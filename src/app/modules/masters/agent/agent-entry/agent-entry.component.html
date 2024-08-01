@@ -1,0 +1,468 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div class="cursor-pointer" [routerLink]="lead? leadListRoute : agentListRoute">
+                    <a class="whitespace-nowrap text-primary-500">{{lead? 'Lead':'Agent'}}</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">{{readonly ? 'Detail' : record.id ? 'Modify' : 'Entry'}}</a>
+                </div>
+            </div>
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    {{title}}
+                </h2>
+            </div>
+        </div>
+
+        <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+            class="sticky mr-2 left-0 bg-gray-50 dark:bg-gray-900" style="border-radius: 0%; width: 100%">
+            <mat-icon> more_vert </mat-icon>
+        </button>
+
+        <mat-menu #optionMenu>
+            <button mat-menu-item (click)="relationahipManagerAgent()">
+                <mat-icon class="mat-18">groups</mat-icon>
+                <span style="font-weight: 600">Relationship Manager</span>
+            </button>
+            <button mat-menu-item (click)="setKYCVerifyAgent()">
+                <mat-icon class="mat-18">fingerprint</mat-icon>
+                <span style="font-weight: 600">{{records["is_kyc_completed"]? "View KYC" : "Verify KYC"}}</span>
+            </button>
+            <button mat-menu-item (click)="setMarkupProfileAgent()">
+                <mat-icon class="mat-18">person</mat-icon>
+                <span style="font-weight: 600">Set Markup Profile</span>
+            </button>
+            <button mat-menu-item (click)="autologinAgent()">
+                <mat-icon class="mat-18">login</mat-icon>
+                <span style="font-weight: 600">Auto Login to B2B</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="setBlockUnblockAgent()">
+                <mat-icon class="mat-18">{{records.is_blocked ? "highlight_off" : "check_circle"}}</mat-icon>
+                <span style="font-weight: 600">{{records.is_blocked ? "Unblock": "Block"}}</span>
+            </button>
+            <button *ngIf="!records.is_email_verified" mat-menu-item (click)="setEmailVerifyAgent()">
+                <mat-icon class="mat-18">verified</mat-icon>
+                <span style="font-weight: 600">Verify Email</span>
+            </button>
+            <button *ngIf="!records.is_mobile_verified" mat-menu-item (click)="setMobileVerifyAgent()">
+                <mat-icon class="mat-18">verified</mat-icon>
+                <span style="font-weight: 600">Verify Mobile</span>
+            </button>
+            <button mat-menu-item (click)="setCurrencyAgent()">
+                <mat-icon [svgIcon]="'heroicons_outline:currency-rupee'"></mat-icon>
+                <span style="font-weight: 600">Set Currency</span>
+            </button>
+            <button mat-menu-item (click)="convertWlAgent()">
+                <mat-icon class="mat-18">sync_alt</mat-icon>
+                <span style="font-weight: 600">Convert to WL</span>
+            </button>
+            <button mat-menu-item (click)="resetPasswordAgent()">
+                <mat-icon class="mat-18">lock</mat-icon>
+                <span style="font-weight: 600;">Reset Password</span>
+            </button>
+        </mat-menu>
+
+        <button mat-raised-button color="primary" [disabled]="formGroup.invalid || disableBtn" (click)="submit()">
+            {{btnTitle}}
+        </button>
+    </div>
+
+    <div class="flex-auto px-10 xl:px-40">
+
+        <form *ngIf="!readonly else detailView"
+            class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden" [formGroup]="formGroup">
+
+            <div class="flex flex-row space-x-3 mb-3">
+                <!-- <div class="flex-0 w-22 h-22 rounded-full overflow-hidden">
+                    <img class="w-full h-full object-cover cursor-pointer" *ngIf="profile_picture"
+                        [matMenuTriggerFor]="imgMenu" [src]="profile_picture" alt="User avatar">
+                    <mat-icon *ngIf="!profile_picture" class="w-full h-full object-cover text-white cursor-pointer"
+                        [svgIcon]="'heroicons_solid:user-circle'" [matMenuTriggerFor]="imgMenu">
+                    </mat-icon>
+                    <div [hidden]="true">
+                        <input type="file" accept="image/*" name="profile" #profileInput
+                            (change)="onProfileInput($event)" />
+                    </div>
+                    <mat-menu #imgMenu>
+                        <button mat-menu-item (click)="profileInput.click()">
+                            Upload Photo
+                        </button>
+                        <button mat-menu-item (click)="removePhoto()">
+                            Remove Photo
+                        </button>
+                    </mat-menu>
+                </div> -->
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Agency Name</mat-label>
+                    <input matInput required [formControlName]="'agency_name'">
+                </mat-form-field>
+            </div>
+
+            <div class="flex flex-row space-x-3">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" required [formControlName]="'email_address'">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Mobile Number</mat-label>
+                    <input matInput required [formControlName]="'mobile_number'">
+                </mat-form-field>
+            </div>
+
+            <div class="flex flex-row space-x-3">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Employee</mat-label>
+                    <mat-select formControlName="relationship_manager_id">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching employee found'" [formControlName]="'empfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of employeeList | async"
+                            [value]="ct.id">{{ct.employee_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>City</mat-label>
+                    <mat-select formControlName="city_id">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching city found'" [formControlName]="'cityfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of cityList | async" [value]="ct.id">{{ct.display_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="flex flex-row space-x-3">
+                <!-- <mat-form-field class="flex-grow">
+                    <mat-label>Master Agent</mat-label>
+                    <mat-select formControlName="master_agent_id">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching agent found'" [formControlName]="'agentfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of agentList | async" [value]="ct.id">{{ct.agency_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field> -->
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Contact Person</mat-label>
+                    <input matInput type="text" [formControlName]="'contact_person'">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Contact Person Email</mat-label>
+                    <input matInput type="email" [formControlName]="'contact_person_email'">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Contact Person Number</mat-label>
+                    <input matInput [formControlName]="'contact_person_number'">
+                </mat-form-field>
+            </div>
+        </form>
+
+        <ng-template #detailView>
+
+            <div class="grid grid-cols-5 gap-2 mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden">
+                <div class="flex flex-row">
+                    <div class="flex-0 w-10 h-10 rounded-full overflow-hidden mb-3">
+                        <img class="w-full h-full object-cover cursor-pointer" *ngIf="profile_picture"
+                            [src]="profile_picture" alt="User avatar">
+                        <mat-icon *ngIf="!profile_picture"
+                            class="w-full h-full object-cover dark:text-white text-primary cursor-pointer"
+                            [svgIcon]="'heroicons_solid:user-circle'">
+                        </mat-icon>
+                        <div [hidden]="true">
+                            <input type="file" accept="image/*" name="profile" #profileInput
+                                (change)="onProfileInput($event)" />
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col mb-3" *ngFor="let filed of fieldList">
+                    <div class="flex flex-row space-x-2">
+                        <span class=" text-md font-semibold text-secondary">{{filed.name}} <mat-icon
+                                *ngIf="filed.name === 'Referral Link'" class="icon-size-3 cursor-pointer ml-1"
+                                [matTooltip]="'Copy Link'"
+                                (click)="copyLink(records.referral_link_url)">content_copy</mat-icon></span>
+                        <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
+                    </div>
+                    <span class="truncate flex items-center">
+                        <span *ngIf="filed.name === 'Email'" class="text-base truncate">
+                            <mat-icon *ngIf="records.is_email_verified"
+                                class="text-green-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
+                                [matTooltip]="'Verified'">verified</mat-icon>
+                            <mat-icon *ngIf="!records.is_email_verified"
+                                class="text-yellow-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
+                                [matTooltip]="'Verification Pending'">warning</mat-icon>
+                        </span>
+                        <span *ngIf="filed.name === 'Mobile Number'" class="text-base truncate">
+                            <mat-icon *ngIf="records.is_mobile_verified"
+                                class="text-green-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
+                                [matTooltip]="'Verified'">verified</mat-icon>
+                            <mat-icon *ngIf="!records.is_mobile_verified"
+                                class="text-yellow-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
+                                [matTooltip]="'Verification Pending'">warning</mat-icon>
+                        </span>
+                        <!-- <span *ngIf="filed.name === 'Referral Link'" class="text-base truncate">
+                            <mat-icon *ngIf="records.referral_link_url" class="icon-size-5 cursor-pointer mr-3" [matTooltip]="'Copy Link'" (click)="copyLink(records.referral_link_url)">content_copy</mat-icon>
+                        </span> -->
+                        <span class="text-base truncate pr-1 relative top-[-1px]"
+                            [matTooltip]="filed.value">{{filed.value || '--'}}</span>
+                    </span>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+
+    <div class="px-20 pt-10" *ngIf="readonly">
+        <mat-tab-group class="sm:px-2" mat-stretch-tabs="false" [animationDuration]="'0'">
+            <mat-tab label="Sub Agents">
+                <ng-template matTabContent>
+                    <div class="flex">
+                        <mat-form-field class="fuse-mat-dense fuse-mat-rounded  min-w-80" [subscriptSizing]="'dynamic'">
+                            <mat-icon class="icon-size-5" matPrefix
+                                [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                            <input matInput [formControl]="searchInputControl" [autocomplete]="'off'"
+                                [placeholder]="'Search Sub Agent'">
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col mt-1 overflow-hidden">
+                        <div class="flex flex-col pt-5 overflow-auto bg-transparent" *ngIf="subAgentsList.length >= 1">
+                            <div class="flex flex-row border-2 w-fit">
+                                <div
+                                    class="font-bold w-10 border-r-2 p-2 flex items-center justify-center sticky left-0 z-10 dark:bg-gray-900 bg-gray-200">
+                                    #
+                                </div>
+                                <div class="font-bold w-30 border-r-2 p-2">
+                                    Agent Code
+                                </div>
+                                <div class="font-bold w-50 border-r-2 p-2">
+                                    Agent
+                                </div>
+                                <div class="font-bold w-80 border-r-2 p-2">
+                                    Email
+                                </div>
+                                <div class="font-bold w-50 border-r-2 p-2">
+                                    Mobile
+                                </div> 
+                                <div class="font-bold w-30 border-r-2 p-2">
+                                    Balance
+                                </div> 
+                                <div class="font-bold w-30 border-r-2 p-2">
+                                    Currency
+                                </div>
+                                <div class="font-bold w-50 border-r-2 p-2">
+                                    Relationship Manager
+                                </div>
+                                <div class="font-bold w-50 border-r-2 p-2">
+                                    City
+                                </div>
+                                <div class="font-bold w-50 border-r-2 p-2">
+                                    Last Login
+                                </div>
+                                <div class="font-bold w-50 border-r-2 p-2">
+                                    Signup
+                                </div>
+                            </div>
+                            <div class="flex flex-row border-x-2 border-b-2 w-fit" *ngFor="let dt of subAgentsList">
+                                <div
+                                    class="w-10 border-r-2 p-1 flex justify-center items-center sticky left-0 z-10 dark:bg-gray-900 bg-gray-200">
+                                    <mat-icon class="cursor-pointer" [matMenuTriggerFor]="menuOpt">more_vert</mat-icon>
+                                    <mat-menu #menuOpt>
+                                        <button mat-menu-item (click)="view(dt)">
+                                            <mat-icon class="mat-18">info</mat-icon>
+                                            <span style="font-weight: 600;">Info</span>
+                                        </button>
+                                        <button mat-menu-item (click)="deleteInternal(dt)">
+                                            <mat-icon class="mat-18">delete</mat-icon>
+                                            <span style="font-weight: 600;">Delete</span>
+                                        </button>
+                                        <mat-divider></mat-divider>
+                                        <button mat-menu-item (click)="relationahipManager(dt)">
+                                            <mat-icon class="mat-18">groups</mat-icon>
+                                            <span style="font-weight: 600;">Relationship Manager</span>
+                                        </button>
+                                        <button mat-menu-item (click)="setKYCVerify(dt)">
+                                            <mat-icon class="mat-18">fingerprint</mat-icon>
+                                            <span style="font-weight: 600;">{{dt.is_kyc_completed ? 'View KYC' : 'Verify
+                                                KYC'}}</span>
+                                        </button>
+                                        <!-- <button mat-menu-item >
+                                                <mat-icon class="mat-18">login</mat-icon>
+                                                <span style="font-weight: 600;">Agent Login</span>
+                                            </button> -->
+                                        <button mat-menu-item (click)="setMarkupProfile(dt)">
+                                            <mat-icon class="mat-18">person</mat-icon>
+                                            <span style="font-weight: 600;">Set Markup Profile</span>
+                                        </button>
+                                        <button mat-menu-item (click)="kycProfile(dt)">
+                                            <mat-icon class="mat-18">beenhere</mat-icon>
+                                            <span style="font-weight: 600">Set KYC Profile</span>
+                                        </button>
+                                        <button mat-menu-item (click)="autologin(dt)">
+                                            <mat-icon class="mat-18">login</mat-icon>
+                                            <span style="font-weight: 600;">Auto Login to B2B</span>
+                                        </button>
+                                        <mat-divider></mat-divider>
+                                        <button mat-menu-item (click)="setBlockUnblock(dt)">
+                                            <mat-icon class="mat-18">{{dt.is_blocked ?
+                                                'highlight_off':'check_circle'}}</mat-icon>
+                                            <span style="font-weight: 600;">{{dt.is_blocked ? 'Unblock' :
+                                                'Block'}}</span>
+                                        </button>
+                                        <button mat-menu-item (click)="resetPassword(dt)">
+                                            <mat-icon class="mat-18">lock</mat-icon>
+                                            <span style="font-weight: 600;">Reset Password</span>
+                                        </button>
+                                        <button *ngIf="!dt.is_email_verified" mat-menu-item
+                                            (click)="setEmailVerify(dt)">
+                                            <mat-icon class="mat-18">verified</mat-icon>
+                                            <span style="font-weight: 600;">Verify Email</span>
+                                        </button>
+                                        <button *ngIf="!dt.is_mobile_verified" mat-menu-item
+                                            (click)="setMobileVerify(dt)">
+                                            <mat-icon class="mat-18">verified</mat-icon>
+                                            <span style="font-weight: 600;">Verify Mobile</span>
+                                        </button>
+                                        <button mat-menu-item (click)="setCurrency(dt)">
+                                            <mat-icon [svgIcon]="'heroicons_outline:currency-rupee'"></mat-icon>
+                                            <span style="font-weight: 600">Set Currency</span>
+                                        </button>
+                                        <button mat-menu-item (click)="convertWl(row)">
+                                            <mat-icon class="mat-18">sync_alt</mat-icon>
+                                            <span style="font-weight: 600;">Convert to WL</span>
+                                        </button>
+                                    </mat-menu>
+                                </div>
+                                <div class="w-30 border-r-2 p-2 truncate">
+                                    <span *ngIf="dt.is_kyc_completed"
+                                        class="inline-block h-2 w-2 rounded-full bg-green-600"
+                                        [matTooltip]="'KYC Completed'"></span>
+                                    <span *ngIf="!dt.is_kyc_completed"
+                                        class="inline-block h-2 w-2 rounded-full bg-red-600"
+                                        [matTooltip]="'KYC Pending'"></span>
+                                    <span class=" inline-block ml-2">{{ dt.agent_code || '-' }}</span>
+                                </div>
+                                <div class="w-50 border-r-2 p-2">
+                                    <div>{{dt.agency_name || '-'}}</div>
+                                    <div class="text-red-500 text-xs leading-none">{{dt.is_blocked ? 'Blocked':''}}
+                                    </div>
+                                </div>
+                                <div class="w-80 border-r-2 p-2">
+                                    <mat-icon class="text-green-600 text-lg relative top-[2px]"
+                                        [matTooltip]="'Verified'" *ngIf="dt.is_email_verified">verified</mat-icon>
+                                    <mat-icon class="text-yellow-600 text-lg relative top-[2px]"
+                                        [matTooltip]="'Verification Pending'"
+                                        *ngIf="!dt.is_email_verified">warning</mat-icon>
+                                    <span class="pl-1">{{dt.email_address || '-'}}</span>
+                                </div>
+                                <div class="w-50 border-r-2 p-2">
+                                    <mat-icon class="text-green-600 text-lg relative top-[2px]"
+                                        [matTooltip]="'Verified'" *ngIf="dt.is_mobile_verified">verified</mat-icon>
+                                    <mat-icon class="text-yellow-600 text-lg relative top-[2px]"
+                                        [matTooltip]="'Verification Pending'"
+                                        *ngIf="!dt.is_mobile_verified">warning</mat-icon>
+                                    <span class="pl-1">{{dt.mobile_number || '-'}}</span>
+                                </div>
+                                <div class="w-30 border-r-2 p-2">
+                                    {{dt.balance ?? '0'}}
+                                </div> 
+                                 <div class="w-30 border-r-2 p-2">
+                                    {{dt.currency || '-'}}
+                                </div> 
+                                <div class="w-50 border-r-2 p-2">
+                                    {{dt.relation_manager_name || '-'}}
+                                </div>
+                                <div class="w-50 border-r-2 p-2">
+                                    {{dt.city_name || '-'}}
+                                </div>
+                                <div class="w-50 border-r-2 p-2">
+                                    {{(dt.web_last_login_time | date : "dd-MM-YYYY hh:mm a") || '-'}}
+                                </div>
+                                <div class="w-50 border-r-2 p-2">
+                                    {{(dt.entry_date_time | date : "dd-MM-YYYY hh:mm a") ||'-' }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row h-40 justify-center items-center text-secondary font-semibold"
+                            *ngIf="subAgentsList.length < 1">
+                            No data to display
+                        </div>
+                        <mat-paginator class="border-b sm:border-t sm:border-b-0 dark:dark"
+                            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize"
+                            (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
+                        </mat-paginator>
+                    </div>
+
+                </ng-template>
+            </mat-tab>
+
+            <mat-tab label="RM Change Log">
+                <ng-template matTabContent>
+                    <div class="flex">
+                        <mat-form-field class="fuse-mat-dense fuse-mat-rounded  min-w-80" [subscriptSizing]="'dynamic'">
+                            <mat-icon class="icon-size-5" matPrefix
+                                [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                            <input matInput type="text" [(ngModel)]="SearchQuery" (input)="applySearchFilters()"
+                                placeholder="Search Relationship Manager" />
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col mt-1 overflow-hidden">
+                        <div class="flex flex-col pt-5 overflow-auto bg-transparent"
+                            *ngIf="filteredrelationshipList.length >= 1">
+                            <div class="flex flex-row border-2 w-fit">
+                                <div class="font-bold w-50 border-r-2 p-2">
+                                    Date
+                                </div>
+                                <div class="font-bold w-56 border-r-2 p-2">
+                                    Area
+                                </div>
+                                <div class="font-bold w-56 border-r-2 p-2">
+                                    Login
+                                </div>
+                                <div class="font-bold w-128 border-r-2 p-2">
+                                    Activity
+                                </div>
+                            </div>
+                            <div class="flex flex-row border-x-2 border-b-2 w-fit"
+                                *ngFor="let dt of filteredrelationshipList">
+                                <div class="w-50 border-r-2 p-2">
+                                    {{ dt.activity_date_time | date : "dd-MM-YYYY hh:mm a" }}
+                                </div>
+                                <div class="w-56 border-r-2 p-2">
+                                    {{ dt.login_area }}
+                                </div>
+                                <div class="w-56 border-r-2 p-2 truncate">
+                                    {{ dt.login }}
+                                </div>
+                                <div class="w-128 border-r-2 p-2">
+                                    {{ dt.activity }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row h-40 justify-center items-center text-secondary font-semibold"
+                            *ngIf="filteredrelationshipList.length < 1">
+                            No data to display
+                        </div>
+                    </div>
+                </ng-template>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+
+</div>

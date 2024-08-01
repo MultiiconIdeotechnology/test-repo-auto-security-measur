@@ -1,0 +1,106 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidde dark:bg-transparent">
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight">{{module_name}}</div>
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+
+            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'">
+            </mat-form-field>
+
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createReferral()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
+            </button>
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="flex flex-col flex-auto overflow-hidden">
+        <!-- list -->
+        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
+            <ng-container>
+                <div class="grid">
+                    <!-- Header -->
+                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card"
+                        matSort matSortDisableClear (matSortChange)="refreshItems()">
+                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
+                            #
+                        </div>
+
+                        <ng-container *ngFor="let col of columns">
+                            <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class">
+                                {{ col.name }}
+                            </div>
+                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
+                                {{ col.name }}
+                            </div>
+                        </ng-container>
+                    </div>
+                    <!-- Rows -->
+                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
+                        <ng-container *ngFor="let ListItem of dataList">
+                            <div
+                                class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer">
+                                <button mat-icon-button (click)="$event.stopPropagation()"
+                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-gray-50 dark:bg-gray-900"
+                                    style="border-radius: 0%; width: 100%">
+                                    <mat-icon> more_vert </mat-icon>
+                                </button>
+                                <mat-menu #optionMenu>
+                                    <button mat-menu-item (click)="delete(ListItem)">
+                                        <mat-icon class="mat-18">delete</mat-icon>
+                                        <span style="font-weight: 600;">Delete</span>
+                                    </button>
+                                    <button mat-menu-item (click)="edit(ListItem)">
+                                        <mat-icon class="mat-18">edit</mat-icon>
+                                        <span style="font-weight: 600;">Edit</span>
+                                    </button>
+                                </mat-menu>
+
+                                <ng-container *ngFor="let col of columns">
+
+                                    <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
+
+                                        <span *ngIf="col.isicon" class="text-center justify-center">
+                                                <mat-icon svgIcon="heroicons_outline:clipboard-document-check" class="text-blue-600 p-0.5" (click)="linkCopy(ListItem[col.key])"
+                                                [matTooltip]="ListItem[col.key]"></mat-icon>
+                                        </span>
+
+                                        <div class="flex flex-col truncate">
+                                            <span class="truncate" *ngIf="!col.isicon && !col.is_boolean"
+                                                [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
+                                                {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
+                                                ListItem[col.key] || " - " }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+            <ng-template #noGridItems>
+                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+                    {{getNodataText()}}
+                </div>
+            </ng-template>
+        </div>
+
+        <mat-paginator
+            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
+            [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total"
+            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize" (page)="refreshItems()"
+            [showFirstLastButtons]="appConfig.showFirstLastButtons">
+        </mat-paginator>
+    </div>
+</div>

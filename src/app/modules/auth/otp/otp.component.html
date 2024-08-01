@@ -1,0 +1,29 @@
+<div class="flex flex-col w-140 min-w-140 second-color overflow-x-hidden rounded-md pt-4 dark -m-6">
+
+    <div class="px-4">
+        <!-- Header -->
+        <div class="flex flex-col space-y-2 text-center w-full mt-3">
+            <img class="w-30 m-auto object-contain object-center" [src]="'assets/images/logo/logo-text.svg'">
+            <span class="text-secondary">OTP Sent to your Personal Email and Whatsapp number</span>
+        </div>
+
+        <mat-divider class="mt-3 border-t border-b-0 main-border-color"></mat-divider>
+
+        <div class="pb-5">
+            <form [formGroup]="contactForm" (ngSubmit)="verifyOTP()">
+                <div class="otp pt-5 max-w-[350px] m-auto">
+                    <div class="otp-input">
+                        <input #otpInput0 type="number" class="otp-box" formControlName="otpDigit0" (input)="onOtpInput($event, 0)" (paste)="onOtpPaste($event)" />
+                        <input #otpInput1 type="number" class="otp-box" formControlName="otpDigit1" (input)="onOtpInput($event, 1)" />
+                        <input #otpInput2 type="number" class="otp-box" formControlName="otpDigit2" (input)="onOtpInput($event, 2)" />
+                        <input #otpInput3 type="number" class="otp-box" formControlName="otpDigit3" (input)="onOtpInput($event, 3)" />
+                        <input #otpInput4 type="number" class="otp-box" formControlName="otpDigit4" (input)="onOtpInput($event, 4)" />
+                        <input #otpInput5 type="number" class="otp-box" formControlName="otpDigit5" (input)="onOtpInput($event, 5)" />
+                    </div>
+                    <p class="pt-3 text-center text-secondary">Please enter your OTP here.</p>
+                </div>
+            </form>
+        </div>
+    
+    </div>
+</div>

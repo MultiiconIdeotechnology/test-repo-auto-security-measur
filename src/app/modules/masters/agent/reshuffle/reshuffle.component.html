@@ -1,0 +1,129 @@
+<div class="flex flex-col max-w-240 md:min-w-120 max-h-screen -m-6">
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}} Reshuffle</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <mat-tab-group class="mt-3 lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+        <mat-tab label="Mode 1" [aria-label]="'Mode 1'" >
+            <form class="flex flex-col flex-auto overflow-y-auto" [formGroup]="mode1Form">
+                
+                <mat-form-field class="flex-grow">
+                    <mat-label>From RM</mat-label>
+                    <mat-select formControlName="FromId"  required>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching employee found'" [formControlName]="'fromfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <ng-container *ngFor="let ct of fromList">
+                            <mat-option [value]="ct.id" *ngIf="mode1Form.get('ToId').value !== ct.id">
+                                {{ct.employee_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>To RM</mat-label>
+                    <mat-select formControlName="ToId"  required>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching employee found'" [formControlName]="'tofilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <ng-container *ngFor="let ct of toList">
+                            <mat-option [value]="ct.id" *ngIf="mode1Form.get('FromId').value !== ct.id">
+                                {{ct.employee_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" *ngIf="this.record == 'Agent'">
+                    <mat-label>Status</mat-label>
+                    <mat-select required formControlName="lead_status">
+                        <mat-option *ngFor="let s of statusType" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" *ngIf="this.record == 'Lead'">
+                    <mat-label>Status</mat-label>
+                    <mat-select required formControlName="lead_status">
+                        <mat-option *ngFor="let s of statusTypeLead" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+            </form>
+
+            <div class="flex flex-col justify-end items-end ">
+                <div class="flex items-center ">
+                    <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button (click)="matDialogRef.close()">
+                        <span>Cancel</span>
+                    </button>
+                    <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'" (click)="Submit()">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="Mode 2" [aria-label]="'Mode 2'">
+            <form class="flex flex-col flex-auto overflow-y-auto" [formGroup]="mode2Form">
+
+                <mat-form-field class="flex-grow" *ngIf="this.record == 'Agent'">
+                    <mat-label>Status</mat-label>
+                    <mat-select required formControlName="lead_status">
+                        <mat-option *ngFor="let s of statusType" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" *ngIf="this.record == 'Lead'">
+                    <mat-label>Status</mat-label>
+                    <mat-select required formControlName="lead_status">
+                        <mat-option *ngFor="let s of statusTypeLead" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>To RM</mat-label>
+                    <mat-select formControlName="ToId"  required>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching employee found'" [formControlName]="'tofilter2'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <ng-container *ngFor="let ct of toList2">
+                            <mat-option [value]="ct.id">
+                                {{ct.employee_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+
+            </form>
+
+            <div class="flex flex-col justify-end items-end ">
+                <div class="flex items-center ">
+                    <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button (click)="matDialogRef.close()">
+                        <span>Cancel</span>
+                    </button>
+                    <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'" (click)="Submit()">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+
+</div>

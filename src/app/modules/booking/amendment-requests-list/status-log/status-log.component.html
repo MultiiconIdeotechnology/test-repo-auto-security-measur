@@ -1,0 +1,28 @@
+<div class="flex flex-col max-w-256 md:min-w-256 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="px-8 py-4">
+        <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
+            <ul *ngIf="logList.length > 0">
+               <li class="mb-3 flex items-center" *ngFor="let af of logList"><span class="w-[10px] h-[10px] rounded-full bg-primary mr-4"></span><span>{{af}}</span></li> 
+            </ul>
+            <div *ngIf="logList.length < 1" class="text-center w-full">
+                <div class="text-xl font-medium">No Status Logs Available!</div>
+            </div>
+        </div>
+    
+        <!-- <div class="flex items-center justify-end mt-4 pb-4 space-x-4">
+            <button mat-stroked-button (click)="matDialogRef.close()">
+                Close
+            </button>
+        </div> -->
+    </div>
+
+</div>

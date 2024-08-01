@@ -1,0 +1,67 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div class="cursor-pointer">
+                    <!--[routerLink]="OfflineRoute"-->
+                    <a class="whitespace-nowrap text-primary-500" (click)="close()">Offline Service Details</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">Details</a>
+                </div>
+            </div>
+        </div>
+        <button mat-raised-button color="primary" (click)="close()">
+            Close
+        </button>
+    </div>
+
+    <!--------Main-------->
+    <div class="p-6">
+        <div class="p-5 rounded-2xl bg-card">
+            <span class="text-2xl">Offline Service Booking</span>
+            <div class="grid  grid-cols-5 gap-4  overflow-hidden border rounded-2xl p-5 mt-4">
+                <div class="contents mb-3 ">
+                    <div class="flex flex-col" *ngFor="let filed of fieldList">
+                        <span class="text-md font-semibold text-secondary">{{filed.name}}
+                            <!-- <mat-icon class="mat-icon notranslate mat-mdc-tooltip-trigger icon-size-3 cursor-pointer ml-1 material-icons mat-ligature-font mat-icon-no-color">content_copy</mat-icon> -->
+                        </span>
+                        <div class="relative">
+                            <span class="mat-mdc-tooltip-trigger text-base truncate"
+                                [matTooltip]="filed.value">{{filed.value || '--'}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--------Table-------->
+    <mat-tab-group class="mt-3 wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+
+        <mat-tab label="Purchase" [aria-label]="'Purchase'" >
+            <app-purchase [id]="id" [isInvoiceGenerated]="isInvoiceGenerated" #purchase></app-purchase>
+        </mat-tab>
+
+        <mat-tab label="Sales" [aria-label]="'Sales'">
+            <app-sales [agent_currency_id]="agent_currency_id" [id]="id" [isInvoiceGenerated]="isInvoiceGenerated" #sales></app-sales>
+        </mat-tab>
+
+        <mat-tab label="Payment" [aria-label]="'Payment'">
+            <app-payment [agent_currency_id]="agent_currency_id" [id]="id" [isInvoiceGenerated]="isInvoiceGenerated" #payment></app-payment>
+        </mat-tab>
+
+        <mat-tab label="Receipt" [aria-label]="'Receipt'">
+            <app-receipt [id]="id" [isInvoiceGenerated]="isInvoiceGenerated" #receipt></app-receipt>
+        </mat-tab>
+
+        <mat-tab label="Invoice" [aria-label]="'Invoice'">
+            <app-invoice [id]="id" [isInvoiceGenerated]="isInvoiceGenerated" (updateInvoiceGenerat)="updateInvoiceGenerat()" [data]="fieldList" #invoice></app-invoice>
+        </mat-tab>
+
+    </mat-tab-group> 
+    
+    
+</div>

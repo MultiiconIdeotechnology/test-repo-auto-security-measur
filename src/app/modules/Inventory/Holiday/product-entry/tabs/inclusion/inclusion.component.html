@@ -1,0 +1,202 @@
+<div class="flex flex-col gap-1">
+
+    <div class="flex flex-col overflow-x-auto">
+        <div class="flex flex-row items-end border-b px-10 space-x-3 min-w-fit">
+            <div class="flex pt-2 pb-1 pl-5 pr-4 cursor-pointer overflow-hidden rounded-t-xl border border-b-0 dark:dark min-w-fit"
+                (click)="cityChange(city)" *ngFor="let city of data?.cities" matRipple
+                [ngClass]="city.city_id?.id === selectedCity.city_id?.id ? 'text-primary-500 -mb-[1px]' : 'text-secondary'">
+                <div class="flex items-center">
+                    <div class="overflow-hidden">
+                        <div class="font-medium leading-6 truncate">{{city.city_id?.display_name}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex pt-2 pb-1 pl-5 pr-4 cursor-pointer overflow-hidden rounded-t-xl border border-b-0 dark:dark min-w-fit"
+                (click)="commonInc = true; selectedCity = {}; selectedTab = ''" matRipple
+                [ngClass]="commonInc ? 'text-primary-500 -mb-[1px]' : 'text-secondary'">
+                <div class="flex items-center">
+                    <div class="overflow-hidden">
+                        <div class="font-medium leading-6 truncate">Common Inclusions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col">
+
+        <div *ngIf="selectedCity.id" class="flex flex-row gap-5 text-lg border-b-2 font-semibold mb-0 m-2">
+            <div class="p-2 w-36 flex justify-center cursor-pointer relative bottom-[-2px] over"
+                (click)="TabChange(tab)"
+                [ngClass]="tab === selectedTab ? 'text-primary-500 border-b-2 border-primary-500' :'text-secondary'"
+                *ngFor="let tab of inventoryTypes">
+                {{tab}}
+            </div>
+        </div>
+        <div class="flex flex-col">
+            <form [formGroup]="formGroup" class="flex flex-col mt-6">
+                <div class="flex flex-row space-x-2 items-center">
+                    <mat-form-field class="flex-grow"
+                        *ngIf="(selectedTab === InventoryType.Other || !selectedTab)  else suggesions">
+                        <mat-label class="font-medium text-sm">{{commonInc ? 'Inclusion' : selectedTab}}</mat-label>
+                        <input placeholder="Inclusion" required matInput formControlName="inclusion">
+                    </mat-form-field>
+
+                    <ng-template #suggesions>
+                        <mat-form-field class="flex-grow">
+                            <mat-label>{{selectedTab}}</mat-label>
+                            <input type="text" matInput formControlName="inclusion" [matAutocomplete]="auto" required>
+                            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                                <mat-option *ngFor="let inclusion of InclusionSuggesions"
+                                    [value]="inclusion">{{inclusion}}</mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </ng-template>
+
+                    <mat-form-field class="w-20" [class.hidden]="selectedTab !== InventoryType.Hotel">
+                        <mat-label class="font-medium text-sm">Nights</mat-label>
+                        <input placeholder="Nights" matInput formControlName="no_of_nights"
+                            [required]="selectedTab === InventoryType.Hotel">
+                    </mat-form-field>
+                    <mat-form-field class="w-20" [class.hidden]="selectedTab !== InventoryType.Hotel">
+                        <mat-label class="font-medium text-sm">Stars</mat-label>
+                        <mat-select formControlName="star_rating" [required]="selectedTab === InventoryType.Hotel">
+                            <mat-option *ngFor="let star of starts" [value]="star">{{star}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="flex-grow" [class.hidden]="selectedTab !== InventoryType.Hotel">
+                        <mat-label class="font-medium text-sm">Meal Plan</mat-label>
+                        <mat-select formControlName="meal_plan" [required]="selectedTab === InventoryType.Hotel">
+                            <mat-option *ngFor="let meal of mealPlanes" [value]="meal">{{meal}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="flex-grow" [class.hidden]="selectedTab !== InventoryType.Hotel">
+                        <mat-label>Room Catogory</mat-label>
+                        <input type="text" matInput formControlName="room_category" [matAutocomplete]="autoo"
+                            [required]="selectedTab === InventoryType.Hotel">
+                        <mat-autocomplete autoActiveFirstOption #autoo="matAutocomplete">
+                            <mat-option *ngFor="let category of roomCategoryList"
+                                [value]="category">{{category}}</mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <button mat-flat-button color="primary" class="rounded-lg" [disabled]="formGroup.invalid"
+                        *ngIf="!selectedTab" (click)="add()">
+                        {{formGroup.get('id').value ? 'SAVE' : 'ADD'}}
+                    </button>
+
+                    <!-- <mat-form-field class="flex-grow" [class.hidden]="selectedTab !== InventoryType.Hotel">
+                        <mat-label class="font-medium text-sm">Room Catogory</mat-label>
+                        <input placeholder="Room Catogory" required matInput
+                            [(ngModel)]="getInclusionTypeWise().form.room_category">
+                    </mat-form-field> -->
+                </div>
+                <div class="flex flex-row space-x-2 items-center" *ngIf="selectedTab">
+                    <mat-form-field class="flex-grow">
+                        <textarea placeholder="Description" matInput formControlName="description"></textarea>
+                    </mat-form-field>
+                    <div class="">
+                        <button mat-flat-button color="primary" class="rounded-lg" [disabled]="formGroup.invalid"
+                            (click)="add()">
+                            {{formGroup.get('id').value ? 'SAVE' : 'ADD'}}
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+
+            <div class="flex flex-col flex-auto overflow-hidden max-h-[294px]" *ngIf="selectedTab">
+                <!-- list -->
+                <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto">
+                    <ng-container>
+                        <div class="grid">
+                            <!-- Header -->
+                            <div
+                                class="tbl-grid gridwidth z-10 sticky top-0 grid gap-4 py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card">
+                                <div style="text-align: center;" class="sticky left-0 bg-card z-99">
+                                    #
+                                </div>
+                                <div class="'pl-4">
+                                    Inclusion
+                                </div>
+                                <div class="'pl-4 text-center" [hidden]="selectedTab !== InventoryType.Hotel">
+                                    Nights
+                                </div>
+                                <div class="'pl-4 text-center" [hidden]="selectedTab !== InventoryType.Hotel">
+                                    Stars
+                                </div>
+                                <div class="'pl-4" [hidden]="selectedTab !== InventoryType.Hotel">
+                                    Meal Plan
+                                </div>
+                                <div class="'pl-4" [hidden]="selectedTab !== InventoryType.Hotel">
+                                    Room Category
+                                </div>
+                                <div class="'pl-4">
+                                    Description
+                                </div>
+
+                            </div>
+
+                            <!-- Rows -->
+                            <ng-container *ngFor="let it of getInclusionTypeWise().inclusions; let i = index">
+                                <div
+                                    class="tbl-grid gridwidth grid items-center gap-4 px-6 md:pr-8 border-b pl-0 cursor-pointer">
+                                    <button mat-icon-button (click)="$event.stopPropagation()"
+                                        [matMenuTriggerFor]="optionMenu"
+                                        class="sticky left-0 bg-gray-50 dark:bg-gray-900"
+                                        style="border-radius: 0%; width: 100%">
+                                        <mat-icon> more_vert </mat-icon>
+                                    </button>
+                                    <mat-menu #optionMenu>
+                                        <button mat-menu-item (click)="edit(it)">
+                                            <mat-icon class="mat-18">edit</mat-icon>
+                                            <span style="font-weight: 600;">Edit</span>
+                                        </button>
+                                        <button mat-menu-item (click)="delete(it)">
+                                            <mat-icon class="mat-18">delete</mat-icon>
+                                            <span style="font-weight: 600;">Delete</span>
+                                        </button>
+                                    </mat-menu>
+
+                                    <span class="truncate">
+                                        {{it.inclusion}}
+                                    </span>
+                                    <span class="truncate  text-center" [hidden]="selectedTab !== InventoryType.Hotel">
+                                        {{it.no_of_nights}}
+                                    </span>
+                                    <span class="truncate  text-center" [hidden]="selectedTab !== InventoryType.Hotel">
+                                        {{it.star_rating}}
+                                    </span>
+                                    <span class="truncate" [hidden]="selectedTab !== InventoryType.Hotel">
+                                        {{it.meal_plan}}
+                                    </span>
+                                    <span class="truncate" [hidden]="selectedTab !== InventoryType.Hotel">
+                                        {{it.room_category}}
+                                    </span>
+                                    <span class="truncate !w-[400px]" [matTooltip]="it.description">
+                                        {{it.description}}
+                                    </span>
+
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <ng-container *ngIf="!selectedTab">
+                <div *ngFor="let ex of getCommonInclusions()"
+                    class="flex flex-row space-x-2 py-[2px] text-lg panel max-h-[294px]">
+                    <mat-icon class="icon-size-4 only-show-on-hover cursor-pointer mt-1" [matTooltip]="'Modify'"
+                        (click)="edit(ex)">edit</mat-icon>
+                    <mat-icon class="icon-size-4 only-show-on-hover cursor-pointer mt-1 text-red-500"
+                        [matTooltip]="'Remove'" (click)="delete(ex)">delete</mat-icon>
+                    <div class="min-h-3 max-h-3 min-w-3 max-w-3 mt-[6px] block rounded-full bg-primary-500"></div>
+                    <div class="text-secondary">{{ ex.inclusion }}</div>
+                </div>
+            </ng-container>
+
+
+        </div>
+    </div>
+
+</div>

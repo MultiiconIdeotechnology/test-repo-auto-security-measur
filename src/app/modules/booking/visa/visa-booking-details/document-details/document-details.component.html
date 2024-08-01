@@ -1,0 +1,88 @@
+<div class="flex flex-col max-w-240 md:min-w-200 max-h-[95vh] -m-6">
+    <div
+        class="flex px-5 pt-4 pb-3 z-10 items-center bg-primary justify-between flex-row text-xl sticky font-semibold border-b-2">
+        <span>{{datas.first_name}} {{datas.last_name}}</span>
+        <mat-icon svgIcon="close" class="cursor-pointer text-white" (click)="matDialogRef.close()"></mat-icon>
+    </div>
+    <div class="bg-card">
+        <div class="px-5 font-semibold pt-3 pb-2 text-lg"></div>
+        <div *ngIf="docs.length > 0" class="flex flex-col w-full max-h-[480px] overflow-y-auto px-4 pt-2 pb-4">
+            <div *ngFor="let doc of docs">
+                <div class="flex flex-col px-4 mb-3 justify-between border primary-border rounded-xl overflow-hidden">
+
+                    <div class="flex flex-row items-center justify-between overflow-hidden">
+                        <!-- <button class="rounded-lg text-[#234977] px-4 bg-white" mat-flat-button (click)="rejectAction(doc.id)" *ngIf="doc.is_document_rejected == false">
+                            <span class="text-[#234977]">Reject</span>
+                        </button> -->
+                        <div>
+                            <mat-icon
+                            class="icon-size-5 rounded-full bg-red-600 text-white"
+                            [svgIcon]="'heroicons_solid:x-mark'"
+                            [matTooltip]="'Reject'"
+                            (click)="doc.is_document_rejected ? null : rejectAction(doc.id)"
+                            [class.opacity-50]="doc.is_document_rejected == true"
+                            [class.cursor-not-allowed]="doc.is_document_rejected"
+                            *ngIf="doc.is_document_rejected || !doc.is_document_rejected"
+                          ></mat-icon>
+                        </div>
+
+                        <div class="flex items-center py-2 space-x-4">
+                            <img src="assets/images/visa/upload-image.png" class="h-13 w-13 object-contain" alt="">
+                            <div class="py-4 flex flex-col items-start justify-between second-color overflow-hidden">
+                                <div class="flex flex-col font-medium tracking-tight leading-6 truncate">
+                                    <div class="flex flex-row space-x-2 items-center">
+                                        <span class="text-lg">{{doc.document_type}}</span>
+                                    </div>
+                                    <div class="leading-5">
+                                        <p class="text-sm secondary-text opacity-[0.8]">(PDF,JPG,PNG)</p>
+                                    </div>
+                                    <p class="text-sm red-text pt-1">{{doc.reject_reason}}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <span
+                                    [ngClass]="doc.is_document_rejected? 'bg-[rgba(255,0,0,0.1)] red-text':'bg-[rgba(1,175,71,0.1)] green-text'"
+                                    class="text-sm truncate rounded-sm px-3 py-1 cursor-pointer font-semibold tracking-wide">
+                                    {{doc.is_document_rejected? 'Rejected':'Uploaded'}}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row items-end justify-center space-x-3">
+                            <a target="_blank" [href]="doc.file_url">
+                                <button [ngClass]="doc.is_document_rejected? 'opacity-60 pointer-events-none':''"
+                                    class="rounded-lg text-[#234977] px-4 bg-white" mat-flat-button>
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                                        class="rounded-full cursor-pointer text-white icon-size-4"
+                                        [matTooltip]="'Download'"></mat-icon>
+                                    <span class="text-[#234977] pl-2">Download</span>
+                                </button>
+                            </a>
+                            <div [hidden]="true">
+                                <input type="file" name="document" #document (change)="uploadDocument(doc, $event)">
+                            </div>
+
+                            <!-- <button [ngClass]="doc.is_document_rejected? '':'pointer-events-none'"
+                                class="border primary-border px-5 py-2 rounded-lg bg-primary"
+                                (click)="document.click()">
+                                <span class="font-semibold">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-up-tray"
+                                        class="text-white rounded-full relative top-[2px] cursor-pointer icon-size-4 mr-3"
+                                        [matTooltip]="'Upload'"></mat-icon>
+                                    <span class="font-medium text-white">Upload</span>
+                                </span>
+                            </button> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-container *ngIf="docs.length < 1">
+            <div class="flex-grow flex flex-row items-center justify-center py-8">
+                <div>
+                    <span class="secondary-text font-semibold text-xl">{{getNodataText()}}</span>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>

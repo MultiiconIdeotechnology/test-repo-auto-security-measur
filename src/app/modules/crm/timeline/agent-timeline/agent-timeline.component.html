@@ -1,0 +1,34 @@
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-[950px] max-w-[950px]">
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-4 bg-primary">
+        <div class="text-lg font-medium text-white ml-2"> {{title}} </div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+    <div class="xl:min-h-[750px] xl:max-h-[750px] min-h-[450px] max-h-[450px] overflow-y-auto">
+        <!-- *ngIf="getTabsPermission('agent-profile')" -->
+        <mat-tab-group class="mt-3 lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+            <mat-tab label="Agent Profile" [aria-label]="'Agent Profile'">
+                <ng-container *ngIf="tabName == 'Agent Profile'">
+                    <app-crm-agent-profile #agentprofile></app-crm-agent-profile>
+                </ng-container>
+            </mat-tab>
+            <!-- *ngIf="getTabsPermission('partners')" -->
+            <mat-tab label="Business Analytics" [aria-label]="'Business Analytics'">
+                <ng-container *ngIf="tabName == 'Business Analytics'">
+                    <app-business-analytics #businessanalytics></app-business-analytics>
+                </ng-container>
+            </mat-tab>
+            <mat-tab label="Tech Service" [aria-label]="'Tech Service'">
+                <ng-container *ngIf="tabName == 'Tech Service'">
+                    <app-timeline-purchase-product #techservice></app-timeline-purchase-product>
+                </ng-container>
+            </mat-tab>
+            <mat-tab label="Call History" [aria-label]="'Call History'">
+                <ng-container *ngIf="tabName == 'Call History'">
+                    <app-timeline-call-history #callhistory></app-timeline-call-history>
+                </ng-container>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

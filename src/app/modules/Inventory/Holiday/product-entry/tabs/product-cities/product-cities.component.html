@@ -1,0 +1,113 @@
+<div class="flex flex-col gap-1">
+    <form [formGroup]="formGroup">
+        <div class="flex flex-row gap-4 items-center">
+
+            <mat-form-field class="w-24">
+                <mat-label class="font-medium">Order No.</mat-label>
+                <input required matInput formControlName="order_by_no" type="number">
+            </mat-form-field>
+
+            <mat-form-field class="w-80">
+                <mat-label class="font-medium">City</mat-label>
+                <mat-select formControlName="city_id" id="focus" required [compareWith]="compareWith">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching Airline found'" [formControl]="cityFilter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of cityFilteredList" [value]="ct">{{ct.display_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-24">
+                <mat-label class="font-medium">Nights</mat-label>
+                <input required matInput formControlName="no_of_nights" [min]="0"
+                    (blur)="validateNights()" type="number">
+            </mat-form-field>
+
+            <mat-form-field class="w-24">
+                <mat-label class="font-medium">Days</mat-label>
+                <input required matInput formControlName="no_of_days" [min]="0"
+                    (blur)="validateDays()" type="number">
+            </mat-form-field>
+
+            <div class="w-24">
+                <button mat-flat-button class="rounded-lg" color="primary"
+                    [disabled]="formGroup.invalid" (click)="add()">
+                    {{formGroup.get('id').value ? 'SAVE' : 'ADD'}}
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="flex flex-col flex-auto overflow-hidden max-h-[510px]">
+        <!-- list -->
+        <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto">
+            <ng-container>
+                <div class="grid">
+                    <!-- Header -->
+                    <div
+                        class="tbl-grid gridwidth z-10 sticky top-0 grid gap-4 py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card">
+                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
+                            #
+                        </div>
+                        <div class="'pl-4 text-center">
+                            No.
+                        </div>
+                        <div class="'pl-4">
+                            City
+                        </div>
+                        <div class="'pl-4 text-center">
+                            Nights
+                        </div>
+                        <div class="'pl-4 text-center">
+                            Days
+                        </div>
+
+                    </div>
+                    <!-- Rows -->
+                    <ng-container *ngFor="let row of data.cities">
+                        <div
+                            class="tbl-grid gridwidth grid items-center gap-4 px-6 md:pr-8 border-b pl-0 cursor-pointer">
+                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                                class="sticky left-0 bg-gray-50 dark:bg-gray-900"
+                                style="border-radius: 0%; width: 100%">
+                                <mat-icon> more_vert </mat-icon>
+                            </button>
+                            <mat-menu #optionMenu>
+                                <button mat-menu-item (click)="edit(row)">
+                                    <mat-icon class="mat-18">edit</mat-icon>
+                                    <span style="font-weight: 600;">Edit</span>
+                                </button>
+                                <button mat-menu-item (click)="delete(row)">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600;">Delete</span>
+                                </button>
+                            </mat-menu>
+
+                            <span class="truncate text-center">
+                                {{row.order_by_no}}
+                            </span>
+                            <span class="truncate">
+                                {{row.city_id.display_name}}
+                            </span>
+                            <span class="truncate text-center">
+                                {{row.no_of_nights}}
+                            </span>
+                            <span class="truncate text-center">
+                                {{row.no_of_days}}
+                            </span>
+
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+
+    <div class="flex flex-col justify-center items-center h-20" *ngIf="data.cities.length <= 0">
+        <div class="font-medium text-base">
+            No data to display!
+        </div>
+    </div>
+</div>

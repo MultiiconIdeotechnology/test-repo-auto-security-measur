@@ -1,0 +1,1060 @@
+<div class="w-full p-13">
+    <!-- Header -->
+
+    <div class="border-b border-2 primary-border rounded-2xl overflow-hidden">
+        <div class="flex justify-between items-center py-4 px-6 bg-primary border-b-2 primary-border">
+            <div class="text-2xl text-white font-bold tracking-tight ">Offline PNR</div>
+            <!--  -->
+            <button class="ml-4" mat-flat-button [color]="'accent'" [disabled]="disableBtn || !isSaveOfflinePNR"
+                (click)="save()">
+                <!-- <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon> -->
+                <span class="ml-2 mr-1">Save</span>
+            </button>
+        </div>
+        <!-- Form Group -->
+        <div class="flex flex-col flex-auto  overflow-y-auto px-6 pb-5">
+            <form [formGroup]="formGroup">
+
+                <!--------pnr-------->
+                <div>
+                    <div class="text-xl text-secondary my-4">PNR Details</div>
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Master Agent</mat-label>
+                            <mat-select formControlName="agent_id" required (selectionChange)="subagentComboCall()">
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search"
+                                        noEntriesFoundLabel="'no matching agent found'"
+                                        [formControlName]="'agentfilter'">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let ct of agentList | async" [value]="ct.id">
+                                    <span><span *ngIf="ct.code">{{ ct.code }} - </span>{{ ct.agency_name }} <span
+                                            *ngIf="ct.master_agent_name"> ( {{ ct.master_agent_name }})</span></span>
+                                    <div class="-mt-2">
+                                        <span class="text-secondary text-sm">{{ ct.email_address }}</span>
+                                    </div>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Agent</mat-label>
+                            <mat-select formControlName="emp_id" required>
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search"
+                                        noEntriesFoundLabel="'no matching agent found'"
+                                        [formControlName]="'agentfilterSub'">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let ct of agentListSub" [value]="ct.id">
+                                    <span><span *ngIf="ct.code">{{ ct.code }} - </span>{{ ct.agency_name }} <span
+                                            *ngIf="ct.master_agent_name"> ( {{ ct.master_agent_name }})</span></span>
+                                    <div class="-mt-2">
+                                        <span class="text-secondary text-sm">{{ ct.email_address }}</span>
+                                    </div>
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>User Type</mat-label>
+                            <mat-select required formControlName="user_type">
+                                <mat-option *ngFor="let s of UserType" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Supplier</mat-label>
+                            <mat-select formControlName="supplier_id" required>
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search"
+                                        noEntriesFoundLabel="'no matching product found'"
+                                        [formControlName]="'supplierFilter'">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let ct of SupplierList"
+                                    [value]="ct.id">{{ct.company_name}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>PNR</mat-label>
+                            <input matInput formControlName="pnr" required type="text"
+                                (keypress)="special_char($event)" />
+                            <!-- <mat-error *ngIf="this.formGroup.get('pnr').value.invalid && this.formGroup.get('pnr').value.dirty">
+                                No special characters allowed.
+                              </mat-error> -->
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>GDS PNR</mat-label>
+                            <input matInput formControlName="gds_pnr" type="text" (keypress)="special_char($event)"
+                                [required]="formGroup.get('airline_type').value != 'LCC'">
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Airline Type</mat-label>
+                            <mat-select required formControlName="airline_type">
+                                <mat-option *ngFor="let s of airlineType" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Trip Type</mat-label>
+                            <mat-select required formControlName="trip_type">
+                                <mat-option *ngFor="let trip of tripList" [value]="trip.value">
+                                    {{ trip.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Trip Region</mat-label>
+                            <mat-select required formControlName="trip_region">
+                                <mat-option *ngFor="let trip of tripRegionList" [value]="trip.value">
+                                    {{ trip.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Flight Type</mat-label>
+                            <mat-select required formControlName="flight_type">
+                                <mat-option *ngFor="let s of flightType" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Booking Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker1" required formControlName="booking_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Departure Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker2" required
+                                formControlName="departure_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                            <mat-datepicker #picker2></mat-datepicker>
+                        </mat-form-field>
+
+
+                        <mat-form-field class="flex-grow"
+                            *ngIf="this.formGroup.get('trip_type').value !== 'Oneway Trip'">
+                            <mat-label>Return Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker3" required formControlName="return_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker3"></mat-datepicker-toggle>
+                            <mat-datepicker #picker3></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Adult</mat-label>
+                            <input matInput formControlName="adult" type="number" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Child</mat-label>
+                            <input matInput formControlName="child" type="number" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Infant</mat-label>
+                            <input matInput formControlName="infant" type="number" required>
+                        </mat-form-field>
+
+                    </div>
+
+                    <div class="flex space-x-4">
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Oneway Stops</mat-label>
+                            <mat-select required formControlName="stops">
+                                <mat-option *ngFor="let s of stopsList" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow"
+                            *ngIf="this.formGroup.get('trip_type').value !== 'Oneway Trip'">
+                            <mat-label>Return Stops</mat-label>
+                            <mat-select required formControlName="return_stops">
+                                <mat-option *ngFor="let s of stopsList" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Refundable</mat-label>
+                            <mat-select required formControlName="is_refundable">
+                                <mat-option *ngFor="let s of refNonList" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <mat-form-field class="w-1/5">
+                            <mat-label>Basefare</mat-label>
+                            <input matInput formControlName="baseFare" required type="number">
+                        </mat-form-field>
+
+                        <mat-form-field class="w-1/5">
+                            <mat-label>Airline Tax & Charges</mat-label>
+                            <input matInput formControlName="airlineTax" required type="number">
+                        </mat-form-field>
+
+                        <mat-form-field class="w-1/5">
+                            <mat-label>Commission</mat-label>
+                            <input matInput formControlName="commission" required type="number">
+                        </mat-form-field>
+                    </div>
+
+                    <!------Returen Tax------>
+                    <div class="p-6 rounded-2xl border-2 primary-border bg-card"
+                        *ngIf="this.formGroup.get('trip_type').value == 'Round Trip' && this.formGroup.get('trip_region').value == 'Domestic'">
+                        <div class="text-xl text-secondary mb-4">Return</div>
+                        <div class="flex space-x-4">
+                            <mat-form-field class="w-1/5">
+                                <mat-label>Basefare</mat-label>
+                                <input matInput formControlName="return_baseFare" required type="number">
+                            </mat-form-field>
+
+                            <mat-form-field class="w-1/5">
+                                <mat-label>Airline Tax & Charges</mat-label>
+                                <input matInput formControlName="return_commission" required type="number">
+                            </mat-form-field>
+
+                            <mat-form-field class="w-1/5">
+                                <mat-label>Commission</mat-label>
+                                <input matInput formControlName="return_airlineTax" required type="number">
+                            </mat-form-field>
+
+                            <mat-form-field class="w-1/5">
+                                <mat-label>PNR</mat-label>
+                                <input matInput formControlName="return_pnr" required type="text"
+                                    (keypress)="special_char($event)" />
+                            </mat-form-field>
+                        </div>
+                        <div class="flex flex-row gap-4">
+                            <mat-form-field class="w-1/5">
+                                <mat-label>GDS PNR</mat-label>
+                                <input matInput formControlName="return_gds_pnr" type="text"
+                                    (keypress)="special_char($event)">
+                            </mat-form-field>
+
+                            <mat-form-field class="w-1/5">
+                                <mat-label>Flight Type</mat-label>
+                                <mat-select required formControlName="return_flight_type">
+                                    <mat-option *ngFor="let s of flightType" [value]="s.value">
+                                        {{ s.viewValue }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-1/5">
+                                <mat-label>Airline Type</mat-label>
+                                <mat-select required formControlName="return_airline_type">
+                                    <mat-option *ngFor="let s of airlineType" [value]="s.value">
+                                        {{ s.viewValue }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-1/5">
+                                <mat-label>Refundable</mat-label>
+                                <mat-select required formControlName="is_return_refundable">
+                                    <mat-option *ngFor="let s of refNonList" [value]="s.value">
+                                        {{ s.viewValue }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>TDS</mat-label>
+                            <input matInput formControlName="tds" required type="number">
+                        </mat-form-field>
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Markup</mat-label>
+                            <input matInput formControlName="gds_pnr" type="number" readonly="true">
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Bonton Tax (18%)</mat-label>
+                            <input matInput formControlName="gds_pnr" type="number" readonly="true">
+                        </mat-form-field>
+                    </div>
+
+                    <div class="flex space-x-4">
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Additional Markup</mat-label>
+                            <input matInput formControlName="addon_markup" required type="number">
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Discount</mat-label>
+                            <input matInput formControlName="discount" required type="number">
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Bonton Sales Price</mat-label>
+                            <input matInput formControlName="gds_pnr" type="number" readonly="true">
+                        </mat-form-field>
+                    </div> -->
+                </div>
+
+                <!--------Traveller-------->
+                <div>
+                    <div class="text-xl text-secondary my-4">Traveller Contact Detail</div>
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow w-3/5">
+                            <mat-label>Address</mat-label>
+                            <input matInput formControlName="address">
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-2/5">
+                            <mat-label>Phone Number</mat-label>
+                            <input matInput formControlName="phone_number" type="number" required>
+                            <mat-error *ngIf="this.formGroup.get('phone_number').hasError('pattern')">
+                                Please enter 10 digit phone number.
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-2/5">
+                            <mat-label>Email</mat-label>
+                            <input matInput type="email" formControlName="email" required>
+                            <mat-error
+                                *ngIf="this.formGroup.get('email').value && !isValidEmail(this.formGroup.get('email').value)">
+                                Please enter a valid email address.
+                            </mat-error>
+                            <!-- <mat-error *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">
+                            <div *ngIf="emailInput.errors.required">
+                                Email address is required.
+                            </div>
+                            <div *ngIf="emailInput.errors.email">
+                                Please enter a valid email address.
+                            </div>
+                        </mat-error> -->
+                        </mat-form-field>
+                    </div>
+
+                    <!--------Baggage-------->
+                    <div class="text-xl text-secondary my-4">Baggage Detail</div>
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow w-1/4">
+                            <mat-label>Check In Baggage</mat-label>
+                            <input matInput formControlName="check_in_baggage">
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-1/4">
+                            <mat-label>Cabin Baggage</mat-label>
+                            <input matInput formControlName="cabin_baggage">
+                        </mat-form-field>
+
+                        <div class="flex-grow w-1/4 pt-8">
+                            <mat-slide-toggle class="ml-1" formControlName="is_passport_required">
+                                <span class="pl-1">Is Passport</span>
+                            </mat-slide-toggle>
+                        </div>
+
+                        <div class="flex justify-end items-center pr-3">
+                            <button mat-flat-button [color]="'primary'" (click)="saveOfflinePNR()">
+                                <span class="ml-2 mr-1">Next</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+
+            <!--------Traveller-------->
+            <div>
+                <!-- <div class="text-xl text-secondary my-4">Traveller Contact Detail</div>
+                <div class="flex space-x-4">
+                    <mat-form-field class="flex-grow w-3/5">
+                        <mat-label>Address</mat-label>
+                        <input matInput [(ngModel)]="formDataListTraveller.address">
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow w-2/5">
+                        <mat-label>Phone Number</mat-label>
+                        <input matInput [(ngModel)]="formDataListTraveller.phone_number" type="number" required>
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow w-2/5">
+                        <mat-label>Email</mat-label>
+                        <input matInput type="email" [(ngModel)]="formDataListTraveller.email" required email #emailInput="ngModel">
+                        <mat-error *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">
+                            <div *ngIf="emailInput.errors.required">
+                                Email address is required.
+                            </div>
+                            <div *ngIf="emailInput.errors.email">
+                                Please enter a valid email address.
+                            </div>
+                        </mat-error>
+                    </mat-form-field>
+                </div> -->
+
+                <!--------Baggage-------->
+                <!-- <div class="text-xl text-secondary my-4">Baggage Detail</div>
+                <div class="flex space-x-4">
+                    <mat-form-field class="flex-grow w-1/4">
+                        <mat-label>Check In Baggage</mat-label>
+                        <input matInput [(ngModel)]="formDataListTraveller.check_in_baggage">
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow w-1/4">
+                        <mat-label>Cabin Baggage</mat-label>
+                        <input matInput [(ngModel)]="formDataListTraveller.cabin_baggage">
+                    </mat-form-field>
+
+                    <div class="flex-grow w-1/4 pt-8">
+                        <mat-slide-toggle class="ml-1" [(ngModel)]="formDataListTraveller.is_passport_required">
+                            <span class="pl-1">Is Passport</span>
+                        </mat-slide-toggle>
+                    </div>
+
+                    <div class="flex justify-end items-center pr-3">
+                        <button mat-flat-button [color]="'primary'" (click)="saveOfflinePNR()"
+                            [disabled]="formGroup.invalid">
+                            <span class="ml-2 mr-1">Save</span>
+                        </button>
+                    </div>
+
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <!--------Segments onway Information-------->
+    <div class="border-b border-2 primary-border rounded-2xl overflow-hidden mt-7" *ngIf="isSaveOfflinePNR">
+        <div class="text-2xl bg-primary font-bold tracking-tight py-4 px-6 border-b-2 primary-border text-white">Segment Details -
+            Onway
+        </div>
+        <div class="px-6 pt-6"
+            [ngClass]="this.formGroup.get('stops').value === '1' || this.formGroup.get('stops').value === '2' || this.formGroup.get('stops').value === '3' ? 'border-t-2 primary-border' : '' "
+            *ngFor="let formData of formDataList; let i=index">
+            <div class="flex space-x-4">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Carrier</mat-label>
+                    <mat-select [(ngModel)]="formData.carrier" required>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching Airline found'" [(ngModel)]="formData.carrierFilter"
+                                (input)="searchCarrier($event.target.value, formData)">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of formData.carrierList" [value]="ct.short_code">{{ct.short_code}} -
+                            {{ct.airline_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Flight No</mat-label>
+                    <input matInput [(ngModel)]="formData.flight_number" required>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Origin</mat-label>
+                    <mat-select class="w-full flex-grow" [(ngModel)]="formData.origin" required class="w-full" #service>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search City"
+                                noEntriesFoundLabel="'no matching city found'" [(ngModel)]="formData.originfilter"
+                                (ngModelChange)="searchOrigin($event, formData)">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let s of formData.originList" [value]="s.city_code">
+                            <div class="flex flex-col items-center justify-start w-full gap-[2px]">
+                                <span class="leading-5 w-full">
+                                    {{s.display_name}}
+                                </span>
+                                <span class="text-secondary leading-3 w-full font-normal text-sm">
+                                    {{s.airport_name}}
+                                </span>
+                            </div>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Destination</mat-label>
+                    <mat-select class="w-full flex-grow" [(ngModel)]="formData.destination" required class="w-full"
+                        #service>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search City"
+                                noEntriesFoundLabel="'no matching city found'" [(ngModel)]="formData.destinationfilter"
+                                (ngModelChange)="searchDestination($event, formData)">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let s of formData.destinationList" [value]="s.city_code">
+                            <div class="flex flex-col items-center justify-start w-full gap-[2px]">
+                                <span class="leading-5 w-full">
+                                    {{s.display_name}}
+                                </span>
+                                <span class="text-secondary leading-3 w-full font-normal text-sm">
+                                    {{s.airport_name}}
+                                </span>
+                            </div>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="flex space-x-4">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Departure Date</mat-label>
+                    <input matInput readonly [matDatepicker]="picker4" required [(ngModel)]="formData.dp_date">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker4"></mat-datepicker-toggle>
+                    <mat-datepicker #picker4></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow ">
+                    <mat-label>Departure Time</mat-label>
+                    <input matInput format="24" name="dep_time" [(ngModel)]="formData.dep_time" required
+                        [ngxMatTimepicker]="entryPicker1">
+                    <mat-icon matSuffix (click)="entryPicker1.open()">
+                        watch_later
+                    </mat-icon>
+                    <ngx-mat-timepicker color="primary" #entryPicker1></ngx-mat-timepicker>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Arrival Date</mat-label>
+                    <input matInput readonly [matDatepicker]="picker5" required [(ngModel)]="formData.rt_date">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker5"></mat-datepicker-toggle>
+                    <mat-datepicker #picker5></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow ">
+                    <mat-label>Arrival Time</mat-label>
+                    <input matInput format="24" name="arr_time" [(ngModel)]="formData.arr_time" required
+                        [ngxMatTimepicker]="entryPickerA">
+                    <mat-icon matSuffix (click)="entryPickerA.open()">
+                        watch_later
+                    </mat-icon>
+                    <ngx-mat-timepicker color="primary" #entryPickerA></ngx-mat-timepicker>
+                </mat-form-field>
+
+                <!-- <mat-form-field class="flex-grow">
+                        <mat-label>Duration Hours</mat-label>
+                        <input matInput [(ngModel)]="formData.pnr" required>
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Duration Minutes</mat-label>
+                        <input matInput [(ngModel)]="formData.gds_pnr" required>
+                    </mat-form-field> -->
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Origin Terminal</mat-label>
+                    <input matInput [(ngModel)]="formData.origin_terminal" required>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Destination Terminal</mat-label>
+                    <input matInput [(ngModel)]="formData.destination_terminal" required>
+                </mat-form-field>
+            </div>
+
+            <div class="text-xl text-secondary  mb-5">SSR</div>
+            <div class="flex space-x-4 items-center max-w-3/4"
+                *ngFor="let ssr of formData.sSRs; let i = index; first as isFirst; last as isLast">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Type</mat-label>
+                    <input matInput [(ngModel)]="ssr.type">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Item</mat-label>
+                    <input matInput [(ngModel)]="ssr.item">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Amount</mat-label>
+                    <input matInput [(ngModel)]="ssr.amount" type="number">
+                </mat-form-field>
+
+                <button class="ml-4 min-w-10 w-10" mat-flat-button [color]="'primary'" (click)="addSSR(formData)">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                </button>
+
+                <button class="ml-4 min-w-10 w-10 bg-[#a53737] text-[#fff]" mat-flat-button (click)="removeSSR(formData)"
+                    *ngIf="isLast" [hidden]="isFirst">
+                    <mat-icon [svgIcon]="'heroicons_outline:minus'"></mat-icon>
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <!--------Segments Return Information-------->
+    <div class="border-b border-2 primary-border rounded-2xl overflow-hidden mt-7"
+        *ngIf="this.formGroup.get('trip_type').value !== 'Oneway Trip' && isSaveOfflinePNR">
+        <div class="text-2xl bg-primary font-bold tracking-tight py-4 px-6 border-b-2 primary-border text-white">Segment Details -
+            Return
+        </div>
+        <div class="p-6"
+            [ngClass]="this.formGroup.get('return_stops').value === '1' || this.formGroup.get('return_stops').value === '2' || this.formGroup.get('return_stops').value === '3' ? 'border-t-2 primary-border' : '' "
+            *ngFor="let formDataR of formDataListReturn; let i=index">
+            <div class="flex space-x-4">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Carrier</mat-label>
+                    <mat-select [(ngModel)]="formDataR.carrier" required>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching Airline found'" [(ngModel)]="formDataR.carrierFilter"
+                                (input)="searchReturnCarrier($event.target.value, formDataR)">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of formDataR.carrierListR" [value]="ct.short_code">{{ct.short_code}}
+                            -
+                            {{ct.airline_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Flight No</mat-label>
+                    <input matInput [(ngModel)]="formDataR.flight_number" required>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Origin</mat-label>
+                    <mat-select class="w-full flex-grow" [(ngModel)]="formDataR.origin" required class="w-full"
+                        #service>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search City"
+                                noEntriesFoundLabel="'no matching city found'" [(ngModel)]="formDataR.originfilter"
+                                (ngModelChange)="searchOriginR($event, formDataR)">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let s of formDataR.originList" [value]="s.city_code">
+                            <div class="flex flex-col items-center justify-start w-full gap-[2px]">
+                                <span class="leading-5 w-full">
+                                    {{s.display_name}}
+                                </span>
+                                <span class="text-secondary leading-3 w-full font-normal text-sm">
+                                    {{s.airport_name}}
+                                </span>
+                            </div>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Destination</mat-label>
+                    <mat-select class="w-full flex-grow" [(ngModel)]="formDataR.destination" required class="w-full"
+                        #service>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search City"
+                                noEntriesFoundLabel="'no matching city found'" [(ngModel)]="formDataR.destinationfilter"
+                                (ngModelChange)="searchDestinationR($event, formDataR)">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let s of formDataR.destinationList" [value]="s.city_code">
+                            <div class="flex flex-col items-center justify-start w-full gap-[2px]">
+                                <span class="leading-5 w-full">
+                                    {{s.display_name}}
+                                </span>
+                                <span class="text-secondary leading-3 w-full font-normal text-sm">
+                                    {{s.airport_name}}
+                                </span>
+                            </div>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="flex space-x-4">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Departure Date</mat-label>
+                    <input matInput readonly [matDatepicker]="picker6" required [(ngModel)]="formDataR.dpR_date">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker6"></mat-datepicker-toggle>
+                    <mat-datepicker #picker6></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow ">
+                    <mat-label>Departure Time</mat-label>
+                    <input matInput format="24" name="depR_time" [(ngModel)]="formDataR.depR_time" required
+                        [ngxMatTimepicker]="entryPicker">
+                    <mat-icon matSuffix (click)="entryPicker.open()">
+                        watch_later
+                    </mat-icon>
+                    <ngx-mat-timepicker color="primary" #entryPicker></ngx-mat-timepicker>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Arrival Date</mat-label>
+                    <input matInput readonly [matDatepicker]="picker7" required [(ngModel)]="formDataR.rtR_date">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker7"></mat-datepicker-toggle>
+                    <mat-datepicker #picker7></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow ">
+                    <mat-label>Arrival Time</mat-label>
+                    <input matInput format="24" name="arrR_time" [(ngModel)]="formDataR.arrR_time" required
+                        [ngxMatTimepicker]="entryPicker2">
+                    <mat-icon matSuffix (click)="entryPicker2.open()">
+                        watch_later
+                    </mat-icon>
+                    <ngx-mat-timepicker color="primary" #entryPicker2></ngx-mat-timepicker>
+                </mat-form-field>
+
+                <!-- <mat-form-field class="flex-grow">
+                        <mat-label>Duration Hours</mat-label>
+                        <input matInput [(ngModel)]="formData.pnr" required>
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Duration Minutes</mat-label>
+                        <input matInput [(ngModel)]="formData.gds_pnr" required>
+                    </mat-form-field> -->
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Origin Terminal</mat-label>
+                    <input matInput [(ngModel)]="formDataR.origin_terminal" required>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Destination Terminal</mat-label>
+                    <input matInput [(ngModel)]="formDataR.destination_terminal" required>
+                </mat-form-field>
+            </div>
+
+            <div class="text-xl text-secondary  mb-5">SSR</div>
+            <div class="flex space-x-4 items-center max-w-3/4"
+                *ngFor="let ssrR of formDataR.sSRs; let i = index; first as isFirst; last as isLast">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Type</mat-label>
+                    <input matInput [(ngModel)]="ssrR.type">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Item</mat-label>
+                    <input matInput [(ngModel)]="ssrR.item">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Amount</mat-label>
+                    <input matInput [(ngModel)]="ssrR.amount" type="number">
+                </mat-form-field>
+
+                <button class="ml-4 min-w-10 w-10" mat-flat-button [color]="'primary'" (click)="addSSRR(formDataR)">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                </button>
+
+                <button class="ml-4 min-w-10 w-10 bg-[#a53737] text-[#fff]" mat-flat-button (click)="removeSSR(formDataR)"
+                    *ngIf="isLast" [hidden]="isFirst">
+                    <mat-icon [svgIcon]="'heroicons_outline:minus'"></mat-icon>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!--------Traveller Details-------->
+    <!-- *ngIf="this.formGroup.get('adult').value !== '0'" -->
+    <div class="border-b border-2 primary-border rounded-2xl overflow-hidden mt-7"
+        *ngIf="(this.formGroup.get('adult').value != 0 || this.formGroup.get('child').value != 0 || this.formGroup.get('infant').value != 0) && isSaveOfflinePNR">
+        <div class="text-2xl bg-primary font-bold tracking-tight py-4 px-6 border-b-2 primary-border text-white">Traveller Details
+        </div>
+        <!---------ADT--------->
+        <div *ngIf="this.formGroup.get('adult').value != 0">
+            <div class="p-6 border-b-2 primary-border" *ngFor="let formData of formDataListAdult;">
+                <div class="flex space-x-4">
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Title (ADT)</mat-label>
+                        <mat-select required [(ngModel)]="formData.title">
+                            <mat-option *ngFor="let s of titleType" [value]="s.value">
+                                {{ s.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow">
+                        <mat-label>First Name</mat-label>
+                        <input matInput [(ngModel)]="formData.first_name" required>
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Last Name</mat-label>
+                        <input matInput [(ngModel)]="formData.last_name" required>
+                    </mat-form-field>
+
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Ticket No</mat-label>
+                        <input matInput [(ngModel)]="formData.ticket_no" required>
+                    </mat-form-field>
+                </div>
+                <div class="flex space-x-4">
+                    <div class="w-1/2 gap-4 flex flex-row">
+                        <mat-form-field class="flex-grow w-1/2">
+                            <mat-label>Basefare</mat-label>
+                            <input matInput [(ngModel)]="formData.baseFare" type="number" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-1/2"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport No</mat-label>
+                            <input matInput [(ngModel)]="formData.passport_no" required>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="w-1/2 gap-4 flex flex-row">
+                        <mat-form-field class="flex-grow w-1/2"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport Expiry Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker9" required
+                                [(ngModel)]="formData.passport_expiry_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker9"></mat-datepicker-toggle>
+                            <mat-datepicker #picker9></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-1/2"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport Issuing Country</mat-label>
+                            <mat-select [(ngModel)]="formData.passport_issuing_country" required>
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search"
+                                        noEntriesFoundLabel="'no matching country found'"
+                                        [(ngModel)]="formData.countryfilter"
+                                        (ngModelChange)="searchAdult($event, formData)">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let ct of formData.countryList" [value]="ct">{{ ct }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="px-5 pt-4  rounded-xl border-2 primary-border bg-card"
+                    *ngIf="this.formGroup.get('trip_type').value == 'Round Trip' && this.formGroup.get('trip_region').value == 'Domestic'">
+                    <div class="text-xl text-secondary mb-4">Return</div>
+                    <div class="flex space-x-4 w-1/2">
+                        <mat-form-field class="flex-grow w-1/5">
+                            <mat-label>Basefare</mat-label>
+                            <input matInput [(ngModel)]="formData.return_baseFare" type="number" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-1/5">
+                            <mat-label>Ticket No</mat-label>
+                            <input matInput [(ngModel)]="formData.return_ticket_no" required>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!---------CNN--------->
+            <div *ngIf="this.formGroup.get('child').value != 0">
+                <div class="p-6 border-b-2 bg-card primary-border" *ngFor="let formData of formDataListChild;">
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Title (CNN)</mat-label>
+                            <mat-select required [(ngModel)]="formData.title">
+                                <mat-option *ngFor="let s of title2Type" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>First Name</mat-label>
+                            <input matInput [(ngModel)]="formData.first_name" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Last Name</mat-label>
+                            <input matInput [(ngModel)]="formData.last_name" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Ticket No</mat-label>
+                            <input matInput [(ngModel)]="formData.ticket_no" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow w-1/5">
+                            <mat-label>Basefare</mat-label>
+                            <input matInput [(ngModel)]="formData.baseFare" type="number" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-1/5">
+                            <mat-label>Date of Birth</mat-label>
+                            <input matInput readonly [matDatepicker]="picker10" required [(ngModel)]="formData.dob">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker10"></mat-datepicker-toggle>
+                            <mat-datepicker #picker10></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-1/5"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport No</mat-label>
+                            <input matInput [(ngModel)]="formData.passport_no" required>
+                        </mat-form-field>
+
+
+
+                        <mat-form-field class="flex-grow w-1/5"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport Expiry Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker11" required
+                                [(ngModel)]="formData.passport_expiry_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker11"></mat-datepicker-toggle>
+                            <mat-datepicker #picker11></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow w-1/5"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport Issuing Country</mat-label>
+                            <mat-select [(ngModel)]="formData.passport_issuing_country" required>
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search"
+                                        noEntriesFoundLabel="'no matching country found'"
+                                        [(ngModel)]="formData.countryfilter"
+                                        (ngModelChange)="searchChild($event, formData)">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let ct of formData.countryList" [value]="ct">{{ ct
+                                    }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="px-5 pt-4  rounded-xl border-2 primary-border bg-card"
+                        *ngIf="this.formGroup.get('trip_type').value == 'Round Trip' && this.formGroup.get('trip_region').value == 'Domestic'">
+                        <div class="text-xl text-secondary mb-4">Return</div>
+                        <div class="flex space-x-4 w-1/2">
+                            <mat-form-field class="flex-grow w-1/5">
+                                <mat-label>Basefare</mat-label>
+                                <input matInput [(ngModel)]="formData.return_baseFare" type="number" required>
+                            </mat-form-field>
+
+                            <mat-form-field class="flex-grow w-1/5">
+                                <mat-label>Ticket No</mat-label>
+                                <input matInput [(ngModel)]="formData.return_ticket_no" required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+            <!---------INF--------->
+            <div *ngIf="this.formGroup.get('infant').value != 0">
+                <div class="p-6 border-b-2 primary-border" *ngFor="let formData of formDataListInfant; let i=index;">
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Title (INF)</mat-label>
+                            <mat-select required [(ngModel)]="formData.title">
+                                <mat-option *ngFor="let s of title2Type" [value]="s.value">
+                                    {{ s.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>First Name</mat-label>
+                            <input matInput [(ngModel)]="formData.first_name" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Last Name</mat-label>
+                            <input matInput [(ngModel)]="formData.last_name" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Ticket No</mat-label>
+                            <input matInput [(ngModel)]="formData.ticket_no" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex space-x-4">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Basefare</mat-label>
+                            <input matInput [(ngModel)]="formData.baseFare" type="number" required>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Date of Birth</mat-label>
+                            <input matInput readonly [matDatepicker]="picker12" required [(ngModel)]="formData.dob">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker12"></mat-datepicker-toggle>
+                            <mat-datepicker #picker12></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport No</mat-label>
+                            <input matInput [(ngModel)]="formData.passport_no" required>
+                        </mat-form-field>
+
+
+
+                        <mat-form-field class="flex-grow"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport Expiry Date</mat-label>
+                            <input matInput readonly [matDatepicker]="picker13" required
+                                [(ngModel)]="formData.passport_expiry_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker13"></mat-datepicker-toggle>
+                            <mat-datepicker #picker13></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow"
+                            *ngIf="this.formGroup.get('is_passport_required').value == true">
+                            <mat-label>Passport Issuing Country</mat-label>
+                            <mat-select [(ngModel)]="formData.passport_issuing_country" required>
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search"
+                                        noEntriesFoundLabel="'no matching country found'"
+                                        [(ngModel)]="formData.countryfilter"
+                                        (ngModelChange)="searchinfant($event, formData)">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let ct of formData.countryList" [value]="ct">{{ ct
+                                    }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="px-5 pt-4  rounded-xl border-2 primary-border bg-card"
+                        *ngIf="this.formGroup.get('trip_type').value == 'Round Trip' && this.formGroup.get('trip_region').value == 'Domestic'">
+                        <div class="text-xl text-secondary mb-4">Return</div>
+                        <div class="flex space-x-4 w-1/2">
+                            <mat-form-field class="flex-grow w-1/5">
+                                <mat-label>Basefare</mat-label>
+                                <input matInput [(ngModel)]="formData.return_baseFare" type="number" required>
+                            </mat-form-field>
+
+                            <mat-form-field class="flex-grow w-1/5">
+                                <mat-label>Ticket No</mat-label>
+                                <input matInput [(ngModel)]="formData.return_ticket_no" required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>

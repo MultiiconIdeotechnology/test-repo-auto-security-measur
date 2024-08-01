@@ -1,0 +1,108 @@
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-100 max-w-100">
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-4 bg-primary">
+        <div class="text-lg font-medium text-white pr-2">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current notranslate dark:text-white mat-icon-no-color"
+                [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+    <div class="xl:min-h-[420px] xl:max-h-[420px] min-h-[400px] max-h-[400px] overflow-y-auto">
+        <div class="flex flex-raw overflow-hidden overflow-x-auto rounded-[10px] mt-4 mr-4 ml-4">
+            <div class="w-[100%]">
+                <form class="flex flex-col flex-auto overflow-hidden" [formGroup]="formGroup">
+                    <div class="px-[2px]">
+                        <div class="flex flex-row">
+                            <mat-form-field class="flex-grow">
+                                <mat-label class="text-base font-medium dark:text-[#687798]">Select Product</mat-label>
+                                <mat-select formControlName="product" [compareWith]="compareWith"
+                                    *ngIf="!formGroup.get('id').value"
+                                    (selectionChange)="onProductSelectionChange($event.value)">
+                                    <mat-option *ngFor="let lt of productList" [value]="lt.id">{{ lt.product_name
+                                        }}</mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="formGroup.get('product').hasError('required')">
+                                    Product is required
+                                </mat-error>
+                                <input matInput readonly *ngIf="formGroup.get('id').value"
+                                    [formControlName]="'product'" />
+                            </mat-form-field>
+                        </div>
+                        <div class="flex flex-row">
+                            <mat-form-field class="flex-grow">
+                                <mat-label class="text-base font-medium dark:text-[#687798]">Product Price</mat-label>
+                                <input matInput required type="number" (keypress)="numberOnly($event)"
+                                    formControlName="price">
+                                <mat-error *ngIf="formGroup.get('price').hasError('required')">
+                                    Price is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex flex-row">
+                            <!-- <mat-form-field class="flex-grow">
+                                <mat-label class="text-base font-medium dark:text-[#687798]">Installments</mat-label>
+                                <mat-select formControlName="installments"
+                                    (selectionChange)="onInstallmentsChange($event.value)">
+                                    <mat-option *ngFor="let lt of installmentList" [value]="lt.value">{{
+                                        lt.viewValue }}</mat-option>
+                                </mat-select>
+                            </mat-form-field> -->
+
+                            <!-- <ng-container *ngFor="let productName of productNameList"> -->
+                            <mat-form-field class="flex-grow">
+                                <mat-label class="text-base font-medium dark:text-[#687798]">Installments</mat-label>
+                                <mat-select formControlName="installments"
+                                    (selectionChange)="onInstallmentsChange($event.value)">
+                                    <mat-option
+                                        *ngFor="let installment of getInstallmentOptions(selectedMaxInstallment)"
+                                        [value]="installment">{{ installment }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <!-- </ng-container> -->
+                        </div>
+
+                        <div class="flex flex-col w-full">
+                            <ng-container *ngFor="let installment of installmentsArray; let i = index">
+                                <div class="flex flex-row w-full space-x-3">
+                                    <span class="mr-1 pt-8">{{ i + 1 }}</span>
+                                    <mat-form-field class="flex-grow w-1/2">
+                                        <mat-label class="text-base font-medium dark:text-[#687798]">Date</mat-label>
+                                        <input matInput [matDatepicker]="picker3" [(ngModel)]="installment.installment_date"
+                                            [min]="getMaxDate(i)"
+                                            [ngModelOptions]="{standalone: true}" />
+                                        <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker3></mat-datepicker>
+                                    </mat-form-field>
+                                    <!-- [min]="i == 0 ? todayDateTime : installmentsArray[i - 1]?.installment_date" -->
+                                    <!-- [min]="i == 0 ? todayDateTime : installment.maxDate" -->
+
+                                    <mat-form-field class="flex-grow w-1/2">
+                                        <mat-label class="text-base font-medium dark:text-[#687798]">Amount(₹)</mat-label>
+                                        <input matInput type="number" (keypress)="numberOnly($event)"
+                                            [(ngModel)]="installment.installment_amount"
+                                            [ngModelOptions]="{standalone: true}" />
+                                    </mat-form-field>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <div class="flex flex-row">
+                            <mat-form-field class="flex-grow">
+                                <mat-label class="text-base font-medium dark:text-[#687798]">Remark</mat-label>
+                                <textarea matInput rows="3" formControlName="rm_remark"></textarea>
+                                <!-- <mat-error *ngIf="formGroup.get('rm_remark').hasError('required')">
+                                    Remark is required
+                                </mat-error> -->
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!readonly" class="flex items-center justify-end mt-4 sm:mt-1 pr-6 py-3 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()"> Close </button>
+        <button *ngIf="!readonly" mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+            {{btnLabel}}
+        </button>
+    </div>
+</div>

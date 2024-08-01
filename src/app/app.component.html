@@ -1,0 +1,20 @@
+<router-outlet></router-outlet>
+<div class="toast-container" *ngIf="showToast" [ngClass]="{
+    success: toastrType == 'success',
+    error: toastrType == 'error',
+    warn: toastrType == 'warn',
+    info: toastrType == 'info',
+    'top-left': toastrPosition == 'top-left',
+    'top-right': toastrPosition == 'top-right',
+    'bottom-left': toastrPosition == 'bottom-left',
+    'bottom-right': toastrPosition == 'bottom-right'
+  }" [@slideRight] (click)="closeToast()">
+    <!-- <span class="closeBtn" (click)="closeToast()">x</span> -->
+    <div class="toast-content flex items-center">
+      <span class="icon" *ngIf="toastrType == 'success'"><mat-icon class="relative text-[22px]">check</mat-icon></span>
+      <span class="icon" *ngIf="toastrType == 'error'"><mat-icon class="relative text-[22px]">close</mat-icon></span>
+      <span class="icon" *ngIf="toastrType == 'warn'"><mat-icon class="relative text-[22px]">warning</mat-icon></span>
+      <span class="icon" *ngIf="toastrType == 'info'"><mat-icon class="relative text-[22px]">info</mat-icon></span>
+      <span class="relative font-semibold top-[-1px]">{{ toastrMsg }}</span>
+    </div>
+  </div>

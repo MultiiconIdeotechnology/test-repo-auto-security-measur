@@ -1,0 +1,37 @@
+<div class="flex flex-col gap-1">
+    <form [formGroup]="formGroup">
+        <div class="flex flex-row gap-4 items-center">
+
+            <mat-form-field class="w-4/5">
+                <mat-label class="font-medium">Special Note</mat-label>
+                <input required matInput formControlName="special_note">
+            </mat-form-field>
+
+            <div class="w-1/5">
+                <button mat-flat-button class="rounded-lg" color="primary" [disabled]="formGroup.invalid"
+                    (click)="add()">
+                    {{formGroup.get('id').value ? 'SAVE' : 'ADD'}}
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="flex flex-col overflow-x-auto overflow-y-auto">
+
+        <div *ngFor="let ex of data.special_notes">
+            <div class="flex flex-row space-x-2 py-[2px] text-lg panel">
+                <mat-icon class="icon-size-4 only-show-on-hover cursor-pointer mt-1" [matTooltip]="'Modify'"
+                    (click)="edit(ex)">edit</mat-icon>
+                <mat-icon class="icon-size-4 only-show-on-hover cursor-pointer mt-1 text-red-500"
+                    [matTooltip]="'Remove'" (click)="delete(ex)">delete</mat-icon>
+                <div class="min-h-3 max-h-3 min-w-3 max-w-3 mt-[6px] block rounded-full bg-primary-500"></div>
+                <span class="text-secondary">{{ ex.special_note }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col justify-center items-center h-20" *ngIf="data.special_notes.length <= 0">
+        <div class="font-medium text-base">
+            No data to display!
+        </div>
+    </div>
+</div>

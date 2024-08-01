@@ -1,0 +1,126 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-hidden">
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div class="cursor-pointer" [routerLink]="kycprofileRoute">
+                    <a class="whitespace-nowrap text-primary-500">KYC Profile</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">{{
+                        readonly ? "Detail" : record.id ? "Modify" : "Entry"
+                        }}</a>
+                </div>
+            </div>
+        </div>
+
+        <button mat-raised-button color="primary" [disabled]="disableBtn" (click)="submit()">
+            {{ btnTitle }}
+        </button>
+    </div>
+
+    <div class="flex-auto px-10 xl:px-40">
+        <form *ngIf="!readonly; else detailView"
+            class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden" [formGroup]="formGroup">
+            <div class="flex flex-row space-x-3">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Profile For</mat-label>
+                    <mat-select formControlName="profile_for" required>
+                        <mat-option *ngFor="let ct of profileforlist" [value]="ct">{{ ct }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Profile Name</mat-label>
+                    <input matInput [readonly]="readonly" type="text" required [formControlName]="'profile_name'" />
+                </mat-form-field>
+            </div>
+
+            <div class="flex flex-row space-x-3">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Document Group</mat-label>
+                    <mat-select formControlName="document_group" (selectionChange)="getDocs($event.value)">
+                        <mat-option>
+                            <ngx-mat-select-search (input)="filterDocumentGroup($event.target.value)"
+                                placeholderLabel="Search" noEntriesFoundLabel="'no matching Document found'"
+                                [formControlName]="'documentfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of documentGrpList" [value]="ct.key">{{ ct.key }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Document Name</mat-label>
+                    <mat-select formControlName="document_id" [compareWith]="compareWith">
+                        <mat-option class="select-value" *ngFor="let ct of DocumentList" [value]="ct">{{
+                            ct.document_name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+
+                <mat-slide-toggle class="self-center w-32" formControlName="is_required" [class.hidden]="readonly">Is
+                    Required</mat-slide-toggle>
+                <mat-slide-toggle class="self-center w-40" formControlName="is_required_group"
+                    [class.hidden]="readonly">Is Required Group</mat-slide-toggle>
+                <span class="self-center">
+                    <button mat-raised-button color="primary" [disabled]="
+                            disableBtn ||
+                            !formGroup.get('document_id').value.id
+                        " (click)="AddData()">
+                        {{ ismodify? "Modify" : "Add" }}
+                    </button>
+                </span>
+            </div>
+        </form>
+
+        <ng-template #detailView>
+            <div class="grid grid-cols-5 gap-2 mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden">
+                <div class="flex flex-col mb-3" *ngFor="let filed of fieldList">
+                    <div class="flex flex-row space-x-2">
+                        <span class="text-md font-semibold text-secondary">{{
+                            filed.name
+                            }}</span>
+                        <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
+                    </div>
+                    <div class="flex">
+                        <span class="text-base truncate hover:text-gray-500 cursor-pointer"
+                            [matTooltip]="filed.value" *ngIf="filed.name !== 'Assigned'">{{ filed.value || "--" }}</span>
+                        <span class=" ml-6 flex flex-row space-x-2 items-center cursor-pointer hover:text-gray-500 hover:border-gray-500 border-white border-b-2" *ngIf="filed.name === 'Assigned'" (click)="assigned()">
+                            <span>{{ filed.value || "--" }}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+        <div class="flex flex-col mt-3 overflow-x-hidden overflow-y-auto shadow rounded-lg" style="max-height: 40% !important">
+            <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center bg-card sticky top-0">
+                <div class="w-1/4 px-4">Document</div>
+                <div class="w-1/4 px-4">Document Group</div>
+                <div class="w-1/4 px-4">Is Required</div>
+                <div class="w-1/4 px-4">Is Required Group</div>
+            </div>
+            <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center overflow-hidden"
+                *ngFor="let data of TempDataList">
+                <div class="w-1/4 px-4 flex flex-row gap-3">
+                    <span *ngIf="!readonly">
+                        <mat-icon (click)="editrecord(data)" class="p-1 text-blue-600 cursor-pointer"
+                            [matTooltip]="'Edit'" svgIcon="heroicons_outline:pencil"></mat-icon>
+                        <mat-icon (click)="deleterecord(data)" class="p-1 text-red-600 cursor-pointer"
+                            [matTooltip]="'Delete'" svgIcon="heroicons_outline:trash"></mat-icon>
+                    </span>
+                    <span>{{ data.document_name }}</span>
+                </div>
+                <div class="w-1/4 px-4">{{ data.document_group }}</div>
+                <div class="w-1/4 px-4">
+                    {{ data.is_required == true ? "Yes" : "No" }}
+                </div>
+                <div class="w-1/4 px-4">
+                    {{ data.is_required_group == true ? "Yes" : "No" }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

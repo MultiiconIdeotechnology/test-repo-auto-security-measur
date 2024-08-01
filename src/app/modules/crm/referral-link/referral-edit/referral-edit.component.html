@@ -1,0 +1,46 @@
+<div class="flex flex-col max-w-120 md:min-w-120 max-h-screen -m-6">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{ title }}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-96 " [formGroup]="formGroup">
+        <!-- <mat-form-field class="flex-grow">
+            <mat-label>Referral Link For</mat-label>
+            <mat-select required formControlName="referral_link_for">
+                <mat-option *ngFor="let trip of linkList" [value]="trip.value">
+                    {{ trip.viewValue }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field> -->
+
+        <mat-form-field class="flex-grow">
+            <mat-label>Relationship Manager</mat-label>
+            <mat-select formControlName="relationship_manager_id">
+                <mat-option>
+                    <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching rm found'"
+                        [formControlName]="'rmfilter'">
+                    </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let ct of rmList" [value]="ct.id">{{ct.employee_name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- <mat-form-field class="flex-grow">
+            <mat-label>Referral Code</mat-label>
+            <input matInput required formControlName="referral_code" [readonly]="this.record?.readonlys?.readonly" />
+        </mat-form-field> -->
+    </form>
+
+    <div class="flex items-center justify-end pt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <!-- Discard -->
+        <button mat-stroked-button (click)="matDialogRef.close()">Close</button>
+        <!-- Save as draft -->
+        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+            {{ btnLabel }}
+        </button>
+    </div>
+</div>

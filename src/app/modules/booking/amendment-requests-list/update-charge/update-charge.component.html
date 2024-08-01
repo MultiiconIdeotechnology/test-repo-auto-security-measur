@@ -1,0 +1,165 @@
+<div class="flex flex-col max-w-[52rem] min-w-[52rem] max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form class="flex flex-col px-6 pt-6 overflow-y-auto max-h-160" [formGroup]="formGroup">
+
+        <div class="grid grid-cols-4 gap-2">
+            <div class="flex flex-col mb-3">
+                <div class="flex flex-row space-x-2">
+                    <span class="text-md font-semibold text-secondary">Amedment Type</span>
+                </div>
+                <span class="text-base truncate">{{formGroup.get('amendment_type').value || "--" }}</span>
+            </div>
+            <div class="flex flex-col mb-3">
+                <div class="flex flex-row space-x-2">
+                    <span class="text-md font-semibold text-secondary">Agent</span>
+                </div>
+                <span class="text-base truncate">{{formGroup.get('agent_name').value || "--" }}</span>
+            </div>
+            <div class="flex flex-col mb-3">
+                <div class="flex flex-row space-x-2">
+                    <span class="text-md font-semibold text-secondary">Supplier</span>
+                </div>
+                <span class="text-base truncate">{{formGroup.get('company_name').value || "--" }}</span>
+            </div>
+            <div class="flex flex-col mb-3">
+                <div class="flex flex-row space-x-2">
+                    <span class="text-md font-semibold text-secondary">Total Pax</span>
+                </div>
+                <span class="text-base truncate">{{formGroup.get('pax').value || "--" }}</span>
+            </div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="flex flex-row space-x-3 mt-3 items-center">
+
+            <!-- <mat-form-field class="flex-grow opacity-60">
+                <mat-label>Pax</mat-label>
+                <input matInput formControlName="pax" readonly>
+            </mat-form-field> -->
+
+            <!-- <mat-form-field class="flex-grow"> -->
+                <!-- <mat-label>Currency</mat-label>
+                <mat-select required formControlName="currency_id" [compareWith]="compareWith">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching currency found'" [formControlName]="'currencyfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of CurrencyList" [value]="ct">{{ct.currency_code}}</mat-option>
+                </mat-select> -->
+                <!-- <input matInput [readonly]="readonly" formControlName="agent_name" required> -->
+                <!-- </mat-form-field> -->
+                
+
+            <!-- <mat-form-field class="flex-grow">
+                <mat-label>ROE</mat-label>
+                <input matInput type="number" formControlName="roe" required>
+            </mat-form-field> -->
+
+            <!-- <div class="flex-grow  mb-3">
+                <div class="flex flex-row space-x-2">
+                    <span class="text-md font-semibold text-secondary">Currency</span>
+                </div>
+                <span class="text-base truncate">{{formGroup.get('pax').value || "--" }}</span>
+            </div>
+
+            <div class="flex-grow  mb-3">
+                <div class="flex flex-row space-x-2">
+                    <span class="text-md font-semibold text-secondary">ROE</span>
+                </div>
+                <span class="text-base truncate">{{formGroup.get('pax').value || "--" }}</span>
+            </div> -->
+
+            <mat-form-field class="flex-grow">
+                <mat-label>Total Charge</mat-label>
+                <input matInput type="number" formControlName="base_amount" required>
+            </mat-form-field>
+
+            <!-- *ngIf="formGroup.get('is_segment_amount').value == true" -->
+            <mat-form-field class="flex-grow" *ngIf="formGroup.get('is_segment_amount').value == true">
+                <mat-label>Segment Amount</mat-label>
+                <input matInput type="number" formControlName="segmentAmount">
+            </mat-form-field>
+
+            <!-- <mat-form-field class="flex-grow">
+                <mat-label>Sales Return (Per Person)</mat-label>
+                <input matInput type="number" formControlName="amendment_amount_per_person" required>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow opacity-60">
+                <mat-label>Sales Return Total</mat-label>
+                <input matInput type="number" [value]="sales_return_total" readonly>
+            </mat-form-field> -->
+           
+        </div>
+
+        <mat-form-field>
+            <mat-label>Note</mat-label>
+            <textarea matInput rows="4" formControlName="company_remark"></textarea>
+        </mat-form-field>
+
+        <!-- <mat-divider></mat-divider> -->
+
+        <!-- <div class="flex flex-row space-x-3 mt-3">
+
+            <div class="flex flex-col mb-3 w-1/3 mt-4">
+                <div class="flex flex-row space-x-2">
+                    <span class="font-semibold text-secondary text-md">Markup</span>
+                </div>
+                <span class="text-base truncate" [matTooltip]="formGroup.get('markup_type').value">{{formGroup.get('markup_value').value || "--" }} {{formGroup.get('markup_type').value || "--" }} </span>
+            </div>
+
+            <mat-form-field class="w-1/3 opacity-60">
+                <mat-label>Gross Sales Return (Per Person)</mat-label>
+                <input type="number" matInput [value]="gross_sales_return_per_person" readonly>
+            </mat-form-field>
+
+            <mat-form-field class="w-1/3 opacity-60">
+                <mat-label>Gross Sales Return Total</mat-label>
+                <input type="number" matInput [value]="gross_sales_return_total" readonly>
+            </mat-form-field>
+
+        </div>
+
+        <div class="flex flex-row space-x-3">
+
+            <div class="flex flex-col mb-3 w-1/3 mt-4">
+                <div class="flex flex-row space-x-2">
+                    <span class="font-semibold text-secondary text-md">Tax</span>
+                </div>
+                <span class="text-base truncate" [matTooltip]="formGroup.get('air_amt_tax_type').value">{{formGroup.get('air_amt_tax_val').value || "--" }}% {{formGroup.get('air_amt_tax_type').value || "--" }} </span>
+            </div>
+
+            <mat-form-field class="w-1/3 opacity-60">
+                <mat-label>Net Sales Return (Per Person)</mat-label>
+                <input type="number" matInput [value]="net_sales_return_per_person" readonly>
+            </mat-form-field>
+
+            <mat-form-field class="w-1/3 opacity-60">
+                <mat-label>Net Sales Return Total</mat-label>
+                <input type="number" matInput [value]="net_sales_return_total" readonly>
+            </mat-form-field>
+
+        </div> -->
+
+    </form>
+
+
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()">
+            Close
+        </button>
+        <button mat-flat-button [color]="'primary'" (click)="submit()" >
+            {{btnLabel}}
+        </button>
+    </div>
+</div>

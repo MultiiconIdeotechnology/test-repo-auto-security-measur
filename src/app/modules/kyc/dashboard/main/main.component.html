@@ -1,0 +1,26 @@
+
+<div class="w-full">
+     <!-- Header -->
+     <div
+     class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+     <!-- Title -->
+     <div class="text-3xl font-extrabold tracking-tight">
+        Dashboard
+     </div>
+ </div>
+    <!-- <app-agent-kyc></app-agent-kyc> -->
+
+    <mat-tab-group class="pt-5" mat-stretch-tabs="false" mat-stretch-tabs="false" [animationDuration]="'0'">
+
+        <mat-tab label="Agent" class="bg-card" *ngIf="getTabsPermission('Agent')">
+            <app-agent-kyc></app-agent-kyc>
+        </mat-tab>
+
+        <mat-tab label="Supplier" *ngIf="getTabsPermission('Supplier')">
+        </mat-tab>
+
+        <mat-tab label="Employee" *ngIf="getTabsPermission('Employee')">
+        </mat-tab>
+
+    </mat-tab-group>
+</div>

@@ -1,0 +1,79 @@
+<div class="border border-gray-border rounded-2xl mb-5 overflow-hidden mt-7">
+    <div class="text-lg px-4 pb-3 border-gray-bg py-3 dark:bg-card bg-gray-200">Account Details</div>
+    <div class="px-4 py-2 dark:bg-transparent bg-white">
+        <div class="flex border-b border-gray-border mb-4 w-full">
+            <div class="py-2 px-5 flex justify-center cursor-pointer font-semibold" (click)="TabChange(tab)"
+                [ngClass]="tab.isSelected ? 'primary-text border-b-2  primary-border' :'text-secondary'"
+                *ngFor="let tab of TabList">
+                {{tab.name}}
+            </div>
+        </div>
+
+        <div>
+
+            <div class="flex flex-col flex-auto">
+                <ng-container>
+                    <div class="grid overflow-auto" *ngIf="currentTab === 1? this.account?.payments.length > 0:this.account?.receipts.length > 0;">
+                        <!-- Header -->
+                        <div class="tbl-grid gridwidth grid gap-4 py-3 px-4 text-secondary field-blue-bg border-b-2 ">
+                            <div class="text-center">#</div>
+                            <ng-container *ngFor="let col of columns">
+                                <div class="text-secondary" *ngIf="col.is_sortable"
+                                    [mat-sort-header]="col.key"
+                                    [class]="'pl-4 ' + col.class">
+                                    {{ col.name }}
+                                </div>
+                                <div class="text-secondary" *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
+                                    {{ col.name }}
+                                </div>
+                            </ng-container>
+                        </div>
+                        <!-- Rows -->
+                        <ng-container *ngIf="currentTab === 1? this.account?.payments.length > 0:this.account?.receipts.length > 0;">
+                            <ng-container *ngFor="let ListItem of currentTab === 1?this.account?.payments:this.account?.receipts;">
+                                <div class="tbl-grid gridwidth grid items-center gap-4 px-4 py-3 cursor-pointer relative" [ngClass]="ListItem.below? 'pb-48':''">
+                                    <mat-icon class="material-symbols-outlined secondary-text text-center icon-size-5 ml-2" (click)="belowt(ListItem)">info</mat-icon>
+    
+                                    <ng-container *ngFor="let col of columns">
+                                        <div [class]="'flex flex-row items-center truncate pl-4 text-md ' + col.class">
+                                            <span *ngIf="col.indicator"
+                                                class="text-white px-1 py-[2px] flex items-center justify-center min-w-18 rounded-md w-fit text-sm font-medium"
+                                                [ngClass]="getStatusColor(ListItem[col.key])">
+                                                <span class="text-sm">{{ ListItem[col.key] }}</span>
+                                            </span>
+                                            <span *ngIf="col.isamount" class="font-medium">
+                                                {{ListItem.currency}} {{ListItem[col.key]}}
+                                            </span>
+                                            
+                                            <div class="flex flex-col font-medium" *ngIf="!col.indicator && !col.isamount">
+                                                <span class="truncate" [matTooltip]="ListItem[col.key]">
+                                                    {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " : ListItem[col.key] || "  " }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <div *ngIf="ListItem.below" class="py-5 px-5 field-blue-bg rounded-md w-full absolute dark:bg-card bg-gray-200 top-14 z-10">
+                                        <div class="grid grid-cols-4 gap-4">
+                                            <div class="flex flex-col" *ngFor="let filed of ListItem.filedList">
+                                                <div class="flex flex-row space-x-2">
+                                                    <span class="font-medium secondary-text">{{filed.name}}</span>
+                                                </div>
+                                                <span class="truncate font-medium py-1" [ngClass]="filed.class" [matTooltip]="filed.value">{{filed.value || '--'}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </ng-container>
+
+                <div *ngIf="currentTab === 1? this.account?.payments.length < 1:this.account?.receipts.length < 1" class="py-6 text-center font-semibold text-lg">
+                    No Data Found!
+                </div>
+    
+            </div>
+        </div>
+    </div>
+</div>

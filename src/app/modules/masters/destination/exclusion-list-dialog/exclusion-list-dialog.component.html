@@ -1,0 +1,16 @@
+<div class="flex flex-col w-120 max-h-screen -m-6 overflow-hidden">
+    <div class="min-h-15 flex px-5 pt-0.5 items-center justify-between text-xl font-semibold border-b-2">
+        <span class=" dark:text-white">Exclusions</span>
+        <mat-icon svgIcon="close" class="cursor-pointer dark:text-white text-black" (click)="matDialogRef.close()"></mat-icon>
+    </div>
+
+    <div class="flex flex-col p-5 max-h-100 overflow-y-auto">
+        <div class="flex flex-row space-x-2" *ngFor="let dt of agentsList">
+            <div class="h-2 w-2 min-w-2 mt-3 rounded-full cursor-pointer bg-slate-500"></div>
+            <div class="mt-2">
+                <span class="whitespace-pre-line text-base truncate">{{ dt.exclusion }}</span>
+            </div>
+        </div>
+    </div>
+    
+</div>

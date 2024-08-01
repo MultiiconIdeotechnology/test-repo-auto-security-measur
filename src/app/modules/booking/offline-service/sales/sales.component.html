@@ -1,0 +1,112 @@
+<div class="">
+    <div class="flex justify-between mb-5">
+        <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+            <input matInput [formControl]="searchInputControl"   [autocomplete]="'off'" [placeholder]="'Search'" />
+        </mat-form-field>
+
+        <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()" *ngIf="!isInvoiceGenerated">
+            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+            <span class="ml-2 mr-1">Add</span>
+        </button>
+    </div>
+</div>
+
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl">
+
+    <!-- list -->
+    <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto min-h-100 max-h-100">
+        <ng-container>
+            <div class="grid ">
+                <!-- Header -->
+                <div class="tbl-grid gridwidth z-10 sticky top-0 grid gap-4 py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold dark:bg-gray-700 bg-gray-200 border-b"
+                    matSort matSortDisableClear (matSortChange)="refreshItemsSales()" #_sortPending
+                    matSortActive="service_date" matSortDirection="desc">
+                    <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-gray-200 z-99 text-secondary">
+                        #
+                    </div>
+
+                    <ng-container *ngFor="let col of columns">
+                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="' ' + col.class"
+                            class="text-secondary">
+                            {{ col.name }}
+                        </div>
+                        <div *ngIf="!col.is_sortable" [class]="' ' + col.class" class="text-secondary">
+                            {{ col.name }}
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- Rows -->
+                <ng-container *ngIf="dataList.length > 0; else noGridItems">
+                    <ng-container *ngFor="let ListItem of dataList">
+                        <div
+                            class="tbl-grid gridwidth grid items-center gap-4 px-6 md:pr-8 border-b pl-0 cursor-pointer">
+                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
+                                <mat-icon> more_vert </mat-icon>
+                            </button>
+                            <mat-menu #optionMenu>
+                                <button mat-menu-item (click)="view(ListItem)">
+                                    <mat-icon class="mat-18">info</mat-icon>
+                                    <span style="font-weight: 600">Info</span>
+                                </button>
+                                <button mat-menu-item (click)="edit(ListItem)" *ngIf="!isInvoiceGenerated">
+                                    <mat-icon class="mat-18">edit</mat-icon>
+                                    <span style="font-weight: 600">Edit</span>
+                                </button>
+                                <button mat-menu-item (click)="delete(ListItem)" *ngIf="!isInvoiceGenerated">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600">Delete</span>
+                                </button>
+                            </mat-menu>
+
+                            <ng-container *ngFor="let col of columns">
+                                <div [class]="'flex flex-row items-center space-x-2 truncate  ' + col.class">
+
+                                    <span *ngIf="col.isicon && ListItem[col.key]" class="text-center justify-center">
+                                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                            (click)="downloadfile(ListItem[col.key])"
+                                            [matTooltip]="'Download'"></mat-icon>
+                                    </span>
+                                    <span *ngIf="col.isicon && !ListItem[col.key]" class="text-center justify-center">
+                                        -
+                                    </span>
+
+                                    <span *ngIf="col.is_boolean" class="text-center">
+                                        <mat-icon class="text-green-600" *ngIf="ListItem[col.key]">done</mat-icon>
+                                        <mat-icon class="text-red-600" *ngIf="!ListItem[col.key]">clear</mat-icon>
+                                    </span>
+
+                                    <div *ngIf=" col.key === 'mobile_number'">{{ListItem.mobile_code}}</div>
+
+                                    <div
+                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' ? 'pr-5' : '')">
+                                        <span class="truncate" *ngIf="!col.is_boolean && !col.isicon"
+                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
+                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
+                                            ListItem[col.key] || " " }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <ng-template #noGridItems>
+            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+                {{getNodataText()}}
+            </div>
+        </ng-template>
+    </div>
+
+    <mat-paginator
+        class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
+        [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
+        [pageSize]="appConfig.pageSize" (page)="refreshItemsSales()"
+        [showFirstLastButtons]="appConfig.showFirstLastButtons">
+    </mat-paginator>
+</div>

@@ -1,0 +1,102 @@
+<div class="flex flex-col max-w-240 md:min-w-240 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="px-8 max-h-120">
+        <div class="text-lg font-semibold pt-4">Agent Info</div>
+        <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
+            <div class="flex flex-col mb-3 w-1/3" *ngFor="let af of agentInfoList">
+                <div class="flex flex-row space-x-2">
+                    <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                </div>
+                <span class="text-base truncate" [matTooltip]="af.value">{{af.value || '--'}}</span>
+            </div>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="text-lg font-semibold pt-4">Amendment Info</div>
+        <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl ">
+            <div class="flex flex-col mb-3 truncate"
+                [ngClass]="af.name == 'Remark' ? 'w-1/2' : af.name == 'Agent Remark' ? 'w-full' : 'w-1/4'"
+                *ngFor="let af of amendmentInfoList">
+                <div class="flex flex-row space-x-2">
+                    <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                </div>
+                <div class="truncate" *ngIf="af.value && !af.toFlight">
+                    <span class="text-base truncate" [ngClass]="af.classes" [matTooltip]="af.value">{{af.value || '--'}}</span>
+                </div>
+                <span class="cursor-pointer truncate hover:text-primary-200" *ngIf="af.toFlight && af.name === 'Air Booking No'"
+                    (click)="flightDetails()">{{af.value || ' 0 '}}</span>
+                <!-- <span class="text-base"  [matTooltip]="af.value">
+                    <span *ngIf="af.value == 0">{{af.value || ' 0 '}}</span>
+                </span> -->
+            </div>
+        </div>
+        <div *ngIf="paxInfoList?.length > 0">
+            <mat-divider></mat-divider>
+            <div class="text-lg font-semibold pt-4">Pax Info</div>
+            <div class="pt-4 pb-2">
+                <div class="flex flex-wrap bg-card rounded-2xl" *ngFor="let paxl of paxInfoList">
+                    <div class="flex flex-col w-1/4 mb-3" *ngFor="let pax of paxl">
+                        <ng-container *ngIf="!pax.toCorrection">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{pax.name}}</span>
+                            </div>
+                            <span class="text-base truncate" [matTooltip]="pax.value">{{pax.value || '--'}}</span>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+
+            <mat-divider></mat-divider>
+            <div class="text-lg font-semibold pt-4">{{titleCharge}}</div>
+            <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
+                <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of chargesList">
+                    <div class="flex flex-row space-x-2">
+                        <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                    </div>
+                    <span class="text-base truncate" [matTooltip]="af.value">{{af.value || ' 0 '}}</span>
+                </div>
+            </div>
+
+            
+            <div *ngIf="this.recordList.paymentbyInfo">
+                <mat-divider></mat-divider>
+                <div class="text-lg font-semibold pt-4">Payment Info</div>
+                <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
+                    <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of paymentInfoList">
+                        <div class="flex flex-row space-x-2">
+                            <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                        </div>
+                        <span class="text-base truncate" [matTooltip]="af.value">{{(af.value || af.value == 0) ? af.value :
+                            '--'}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end  mt-4 pb-4 space-x-4">
+                <ng-container class="w-1/2" *ngIf="this.record.amendment_status != 'Completed'">
+                    <ng-container *ngIf="this.record.amendment_status != 'Confirm'">
+                        <div class="w-1/2">
+                            <button mat-stroked-button (click)="sendMail()">
+                                Send Mail To Supplier
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <div class="w-1/2 flex justify-end">
+                    <button class="mr-2" mat-stroked-button *ngIf="data.showUpdateCharge" (click)="updateCharge()">
+                        Update Charges
+                    </button>
+                    <button mat-stroked-button (click)="matDialogRef.close()">
+                        Close
+                    </button>
+                </div>
+            </div>
+
+        </div>

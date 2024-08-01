@@ -1,0 +1,173 @@
+<div class="flex flex-col flex-auto pb-3 min-w-0">
+
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sticky top-0 sm:justify-between py-5 sm:px-10 border-b bg-transparent dark:bg-gray-900 z-10">
+        <div class="flex-1 min-w-0">
+            <div class="">
+                <h2 class="text-3xl md:text-3xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    {{title}}
+                </h2>
+            </div>
+        </div>
+
+        <button mat-raised-button color="primary" [disabled]="formGroup.invalid || disableBtn"
+            (click)="submit()">{{btnTitle}}</button>
+    </div>
+
+    <div class="flex-auto px-10 xl:px-40">
+
+        <form class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden" [formGroup]="formGroup">
+
+            <!-- <div class="flex flex-row space-x-3">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Company Name</mat-label>
+                    <input matInput type="text" required [formControlName]="'company_name'">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Gst Number</mat-label>
+                    <input matInput type="text" required [formControlName]="'company_gst_number'">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Gst Email</mat-label>
+                    <input matInput type="text" required [formControlName]="'gst_company_email'">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Gst Contact Number</mat-label>
+                    <input matInput type="text" required [formControlName]="'gst_contact_number'">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Gst Address</mat-label>
+                    <input matInput type="text" required [formControlName]="'gst_company_address'">
+                </mat-form-field>
+
+            </div> -->
+
+            <div class="flex flex-row space-x-3">
+
+                <!-- <mat-form-field class="flex-grow">
+                    <mat-label>Company</mat-label>
+                    <input matInput type="text" required [formControlName]="'gst_company_address'">
+                </mat-form-field> -->
+
+                <mat-form-field class="flex-grow ">
+                    <mat-label>Company</mat-label>
+                    <mat-select  formControlName="company_id" required (selectionChange)="onCompanySelectionChange($event.value)">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching company found'" [formControlName]="'companyFilter'" >
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of companyList | async" [value]="ct.company_id" >{{ct.company_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="w-[33%]">
+                    <mat-label>Air Amendment Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="air_amt_tax_val" min="0">
+                        <mat-select required formControlName="air_amt_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list_tax" [value]="fl.value" [matTooltip]="fl.value">
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Air Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="air_tax_value" min="0">
+                        <mat-select required formControlName="air_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list_tax" [value]="fl.value" [matTooltip]="fl.value" >
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field>
+            </div>
+
+            <div class="flex flex-row space-x-3">
+                 <mat-form-field class="flex-grow">
+                    <mat-label>Bus Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="bus_tax_value" min="0">
+                        <mat-select required formControlName="bus_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list_tax" [value]="fl.value" [matTooltip]="fl.value">
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Hotel Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="hotel_tax_value" min="0">
+                        <mat-select required formControlName="hotel_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list" [value]="fl.value" [matTooltip]="fl.value">
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Holiday Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="holiday_tax_value" min="0">
+                        <mat-select required formControlName="holiday_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list" [value]="fl.value" [matTooltip]="fl.value">
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field>
+            </div>
+            <div class="flex flex-row space-x-3">
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Visa Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="visa_tax_value" min="0">
+                        <mat-select required formControlName="visa_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list" [value]="fl.value" [matTooltip]="fl.value">
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Insurance Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="insurance_tax_value" min="0">
+                        <mat-select required formControlName="insurance_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list" [value]="fl.value" [matTooltip]="fl.value">
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Activity Tax (%)</mat-label>
+                    <div class="flex flex-row items-center justify-between w-full">
+                        <input type="number" class="w-26 pr-3" matInput formControlName="activity_tax_value" min="0">
+                        <mat-select required formControlName="activity_tax_type" class="min-w-[calc(100%-104px)]">
+                            <mat-option *ngFor="let fl of fix_list" [value]="fl.value" [matTooltip]="fl.value">
+                                {{fl.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                </mat-form-field> 
+
+            </div>
+        </form>
+
+    </div>
+
+</div>

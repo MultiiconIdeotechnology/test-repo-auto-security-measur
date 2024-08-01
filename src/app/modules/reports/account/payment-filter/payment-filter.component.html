@@ -1,0 +1,109 @@
+<div class="flex flex-col max-w-240 md:min-w-120 max-h-screen -m-6">
+
+    <!-- Header -->
+    <!-- <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary ">
+        <div class="text-lg font-medium">Payment Filter</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div> -->
+
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Compose form -->
+    <form class="flex flex-col flex-auto p-6 sm:p-8 overflow-y-auto" [formGroup]="filterForm">
+
+        <mat-form-field class="w-full">
+            <mat-label>Status</mat-label>
+            <mat-select name="status" formControlName="status">
+                <mat-option value="All">All</mat-option>
+                <mat-option value="Pending">Pending</mat-option>
+                <mat-option value="Confirmed">Confirmed</mat-option>
+                <mat-option value="Rejected">Rejected</mat-option>
+
+            </mat-select>
+        </mat-form-field>
+
+        <!-- <mat-form-field class="w-full">
+            <mat-label>Select Date</mat-label>
+            <mat-select name="date" formControlName="date" (selectionChange)="updateDate($event.value)">
+                <mat-option *ngFor="let dr of dateRanges" [value]="dr">{{dr}}</mat-option>
+            </mat-select>
+        </mat-form-field> -->
+
+        <!-- <mat-form-field  (selectionChange)="updateDate($event.value)">
+            <mat-label>From Date - To Date</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate formControlName='fromDate' placeholder="Start date">
+                <input matEndDate formControlName='toDate' placeholder="End date">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field> -->
+
+        <!-- <mat-form-field class="flex-grow" *ngIf="module_name == 'Receipt filter'">
+            <mat-label>Payment Gateway</mat-label>
+            <mat-select  formControlName="payment_gateway" required>
+                <mat-option *ngFor="let ct of providerList" [value]="ct">{{ct}}</mat-option>
+            </mat-select>
+        </mat-form-field> -->
+
+
+
+        <mat-form-field class="w-full" *ngIf="filterForm.get('date').value !== DR.setCustomDate">
+            <mat-label>Select Date</mat-label>
+            <mat-select
+                name="date"
+                formControlName="date"
+                (selectionChange)="updateDate($event.value)"
+            >
+                <mat-option
+                    *ngFor="let dr of dateRanges"
+                    [value]="dr"
+                    >{{ dr }}</mat-option
+                >
+            </mat-select>
+        </mat-form-field>
+        <div *ngIf="filterForm.get('date').value === DR.setCustomDate"  class="flex flex-row items-center space-x-1">
+            <mat-form-field class="w-full">
+                <mat-label>Date</mat-label>
+                <mat-date-range-input [rangePicker]="picker">
+                    <input
+                        matStartDate
+                        formControlName="fromDate"
+                        placeholder="Start date"
+                    />
+                    <input
+                        matEndDate
+                        formControlName="toDate"
+                        placeholder="End date"
+                    />
+                </mat-date-range-input>
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+            <mat-icon class="icon-size-4" (click)="this.filterForm.get('date').patchValue('Today')">cancel</mat-icon>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-6">
+            <div></div>
+            <div class="flex items-center mt-4 sm:mt-0">
+                <button *ngIf="!readonly" class="sm:mx-3 max-sm:mx-3" mat-stroked-button (click)="matDialogRef.close()">
+                    <span>Cancel</span>
+                </button>
+                <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                    (click)="ngSubmit()">
+                    Filter
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

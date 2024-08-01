@@ -1,0 +1,22 @@
+<div class="flex flex-col max-w-180 md:min-w-180 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">Perticular</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class=" p-8 pb-4 flex flex-wrap bg-card rounded-2xl overflow-hidden">
+        <div class="flex flex-col mb-3" *ngFor="let filed of fieldList" [ngClass]="filed.name == 'Particular' ? 'w-1/2' : 'w-1/4'">
+            <div class="flex flex-row space-x-2" >
+                <span class=" text-md font-semibold text-secondary">{{filed.name}}</span>
+                <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
+            </div>
+            <span class="truncate flex items-center">
+                <span class="text-base truncate pr-1 relative top-[-1px]" [matTooltip]="filed.value">{{filed.value || '--'}}</span>
+            </span>
+        </div>
+    </div>
+</div>

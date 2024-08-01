@@ -1,0 +1,169 @@
+<div class="flex flex-col max-w-240 md:min-w-140 -m-6">
+    <div
+        class="flex px-5 pt-4 pb-3 z-10 items-center bg-primary justify-between flex-row text-xl sticky font-semibold border-b-2">
+        <span class="text-white">{{datas.first_name}} {{datas.last_name}}</span>
+        <mat-icon svgIcon="close" class="cursor-pointer text-white" (click)="matDialogRef.close()"></mat-icon>
+    </div>
+    <div class="dark:bg-[#0f172a] ">
+        <div class="px-5 font-semibold pt-3  text-lg"></div>
+        <div *ngIf="docs.length > 0" class="flex flex-col w-full max-h-[480px] overflow-y-auto px-4 pt-2 pb-4">
+            <div *ngFor="let doc of docs">
+                <div class="flex flex-col px-4 mb-3 justify-between shadow rounded-xl border-l-4  overflow-hidden dark:bg-card bg-gray-200"
+                    [ngClass]="getColor(doc)">
+                    <div class="flex flex-row items-center justify-between overflow-hidden">
+
+
+                        <div class="flex flex-row items-center  justify-between overflow-hidden w-full">
+                            <div class="py-4 flex flex-col items-start justify-between second-color  overflow-hidden">
+                                <div class="flex flex-col font-medium tracking-tight leading-6 truncate">
+                                    <div class="flex flex-row space-x-2 items-center">
+                                        <span class="text-lg">{{doc.document_type}}</span>
+                                        <span *ngIf="doc.is_required" class="text-gray-500">Required</span>
+                                    </div>
+                                    <div class="leading-5">
+                                        <p class="text-secondary text-xs ">(Max size 5MB)</p>
+                                        <p class="text-sm text-secondary">Support for (PDF,JPG,PNG) only </p>
+                                        <div *ngIf="doc.reject_reason">
+                                            <span class="text-sm text-white whitespace-nowrap">Reason for rejection : </span>
+                                            <span class="text-sm text-secondary whitespace-normal">{{doc.reject_reason}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-row items-end justify-center space-x-1">
+                                <a target="_blank" [href]="doc.file_url">
+                                    <button mat-icon-button [matTooltip]="'Download'" [disabled]="!doc.file_url">
+                                        <mat-icon class="icon-size-6" [ngClass]="doc.file_url? 'text-primary':''"
+                                            [svgIcon]="'heroicons_outline:download'"></mat-icon>
+                                    </button>
+                                </a>
+                                <div [hidden]="true">
+                                    <input type="file" name="documentUpload" #document
+                                        (change)="uploadDocument(doc, $event)">
+                                </div>
+                                <button [disabled]="doc.is_document_audited" (click)="document.click()"
+                                    [matTooltip]="'Upload'" mat-icon-button>
+                                    <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+                                </button>
+
+                                <button mat-icon-button [disabled]="!doc.file_url" (click)="$event.stopPropagation()"
+                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-text"
+                                    style="border-radius: 0%;width: 100%;">
+                                    <mat-icon>
+                                        more_vert
+                                    </mat-icon>
+                                </button>
+                                <mat-menu #optionMenu>
+                                    <button *ngIf="!doc.is_document_audited" mat-menu-item (click)="Audit(doc)"
+                                    [ngClass]="{'opacity-50': datas.status == 'Payment Confirmed'}">
+                                        <mat-icon class="mat-18">check_circle</mat-icon>
+                                        <span style="font-weight: 600;">Audit</span>
+                                    </button>
+                                    <button *ngIf="!doc.is_document_rejected" mat-menu-item (click)="Reject(doc)"
+                                    [ngClass]="{'opacity-50': datas.status == 'Payment Confirmed'}">
+                                        <mat-icon class="mat-18">close</mat-icon>
+                                        <span style="font-weight: 600;">Reject</span>
+                                    </button>
+                                </mat-menu>
+                            </div>
+                        </div>
+
+                        <!-- <button class="rounded-lg text-[#234977] px-4 bg-white" mat-flat-button (click)="rejectAction(doc.id)" *ngIf="doc.is_document_rejected == false">
+                            <span class="text-[#234977]">Reject</span>
+                        </button> -->
+
+                        <!-- <div>
+                            <mat-icon
+                            class="icon-size-5 rounded-full bg-red-600 text-white"
+                            [svgIcon]="'heroicons_solid:x-mark'"
+                            [matTooltip]="'Reject'"
+                            (click)="doc.is_document_rejected ? null : rejectAction(doc.id)"
+                            [class.opacity-50]="doc.is_document_rejected == true"
+                            [class.cursor-not-allowed]="doc.is_document_rejected"
+                            *ngIf="doc.is_document_rejected || !doc.is_document_rejected"
+                          ></mat-icon>
+                        </div> -->
+
+                        <!-- <div class="flex items-center py-2 space-x-4">
+                            <img src="assets/images/visa/upload-image.png" class="h-13 w-13 object-contain" alt="">
+                            <div class="py-4 flex flex-col items-start justify-between second-color overflow-hidden">
+                                <div class="flex flex-col font-medium tracking-tight leading-6 truncate">
+                                    <div class="flex flex-row space-x-2 items-center">
+                                        <span class="text-lg">{{doc.document_type}}</span>
+                                    </div>
+                                    <div class="leading-5">
+                                        <p class="text-sm secondary-text opacity-[0.8]">(PDF,JPG,PNG)</p>
+                                    </div>
+                                    <p class="text-sm red-text pt-1">{{doc.reject_reason}}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <span
+                                    [ngClass]="doc.is_document_rejected? 'bg-[rgba(255,0,0,0.1)] red-text':'bg-[rgba(1,175,71,0.1)] green-text'"
+                                    class="text-sm truncate rounded-sm px-3 py-1 cursor-pointer font-semibold tracking-wide">
+                                    {{doc.is_document_rejected? 'Rejected':'Uploaded'}}
+                                </span>
+                            </div>
+                        </div> -->
+
+                        <!-- <div class="flex flex-row items-end justify-center space-x-3">
+                            <a target="_blank" [href]="doc.file_url">
+                                <button [ngClass]="doc.is_document_rejected? 'opacity-60 pointer-events-none':''"
+                                    class="rounded-lg text-[#234977] px-4 bg-white" mat-flat-button>
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                                        class="rounded-full cursor-pointer text-white icon-size-4"
+                                        [matTooltip]="'Download'"></mat-icon>
+                                    <span class="text-[#234977] pl-2">Download</span>
+                                </button>
+                            </a>
+                            <div [hidden]="true">
+                                <input type="file" name="document" #document (change)="uploadDocument(doc, $event)">
+                            </div> -->
+
+                        <!-- <button [ngClass]="doc.is_document_rejected? '':'pointer-events-none'"
+                                class="border primary-border px-5 py-2 rounded-lg bg-primary"
+                                (click)="document.click()">
+                                <span class="font-semibold">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-up-tray"
+                                        class="text-white rounded-full relative top-[2px] cursor-pointer icon-size-4 mr-3"
+                                        [matTooltip]="'Upload'"></mat-icon>
+                                    <span class="font-medium text-white">Upload</span>
+                                </span>
+                            </button> -->
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="docs.length > 0"
+            class="flex flex-row max-xl:grid max-xl:grid-cols-2 items-center justify-center space-x-5 max-sm:space-x-0 p-4">
+            <div class="flex flex-row items-center space-x-2">
+                <div class="h-[10px] w-[10px] bg-gray-500 rounded-full"></div>
+                <div>Upload Pending</div>
+            </div>
+            <div class="flex flex-row items-center space-x-2">
+                <div class="h-[10px] w-[10px] bg-blue-500 rounded-full"></div>
+                <div>Audit Pending</div>
+            </div>
+            <div class="flex flex-row items-center space-x-2">
+                <div class="h-[10px] w-[10px] bg-green-500 rounded-full"></div>
+                <div>Audited</div>
+            </div>
+            <div class="flex flex-row items-center space-x-2">
+                <div class="h-[10px] w-[10px] bg-red-500 rounded-full"></div>
+                <div>Rejected</div>
+            </div>
+        </div>
+
+
+        <ng-container *ngIf="docs.length < 1">
+            <div class="flex-grow flex flex-row items-center justify-center py-8">
+                <div>
+                    <span class="secondary-text font-semibold text-xl">{{getNodataText()}}</span>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>

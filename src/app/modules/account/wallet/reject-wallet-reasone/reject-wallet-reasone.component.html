@@ -1,0 +1,25 @@
+<div class="flex flex-col w-100 max-h-screen -m-6">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">Reject Reason</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="px-5 py-2 mt-2">
+        <form [formGroup]="formGroup" class="flex flex-col">
+            <mat-form-field class="w-full fuse-mat-dense">
+                <mat-label>Reason</mat-label>
+                <textarea matInput required [formControlName]="'reject_reasone'" class="min-h-18"></textarea>
+            </mat-form-field>
+        </form>
+    </div>
+
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()">Close</button>
+        <button mat-flat-button [color]="'primary'" (click)="apply()" [disabled]="formGroup.invalid">
+            Reject
+        </button>
+    </div>
+</div>

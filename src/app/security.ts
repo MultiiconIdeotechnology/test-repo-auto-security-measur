@@ -1,0 +1,551 @@
+import { AuthService } from './core/auth/auth.service';
+import { ReflectionInjector } from './injector/reflection-injector';
+
+export class Security {
+    public static permissions: any[];
+
+    public static hasPermission(permission: { module_name: string, group_name: string, operation_type: string, category_name: string }): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === permission.module_name &&
+                    x.group_name === permission.group_name &&
+                    x.operation_type === permission.operation_type &&
+                    x.category_name === permission.category_name) > -1;
+    }
+
+    public static hasNewEntryPermission(module_name: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module_name &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.newEntry &&
+                    x.category_name === category_name.entry) > -1;
+    }
+
+    public static hasEditEntryPermission(module: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.editEntry &&
+                    x.category_name === category_name.entry) > -1;
+    }
+
+    public static hasDeleteEntryPermission(module: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.deleteEntry &&
+                    x.category_name === category_name.delete) > -1;
+    }
+
+    public static hasViewDetailPermission(module: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.viewDetail &&
+                    x.category_name === category_name.viewDetail) > -1;
+    }
+
+    public static hasExportDataPermission(module: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.exportData &&
+                    x.category_name === category_name.export) > -1;
+    }
+
+    public static hasImportDataPermission(module: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.importData &&
+                    x.category_name === category_name.import) > -1;
+    }
+
+    public static hasDisplayLimitedRecordsPermission(module: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.displayLimitedRecords &&
+                    x.category_name === category_name.view) > -1;
+    }
+
+    public static hasDisplayAllRecordsPermission(module: string): boolean {
+        return Security.getPermissions()
+            .findIndex(
+                (x: any) =>
+                    x.module_name === module &&
+                    x.group_name === group_name.listingPage &&
+                    x.operation_type === operation_type.displayAllRecords &&
+                    x.category_name === category_name.view) > -1;
+    }
+
+    public static getPermissions(): any[] {
+        if (!Security.permissions || Security.permissions.length === 0) {
+            this.permissions = ReflectionInjector.get(AuthService).getPermissions();
+        }
+
+        return Security.permissions;
+    }
+}
+
+export const messages = {
+    permissionDenied: 'Permission Denied'
+};
+
+export const group_name = {
+    listingPage: 'Listing',
+    detailPage: 'Detail',
+    entryPage: 'Entry Page',
+    attendance: 'Attendance',
+    report: 'Report',
+    admin: 'Administrator',
+    dealing: 'Dealing',
+    account: 'Account',
+};
+
+export const operation_type = {
+    newEntry: 'Add New',
+    editEntry: 'Modify',
+    deleteEntry: 'Delete',
+    displayLimitedRecords: 'Display Limited Records',
+    displayAllRecords: 'Display All Records',
+    view: 'View',
+    viewDetail: 'View Detail',
+    exportData: 'Export Data',
+    importData: 'Import Data',
+    applyPremission: 'Apply Premission',
+    WorkingStatus: 'Working Status',
+    Convert_to_agent: 'Convert To Agent',
+    relationship_manager:'Relationship Manager',
+    view_kyc:'View Kyc',
+    agent_login:'Agent Login',
+    set_markup_profile:'Set Markup Profile',
+    convert_to_wl:'Convert To WL',
+    audit_kyc:'Audit KYC',
+    resetPassword: 'Reset Password',
+    enable_disable: 'Disable/Enable',
+    audit_unaudit: 'Audit/Unaudit',
+    block_unblock: 'Block/Unblock',
+    publish_unpublish: 'Published/Unpublished',
+    default:'Default'
+};
+
+export const category_name = {
+    entry: 'Entry',
+    delete: 'Delete',
+    view: 'View',
+    viewDetail: 'View Detail',
+    export: 'Export',
+    import: 'Import',
+    block_unblock: 'Block/Unblock',
+    copy: 'Copy',
+    is_most: 'IsMost',
+    resetPassword: 'Reset Password',
+    document: 'Document',
+    applyPremission: 'Apply Premission',
+    status: 'Status',
+    audit_unaudit: 'Audit/Unaudit',
+    publish_unpublish: 'Publish/Unpublish',
+    online_offline: 'Online/Offline',
+    active_deactivate: 'Active/Deactivate',
+    secrity: 'Security',
+    update: 'Update',
+    isdefault: 'Is Default',
+    resetpassword: 'Reset Password',
+    permissionProfile: 'Permission Profile',
+    themesetting: 'Theme Setting',
+    WorkingStatus: 'Working Status',
+    Convert_to_agent: 'Convert To Agent',
+    relationship_manager:'Relationship Manager',
+    view_kyc:'View Kyc',
+    agent_login:'Agent Login',
+    set_markup_profile:'Set Markup Profile',
+    convert_to_wl:'Convert To WL',
+    audit_kyc:'Audit KYC',
+    default:'Default',
+    enableDisable: 'Enable/Disable',
+    operation: 'Operation',
+    autoLogin: 'Auto Login',
+    complete: 'Complete',
+    confirm: 'Confirm',
+    manu_display: 'Menu Display',
+    changeStatus: 'Change Status',
+    print: 'Print',
+    action: 'Action',
+    dail_call: 'Dail Call',
+    re_shuffle: 'Reshuffle',
+};
+
+export const module_name = {
+    lead:"Leads",
+    crmagent:"Agent Dashboard",
+    collections:"Collections",
+    techDashboard:"Tech Dashboard",
+    dialCall: "Dial Call",
+    scheduleCall: "Schedule Call",
+    employee: "Employee",
+    designation: "Designation",
+    destination: "Destination",
+    currency:"Currency",
+    currencyROE:"Currency ROE",
+    activity:"Activity",
+    city: "City",
+    department: "Department",
+    document :'Types of Documents',
+    kycprofile:'KYC Profile',
+    kycdocument:'Documents',
+    markupprofile:'Markup Profile',
+    emailsetup: 'Email Setup',
+    supplierapi: 'Supplier API',
+    transfer:'Transfers',
+    supplier:'Supplier',
+    holiday:'Holiday Products',
+    productpricing:'Product Pricing',
+    hotel:'Hotel',
+    hotelroom:'Hotel Room',
+    hoteltariff:'Hotel Tariff',
+    productfixdeparture:'Product Fix Departure',
+    vehicle:'Vehicle',
+    messageevents:'Message Events',
+    messagetemplates:'Message Templates',
+    agent:'Agents',
+    compny:'Company',
+    bank:'Bank',
+    whitelabel:'White Lable',
+    Installment:'Installment',
+    defaultproductexclusions : 'Default Product Exclusions',
+    newSignup : 'New Signup',
+    permission : 'Permission Master',
+    permissionProfile : 'Permission Profile',
+    markupProfile : 'Markup Profile',
+    amendmentRequests : 'Amendment Requests',
+    groupInquiry : 'Group Inquiry',
+    ledger:'Agent Ledger',
+    payment: 'Payments',
+    receipt: 'Receipt',
+    flight: 'Flight',
+    bus: 'Bus',
+    agentkyc: 'Agent KYC Dashboard',
+    wallet: 'Wallet Recharge',
+    pspsetting: 'PSP',
+    visa: 'Visa',
+    withdraw: 'Withdraw',
+    offlineService: 'Offline Service',
+    walletCredit: 'Wallet Credit',
+    agentBalance: 'Agent Balance Register',
+    walletOutstanding: 'Wallet Outstanding',
+    receipts: 'Receipts',
+    kycDashboard: 'KYC Dashboard',
+    bookingsFlight: 'Bookings - Flight',
+    bookingsBus: 'Bookings - BUS',
+    bookingsHotel: 'Bookings - Hotel',
+    bookingsVisa: 'Bookings - Visa',
+    inventoryHoliday: 'Inventory - Holiday',
+    inventoryHotel: 'Inventory - Hotel',
+    inventoryVisa: 'Inventory - Visa',
+    ERPSettings: 'ERP Settings',
+    SaleBook: 'Sale Book',
+    SalesReturn: 'Sales Return',
+    Purchase: 'Purchase',
+    OsbPayment: 'OSB Payment',
+    OsbReceipt: 'OSB Receipt',
+    OsbInvoice: 'OSB Invoice',
+    Sales: 'Sales',
+    Referrallink: 'Referral Link',
+    itemMaster: 'Items',
+    product: 'Products',
+    leads_register: 'Leads Register',
+    airline: 'Airline',
+    report_hotel: 'Hotel',
+    report_bus: 'Bus',
+};
+
+export const cityPermissions = {
+    addImagePermissions: { module_name: module_name.city, group_name: group_name.listingPage, operation_type: 'Add Image', category_name: category_name.entry },
+    enablePreferedHotelPermissions: { module_name: module_name.city, group_name: group_name.listingPage, operation_type: 'Enable Prefered Hotel', category_name: category_name.enableDisable },
+}
+
+export const bankPermissions = {
+    auditUnauditPermissions: { module_name: module_name.bank, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+}
+
+export const companyPermissions = {
+    ctcMarkupPermissions: { module_name: module_name.compny, group_name: group_name.listingPage, operation_type: 'CTC Markup', category_name: category_name.view },
+}
+
+export const currencyROEPermissions = {
+    ROEBulkUpdatePermissions: { module_name: module_name.currencyROE, group_name: group_name.listingPage, operation_type: 'Bulk Update', category_name: category_name.entry },
+    ROESyncPermissions: { module_name: module_name.currencyROE, group_name: group_name.listingPage, operation_type: 'Sync', category_name: category_name.entry },
+}
+
+export const destinationPermissions = {
+    addImagePermissions: { module_name: module_name.destination, group_name: group_name.listingPage, operation_type: 'Add Image', category_name: category_name.entry },
+    destinationCitiesPermissions: { module_name: module_name.destination, group_name: group_name.listingPage, operation_type: 'Destination Cities', category_name: category_name.entry },
+    defaultExclusionsPermissions: { module_name: module_name.destination, group_name: group_name.listingPage, operation_type: 'Default Exclusions', category_name: category_name.entry },
+    enableDisablePermissions: { module_name: module_name.destination, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const supplierPermissions = {
+    viewKYCPermissions: { module_name: module_name.supplier, group_name: group_name.listingPage, operation_type: 'View KYC', category_name: category_name.view },
+    blockUnblockPermissions: { module_name: module_name.supplier, group_name: group_name.listingPage, operation_type: 'Block Unblock', category_name: category_name.block_unblock },
+    auditUnauditKYCPermissions: { module_name: module_name.supplier, group_name: group_name.listingPage, operation_type: 'Audit Unaudit KYC', category_name: category_name.audit_unaudit },
+    assignKYCProfile: { module_name: module_name.supplier, group_name: group_name.listingPage, operation_type: 'Assign KYC Profile', category_name: category_name.entry },
+}
+
+export const leadPermissions = {
+    dailCallPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Dail Call', category_name: category_name.operation },
+    callHistoryPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation },
+    scheduleCallPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Schedule Call', category_name: category_name.operation },
+    startKYCProcessPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Start KYC Process', category_name: category_name.operation },
+    deadLeadPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Dead Lead', category_name: category_name.operation },
+    marketingMaterialPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Marketing Materials', category_name: category_name.operation }
+}
+
+export const agentPermissions = {
+    dailCallPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Dail Call', category_name: category_name.operation },
+    callHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation },
+    marketingMaterialPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Marketing Materials', category_name: category_name.operation },
+    dormantsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Inbox Dormant', category_name: category_name.operation }
+}
+
+export const techCollectionPermissions = {
+    dailCallPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Dail Call', category_name: category_name.operation },
+    callHistoryPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation }
+}
+
+export const travelCollectionPermissions = {
+    dailCallPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Travel Dail Call', category_name: category_name.operation },
+    callHistoryPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Travel Call History', category_name: category_name.operation }
+}
+
+export const leadsPermissions = {
+    viewKYCPermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'View KYC', category_name: category_name.view },
+    verifyEmailPermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Verify Email', category_name: category_name.operation },
+    verifyMobilePermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Verify Mobile', category_name: category_name.operation },
+    viewOnlyAssignedPermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+
+}
+
+export const agentsPermissions = {
+    relationshipManagerPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Relationship Manager', category_name: category_name.entry },
+    relationshipManagerLogsPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Relationship Manager Logs', category_name: category_name.view },
+    statusChangedLogsPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Status Changed Logs', category_name: category_name.view },
+    viewKYCPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'View KYC', category_name: category_name.view },
+    setMarkupProfilePermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Set Markup Profile', category_name: category_name.entry },
+    autoLoginPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Auto Login', category_name: category_name.autoLogin },
+    reshufflePermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Reshuffle', category_name: category_name.re_shuffle },
+    walletTransferPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Wallet Transfer', category_name: category_name.operation },
+    blockUnblockPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Block Unblock', category_name: category_name.block_unblock },
+    verifyEmailPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Verify Email', category_name: category_name.operation },
+    verifyMobilePermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Verify Mobile', category_name: category_name.operation },
+    setCurrencyPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Set Currency', category_name: category_name.entry },
+    convertToWLPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Convert To WL', category_name: category_name.operation },
+    viewOnlyAssignedPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+}
+
+export const leadRegisterPermissions = {
+    relationshipManagerPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Relationship Manager', category_name: category_name.entry },
+    callHistoryPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation },
+    reshufflePermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Reshuffle', category_name: category_name.re_shuffle },
+    relationshipManagerLogsPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Relationship Manager Logs', category_name: category_name.view }
+}
+
+
+export const whiteLablePermissions = {
+    enableDisablePermissions: { module_name: module_name.whitelabel, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+    installmentsPermissions: { module_name: module_name.whitelabel, group_name: group_name.listingPage, operation_type: 'Installments', category_name: category_name.entry },
+    viewOnlyAssignedPermissions: { module_name: module_name.whitelabel, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+}
+
+export const walletRechargePermissions = {
+    auditUnauditPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    rejectPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit },
+    pendingTabPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Pending Tab', category_name: category_name.view },
+    auditedTabPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Audited Tab', category_name: category_name.view },
+    rejectedTabPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Rejected Tab', category_name: category_name.view },
+}
+
+export const partnerPurchaseProductPermissions = {
+    purchaseProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Purchase Product', category_name: category_name.operation },
+    dormantsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Partner Dormant', category_name: category_name.operation },
+    itemsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Items Tab', category_name: category_name.view },
+    installmentsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Installments Tab', category_name: category_name.view },
+    receiptsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Receipts Tab', category_name: category_name.view },
+}
+
+export const crmLeadPermissions = {
+    detailTabPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Detail Tab', category_name: category_name.view },
+    feedbackTabPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Feedback Tab', category_name: category_name.view },
+    inboxTabPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Inbox Tab', category_name: category_name.view },
+    archiveTabPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Archive Tab', category_name: category_name.view },
+    agentInboxTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Inbox Tab', category_name: category_name.view },
+    partnersTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Partners Tab', category_name: category_name.view },
+    techCollectionTabPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Tech Collection', category_name: category_name.view },
+    travelCollectionPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Travel Collection', category_name: category_name.view }
+}
+
+export const walletCreditPermissions = {
+    changeExpiryPermissions: { module_name: module_name.walletCredit, group_name: group_name.listingPage, operation_type: 'Change Expiry', category_name: category_name.entry },
+    enableDisablePermissions: { module_name: module_name.walletCredit, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const withdrawPermissions = {
+    auditUnauditPermissions: { module_name: module_name.withdraw, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    rejectPermissions: { module_name: module_name.withdraw, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit },
+    pendingTabPermissions: { module_name: module_name.withdraw, group_name: group_name.listingPage, operation_type: 'Pending Tab', category_name: category_name.view },
+    auditedTabPermissions: { module_name: module_name.withdraw, group_name: group_name.listingPage, operation_type: 'Audited Tab', category_name: category_name.view },
+    rejectedTabPermissions: { module_name: module_name.withdraw, group_name: group_name.listingPage, operation_type: 'Rejected Tab', category_name: category_name.view },
+}
+
+export const kycDashboardPermissions = {
+    agentKYCTabPermissions: { module_name: module_name.kycDashboard, group_name: group_name.listingPage, operation_type: 'Agent KYC Tab', category_name: category_name.view },
+    supplierKYCTabPermissions: { module_name: module_name.kycDashboard, group_name: group_name.listingPage, operation_type: 'Supplier KYC Tab', category_name: category_name.view },
+    employeeKYCTabPermissions: { module_name: module_name.kycDashboard, group_name: group_name.listingPage, operation_type: 'Employee KYC Tab', category_name: category_name.view },
+    agentViewKYCPermissions: { module_name: module_name.agentkyc, group_name: group_name.listingPage, operation_type: 'View KYC', category_name: category_name.view },
+    agentConvertToTAPermissions: { module_name: module_name.agentkyc, group_name: group_name.listingPage, operation_type: 'Convert To TA', category_name: category_name.operation },
+}
+
+export const kycprofilePermissions = {
+    copyPermissions: { module_name: module_name.kycprofile, group_name: group_name.listingPage, operation_type: 'Copy', category_name: category_name.copy },
+}
+
+export const documentPermissions = {
+    auditUnauditPermissions: { module_name: module_name.kycdocument, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    rejectPermissions: { module_name: module_name.kycdocument, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit },
+}
+
+export const bookingsFlightPermissions = {
+    importPNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Import PNR', category_name: category_name.entry },
+    offlinePNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Offline PNR', category_name: category_name.entry },
+}
+
+export const amendmentRequestsPermissions = {
+    updateChargePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Update Charge', category_name: category_name.entry },
+    completePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Complete', category_name: category_name.complete },
+    confirmPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Confirm', category_name: category_name.confirm },
+    manuDisplayPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Menu Display', category_name: category_name.manu_display },
+    changeStatusPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Change Status', category_name: category_name.changeStatus },
+    statusLogsPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Status Logs', category_name: category_name.view },
+}
+
+
+export const groupInquiryPermissions = {
+    updateChargePermissions: { module_name: module_name.groupInquiry, group_name: group_name.listingPage, operation_type: 'Update Charge', category_name: category_name.entry },
+    groupInquirySubPermissions: { module_name: module_name.groupInquiry, group_name: group_name.listingPage, operation_type: 'Group Inquiry', category_name: category_name.entry },
+}
+
+export const busBookingPermissions = {
+    voucherPermissions: { module_name: module_name.bookingsBus, group_name: group_name.detailPage, operation_type: 'Voucher', category_name: category_name.print },
+    amendmentPermissions: { module_name: module_name.bookingsBus, group_name: group_name.detailPage, operation_type: 'Amendment', category_name: category_name.entry },
+    invoicePermissions: { module_name: module_name.bookingsBus, group_name: group_name.detailPage, operation_type: 'Invoice', category_name: category_name.print },
+}
+
+export const bookingsHotelPermissions = {
+    modifyPermissions: { module_name: module_name.bookingsHotel, group_name: group_name.detailPage, operation_type: 'Modify', category_name: category_name.entry },
+    voucherPermissions: { module_name: module_name.bookingsHotel, group_name: group_name.detailPage, operation_type: 'Voucher', category_name: category_name.print },
+    amendmentPermissions: { module_name: module_name.bookingsHotel, group_name: group_name.detailPage, operation_type: 'Amendment', category_name: category_name.entry },
+    invoicePermissions: { module_name: module_name.bookingsHotel, group_name: group_name.detailPage, operation_type: 'Invoice', category_name: category_name.print },
+}
+
+export const bookingsVisaPermissions = {
+    modifyPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.listingPage, operation_type: 'View All Data', category_name: category_name.view },
+    startProcessPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Start Process', category_name: category_name.action },
+    applyForVisaPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Apply For Visa', category_name: category_name.action },
+    successVisaPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Success Visa', category_name: category_name.action },
+    rejectVisaPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Reject Visa', category_name: category_name.action },
+    viewDocumentsPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'View Documents', category_name: category_name.view },
+    viewOnlyAssignedPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+}
+
+export const offlineServicePermissions = {
+    viewOnlyAssignedPermissions: { module_name: module_name.offlineService, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+}
+
+export const activityPermissions = {
+    auditUnauditPermissions: { module_name: module_name.activity, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    enableDisablePermissions: { module_name: module_name.activity, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const takeransfersPermissions = {
+    auditUnauditPermissions: { module_name: module_name.transfer, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    enableDisablePermissions: { module_name: module_name.transfer, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const inventoryHolidayPermissions = {
+    publishUnpublishPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
+    setasPopularPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
+    copyProductPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
+    viewHolidayPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'View Holiday', category_name: category_name.view },
+}
+
+export const vehiclePermissions = {
+    auditUnauditPermissions: { module_name: module_name.vehicle, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    enableDisablePermissions: { module_name: module_name.vehicle, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+    addImagePermissions: { module_name: module_name.vehicle, group_name: group_name.listingPage, operation_type: 'Add Image', category_name: category_name.entry },
+}
+
+export const inventoryVisaPermissions = {
+    enableDisablePermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+    visaDocumentsPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Visa Documents', category_name: category_name.view },
+    visaChargesPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Visa Charges', category_name: category_name.view },
+    specialNotesPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Special Notes', category_name: category_name.entry },
+}
+
+export const employeePermissions = {
+    blockUnblockPermissions: { module_name: module_name.employee, group_name: group_name.listingPage, operation_type: 'Block Unblock', category_name: category_name.block_unblock },
+    viewKYCPermissions: { module_name: module_name.employee, group_name: group_name.listingPage, operation_type: 'View KYC', category_name: category_name.view },
+    auditUnauditKYCPermissions: { module_name: module_name.employee, group_name: group_name.listingPage, operation_type: 'Audit Unaudit KYC', category_name: category_name.audit_unaudit },
+    workingStatusPermissions: { module_name: module_name.employee, group_name: group_name.listingPage, operation_type: 'Working Status', category_name: category_name.entry },
+    setPermissionProfilePermissions: { module_name: module_name.employee, group_name: group_name.listingPage, operation_type: 'Set Permission Profile', category_name: category_name.entry },
+    setKYCProfilePermissions: { module_name: module_name.employee, group_name: group_name.listingPage, operation_type: 'Set KYC Profile', category_name: category_name.entry },
+}
+
+export const permissionMasterPermissions = {
+    isDefaultPermissions: { module_name: module_name.permission, group_name: group_name.listingPage, operation_type: 'Is Default', category_name: category_name.operation },
+}
+
+export const permissionProfilePermissions = {
+    isDefaultPermissions: { module_name: module_name.permissionProfile, group_name: group_name.listingPage, operation_type: 'Is Default', category_name: category_name.operation },
+    applyPermissionPermissions: { module_name: module_name.permissionProfile, group_name: group_name.listingPage, operation_type: 'Apply Permission', category_name: category_name.entry },
+}
+
+export const ERPSettingsPermissions = {
+    savePermissions: { module_name: module_name.ERPSettings, group_name: group_name.detailPage, operation_type: 'Save', category_name: category_name.entry },
+}
+
+export const markupProfilePermissions = {
+    setasDefaultPermissions: { module_name: module_name.markupProfile, group_name: group_name.listingPage, operation_type: 'Set as Default', category_name: category_name.action },
+}
+
+export const emailSetupPermissions = {
+    sendTestMailPermissions: { module_name: module_name.emailsetup, group_name: group_name.listingPage, operation_type: 'Send Test Mail', category_name: category_name.action },
+    setasDefaultPermissions: { module_name: module_name.emailsetup, group_name: group_name.listingPage, operation_type: 'Set as Default', category_name: category_name.action },
+}
+
+export const messageTemplatesPermissions = {
+    enableDisablePermissions: { module_name: module_name.messagetemplates, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const supplierAPIPermissions = {
+    enableDisablePermissions: { module_name: module_name.supplierapi, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const PSPPermissions = {
+    setDefaultPermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Set Default', category_name: category_name.action },
+    enableDisablePermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}

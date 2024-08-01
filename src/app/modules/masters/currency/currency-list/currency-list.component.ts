@@ -1,0 +1,147 @@
+import { module_name } from 'app/security';
+import { Component } from '@angular/core';
+import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CurrencyEntryComponent } from '../currency-entry/currency-entry.component';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { CurrencyService } from 'app/services/currency.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+@Component({
+  selector: 'app-currency-list',
+  templateUrl: './currency-list.component.html',
+  styles: [`
+  .tbl-grid {
+    grid-template-columns:  40px 260px 140px 120px 210px;
+  }
+  `],
+  standalone   : true,
+  imports      : [
+    NgIf,
+    NgFor,
+    DatePipe,
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatMenuModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatButtonModule,
+    MatTooltipModule,
+  ],
+})
+export class CurrencyListComponent extends BaseListingComponent {
+
+  module_name = module_name.currency
+  dataList = [];
+  total = 0;
+
+  columns = [
+    { key: 'currency', name: 'Currency', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
+    { key: 'currency_short_code', name: 'Short Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: 'center', indicator: false, tooltip: true },
+    { key: 'currency_symbol', name: 'Symbol', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: 'center', indicator: false, tooltip: true },
+    { key: '.', name: '', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, align: 'center', indicator: false, tooltip: true },
+  ]
+  cols = [];
+
+  constructor(
+    private currencyService: CurrencyService,
+    private conformationService: FuseConfirmationService,
+    private matDialog: MatDialog,
+  ) {
+    super(module_name.currency)
+    this.cols = this.columns.map(x => x.key);
+    this.key = this.module_name;
+    this.sortColumn = 'currency';
+    this.sortDirection = 'asc';
+    this.Mainmodule = this
+  }
+
+  refreshItems(): void {
+    this.isLoading = true;
+    this.currencyService.getcurrencyList(this.getFilterReq()).subscribe({
+      next: data => {
+        this.isLoading = false;
+        this.dataList = data.data;
+        this._paginator.length = data.total;
+      }, error: err => {
+        this.alertService.showToast('error',err,'top-right',true)
+        this.isLoading = false;
+      }
+    })
+  }
+
+  createInternal(model): void {
+    this.matDialog.open(CurrencyEntryComponent, {
+      data: null,
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      if (res) {
+        this.alertService.showToast('success', "New record added", "top-right", true);
+        this.refreshItems();
+      }
+    })
+  }
+
+  editInternal(record): void {
+    this.matDialog.open(CurrencyEntryComponent, {
+      data: {data: record, readonly: false},
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      if (res) {
+        this.alertService.showToast('success', "Record modified", "top-right", true);
+        this.refreshItems();
+      }
+    })
+  }
+
+  viewInternal(record): void {
+    this.matDialog.open(CurrencyEntryComponent, {
+      data: {data: record, readonly: true},
+      disableClose: true
+    })
+  }
+
+  deleteInternal(record): void {
+    const label: string = 'Delete Currency'
+    this.conformationService.open({
+      title: label,
+      message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.currency + ' ?'
+    }).afterClosed().subscribe(res => {
+      if (res === 'confirmed') {
+        this.currencyService.delete(record.id).subscribe({
+          next: () => {
+            this.alertService.showToast('success', "Currency has been deleted!", "top-right", true);
+            this.refreshItems();
+          },error: (err) => {this.alertService.showToast('error',err,'top-right',true);
+      }
+        })
+      }
+    })
+  }
+
+  getNodataText(): string {
+    if (this.isLoading)
+      return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
+
+  ngOnDestroy(): void {
+    this.masterService.setData(this.key, this)
+  }
+}

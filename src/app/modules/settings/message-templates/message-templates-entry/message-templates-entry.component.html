@@ -1,0 +1,231 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div class="cursor-pointer" [routerLink]="MessageTemplatesRoute">
+                    <a class="whitespace-nowrap text-primary-500">Message Templates</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">{{
+                        readonly ? "Detail" : record.id ? "Modify" : "Entry"
+                        }}</a>
+                </div>
+            </div>
+        </div>
+
+        <button mat-raised-button color="primary" (click)="submit()">
+            {{ btnTitle }}
+        </button>
+    </div>
+
+    <div class="flex-auto px-10 xl:px-40">
+        <form class="flex flex-col mt-8 p-8 pb-4 bg-card rounded-2xl shadow overflow-hidden" [formGroup]="formGroup">
+            <!-- <div class="flex flex-row space-x-3">
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Template For</mat-label>
+                    <mat-select *ngIf="!readonly" formControlName="template_for" required (selectionChange)="TemplateForchange()">
+                        <mat-option *ngFor="let ct of TemplateList" [value]="ct">{{ct}}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="template_for">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" [class.hidden]="formGroup.get('template_for').value !== 'Agent'">
+                    <mat-label>Agent</mat-label>
+                    <mat-select *ngIf="!readonly" formControlName="template_for_id"
+                        [required]="formGroup.get('template_for').value == 'Agent'" [compareWith]="compareWith">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching Agent found'" [formControlName]="'agentfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of AgentList | async" [value]="ct.id">{{ct.agency_name}}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="template_for_name">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" [class.hidden]="formGroup.get('template_for').value !== 'Company'">
+                    <mat-label>Employee</mat-label>
+                    <mat-select *ngIf="!readonly" formControlName="template_for_id"
+                        [required]="formGroup.get('template_for').value == 'Company'" [compareWith]="compareWith">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching employee found'" [formControlName]="'empfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of employeeList | async"
+                            [value]="ct.id">{{ct.employee_name}}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="template_for_name">
+                </mat-form-field>
+
+            </div> -->
+
+            <div class="flex flex-row space-x-3">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Event</mat-label>
+                    <mat-select *ngIf="!readonly" required formControlName="event_id">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching event found'" [formControlName]="'eventfilter'"
+                                [compareWith]="compareWith">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of eventList | async" [value]="ct.id">{{ ct.event_name
+                            }}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="event_name" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Message Type</mat-label>
+                    <mat-select *ngIf="!readonly" required formControlName="message_type">
+                        <mat-option *ngFor="let ct of MessageList" [value]="ct">{{ ct }}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="message_type" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" [class.hidden]="
+                        formGroup.get('message_type').value == 'Email'
+                    ">
+                    <mat-label>Message Title</mat-label>
+                    <input matInput [readonly]="readonly" [required]="
+                            formGroup.get('message_type').value != 'Email'
+                        " type="text" required [formControlName]="'message_title'" />
+                </mat-form-field>
+
+
+            </div>
+
+            <div class="flex flex-row">
+
+                <mat-form-field class="flex-grow mr-3" [class.hidden]="
+                    formGroup.get('message_type').value != 'Email'
+                ">
+                    <mat-label>Email Subject</mat-label>
+                    <input matInput [readonly]="readonly" [required]="
+                        formGroup.get('message_type').value == 'Email'
+                    " type="text" required [formControlName]="'email_subject'" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Send To</mat-label>
+                    <mat-select *ngIf="!readonly" required formControlName="send_to" (selectionChange)="SendTochange()">
+                        <mat-option *ngFor="let ct of SendToList" [value]="ct">{{ ct }}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="send_to" />
+                </mat-form-field>
+
+                <!-- <mat-form-field
+                    class="flex-grow"
+                    [class.hidden]="
+                        formGroup.get('message_type').value != 'Email'
+                    "
+                >
+                    <mat-label>Send From</mat-label>
+                    <mat-select
+                        *ngIf="!readonly"
+                        [required]="
+                            formGroup.get('message_type').value == 'Email'
+                        "
+                        formControlName="send_from_id"
+                    >
+                        <mat-option>
+                            <ngx-mat-select-search
+                                placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching Agent found'"
+                                [formControlName]="'sendfromfilter'"
+                            >
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option
+                            *ngFor="let ct of SendFromList | async"
+                            [value]="ct.id"
+                            >{{ ct.display_name }}</mat-option
+                        >
+                    </mat-select>
+                    <input
+                        *ngIf="readonly"
+                        [readonly]="readonly"
+                        matInput
+                        required
+                        formControlName="send_from_name"
+                    />
+                </mat-form-field> -->
+
+                <!-- <mat-form-field class="flex-grow" [class.hidden]="formGroup.get('send_to').value !== 'Agent'">
+                    <mat-label>Agent</mat-label>
+                    <mat-select *ngIf="!readonly" formControlName="send_from_id"
+                        [required]="formGroup.get('send_to').value == 'Agent'">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching Agent found'" [formControlName]="'agentfilter2'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of AgentList2 | async" [value]="ct.id">{{ct.agent_name}}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="send_from_id">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" [class.hidden]="formGroup.get('send_to').value !== 'Employee'">
+                    <mat-label>Employee</mat-label>
+                    <mat-select *ngIf="!readonly" formControlName="send_from_id"
+                        [required]="formGroup.get('send_to').value == 'Employee'">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching employee found'" [formControlName]="'empfilter2'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of employeeList2 | async"
+                            [value]="ct.id">{{ct.employee_name}}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="send_from_id">
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" [class.hidden]="formGroup.get('send_to').value !== 'Supplier'">
+                    <mat-label>Supplier</mat-label>
+                    <mat-select *ngIf="!readonly" formControlName="send_from_id"
+                        [required]="formGroup.get('send_to').value == 'Supplier'">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching supplier found'" [formControlName]="'supplierfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of SupplierList | async"
+                            [value]="ct.id">{{ct.supplier_name}}</mat-option>
+                    </mat-select>
+                    <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="send_from_id">
+                </mat-form-field> -->
+
+                <mat-form-field class="flex-grow ml-3" [class.hidden]="formGroup.get('send_to').value !== 'Individual' && formGroup.get('send_to').value !== 'Group'">
+                    <mat-label [class.hidden]="formGroup.get('send_to').value !== 'Individual'">Individual Address</mat-label>
+                    <mat-label [class.hidden]="formGroup.get('send_to').value !== 'Group'">Group Name</mat-label>
+                    <input matInput [readonly]="readonly" [required]="
+                            formGroup.get('send_to').value == 'Individual'
+                        " type="text" [formControlName]="'individual_address'" />
+                </mat-form-field>
+            </div>
+
+            <div class="flex-row w-full md:flex-row" style="position: sticky" [class.hidden]="
+                    this.formGroup.get('message_type').value === 'Email'">
+                <mat-form-field class="w-full md:w-1/1">
+                    <mat-label>Template</mat-label>
+                    <textarea [required]="
+                            formGroup.get('message_type').value == 'WhatsApp' ||
+                            formGroup.get('message_type').value == 'SMS'
+                        " class="h-50" matInput placeholder="Enter..." name="message_template"
+                        formControlName="message_template" [readonly]="readonly"></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="flex-row w-full md:flex-row bg-white" style="position: sticky"
+                [class.hidden]="this.formGroup.get('message_type').value !== 'Email'">
+                <mat-label>Template</mat-label>
+                <div [required]="formGroup.get('message_type').value === 'Email'" [ngxSummernote]="config"
+                    style="width: 100%" name="template" [formControlName]="'message_template'"></div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,129 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment';
+import { Observable } from 'rxjs';
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class AgentService {
+
+
+    private baseUrl = environment.apiUrl;
+
+    constructor(private http: HttpClient) { }
+
+    getAgentCombo(filter: string): Observable<any[]> {
+        return this.http.post<any[]>(this.baseUrl + 'Agent/getAgentCombo', { filter });
+    }
+
+    getAgentComboMaster(filter: string, is_master_agent: boolean): Observable<any[]> {
+        return this.http.post<any[]>(this.baseUrl + 'Agent/getAgentCombo', { filter: filter, is_master_agent: is_master_agent });
+    }
+
+    getFromEmployee(type: string): Observable<any[]> {
+        return this.http.post<any[]>(this.baseUrl + 'CRM/Reshuffle/getFromEmployee', { type: type });
+    }
+
+    getAgentList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/getAgentList', model);
+    }
+
+    getAgentDetailList(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/getAgentEditList', { id: id });
+    }
+
+    getRMChangeList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ActivityLogs/getRMChangeList', model);
+    }
+
+    create(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/create', model);
+    }
+
+    getAgentRecord(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/getAgentRecord', { id: id });
+    }
+
+    delete(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/delete', { id: id });
+    }
+
+    regenerateNewPassword(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/regenerateNewPassword', { id: id });
+    }
+
+    // transferOldToNew
+    transferOldToNew(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'WalletRecharge/TransferOldToNew_V2', model);
+    }
+
+    setBlockUnblock(id: string, note?: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setBlockUnblock', { id, note });
+    }
+
+    setKYCVerify(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setKYCVerify', { id });
+    }
+
+    setMarkupProfile(id: string, transactionId: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setMarkupProfile', { id: id, transactionId: transactionId });
+    }
+
+    setBaseCurrency(id: string, base_currency_id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/changeBaseCurrency', { id: id, base_currency_id: base_currency_id });
+    }
+
+    setReferralLink(id: string, transactionId: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setReferralLink', { id: id, transactionId: transactionId });
+    }
+
+    setRelationManager(id: string, empId: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setRelationManager', { id: id, empId: empId });
+    }
+
+    setEmailVerify(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setEmailVerify', model);
+    }
+
+    setEmailVerifyAgent(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setEmailVerify', { id: id });
+    }
+
+    setMobileVerify(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setMobileVerify', model);
+    }
+
+    setMobileVerifyAgent(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setMobileVerify', { id: id });
+    }
+
+    mapkycProfile(id: string, KycProfileId: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/mapKycProfile', { id: id, KycProfileId: KycProfileId });
+    }
+
+    autoLogin(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/autoLogin', { id: id });
+    }
+
+    agentEdit(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/editAgentDetails', model);
+    }
+
+    TransferAgentRmToRm(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/TransferAgentRmToRm', model);
+    }
+
+    TransferLeadRmToRm(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/TransferLeadRmToRm', model);
+    }
+
+    relationshipManagerLogsList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/relationManagerChangeLogs', model);
+    }
+
+    statusChangedLogsList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'StatusChangeLogs/getStatusChangeLogsList', model);
+    }
+}

@@ -1,0 +1,38 @@
+<div class="flex flex-col max-w-240 md:min-w-100 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">Set Base Currency {{record.company_name}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-120 pb-5" [formGroup]="formGroup">
+        <mat-form-field class="w-full">
+            <mat-label>Base Currency</mat-label>
+            <mat-select required formControlName="base_currency_id">
+                <mat-option>
+                    <ngx-mat-select-search placeholderLabel="Search"
+                        noEntriesFoundLabel="'no matching currency found'"
+                        [formControlName]="'currencyfilter'">
+                    </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let ct of CurrencyList"
+                    [value]="ct.id">{{ct.currency_short_code}}</mat-option>
+            </mat-select>
+            <!-- <mat-icon svgIcon="heroicons_mini:chevron-down"
+                class="cursor-pointer"></mat-icon> -->
+        </mat-form-field>
+    </form>
+
+
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()">
+            Close
+        </button>
+        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid">
+            Save
+        </button>
+    </div>
+</div>

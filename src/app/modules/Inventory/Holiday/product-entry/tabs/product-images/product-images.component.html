@@ -1,0 +1,46 @@
+<div class="grid grid-cols-4 gap-4 overflow-auto max-h-[480px]">
+
+    <div [hidden]="true">
+        <input type="file" accept="image/*" name="profile2" #coverinput
+            (change)="onProfileInput($event, imageType.cover)" />
+    </div>
+    <div class="h-56 col-span-2 bg-gray-800 flex rounded-md justify-center items-center" *ngIf="CoverImageNotExist()">
+        <div class="flex flex-col items-center justify-center">
+            <button type="button" (click)="coverinput.click()" mat-icon-button>
+                <mat-icon svgIcon="mat_solid:add"></mat-icon>
+            </button>
+            <span class="text-sm">Cover Photo</span>
+            <span class="text-sm text-secondary" [innerHTML]="imageRecSize.holiday"></span>
+            <span class="text-sm text-secondary">Max Size: 2MB</span>
+        </div>
+    </div>
+    <div class="h-56 relative bg-gray-800 rounded-md overflow-hidden panel"
+        [ngClass]="img.img_type === imageType.cover ? 'col-span-2' : 'col-span-1'" *ngFor="let img of data.images">
+        <div class="absolute w-full h-full flex flex-row items-center justify-center">
+            <div class="flex flex-col items-center justify-center only-show-on-hover">
+                <button mat-icon-button [matTooltip]="'Remove'" (click)="removeImage(img, img.img_type)"
+                    *ngIf="!readonly">
+                    <mat-icon class="text-red-600" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                </button>
+            </div>
+        </div>
+        <img class="w-full h-full object-cover cursor-pointer" [src]="img.img_name" alt="" />
+    </div>
+
+    <div [hidden]="true">
+        <input type="file" accept="image/*" name="profile" #galleryInput multiple
+            (change)="onProfileInput($event, imageType.gallery)" />
+    </div>
+
+    <div class="h-56 col-span-1 bg-gray-800 flex rounded-md justify-center items-center">
+        <div class="flex flex-col items-center justify-center">
+            <button [matTooltip]="'Add Activity Photos'" type="button" (click)="galleryInput.click()"
+                class="text-blue-500" mat-icon-button>
+                <mat-icon svgIcon="mat_solid:add"></mat-icon>
+            </button>
+            <span class="text-sm">Activity Photos</span>
+            <span class="text-sm text-secondary" [innerHTML]="imageRecSize.holiday"></span>
+            <span class="text-sm text-secondary">Max Size: 2MB</span>
+        </div>
+    </div>
+</div>

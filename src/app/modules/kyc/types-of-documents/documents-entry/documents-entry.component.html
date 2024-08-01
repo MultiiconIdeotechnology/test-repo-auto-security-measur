@@ -1,0 +1,72 @@
+<div class="flex flex-col max-w-240 md:min-w-100 max-h-screen -m-6">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{ title }}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto" [formGroup]="formGroup"
+        *ngIf="!readonly else detailView">
+        <mat-form-field class="flex-grow">
+            <mat-label>Document Name</mat-label>
+            <input [readonly]="readonly" matInput type="text" required formControlName="document_name" />
+        </mat-form-field>
+
+        <mat-form-field class="flex-grow">
+            <mat-label>Document Group</mat-label>
+            <mat-select formControlName="document_group" required *ngIf="!readonly">
+                <mat-option [value]="'Address Proof'">Address Proof</mat-option>
+                <mat-option [value]="'Photo Proof'">Photo Proof</mat-option>
+                <mat-option [value]="'PAN Card'">PAN Card</mat-option>
+                <mat-option [value]="'GST Certificate'">GST Certificate</mat-option>
+                <mat-option [value]="'Incorporation Certificate'">Incorporation Certificate</mat-option>
+                <mat-option [value]="'Company Documents'">Company Documents</mat-option>
+                <mat-option [value]="'Personal Documents'">Personal Documents</mat-option>
+                <mat-option [value]="'Bank Verification'">Bank Verification</mat-option>
+            </mat-select>
+            <input *ngIf="readonly" [readonly]="readonly" matInput type="text" required
+                formControlName="document_group" />
+        </mat-form-field>
+
+        <mat-form-field class="flex-grow">
+            <mat-label>Max File Size [KB]</mat-label>
+            <input [readonly]="readonly" type="number" matInput required formControlName="maximum_size" />
+        </mat-form-field>
+
+        <mat-form-field class="flex-grow">
+            <mat-label>File Extentions</mat-label>
+            <input [readonly]="readonly" matInput type="text" required formControlName="file_extentions" />
+        </mat-form-field>
+        
+        <mat-form-field class="flex-grow" [class.hidden]="!formGroup.get('is_remark_required').value">
+            <mat-label>Remark Caption</mat-label>
+            <input [readonly]="readonly" matInput type="text" [required]="formGroup.get('is_remark_required').value" formControlName="remark_caption" />
+        </mat-form-field>
+
+        <mat-slide-toggle formControlName="is_remark_required" [disabled]="readonly"> <span class="pl-1">Is Remark
+                Required</span></mat-slide-toggle>
+    </form>
+
+    <ng-template #detailView>
+        <div class="grid grid-cols-3 gap-6 mb-3 p-8 pb-4 bg-card rounded-2xl overflow-hidden">
+            <div class="flex flex-col w-[200px]" *ngFor="let filed of fieldList">
+                <div class="flex flex-row space-x-2">
+                    <span class=" text-md font-semibold text-secondary">{{filed.name}}</span>
+                    <!-- <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon> -->
+                </div>
+                <span class="text-base truncate" [matTooltip]="filed.value">{{filed.value || '--'}}</span>
+            </div>
+        </div>
+    </ng-template>
+
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <!-- Discard -->
+        <!-- <button mat-stroked-button (click)="matDialogRef.close()">Close</button> -->
+        <!-- Save as draft -->
+        <button *ngIf="!readonly" mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+            {{ btnLabel }}
+        </button>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<div class="flex flex-col max-w-140 md:min-w-120 -m-6 overflow-auto max-h-100">
+    <div
+        class="min-h-15 max-h-15 flex px-5 pt-0.5 bg-primary items-center justify-between flex-row text-xl sticky top-0 font-semibold border-b-2">
+        <span class="text-white">{{title}} </span>
+        <!-- <mat-icon svgIcon="close" class="cursor-pointer" (click)="matDialogRef.close()"></mat-icon> -->
+        <button mat-icon-button (click)="matDialogRef.close()" >
+            <mat-icon
+                class="text-current mt-2  text-white"
+                [svgIcon]="'heroicons_outline:x-mark'"
+            ></mat-icon>
+        </button>
+    </div>
+
+    <div class="py-3 flex flex-col  overflow-auto">
+        <div class="flex flex-row gap-2" *ngFor="let pd of fieldList">
+            <div [ngClass]="pd.is_bold? 'font-semibold text-white':'secondary-text'" class="flex justify-between w-full px-6 py-2" *ngIf="pd.key != '---' && pd.key != 'Total Amount'">
+                <span class="flex items-center">{{pd.key}}</span>
+                <span class="relative top-[2px]">{{pd.value}}</span>
+            </div>
+            <span *ngIf="pd.key === '---'"  class="py-1 mx-4 block border-b border-dashed border-gray-border w-full"></span>
+            <div *ngIf="pd.key === 'Total Amount'" class="px-4 py-4 mt-1 border-t border-gray-border flex justify-between primary-text font-semibold text-xl w-full">
+                <span>{{pd.key}}</span>
+                <span>{{pd.value}}</span>
+            </div>
+        </div>
+    </div>
+</div>

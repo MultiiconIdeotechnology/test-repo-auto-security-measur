@@ -1,0 +1,156 @@
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-160 max-w-160">
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-4 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+    <div class="xl:min-h-[490px] xl:max-h-[490px] min-h-[400px] max-h-[400px] overflow-y-auto">
+        <div class="flex flex-raw overflow-hidden overflow-x-auto border rounded-[10px] m-4">
+            <div class="w-[100%] px-4 field-blue-bg dark:bg-[#2A374A] bg-gray-200 ">
+                <div class="grid py-2 xl:grid-cols-3 grid-cols-3 gap-4 overflow-hidden">
+                    <div class="flex flex-col">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Agency Name</span>
+                        <span class="text-[15px] truncate dark:text-white text-black"
+                            [matTooltip]="record?.agency_name">{{record?.agency_name ? record?.agency_name : "
+                            -"}}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Contact Person</span>
+                        <div class="text-base truncate">
+                            <span class="text-[15px] truncate dark:text-white text-black"
+                                [matTooltip]="record?.contact_person_name">{{record?.contact_person_name ?
+                                record?.contact_person_name : '-'}}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Mobile Number</span>
+                        <span class="text-[15px] truncate dark:text-white text-black" [matTooltip]="record?.contact_person_mobile_code ? '+' + record?.contact_person_mobile_code + ' ' + record?.contact_person_mobile : (record?.contact_person_mobile ? record?.contact_person_mobile : '-')">
+                            {{ record?.contact_person_mobile_code ? '+' + record?.contact_person_mobile_code : '' }}
+                            {{ record?.contact_person_mobile ? record?.contact_person_mobile : '-' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="grid py-2 xl:grid-cols-3 grid-cols-3 gap-4 overflow-hidden">
+                    <div class="flex flex-col">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Email Address</span>
+                        <span class="text-[15px] truncate dark:text-white text-black"
+                            [matTooltip]="record?.contact_person_email">{{record?.contact_person_email ?
+                            record?.contact_person_email : '-'}}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Last Call Date</span>
+                        <span class="text-[15px] truncate dark:text-white text-black"
+                            [matTooltip]="record?.last_call_date_time">{{(record?.last_call_date_time |
+                            date:'dd-MM-yyyy') || ' - '}}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Last Feedback</span>
+                        <span class="text-[15px] truncate dark:text-white text-black">{{record?.last_call_feedback ?
+                            record?.last_call_feedback : '-'}}</span>
+                    </div>
+                </div>
+            </div>
+            <ng-template *ngIf="dataList.length > 0">
+                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+                    {{getNodataText()}}
+                </div>
+            </ng-template>
+        </div>
+
+        <div class="flex flex-raw overflow-hidden overflow-x-auto rounded-[10px] m-4">
+            <div class="w-[100%]">
+                <form class="flex flex-col flex-auto overflow-hidden " [formGroup]="formGroup">
+                    <div class="px-1 pt-1">
+                        <div class="flex flex-row w-full">
+                            <div class="w-[70%]">
+                                <!-- <mat-form-field class="w-[400px]">
+                                    <mat-label class="text-base font-medium dark:text-[#687798]">Assign</mat-label>
+                                    <mat-select formControlName="call_assign_to">
+                                        <mat-option *ngFor="let lt of dataList" [value]="lt.id">{{
+                                            lt.employee_name}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field> -->
+                                <mat-form-field class="w-[411px]">
+                                    <mat-label class="text-base font-medium dark:text-[#687798]">Assign</mat-label>
+                                    <mat-select formControlName="call_assign_to">
+                                        <mat-option>
+                                            <ngx-mat-select-search placeholderLabel="Search"
+                                                noEntriesFoundLabel="'no matching agent found'" [formControlName]="'assignfilter'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option *ngFor="let lt of dataList" [value]="lt.id">
+                                            <span>{{ lt.employee_name }}</span>
+                                            <div class="-mt-2">
+                                                <span class="text-secondary text-sm">{{lt.personal_email}}</span>
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <div class="w-[30%]">
+                                <mat-form-field class="flex-grow w-[180px]">
+                                    <mat-label class="text-base font-medium dark:text-[#687798]">Purpose</mat-label>
+                                    <mat-select formControlName="call_purpose">
+                                        <mat-option *ngFor="let lt of purposeList" [value]="lt.value">{{ lt.viewValue
+                                            }}</mat-option>
+                                    </mat-select>
+                                    <mat-error *ngIf="formGroup.get('call_purpose').hasError('required')">
+                                        Purpose is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row w-full">
+                            <div class="flex flex-row">
+                                <mat-form-field class="flex-grow w-[205px]">
+                                    <mat-label class="text-base font-medium dark:text-[#687798]">Date</mat-label>
+                                    <input matInput [readonly]="readonly" [matDatepicker]="joiningpicker"
+                                        [min]="todayDateTime" placeholder="Choose a date"
+                                        formControlName="schedule_date" />
+                                    <mat-datepicker-toggle matSuffix [for]="joiningpicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #joiningpicker></mat-datepicker>
+                                    <mat-error *ngIf="formGroup.get('schedule_date').hasError('required')">
+                                        Date is required
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field class="flex-grow w-[205px] pl-2 pr-3">
+                                    <ngx-mat-timepicker color="primary" #entryPicker></ngx-mat-timepicker>
+                                    <mat-label class="text-base font-medium dark:text-[#687798]">Time</mat-label>
+                                    <input matInput [readonly]="readonly" format="24" formControlName="schedule_time"
+                                        [ngxMatTimepicker]="entryPicker" readonly />
+                                    <mat-icon matSuffix (click)="entryPicker.open()">
+                                        watch_later
+                                    </mat-icon>
+                                    <mat-error *ngIf="formGroup.get('schedule_time').hasError('required')">
+                                        Time is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="w-full">
+                            <div class="flex flex-row">
+                                <mat-form-field class="flex-grow">
+                                    <mat-label class="text-base font-medium dark:text-[#687798]">Remark</mat-label>
+                                    <textarea matInput rows="3" formControlName="reschedule_remark"></textarea>
+                                    <mat-error *ngIf="formGroup.get('reschedule_remark').hasError('required')">
+                                        Remark is required
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="!readonly" class="flex items-center justify-end mt-4 sm:mt-1 pr-6 py-3 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()"> Close </button>
+        <button *ngIf="!readonly" mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+            {{btnLabel}}
+        </button>
+    </div>
+</div>

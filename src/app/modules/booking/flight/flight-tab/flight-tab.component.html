@@ -1,0 +1,37 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent payment_group">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight">Flight</div>
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+        </div>
+    </div>
+
+    <div class="h-full">
+
+    <mat-tab-group class=" h-full tab_group" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+
+        <mat-tab label="Flight" [aria-label]="'flight'" class="h-full">
+            <ng-template matTabContent class="p-0">
+
+                <app-flight></app-flight>
+
+            </ng-template>
+        </mat-tab>
+
+        <mat-tab label="Amendment Request" [aria-label]="'amendment request'" >
+            <ng-template matTabContent>
+
+                <app-amendment-requests-list></app-amendment-requests-list>
+              
+            </ng-template>
+        </mat-tab>
+
+    </mat-tab-group>
+
+    </div>
+
+</div>

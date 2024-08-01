@@ -1,0 +1,416 @@
+import { Router } from '@angular/router';
+import { Component } from '@angular/core';
+import { Security, messages, module_name, whiteLablePermissions } from 'app/security';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { WhitelabelEntryComponent } from '../whitelabel-entry/whitelabel-entry.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { WlService } from 'app/services/wl.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
+import { InstallmentComponent } from '../installment/installment.component';
+import { takeUntil } from 'rxjs';
+import { UserService } from 'app/core/user/user.service';
+
+@Component({
+    selector: 'app-whitelabel-list',
+    templateUrl: './whitelabel-list.component.html',
+    styles: [`
+    .tbl-grid {
+      grid-template-columns:  40px 170px 250px 160px 200px 180px 100px 100px 120px 100px 80px;
+    }
+    `],
+    standalone: true,
+    imports: [
+        NgIf,
+        NgFor,
+        DatePipe,
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatButtonModule,
+        MatProgressBarModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatMenuModule,
+        MatDialogModule,
+        MatTooltipModule,
+        MatDividerModule,
+    ],
+})
+export class WhitelabelListComponent extends BaseListingComponent {
+    module_name = module_name.whitelabel;
+    dataList = [];
+    user: any = {};
+    total = 0;
+
+    columns = [
+        {
+            key: 'agency_name',
+            name: 'Agent Name',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: true,
+            is_required: false,
+            is_included: false,
+            is_boolean: false,
+            tooltip: true
+        },
+        {
+            key: 'email_address',
+            name: 'Email',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: false,
+            tooltip: true
+        },
+        {
+            key: 'mobile_number',
+            name: 'Mobile',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: false,
+            tooltip: true
+        },
+        {
+            key: 'wl_activation_date',
+            name: 'Activation Date',
+            is_date: true,
+            date_formate: 'dd-MM-yyyy HH:mm:ss',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: false,
+            tooltip: true
+        },
+        {
+            key: 'wl_expiry_date',
+            name: 'Expiry Date',
+            is_date: true,
+            date_formate: 'dd-MM-yyyy HH:mm:ss',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: false,
+            tooltip: true
+        },
+        {
+            key: 'is_b2b_wl',
+            name: 'B2B WL',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: 'header-center-view',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: true,
+            tooltip: true
+        },
+        {
+            key: 'is_b2c_wl',
+            name: 'B2C WL',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: 'header-center-view',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: true,
+            tooltip: true
+        },
+        {
+            key: 'is_android_wl',
+            name: 'Android WL',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: 'header-center-view',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: true,
+            tooltip: true
+        },
+        {
+            key: 'is_ios_wl',
+            name: 'IOS WL',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: 'header-center-view',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: true,
+            tooltip: true
+        },
+        {
+            key: '.',
+            name: '',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            is_required: false,
+            is_included: false,
+            is_boolean: false,
+            tooltip: false
+        },
+    ];
+    cols = [];
+
+    constructor(
+        private wlService: WlService,
+        private conformationService: FuseConfirmationService,
+        private matDialog: MatDialog,
+        private userService: UserService,
+        private router: Router
+    ) {
+        super(module_name.whitelabel);
+        this.cols = this.columns.map((x) => x.key);
+        this.key = this.module_name;
+        this.sortColumn = 'wl_activation_date';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+
+        this.userService.user$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((user: any) => {
+                this.user = user;
+            });
+    }
+
+    refreshItems(): void {
+        this.isLoading = true;
+
+        var model = this.getFilterReq();
+        if (Security.hasPermission(whiteLablePermissions.viewOnlyAssignedPermissions)) {
+            model.relationmanagerId = this.user.id
+        }
+
+        this.wlService.getWlList(model).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.dataList = data.data;
+                this._paginator.length = data.total;
+            },
+            error: (err) => {
+                this.alertService.showToast(
+                    'error',
+                    err,
+                    'top-right',
+                    true
+                );
+                this.isLoading = false;
+            },
+        });
+    }
+
+    createInternal(model): void {
+        this.matDialog
+            .open(WhitelabelEntryComponent, {
+                data: null,
+                disableClose: true,
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res) {
+                    this.alertService.showToast(
+                        'success',
+                        'New record added',
+                        'top-right',
+                        true
+                    );
+                    this.refreshItems();
+                }
+            });
+    }
+
+    editInternal(record): void {
+        this.matDialog
+            .open(WhitelabelEntryComponent, {
+                data: { data: record, readonly: false },
+                disableClose: true,
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res) {
+                    this.alertService.showToast(
+                        'success',
+                        'Record modified',
+                        'top-right',
+                        true
+                    );
+                    this.refreshItems();
+                }
+            });
+    }
+
+    viewInternal(record): void {
+        this.matDialog.open(WhitelabelEntryComponent, {
+            data: { data: record, readonly: true },
+            disableClose: true,
+        });
+    }
+
+    deleteInternal(record): void {
+        const label: string = 'Delete WL';
+        this.conformationService
+            .open({
+                title: label,
+                message:
+                    'Are you sure to ' +
+                    label.toLowerCase() +
+                    ' ' +
+                    record.agency_name +
+                    ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    this.wlService.delete(record.id).subscribe({
+                        next: () => {
+                            this.alertService.showToast(
+                                'success',
+                                'Whitelabel has been deleted!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+
+                        },
+                    });
+                }
+            });
+    }
+
+    EnableDisable(record): void {
+        if (!Security.hasPermission(whiteLablePermissions.enableDisablePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = record.is_disabled
+            ? 'Enable Activity'
+            : 'Disable Activity';
+        this.conformationService
+            .open({
+                title: label,
+                message:
+                    'Are you sure to ' +
+                    label.toLowerCase() +
+                    ' ' +
+                    record.agency_name +
+                    ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    this.wlService.setEnableDisable(record.id).subscribe({
+                        next: () => {
+                            record.is_disabled = !record.is_disabled;
+                            if (record.is_disabled) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'WL has been Disabled!',
+                                    'top-right',
+                                    true
+                                );
+                            } else {
+                                this.alertService.showToast(
+                                    'success',
+                                    'WL has been Enabled!',
+                                    'top-right',
+                                    true
+                                );
+                            }
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+
+                        },
+                    });
+                }
+            });
+    }
+
+    Installment(model: any): void {
+        if (!Security.hasPermission(whiteLablePermissions.installmentsPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog
+            .open(InstallmentComponent, {
+                data: model,
+                disableClose: true,
+            })
+            .afterClosed()
+            .subscribe((res) => { });
+    }
+
+    getNodataText(): string {
+        if (this.isLoading) return 'Loading...';
+        else if (this.searchInputControl.value)
+            return `no search results found for \'${this.searchInputControl.value}\'.`;
+        else return 'No data to display';
+    }
+
+    ngOnDestroy(): void {
+        this.masterService.setData(this.key, this);
+    }
+}

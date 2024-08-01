@@ -1,0 +1,66 @@
+<div class="flex flex-col flex-auto overflow-hidden mt-[-10px]">
+    <div
+        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[250px] lg:max-h-[250px] xl:min-h-[250px] xl:max-h-[250px]">
+        <ng-container>
+            <div class="grid ">
+                <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 pl-5 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
+                    matSort matSortDisableClear matSortActive="priorityid" matSortDirection="desc">
+                    <ng-container *ngFor="let col of columns">
+                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'' + col.class"
+                            [ngClass]="{ 'justify-center': col.align === 'left' }" class="text-secondary">
+                            {{ col.name }}
+                        </div>
+                        <div *ngIf="!col.is_sortable" [class]="'' + col.class">
+                            {{ col.name }}
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- Rows -->
+                <ng-container *ngIf="dataList?.installment.length > 0; else noGridItems">
+                    <ng-container *ngFor="let ListItem of dataList?.installment; let i = index">
+                        <div class="tbl-grid gridwidth grid items-center px-5 py-2 border-b pl-0 cursor-pointer">
+                            <!-- <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
+                                <mat-icon> more_vert </mat-icon>
+                            </button> -->
+                            <ng-container *ngFor="let col of columns">
+                                <div [class]="'flex flex-row items-center space-x-2 truncate pl-5 ' + col.class"
+                                    [ngClass]="{ 'justify-center': col.align === 'left' }">
+
+                                    <span *ngIf="col.callAction && col.key === 'index'">
+                                        <span *ngIf="col.name == 'Sr. No'">{{i + 1}}</span>
+                                    </span>
+
+                                    <div *ngIf="col.indicator"
+                                        [matTooltip]="ListItem['is_payment_audited'] == true ? 'Audit' : 'Unaudit'"
+                                        class="w-2 h-2 rounded-full mr-[6px]"
+                                        [ngClass]="getPaymentIndicatorClass(ListItem['is_payment_audited'])"></div>
+
+                                    <div
+                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
+                                        <span class="truncate" *ngIf="!col.toColor && !col.callAction"
+                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
+                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
+                                            " - " : ListItem[col.key] || " - " }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <ng-template #noGridItems>
+            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+                {{getNodataText()}}
+            </div>
+        </ng-template>
+    </div>
+    <!-- <mat-paginator
+    class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
+    [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
+    [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
+</mat-paginator> -->
+</div>

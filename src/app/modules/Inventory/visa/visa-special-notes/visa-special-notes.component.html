@@ -1,0 +1,35 @@
+<div class="flex flex-col max-w-256 md:min-w-128 max-h-screen -m-6 pb-4">
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">Visa Special Notes</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form class="flex flex-row gap-4 items-center flex-auto px-6 pt-6 overflow-y-auto" [formGroup]="formGroup">
+        <mat-form-field class="w-full">
+            <mat-label>Special Notes</mat-label>
+            <textarea id="special_notes" class="mt-1" matInput [formControlName]="'special_notes'" required matTextareaAutosize
+                matAutosizeMinRows="5"></textarea>
+        </mat-form-field>
+        <div class="w-[15%]">
+            <button mat-stroked-button color="primary"  (click)="add()">Add</button>
+        </div>
+    </form>
+    <div class="flex flex-col">
+        <div *ngFor="let ex of specialNotesList" class="flex flex-row space-x-2 py-[2px] text-lg panel items-center px-6">
+            <mat-icon class="icon-size-4 only-show-on-hover cursor-pointer mt-1" [matTooltip]="'Modify'" (click)="edit(ex)">edit</mat-icon>
+            <mat-icon class="icon-size-4 only-show-on-hover cursor-pointer mt-1 text-red-500" [matTooltip]="'Remove'" (click)="delete(ex)">delete</mat-icon>
+            <mat-icon class="icon-size-4">radio_button_checked </mat-icon>
+            <ng-container>
+                <div class="text-white text-lg">{{ ex }}</div>
+            </ng-container>
+        </div>
+
+        <div class="flex items-center justify-end pt-4 sm:mt-0 pr-6 pb-1 space-x-3">
+            <button mat-flat-button [color]="'primary'" (click)="saveAction()" [disabled]="formGroup.invalid">
+                <span>Save</span>
+            </button>
+        </div>
+    </div>
+</div>

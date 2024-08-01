@@ -1,0 +1,76 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div class="cursor-pointer" [routerLink]="MarkupProfileListRoute">
+                    <a class="whitespace-nowrap text-primary-500">Markup Profile</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">{{readonly ? 'Detail' : record.id ? 'Modify' : 'Entry'}}</a>
+                </div>
+            </div>
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    {{title}}
+                </h2>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="flex-auto px-20">
+
+        <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-120" [formGroup]="formGroup">
+
+            <mat-form-field class="flex-grow">
+                <mat-label>Profile Name</mat-label>
+                <input [readonly]="readonly" matInput required formControlName="profile_name">
+            </mat-form-field>
+    
+            <mat-form-field class="flex-grow">
+                <mat-label>Markup Profile By</mat-label>
+                <mat-select *ngIf="!readonly" formControlName="markup_profile_by" required
+                    (selectionChange)="changeprofile()">
+                    <mat-option *ngFor="let ct of markupprofileList" [value]="ct">{{ct}}</mat-option>
+                </mat-select>
+                <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="markup_profile_by">
+            </mat-form-field>
+    
+            <mat-form-field class="flex-grow" [class.hidden]="formGroup.get('markup_profile_by').value !== 'Company'">
+                <mat-label>Employee</mat-label>
+                <mat-select *ngIf="!readonly" formControlName="particular_id"
+                    [required]="formGroup.get('markup_profile_by').value == 'Company'">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching employee found'"
+                            [formControlName]="'empfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of employeeList | async" [value]="ct.id">{{ct.employee_name}}</mat-option>
+                </mat-select>
+                <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="particular_name">
+            </mat-form-field>
+    
+            <mat-form-field class="flex-grow" [class.hidden]="formGroup.get('markup_profile_by').value !== 'Agent'">
+                <mat-label>Agent</mat-label>
+                <mat-select *ngIf="!readonly" formControlName="particular_id"
+                    [required]="formGroup.get('markup_profile_by').value == 'Agent'">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching agent found'"
+                            [formControlName]="'agentfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of AgentList | async" [value]="ct.id">{{ct.agency_name}}</mat-option>
+                </mat-select>
+                <input *ngIf="readonly" [readonly]="readonly" matInput required formControlName="particular_name">
+            </mat-form-field>
+            <mat-slide-toggle formControlName="is_default_profile" *ngIf="!readonly">Is Default</mat-slide-toggle>
+            <mat-slide-toggle [disabled]="true" *ngIf="readonly"
+                [checked]="this.formGroup.get('is_default_profile').value === true ? true : false">Is
+                Default</mat-slide-toggle>
+        </form>
+
+    </div>
+</div>

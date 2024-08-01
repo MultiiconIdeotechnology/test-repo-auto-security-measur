@@ -1,0 +1,367 @@
+<div class="flex flex-col max-w-256 md:min-w-128 max-h-screen -m-6">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{ title }}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-96 pb-5" [formGroup]="formGroup"
+        *ngIf="!readonly; else detailView">
+        <mat-form-field class="flex-grow">
+            <mat-label>Master Agent</mat-label>
+            <mat-select formControlName="agent_id" required>
+                <mat-option>
+                    <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching agent found'"
+                        [formControlName]="'agentfilter'">
+                    </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let ct of agentList" [value]="ct.id">
+                    <span>{{ ct.code }} - {{ ct.agency_name }}<span *ngIf="ct.master_agent_name"> ({{
+                            ct.master_agent_name }})</span></span>
+                    <div class="-mt-2">
+                        <span class="text-secondary text-sm">{{
+                            ct.email_address
+                            }}</span>
+                    </div>
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <label>B2B Link</label>
+        <mat-slide-toggle formControlName="is_b2b_wl" class="ml-0 slide_toggle"
+        [checked]="formGroup?.get('is_b2b_wl').value"></mat-slide-toggle>
+
+        <mat-form-field class="flex-grow pt-[10px]">
+            <mat-label>B2B URL</mat-label>
+            <input matInput [readonly]="readonly" formControlName="b2b_wl_link" />
+        </mat-form-field>
+
+        <label>B2C Link</label>
+        <mat-slide-toggle formControlName="is_b2c_wl" class="ml-0 slide_toggle"
+        [checked]="formGroup?.get('is_b2c_wl').value"></mat-slide-toggle>
+
+        <mat-form-field class="flex-grow pt-[10px]">
+            <mat-label>B2C URL</mat-label>
+            <input matInput [readonly]="readonly" formControlName="b2c_wl_link" />
+        </mat-form-field>
+
+        <label>Android Link</label>
+        <mat-slide-toggle formControlName="is_android_wl" class="ml-0 slide_toggle"
+        [checked]="formGroup?.get('is_android_wl').value"></mat-slide-toggle>
+
+        <mat-form-field class="flex-grow pt-[10px]">
+            <mat-label>Android URL</mat-label>
+            <input matInput [readonly]="readonly" formControlName="android_wl_link" />
+        </mat-form-field>
+
+        <label>IOS Link</label>
+        <mat-slide-toggle formControlName="is_ios_wl" class="ml-0 slide_toggle"
+        [checked]="formGroup?.get('is_ios_wl').value"></mat-slide-toggle>
+
+        <mat-form-field class="flex-grow pt-[10px]">
+            <mat-label>IOS URL</mat-label>
+            <input matInput [readonly]="readonly" formControlName="ios_wl_link" />
+        </mat-form-field>
+
+        <!-- <div class="flex flex-row space-x-3">
+            <mat-form-field class="flex-grow">
+                <mat-label>B2B Link</mat-label>
+                <input matInput [readonly]="readonly" formControlName="b2b_wl_link" />
+            </mat-form-field>
+            <mat-form-field class="flex-grow">
+                <mat-label>B2C Link</mat-label>
+                <input matInput [readonly]="readonly" formControlName="b2c_wl_link" />
+            </mat-form-field>
+        </div>
+
+        <div class="flex flex-row space-x-3">
+            <mat-form-field class="flex-grow">
+                <mat-label>Android Link</mat-label>
+                <input matInput [readonly]="readonly" formControlName="android_wl_link" />
+            </mat-form-field>
+            <mat-form-field class="flex-grow">
+                <mat-label>IOS Link</mat-label>
+                <input matInput [readonly]="readonly" formControlName="ios_wl_link" />
+            </mat-form-field>
+        </div> -->
+
+        <div>
+            <mat-form-field class="w-full">
+                <mat-label>Api URL</mat-label>
+                <input matInput [readonly]="readonly" formControlName="api_url" />
+            </mat-form-field>
+        </div>
+
+        <div class="flex space-x-3">
+            <mat-form-field class="w-1/2">
+                <mat-label>Wl Activation Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="wl_activation_date" required />
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field class="w-1/2">
+                <mat-label>Wl Expiry Date</mat-label>
+                <input matInput [matDatepicker]="picker1" formControlName="wl_expiry_date" required />
+                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+        <ngx-mat-timepicker class="absolute" color="primary" #entryPicker></ngx-mat-timepicker>
+        <ngx-mat-timepicker class="absolute" color="primary" #exitPicker></ngx-mat-timepicker>
+
+        <div class="flex space-x-3 justify-center">
+            <div class="flex flex-col items-center">
+                <div
+                    class="relative flex items-center justify-center w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-bg-card">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+                    <div class="absolute inset-0 flex items-center justify-center z-20">
+                        <div>
+                            <div [hidden]="true">
+                                <input type="file" accept="image/*" #profileInput
+                                    (change)="onProfileInput($event, 'logo_1')" />
+                            </div>
+                            <label (click)="onFileClick('logo_1')"
+                                class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
+                                matRipple>
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:camera'"></mat-icon>
+                            </label>
+                        </div>
+                        <div>
+                            <button mat-icon-button (click)="removePhoto('logo_1')">
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <img class="w-full h-full object-cover cursor-pointer" *ngIf="logo_1" [matMenuTriggerFor]="imgMenu"
+                        [src]="logo_1" alt="User avatar" />
+                    <mat-icon *ngIf="!logo_1" class="p-[10%] w-full h-full object-cover text-gray-500 cursor-pointer"
+                        [svgIcon]="'heroicons_solid:camera'" [matMenuTriggerFor]="imgMenu">
+                    </mat-icon>
+                </div>
+                <mat-label class="mt-3">Logo 1</mat-label>
+                <span class="text-secondary text-xs">Max size 2 MB</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div
+                    class="relative flex items-center justify-center w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-bg-card">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+                    <div class="absolute inset-0 flex items-center justify-center z-20">
+                        <div>
+                            <div [hidden]="true">
+                                <input type="file" accept="image/*" #profileInput1
+                                    (change)="onProfileInput($event, 'logo_2')" />
+                            </div>
+                            <label (click)="onFileClick('logo_2')"
+                                class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
+                                matRipple>
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:camera'"></mat-icon>
+                            </label>
+                        </div>
+                        <div>
+                            <button mat-icon-button (click)="removePhoto('logo_2')">
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <img class="w-full h-full object-cover cursor-pointer" *ngIf="logo_2" [matMenuTriggerFor]="imgMenu1"
+                        [src]="logo_2" alt="User avatar" />
+                    <mat-icon *ngIf="!logo_2" class="p-[10%] w-full h-full object-cover text-gray-500 cursor-pointer"
+                        [svgIcon]="'heroicons_solid:camera'" [matMenuTriggerFor]="imgMenu1">
+                    </mat-icon>
+                </div>
+                <mat-label class="mt-3">Logo 2</mat-label>
+                <span class="text-secondary text-xs">Max size 2 MB</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div
+                    class="relative flex items-center justify-center w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-bg-card">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+                    <div class="absolute inset-0 flex items-center justify-center z-20">
+                        <div>
+                            <div [hidden]="true">
+                                <input type="file" accept="image/*" #profileInput2
+                                    (change)="onProfileInput($event, 'logo_3')" />
+                            </div>
+                            <label (click)="onFileClick('logo_3')"
+                                class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
+                                matRipple>
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:camera'"></mat-icon>
+                            </label>
+                        </div>
+                        <div>
+                            <button mat-icon-button (click)="removePhoto('logo_3')">
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <img class="w-full h-full object-cover cursor-pointer" *ngIf="logo_3" [matMenuTriggerFor]="imgMenu2"
+                        [src]="logo_3" alt="User avatar" />
+                    <mat-icon *ngIf="!logo_3" class="p-[10%] w-full h-full object-cover text-gray-500 cursor-pointer"
+                        [svgIcon]="'heroicons_solid:camera'" [matMenuTriggerFor]="imgMenu2">
+                    </mat-icon>
+                </div>
+                <mat-label class="mt-3">Logo 3</mat-label>
+                <span class="text-secondary text-xs">Max size 2 MB</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <div
+                    class="relative flex items-center justify-center w-28 h-28 rounded-3xl overflow-hidden ring-4 ring-bg-card">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+                    <div class="absolute inset-0 flex items-center justify-center z-20">
+                        <div>
+                            <div [hidden]="true">
+                                <input type="file" accept="image/*" #profileInput3 (change)="
+                                        onProfileInput($event, 'fav_icon')
+                                    " />
+                            </div>
+                            <label (click)="onFileClick('fav_icon')"
+                                class="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-hover"
+                                matRipple>
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:camera'"></mat-icon>
+                            </label>
+                        </div>
+                        <div>
+                            <button mat-icon-button (click)="removePhoto('fav_icon')">
+                                <mat-icon class="text-white" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                    <img class="w-full h-full object-cover cursor-pointer" *ngIf="fav_icon"
+                        [matMenuTriggerFor]="imgMenu3" [src]="fav_icon" alt="User avatar" />
+                    <mat-icon *ngIf="!fav_icon" class="p-[10%] w-full h-full object-cover text-gray-500 cursor-pointer"
+                        [svgIcon]="'heroicons_solid:camera'" [matMenuTriggerFor]="imgMenu3">
+                    </mat-icon>
+                </div>
+                <mat-label class="mt-3">Fav Icon</mat-label>
+                <span class="text-secondary text-xs">Max size 2 MB</span>
+            </div>
+            <!-- <div class="flex-0 w-22 h-22 rounded-full overflow-hidden">
+                <img class="w-full h-full object-cover cursor-pointer" *ngIf="logo_1"
+                    [matMenuTriggerFor]="imgMenu" [src]="logo_1" alt="User avatar">
+                <mat-icon *ngIf="!logo_1" class="w-full h-full object-cover text-white cursor-pointer"
+                    [svgIcon]="'mat_outline:imagesmode'" [matMenuTriggerFor]="imgMenu">
+                </mat-icon>
+                <div [hidden]="true">
+                    <input type="file" accept="image/*" #profileInput
+                        (change)="onProfileInput($event, 'logo_1')" />
+                </div>
+                <mat-menu #imgMenu>
+                    <button mat-menu-item (click)="onFileClick('logo_1')">
+                        Upload Photo
+                    </button>
+                    <button mat-menu-item (click)="removePhoto()">
+                        Remove Photo
+                    </button>
+                </mat-menu>
+                <mat-lable>Logo 1</mat-lable>
+            </div> -->
+            <!-- <div class="flex-0 w-22 h-22 rounded-full overflow-hidden">
+                <img class="w-full h-full object-cover cursor-pointer" *ngIf="logo_2"
+                    [matMenuTriggerFor]="imgMenu1" [src]="logo_2" alt="User avatar">
+                <mat-icon *ngIf="!logo_2" class="w-full h-full object-cover text-white cursor-pointer"
+                    [svgIcon]="'mat_outline:imagesmode'" [matMenuTriggerFor]="imgMenu1">
+                </mat-icon>
+                <div [hidden]="true">
+                    <input type="file" accept="image/*" #profileInput
+                        (change)="onProfileInput($event, 'logo_2')" />
+                </div>
+                <mat-menu #imgMenu1>
+                    <button mat-menu-item (click)="onFileClick('logo_2')">
+                        Upload Photo
+                    </button>
+                    <button mat-menu-item (click)="removePhoto()">
+                        Remove Photo
+                    </button>
+                </mat-menu>
+                <mat-lable>Logo 2</mat-lable>
+            </div>
+            <div class="flex-0 w-22 h-22 rounded-full overflow-hidden">
+                <img class="w-full h-full object-cover cursor-pointer" *ngIf="logo_3"
+                    [matMenuTriggerFor]="imgMenu2" [src]="logo_3" alt="User avatar">
+                <mat-icon *ngIf="!logo_3" class="w-full h-full object-cover text-white cursor-pointer"
+                    [svgIcon]="'mat_outline:imagesmode'" [matMenuTriggerFor]="imgMenu2">
+                </mat-icon>
+                <div [hidden]="true">
+                    <input type="file" accept="image/*" #profileInput
+                        (change)="onProfileInput($event, 'logo_3')" />
+                </div>
+                <mat-menu #imgMenu2>
+                    <button mat-menu-item (click)="onFileClick('logo_3')">
+                        Upload Photo
+                    </button>
+                    <button mat-menu-item (click)="removePhoto()">
+                        Remove Photo
+                    </button>
+                </mat-menu>
+                <mat-lable>Logo 3</mat-lable>
+            </div>
+            <div class="flex-0 w-22 h-22 rounded-full overflow-hidden">
+                <img class="w-full h-full object-cover cursor-pointer" *ngIf="fav_icon"
+                    [matMenuTriggerFor]="imgMenu3" [src]="fav_icon" alt="User avatar">
+                <mat-icon *ngIf="!fav_icon" class="w-full h-full object-cover text-white cursor-pointer" [matMenuTriggerFor]="imgMenu3">
+                    imagesmode
+                </mat-icon>
+                <div [hidden]="true">
+                    <input type="file" accept="image/*" name="profile" #profileInput
+                        (change)="onProfileInput($event, 'fav_icon')" />
+                </div>
+                <mat-menu #imgMenu3>
+                    <button mat-menu-item (click)="onFileClick('fav_icon')">
+                        Upload Photo
+                    </button>
+                    <button mat-menu-item (click)="removePhoto()">
+                        Remove Photo
+                    </button>
+                </mat-menu>
+                <mat-lable>Fav Icon</mat-lable>
+            </div> -->
+        </div>
+    </form>
+
+    <ng-template #detailView>
+        <div class="grid grid-cols-5 gap-4 mb-8 p-8 pb-4 bg-card rounded-2xl overflow-hidden">
+            <div class="flex flex-col mb-3" *ngFor="let filed of fieldList">
+                <div class="flex flex-row space-x-2">
+                    <span class="text-md font-semibold text-secondary">{{
+                        filed.name
+                        }} <mat-icon *ngIf="filed.name === 'B2B WL Link' || filed.name === 'B2C WL Link'"
+                            class="icon-size-3 cursor-pointer ml-1" [matTooltip]="'Copy Link'"
+                            (click)="copyLink(filed.value)">content_copy</mat-icon></span>
+                    <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
+                </div>
+                <span class="truncate flex items-center">
+                    <span class="truncate flex items-center">
+                        <span class="text-base truncate" *ngIf="
+                                filed.name === 'Logo size 1' ||
+                                filed.name === 'Logo size 2' ||
+                                filed.name === 'Logo size 3' ||
+                                filed.name === 'Fav icon'
+                            ">
+                            <img *ngIf="filed.value" class="w-13 object-cover cursor-pointer" src="{{ filed.value }}" />
+                            <span *ngIf="!filed.value">--</span>
+                        </span>
+                        <span class="text-base truncate" [matTooltip]="filed.value" *ngIf="
+                                filed.name !== 'Logo size 1' &&
+                                filed.name !== 'Logo size 2' &&
+                                filed.name !== 'Logo size 3' &&
+                                filed.name !== 'Fav icon'
+                            ">{{ filed.value || "--" }}</span>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </ng-template>
+
+    <div *ngIf="!readonly" class="flex items-center justify-end pt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <!-- Discard -->
+        <button mat-stroked-button (click)="matDialogRef.close()">Close</button>
+        <!-- Save as draft -->
+        <button *ngIf="!readonly" mat-flat-button [color]="'primary'" (click)="submit()"
+            [disabled]="disableBtn">
+            {{ btnLabel }}
+        </button>
+    </div>
+</div>

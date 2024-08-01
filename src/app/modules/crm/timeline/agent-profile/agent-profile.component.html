@@ -1,0 +1,132 @@
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-[950px] max-w-[950px]">
+    <div class="xl:min-h-[550px] xl:max-h-[550px] min-h-[550px] max-h-[550px] overflow-y-auto">
+        <div class="flex flex-raw overflow-hidden overflow-x-auto border rounded-[10px] m-4"
+            *ngFor="let profile of dataList">
+            <div class="w-full pb-2 field-blue-bg dark:bg-[#2A374A] bg-gray-200">
+                <div class="flex items-center space-x-4 pt-4 pl-4 pr-4">
+                    <div class="relative rounded-full">
+                        <ng-container *ngIf="profile?.dp">
+                            <img src={{profile?.dp}} class="rounded-full h-18 w-18 object-cover" alt="">
+                        </ng-container>
+
+                        <ng-container *ngIf="!profile?.dp">
+                            <img src="assets/images/logo/default_profile_icon.jpeg"
+                                class="rounded-full h-18 w-18 object-cover" alt="">
+                        </ng-container>
+                    </div>
+
+                    <div class="pl-2">
+                        <div class="text-2xl font-semibold">{{profile?.agency_name || '-'}}</div>
+                        <div class="text-lg">
+                            <span
+                                class="text-lg font-normal text-secondary dark:text-[#687798]">{{profile?.contactPersonName
+                                || '-'}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 space-x-6 overflow-hidden w-full flex-row flex mt-1">
+                    <div class="flex flex-col w-[36%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Email Address</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.emailAddress">{{profile?.emailAddress ? profile?.emailAddress : "
+                            -"}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[24%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Mobile Number</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.mobileNumber ? '+' + profile.mobileCode + ' ' + profile.mobileNumber : '-'">
+                            {{profile?.mobileNumber ? '+' + profile.mobileCode + ' ' + profile.mobileNumber : '-'}}
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col w-[24%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">KYC</span>
+                        <span class="text-base truncate dark:text-white text-black" [matTooltip]="profile?.kyc">
+                            <span *ngIf="profile?.kyc" class="border-b-2 solid border-gray-600"
+                                (click)="kycViewDetails(profile)">View Details</span>
+                            <span *ngIf="!profile?.kyc"> - </span>
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col w-[16%]">
+                        <span class="text-md font-medium text-secondary dark:text-[#687798]">Base Currency</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.baseCurrency">{{profile?.baseCurrency ? profile?.baseCurrency :
+                            "-"}}</span>
+                    </div>
+                </div>
+
+                <div class="p-4 space-x-6 overflow-hidden w-full flex-row flex">
+                    <div class="flex flex-col w-[36%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Wallet Balance</span>
+                        <span class="text-base truncate dark:text-white text-black">
+                            {{profile?.walletBalance ? profile.baseCurrency + ' ' + profile.walletBalance : '0'}}
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col w-[24%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Wallet Credit</span>
+                        <span class="text-base truncate dark:text-white text-black">
+                            {{profile?.walletCredit ? profile.baseCurrency + ' ' + profile.walletCredit : '0'}}
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col w-[24%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Relationship
+                            Manager</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.relationshipManager">{{profile?.relationshipManager ?
+                            profile?.relationshipManager : " -"}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[16%]">
+                        <span class="text-md font-medium text-secondary dark:text-[#687798]">Last Login Date</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.lastLoginDate">{{(profile?.lastLoginDate | date:'dd-MM-yyyy') ||
+                            '-'}}</span>
+                    </div>
+                </div>
+
+                <div class="p-4 space-x-6 overflow-hidden w-full flex-row flex">
+                    <div class="flex flex-col w-[36%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Last Transaction
+                            Date</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.lastTransactionDate">{{(profile?.lastTransactionDate |
+                            date:'dd-MM-yyyy') || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[24%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Register Date</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.registerDate">{{(profile?.registerDate | date:'dd-MM-yyyy') || "
+                            -"}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[24%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">City</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="profile?.city">{{profile?.city ? profile?.city : " -"}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[16%]"></div>
+                </div>
+                <div class="flex flex-col p-4">
+                    <span class="text-md font-medium text-secondary dark:text-[#687798]">Address</span>
+                    <span class="text-base w-full dark:text-white text-black"
+                        [matTooltip]="profile?.address1 && profile?.address2 ? profile?.address1 + ' ' + profile?.address2 : profile?.address1 || profile?.address2 || '-'">
+                        {{ profile?.address1 && profile?.address2 ? profile?.address1 + ' ' + profile?.address2 :
+                        profile?.address1 || profile?.address2 || '-' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <ng-container *ngIf="dataList && !dataList.length">
+            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+                No data to display
+            </div>
+        </ng-container>
+    </div>
+</div>

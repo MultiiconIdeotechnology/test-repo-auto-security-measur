@@ -1,0 +1,143 @@
+<div class="flex flex-col max-w-240 md:min-w-160 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-120 pb-5" [formGroup]="formGroup">
+        <div class="flex gap-3">
+            <mat-form-field class="flex-grow w-1/3">
+                <mat-label>Carrier</mat-label>
+                <mat-select formControlName="carrier" required >
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching Airline found'" formControlName="airLineFilter" (input)="filterAirlineCarrier($event.target.value)">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of AirlineListCarrier" [value]="ct.id">{{ct.short_code}} -
+                        {{ct.airline_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow w-1/3">
+                <mat-label>Cabin Class</mat-label>
+                <mat-select formControlName="cabin_class" required>
+                    <mat-option [value]="'Economy'">Economy</mat-option>
+                    <mat-option [value]="'Business'">Business</mat-option>
+                    <mat-option [value]="'PremiumEconomy'">Premium Economy</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow w-1/3">
+                <mat-label>Flight Number</mat-label>
+                <input matInput formControlName="flight_number" required>
+            </mat-form-field>
+        </div>
+
+        <div class="flex gap-3">
+            <mat-form-field class="flex-grow w-1/2">
+                <mat-label>From</mat-label>
+                <mat-select class="w-full flex-grow" formControlName="from" required class="w-full" #service>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search City"
+                            noEntriesFoundLabel="'no matching city found'" formControlName="fromfilter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let s of fromList" [value]="s.city_code">{{ s.display_name }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow w-1/2">
+                <mat-label>To</mat-label>
+                <mat-select class="w-full flex-grow" formControlName="to" required class="w-full" #service>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search City"
+                            noEntriesFoundLabel="'no matching city found'" formControlName="tofilter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let s of toList" [value]="s.city_code">{{ s.display_name }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="flex gap-3">
+            <mat-form-field class="flex-grow w-1/2">
+                <mat-label>Departure Date</mat-label>
+                <input matInput [matDatepicker]="picker" required [min]="this.record.status === 'Edit' ? formGroup.get('arrTime').value: this.recordList?.arrTime" [formControlName]="'depTime'">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow w-1/2">
+                <mat-label>Departure Time</mat-label>
+                <input matInput format="24" name="depTime_time" [min]="this.record.status === 'Edit' ? this.record.depTime: this.recordList?.arrTime | date:'HH:mm'" [formControlName]="'depTime_time'" required
+                    [ngxMatTimepicker]="entryPicker">
+                <mat-icon matSuffix (click)="entryPicker.open()">
+                    watch_later
+                </mat-icon>
+                <ngx-mat-timepicker color="primary" #entryPicker></ngx-mat-timepicker>
+            </mat-form-field>
+        </div>
+
+        <div class="flex gap-3">
+            <mat-form-field class="flex-grow w-1/2">
+                <mat-label>Arrival Date</mat-label>
+                <input matInput [matDatepicker]="picker1" required [formControlName]="'arrTime'" [min]="formGroup.get('depTime').value" >
+                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow w-1/2">
+                <mat-label>Arrival Time</mat-label>
+                <input matInput format="24" name="arrTime_time" [min]="formGroup.get('depTime_time').value"  [formControlName]="'arrTime_time'" required
+                    [ngxMatTimepicker]="entryPicker1">
+                <mat-icon matSuffix (click)="entryPicker1.open()">
+                    watch_later
+                </mat-icon>
+                <ngx-mat-timepicker color="primary" #entryPicker1></ngx-mat-timepicker>
+            </mat-form-field>
+        </div>
+
+        <div class="flex gap-3">
+
+            <mat-form-field class="flex-grow w-1/3">
+                <mat-label>Origin Terminal</mat-label>
+                <input matInput formControlName="origin_terminal" required>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow w-1/3">
+                <mat-label>Destination Terminal</mat-label>
+                <input matInput formControlName="destination_terminal" required>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow w-1/3">
+                <mat-label>Oprating Carrier</mat-label>
+                <mat-select formControlName="operating_carrier" required>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching Airline found'" formControlName="opratingFilter" (input)="filterAirlineOparatingCarrier($event.target.value)">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of AirlineListOpratingCarrier" [value]="ct.id">{{ct.short_code}} -
+                        {{ct.airline_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+    </form>
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <!-- Discard -->
+        <button mat-stroked-button (click)="matDialogRef.close()">
+            Close
+        </button>
+        <!-- Save as draft -->
+        <!-- [disabled]="formGroup.invalid" -->
+        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid">
+            Save
+        </button>
+    </div>
+</div>

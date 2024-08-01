@@ -1,0 +1,98 @@
+<div class="flex flex-col max-w-240 md:min-w-120 max-h-screen -m-6">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium  text-white">{{ title }}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current  text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-----Form----->
+    <div class="px-5 py-2 mt-2">
+        <form [formGroup]="formGroup" class="flex flex-col">
+
+            <div class="flex flex-col">
+                <mat-form-field class="flex-grow ">
+                    <mat-label>Lead Status</mat-label>
+                    <mat-select required formControlName="lead_status">
+                        <mat-option *ngFor="let s of StatusList" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow ">
+                    <mat-label>Lead Type</mat-label>
+                    <mat-select required formControlName="lead_type">
+                        <mat-option *ngFor="let s of leadType" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="flex flex-col">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Priority</mat-label>
+                    <mat-select required formControlName="priority_text">
+                        <mat-option *ngFor="let s of priorityText" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- <mat-form-field class="flex-grow ">
+                    <mat-label>Lead Source</mat-label>
+                    <mat-select required formControlName="lead_source">
+                        <mat-option *ngFor="let s of leadSource" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field> -->
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Lead Source</mat-label>
+                    <mat-select formControlName="lead_source" required [compareWith]="compareWith">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching lead found'" [formControlName]="'leadfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of leadList" [value]="ct">{{ct.lead_source}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <mat-form-field class="flex-grow">
+                <mat-label>Employee</mat-label>
+                <mat-select formControlName="relationship_manager_id" required [compareWith]="compareWith">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching employee found'" [formControlName]="'empfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of employeeList" [value]="ct">{{ct.employee_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow ">
+                <mat-label>KYC Started</mat-label>
+                <mat-select required formControlName="KYC_Status">
+                    <mat-option *ngFor="let s of kycList" [value]="s.value">
+                        {{ s.viewValue }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+        </form>
+    </div>
+
+    <!-----button----->
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()">Close</button>
+        <button *ngIf="!readonly" mat-flat-button [color]="'primary'" (click)="apply()"
+            [disabled]="formGroup.invalid || disableBtn">
+            {{ btnLabel }}
+        </button>
+    </div>
+</div>

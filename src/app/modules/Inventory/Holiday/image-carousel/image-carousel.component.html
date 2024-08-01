@@ -1,0 +1,9 @@
+<div class="flex flex-col -m-6">
+    <ngx-slick-carousel class="carousel max-w-[830px] max-h-[774px] h-full w-full overflow-hidden pop-img"
+        #slickModal="slick-carousel" [config]="slideConfig">
+        <div ngxSlickItem *ngFor="let slide of SecondImageList" class="slide">
+            <img [src]="slide" alt=""
+                class="w-full h-full">
+        </div>
+    </ngx-slick-carousel>
+</div>

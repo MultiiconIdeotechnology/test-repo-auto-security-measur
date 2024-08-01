@@ -1,0 +1,127 @@
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl ">
+    <!-- list -->
+    <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto min-h-100 max-h-100">
+        <ng-container>
+            <div class="grid ">
+                <!-- Header -->
+                <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold dark:bg-gray-700 bg-white border-b"
+                    matSort matSortDisableClear (matSortChange)="refreshItems()" #_sortPending
+                    matSortActive="entry_date_time" matSortDirection="desc">
+                    <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
+                        #
+                    </div>
+
+                    <ng-container *ngFor="let col of columns">
+                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class"
+                            class="text-secondary">
+                            {{ col.name }}
+                        </div>
+                        <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
+                            {{ col.name }}
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- Rows -->
+                <ng-container *ngIf="dataList.length > 0; else noGridItems">
+                    <ng-container *ngFor="let ListItem of dataList">
+                        <div class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer">
+                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
+                                <mat-icon> more_vert </mat-icon>
+                            </button>
+                            <mat-menu #optionMenu>
+                                <button mat-menu-item (click)="view(ListItem)">
+                                    <mat-icon class="mat-18">info</mat-icon>
+                                    <span style="font-weight: 600;">Info</span>
+                                </button>
+                                <button mat-menu-item (click)="setKYCVerify(ListItem)">
+                                    <mat-icon class="mat-18">fingerprint</mat-icon>
+                                    <span style="font-weight: 600">View KYC</span>
+                                </button>
+                                <button mat-menu-item (click)="modifyReditect(ListItem)">
+                                    <mat-icon svgIcon="heroicons_solid:pencil-square"></mat-icon>
+                                    <span style="font-weight: 600">Modify Details</span>
+                                </button>
+                                <!-- <button mat-menu-item (click)="assignKYC(ListItem)">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-up-on-square-stack"></mat-icon>
+                                    <span style="font-weight: 600">Assign KYC</span>
+                                </button> -->
+                                <mat-divider
+                                    *ngIf="!ListItem.is_email_verified || !ListItem.is_mobile_verified"></mat-divider>
+                                <button *ngIf="!ListItem.is_email_verified" mat-menu-item
+                                    (click)="setEmailVerify(ListItem)">
+                                    <mat-icon class="mat-18">verified</mat-icon>
+                                    <span style="font-weight: 600">Verify Email</span>
+                                </button>
+                                <button *ngIf="!ListItem.is_mobile_verified" mat-menu-item
+                                    (click)="setMobileVerify(ListItem)">
+                                    <mat-icon class="mat-18">verified</mat-icon>
+                                    <span style="font-weight: 600">Verify Mobile</span>
+                                </button>
+                                <!-- <button mat-menu-item (click)="delete(ListItem)">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600;">Delete</span>
+                                </button> -->
+                            </mat-menu>
+
+                            <ng-container *ngFor="let col of columns">
+                                <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
+
+                                    <mat-icon class="text-green-600 icon-size-4 relative" [matTooltip]="'Verified'"
+                                        *ngIf="
+                                        ListItem[
+                                            'is_mobile_verified'
+                                        ] && col.key === 'mobile_number'
+                                    ">verified</mat-icon>
+                                    <mat-icon class="text-yellow-600 icon-size-4 relative" [matTooltip]="
+                                        'Verification Pending'
+                                    " *ngIf="
+                                        !ListItem[
+                                            'is_mobile_verified'
+                                        ] && col.key === 'mobile_number'
+                                    ">warning</mat-icon>
+
+                                    <mat-icon class="text-green-600 icon-size-4 relative" [matTooltip]="'Verified'"
+                                        *ngIf="
+                                        ListItem['is_email_verified'] &&
+                                        col.key === 'email_address'
+                                    ">verified</mat-icon>
+                                    <mat-icon class="text-yellow-600 icon-size-4 relative" [matTooltip]="
+                                        'Verification Pending'
+                                    " *ngIf="
+                                        !ListItem[
+                                            'is_email_verified'
+                                        ] && col.key === 'email_address'
+                                    ">warning</mat-icon>
+
+                                    <!-- <div class="ml-0" *ngIf=" col.key === 'mobile_number'">{{ListItem.mobile_code}}</div> -->
+
+                                    <div class="flex flex-col truncate">
+                                        <span class="truncate" [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
+                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
+                                            ListItem[col.key] || " - " }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-container>
+
+
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <ng-template #noGridItems>
+            <div class="p-40  border-t text-3xl tracking-tight text-center">
+                {{getNodataText()}}
+            </div>
+        </ng-template>
+    </div>
+
+    <mat-paginator
+        class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
+        [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
+        [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
+    </mat-paginator>
+</div>

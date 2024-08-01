@@ -1,0 +1,37 @@
+<div class="flex flex-col max-w-256 md:min-w-128 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">Sub Agent - {{record.agency_name}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-4 gap-2 mb-4 p-8 pb-4 bg-card rounded-2xl overflow-x-hidden min-h-[500px] overflow-y-auto">
+        <div class="flex flex-col mb-3" *ngFor="let filed of fieldList">
+            <div class="flex flex-row space-x-2">
+                <span class=" text-md font-semibold text-secondary">{{filed.name}} <mat-icon *ngIf="filed.name === 'Referral Link'" class="icon-size-3 cursor-pointer ml-1" [matTooltip]="'Copy Link'" (click)="copyLink(records.referral_link_url)">content_copy</mat-icon></span>
+                <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
+            </div>
+            <span class="truncate flex items-center">
+                <span *ngIf="filed.name === 'Email'" class="text-base truncate">
+                    <mat-icon *ngIf="records.is_email_verified" class="text-green-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]" [matTooltip]="'Verified'">verified</mat-icon>
+                    <mat-icon *ngIf="!records.is_email_verified" class="text-yellow-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]" [matTooltip]="'Verification Pending'">warning</mat-icon>
+                </span>
+                <span *ngIf="filed.name === 'Mobile Number'" class="text-base truncate">
+                    <mat-icon *ngIf="records.is_mobile_verified" class="text-green-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]" [matTooltip]="'Verified'">verified</mat-icon>
+                    <mat-icon *ngIf="!records.is_mobile_verified" class="text-yellow-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]" [matTooltip]="'Verification Pending'">warning</mat-icon>
+                </span>
+                <span class="text-base truncate pr-1 relative top-[-1px]" [matTooltip]="filed.value">{{filed.value || '--'}}</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()">
+            Close
+        </button>
+    </div>
+    
+</div>

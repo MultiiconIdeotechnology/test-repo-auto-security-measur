@@ -1,0 +1,138 @@
+<div class="flex flex-col max-w-[36rem] min-w-[36rem] max-h-screen -m-6">
+    <!-- Header -->
+    <div
+        class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary"
+    >
+        <div class="text-lg font-medium text-white">{{ title }}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon
+                class="text-current text-white"
+                [svgIcon]="'heroicons_outline:x-mark'"
+            ></mat-icon>
+        </button>
+    </div>
+
+    <form
+        class="flex flex-col px-6 pt-6 overflow-y-auto max-h-160 overflow-x-auto"
+        [formGroup]="ImageformGroup"
+    >
+        <div class="flex flex-col mt-3">
+            <div class="flex flex-row justify-between items-center pb-3">
+                <p class="text-primary text-lg font-semibold">Cover Photo</p>
+            </div>
+            <div [hidden]="true">
+                <input
+                    type="file"
+                    accept="image/*"
+                    name="profile2"
+                    #coverinput
+                    (change)="onProfileInputforcoverphoto()"
+                />
+            </div>
+
+            <div
+                class="h-56 w-56 bg-default flex rounded-md justify-center items-center"
+                *ngIf="!profile_picture"
+            >
+                <div class="flex flex-col items-center justify-center">
+                    <button
+                        type="button"
+                        (click)="coverinput.click()"
+                        class="text-blue-500"
+                        mat-icon-button
+                    >
+                        <mat-icon svgIcon="mat_solid:add"></mat-icon>
+                    </button>
+                    <span class="text-sm">Cover Photo</span>
+                </div>
+            </div>
+            <div
+                class="h-56 w-56 rounded-md overflow-hidden panel2 relative"
+                *ngIf="profile_picture"
+            >
+                <div class="absolute bottom-24 left-[93px] only-show-on-hover">
+                    <button
+                        mat-icon-button
+                        [matTooltip]="'Remove Cover Photo'"
+                        (click)="
+                            RemoveImage(
+                                { id: profile_pictureid },
+                                'Cover Photo'
+                            )
+                        "
+                        *ngIf="!readonly"
+                    >
+                        <mat-icon
+                            class="text-red-600"
+                            [svgIcon]="'heroicons_outline:trash'"
+                        ></mat-icon>
+                    </button>
+                </div>
+                <img
+                    class="w-full h-full object-cover cursor-pointer"
+                    [src]="profile_picture"
+                    alt="Cover Photo"
+                />
+            </div>
+
+            <div
+                class="flex xl:flex-row-8 lg:flex-row-6 md:flex-row-4 flex-row-3 items-start w-fit pt-2"
+            >
+                <div
+                    class="flex flex-row p-0 pt-2"
+                    *ngFor="let img of ImageList"
+                >
+                    <div
+                        class="relative h-36 w-36 rounded-md overflow-hidden panel2"
+                    >
+                        <div
+                            class="absolute bottom-11 left-13 only-show-on-hover"
+                        >
+                            <button
+                                mat-icon-button
+                                [matTooltip]="'Remove'"
+                                (click)="RemoveImage(img, 'Gallery')"
+                                *ngIf="!readonly"
+                            >
+                                <mat-icon
+                                    class="text-red-600"
+                                    [svgIcon]="'heroicons_outline:trash'"
+                                ></mat-icon>
+                            </button>
+                        </div>
+                        <img
+                            class="w-full h-full object-cover cursor-pointer"
+                            [src]="img.image"
+                            alt="Gallery Image"
+                        />
+                    </div>
+                </div>
+
+                <div [hidden]="true">
+                    <input
+                        type="file"
+                        accept="image/*"
+                        name="profile"
+                        #galleryInput
+                        (change)="onProfileInput($event)"
+                    />
+                </div>
+
+                <div
+                    class="h-36 w-36 bg-default flex rounded-md justify-center items-center m-3"
+                    *ngIf="!readonly"
+                >
+                    <button
+                        [matTooltip]="'Add Gallery Image'"
+                        type="button"
+                        (click)="galleryInput.click()"
+                        class="text-blue-500"
+                        mat-icon-button
+                    >
+                        <mat-icon svgIcon="mat_solid:add"></mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

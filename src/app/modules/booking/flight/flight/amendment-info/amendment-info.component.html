@@ -1,0 +1,111 @@
+<div class="flex flex-col max-w-240 md:min-w-200 -m-6 overflow-auto max-h-screen dark:bg-gray-900">
+    <div
+        class="min-h-15 max-h-15 flex bg-primary px-5 pt-0.5 card-color-bg z-10 items-center justify-between flex-row text-xl sticky top-0 font-semibold border-b-2">
+        <span class="text-white">Amendment Detail - {{typeTitle}}</span>
+        <mat-icon svgIcon="close" class="cursor-pointer text-white" (click)="matDialogRef.close()"></mat-icon>
+    </div>
+
+    <div class="py-5 px-5 flex flex-col">
+        <div class="rounded-md overflow-hidden mb-3" *ngIf="allData?.pax_info.length > 0">
+            <div class="text-lg font-normal pb-1 ">Passenger Detail</div>
+            <div class="mb-1">
+                <table cellPadding="10px" class="w-full mt-1 border-collapse border border-gray-border">
+                    <tr class=" text-left border border-gray-border text-secondary dark:bg-card bg-gray-200">
+                        <th class="border-l max-w-80 font-normal">
+                            Passenger Name
+                        </th>
+                        <th class="border-l max-w-80 font-normal" *ngIf="data.amendment_type === 'Correction Quotation'">
+                            New Passenger Name
+                        </th>
+                        <th class="border-l font-normal">
+                            Travel Details
+                        </th>
+                        <th class="border-l font-normal" *ngIf="data.amendment_type === 'Baggage Quotation'">
+                            Extra Baggage
+                        </th>
+                        <th class="border-l font-normal" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                            Old Booking Date
+                        </th>
+                        <th class="border-l font-normal" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                            New Booking Date
+                        </th>
+                    </tr>
+                    <tr class="border border-gray-border" *ngFor="let pi of allData?.pax_info; let i = index">
+                        <td class="border-l max-w-80">
+                            {{pi.passenger_name || ''}}
+                        </td>
+                        <td class="border-l max-w-80" *ngIf="data.amendment_type === 'Correction Quotation'">
+                            {{pi.new_passenger_name || ''}}
+                        </td>
+                        <td class="border-l">
+                            {{pi.traveller_detail || '-'}}
+                        </td>
+                        <td class="border-l" *ngIf="data.amendment_type === 'Baggage Quotation'">
+                            {{pi.extra_baggage || '-'}}
+                        </td>
+                        <td class="border-l" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                            {{(pi.old_booking_date | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
+                        </td>
+                        <td class="border-l" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                            {{(pi.new_booking_date | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="dark:bg-card bg-gray-200 px-5 py-3 mb-4 border-2 rounded-md" *ngIf="allData?.remark">
+            <div class="font-semibold ">Note</div>
+            <div class=" text-secondary">{{allData?.remark}}</div>
+        </div>
+
+        <div class="rounded-md overflow-hidden mb-3" *ngIf="allData?.b2bcharges.charge">
+            <div class="text-lg font-normal pb-1 ">Amendment Charge (B2B Amount)</div>
+            <div class="mb-1">
+                <table cellPadding="10px" class="w-full mt-1 border-collapse border border-gray-border">
+                    <tr class="font-semibold field-blue-bg text-left border border-gray-border text-secondary dark:bg-card bg-gray-200">
+                        <th class="border-l w-[50%] font-normal">
+                            Per Person <span *ngIf="!allData?.is_refundable">Charge</span><span *ngIf="allData?.is_refundable">Refund</span>
+                        </th>
+                        <th class="border-l w-[50%] font-normal">
+                            Total <span *ngIf="!allData?.is_refundable">Charge</span><span *ngIf="allData?.is_refundable">Refund</span>
+                        </th>
+                    </tr>
+                    <tr class="border border-gray-border">
+                        <td class="border-l w-[50%]">
+                            {{allData?.b2bcharges.per_person_charge || '0'}}
+                        </td>
+                        <td class="border-l w-[50%]">
+                            {{allData?.b2bcharges.charge || '0'}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="rounded-md overflow-hidden" *ngIf="allData?.charges.charge">
+            <div class="text-lg font-normal pb-1 ">Amendment Charge</div>
+            <div class="mb-1">
+                <table cellPadding="10px" class="w-full mt-1 border-collapse border border-gray-border">
+                    <tr class="font-semibold field-blue-bg text-left border border-gray-border text-secondary dark:bg-card bg-gray-200">
+                        <th class="border-l w-[50%] font-normal">
+                            Per Person <span *ngIf="!allData?.is_refundable">Charge</span><span *ngIf="allData?.is_refundable">Refund</span>
+                        </th>
+                        <th class="border-l w-[50%] font-normal">
+                            Total <span *ngIf="!allData?.is_refundable">Charge</span><span *ngIf="allData?.is_refundable">Refund</span>
+                        </th>
+                    </tr>
+                    <tr class="border border-gray-border">
+                        <td class="border-l w-[50%]">
+                            {{allData?.charges.per_person_charge || '0'}}
+                        </td>
+                        <td class="border-l w-[50%]">
+                            {{allData?.charges.charge || '0'}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+</div>

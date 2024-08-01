@@ -1,0 +1,47 @@
+<div class="flex flex-col max-w-240 md:min-w-100 max-h-120 -m-6">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium">{{ title }}</div>
+        <button mat-icon-button [tabIndex]="-1" (click)="matDialogRef.close(this.destinationCityList?.length)">
+            <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="flex flex-col mt-3 mb-3 px-3 overflow-hidden">
+        <form class="flex flex-col mt-3 px-3" [formGroup]="destinationCityFormGroup">
+            <div class="flex flex-row space-x-3 items-center">
+                <mat-form-field class="flex-grow w-100">
+                    <mat-label>City</mat-label>
+                    <mat-select formControlName="destination_city_id" required>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching city found'" [formControlName]="'cityfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of cityList | async" [value]="ct">{{ ct.display_name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <button mat-stroked-button color="primary" (click)="SaveDestinationCity()">
+                    Add
+                </button>
+            </div>
+        </form>
+
+        <div class="flex flex-col space-y-2 mx-3 overflow-x-scroll w-140">
+            <div class="flex flex-row space-x-2 panel cursor-pointer items-center"
+                *ngFor="let dt of destinationCityList">
+                <div class="flex flex-row space-x-1">
+                    <mat-icon (click)="removeDestinationCity(dt)" class="icon-size-4 text-red-500 only-show-on-hover"
+                        matTooltip="Remove Note">delete</mat-icon>
+                </div>
+                <mat-icon class="icon-size-4">radio_button_checked </mat-icon>
+                <div class="">
+                    <span class="whitespace-pre-line flex flex-wrap width-content">
+                        {{ dt.display_name }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

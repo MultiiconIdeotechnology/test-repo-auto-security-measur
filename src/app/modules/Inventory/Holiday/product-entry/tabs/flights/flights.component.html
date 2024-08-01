@@ -1,0 +1,234 @@
+<div class="flex flex-col gap-1">
+    <form [formGroup]="formGroup">
+        <div class="flex flex-row gap-4 items-center">
+
+            <mat-form-field class="flex-grow">
+                <mat-label class="font-medium text-sm">Trip Type</mat-label>
+                <mat-select formControlName="trip_type" required>
+                    <mat-option *ngFor="let ct of tripTypes" [value]="ct">{{ct}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-1/3">
+                <mat-label class="font-medium text-sm">AirLine</mat-label>
+                <mat-select formControlName="airline_id" required [compareWith]="compareWith">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching Airline found'" [formControl]="airLineFilter" (input)="filterAirline($event.target.value)">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of AirlineList" [value]="ct">{{ct.short_code}} -
+                        {{ct.airline_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label class="font-medium text-sm">Cabin Baggage</mat-label>
+                <input matInput formControlName="cabin_baggage" required>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label class="font-medium text-sm">Checkin Baggage</mat-label>
+                <input matInput formControlName="checkin_baggage" required>
+            </mat-form-field>
+
+        </div>
+
+        <div class="flex flex-row gap-4 items-center">
+
+            <mat-form-field class="w-1/2">
+                <mat-label class="font-medium text-sm">Departure City</mat-label>
+                <mat-select formControlName="departure_city_id" required [compareWith]="compareWith">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching City found'"
+                            [formControl]="DepCityFilter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of DepCityList | async" [value]="ct">
+                        <div class="flex flex-col h-15 justify-center">
+                            <span class="font-medium">{{ ct.display_name }},
+                                {{ ct.country }}</span>
+                            <span class="text-sm secondary-text -mt-1"> {{
+                                ct.airport_name
+                                }}</span>
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label class="text-sm">Departure Date</mat-label>
+                <input matInput required [matDatepicker]="joiningpicker" placeholder="Choose a date"
+                    formControlName="departure_date_time" />
+                <mat-datepicker-toggle matSuffix [for]="joiningpicker"></mat-datepicker-toggle>
+                <mat-datepicker #joiningpicker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label class="text-sm">Departure Time</mat-label>
+                <input matInput required format="24" formControlName="departure_time"
+                    [ngxMatTimepicker]="departurePicker" readonly />
+                <mat-icon matSuffix (click)="departurePicker.open()">
+                    watch_later
+                </mat-icon>
+            </mat-form-field>
+
+            <ngx-mat-timepicker color="primary" #departurePicker></ngx-mat-timepicker>
+
+        </div>
+
+
+        <div class="flex flex-row gap-4 items-center">
+
+            <mat-form-field class="w-1/2">
+                <mat-label class="font-medium text-sm">Arrival City</mat-label>
+                <mat-select formControlName="arrival_city_id" required [compareWith]="compareWith">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching City found'"
+                            [formControl]="ArrCityFilter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of ArrCityList | async" [value]="ct">
+                        <div class="flex flex-col h-15 justify-center">
+                            <span class="font-medium">{{ ct.display_name }},
+                                {{ ct.country }}</span>
+                            <span class="text-sm secondary-text -mt-1"> {{
+                                ct.airport_name
+                                }}</span>
+                        </div>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label class="text-sm">Arrival Date</mat-label>
+                <input matInput required [matDatepicker]="picker" placeholder="Choose a date"
+                    formControlName="arrival_date_time" />
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label class="text-sm">Arrival Time</mat-label>
+                <input matInput required format="24" formControlName="arrival_time" [ngxMatTimepicker]="arrivalPicker"
+                    readonly />
+                <mat-icon matSuffix (click)="arrivalPicker.open()">
+                    watch_later
+                </mat-icon>
+            </mat-form-field>
+
+            <ngx-mat-timepicker color="primary" #arrivalPicker></ngx-mat-timepicker>
+
+
+        </div>
+
+        <div class="flex flex-row gap-4">
+            <mat-form-field class="flex-grow">
+                <input matInput placeholder="Remark" formControlName="remark">
+            </mat-form-field>
+
+            <div class="w-1/6">
+                <button mat-flat-button class="rounded-lg" color="primary"
+                    [disabled]="formGroup.invalid" (click)="add()">
+                    {{formGroup.get('id').value ? 'SAVE' : 'ADD'}}
+                </button>
+            </div>
+        </div>
+    </form>
+
+
+
+    <div class="flex flex-col flex-auto overflow-hidden max-h-[276px]">
+        <!-- list -->
+        <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto">
+            <ng-container>
+                <div class="grid">
+                    <!-- Header -->
+                    <div
+                        class="tbl-grid gridwidth z-10 sticky top-0 grid gap-4 py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card">
+                        <div style="text-align: center;" class="sticky left-0 bg-card z-99">
+                            #
+                        </div>
+                        <div class="'pl-4">
+                            Trip Type
+                        </div>
+                        <div class="'pl-4">
+                            Airline
+                        </div>
+                        <div class="'pl-4">
+                            Baggage
+                        </div>
+                        <div class="'pl-4">
+                            Departure
+                        </div>
+                        <div class="'pl-4">
+                            Arrival
+                        </div>
+                        <div class="'pl-4">
+                            Remark
+                        </div>
+
+                    </div>
+                    <!-- Rows -->
+                    <ng-container *ngFor="let row of data.flights">
+                        <div
+                            class="tbl-grid gridwidth grid items-center gap-4 px-6 md:pr-8 border-b pl-0 cursor-pointer">
+                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                                class="sticky left-0 bg-gray-50 dark:bg-gray-900"
+                                style="border-radius: 0%; width: 100%">
+                                <mat-icon> more_vert </mat-icon>
+                            </button>
+                            <mat-menu #optionMenu>
+                                <button mat-menu-item (click)="edit(row)">
+                                    <mat-icon class="mat-18">edit</mat-icon>
+                                    <span style="font-weight: 600;">Edit</span>
+                                </button>
+                                <button mat-menu-item (click)="delete(row)">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600;">Delete</span>
+                                </button>
+                            </mat-menu>
+
+                            <div class="flex flex-col">
+                                <span class="truncate">{{row.trip_type}}</span>
+                                <span class="text-xs secondary-text truncate">
+                                    {{row.departure_date_time | date: 'dd-MM-yyyy HH:mm'}}
+                                    | {{row.arrival_date_time | date: 'dd-MM-yyyy HH:mm'}}
+                                </span>
+                            </div>
+                            <span class="truncate">
+                                {{row.airline_id.short_code}} - {{row.airline_id.airline_name}}
+                            </span>
+                            <span class="truncate">
+                                Cabin: {{row.cabin_baggage}}KG | checkin: {{row.checkin_baggage}}KG
+                            </span>
+                            <div class="flex flex-col">
+                                <span class="font-medium truncate">{{ row.departure_city_id.display_name }},
+                                    {{ row.departure_city_id.country }}</span>
+                                <span class="text-xs secondary-text truncate">
+                                    {{row.departure_city_id.airport_name}}</span>
+                            </div>
+                            <span class="flex flex-col">
+                                <span class="font-medium truncate">{{ row.arrival_city_id.display_name }},
+                                    {{ row.arrival_city_id.country }}</span>
+                                <span class="text-xs secondary-text truncate">
+                                    {{row.arrival_city_id.airport_name}}</span>
+                            </span>
+                            <span class="truncate">
+                                {{row.remark}}
+                            </span>
+
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+
+
+    <div class="flex flex-col justify-center items-center h-20" *ngIf="data.flights.length <= 0">
+        <div class="font-medium text-base">
+            No data to display!
+        </div>
+    </div>
+</div>

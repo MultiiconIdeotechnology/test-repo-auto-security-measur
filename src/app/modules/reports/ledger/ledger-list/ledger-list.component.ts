@@ -1,0 +1,259 @@
+import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
+import { Component, ViewChild } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterOutlet } from '@angular/router';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { Security, messages, module_name } from 'app/security';
+import { LedgerService } from 'app/services/ledger.service';
+import { Excel } from 'app/utils/export/excel';
+import { GridUtils } from 'app/utils/grid/gridUtils';
+import { DateTime } from 'luxon';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { LedgerFilterComponent } from '../ledger-filter/ledger-filter.component';
+import { PerticularInfoComponent } from '../perticular-info/perticular-info.component';
+
+@Component({
+  selector: 'app-ledger-list',
+  templateUrl: './ledger-list.component.html',
+  styles: [`
+  .tbl-grid {
+    grid-template-columns:  100px 240px 510px 100px 100px 100px 110px;
+  }
+  `],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgFor,
+    DatePipe,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatMenuModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatButtonModule,
+    MatTooltipModule,
+    NgClass,
+    RouterOutlet,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
+    NgxMatSelectSearchModule,
+
+  ],
+})
+export class LedgerListComponent extends BaseListingComponent {
+
+  legerFilter: any;
+  total: any;
+  public Filter: any;
+
+  @ViewChild(MatPaginator) public _paginator: MatPaginator;
+
+  module_name = module_name.ledger
+  columns = [
+    { key: 'datetime', name: 'Date',isShow:true, is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: false, class: '', is_sticky: false, indicator: false, },
+    { key: 'reference_number', name: 'Reference Number', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
+    { key: 'particular', name: 'Particular',isview:true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
+    { key: 'debit', name: 'Debit',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-red-500' },
+    { key: 'credit', name: 'Credit',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-green-500' },
+    { key: 'balance', name: 'Balance',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false },
+    // { key: ' ', name: 'Total Balance', isFix: false, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, totalblc: true },
+  ]
+  cols = [];
+  dataList: any[] = [];
+  Alldata: any[] = [];
+
+  searchInternalFilter = new FormControl();
+  agentName: any;
+
+  constructor(
+    private matDialog: MatDialog,
+    private ledgerService: LedgerService
+  ) {
+    super(module_name.ledger)
+    this.cols = this.columns.map(x => x.key);
+    this.key = this.module_name;
+    this.sortColumn = 'datetime';
+    this.sortDirection = '';
+    this.Mainmodule = this
+
+    this.legerFilter = {
+      agent_for: '',
+      currencyId: '',
+      agent_id: '',
+      date: '',
+      service_for: '',
+      // startDate: new Date(),
+      // endDate: new Date(),
+      fromDate: new Date(),
+      toDate: new Date(),
+    }
+
+  }
+
+  ngOnInit(): void {
+    this.filter();
+
+    this.searchInternalFilter.valueChanges.subscribe(text => {
+      const filterdData = this.Alldata.filter(x =>
+        x.reference_number?.toLowerCase().includes(text.toLowerCase())
+        || x.particular?.toLowerCase().includes(text.toLowerCase())
+        || x.credit?.toString().toLowerCase().includes(text.toLowerCase())
+        || x.debit?.toString().toLowerCase().includes(text.toLowerCase())
+        || x.balance?.toString().toLowerCase().includes(text.toLowerCase())
+      );
+      this.paginator.pageIndex = 0;
+      this.setPaginator(filterdData);
+    })
+
+  }
+
+  totalCount(dataList) {
+    const cradit = (dataList.balance) - (dataList.credit)
+    const debit = (dataList.balance) - (dataList.debit)
+  }
+
+  filter(): void {
+    this.matDialog.open(LedgerFilterComponent, {
+      data: this.legerFilter,
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      if (res) {
+        this.legerFilter = res;
+        this.agentName = this.legerFilter.agent_id.agency_name
+        this.refreshItems();
+      }
+    })
+  }
+
+  view(record: any){
+    this.matDialog.open(PerticularInfoComponent, {
+      data: record,
+      disableClose: true
+    }).afterClosed().subscribe()
+  }
+
+
+  getFilter(): any {
+
+    const filterReq = {};
+    // filterReq["fromDate"] = this.legerFilter?.fromDate;
+    // filterReq["toDate"] = this.legerFilter?.toDate;
+    filterReq['fromDate'] = DateTime.fromJSDate(this.legerFilter.fromDate).toFormat('yyyy-MM-dd');
+    filterReq['toDate'] = DateTime.fromJSDate(this.legerFilter.toDate).toFormat('yyyy-MM-dd');
+    filterReq["agent_for"] = this.legerFilter?.agent_for;
+    filterReq["service_for"] = this.legerFilter?.service_for;
+
+    filterReq["agent_id"] = this.legerFilter?.agent_id?.id || "";
+    filterReq["currencyId"] = this.legerFilter?.currencyId?.id || "";
+    return filterReq;
+  }
+
+  balance: any
+
+  refreshItems(): void {
+    this.isLoading = true;
+
+    this.ledgerService.getLedger(this.getFilter()).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        // res.data[res.data.length - 1].balance = '';
+
+        this.dataList = res.data;
+
+        for (let i = 0; i < this.dataList.length; i++) {
+
+          const balance = this.dataList[i].balance;
+          const credit = this.dataList[i].credit;
+          const debit = this.dataList[i].debit;
+
+          const countCredit = balance + credit;
+          const countDebit = balance - debit;
+
+          // parseFloat(countCredit). toFixed(2);
+          this.dataList[i].countCredit = parseFloat(countCredit).toFixed(2);
+          this.dataList[i].countDebit = countDebit.toFixed(2);
+        }
+
+        this.Alldata = res.data;
+        this._paginator.length = res.data.length;
+
+        this.setPaginator();
+
+      }, error: err => {
+        this.alertService.showToast('error', err);
+        this.isLoading = false;
+      },
+    });
+  }
+
+  getNodataText(): string {
+    if (this.isLoading)
+      return 'Loading...';
+    else if (this.searchInternalFilter.value)
+      return `no search results found for \'${this.searchInternalFilter.value}\'.`;
+    else return 'No data to display';
+  }
+
+  setPaginator(filterdData?): void {
+    const index = this._paginator?.pageIndex || 0;
+    const size = this._paginator?.pageSize;
+    let data = filterdData ? filterdData : this.Alldata;
+    this.dataList = data.slice(index * size, (index * size) + size);
+  }
+
+  ngOnDestroy(): void {
+    this.masterService.setData(this.key, this)
+  }
+
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission('Ledger')) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    // const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value);
+    // const req = Object.assign(filterReq);
+
+    // req.skip = 0;
+    // req.take = this._paginator.length;
+
+    this.ledgerService.getLedger(this.getFilter()).subscribe(data => {
+      for (var dt of data.data) {
+        dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
+      }
+      Excel.export(
+        'Ledger',
+        [
+          { header: 'Date', property: 'datetime' },
+          { header: 'Reference Number', property: 'reference_number' },
+          { header: 'Particular', property: 'particular' },
+          { header: 'Credit', property: 'credit' },
+          { header: 'Debit', property: 'debit' },
+          { header: 'Balance', property: 'balance' },
+        ],
+        data.data, "Ledger", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+    });
+  }
+}
+

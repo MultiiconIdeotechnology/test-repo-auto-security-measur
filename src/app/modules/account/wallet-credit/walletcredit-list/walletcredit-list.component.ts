@@ -1,0 +1,368 @@
+import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
+import { Component, OnDestroy } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { Security, messages, module_name, walletCreditPermissions } from 'app/security';
+import { WalletService } from 'app/services/wallet-credit.service';
+import { WalletCreditEntryComponent } from '../wallet-credit-entry/wallet-credit-entry.component';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
+
+@Component({
+  selector: 'app-walletcredit-list',
+  templateUrl: './walletcredit-list.component.html',
+  styleUrls: ['./walletcredit-list.component.scss'],
+  styles: [
+    `
+      .tbl-grid {
+          grid-template-columns: 40px 110px 170px 170px 190px 150px 100px 140px 120px 180px;
+      }
+    `,
+  ],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgFor,
+    DatePipe,
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatMenuModule,
+    MatDialogModule,
+    MatTooltipModule,
+    MatDividerModule,
+  ],
+})
+export class WalletcreditListComponent extends BaseListingComponent implements OnDestroy {
+
+  module_name = module_name.walletCredit;
+  dataList = [];
+  total = 0;
+
+  columns = [
+    {
+      key: 'master_agent_code',
+      name: 'Agent Code',
+      is_date: false,
+      date_formate: '',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: '',
+      indicator: false,
+      tooltip: true,
+    },
+    {
+      key: 'master_agent_name',
+      name: 'Agent',
+      is_date: false,
+      date_formate: '',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: '',
+      indicator: false,
+      tooltip: true,
+    },
+    {
+      key: 'credit_balance',
+      name: 'Balance',
+      is_date: false,
+      date_formate: '',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: '',
+      indicator: false,
+      tooltip: true,
+    },
+    {
+      key: 'expiry_date',
+      name: 'Expiry',
+      is_date: true,
+      date_formate: 'dd-MM-yyyy HH:mm:ss',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: '',
+      indicator: false,
+      tooltip: false,
+    },
+    {
+      key: 'payment_cycle_policy_type',
+      name: 'Policy Type',
+      is_date: false,
+      date_formate: '',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: '',
+      indicator: false,
+      tooltip: true,
+    },
+    {
+      key: 'payment_cycle_policy',
+      name: 'Policy',
+      is_date: false,
+      date_formate: '',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: 'center',
+      indicator: false,
+      tooltip: false,
+    },
+    {
+      key: 'outstanding_on_due_date',
+      name: 'Outstanding',
+      is_date: false,
+      date_formate: '',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: 'center',
+      indicator: false,
+      tooltip: false,
+    },
+    {
+      key: 'over_due_count',
+      name: 'Over Due',
+      is_date: false,
+      date_formate: '',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: 'center',
+      indicator: false,
+      tooltip: false,
+    },
+    {
+      key: 'entry_date_time',
+      name: 'Entry',
+      is_date: true,
+      date_formate: 'dd-MM-yyyy HH:mm:ss',
+      is_sortable: true,
+      class: '',
+      is_sticky: false,
+      align: 'center',
+      indicator: false,
+      tooltip: false,
+    },
+  ];
+  cols = [];
+
+  constructor(
+    private walletService: WalletService,
+    private conformationService: FuseConfirmationService,
+    private router: Router,
+    private matDialog: MatDialog,
+  ) {
+    super(module_name.walletCredit);
+    this.cols = this.columns.map((x) => x.key);
+    this.key = this.module_name;
+    this.sortColumn = '';
+    this.sortDirection = 'asc';
+    this.Mainmodule = this;
+  }
+
+  refreshItems(): void {
+    this.isLoading = true;
+    this.walletService.getWalletCreditList(this.getFilterReq()).subscribe({
+      next: (data) => {
+        this.isLoading = false;
+        this.dataList = data.data;
+        this._paginator.length = data.total;
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err, 'top-right', true);
+        this.isLoading = false;
+      },
+    });
+  }
+
+  createInternal(model): void {
+    this.matDialog.open(WalletCreditEntryComponent, {
+      data: { data: null, send: 'create' },
+      disableClose: true,
+    })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          this.alertService.showToast(
+            'success',
+            'New record added',
+            'top-right',
+            true
+          );
+          this.refreshItems();
+        }
+      });
+  }
+
+  changeExpiry(record): void {
+    if (!Security.hasPermission(walletCreditPermissions.changeExpiryPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.matDialog
+      .open(WalletCreditEntryComponent, {
+        data: { data: record, readonly: false },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          this.refreshItems();
+        }
+      });
+  }
+
+  viewInternal(record): void {
+    this.matDialog.open(WalletCreditEntryComponent, {
+      data: { data: record, readonly: true },
+      disableClose: true,
+    });
+  }
+
+  EnableDisable(record): void {
+    if (!Security.hasPermission(walletCreditPermissions.enableDisablePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    const label: string = record.is_enable ? 'Disable' : 'Enable';
+    this.conformationService
+      .open({
+        title: label,
+        message:
+          'Are you sure to ' +
+          label.toLowerCase() +
+          ' ' +
+          record.master_agent_name +
+          ' ?',
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res === 'confirmed') {
+          this.walletService
+            .setEnable(record.id)
+            .subscribe({
+              next: () => {
+                record.is_enable = !record.is_enable;
+                if (record.is_enable) {
+                  this.alertService.showToast(
+                    'success',
+                    'Wallet Credit has been Enabled!',
+                    'top-right',
+                    true
+                  );
+                } else {
+                  this.alertService.showToast(
+                    'success',
+                    'Wallet Credit has been Disabled!',
+                    'top-right',
+                    true
+                  );
+                }
+              }, error: (err) => {
+                this.alertService.showToast('error', err);
+              }
+            });
+        }
+      });
+  }
+
+  // deleteInternal(record): void {
+  //   const label: string = 'Delete Wallet Credit';
+  //   this.conformationService
+  //     .open({
+  //       title: label,
+  //       message:
+  //         'Are you sure to ' +
+  //         label.toLowerCase() +
+  //         ' ' +
+  //         record.master_agent_name +
+  //         ' ?',
+  //     })
+  //     .afterClosed()
+  //     .subscribe((res) => {
+  //       if (res === 'confirmed') {
+  //         this.walletService.delete(record.id).subscribe({
+  //           next: () => {
+  //             this.alertService.showToast(
+  //               'success',
+  //               'Wallet Credit has been deleted!',
+  //               'top-right',
+  //               true
+  //             );
+  //             this.refreshItems();
+  //           },
+  //           error: (err) => {
+  //             this.alertService.showToast('error', err)
+  //             this.isLoading = false;
+  //           },
+  //         });
+  //       }
+  //     });
+  // }
+
+  getNodataText(): string {
+    if (this.isLoading) return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
+
+  ngOnDestroy(): void {
+    this.masterService.setData(this.key, this);
+  }
+
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission(this.module_name)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.walletService.getWalletCreditList(this.getFilterReq()).subscribe(data => {
+      for (var dt of data.data) {
+        dt.expiry_date = DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy hh:mm a')
+        dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a')
+        // dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
+      }
+      Excel.export(
+        'Wallet Credit',
+        [
+          { header: 'Agent Code', property: 'master_agent_code' },
+          { header: 'Agent.', property: 'master_agent_name' },
+          { header: 'Balance', property: 'credit_balance' },
+          { header: 'Expiry', property: 'expiry_date' },
+          { header: 'Policy Type', property: 'payment_cycle_policy_type' },
+          { header: 'Policy', property: 'payment_cycle_policy' },
+          { header: 'Outstanding', property: 'outstanding_on_due_date' },
+          { header: 'Over Due', property: 'over_due_count' },
+          { header: 'Entry', property: 'entry_date_time' },
+        ],
+        data.data, "Wallet Credit", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }]);
+    });
+  }
+
+}
