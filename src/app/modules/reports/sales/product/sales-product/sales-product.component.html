@@ -93,7 +93,7 @@
                     </th>
 
                     <ng-container *ngFor="let item of dataList[0]?.itemCodes">
-                        <th>
+                        <th (mouseover)="getToolTip(item.key)" [matTooltip]="selectedToolTip">
                             {{item.key}}
                         </th>
                     </ng-container>
@@ -105,8 +105,6 @@
                             ariaLabel="Filter Agent Code" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency Name"
-                            ariaLabel="Filter Agency Name" /> -->
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">

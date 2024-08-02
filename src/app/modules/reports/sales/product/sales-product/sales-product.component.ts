@@ -59,7 +59,6 @@ import { DateTime } from 'luxon';
     styleUrls: ['./sales-product.component.scss']
 })
 export class SalesProductComponent extends BaseListingComponent implements OnDestroy {
-
     dataList = [];
     total = 0;
     module_name = module_name.products;
@@ -68,7 +67,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     selectedAgent: string;
     selectedEmployee: string;
     user: any = {};
-
+    selectedToolTip: string = "";
+    toolTipArray: any[] = [];
 
     columns = [
         { key: 'agent_code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, campName: false },
@@ -127,6 +127,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.salesProductsService.getProductReport(request).subscribe({
             next: (data) => {
                 this.dataList = data.data;
+                this.toolTipArray = data.itemArry;
                 this.totalRecords = data.total;
                 this.isLoading = false;
             }, error: (err) => {
@@ -136,6 +137,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         });
     }
 
+    // function to get the Agent list from api
     getAgent(value: string) {
         this.agentService.getAgentCombo(value).subscribe((data) => {
             this.agentList = data;
@@ -144,6 +146,11 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
             }
         })
+    }
+
+    // To get Tooltip over required header
+    getToolTip(val: any) {
+        this.selectedToolTip = this.toolTipArray.find((item) => item.item_code == val)?.item_name
     }
 
     // Api to get the Employee list data
@@ -190,28 +197,28 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         const req = Object.assign(filterReq);
         req.skip = 0;
         req.take = this.totalRecords;
+        const exportHeaderArr = [
+            { header: 'Agent Code', property: 'agent_code' },
+            { header: 'Agency Name', property: 'agency_name' },
+            { header: 'RM', property: 'rm' },
+            { header: 'Due Amount', property: 'Due_amount' },
+            { header: 'Amount', property: 'Amount' }
+        ];
 
         this.salesProductsService.getProductReport(req).subscribe(data => {
-            let productData = this.transformData(data.data)
+            let productData = this.transformData(data.data);
+
+            for (let i in productData[0].itemCodes) {
+                exportHeaderArr.push({ header: productData[0].itemCodes[i].key, property: productData[0].itemCodes[i].key })
+            }
+
             Excel.export(
                 'Products',
-                [
-                    { header: 'Agent Code', property: 'agent_code' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: 'RM', property: 'rm' },
-                    { header: 'Due Amount', property: 'Due_amount' },
-                    { header: 'Amount', property: 'Amount' },
-                    { header: '001', property: '001' },
-                    { header: '002', property: '002' },
-                    { header: '003', property: '003' },
-                    { header: '004', property: '004' },
-                    { header: '005', property: '005' },
-                    { header: '006', property: '006' },
-                    { header: '007', property: '007' },
-                    { header: '008', property: '008' },
-                    { header: '009', property: '009' },
-                ],
-                productData, "Products", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 20 } }]);
+                 exportHeaderArr, 
+                 productData, 
+                 "Products", 
+                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 20 } }]
+            );
         });
     }
 
