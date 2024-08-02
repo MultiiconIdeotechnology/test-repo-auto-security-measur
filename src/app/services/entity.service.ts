@@ -11,10 +11,12 @@ export class EntityService {
   private WalletAuditedCall = new Subject<any>();
   private WalletRejectedCall = new Subject<any>();
   private leadEntityCall = new ReplaySubject<any>();
+  private updateChargeCall = new ReplaySubject<any>();
+  private refreshUpdateChargeCall = new ReplaySubject<any>();
+  private amendmentReqInfo = new ReplaySubject<any>();
   private refreshleadEntityCall = new ReplaySubject<any>();
   private referralEntityCall = new ReplaySubject<any>();
   private editreferralEntityCall = new ReplaySubject<any>();
-
   private refreshreferralEntityCall = new ReplaySubject<any>();
   private refresheditreferralEntityCall = new ReplaySubject<any>();
 
@@ -106,6 +108,34 @@ export class EntityService {
   public onleadEntityCall(): Observable<any> {
     return this.leadEntityCall.asObservable();
   }
+  
+  // Amendment Update Charge Drawer
+  public raiseUpdateChargeCall(item: any): void {
+    this.updateChargeCall.next(item);
+  }
+
+  public onUpdateChargeCall(): Observable<any> {
+    return this.updateChargeCall.asObservable();
+  }
+
+  public raiserefreshUpdateChargeCall(item: any): void {
+    this.refreshUpdateChargeCall.next(item);
+  }
+
+  public onraiserefreshUpdateChargeCall(): Observable<any> {
+    return this.refreshUpdateChargeCall.asObservable();
+  }
+  // ### End ### //
+
+  // Amendment Request Info Drawer
+  public raiseAmendmentInfoCall(item: any): void {
+    this.amendmentReqInfo.next(item);
+  }
+
+  public onAmendmentInfoCall(): Observable<any> {
+    return this.amendmentReqInfo.asObservable();
+  }
+  // ### End ### //
 
   public raiseSearchChange(item): void {
     this.searchChange.next(item);

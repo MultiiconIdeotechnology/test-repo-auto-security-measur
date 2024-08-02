@@ -1,7 +1,5 @@
-// import { WorkingStatusComponent } from './../../masters/employee/dialogs/working-status/working-status.component';
-// import { FuseConfirmationService } from './../../../../@fuse/services/confirmation/confirmation.service';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -31,6 +29,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { EntityService } from 'app/services/entity.service';
+import { takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -54,18 +54,19 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         MatTooltipModule,
         MatDividerModule,
         NgClass,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        UpdateChargeComponent,
+        AmendmentRequestEntryComponent
     ],
 })
 export class AmendmentRequestsListComponent
-    extends BaseListingComponent
-    implements OnDestroy {
+    extends BaseListingComponent  {
     isFilterShow: boolean = false;
     module_name = module_name.amendmentRequests;
     dataList = [];
     total = 0;
 
-    AmendmentFilter: any
+    AmendmentFilter: any;
 
     columns = [
         // {
@@ -251,22 +252,48 @@ export class AmendmentRequestsListComponent
         },
     ];
     cols = [];
-    selectedAgent!:string
-    selectedSupplier!:string;
+    selectedAgent!: string;
+    selectedSupplier!: string;
     agentList: any[] = [];
     supplierList: any[] = [];
     isMenuOpen: boolean = false;
 
-    statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Expired'];
-    typeList = [ 'Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
-
+    typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
+    statusList = [
+        "Request Sent to Supplier",
+        "Request to Supplier Failed",
+        "Quotation Sent",
+        "Quotation Confirmed By TA",
+        "Quotation Rejected By TA",
+        "Confirmation Sent To Supplier",
+        "Payment Completed",
+        "Refund Process",
+        "Refund Completed",
+        "Completed",
+        "Rejected",
+        "Cancelled",
+        "Partial Payment Completed"
+    ];
+    statusListForAgent = [
+        "Request Sent",
+        "Quotation Received",
+        "Quotation Confirmed",
+        "Payment Completed",
+        "Quotation Rejected",
+        "Inprocess",
+        "Refund Initiated",
+        "Completed",
+        "Rejected",
+        "Cancelled",
+    ];
     constructor(
         private amendmentrequestsService: AmendmentRequestsService,
         private matDialog: MatDialog,
         private toasterService: ToasterService,
         private agentService: AgentService,
         private kycDocumentService: KycDocumentService,
-        private confirmationService: FuseConfirmationService
+        private confirmationService: FuseConfirmationService,
+        private entityService: EntityService
     ) {
         super(module_name.amendmentRequests);
         this.cols = this.columns.map((x) => x.key);
@@ -286,14 +313,24 @@ export class AmendmentRequestsListComponent
         this.AmendmentFilter.FromDate.setDate(1);
         this.AmendmentFilter.FromDate.setMonth(this.AmendmentFilter.FromDate.getMonth() - 3);
 
+        this.entityService.onraiserefreshUpdateChargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                console.log("item", item);
+                if(item) {
+                    // this.alertService.showToast('success', "Charge has been Updated!", "top-right", true);
+                    this.refreshItems();
+                }
+            }
+        });
     }
 
     ngOnInit() {
         this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
         this.getAgent("", true);
-        this.getSupplier("", true)
+        this.getSupplier("", true);
     }
 
+    // Get Filter
     getFilter(): any {
         const filterReq = GridUtils.GetFilterReq(
             this._paginator,
@@ -310,6 +347,7 @@ export class AmendmentRequestsListComponent
         return filterReq;
     }
 
+    // Get Agent Data
     getAgent(value: string, bool: boolean = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
@@ -320,172 +358,129 @@ export class AmendmentRequestsListComponent
         });
     }
 
+    // Get Supplier
     getSupplier(value: string, bool: boolean = true) {
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
         });
     }
 
+    // Refresh Items
     refreshItems(event?: any): void {
         this.isLoading = true;
         let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq(event)
         var model = { ...extraModel, ...newModel };
 
-        this.amendmentrequestsService
-            .getAirAmendmentList(model)
-            .subscribe({
-                next: (data) => {
-                    this.isLoading = false;
+        this.amendmentrequestsService.getAirAmendmentList(model).subscribe({
+            next: (data) => {
+                this.isLoading = false;
 
-                    const cancel = { label: 'Cancel', icon: 'cancel', status: 'Cancelled' };
-                    const reject = { label: 'Reject', icon: 'block', status: 'Rejected' };
-                    // const completed = { label: 'Complete', icon: 'task_alt', status: 'Completed' };
-                    const sendRequest = { label: 'Send Request to Supplier', icon: 'send', status: 'Inprocess' };
+                const cancel = { label: 'Cancel', icon: 'cancel', status: 'Cancelled' };
+                const reject = { label: 'Reject', icon: 'block', status: 'Rejected' };
+                // const completed = { label: 'Complete', icon: 'task_alt', status: 'Completed' };
+                const sendRequest = { label: 'Send Request to Supplier', icon: 'send', status: 'Inprocess' };
 
-                    data.data.forEach(x => {
-                        x.actionStatus = [];
-                        switch (x.amendment_status) {
-                            case 'Pending':
-                                x.actionStatus.push(cancel);
-                                x.actionStatus.push(sendRequest);
-                                x.class = 'text-gray-500';
-                                break;
-                            case 'Inprocess':
-                                x.actionStatus.push(cancel);
-                                x.actionStatus.push(reject);
-                                // x.actionStatus.push(completed);
-                                x.class = 'text-orange-500';
-                                break;
-                            case 'Cancelled':
-                                x.class = 'text-red-500';
-                                break;
-                            case 'Confirm':
-                                x.actionStatus.push(cancel);
-                                x.actionStatus.push(reject);
-                                x.class = 'text-green-500';
-                                break;
-                            case 'Rejected':
-                                x.class = 'text-red-500';
-                                break;
-                            case 'Completed':
-                                x.class = 'text-green-500';
-                                break;
-                            case 'Quotation Sent':
-                                x.actionStatus.push(cancel);
-                                x.class = 'text-blue-500';
-                                break;
-                            case 'Expired':
-                                x.class = 'text-red-500';
-                                break;
-                        }
-                    })
-                    this.dataList = data.data;
-                    this.totalRecords = data.total;
-                    if (this.dataList && this.dataList.length) {
-                        setTimeout(() => {
-                          this.isFrozenColumn('', ['reference_no']);
-                        }, 200);
+                data.data.forEach(x => {
+                    x.actionStatus = [];
+                    switch (x.amendment_status) {
+                        case 'Pending':
+                            x.actionStatus.push(cancel);
+                            x.actionStatus.push(sendRequest);
+                            x.class = 'text-gray-500';
+                            break;
+                        case 'Inprocess':
+                            x.actionStatus.push(cancel);
+                            x.actionStatus.push(reject);
+                            // x.actionStatus.push(completed);
+                            x.class = 'text-orange-500';
+                            break;
+                        case 'Cancelled':
+                            x.class = 'text-red-500';
+                            break;
+                        case 'Confirm':
+                            x.actionStatus.push(cancel);
+                            x.actionStatus.push(reject);
+                            x.class = 'text-green-500';
+                            break;
+                        case 'Rejected':
+                            x.class = 'text-red-500';
+                            break;
+                        case 'Completed':
+                            x.class = 'text-green-500';
+                            break;
+                        case 'Quotation Sent':
+                            x.actionStatus.push(cancel);
+                            x.class = 'text-blue-500';
+                            break;
+                        case 'Expired':
+                            x.class = 'text-red-500';
+                            break;
                     }
-                },
-                error: (err) => {
-                    this.toasterService.showToast('error', err)
-                    this.isLoading = false;
-                },
-            });
-    }
-
-    changeStatus(data, status): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.changeStatusPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: 'Status Change to ' + status.status,
-            message: 'Are you sure to change status to ' + status.status + ' ?',
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed')
-                this.amendmentrequestsService.setAmendmentStatus(data.id, status.status).subscribe((data) => {
-                    this.refreshItems();
-                    this.alertService.showToast('success', "Amendment status changed!", "top-right", true);
-                })
-        })
-    }
-
-    filter() {
-        this.matDialog
-            .open(FilterComponent, {
-                data: this.AmendmentFilter,
-                disableClose: true,
-            })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res) {
-                    this.AmendmentFilter = res;
-                    this.refreshItems();
+                });
+                this.dataList = data.data;
+                this.totalRecords = data.total;
+                if (this.dataList && this.dataList.length) {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['reference_no']);
+                    }, 200);
                 }
-            });
+            }, error: (err) => {
+                this.toasterService.showToast('error', err)
+                this.isLoading = false;
+            },
+        });
     }
 
-    // complete(model): void {
-    //     const amendment = {}
-    //     amendment['agent_id'] = model.agent_id;
-    //     amendment['amendment_id'] = model.id;
-    //     amendment['payment_method'] = 'Wallet';
-    //     this.confirmationService.open({
-    //         title: 'Amendment process',
-    //         message: 'Are you sure to complete this amendment process ?',
-    //         icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-    //     }).afterClosed().subscribe(res => {
-    //         if (res === 'confirmed') {
-    //             this.amendmentrequestsService.amendmentChargesDeduction(amendment).subscribe(() => {
-    //                 this.alertService.showToast('success', "Amendment process completed!", "top-right", true);
-    //                 this.refreshItems();
-    //             })
-    //         }
-    //     })
-    // }
-
-    confirm(model) {
-        if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        const json = {
-            id: model.id,
-            status: 'Confirm'
-        }
-        this.confirmationService.open({
-            title: 'Amendment Confirm',
-            message: 'Are you sure to confirm this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.setAmendmentStatusQ(json).subscribe(() => {
-                    this.alertService.showToast('success', "Amendment confirmed!", "top-right", true);
-                    this.refreshItems();
-                })
+    // Filter Dialog Open
+    filter() {
+        this.matDialog.open(FilterComponent, {
+            data: this.AmendmentFilter,
+            disableClose: true,
+        }).afterClosed().subscribe((res) => {
+            if (res) {
+                this.AmendmentFilter = res;
+                this.refreshItems();
             }
-        })
+        });
     }
 
+    // Status wise color
     getStatusColor(status: string): string {
-        if (status == 'Pending' || status == 'Inprocess' || status == 'Partial Cancellation Pending' || status =='Request Sent to Supplier' || status == 'Cancellation Pending') {
+        if (status == 'Refund Process' || status == 'Inprocess') {
             return 'text-orange-600';
-        } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed') {
+        } else if (status == 'Quotation Sent' || status == "Partial Payment Completed") {
             return 'text-yellow-600';
-        } else if (status == 'Completed' || status == 'Confirm') {
+        } else if (status == 'Quotation Confirmed By TA' || status == 'Completed' || status == 'Confirm' || status == 'Quotation Confirmed') {
             return 'text-green-600';
-        } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected') {
+        } else if (status == 'Request to Supplier Failed' || status == "Quotation Rejected By TA" || status == "Rejected" || status == "Cancelled") {
             return 'text-red-600';
-        } else if (status == 'Quotation Sent') {
+        } else if (status == 'Request Sent to Supplier' || status == "Confirmation Sent To Supplier" || status == "Payment Completed" || status == "Refund Completed") {
             return 'text-blue-600';
         } else {
             return '';
         }
     }
 
-    completeAmendment(model) {
+    // Agent status wise color
+    getStatusColorForAgent(status: string): string {
+        if (status == 'Request Sent' || status == 'Inprocess') {
+            return 'text-orange-600';
+        } else if (status == 'Partial Payment Completed') {
+            return 'text-yellow-600';
+        } else if (status == 'Quotation Confirmed' || status == 'Completed') {
+            return 'text-green-600';
+        } else if (status == 'Quotation Rejected' || status == 'Rejected' || status == 'Cancelled') {
+            return 'text-red-600';
+        } else if (status == 'Quotation Received' || status == 'Payment Completed' || status == 'Refund Initiated') {
+            return 'text-blue-600';
+        } else {
+            return '';
+        }
+    }
+
+    // Complete Amendment
+    completeAmendment(model: any) {
         if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -508,85 +503,46 @@ export class AmendmentRequestsListComponent
         })
     }
 
-    showUpdateCharge(data): boolean {
-        return ['Inprocess', 'Quotation Sent'].includes(data.amendment_status);
-        // return (data.amendment_status);
+    // Show update charge
+    showUpdateCharge(data: any): boolean {
+        return (data.amendment_status != 'Rejected' && data.amendment_status != 'Completed' && data.amendment_status != 'Cancelled');
     }
 
-    updateCharge(model): void {
+    // Update Charge Drawer Action
+    updateCharge(model: any): void {
         if (!Security.hasPermission(amendmentRequestsPermissions.updateChargePermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.matDialog.open(UpdateChargeComponent, {
-            data: model,
-            disableClose: true
-        }).afterClosed().subscribe(res => {
-            if (res) {
-                this.alertService.showToast('success', "Charge has been Updated!", "top-right", true);
-                this.refreshItems();
-            }
-        })
+        // UpdateChargeComponent
+        this.entityService.raiseUpdateChargeCall({ data: model });
     }
 
-    inprocess(model): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
+    // Confirmation Action
+    confirmation(data: any): void {
         this.confirmationService.open({
-            title: 'Amendment Inprocess',
-            message: 'Are you sure to inprocess this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.amendmentInprocess({id: model.id}).subscribe(() => {
-                    this.alertService.showToast('success', "Amendment inprocessed!", "top-right", true);
-                    this.refreshItems();
+            title: "Confirm Amendment",
+            message: 'Are you sure to confirm ' + data.reference_no + ' amendment?'
+        }).afterClosed().subscribe(ress => {
+            if (ress === 'confirmed') {
+                const json = {
+                    id: data.id
+                }
+
+                this.amendmentrequestsService.confirmAmendment(json).subscribe({
+                    next: (res) => {
+                        this.alertService.showToast('success', 'Amendment Confirmed!');
+                        this.refreshItems();
+                    }, error: (err) => {
+                        this.alertService.showToast('error', err)
+                    }
                 })
             }
         })
     }
 
-    refundInitiate(model): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: 'Amendment Refund Initiate',
-            message: 'Are you sure to refund initiate this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.amendmentRefundInitiate({id: model.id}).subscribe(() => {
-                    this.alertService.showToast('success', "Amendment refund initiated!", "top-right", true);
-                    this.refreshItems();
-                })
-            }
-        })
-    }
-
-    complete(model): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: 'Amendment Complete',
-            message: 'Are you sure to complete this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.completeAmendment(model.id).subscribe(() => {
-                    this.alertService.showToast('success', "Amendment completed!", "top-right", true);
-                    this.refreshItems();
-                })
-            }
-        })
-    }
-
-    statusLogs(model): void {
+    // Status Logs Action
+    statusLogs(model: any): void {
         if (!Security.hasPermission(amendmentRequestsPermissions.statusLogsPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -597,18 +553,85 @@ export class AmendmentRequestsListComponent
         })
     }
 
-    viewInternal(record): void {
+    // Inprocess Action
+    inprocess(model: any): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
-        this.matDialog.open(AmendmentRequestEntryComponent, {
-            data: { data: record, readonly: true, showUpdateCharge: this.showUpdateCharge(record) },
-            disableClose: true
+        this.confirmationService.open({
+            title: 'Amendment Inprocess',
+            message: 'Are you sure to inprocess this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
         }).afterClosed().subscribe(res => {
-            if (res) {
-                this.refreshItems();
+            if (res === 'confirmed') {
+                this.amendmentrequestsService.amendmentInprocess({ id: model.id }).subscribe({
+                    next: (data) => {
+                        this.alertService.showToast('success', "Amendment inprocessed!", "top-right", true);
+                        this.refreshItems();
+                    }, error: (err) => {
+                        this.alertService.showToast("error", err);
+                    },
+                })
             }
         })
     }
 
+    // Refund Initiate Action
+    refundInitiate(model: any): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.confirmationService.open({
+            title: 'Amendment Refund Initiate',
+            message: 'Are you sure to refund initiate this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentrequestsService.amendmentRefundInitiate({ id: model.id }).subscribe({
+                    next: (data) => {
+                        this.alertService.showToast('success', "Amendment refund initiated!", "top-right", true);
+                        this.refreshItems();
+                    }, error: (err) => {
+                        this.alertService.showToast("error", err);
+                    },
+                })
+            }
+        })
+    }
+
+    // Complete Action
+    complete(model: any): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.confirmationService.open({
+            title: 'Amendment Complete',
+            message: 'Are you sure to complete this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentrequestsService.completeAmendment(model.id).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', "Amendment completed!", "top-right", true);
+                        this.refreshItems();
+                    }, error: (err) => {
+                        this.alertService.showToast("error", err);
+                    },
+                })
+            }
+        })
+    }
+
+    // Info Drawer Action
+    viewInternal(record: any): void {
+        // AmendmentRequestEntryComponent
+        this.entityService.raiseAmendmentInfoCall({ data: record });
+    }
+
+    // No Data Text
     getNodataText(): string {
         if (this.isLoading) return 'Loading...';
         else if (this.searchInputControl.value)
@@ -616,10 +639,7 @@ export class AmendmentRequestsListComponent
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
-    }
-
+    // Export Excel
     exportExcel(): void {
         if (!Security.hasExportDataPermission(this.module_name)) {
             return this.alertService.showToast('error', messages.permissionDenied);
@@ -659,6 +679,7 @@ export class AmendmentRequestsListComponent
                     { header: 'GDS PNR', property: 'gds_pnr' },
                     { header: 'Request On', property: 'amendment_request_time' },
                     { header: 'Travel Date', property: 'travel_date' },
+                    { header: 'Agent Status', property: 'status_for_agent' },
                     { header: 'Confirmed', property: 'amendment_confirmation_time' },
                 ],
                 data.data, "Amendment Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]);

@@ -43,7 +43,9 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 export class StatusLogComponent {
   record: any = {};
   logList: any[] =[];
-
+  splitFormat = "<<split>>"
+  replaceFormat = "<<replace>>"
+  
   constructor(
     public matDialogRef: MatDialogRef<StatusLogComponent>,
     public alertService: ToasterService,

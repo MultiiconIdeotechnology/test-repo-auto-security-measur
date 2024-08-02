@@ -92,6 +92,15 @@
                         <span class="float-right" (click)="isFrozenColumn('amendment_status');$event.stopPropagation()">
                         </span>
                     </th>
+
+                    <th class="min-w-[145px]" pSortableColumn="status_for_agent" pResizableColumn>
+                        Agent Status <p-sortIcon field="status_for_agent" />
+                    </th>
+
+                    <th class="min-w-[145px]" pSortableColumn="reject_reason" pResizableColumn>
+                        Reject Reason <p-sortIcon field="reject_reason" />
+                    </th>
+
                     <th pSortableColumn="agency_name" pResizableColumn>
                         Agent <p-sortIcon field="agency_name" />
                     </th>
@@ -163,6 +172,26 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
+
+                    <th alignFrozen="left" pFrozenColumn>
+                        <p-columnFilter field="status_for_agent" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusListForAgent"
+                                    (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="reject_reason"
+                            placeholder="Search by Reason" ariaLabel="Filter Reason" />
+                    </th>
+
                     <th>
                         <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
                             [showMenu]="false">
@@ -278,50 +307,37 @@
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Update Charge</span>
                             </button>
-                            <!-- <button mat-menu-item
-                                *ngIf="element.amendment_status === 'Confirm' && element.amendment_status !== 'Quotation Sent'"
-                                (click)="complete(element)">
-                                <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
-                                <span style="font-weight: 600">Complete</span>
-                            </button> -->
 
-                            <button mat-menu-item (click)="completeAmendment(element)"
-                                *ngIf="element.amendment_status == 'Confirm' || isMenuOpen">
+                            <mat-divider
+                                *ngIf="((element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || 
+                                    element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed' || 
+                                    (element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received')) || isMenuOpen"></mat-divider>
+                          
+                                    <button mat-menu-item (click)="inprocess(element)"
+                                *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || isMenuOpen">
+                                <mat-icon class="mat-18">send</mat-icon>
+                                <span style="font-weight: 600">Inprocess</span>
+                            </button>
+
+                            <button mat-menu-item (click)="refundInitiate(element)" *ngIf="(element.amendment_status.toLowerCase() == 'confirmation sent to supplier' && 
+                                (element.amendment_type.toLowerCase() != 'reissue quotation' && element.amendment_type.toLowerCase() != 'correction quotation' &&
+                                element.amendment_type.toLowerCase() != 'wheel chair request' && element.amendment_type.toLowerCase() != 'meal quotation(ssr)'
+                                && element.amendment_type.toLowerCase() != 'baggage quotation(ssr)' )) || isMenuOpen">
+                                <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
+                                <span style="font-weight: 600">Refund Initiate</span>
+                            </button>
+
+                            <button mat-menu-item (click)="complete(element)"
+                                *ngIf="(element.amendment_status.toLowerCase() == 'refund completed') || isMenuOpen">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Complete</span>
                             </button>
 
-                            <button mat-menu-item (click)="confirm(element)"
-                                *ngIf="(element.amendment_status == 'Quotation Sent' || element.amendment_status == 'Partial Cancellation Pending') || isMenuOpen">
+                            <button mat-menu-item (click)="confirmation(element)"
+                                *ngIf="(element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received') || isMenuOpen">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Confirm</span>
                             </button>
-
-                            <button mat-menu-item (click)="changeStatus(element, status)"
-                                *ngFor="let status of element.actionStatus">
-                                <mat-icon class="mat-18">{{status.icon}}</mat-icon>
-                                <span style="font-weight: 600">{{status.label}}</span>
-                            </button>
-
-                            <!-- <mat-divider
-                                *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || 
-                                    element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed'"></mat-divider>
-
-                            <button mat-menu-item (click)="inprocess(element)"
-                                *ngIf="element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta'">
-                                <mat-icon class="mat-18">text_snippet</mat-icon>
-                                <span style="font-weight: 600">Inprocess</span>
-                            </button>
-                            <button mat-menu-item (click)="refundInitiate(element)"
-                                *ngIf="element.amendment_status.toLowerCase() == 'confirmation sent to supplier'">
-                                <mat-icon class="mat-18">text_snippet</mat-icon>
-                                <span style="font-weight: 600">Refund Initiate</span>
-                            </button>
-                            <button mat-menu-item (click)="complete(element)"
-                                *ngIf="element.amendment_status.toLowerCase() == 'refund completed'">
-                                <mat-icon class="mat-18">text_snippet</mat-icon>
-                                <span style="font-weight: 600">Complete</span>
-                            </button> -->
 
                             <mat-divider></mat-divider>
                             <button mat-menu-item (click)="statusLogs(element)">
@@ -341,6 +357,14 @@
                         <span [ngClass]="getStatusColor(element.amendment_status)">
                             {{element.amendment_status || "-"}}
                         </span>
+                    </td>
+                    <td>
+                        <span [ngClass]="getStatusColorForAgent(element.status_for_agent)">
+                            {{element.status_for_agent || "-"}}
+                        </span>
+                    </td>
+                    <td>
+                        {{element.reject_reason || "-"}}
                     </td>
                     <td>
                         {{element.agency_name || "-"}}
@@ -388,3 +412,6 @@
         </p-table>
     </div>
 </div>
+
+<app-update-charge></app-update-charge>
+<app-amendment-request-entry></app-amendment-request-entry>

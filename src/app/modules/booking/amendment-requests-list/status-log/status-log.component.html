@@ -11,13 +11,22 @@
     <div class="px-8 py-4">
         <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
             <ul *ngIf="logList.length > 0">
-               <li class="mb-3 flex items-center" *ngFor="let af of logList"><span class="w-[10px] h-[10px] rounded-full bg-primary mr-4"></span><span>{{af}}</span></li> 
+                <li class="mb-3 flex flex-row items-center" *ngFor="let af of logList">
+                    <span class="w-[10px] min-w-[10px] h-[10px] rounded-full bg-primary mr-4">
+                    </span>
+                    <div class="flex flex-col gap-1">
+                        <span>{{af.split(splitFormat).length > 0 ? af.split(splitFormat)[0] : ' - '}}</span>
+                        <span class="text-sm text-secondary"
+                            *ngIf="af.split(splitFormat).length > 1">{{af.split(splitFormat).length > 1 ?
+                            af.split(splitFormat)[1].replaceAll(replaceFormat,' | ') : ' - '}}</span>
+                    </div>
+                </li>
             </ul>
             <div *ngIf="logList.length < 1" class="text-center w-full">
                 <div class="text-xl font-medium">No Status Logs Available!</div>
             </div>
         </div>
-    
+
         <!-- <div class="flex items-center justify-end mt-4 pb-4 space-x-4">
             <button mat-stroked-button (click)="matDialogRef.close()">
                 Close

@@ -56,6 +56,10 @@ export class AmendmentRequestsService {
     return this.http.post<any>(this.baseUrl + 'AirAmendment/completeAmendment', {id:id});
   }
 
+  confirmAmendment(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AirAmendment/confirmAmendment", model);
+  }
+
   SendAmendmentEmailToSupplier(id: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'AirAmendment/SendAmendmentEmailToSupplier', {id:id});
   }
