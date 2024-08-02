@@ -27,6 +27,8 @@ import { GridUtils } from 'app/utils/grid/gridUtils';
 import { takeUntil, debounceTime, filter } from 'rxjs';
 import { FilterComponent } from '../filter/filter.component';
 import { AgentService } from 'app/services/agent.service';
+import { BankDetailsRightComponent } from '../bank-details-right/bank-details-right.component';
+import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
 
 @Component({
   selector: 'app-withdraw-list',
@@ -55,6 +57,8 @@ import { AgentService } from 'app/services/agent.service';
     WPendingComponent,
     WAuditedComponent,
     WRejectedComponent,
+    BankDetailsRightComponent,
+    InfoWithdrawComponent
   ],
 })
 export class WithdrawListComponent extends BaseListingComponent implements OnDestroy {
@@ -70,6 +74,7 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   isThird: boolean = true
   filterData: any = {};
   module_name = module_name.withdraw
+  agentData: any[] = [];
 
   @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
   @ViewChild(MatSort) public _sortPending: MatSort;
@@ -82,6 +87,10 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   @ViewChild(MatPaginator) public _paginatorRejected: MatPaginator;
   @ViewChild(MatSort) public _sortRejected: MatSort;
   searchInputControlRejected = new FormControl('');
+
+  isFilterShowPending: boolean = false;
+  isFilterShowAudit: boolean = false;
+  isFilterShowReject: boolean = false;
 
   constructor(
     private agentService: AgentService,
@@ -136,6 +145,7 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
       )
       .subscribe((value) => {
         this.pending.searchInputControlPending.patchValue(value)
+        
       });
 
     this.searchInputControlAudit.valueChanges
@@ -156,6 +166,26 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
         this.rejected.searchInputControlRejected.patchValue(value)
       });
 
+      this.getAgentList("");
+  }
+
+  getAgentList(value: string) {
+    this.agentService.getAgentCombo(value).subscribe((data) => {
+      this.agentData = data;
+      
+    })
+  }
+
+  rejectedRefresh(){
+    this.rejected.refreshItemsRejected()
+  }
+
+  auditedRefresh(){
+    this.audited.refreshItemsAudited()
+  }
+  
+  pendingRefresh(){
+    this.pending.refreshItemsPending()
   }
 
   public tabChanged(event: any): void {
@@ -168,20 +198,19 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
       case 'Pending':
         this.tab = 'Pending';
         break;
-
       case 'Audited':
         this.tab = 'Audited';
         if (this.isSecound) {
-          this.audited.refreshItemsAudited()
           this.isSecound = false
+          this.audited.refreshItemsAudited()
         }
         break;
 
       case 'Rejected':
         this.tab = 'Rejected';
         if (this.isThird) {
-          this.rejected.refreshItemsRejected()
           this.isThird = false
+          this.rejected.refreshItemsRejected()
         }
         break;
     }

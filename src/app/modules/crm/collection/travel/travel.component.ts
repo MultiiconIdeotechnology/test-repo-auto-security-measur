@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,7 +20,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name, travelCollectionPermissions } from 'app/security';
+import { Security, messages, module_name, partnerPurchaseProductPermissions, travelCollectionPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -28,6 +28,12 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
 import { TravelDialCallEntryComponent } from '../travel-dial-call-entry/travel-dial-call-entry.component';
 import { TravelCallHistoryComponent } from '../travel-call-history/travel-call-history.component';
+import { PurchaseProductComponent } from '../../agent/purchase-product/purchase-product.component';
+import { DialTravelCallListComponent } from '../travel-dial-call-list/travel-dial-call-list.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
     selector: 'app-travel',
@@ -67,10 +73,17 @@ import { TravelCallHistoryComponent } from '../travel-call-history/travel-call-h
         MatMenuModule,
         MatDialogModule,
         CommonModule,
-        MatTabsModule
+        MatTabsModule,
+        PrimeNgImportsModule
     ]
 })
-export class TravelCollectionComponent {
+export class TravelCollectionComponent extends BaseListingComponent{
+    @Input() isFilterShowTravel: boolean;
+    @Input() dropdownListObj:{};
+
+    agentList:any[] = [];
+    selectedAgent:string;
+
     columns = [
         {
             key: 'calls',
@@ -83,7 +96,6 @@ export class TravelCollectionComponent {
             align: '',
             indicator: false,
             tooltip: false,
-            callAction: true
         },
         {
             key: 'acCode',
@@ -98,7 +110,7 @@ export class TravelCollectionComponent {
             tooltip: false,
         },
         {
-            key: 'name',
+            key: 'agencyName',
             name: 'Name',
             is_date: false,
             date_formate: '',
@@ -119,7 +131,7 @@ export class TravelCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'creditLimit',
@@ -131,7 +143,7 @@ export class TravelCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'policy',
@@ -143,7 +155,7 @@ export class TravelCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'amount',
@@ -155,14 +167,14 @@ export class TravelCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'dueDate',
             name: 'Due Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
+            is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
@@ -174,7 +186,7 @@ export class TravelCollectionComponent {
             name: 'Expiry Login',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
+            is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
@@ -207,43 +219,69 @@ export class TravelCollectionComponent {
 
     constructor(
         private crmService: CrmService,
-        private alertService: ToasterService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        private conformationService: FuseConfirmationService,
+        private agentService: AgentService
     ) {
+        super(module_name.techDashboard)
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'priorityid';
+        this.sortColumn = 'dueDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this
     }
 
     ngOnInit(): void {
-        this.searchInputControlTravel.valueChanges
-            .subscribe(() => {
-                GridUtils.resetPaginator(this._paginatorTravel);
-                this.refreshItems();
-            });
-        this.refreshItems();
+        // this.searchInputControlTravel.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginatorTravel);
+        //         this.refreshItems();
+        //     });
+        // this.refreshItems();
+
+        this.searchInputControlTravel.valueChanges.subscribe(() => {
+            // this.refreshItems();
+          });
+
     }
 
-    refreshItems(): void {
+    ngOnChanges(){
+        this.agentList = this.dropdownListObj['agentList'];
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorTravel,
-            this._sortTravel,
-            this.searchInputControlTravel.value
-        );
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginatorTravel,
+        //     this._sortTravel,
+        //     this.searchInputControlTravel.value
+        // );
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlTravel.value;
         this.crmService.getTravelCollectionList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginatorTravel.length = data.total;
+                // this._paginatorTravel.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
                 this.isLoading = false;
             },
         });
+    }
+
+   
+
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
     }
 
     getNodataText(): string {
@@ -270,11 +308,20 @@ export class TravelCollectionComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.matDialog.open(TravelDialCallEntryComponent, {
-            data: { data: record, readonly: true },
-            disableClose: true,
-        }).afterClosed().subscribe(res => {
-            if (res) {
+        // this.matDialog.open(TravelDialCallEntryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true,
+        // }).afterClosed().subscribe(res => {
+        //     if (res) {
+        //         this.refreshItems();
+        //     }
+        // })
+
+        this.matDialog.open(DialTravelCallListComponent, {
+            data: { data: record, readonly: true},
+            disableClose: true
+        }).afterClosed().subscribe({
+            next: (res) => {
                 this.refreshItems();
             }
         })
@@ -284,12 +331,19 @@ export class TravelCollectionComponent {
         if (!Security.hasPermission(travelCollectionPermissions.callHistoryPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        if (record?.calls > 0) {
-            this.matDialog.open(TravelCallHistoryComponent, {
-                data: { data: record, readonly: true },
-                disableClose: true
-            });
-        }
+        // this.matDialog.open(TravelCallHistoryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true
+        // });
+
+        this.matDialog.open(DialTravelCallListComponent, {
+            data: { data: record, readonly: true, selectedTabIndex: 3},
+            disableClose: true
+        }).afterClosed().subscribe({
+            next: (res) => {
+                this.refreshItems();
+            }
+        })
     }
 
     sendReminderEmail(record): void {
@@ -300,16 +354,51 @@ export class TravelCollectionComponent {
         //     data: { data: record, readonly: true },
         //     disableClose: true
         // });
+        const label: string = 'Send Reminders WA/Email';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.name + ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    const payload = {
+                        agent_id : record?.agentid
+                    }
+                    this.crmService.getTravelSendReminderWAEmail(payload).subscribe({
+                        next: () => {
+                            this.alertService.showToast(
+                                'success',
+                                'Send Reminders WA/Email is successfully!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+                    });
+                }
+            });
     }
 
-    paymentUpdate(record): void {
-        // if (!Security.hasPermission(agentPermissions.marketingMaterialPermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
-        // this.matDialog.open(MarketingMaterialsComponent, {
-        //     data: { data: record, readonly: true },
-        //     disableClose: true
-        // });
+    purchaseProduct(record): void {
+        if (!Security.hasPermission(partnerPurchaseProductPermissions.purchaseProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(PurchaseProductComponent, {
+            width: '1000px',
+            data: { data: record, readonly: true },
+            disableClose: true,
+        });
     }
 
     timeline(record): void {

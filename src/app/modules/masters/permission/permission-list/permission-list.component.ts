@@ -17,6 +17,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-permission-list',
@@ -42,6 +43,7 @@ import { ToasterService } from 'app/services/toaster.service';
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
+        PrimeNgImportsModule
     ],
 })
 export class PermissionListComponent extends BaseListingComponent {
@@ -129,7 +131,8 @@ export class PermissionListComponent extends BaseListingComponent {
             tooltip: true
         },
     ];
-    cols = [];
+    isFilterShow: boolean = false;
+
 
     constructor(
         private conformationService: FuseConfirmationService,
@@ -138,22 +141,22 @@ export class PermissionListComponent extends BaseListingComponent {
         private toasterService: ToasterService
     ) {
         super(module_name.permission);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'module_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.permissionService
-            .getPermissionList(this.getFilterReq())
+            .getPermissionList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                 },
                 error: (err) => {
                     this.alertService.showToast(
@@ -289,6 +292,6 @@ export class PermissionListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

@@ -1,92 +1,153 @@
-<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl">
-    <!-- list -->
-    <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto min-h-100 max-h-100">
-        <ng-container>
-            <div class="grid ">
-                <!-- Header -->
-                <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold dark:bg-gray-700 bg-white border-b"
-                    matSort matSortDisableClear (matSortChange)="refreshItemsPending()" matSortActive="entry_date_time" matSortDirection="desc">
-                    <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
-                        #
-                    </div>
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItemsPending($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        [globalFilterFields]="['entry_date_time', 'withdraw_amount', 'agent_Code', 'agent_name','account_number']"
+        styleClass="p-datatable-gridlines p-datatable-sm">
 
-                    <ng-container *ngFor="let col of columns">
-                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class"
-                            class="text-secondary">
-                            {{ col.name }}
-                        </div>
-                        <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                            {{ col.name }}
-                        </div>
-                    </ng-container>
-                </div>
-                <!-- Rows -->
-                <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                    <ng-container *ngFor="let ListItem of dataList">
-                        <div
-                            class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
-                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
-                                <mat-icon> more_vert </mat-icon>
-                            </button>
-                            <mat-menu #optionMenu>
-                                <button mat-menu-item (click)="view(ListItem)">
-                                    <mat-icon class="mat-18">info</mat-icon>
-                                    <span style="font-weight: 600">Info</span>
-                                </button>
-                                <button *ngIf="!ListItem.is_audited" mat-menu-item (click)="Audit(ListItem)">
-                                    <mat-icon class="mat-18">check_circle</mat-icon>
-                                    <span style="font-weight: 600;">Audit</span>
-                                </button>
-                                <button *ngIf="!ListItem.is_rejected" mat-menu-item (click)="Reject(ListItem)">
-                                    <mat-icon class="mat-18">close</mat-icon>
-                                    <span style="font-weight: 600;">Reject</span>
-                                </button>
-                            </mat-menu>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="entry_date_time" pResizableColumn
+                    pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.entry_date_time"
+                    [ngClass]="{'left-0': !frozenObj?.entry_date_time}">
+                    Date <p-sortIcon field="entry_date_time" />
+                    <span class="float-right" (click)="isFrozenColumn('entry_date_time');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.entry_date_time" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.entry_date_time" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                <th class="text-right" pSortableColumn="withdraw_amount" pResizableColumn>
+                    Amount <p-sortIcon field="withdraw_amount" />
+                </th>
+                <th pSortableColumn="agent_Code" pResizableColumn>
+                    Agent Code <p-sortIcon field="agent_Code" />
+                </th>
+                <th pSortableColumn="agent_name" pResizableColumn>
+                    Agency Name <p-sortIcon field="agent_name" />
+                </th>
+                <th class="w-full" pSortableColumn="account_number" pResizableColumn>
+                    Bank <p-sortIcon field="account_number" />
+                </th>
+            </tr>
 
-                            <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
+            <tr *ngIf="isFilterShowPending">
+                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.entry_date_time">
+                    <!-- <p-columnFilter field="entry_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                placeholder="Search by Entry Date"></p-calendar>
+                        </ng-template>
+                    </p-columnFilter> -->
+                    <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar selectionMode="range" [ngModel]="value"
+                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="withdraw_amount" placeholder="Search by Amount"
+                        ariaLabel="Filter Amount" />
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="agent_Code" placeholder="Search by Agent Code"
+                        ariaLabel="Filter Agent Code" />
+                </th>
+                <th>
+                    <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent Name"
+                        ariaLabel="Filter Agent Name" /> -->
 
-                                    <span *ngIf="col.isicon" class="text-center justify-center">
-                                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                                            (click)="downloadfile(ListItem[col.key])"
-                                            [matTooltip]="'Download'"></mat-icon>
-                                    </span>
-
-                                    <span *ngIf="col.is_boolean" class="text-center">
-                                        <mat-icon class="text-green-600" *ngIf="ListItem[col.key]">done</mat-icon>
-                                        <mat-icon class="text-red-600" *ngIf="!ListItem[col.key]">clear</mat-icon>
-                                    </span>
-
-                                    <div *ngIf=" col.key === 'mobile_number'">{{ListItem.mobile_code}}</div>
-
-                                    <div [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
-                                        <span class="truncate" *ngIf="!col.is_boolean && !col.isicon"
-                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
-                                            ListItem[col.key] || " " }}
-                                        </span>
+                    <p-columnFilter class="searchableDropdown" field="agent_id" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
+                                optionLabel="agency_name" [filter]="true" filterBy="agency_name"
+                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                [showClear]="true" appendTo="body" placeholder="Select a Agent">
+                                <ng-template let-employee pTemplate="item">
+                                    <div class="flex align-items-center gap-2">
+                                        <div [value]="employee.id">
+                                            <div class="m-0">
+                                                {{employee.code}} - {{employee.agency_name}}
+                                                <div class="text-sm text-slate-500">{{employee.email_address}}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </ng-container>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
-        </ng-container>
-
-        <ng-template #noGridItems>
-            <div class="p-8 flex items-center justify-center sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                {{getNodataTextPending()}}
-            </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="account_number" placeholder="Search by Bnak"
+                        ariaLabel="Filter Bank" />
+                </th>
+            </tr>
         </ng-template>
-    </div>
 
-    <mat-paginator
-        class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-        [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
-        [pageSize]="appConfig.pageSize" (page)="refreshItemsPending()"
-        [showFirstLastButtons]="appConfig.showFirstLastButtons">
-    </mat-paginator>
+        <ng-template pTemplate="body" let-element>
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
+
+                    <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="view(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600">Info</span>
+                        </button>
+                        <button *ngIf="!element.is_audited" mat-menu-item (click)="Audit(element)">
+                            <mat-icon class="mat-18">check_circle</mat-icon>
+                            <span style="font-weight: 600;">Audit</span>
+                        </button>
+                        <button *ngIf="!element.is_rejected" mat-menu-item (click)="Reject(element)">
+                            <mat-icon class="mat-18">close</mat-icon>
+                            <span style="font-weight: 600;">Reject</span>
+                        </button>
+                        <button mat-menu-item (click)="bankDetails(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600;">Bank Details</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.entry_date_time">
+                    {{(element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
+                </td>
+                <td class="text-right">
+                    {{element.currency_symbol}} {{element.withdraw_amount || '0'}}
+                </td>
+                <td>
+                    {{element.agent_Code || '-'}}
+                </td>
+                <td>
+                    {{element.agent_name || '-'}}
+                </td>
+                <td class="items-center">
+                    <span *ngIf="element.account_number && element.account_number.trim() != '-' "
+                        [matTooltip]="element.bank_audit ? 'Audit' : 'UnAudit'"
+                        class="w-2 max-w-2 min-w-2 h-2 max-h-2 inline-block me-1 rounded-full"
+                        [ngClass]="element.bank_audit ? 'bg-green-500' : 'bg-red-500'"></span>
+
+                    <span class="cursor-pointer border-b border-gray-500  truncate "
+                        (click)="element.account_number && element.account_number.trim() != '-' ? bankDetails(element) : null">{{element.account_number
+                        || '-'}}</span>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="6" class="text-center font-semibold text-lg">
+                    {{getNodataTextPending()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>

@@ -174,17 +174,25 @@ export class BookingDetailsComponent {
   }
 
   agentInfo(data): void {
-    if (data.is_master_agent == true) {
-      this.router.navigate([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly'])
+    if (data.master_agent_id) {
+    //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+    Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
     }
     else {
-      this.matDialog.open(SubAgentInfoComponent, {
-        data: { data: data, readonly: true, id: data.agent_id },
-        disableClose: true
-      })
+      this.B2BPartnerInfo();
+      // this.matDialog.open(SubAgentInfoComponent, {
+      //   data: { data: data, readonly: true, id: data.agent_id },
+      //   disableClose: true
+      // })
     }
   }
 
+  B2BPartnerInfo(){
+    this.matDialog.open(SubAgentInfoComponent, {
+          data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
+          disableClose: true
+        })
+  }
 
   pnr(model, status): void {
     this.matDialog.open(GdsPnrComponent, {
@@ -242,7 +250,9 @@ export class BookingDetailsComponent {
     })
       .afterClosed()
       .subscribe((res) => {
-        this.refreshData()
+        if(res){
+          this.refreshData()
+        }
       });
   }
 
@@ -279,7 +289,9 @@ export class BookingDetailsComponent {
     })
       .afterClosed()
       .subscribe((res) => {
-        this.refreshData()
+        if(res){
+          this.refreshData()
+        }
       });
   }
 
@@ -337,7 +349,7 @@ export class BookingDetailsComponent {
       }
       this.flighttabService.printBooking(json).subscribe({
         next: (res) => {
-          CommonUtils.downloadPdf(res.data, 'Print.pdf');
+          CommonUtils.downloadPdf(res.data, this.mainDataAll.booking_ref_no + '.pdf');
         }, error: (err) => {
           this.toastr.showToast('error', err)
         }
@@ -349,7 +361,7 @@ export class BookingDetailsComponent {
     const recordData = record == 'print' ? this.mainData[0].invoice_id : record
     this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, 'invoice.pdf');
+        CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }

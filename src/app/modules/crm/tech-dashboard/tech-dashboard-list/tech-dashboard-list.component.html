@@ -4,50 +4,139 @@
         <div class="text-3xl font-extrabold tracking-tight">
             {{ module_name }}
         </div>
-        <!-- Actions -->
+
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
-                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'"> -->
+               
+                <!-- <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <ng-container *ngIf="tabNameStr == 'Pending'">
-                    <input  matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'" [placeholder]="'Search'">
+                    <input matInput [formControl]="searchInputControlPending" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
                 </ng-container>
                 <ng-container *ngIf="tabNameStr == 'Completed'">
-                    <input  matInput [formControl]="searchInputControlArchive"
-                    [autocomplete]="'off'" [placeholder]="'Search'">
+                    <input matInput [formControl]="searchInputControlCompleted" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
+                </ng-container>
+                <ng-container *ngIf="tabNameStr == 'Expired'">
+                    <input matInput [formControl]="searchInputControlExpired" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
                 </ng-container>
 
-            </mat-form-field>
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'">
-                <mat-icon class="w-10 h-10">filter_alt</mat-icon>
-                <span class="">Filter</span>
-            </button> -->
+                <ng-container *ngIf="tabNameStr == 'Blocked'">
+                    <input matInput [formControl]="searchInputControlBlocked" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
+                </ng-container>
+            </mat-form-field> -->
 
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createInternal()" *ngIf="tabNameStr == 'Inbox'">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Add</span>
-            </button> -->
-            <ng-container *ngIf="tabNameStr == 'Pending'">
-            <button class="ml-4" mat-flat-button [color]="'primary'"  (click)="refreshItemsTab('Pending')">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Pending'">
+                <input matInput [formControl]="searchInputControlPending" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="pendingRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="pendingRefresh()"></mat-icon>
+            </div>
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Completed'">
+                <input matInput [formControl]="searchInputControlCompleted" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="completedRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="completedRefresh()"></mat-icon>
+            </div>
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Expired'">
+                <input matInput [formControl]="searchInputControlExpired" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="expiredRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="expiredRefresh()"></mat-icon>
+            </div>
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Blocked'">
+                <input matInput [formControl]="searchInputControlBlocked" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="blockedRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="blockedRefresh()"></mat-icon>
+            </div>
+
+
+
+            <!------global filter------>
+            <button *ngIf="this.tabNameStr == 'Pending'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading"
+                (click)="isFilterShowPending  = !isFilterShowPending">
+                <img *ngIf="!isFilterShowPending" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowPending" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
             </button>
-            </ng-container>
-            <ng-container *ngIf="tabNameStr == 'Completed'">
-                <button class="ml-4" mat-flat-button [color]="'primary'"  (click)="refreshItemsTab('Completed')">
+
+            <button *ngIf="this.tabNameStr == 'Completed'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading"
+                (click)="isFilterShowCompleted  = !isFilterShowCompleted ">
+                <img *ngIf="!isFilterShowCompleted" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowCompleted " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <button *ngIf="this.tabNameStr == 'Expired'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading"
+                (click)="isFilterShowExpired  = !isFilterShowExpired ">
+                <img *ngIf="!isFilterShowExpired" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowExpired " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <button *ngIf="this.tabNameStr == 'Blocked'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading"
+                (click)="isFilterShowBlocked  = !isFilterShowBlocked ">
+                <img *ngIf="!isFilterShowBlocked" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowBlocked " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <ng-container *ngIf="tabNameStr == 'Pending'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
-                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="tabNameStr == 'Completed'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Completed')">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+            </ng-container>
+            <ng-container *ngIf="tabNameStr == 'Expired'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Expired')">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+            </ng-container>
+
+            <ng-container *ngIf="tabNameStr == 'Blocked'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Blocked')">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+            </ng-container>
         </div>
     </div>
 
-    <!-- *ngIf="getTabsPermission('inbox')" -->
-    <mat-tab-group class="mt-3 lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
-        <mat-tab label="Pending" [aria-label]="'Pending'" >
-            <app-crm-tech-dashboard-pending #pending></app-crm-tech-dashboard-pending>
+    <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+        <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
+            <app-crm-tech-dashboard-pending #pending
+                [isFilterShowPending]="isFilterShowPending" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-pending>
         </mat-tab>
 
-        <!-- *ngIf="getTabsPermission('completed')" -->
-        <mat-tab label="Completed" [aria-label]="'Completed'">
-            <app-crm-tech-dashboard-completed #completed></app-crm-tech-dashboard-completed>
+        <mat-tab label="Completed" [aria-label]="'Completed'" *ngIf="getTabsPermission('completed')">
+            <ng-container *ngIf="tabNameStr == 'Completed'">
+            <app-crm-tech-dashboard-completed #completed
+                [isFilterShowCompleted]="isFilterShowCompleted" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-completed>
+            </ng-container>
+        </mat-tab>
+
+        <mat-tab label="Blocked" [aria-label]="'Blocked'" *ngIf="getTabsPermission('blocked')">
+            <ng-container *ngIf="tabNameStr == 'Blocked'">
+            <app-crm-tech-dashboard-blocked #blocked
+                [isFilterShowBlocked]="isFilterShowBlocked" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-blocked>
+            </ng-container>
+        </mat-tab>
+
+        <mat-tab label="Expired" [aria-label]="'Expired'" *ngIf="getTabsPermission('expired')">
+            <ng-container *ngIf="tabNameStr == 'Expired'">
+            <app-crm-tech-dashboard-expired #expired
+                [isFilterShowExpired]="isFilterShowExpired" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-expired>
+            </ng-container>
         </mat-tab>
     </mat-tab-group>
 </div>

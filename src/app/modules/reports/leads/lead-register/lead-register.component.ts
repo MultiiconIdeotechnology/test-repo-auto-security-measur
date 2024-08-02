@@ -16,10 +16,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterOutlet } from '@angular/router';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, leadPermissions, leadRegisterPermissions, messages, module_name } from 'app/security';
+import { RouterOutlet } from '@angular/router';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { Security, leadRegisterPermissions, messages, module_name } from 'app/security';
 import { LeadsRegisterService } from 'app/services/leads-register.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { FilterComponent } from './filter/filter.component';
@@ -30,280 +29,479 @@ import { ReshuffleComponent } from 'app/modules/masters/agent/reshuffle/reshuffl
 import { RMLogsComponent } from './rmlogs/rmlogs.component';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { EditLeadRegisterComponent } from './edit-lead-register/edit-lead-register.component';
+import { ImportLeadsComponent } from './import-leads/import-leads.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { LeadStatusChangedLogComponent } from 'app/modules/crm/lead/lead-status-changed-log/lead-status-changed-log.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { EmployeeService } from 'app/services/employee.service';
+import { AgentService } from 'app/services/agent.service';
+
 
 @Component({
-  selector: 'app-lead-register',
-  templateUrl: './lead-register.component.html',
-  styleUrls: ['./lead-register.component.scss'],
-  styles: [`
+    selector: 'app-lead-register',
+    templateUrl: './lead-register.component.html',
+    styleUrls: ['./lead-register.component.scss'],
+    styles: [`
   .tbl-grid {
     grid-template-columns: 40px 50px 110px 80px 190px 160px 130px 110px 180px 210px 120px 130px 120px 130px 120px 120px;
   }
   `],
-  standalone: true,
-  imports: [
-    NgIf,
-    NgFor,
-    DatePipe,
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatMenuModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatInputModule,
-    MatButtonModule,
-    MatTooltipModule,
-    NgClass,
-    RouterOutlet,
-    MatProgressSpinnerModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSelectModule,
-    NgxMatSelectSearchModule,
-    MatTabsModule,
-  ],
+    standalone: true,
+    imports: [
+        NgIf,
+        NgFor,
+        DatePipe,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatMenuModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule,
+        MatInputModule,
+        MatButtonModule,
+        MatTooltipModule,
+        NgClass,
+        RouterOutlet,
+        MatProgressSpinnerModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatSelectModule,
+        NgxMatSelectSearchModule,
+        MatTabsModule,
+        PrimeNgImportsModule
+    ],
 })
 export class LeadRegisterComponent extends BaseListingComponent implements OnDestroy {
 
-  dataList = [];
-  total = 0;
-  module_name = module_name.leads_register
-  leadFilter: any;
+    dataList = [];
+    total = 0;
+    module_name = module_name.leads_register
+    leadFilter: any;
+    deadLeadId: any;
+    isFilterShow: boolean = false;
 
-  constructor(
-    private confirmService: FuseConfirmationService,
-    private router: Router,
-    private leadsRegisterService: LeadsRegisterService,
-    private matDialog: MatDialog,
+    columns = [
+        { key: 'calls', name: 'Calls', callAction: true, tocalls: true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
+        { key: 'status', name: 'Status', toColor: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'priority_text', name: 'Priority', toColorP: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
+        { key: 'agency_name', name: 'Agency', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'rmName', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'lead_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
+        { key: 'lead_source', name: 'Source', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'contact_person_name', name: 'Contact Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'contact_person_email', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'contact_person_mobile', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'cityName', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'kycStarted', name: 'KYC Started', isLive: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'lastCallFeedback', name: 'Last Feedback', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'lastCall', name: 'Last Call', isDate: true, is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'leadDate', name: 'Lead Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+    ]
 
-    // private clipboard: Clipboard
-  ) {
-    super(module_name.leads_register)
-    this.cols = this.columns.map(x => x.key);
-    this.key = this.module_name;
-    this.sortColumn = 'leadDate';
-    this.sortDirection = 'desc';
-    this.Mainmodule = this;
+    selectedStatus:string;
+    selectedPriority:string;
+    selectedLeadType:string;
+    selectedLeadSource:string;
+    selectedKyc:string;
+    selectedAgent:string;
+    leadList:any[] = [];
+    employeeList:any[] = [];
+    agentList:any[] = [];
 
-    this.leadFilter = {
-      lead_type: 'All',
-      lead_status: 'All',
-      priority_text: 'All',
-      relationship_manager_id: '',
-      KYC_Status: 'All',
-      lead_source: '',
-    };
-  }
+    statusList: any[] = [
+        {label: 'New', value: 'New',  },
+        {label: 'Live', value: 'Live',  },
+        {label: 'Converted', value: 'Converted',  },
+        {label: 'Dead', value: 'Dead',  }
+      ];
 
-  columns = [
-    { key: 'calls', name: 'Calls', callAction: true, tocalls: true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-    { key: 'status', name: 'Status', toColor: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'priority_text', name: 'Priority', toColorP: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-    { key: 'agency_name', name: 'Agency', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'rmName', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'lead_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-    { key: 'lead_source', name: 'Source', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'contact_person_name', name: 'Contact Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'contact_person_email', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'contact_person_mobile', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'cityName', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'kycStarted', name: 'KYC Started', isLive: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'lastCallFeedback', name: 'Last Feedback', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'lastCall', name: 'Last Call', isDate: true, is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'leadDate', name: 'Lead Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-  ]
-  cols = [];
+      priorityText: any[] = [
+        { label: 'High', value: 'High' },
+        { label: 'Medium', value: 'Medium' },
+        { label: 'Low', value: 'Low' },
+      ];
 
-  getFilter(): any {
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginator,
-      this._sort,
-      this.searchInputControl.value
-    );
+      leadType: any[] = [
+        { label: 'B2B Partner', value: 'B2B Partner' },
+        { label: 'WL', value: 'WL' },
+        { label: 'Corporate', value: 'Corporate' },
+        { label: 'Supplier', value: 'Supplier' },
+        { label: 'Boost My Brand', value: 'Boost My Brand' },
+        { label: 'Build My Brand', value: 'Build My Brand' }
+      ];
 
-    filterReq['lead_type'] = this.leadFilter?.lead_type == 'All' ? '' : this.leadFilter?.lead_type;
-    filterReq['priority_text'] = this.leadFilter?.priority_text == 'All' ? '' : this.leadFilter?.priority_text;
-    filterReq['relationship_manager_id'] = this.leadFilter?.relationship_manager_id?.id || '';
-    filterReq['lead_status'] = this.leadFilter?.lead_status == 'All' ? '' : this.leadFilter?.lead_status;
-    filterReq['lead_source'] = this.leadFilter?.lead_source.lead_source == 'All' ? '' : this.leadFilter?.lead_source.lead_source || '';
-    filterReq['KYC_Status'] = this.leadFilter?.KYC_Status == 'All' ? '' : this.leadFilter?.KYC_Status;
-    return filterReq;
-  }
+      kycList: any[] = [
+        { label: 'Yes', value: 'Yes' },
+        { label: 'No', value: 'No' },
+      ]
 
-  refreshItems(): void {
-    this.isLoading = true;
-    this.leadsRegisterService.leadMasterRegisterList(this.getFilter()).subscribe({
-      next: (data) => {
-        this.dataList = data.data;
-        this.total = data.total;
-        this._paginator.length = data.total
-        this.isLoading = false;
-      }, error: (err) => {
-        this.alertService.showToast('error', err)
-        this.isLoading = false
-      }
-    });
-  }
+    cols = [];
+    _selectedColumns: Column[];
 
-  filter() {
-    this.matDialog
-      .open(FilterComponent, {
-        data: this.leadFilter,
-        disableClose: true,
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res) {
-          this.leadFilter = res;
-          this.refreshItems();
+
+    constructor(
+        private leadsRegisterService: LeadsRegisterService,
+        private matDialog: MatDialog,
+        private conformationService: FuseConfirmationService,
+        private employeeService: EmployeeService,
+        private agentService: AgentService
+    ) {
+        super(module_name.leads_register)
+        // this.cols = this.columns.map(x => x.key);
+        this.key = this.module_name;
+        this.sortColumn = 'leadDate';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+
+        this.leadFilter = {
+            lead_type: 'All',
+            lead_status: 'All',
+            priority_text: 'All',
+            relationship_manager_id: '',
+            KYC_Status: 'All',
+            lead_source: '',
+            date: 'All',
+            FromDate: null,
+            ToDate: null
+        };
+    }
+
+    ngOnInit() {
+        this.cols = [
+            { field: 'contact_person_mobile_code', header: 'Contact Person Mobile Code' }
+        ];
+
+        this.getAgent("");
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    getFilter(): any {
+        const filterReq = {};
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sort,
+        //     this.searchInputControl.value
+        // );
+
+
+        filterReq['lead_type'] = this.leadFilter?.lead_type == 'All' ? '' : this.leadFilter?.lead_type;
+        filterReq['priority_text'] = this.leadFilter?.priority_text == 'All' ? '' : this.leadFilter?.priority_text;
+        filterReq['relationship_manager_id'] = this.leadFilter?.relationship_manager_id?.id || '';
+        filterReq['lead_status'] = this.leadFilter?.lead_status == 'All' ? '' : this.leadFilter?.lead_status;
+        filterReq['lead_source'] = this.leadFilter?.lead_source.lead_source == 'All' ? '' : this.leadFilter?.lead_source.lead_source || '';
+        filterReq['KYC_Status'] = this.leadFilter?.KYC_Status == 'All' ? '' : this.leadFilter?.KYC_Status;
+        filterReq['date'] = this.leadFilter.date || 'Last Month';
+
+        if (this.leadFilter.FromDate !== null) {
+            filterReq['from_date'] = this.leadFilter.FromDate ? DateTime.fromJSDate(new Date(this.leadFilter.FromDate)).toFormat('yyyy-MM-dd') : null;
+            filterReq['to_date'] = this.leadFilter.ToDate ? DateTime.fromJSDate(new Date(this.leadFilter.ToDate)).toFormat('yyyy-MM-dd') : null;
         }
-      });
-  }
-
-  callHistory(record): void {
-    if (!Security.hasPermission(leadRegisterPermissions.callHistoryPermissions)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
-    }
-    if (record?.calls > 0) {
-      this.matDialog.open(CallHistoryComponent, {
-        data: { data: record, readonly: true },
-        disableClose: true
-      });
-    }
-  }
-
-  reShuffle() {
-    if (!Security.hasPermission(leadRegisterPermissions.reshufflePermissions)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
+        return filterReq;
     }
 
-    this.matDialog.open(ReshuffleComponent, {
-      data: 'Lead',
-      disableClose: true,
-    }).afterClosed().subscribe(res => {
-      if (res) {
-        // this.agentFilter = res;
-        // this.refreshItems();
-      }
-    })
-  }
-
-  getStatusColor(status: string): string {
-    if (status == 'Converted' || status == 'Live') {
-      return 'text-green-600';
-    } else if (status == 'Dead') {
-      return 'text-red-600';
-    } else if (status == 'New') {
-      return 'text-yellow-600';
-    } else {
-      return '';
-    }
-  }
-
-  getStatusColorP(status: string): string {
-    if (status == 'Low') {
-      return 'text-pink-600';
-    } else if (status == 'High') {
-      return 'text-red-600';
-    } else if (status == 'Medium') {
-      return 'text-yellow-600';
-    } else {
-      return '';
-    }
-  }
-
-  relationahipManager(record): void {
-    if (!Security.hasPermission(leadRegisterPermissions.relationshipManagerPermissions)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
+    refreshItems(event?:any): void {
+        this.isLoading = true;
+        let extraModel = this.getFilter();
+        let oldModel = this.getNewFilterReq(event)
+        let model = {...extraModel, ...oldModel};
+        this.leadsRegisterService.leadMasterRegisterList(model).subscribe({
+            next: (data) => {
+                this.dataList = data.data;
+                this.total = data.total;
+                this.totalRecords = data.total
+                this.isLoading = false;
+            }, error: (err) => {
+                this.alertService.showToast('error', err)
+                this.isLoading = false
+            }
+        });
     }
 
-    this.matDialog.open(RmdialogComponent, {
-      data: record,
-      disableClose: true
-    }).afterClosed().subscribe(res => {
-      if (res) {
+    // function to get the Agent list from api
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
 
-        const json = {
-          id: record.id,
-          relationship_manager_id: res.empId
-        }
-        this.leadsRegisterService.leadRMChange(json).subscribe({
-          next: () => {
-            this.alertService.showToast('success', "Relationship Manager Changed!");
-            this.refreshItems()
-          },
-          error: (err) => {
-            this.alertService.showToast('error', err, 'top-right', true);
-          },
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
         })
-      }
-    })
-  }
-
-  relationahipManagerLog(record): void {
-    if (!Security.hasPermission(leadRegisterPermissions.relationshipManagerLogsPermissions)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    this.matDialog.open(RMLogsComponent, {
-      data: record,
-      disableClose: true
-    });
-  }
+    // on clicking on filter for table column
+    onFilter(){
+        this.isFilterShow = !this.isFilterShow;
 
-  getNodataText(): string {
-    if (this.isLoading)
-      return 'Loading...';
-    else if (this.searchInputControl.value)
-      return `no search results found for \'${this.searchInputControl.value}\'.`;
-    else return 'No data to display';
-  }
-
-  exportExcel(): void {
-    if (!Security.hasExportDataPermission(module_name.leads_register)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
+        // first time api called to get the lead status data
+        this.getLeadStatus("");
+        this.getEmployee("");
     }
 
-    const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value,'leadDate',1);
-    filterReq['take'] = this._paginator.length;
-    filterReq['lead_type'] = this.leadFilter?.lead_type == 'All' ? '' : this.leadFilter?.lead_type;
-    filterReq['priority_text'] = this.leadFilter?.priority_text == 'All' ? '' : this.leadFilter?.priority_text;
-    filterReq['relationship_manager_id'] = this.leadFilter?.relationship_manager_id?.id || '';
-    filterReq['lead_status'] = this.leadFilter?.lead_status == 'All' ? '' : this.leadFilter?.lead_status;
-    filterReq['lead_source'] = this.leadFilter?.lead_source.lead_source == 'All' ? '' : this.leadFilter?.lead_source.lead_source || '';
-    filterReq['KYC_Status'] = this.leadFilter?.KYC_Status == 'All' ? '' : this.leadFilter?.KYC_Status;
+    // lead status data api to get data bind to dropdown on filter
+    getLeadStatus(val:string){
+        this.leadsRegisterService.leadSouceCombo(val).subscribe({
+            next: data => {
+              this.leadList = data;
+            }
+          });
+    }
 
-    this.leadsRegisterService.leadMasterRegisterList(filterReq).subscribe(data => {
-      for (var dt of data.data) {
-        dt.lastCall = DateTime.fromISO(dt.lastCall).toFormat('dd-MM-yyyy')
-        dt.leadDate = DateTime.fromISO(dt.leadDate).toFormat('dd-MM-yyyy')
-        dt.kycStarted = dt.kycStarted? 'Yes' : 'No'
-      }
-      Excel.export(
-        'Leads Register',
-        [
-          { header: 'Calls', property: 'calls' },
-          { header: 'Status', property: 'status' },
-          { header: 'Priority', property: 'priority_text' },
-          { header: 'Agency', property: 'agency_name' },
-          { header: 'RM', property: 'rmName' },
-          { header: 'Type', property: 'lead_type' },
-          { header: 'Source', property: 'lead_source' },
-          { header: 'Contact Person', property: 'contact_person_name' },
-          { header: 'Email', property: 'contact_person_email' },
-          { header: 'Mobile', property: 'contact_person_mobile' },
-          { header: 'City', property: 'cityName' },
-          { header: 'KYC Started', property: 'kycStarted' },
-          { header: 'Last Feedback', property: 'lastCallFeedback' },
-          { header: 'Last Call', property: 'lastCall' },
-          { header: 'Lead Date', property: 'leadDate' },
-          
-        ],
-        data.data, "Leads Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
-    });
-  }
+    getEmployee(value:string){
+        this.employeeService.getemployeeCombo(value).subscribe({
+            next: data => {
+              this.employeeList = data;
+            }
+          });
+    }
+
+    filter() {
+        this.matDialog
+            .open(FilterComponent, {
+                data: this.leadFilter,
+                disableClose: true,
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res) {
+                    this.leadFilter = res;
+                    this.refreshItems();
+                }
+            });
+    }
+
+    callHistory(record): void {
+        if (!Security.hasPermission(leadRegisterPermissions.callHistoryPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        this.matDialog.open(CallHistoryComponent, {
+            data: { data: record, readonly: true },
+            disableClose: true
+        });
+    }
+
+    reShuffle() {
+        if (!Security.hasPermission(leadRegisterPermissions.reshufflePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(ReshuffleComponent, {
+            data: 'Lead',
+            disableClose: true,
+        }).afterClosed().subscribe(res => {
+            if (res) {
+                // this.agentFilter = res;
+                // this.refreshItems();
+            }
+        })
+    }
+
+    importLeads() {
+        if (!Security.hasPermission(leadRegisterPermissions.importPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(ImportLeadsComponent, {
+            data: null,
+            disableClose: true
+        }).afterClosed().subscribe(res => {
+            if (res) {
+                this.refreshItems();
+            }
+        })
+    }
+
+    getStatusColor(status: string): string {
+        if (status == 'Converted' || status == 'Live') {
+            return 'text-green-600';
+        } else if (status == 'Dead') {
+            return 'text-red-600';
+        } else if (status == 'New') {
+            return 'text-yellow-600';
+        } else {
+            return '';
+        }
+    }
+
+    getStatusColorP(status: string): string {
+        if (status == 'Low') {
+            return 'text-pink-600';
+        } else if (status == 'High') {
+            return 'text-red-600';
+        } else if (status == 'Medium') {
+            return 'text-yellow-600';
+        } else {
+            return '';
+        }
+    }
+
+    relationahipManager(record): void {
+        if (!Security.hasPermission(leadRegisterPermissions.relationshipManagerPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(RmdialogComponent, {
+            data: record,
+            disableClose: true
+        }).afterClosed().subscribe(res => {
+            if (res) {
+
+                const json = {
+                    id: record.id,
+                    relationship_manager_id: res.empId
+                }
+                this.leadsRegisterService.leadRMChange(json).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', "Relationship Manager Changed!");
+                        this.refreshItems()
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                    },
+                })
+            }
+        })
+    }
+
+    relationahipManagerLog(record): void {
+        if (!Security.hasPermission(leadRegisterPermissions.relationshipManagerLogsPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(RMLogsComponent, {
+            data: record,
+            disableClose: true
+        });
+    }
+
+    getNodataText(): string {
+        if (this.isLoading)
+            return 'Loading...';
+        else if (this.searchInputControl.value)
+            return `no search results found for \'${this.searchInputControl.value}\'.`;
+        else return 'No data to display';
+    }
+
+    editLeadRegister(record): void {
+        this.matDialog.open(EditLeadRegisterComponent, {
+            data: { data: record, readonly: false },
+            disableClose: true
+        }).afterClosed().subscribe(res => {
+            if (res) {
+                this.refreshItems();
+            }
+        })
+    }
+
+    exportExcel(): void {
+        if (!Security.hasExportDataPermission(module_name.leads_register)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        // const req = this.getFilter();
+        // req.Skip = 0;
+        // req.Take = this.totalRecords;
+
+        const filterReq = this.getNewFilterReq({});
+        filterReq['Take'] = this.totalRecords;
+        filterReq['lead_type'] = this.leadFilter?.lead_type == 'All' ? '' : this.leadFilter?.lead_type;
+        filterReq['priority_text'] = this.leadFilter?.priority_text == 'All' ? '' : this.leadFilter?.priority_text;
+        filterReq['relationship_manager_id'] = this.leadFilter?.relationship_manager_id?.id || '';
+        filterReq['lead_status'] = this.leadFilter?.lead_status == 'All' ? '' : this.leadFilter?.lead_status;
+        filterReq['lead_source'] = this.leadFilter?.lead_source.lead_source == 'All' ? '' : this.leadFilter?.lead_source.lead_source || '';
+        filterReq['KYC_Status'] = this.leadFilter?.KYC_Status == 'All' ? '' : this.leadFilter?.KYC_Status;
+        filterReq['date'] = this.leadFilter.date || 'Last Month';
+        filterReq['Filter'] = this.searchInputControl.value ? this.searchInputControl.value : ""
+
+        if (this.leadFilter.FromDate !== null && this.leadFilter.ToDate !== null) {
+            filterReq['from_date'] = this.leadFilter.FromDate ? DateTime.fromJSDate(new Date(this.leadFilter.FromDate)).toFormat('yyyy-MM-dd') : null;
+            filterReq['to_date'] = this.leadFilter.ToDate ? DateTime.fromJSDate(new Date(this.leadFilter.ToDate)).toFormat('yyyy-MM-dd') : null;
+        }
+
+        this.leadsRegisterService.leadMasterRegisterList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                if (dt.lastCallFeedback == null) {
+                    dt.lastCall = dt.lastCallFeedback == null ? null : DateTime.fromISO(dt.lastCall).toFormat('dd-MM-yyyy')
+                }
+                dt.leadDate = DateTime.fromISO(dt.leadDate).toFormat('dd-MM-yyyy')
+                // dt.lastCall = DateTime.fromISO(dt.lastCall).toFormat('dd-MM-yyyy')
+                dt.kycStarted = dt.kycStarted ? 'Yes' : 'No'
+            }
+            Excel.export(
+                'Leads Register',
+                [
+                    { header: 'Calls', property: 'calls' },
+                    { header: 'Status', property: 'status' },
+                    { header: 'Priority', property: 'priority_text' },
+                    { header: 'Agency', property: 'agency_name' },
+                    { header: 'RM', property: 'rmName' },
+                    { header: 'Type', property: 'lead_type' },
+                    { header: 'Source', property: 'lead_source' },
+                    { header: 'Contact Person', property: 'contact_person_name' },
+                    { header: 'Email', property: 'contact_person_email' },
+                    { header: 'Mobile', property: 'contact_person_mobile' },
+                    { header: 'City', property: 'cityName' },
+                    { header: 'KYC Started', property: 'kycStarted' },
+                    { header: 'Last Feedback', property: 'lastCallFeedback' },
+                    { header: 'Last Call', property: 'lastCall' },
+                    { header: 'Lead Date', property: 'leadDate' },
+                ],
+                data.data, "Leads Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
+        });
+    }
+
+    deadLeadToLiveLead(record, index): void {
+        if (!Security.hasPermission(leadRegisterPermissions.deadLeadToLiveLeadPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        this.deadLeadId = record?.id;
+        const label: string = 'Dead Lead To Live Lead'
+        this.conformationService.open({
+            title: label,
+            message: 'Are you sure to ' + record?.agency_name + ' ?',
+            inputBox: 'Status Remark',
+            customShow: true
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res?.action === 'confirmed') {
+                    const newJson = {
+                        id: this.deadLeadId,
+                        status_remark: res?.statusRemark ? res?.statusRemark : ""
+                    }
+
+                    this.leadsRegisterService.deadLeadToLiveLead(newJson).subscribe({
+                        next: (res) => {
+                            if (res) {
+                                // this.dataList.splice(index, 1);
+                                this.refreshItems()
+                            }
+                            this.alertService.showToast('success', "Dead Lead To Live Lead Successfully!", "top-right", true);
+                            this.isLoading = false;
+                        }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+                    });
+                }
+            }
+        })
+    }
+
+    statusChangedLog(record): void {
+        // if (!Security.hasPermission(agentsPermissions.statusChangedLogsPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.matDialog.open(LeadStatusChangedLogComponent, {
+            data: record,
+            disableClose: true
+        });
+    }
 }

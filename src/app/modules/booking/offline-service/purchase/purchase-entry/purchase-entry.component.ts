@@ -104,7 +104,7 @@ export class PurchaseEntryComponent {
 
   formGroup: FormGroup;
   title = "Purchase Entry"
-  btnLabel = "Create"
+  btnLabel = "Submit"
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
@@ -119,6 +119,7 @@ export class PurchaseEntryComponent {
       supplier_booking_ref_no: [''],
       purchase_amount: [''],
       supplier_invoice: [''],
+      supplier_confirmation_proof: [''],
       roe: [''],
       currency: [''],
     })
@@ -160,15 +161,12 @@ export class PurchaseEntryComponent {
           this.readonly = this.data.readonly;
           if (this.readonly) {
             this.fieldList = [
-              { name: 'Ref.No', value: data.supplier_booking_ref_no },
-              { name: 'Service Type', value: data.service_type },
-              { name: 'Service Particular', value: data.service_particular },
-              { name: 'Service Remark', value: data.service_remark },
-              { name: 'Service Date', value: data.service_date ? DateTime.fromISO(data.service_date).toFormat('dd-MM-yyyy') : '' },
-              { name: 'Supplier Name', value: data.supplier_name },
-              { name: 'Purchase Amount', value: data.purchase_amount },
-              { name: 'Currency', value: data.currency },
+              { name: 'Service Type', value: data.service_type ,isTooltip : true},
+              { name: 'Supplier', value: data.supplier_name },
+              { name: 'Purchase Amount', value: data.purchase_amount + data.currency },
               { name: 'ROE', value: data.roe },
+              { name: 'Service Date', value: data.service_date ? DateTime.fromISO(data.service_date).toFormat('dd-MM-yyyy') : '' },
+              { name: 'Supplier Reference No.', value: data.supplier_booking_ref_no ,isTooltip : true },
             ];
           } else {
             this.formGroup.patchValue(data);
@@ -187,8 +185,8 @@ export class PurchaseEntryComponent {
     this.formGroup.get('currency').patchValue(data.currency_short_code);
   }
 
-  download(): void {
-    if (this.formGroup.get('supplier_invoice').value?.base64) {
+  download(data: any): void {
+    if (data?.base64) {
 
       const newTab = window.open('', '_blank');
       if (newTab) {
@@ -208,7 +206,7 @@ export class PurchaseEntryComponent {
                     }
                 </style>
                 <body>
-                    <iframe src="${this.formGroup.get('supplier_invoice').value?.result}"></iframe>
+                    <iframe src="${data?.result}"></iframe>
                 </body>
             </html>
         `);
@@ -217,11 +215,11 @@ export class PurchaseEntryComponent {
         alert('Please allow popups for this website');
       }
     } else
-      window.open(this.formGroup.get('supplier_invoice').value, '_blank');
+      window.open(data, '_blank');
   }
 
 
-  uploadDocument(event: any): void {
+  uploadDocument(event: any, from: string): void {
     const file = (event.target as HTMLInputElement).files[0];
 
     const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
@@ -235,7 +233,12 @@ export class PurchaseEntryComponent {
     CommonUtils.getJsonFile(file, (reader, jFile) => {
       const doc = Object.assign({});
       jFile["result"] = reader.result;
-      this.formGroup.get('supplier_invoice').patchValue(jFile);
+
+      if (from == "supplier_invoice")
+        this.formGroup.get('supplier_invoice').patchValue(jFile);
+      else
+        this.formGroup.get('supplier_confirmation_proof').patchValue(jFile);
+
       this.alertService.showToast('success', "Document Uploaded", "top-right", true);
       (event.target as HTMLInputElement).value = '';
     });
@@ -250,6 +253,11 @@ export class PurchaseEntryComponent {
     }
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
+    if (json.roe <= 0) {
+      this.alertService.showToast('error', 'ROE must be greater than 0.', 'top-right', true);
+      this.disableBtn = false;
+      return;
+    }
 
     if (!json?.supplier_invoice?.base64) {
       json.supplier_invoice = {
@@ -262,6 +270,20 @@ export class PurchaseEntryComponent {
         fileName: json.supplier_invoice.fileName,
         fileType: json.supplier_invoice.fileType,
         base64: json.supplier_invoice.base64,
+      };
+    }
+
+    if (!json?.supplier_confirmation_proof?.base64) {
+      json.supplier_confirmation_proof = {
+        fileName: '',
+        fileType: '',
+        base64: '',
+      };
+    } else {
+      json.supplier_confirmation_proof = {
+        fileName: json.supplier_confirmation_proof.fileName,
+        fileType: json.supplier_confirmation_proof.fileType,
+        base64: json.supplier_confirmation_proof.base64,
       };
     }
 
@@ -278,6 +300,10 @@ export class PurchaseEntryComponent {
         this.alertService.showToast('error', err, "top-right", true);
       }
     })
+  }
+
+  downloadfile(data: string) {
+    window.open(data, '_blank')
   }
 
   public compareWith(v1: any, v2: any) {

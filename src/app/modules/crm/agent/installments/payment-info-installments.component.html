@@ -1,6 +1,6 @@
 <div class="flex flex-col flex-auto overflow-hidden mt-[-10px]">
     <div
-        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[250px] lg:max-h-[250px] xl:min-h-[250px] xl:max-h-[250px]">
+        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[350px] lg:max-h-[350px] xl:min-h-[350px] xl:max-h-[350px]">
         <ng-container>
             <div class="grid ">
                 <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 pl-5 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
@@ -17,26 +17,25 @@
                     </ng-container>
                 </div>
                 <!-- Rows -->
-                <ng-container *ngIf="dataList?.installment.length > 0; else noGridItems">
-                    <ng-container *ngFor="let ListItem of dataList?.installment; let i = index">
-                        <div class="tbl-grid gridwidth grid items-center px-5 py-2 border-b pl-0 cursor-pointer">
+                <ng-container *ngIf="installmentDetail?.installment?.length > 0; else noGridItems">
+                    <ng-container *ngFor="let ListItem of installmentDetail?.installment; let i = index">
+                        <div class="tbl-grid gridwidth grid items-center px-5 py-2 border-b pl-5 cursor-pointer">
                             <!-- <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
                                 class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
                                 <mat-icon> more_vert </mat-icon>
                             </button> -->
                             <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center space-x-2 truncate pl-5 ' + col.class"  [ngClass]="{ 'justify-center': col.align === 'left' }">
-
-                                    <span *ngIf="col.callAction && col.key === 'index'">
-                                        <span *ngIf="col.name == 'Sr. No'">{{i + 1}}</span>
+                                <div [class]="'flex flex-row items-center space-x-2 truncate' + col.class" [ngClass]="ListItem.installment_date ? 'pl-0': col.align === 'left' ? 'justify-center' : 'pl-5'">
+                                    <span *ngIf="col.callAction && col.key === 'dueammount'">
+                                        <span *ngIf="col.name == 'Due Amount'">{{ListItem[col.key] ? ListItem[col.key] : 0 }}</span>
                                     </span>
 
-                                    <div *ngIf="col.indicator" [matTooltip]="ListItem['is_payment_audited'] == true ? 'Audit' : 'Unaudit'"
+                                    <div *ngIf="col.indicator" [matTooltip]="ListItem['is_payment_audited'] == true ? 'Payment Received' : 'Payment Pending'"
                                         class="w-2 h-2 rounded-full mr-[6px]"
                                         [ngClass]="getPaymentIndicatorClass(ListItem['is_payment_audited'])"></div>
 
                                     <div
-                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
+                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? '' : '') ">
                                         <span class="truncate" *ngIf="!col.toColor && !col.callAction"
                                             [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
                                             {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||

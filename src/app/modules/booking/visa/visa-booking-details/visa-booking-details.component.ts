@@ -138,7 +138,7 @@ export class VisaBookingDetailsComponent {
         const invoice_id = this.bookingDetail.invoice_id;
         this.visaService.printInvoice(invoice_id).subscribe({
             next: (res) => {
-                CommonUtils.downloadPdf(res.print, 'invoice');
+                CommonUtils.downloadPdf(res.print, this.mainDataAll.invoice_no + '.pdf');
             }, error: (err) => {
                 this.toastr.showToast('error', err);
             }
@@ -191,7 +191,7 @@ export class VisaBookingDetailsComponent {
                 },
                 error: (err) => {
                   this.toastr.showToast('error', err, 'top-right', true);
-    
+
                 },
               });
             }
@@ -250,7 +250,8 @@ export class VisaBookingDetailsComponent {
 
     agentInfo(data): void {
         if (data.is_master_agent == true) {
-            this.router.navigate([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly'])
+            // this.router.navigate([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly'])
+            Linq.recirect([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly'])
         }
         else {
             this.matDialog.open(SubAgentInfoComponent, {
@@ -343,7 +344,7 @@ export class VisaBookingDetailsComponent {
                 },
                 error: (err) => {
                   this.toastr.showToast('error', err, 'top-right', true);
-    
+
                 },
               });
             }

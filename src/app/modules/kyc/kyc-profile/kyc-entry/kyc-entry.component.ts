@@ -26,6 +26,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AssignedInfoComponent } from '../assigned-info/assigned-info.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { ToasterService } from 'app/services/toaster.service';
+import { PspSettingService } from 'app/services/psp-setting.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-kyc-entry',
@@ -76,6 +78,8 @@ export class KycEntryComponent {
   disableBtn: boolean = false
   documentGrpListAll: any[] = [];
   routId: string = ''
+  compnyList: any[] = [];
+
 
   constructor(
     public formBuilder: FormBuilder,
@@ -88,6 +92,7 @@ export class KycEntryComponent {
     private matDialog: MatDialog,
     private conformationService: FuseConfirmationService,
     private toasterService: ToasterService,
+    private pspsettingService: PspSettingService,
 
 
   ) { }
@@ -104,10 +109,28 @@ export class KycEntryComponent {
       is_required_group: [false],
       document_id: [''],
       documentfilter: [''],
-      document_group: ['']
+      document_group: [''],
+      company_id: [''],
+      companyfilter: [''],
     });
 
-
+    /*************Company combo**************/
+    this.formGroup
+      .get('companyfilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        startWith(''),
+        debounceTime(200),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          return this.pspsettingService.getCompanyCombo(value);
+        })
+      )
+      .subscribe({
+        next: data => {
+          this.compnyList = data
+        }
+      });
 
     //   this.formGroup.get('profile_name').valueChanges.subscribe(text => {
     //     this.formGroup.get('profile_name').patchValue(Linq.convertToTitleCase(text), { emitEvent: false });
@@ -121,14 +144,20 @@ export class KycEntryComponent {
       if (id) {
         this.readonly = readonly ? true : false;
         this.btnTitle = readonly ? 'Close' : 'Save';
-        this.kycService.getkycprofileRecord(id).subscribe({
+        this.kycService.getkycprofileRecord(this.routId).subscribe({
           next: data => {
             this.record = data;
             this.formGroup.patchValue(data);
+            this.formGroup.get('companyfilter').patchValue(this.record.company_name)
+            this.formGroup.get('company_id').patchValue(this.record.company_id)
 
-            this.record.kycProfileDocument.forEach(x => {
-              this.TempDataList.push({ id: x.id, document_id: x.document_id, document_name: x.document_name, document_group: x.document_group, is_required: x.is_required, is_required_group: x.is_required_group })
-            });
+
+            if (this.record.kycProfileDocument?.length > 0) {
+              this.record.kycProfileDocument.forEach(x => {
+                this.TempDataList.push({ id: x.id, document_id: x.document_id, document_name: x.document_name, document_group: x.document_group, is_required: x.is_required, is_required_group: x.is_required_group })
+              });
+            }
+
             if (this.readonly) {
               this.fieldList = [
                 { name: 'Profile For', value: this.record.profile_for },
@@ -198,6 +227,7 @@ export class KycEntryComponent {
       // id: this.formGroup.get('id').value,
       profile_for: this.formGroup.get('profile_for').value,
       profile_name: this.formGroup.get('profile_name').value,
+      company_id: this.formGroup.get('company_id').value,
       kycProfileDocumentDto: this.TempDataList
     }
     this.disableBtn = true
@@ -232,6 +262,12 @@ export class KycEntryComponent {
           this.toasterService.showToast('success', 'New record added', "top-right", true);
         }
         else {
+          this.TempDataList[this.index].document_id = this.formGroup.get('document_id').value.id;
+          this.TempDataList[this.index].document_name = this.formGroup.get('document_id').value.document_name;
+          this.TempDataList[this.index].document_group = this.formGroup.get('document_id').value.document_group;
+          this.TempDataList[this.index].is_required = this.formGroup.get('is_required').value;
+          this.TempDataList[this.index].is_required_group = this.formGroup.get('is_required_group').value;
+
           this.toasterService.showToast('success', 'Record modified', "top-right", true);
         }
 
@@ -308,22 +344,28 @@ export class KycEntryComponent {
       return;
     }
 
+
     const isalreadyexist = this.TempDataList.find(x => x.document_id == this.formGroup.get('document_id').value.id && x.document_name == this.formGroup.get('document_id').value.document_name && x.document_group == this.formGroup.get('document_group').value)
+
+
     if (this.ismodify) {
-      this.TempDataList[this.index].document_id = this.formGroup.get('document_id').value.id;
-      this.TempDataList[this.index].document_name = this.formGroup.get('document_id').value.document_name;
-      this.TempDataList[this.index].document_group = this.formGroup.get('document_id').value.document_group;
-      this.TempDataList[this.index].is_required = this.formGroup.get('is_required').value;
-      this.TempDataList[this.index].is_required_group = this.formGroup.get('is_required_group').value;
+
+      // this.TempDataList[this.index].document_id = this.formGroup.get('document_id').value.id;
+      // this.TempDataList[this.index].document_name = this.formGroup.get('document_id').value.document_name;
+      // this.TempDataList[this.index].document_group = this.formGroup.get('document_id').value.document_group;
+      // this.TempDataList[this.index].is_required = this.formGroup.get('is_required').value;
+      // this.TempDataList[this.index].is_required_group = this.formGroup.get('is_required_group').value;
       this.submitDoc('add');
       this.ismodify = false;
     } else {
-      this.toasterService.showToast('error', 'Record already exists!', "top-right", true);
       if (isalreadyexist == '' || isalreadyexist == null) {
         this.TempDataList.push({ id: '', document_id: this.formGroup.get('document_id').value.id, document_name: this.formGroup.get('document_id').value.document_name, document_group: this.formGroup.get('document_group').value, is_required: this.formGroup.get('is_required').value, is_required_group: this.formGroup.get('is_required_group').value })
         this.submitDoc('add');
+      } else {
+        this.toasterService.showToast('error', 'Record already exists!', "top-right", true);
       }
     }
+
   }
 
   // editrecord(data: any) {
@@ -358,20 +400,20 @@ export class KycEntryComponent {
           x.document_group == data.document_group
       )
     );
-    this.formGroup.get('id').patchValue(data.id);
-    this.formGroup.get('documentfilter').patchValue(data.document_group);
-    this.formGroup.get('document_id').patchValue({ id: data.document_id, document_name: data.document_name, document_group: data.document_group });
-    this.formGroup.get('document_group').patchValue(data.document_group);
+    var dt = cloneDeep(data);
+    this.formGroup.get('id').patchValue(dt.id);
+    this.formGroup.get('documentfilter').patchValue(dt.document_group);
+    this.formGroup.get('document_id').patchValue({ id: dt.document_id, document_name: dt.document_name, document_group: dt.document_group });
+    this.formGroup.get('document_group').patchValue(dt.document_group);
 
-    this.formGroup.get('is_required').patchValue(data.is_required ? true : false);
-    this.formGroup.get('is_required_group').patchValue(data.is_required_group ? true : false);
+    this.formGroup.get('is_required').patchValue(dt.is_required ? true : false);
+    this.formGroup.get('is_required_group').patchValue(dt.is_required_group ? true : false);
     this.getDocs(this.formGroup.get('document_group').value)
   }
 
 
 
   deleterecord(data: any) {
-
 
     const label: string = 'Delete Kyc Profile'
     this.conformationService.open({

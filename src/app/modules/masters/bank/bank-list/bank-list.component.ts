@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -8,10 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
@@ -19,16 +16,13 @@ import { Security, bankPermissions, messages, module_name } from 'app/security';
 import { BankService } from 'app/services/bank.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { BankEntryComponent } from '../bank-entry/bank-entry.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-bank-list',
   templateUrl: './bank-list.component.html',
   styleUrls: ['./bank-list.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns:  40px 200px 120px 100px 230px 100px 194px 180px 200px 160px 120px 134px 100px 170px;
-  }
-  `],
+  styles: [],
   standalone: true,
   imports: [
     NgIf,
@@ -41,21 +35,19 @@ import { BankEntryComponent } from '../bank-entry/bank-entry.component';
     MatInputModule,
     MatButtonModule,
     MatProgressBarModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatMenuModule,
     MatDialogModule,
     MatTooltipModule,
-    MatDividerModule
+    MatDividerModule,
+    PrimeNgImportsModule
   ]
 })
-export class BankListComponent extends BaseListingComponent {
+export class BankListComponent extends BaseListingComponent implements OnInit {
 
   module_name = module_name.bank
   dataList = [];
   total = 0;
-
+  isFilterShow: boolean = false;
 
   constructor(
     private matDialog: MatDialog,
@@ -64,7 +56,7 @@ export class BankListComponent extends BaseListingComponent {
     private bankService: BankService
   ) {
     super(module_name.bank)
-    this.cols = this.columns.map(x => x.key);
+    // this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'bank_name';
     this.sortDirection = 'desc';
@@ -86,8 +78,17 @@ export class BankListComponent extends BaseListingComponent {
     { key: 'is_audited', name: 'Is Audited', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, indicator: false, is_boolean: true, tooltip: true },
     { key: 'audit_date_time', name: 'Audit Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
 
+  ];
+
+  selectedAction:string;
+  actionList: any[] = [
+      { label: 'Yes', value: true },
+      { label: 'No', value: false },
   ]
-  cols = [];
+
+  ngOnInit() {
+
+  }
 
   create() {
     this.matDialog.open(BankEntryComponent, {
@@ -185,13 +186,16 @@ export class BankListComponent extends BaseListingComponent {
     window.open(str, '_blank');
   }
 
-  refreshItems(): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
-    this.bankService.getBankList(this.getFilterReq()).subscribe({
+    const json = this.getNewFilterReq(event);
+    json['MasterId'] = '';
+    
+    this.bankService.getBankList(json).subscribe({
       next: data => {
         this.isLoading = false;
         this.dataList = data.data;
-        this.total = data.total;
+        this.totalRecords = data.total;
       }, error: err => {
         this.isLoading = false;
       }

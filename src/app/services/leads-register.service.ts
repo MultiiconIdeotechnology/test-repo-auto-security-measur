@@ -23,7 +23,7 @@ export class LeadsRegisterService {
     getEmployeeLeadAssignCombo(filter: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'employee/getEmployeeLeadAssignCombo', {filter});
     }
-    
+
     leadSouceCombo(filter: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'leadmaster/leadSouceCombo', {filter});
     }
@@ -34,5 +34,13 @@ export class LeadsRegisterService {
 
     relationshipManagerLogsList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'leadmaster/leadrelationManagerChangeLogs', model);
+    }
+
+    leadBulkUpload(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'AgentReport/leadBulkUpload', model);
+    }
+
+    deadLeadToLiveLead(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'leadmaster/DeadToLiveLead', model);
     }
 }

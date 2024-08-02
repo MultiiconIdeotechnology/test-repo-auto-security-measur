@@ -7,100 +7,199 @@
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
 
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <!------Global Search ------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'">
-            </mat-form-field>
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
 
+            <!------Global Filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!------Create------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createReferral()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
-            </button>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
         </div>
     </div>
 
     <!----------------Table----------------->
-    <div class="flex flex-col flex-auto overflow-hidden">
-        <!-- list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
-            <ng-container>
-                <div class="grid">
-                    <!-- Header -->
-                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card"
-                        matSort matSortDisableClear (matSortChange)="refreshItems()">
-                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
-                            #
-                        </div>
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['campaign_name', 'referral_link_for', 'referral_code', 'relationship_manager_name','no_of_leads','entry_date_time', 'start_date', 'remark']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+            <!-- Link , No Of Signup -->
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th pSortableColumn="campaign_name" pResizableColumn>
+                        Campaign Name <p-sortIcon field="campaign_name" />
+                    </th>
+                    <th pSortableColumn="referral_link_for" pResizableColumn>
+                        Campaign Type <p-sortIcon field="referral_link_for" />
+                    </th>
+                    <th pSortableColumn="referral_code" pResizableColumn>
+                        Campaign Code<p-sortIcon field="referral_code" />
+                    </th>
+                    <th pSortableColumn="relationship_manager_name" pResizableColumn>
+                        Relationship Manager <p-sortIcon field="relationship_manager_name" />
+                    </th>
+                    <th pResizableColumn class="text-center">
+                        Link
+                    </th>
+                    <th pSortableColumn="no_of_leads" pResizableColumn>
+                        No Of Leads <p-sortIcon field="no_of_leads" />
+                    </th>
+                    <th pSortableColumn="entry_date_time" pResizableColumn>
+                        Create Date <p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th pSortableColumn="start_date" pResizableColumn>
+                        Start Date <p-sortIcon field="start_date" />
+                    </th>
+                    <th pSortableColumn="remark" pResizableColumn>
+                        Remark <p-sortIcon field="remark" />
+                    </th>
+                </tr>
 
-                        <ng-container *ngFor="let col of columns">
-                            <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                        </ng-container>
-                    </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                        <ng-container *ngFor="let ListItem of dataList">
-                            <div
-                                class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                                <button mat-icon-button (click)="$event.stopPropagation()"
-                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-gray-50 dark:bg-gray-900"
-                                    style="border-radius: 0%; width: 100%">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
-                                <mat-menu #optionMenu>
-                                    <button mat-menu-item (click)="delete(ListItem)">
-                                        <mat-icon class="mat-18">delete</mat-icon>
-                                        <span style="font-weight: 600;">Delete</span>
-                                    </button>
-                                    <button mat-menu-item (click)="edit(ListItem)">
-                                        <mat-icon class="mat-18">edit</mat-icon>
-                                        <span style="font-weight: 600;">Edit</span>
-                                    </button>
-                                </mat-menu>
+                <tr *ngIf="isFilterShow">
+                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="campaign_name"
+                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="referral_link_for" placeholder="Search by Campaign Type"
+                            ariaLabel="Filter Campaign Type" /> -->
+                        <p-columnFilter field="referral_link_for" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="linkList"
+                                    (onChange)="filter($event.value)" placeholder="Select Campaign Type"
+                                    [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div>{{ option.label }}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="referral_code"
+                            placeholder="Search by Campaign Code" ariaLabel="Filter Campaign Code" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="relationship_manager_name" placeholder="Search by R Manager"
+                            ariaLabel="Filter R M" /> -->
+                        <p-columnFilter class="searchableDropdown" field="rm_id_filtres" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="selectedAgent" [filter]="true" filterBy="employee_name"
+                                    (onFilter)="getEmployeeList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                    [showClear]="true" appendTo="body" placeholder="Select RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th></th>
+                    <th>
+                        <p-columnFilter type="numeric" field="no_of_leads" placeholder="Search by No Of Leads"
+                            ariaLabel="Filter No Of Leads" />
+                    </th>
+                    <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Create Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="start_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Start Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="remark" placeholder="Search by Remark"
+                            ariaLabel="Filter Remark" />
 
-                                <ng-container *ngFor="let col of columns">
 
-                                    <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
-
-                                        <span *ngIf="col.isicon" class="text-center justify-center">
-                                                <mat-icon svgIcon="heroicons_outline:clipboard-document-check" class="text-blue-600 p-0.5" (click)="linkCopy(ListItem[col.key])"
-                                                [matTooltip]="ListItem[col.key]"></mat-icon>
-                                        </span>
-
-                                        <div class="flex flex-col truncate">
-                                            <span class="truncate" *ngIf="!col.isicon && !col.is_boolean"
-                                                [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                                {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
-                                                ListItem[col.key] || " - " }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-template #noGridItems>
-                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                    {{getNodataText()}}
-                </div>
+                    </th>
+                </tr>
             </ng-template>
-        </div>
 
-        <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-            [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total"
-            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize" (page)="refreshItems()"
-            [showFirstLastButtons]="appConfig.showFirstLastButtons">
-        </mat-paginator>
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td class=" left-[-1px] bg-gray-50 dark:bg-gray-900" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="edit(element)">
+                                <mat-icon class="mat-18">edit</mat-icon>
+                                <span style="font-weight: 600;">Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="delete(element)">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                                <span style="font-weight: 600;">Delete</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td>
+                        {{element.campaign_name || '-'}}
+                    </td>
+                    <td>{{element.referral_link_for || '-'}}</td>
+                    <td>{{element.referral_code || '-'}}</td>
+                    <td>{{element.relationship_manager_name || '-'}}</td>
+                    <td class="text-center justify-center cursor-pointer">
+                        <mat-icon svgIcon="heroicons_outline:clipboard-document-check" class="text-blue-600 p-0.5"
+                            (click)="linkCopy(element.referral_link)" [matTooltip]="element.referral_link">
+                        </mat-icon>
+                    </td>
+                    <td class="text-center">{{element.no_of_leads || '-'}}</td>
+                    <td class="text-left">{{(element.entry_date_time | date:'dd-MM-yyyy') || '-'}}</td>
+                    <td class="text-left">{{(element.start_date | date:'dd-MM-yyyy') || '-'}}</td>
+                    <td class="text-left w-full">{{element.remark || '-'}}</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="11" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
 </div>
+<referral-settings></referral-settings>

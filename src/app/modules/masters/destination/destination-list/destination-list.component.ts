@@ -11,7 +11,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -23,6 +22,7 @@ import { CitiesListDialogComponent } from '../cities-list-dialog/cities-list-dia
 import { ExclusionListDialogComponent } from '../exclusion-list-dialog/exclusion-list-dialog.component';
 import { DefaultExclusionsComponent } from '../default-exclusions/default-exclusions.component';
 import { ImagesComponent } from '../images/images.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-destination-list',
@@ -44,17 +44,17 @@ import { ImagesComponent } from '../images/images.component';
         MatMenuModule,
         MatTableModule,
         MatSortModule,
-        MatPaginatorModule,
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class DestinationListComponent extends BaseListingComponent {
     module_name = module_name.destination;
     dataList = [];
-    total = 0;
+    isFilterShow: boolean = false;
 
     columns = [
         {
@@ -127,15 +127,15 @@ export class DestinationListComponent extends BaseListingComponent {
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.destinationService
-            .getdestinationList(this.getFilterReq())
+            .getdestinationList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
 
                     this.dataList.forEach((row) => {
                         row['cities_length'] = row['cities'].length;
@@ -351,6 +351,6 @@ export class DestinationListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

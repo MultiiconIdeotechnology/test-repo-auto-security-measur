@@ -1,10 +1,10 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,24 +20,20 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { module_name } from 'app/security';
+import { Security, leadRegisterPermissions, messages, module_name } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
+import { LeadsRegisterService } from 'app/services/leads-register.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
+import { LeadStatusChangedLogComponent } from '../lead-status-changed-log/lead-status-changed-log.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
 
 @Component({
     selector: 'app-archive',
     templateUrl: './archive.component.html',
-    styles: [
-        `
-        .tbl-grid {
-            grid-template-columns: 40px 100px 270px 230px 110px 140px 150px 120px;
-        }
-    `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -68,11 +64,15 @@ import { Subject } from 'rxjs';
         CommonModule,
         MatTabsModule,
         MatProgressBarModule,
+        PrimeNgImportsModule
     ]
 })
-export class ArchiveComponent {
+export class ArchiveComponent extends BaseListingComponent{
+    @Input() isFilterShowArchive: boolean
     cols = [];
     total = 0;
+    deadLeadId: any;
+    statusList = [ 'Converted', 'Dead'];
 
     columns = [
         {
@@ -85,8 +85,7 @@ export class ArchiveComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
-            toColor: true
+            tooltip: false,
         },
         {
             key: 'agency_name',
@@ -146,7 +145,7 @@ export class ArchiveComponent {
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'lead_source',
@@ -158,7 +157,7 @@ export class ArchiveComponent {
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         }
     ]
     dataList: any;
@@ -180,12 +179,18 @@ export class ArchiveComponent {
     filter: any = {}
 
     ngOnInit(): void {
+        // this.searchInputControlArchive.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginatorArchive);
+        //         this.refreshItems();
+        //     });
+        // this.refreshItems();
+
         this.searchInputControlArchive.valueChanges
-            .subscribe(() => {
-                GridUtils.resetPaginator(this._paginatorArchive);
-                this.refreshItems();
-            });
-        this.refreshItems();
+        .subscribe(() => {
+          // GridUtils.resetPaginator(this._paginatorPending);
+        //   this.refreshItems();
+        });
     }
 
     getStatusColor(status: string): string {
@@ -202,8 +207,11 @@ export class ArchiveComponent {
 
     constructor(
         private crmService: CrmService,
-        private alertService: ToasterService
+        private matDialog: MatDialog,
+        private conformationService: FuseConfirmationService,
+        private leadsRegisterService: LeadsRegisterService
     ) {
+        super(module_name.lead);
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'priority_id';
@@ -219,23 +227,72 @@ export class ArchiveComponent {
         else return 'No data to display';
     }
 
-    refreshItems() {
+    refreshItems(event?: any) {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorArchive,
-            this._sortArchive,
-            this.searchInputControlArchive.value, "entry_date_time"
-        );
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlArchive.value;
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginatorArchive,
+        //     this._sortArchive,
+        //     this.searchInputControlArchive.value, "entry_date_time"
+        // );
         this.crmService.getArchiveLeadList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginatorArchive.length = data?.total;
+                this.totalRecords = data.total;
+                // this._paginatorArchive.length = data?.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
                 this.isLoading = false;
             },
         });
+    }
+
+    statusChangedLog(record): void {
+        // if (!Security.hasPermission(agentsPermissions.statusChangedLogsPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.matDialog.open(LeadStatusChangedLogComponent, {
+            data: record,
+            disableClose: true
+        });
+    }
+
+    deadLeadToLiveLead(record, index): void {
+        if (!Security.hasPermission(leadRegisterPermissions.deadLeadToLiveLeadPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+
+        }
+        this.deadLeadId = record?.id;
+        const label: string = 'Dead Lead To Live Lead'
+        this.conformationService.open({
+            title: label,
+            message: 'Are you sure to ' + record?.agency_name + ' ?',
+            inputBox: 'Status Remark',
+            customShow: true
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res?.action === 'confirmed') {
+                    const newJson = {
+                        id: this.deadLeadId,
+                        status_remark: res?.statusRemark ? res?.statusRemark : ""
+                    }
+
+                    this.leadsRegisterService.deadLeadToLiveLead(newJson).subscribe({
+                        next: (res) => {
+                            if (res) {
+                                // this.dataList.splice(index, 1);
+                                this.refreshItems()
+                            }
+                            this.alertService.showToast('success', "Dead Lead To Live Lead Successfully!", "top-right", true);
+                            this.isLoading = false;
+                        }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+                    });
+                }
+            }
+        })
     }
 }

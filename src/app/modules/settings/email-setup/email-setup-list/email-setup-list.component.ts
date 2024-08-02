@@ -20,6 +20,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-email-setup-list',
@@ -51,6 +52,7 @@ import { ToasterService } from 'app/services/toaster.service';
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class EmailSetupListComponent
@@ -58,7 +60,7 @@ export class EmailSetupListComponent
     implements OnDestroy {
     module_name = module_name.emailsetup;
     dataList = [];
-    total = 0;
+    isFilterShow: boolean = false;
 
     columns = [
         {
@@ -143,6 +145,10 @@ export class EmailSetupListComponent
         },
     ];
     cols = [];
+    actionList: any[] = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false },
+    ]
 
     constructor(
         private emailSetupService: EmailSetupService,
@@ -158,15 +164,15 @@ export class EmailSetupListComponent
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.emailSetupService
-            .getEmailSetupList(this.getFilterReq())
+            .getEmailSetupList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                 },
                 error: (err) => {
                     this.alertService.showToast('error', err)
@@ -268,10 +274,6 @@ export class EmailSetupListComponent
 
     passwordShow(data: any) {
         this.showBtn = !this.showBtn;
-    }
-
-    ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
     }
 
     SetDefault(record): void {

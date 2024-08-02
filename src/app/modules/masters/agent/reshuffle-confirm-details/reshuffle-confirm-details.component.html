@@ -1,0 +1,115 @@
+<div class="flex flex-col max-w-240 md:min-w-120 max-h-screen -m-6">
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}} Reshuffle summary</div>
+        <button mat-icon-button (click)="matDialogRef1.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="p-5">
+        <div *ngIf="record.Mode == 1">
+            <div>
+                <span class="text-primary font-bold pr-2 ">From RM :</span>
+                <span>{{record.FromId.employee_name}}</span>
+            </div>
+
+            <div class="flex justify-between mt-2" *ngIf="title == 'Agent'">
+                <div>
+                    <span class="text-primary font-bold pr-2">New :</span>
+                    <span>{{record.FromNew}}</span>
+                </div>
+                <div>
+                    <span class="text-primary font-bold pr-2">Active :</span>
+                    <span>{{record.FromActive}}</span>
+                </div>
+                <div>
+                    <span class="text-primary font-bold pr-2">Inactive :</span>
+                    <span>{{record.FromInActive}}</span>
+                </div>
+            </div>
+            <div class="flex justify-between mt-2" *ngIf="title == 'Lead'">
+                <div>
+                    <span class="text-primary font-bold pr-2">New :</span>
+                    <span>{{record.LeadFromNew}}</span>
+                </div>
+                <div>
+                    <span class="text-primary font-bold pr-2">Live :</span>
+                    <span>{{record.LeadFromLive}}</span>
+                </div>
+                <div>
+                    <span class="text-primary font-bold pr-2">Converted :</span>
+                    <span>{{record.LeadFromConverted}}</span>
+                </div>
+                <div>
+                    <span class="text-primary font-bold pr-2">Dead :</span>
+                    <span>{{record.LeadFromDead}}</span>
+                </div>
+            </div>
+            <mat-divider class="my-4"></mat-divider>
+        </div>
+        <div>
+            <span class="text-primary font-bold pr-2 ">To RM :</span>
+            <span>{{record.ToId.employee_name}}</span>
+        </div>
+        <div class="flex justify-between mt-2" *ngIf="title == 'Agent'">
+            <div>
+                <span class="text-primary font-bold pr-2">New :</span>
+                <span>{{record.ToNew}}</span>
+            </div>
+            <div>
+                <span class="text-primary font-bold pr-2">Active :</span>
+                <span>{{record.ToActive}}</span>
+            </div>
+            <div>
+                <span class="text-primary font-bold pr-2">Inactive :</span>
+                <span>{{record.ToInActive}}</span>
+            </div>
+        </div>
+        <div class="flex justify-between mt-2" *ngIf="title == 'Lead'">
+            <div>
+                <span class="text-primary font-bold pr-2">New :</span>
+                <span>{{record.LeadToNew}}</span>
+            </div>
+            <div>
+                <span class="text-primary font-bold pr-2">Live :</span>
+                <span>{{record.LeadToLive}}</span>
+            </div>
+            <div>
+                <span class="text-primary font-bold pr-2">Converted :</span>
+                <span>{{record.LeadToConverted}}</span>
+            </div>
+            <div>
+                <span class="text-primary font-bold pr-2">Dead :</span>
+                <span>{{record.LeadToDead}}</span>
+            </div>
+        </div>
+        <mat-divider class="my-4"></mat-divider>
+        <div class="mb-2">
+            <span class="text-primary font-bold pr-2">Status :</span>
+            <span>{{record.Status}}</span>
+        </div>
+        <div class="mb-2" *ngIf="record.Mode == 2 && title == 'Agent'">
+            <span class="text-primary font-bold pr-2">Count :</span>
+            <span>{{record.Count}}</span>
+        </div>
+        <div class="mb-2" *ngIf="record.Mode == 2 && title == 'Lead'">
+            <span class="text-primary font-bold pr-2">Count :</span>
+            <span>{{record.LeadCount}}</span>
+        </div>
+        <div>
+            <span class="text-primary font-bold pr-2">No Of Agent :</span>
+            <span>{{record.noofAgent}}</span>
+        </div>
+    </div>
+
+    <div class="flex flex-col justify-end items-end mx-5 mb-5">
+        <div class="flex items-center ">
+            <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button (click)="matDialogRef1.close()">
+                <span>Cancel</span>
+            </button>
+            <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'" (click)="Confirm()">
+                Save
+            </button>
+        </div>
+    </div>
+</div>

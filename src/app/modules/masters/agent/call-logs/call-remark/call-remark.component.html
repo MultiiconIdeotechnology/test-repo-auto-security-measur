@@ -1,0 +1,15 @@
+<div class="flex flex-col max-w-100 min-w-100 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16  pl-5 pr-4 border-b bg-primary">
+        <div class="text-lg font-medium  truncate ">Call Remark</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current " [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="px-5 py-4 break-words">
+        {{record}}
+    </div>
+
+</div>

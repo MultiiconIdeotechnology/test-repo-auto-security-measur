@@ -69,7 +69,7 @@ import { CrmService } from 'app/services/crm.service';
         MatPaginatorModule,
         MatSortModule,
         MatDialogModule,
-        CommonModule,
+        CommonModule
     ]
 })
 export class CRMDialCallEntryComponent extends BaseListingComponent implements OnDestroy {
@@ -99,13 +99,15 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
     feedbackList: any[] =
     [
         { value: 'Positive', viewValue: 'Positive' },
-        { value: 'Negative', viewValue: 'Negative' }
+        { value: 'Negative', viewValue: 'Negative' },
+        { value: 'No Answer', viewValue: 'No Answer' }
     ];
 
     purposeList: any[] =
     [
         { value: 'Demo', viewValue: 'Demo' },
-        { value: 'Query', viewValue: 'Query' }
+        { value: 'Query', viewValue: 'Query' },
+        { value: 'Follow-up', viewValue: 'Follow-up' }
     ];
 
     constructor(
@@ -349,7 +351,6 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
                 else {
                     this.alertService.showToast('success', 'New record added', 'top-right', true);
                 }
-                this.refreshItems();
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

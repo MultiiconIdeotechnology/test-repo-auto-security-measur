@@ -1,6 +1,8 @@
 <div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-[750px] max-w-[750px]">
     <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-4 bg-primary">
-        <div class="text-lg font-medium text-white">{{title}} - {{agencyName}} </div>
+        <div *ngIf="!this.accountReceiptFlag" class="text-lg font-medium text-white">{{title}} - {{record?.product_name}} </div>
+        <div *ngIf="this.accountReceiptFlag" class="text-lg font-medium text-white">{{title}} - {{dataList?.product_name}} </div>
+
         <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
             <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
@@ -11,85 +13,146 @@
                 <div class="pl-3 pt-3 overflow-hidden w-full flex-row flex">
                     <div class="flex flex-col w-[40%] pl-3 pt-1">
                         <span class="text-base font-medium text-secondary dark:text-[#687798]">Product</span>
-                        <span class="text-base truncate dark:text-white text-black"
-                            [matTooltip]="record?.product_name">{{record?.product_name ? record?.product_name : "
+                        <span *ngIf="!this.accountReceiptFlag" class="text-base truncate dark:text-white text-black">{{record?.product_name ? record?.product_name : "
+                            -"}}</span>
+
+                        <span *ngIf="this.accountReceiptFlag" class="text-base truncate dark:text-white text-black">{{dataList?.product_name ? dataList?.product_name : "
                             -"}}</span>
                     </div>
 
                     <div class="flex flex-col w-[40%] pl-3 pt-1">
                         <span class="text-base font-medium text-secondary dark:text-[#687798]">Product Price</span>
-                        <span class="text-base truncate dark:text-white text-black">{{record?.purchase_amount ? '₹ ' + record?.purchase_amount : "
-                            -"}}</span>
+                        <span *ngIf="!this.accountReceiptFlag"
+                            class="text-base truncate dark:text-white text-black">{{record?.purchase_amount ? '₹ ' +
+                            record?.purchase_amount : "-"}}</span>
+                        <span *ngIf="this.accountReceiptFlag"
+                            class="text-base truncate dark:text-white text-black">{{dataList?.purchase_amount ? '₹ ' +
+                            dataList?.purchase_amount : "-"}}</span>
                     </div>
 
                     <div class="flex flex-col w-[20%] pt-1">
                         <span class="text-md font-medium text-secondary dark:text-[#687798]">Payment Due</span>
-                        <span class="text-base w-full"
-                            [ngClass]="record?.is_payment_due == true ? 'text-green-600' : 'text-red-600'">{{record?.is_payment_due ==
-                            true ? 'Yes' : 'No'}}</span>
+                        <span *ngIf="!this.accountReceiptFlag" class="text-base w-full"
+                            [ngClass]="record?.is_payment_due == true ? 'text-green-600' : 'text-red-600'">{{record?.is_payment_due
+                            == true ? 'Yes' : 'No'}}</span>
+
+                        <span *ngIf="this.accountReceiptFlag" class="text-base w-full"
+                            [ngClass]="dataList?.is_payment_due == true ? 'text-green-600' : 'text-red-600'">{{dataList?.is_payment_due
+                            == true ? 'Yes' : 'No'}}</span>
                     </div>
                 </div>
                 <div class="pl-3 pt-3 pr-3 overflow-hidden w-full flex-row flex">
                     <div class="flex flex-col w-[40%] pl-3">
                         <span class="text-md font-medium text-secondary dark:text-[#687798]">Start Integration</span>
-                        <span class="text-base w-full"
+                        <span *ngIf="!this.accountReceiptFlag" class="text-base w-full"
                             [ngClass]="record?.start_integration ? 'text-green-600' : 'text-red-600'">{{record?.start_integration
+                            == true ? 'Yes' : 'No'}}</span>
+
+                        <span *ngIf="this.accountReceiptFlag" class="text-base w-full"
+                            [ngClass]="dataList?.start_integration ? 'text-green-600' : 'text-red-600'">{{dataList?.start_integration
                             == true ? 'Yes' : 'No'}}</span>
                     </div>
 
                     <div class="flex flex-col w-[40%] pl-3">
                         <span class="text-base font-medium text-secondary dark:text-[#687798]">Status</span>
-                        <span class="text-base truncate"
-                            [ngClass]="getStatusColor(record?.product_status)"
-                            [matTooltip]="record?.product_status">{{record?.product_status ? record?.product_status : "
+                        <span *ngIf="!this.accountReceiptFlag" class="text-base truncate"
+                            [ngClass]="getStatusColor(record?.product_status)">{{record?.product_status ? record?.product_status : "
                             -"}}</span>
+
+                            <div *ngIf="accountReceiptFlag && dataList?.item?.length > 0" class="text-base truncate"
+                                [ngClass]="getStatusColor(dataList.item[0]?.status)">
+                                {{ dataList.item[0]?.status ? dataList.item[0]?.status : " - " }}
+                            </div>
                     </div>
 
                     <div class="flex flex-col w-[20%] pl-3">
                         <span class="text-base font-medium text-secondary dark:text-[#687798]">Activation Date</span>
-                        <span class="text-base truncate dark:text-white text-black">{{record?.acivation_date ? (record?.acivation_date | date:'dd-MM-yyyy')  : "
+                        <span *ngIf="!this.accountReceiptFlag"
+                            class="text-base truncate dark:text-white text-black">{{record?.acivation_date ?
+                            (record?.acivation_date | date:'dd-MM-yyyy') : "
                             -"}}</span>
+
+                        <div *ngIf="this.accountReceiptFlag && dataList?.item?.length > 0"
+                            class="text-base truncate dark:text-white text-black">{{dataList?.item[0]?.acivation_date ?
+                            (dataList?.item[0]?.acivation_date | date:'dd-MM-yyyy') : "
+                            -"}}</div>
                     </div>
                 </div>
                 <div class="pl-3 pt-3 pr-3 overflow-hidden w-full flex-row flex">
                     <div class="flex flex-col w-[40%] pr-3 pl-3">
                         <span class="text-md font-medium text-secondary dark:text-[#687798]">Expiry Date</span>
-                        <span class="text-base w-full dark:text-white text-black">{{record?.expiry_date ?  (record?.expiry_date | date:'dd-MM-yyyy') : "
-                        -"}}</span>
+                        <span *ngIf="!this.accountReceiptFlag"
+                            class="text-base w-full dark:text-white text-black">{{record?.expiry_date ?
+                            (record?.expiry_date | date:'dd-MM-yyyy') : "
+                            -"}}</span>
+
+                        <div *ngIf="this.accountReceiptFlag && dataList?.item?.length > 0"
+                            class="text-base w-full dark:text-white text-black">{{dataList?.item[0]?.expiry_date ?
+                            (dataList?.item[0]?.expiry_date | date:'dd-MM-yyyy') : "
+                            -"}}</div>
                     </div>
 
                     <div class="flex flex-col w-[40%] pr-3 pl-3">
                         <span class="text-base font-medium text-secondary dark:text-[#687798]">Entry Date</span>
-                        <span class="text-base truncate dark:text-white text-black">{{record?.entry_date_time ? (record?.entry_date_time | date:'dd-MM-yyyy') : "
+                        <span *ngIf="!this.accountReceiptFlag"
+                            class="text-base truncate dark:text-white text-black">{{record?.entry_date_time ?
+                            (record?.entry_date_time | date:'dd-MM-yyyy') : "
                             -"}}</span>
+
+                        <div *ngIf="this.accountReceiptFlag && dataList?.item?.length > 0"
+                            class="text-base truncate dark:text-white text-black">{{dataList?.item[0]?.entry_date_time ?
+                            (dataList?.item[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</div>
                     </div>
                 </div>
                 <div class="pl-3 pb-2 pt-2 overflow-hidden w-full flex-row flex">
                     <div class="flex flex-col w-full pl-3">
                         <span class="text-base font-medium text-secondary dark:text-[#687798]">Remark</span>
-                        <span class="text-base dark:text-white text-black"
-                            [matTooltip]="record?.rm_remark">{{record?.rm_remark ? record?.rm_remark : "
+                        <span *ngIf="!this.accountReceiptFlag" class="text-base dark:text-white text-black">{{record?.rm_remark ? record?.rm_remark : "
+                            -"}}</span>
+
+                        <span *ngIf="this.accountReceiptFlag" class="text-base dark:text-white text-black">{{dataList?.rm_remark ? dataList?.rm_remark : "
                             -"}}</span>
                     </div>
                 </div>
             </div>
         </div>
         <mat-tab-group class="mt-2 lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
-            <mat-tab label="Items" [aria-label]="'Items'" *ngIf="getTabsPermission('items')">
-                <!-- <ng-container *ngIf="tabName == 'Items'"> -->
-                   <app-timeline-payment-info-items #items></app-timeline-payment-info-items>
-                <!-- </ng-container> -->
-            </mat-tab>
-            <mat-tab label="Installments" [aria-label]="'Installments'" *ngIf="getTabsPermission('installments')">
-                <ng-container *ngIf="tabName == 'Installments'">
-                    <app-timeline-installments-info-items #installments></app-timeline-installments-info-items>
-                </ng-container>
-            </mat-tab>
-            <mat-tab label="Receipts" [aria-label]="'Receipts'" *ngIf="getTabsPermission('receipts')">
-                <ng-container *ngIf="tabName == 'Receipts'">
-                    <app-timeline-receipts-info-items #receipts></app-timeline-receipts-info-items>
-                </ng-container>
-            </mat-tab>
+
+            <ng-container *ngIf="this.accountReceiptFlag == false">
+                <mat-tab label="Items" [aria-label]="'Items'" *ngIf="getTabsPermission('items')">
+                    <!-- <ng-container *ngIf="tabName == 'Items'"> -->
+                    <app-timeline-payment-info-items #items></app-timeline-payment-info-items>
+                    <!-- </ng-container> -->
+                </mat-tab>
+                <mat-tab label="Installments" [aria-label]="'Installments'" *ngIf="getTabsPermission('installments')">
+                    <ng-container *ngIf="tabName == 'Installments'">
+                        <app-timeline-installments-info-items #installments></app-timeline-installments-info-items>
+                    </ng-container>
+                </mat-tab>
+                <mat-tab label="Receipts" [aria-label]="'Receipts'" *ngIf="getTabsPermission('receipts')">
+                    <ng-container *ngIf="tabName == 'Receipts'">
+                        <app-timeline-receipts-info-items #receipts></app-timeline-receipts-info-items>
+                    </ng-container>
+                </mat-tab>
+            </ng-container>
+
+            <ng-container *ngIf="this.accountReceiptFlag == true">
+                <mat-tab label="Items" [aria-label]="'Items'" *ngIf="getTabsPermission('items')">
+                    <app-timeline-payment-info-items #items [recordItem]="record"></app-timeline-payment-info-items>
+                </mat-tab>
+                <mat-tab label="Installments" [aria-label]="'Installments'" *ngIf="getTabsPermission('installments')">
+                    <ng-container *ngIf="tabName == 'Installments'">
+                        <app-timeline-installments-info-items #installments
+                            [recordItem]="record"></app-timeline-installments-info-items>
+                    </ng-container>
+                </mat-tab>
+                <mat-tab label="Receipts" [aria-label]="'Receipts'" *ngIf="getTabsPermission('receipts')">
+                    <ng-container *ngIf="tabName == 'Receipts'">
+                        <app-timeline-receipts-info-items #receipts
+                            [recordItem]="record"></app-timeline-receipts-info-items>
+                    </ng-container>
+                </mat-tab>
+            </ng-container>
         </mat-tab-group>
     </div>
 </div>

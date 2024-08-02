@@ -7,7 +7,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -17,15 +16,12 @@ import { Security, currencyROEPermissions, messages, module_name } from 'app/sec
 import { CurrencyRoeService } from 'app/services/currency-roe.service';
 import { CurrencyRoeEntryComponent } from '../currency-roe-entry/currency-roe-entry.component';
 import { CurrencyRoeBulkDialogComponent } from '../currency-roe-bulk-dialog/currency-roe-bulk-dialog.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-currency-roe-list',
     templateUrl: './currency-roe-list.component.html',
-    styles: [`
-  .tbl-grid {
-    grid-template-columns:  40px 140px 120px 120px 140px 170px 180px;
-  }
-  `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -38,10 +34,10 @@ import { CurrencyRoeBulkDialogComponent } from '../currency-roe-bulk-dialog/curr
         MatMenuModule,
         MatTableModule,
         MatSortModule,
-        MatPaginatorModule,
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
+        PrimeNgImportsModule
     ],
 })
 export class CurrencyRoeListComponent extends BaseListingComponent {
@@ -49,6 +45,7 @@ export class CurrencyRoeListComponent extends BaseListingComponent {
     module_name = module_name.currencyROE
     dataList = [];
     total = 0;
+    isFilterShow: boolean = false;
 
     columns = [
         { key: 'from_currency_code', name: 'From Currency', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: true, tooltip: true },
@@ -75,13 +72,13 @@ export class CurrencyRoeListComponent extends BaseListingComponent {
         this.Mainmodule = this
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.currencyRoeService.getCurrencyRoeList(this.getFilterReq()).subscribe({
+        this.currencyRoeService.getCurrencyRoeList(this.getNewFilterReq(event)).subscribe({
             next: data => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
             }, error: err => {
                 this.alertService.showToast('error', err, 'top-right', true)
                 this.isLoading = false;
@@ -179,7 +176,8 @@ export class CurrencyRoeListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this)
+        // this.masterService.setData(this.key, this)
+        // document.removeEventListener('scroll', this.preventScrollClose, true);
     }
 
 }

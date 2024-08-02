@@ -22,7 +22,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { CrmService } from 'app/services/crm.service';
 import { UserService } from 'app/core/user/user.service';
-import { takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { module_name } from 'app/security';
@@ -62,7 +62,7 @@ import { MatSort } from '@angular/material/sort';
     ]
 })
 
-export class PurchaseProductEntryComponent extends BaseListingComponent implements OnDestroy {
+export class PurchaseProductEntryComponent {
     readonly: boolean = false;
     record: any = {};
     editRecord: any = {};
@@ -88,6 +88,7 @@ export class PurchaseProductEntryComponent extends BaseListingComponent implemen
     productId: any;
     productList: any[] = [];
     isProductInitialChanged: boolean = false;
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
     constructor(
         public matDialogRef: MatDialogRef<PurchaseProductEntryComponent>,
@@ -101,7 +102,7 @@ export class PurchaseProductEntryComponent extends BaseListingComponent implemen
         @Inject(MAT_DIALOG_DATA) public editData: any = {}
 
     ) {
-        super(module_name.crmagent);
+        // super(module_name.crmagent);
         this.record = data ?? {}
         this.editRecord = editData ?? {}
         if (!this.editRecord?.editFlag) {
@@ -148,7 +149,6 @@ export class PurchaseProductEntryComponent extends BaseListingComponent implemen
     }
 
     refreshItems(): void {
-        this.isLoading = true;
         const filterReq = GridUtils.GetFilterReq(
             this._paginator,
             this._sort,
@@ -156,12 +156,10 @@ export class PurchaseProductEntryComponent extends BaseListingComponent implemen
         );
         this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
             next: (data) => {
-                this.isLoading = false;
                 this.dataList = data.data;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
-                this.isLoading = false;
             },
         });
     }
@@ -186,7 +184,6 @@ export class PurchaseProductEntryComponent extends BaseListingComponent implemen
         for (let index = 1; index <= value; index++) {
             var date = new Date()
             date.setDate(new Date().getDate() + (index - 1))
-            // console.log(date)
             this.installmentsArray.push({ installment_date: date, installment_amount: 0 })
             // this.dateSet(new Date(), index + 1)
         }
@@ -237,21 +234,21 @@ export class PurchaseProductEntryComponent extends BaseListingComponent implemen
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.record?.editData?.agentid ? this.record?.editData?.agentid : "",
-            filterReq['Id'] = this.record?.editData?.product_id ? this.record?.editData?.id : ""
+        // filterReq['agent_id'] = this.record?.editData?.agentid ? this.record?.editData?.agentid : "",
+        filterReq['Id'] = this.record?.editData?.product_id ? this.record?.editData?.id : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
-                this.productList = res?.data[0];
+                this.productList = res[0];
                 if (this.record?.editData?.id) {
-                    this.formGroup.patchValue(res?.data[0]);
-                    this.formGroup.get("product").patchValue(res?.data[0]?.product_name);
-                    this.formGroup.get('price').patchValue(res?.data[0]?.purchase_amount);
-                    this.formGroup.get('rm_remark').patchValue(res?.data[0]?.rm_remark);
-                    this.formGroup.get('installments').patchValue(res?.data[0]?.installmentCount);
-                    this.selectedMaxInstallment = res?.data[0]?.max_installment;
-                    this.installmentsArray = res?.data[0].installment.map(x => ({ installment_amount: x.installment_amount, installment_date: x.installment_date }));
-                    this.productId = res?.data[0]?.productid;
-                    this.productPurchaseMasterId = res?.data[0]?.id1;
+                    this.formGroup.patchValue(res?.[0]);
+                    this.formGroup.get("product").patchValue(res?.[0]?.product_name);
+                    this.formGroup.get('price').patchValue(res?.[0]?.purchase_amount);
+                    this.formGroup.get('rm_remark').patchValue(res?.[0]?.rm_remark);
+                    this.formGroup.get('installments').patchValue(res?.[0]?.installmentCount);
+                    this.selectedMaxInstallment = res?.[0]?.max_installment;
+                    this.installmentsArray = res?.[0]?.installment?.map(x => ({ installment_amount: x.installment_amount, installment_date: x.installment_date }));
+                    this.productId = res?.[0]?.productid;
+                    this.productPurchaseMasterId = res?.[0]?.id1;
                 }
             },
             error: (err) => {
@@ -362,9 +359,9 @@ export class PurchaseProductEntryComponent extends BaseListingComponent implemen
         if (index == 0)
             return this.todayDateTime
         else {
-            let dddd = new Date(this.installmentsArray[index - 1].installment_date.toString())
-            dddd.setDate(dddd.getDate() + 1)
-            return dddd
+            let maxDate = new Date(this.installmentsArray[index - 1].installment_date.toString())
+            maxDate.setDate(maxDate.getDate() + 1)
+            return maxDate
         }
     }
 }

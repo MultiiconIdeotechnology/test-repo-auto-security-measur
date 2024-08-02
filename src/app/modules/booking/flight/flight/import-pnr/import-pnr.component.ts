@@ -91,7 +91,6 @@ export class ImportPnrComponent {
   btnLabel = 'Save';
   form = { additional: 0, discount: 0 }
 
-
   ngOnInit(): void {
     Object.assign(this.form);
 
@@ -184,6 +183,8 @@ export class ImportPnrComponent {
     const Fdata = this.formGroup.value
     Fdata['agent_id'] = this.formGroup.get('agent_id').value
     if (this.selectedValue === '1'){
+      // this.additional = Number(this.form.additional)
+      // Fdata['additional_markup'] = this.additional;
       Fdata['additional_markup'] = Number(this.form.additional)
       Fdata['discount'] = 0
     }
@@ -191,7 +192,6 @@ export class ImportPnrComponent {
       Fdata['discount'] = Number(this.form.discount)
       Fdata['additional_markup'] = 0
     }
-
       this.flighttabService.flightImportPNR(Fdata).subscribe({
         next: ( data:any) => {
             this.matDialogRef.close(true);

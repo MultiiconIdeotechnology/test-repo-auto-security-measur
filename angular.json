@@ -71,7 +71,9 @@
                             "src/styles/styles.scss",
                             "src/styles/tailwind.scss",
                             "node_modules/slick-carousel/slick/slick.scss",
-                            "node_modules/slick-carousel/slick/slick-theme.scss"
+                            "node_modules/slick-carousel/slick/slick-theme.scss",
+                            "node_modules/primeicons/primeicons.css",
+                            "node_modules/primeng/resources/primeng.min.css"
                         ],
                         "scripts": [
                             "node_modules/jquery/dist/jquery.min.js",
@@ -101,6 +103,15 @@
                             ],
                             "outputHashing": "all"
                         },
+                        "staging": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.staging.ts"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
                         "development": {
                             "buildOptimizer": false,
                             "optimization": false,
@@ -117,6 +128,9 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "fuse:build:production"
+                        },
+                        "staging": {
+                            "browserTarget": "fuse:build:staging"
                         },
                         "development": {
                             "browserTarget": "fuse:build:development"
@@ -147,8 +161,7 @@
                         "styles": [
                             "src/styles/styles.scss"
                         ],
-                        "scripts": [
-                        ]
+                        "scripts": []
                     }
                 }
             }

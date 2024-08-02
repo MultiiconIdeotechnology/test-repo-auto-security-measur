@@ -16,6 +16,10 @@ export class FlightTabService {
     return this.http.post<any>(this.baseUrl + 'AirBooking/getAirBookingList', model);
   }
 
+  getAirLineList(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'AirLineReport/getAirLineList', model);
+  }
+
   getAirBookingRecord(id: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'AirBooking/getAirBookingRecord', { id: id });
   }
@@ -61,15 +65,15 @@ export class FlightTabService {
   }
 
   Invoice(invoiceId: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "AirBooking/printInvoice", {invoiceId:invoiceId});
+    return this.http.post<any>(this.baseUrl + "AirBooking/printInvoice", { invoiceId: invoiceId });
   }
 
   getAmendmentTypes(id: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "AirAmendment/getAmendmentTypes", {id:id});
+    return this.http.post<any>(this.baseUrl + "AirAmendment/getAmendmentTypes", { id: id });
   }
 
-  amendmentInitiate(id:string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "Flight/amendmentInitiate", {id:id});
+  amendmentInitiate(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "Flight/amendmentInitiate", { id: id });
   }
 
   CreateAmendment(model: any): Observable<any> {
@@ -77,7 +81,7 @@ export class FlightTabService {
   }
 
   getStatusLog(id: string, service: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "AirBooking/getStatusLog", {id:id , service:service});
+    return this.http.post<any>(this.baseUrl + "AirBooking/getStatusLog", { id: id, service: service });
   }
 
   printBooking(model: any): Observable<any> {
@@ -89,26 +93,26 @@ export class FlightTabService {
   }
 
   getSupplierBoCombo(type?: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", {type:type});
+    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type });
   }
 
   generateRevertPayment(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + "Flight/generateRevertPayment", model);
   }
-  
+
   changePaxDetails(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + "AirBooking/changePaxDetails", model);
   }
-  
+
   setBookingStatus(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + "AirBooking/setBookingStatus", model);
   }
 
   getPaxDetails(id: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "AirBooking/getPaxDetails", {id:id});
+    return this.http.post<any>(this.baseUrl + "AirBooking/getPaxDetails", { id: id });
   }
 
-  getAirBookngStatus({}): Observable<any> {
+  getAirBookngStatus({ }): Observable<any> {
     return this.http.post<any>(this.baseUrl + "AirBooking/getAirBookngStatus", {});
   }
 

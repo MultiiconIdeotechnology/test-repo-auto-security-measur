@@ -1,0 +1,176 @@
+<!-- <div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-[880px] max-w-[880px]">
+    <div class="xl:min-h-[600px] xl:max-h-[600px] min-h-[500px] max-h-[500px] overflow-y-auto">
+        <div
+            class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-4 md:px-4 border-b w-full">
+            <div class="flex shrink-0 mt-6 sm:mt-0">
+                <mat-form-field class="fuse-mat-dense rounded-2xl w-[860px]" [subscriptSizing]="'dynamic'">
+                    <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                    <input matInput [formControl]="searchInputControl" [autocomplete]="'off'"
+                        [placeholder]="'Search'" />
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="flex flex-raw overflow-hidden overflow-x-auto border rounded-[10px] m-4" *ngFor="let callHis of dataList">
+            <div class="flex pt-3 pb-2 pr-2 pl-3">
+                <img class="w-6 h-6" src="assets/images/crm/dail_icon.png" alt="Logo image">
+            </div>
+            <div class="w-[90%] pb-2">
+                <div class="pt-2 pb-2 pr-2 pl-1 overflow-hidden w-full flex-row flex">
+                    <div class="flex flex-col w-[40%]">
+                        <span class="truncate font-medium text-lg dark:text-white text-black"
+                            [matTooltip]="callHis?.entry_by_id_Name">{{callHis?.entry_by_id_Name ? callHis?.entry_by_id_Name : 'SYSTEM'}}</span>
+                        <span class="text-base font-semibold text-secondary dark:text-[#687798]">{{(callHis?.entry_date_time | date:'dd/MM/yyyy HH:mm:ss') || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[40%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Call Purpose</span>
+                        <span class="text-base truncate dark:text-white text-black" (click)="callsAction"
+                            [matTooltip]="callHis?.call_purpose">{{callHis?.call_purpose ? callHis?.call_purpose : " -"}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[20%]">
+                        <span class="text-md font-medium text-secondary dark:text-[#687798]">Call Feedback</span>
+                        <span class="text-base truncate dark:text-white text-black" [matTooltip]="callHis?.feedback">{{callHis?.feedback ? callHis?.feedback : "-"}}</span>
+                    </div>
+                </div>
+                <div class="flex flex-col w-full pl-1">
+                    <span class="text-md font-medium text-secondary dark:text-[#687798]">Call Remark</span>
+                    <span class="text-base w-full dark:text-white text-black" [matTooltip]="callHis?.rm_remark">{{callHis?.rm_remark ?
+                        callHis?.rm_remark : "-"}}</span>
+                </div>
+
+                <div class="grid pt-1 pr-2 pl-1 xl:grid-cols-1 grid-cols-1 gap-1 overflow-hidden" *ngIf="callHis?.is_call_rescheduled" >
+                    <span class="text-base font-semibold dark:text-white text-black">
+                        <div>
+                            <mat-checkbox class="example-margin ml-[-8px] " [disabled]="true" [checked]="callHis?.is_call_rescheduled" [ngModelOptions]="{standalone: true}">Schedule Call</mat-checkbox>
+                        </div>
+                    </span>
+                </div>
+
+                <div class="pb-2 pr-2 pl-1 overflow-hidden w-full flex-row flex" *ngIf="callHis?.is_call_rescheduled">
+                    <div class="flex flex-col w-[40%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Assign to</span>
+                        <span class="truncate font-medium text-lg dark:text-white text-black"
+                            [matTooltip]="callHis?.call_assign_to_Name">{{callHis?.call_assign_to_Name || ' - '}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[40%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Date & Time</span>
+                        <span class="text-base font-semibold dark:text-white text-black">{{(callHis?.entry_date_time | date:'dd/MM/yyyy HH:mm:ss') || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col w-[20%]">
+                        <span class="text-base font-medium text-secondary dark:text-[#687798]">Call Purpose</span>
+                        <span class="text-base truncate dark:text-white text-black"
+                            [matTooltip]="callHis?.call_purpose">{{callHis?.call_purpose ? callHis?.call_purpose : " -"}}</span>
+                    </div>
+                </div>
+                <div class="flex flex-col pl-1" *ngIf="callHis?.is_call_rescheduled">
+                    <span class="text-md font-medium text-secondary dark:text-[#687798]">Call Remark</span>
+                    <span class="text-base w-full dark:text-white text-black" [matTooltip]="callHis?.reschedule_remark">{{callHis?.reschedule_remark ?
+                        callHis?.reschedule_remark : "-"}}</span>
+                </div>
+            </div>
+        </div>
+
+        <ng-container *ngIf="dataList && !dataList.length">
+            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+                No data to display
+            </div>
+        </ng-container>
+    </div>
+</div> -->
+
+<div class="flex flex-col flex-auto overflow-hidden mt-[-8px]">
+    <div
+        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[510px] lg:max-h-[510px] xl:min-h-[510px] xl:max-h-[510px]">
+        <div
+            class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pb-[10px] px-0 md:px-0 border-b w-full">
+            <div class="flex shrink-0 mt-0 sm:mt-0 w-full">
+                <!-- <mat-form-field class="fuse-mat-dense w-full" [subscriptSizing]="'dynamic'">
+                    <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                    <input matInput [formControl]="searchInputControl" [autocomplete]="'off'"
+                        [placeholder]="'Search'" />
+                </mat-form-field> -->
+
+                <div class="flex ctm_search w-full">
+                    <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" class="w-[95%]" />
+                    <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                </div>
+            </div>
+        </div>
+        <ng-container>
+            <div class="grid">
+                <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 px-6 md:pr-8 pl-0 text-md font-semibold dark:bg-gray-700 bg-white border-b"
+                    matSort matSortDisableClear matSortActive="entry_date_time" matSortDirection="desc"
+                    (matSortChange)="refreshItems()">
+                    <ng-container *ngFor="let col of columns">
+                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class"
+                            class="text-secondary">
+                            {{ col.name }}
+                        </div>
+                        <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class" class="text-secondary">
+                            {{ col.name }}
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- Rows -->
+                <ng-container *ngIf="dataList?.length > 0; else noGridItems">
+                    <ng-container *ngFor="let ListItem of dataList; let i=index;">
+                        <div
+                            class="tbl-grid gridwidth grid items-center px-6 md:pr-8 p-[6px] border-b pl-0 cursor-pointer">
+                            <ng-container *ngFor="let col of columns">
+                                <div [class]="'flex flex-row items-center truncate pl-4 ' + col.class">
+                                    <div class="truncate"
+                                        [matTooltip]="ListItem[col.key] ? ListItem[col.key] : 'SYSTEM'"
+                                        *ngIf="col.assignFlag">{{ListItem[col.key] ? ListItem[col.key] : 'SYSTEM'}}
+                                    </div>
+
+                                    <span *ngIf="col.shcheduleRemark && col.key === 'rm_remark'">
+                                        <div *ngIf="col.name == 'Remark'">
+                                            <mat-icon class="mat-18 ml-4 cursor-pointer"
+                                                (click)="remark(ListItem.rm_remark)">info</mat-icon>
+                                            <!-- <span class="flex flex-row space-x-2 justify-center cursor-pointer border-b border-gray-500"
+                                                (click)="callHistory(ListItem)">{{ListItem[col.key]}}</span> -->
+                                        </div>
+                                    </span>
+                                    <!-- <span *ngIf="col.scheduleCallFlag && col.key === 'is_call_rescheduled'">
+                                        <div *ngIf="col.name == 'Schedule Call'">
+                                            <span class="flex flex-row space-x-2 justify-center items-center cursor-pointer"
+                                                [ngClass]="ListItem.is_call_rescheduled == true ? 'border-b border-gray-500' : ''"
+                                                (click)="isScheduleCall(ListItem)">{{ListItem.is_call_rescheduled ==
+                                                true ? 'Yes' : 'No'}}</span>
+                                        </div>
+                                    </span> -->
+                                    <span *ngIf="col.scheduleCallFlag && col.key === 'is_call_rescheduled'" class="items-center justify-center m-auto flex text-center">
+                                        <div *ngIf="col.name == 'Schedule Call'">
+                                            <span class="flex flex-row ml-4"
+                                                [ngClass]="ListItem.is_call_rescheduled == true ? 'border-b border-gray-500 cursor-pointer' : ''"
+                                                (click)="isScheduleCall(ListItem)">{{ListItem.is_call_rescheduled == true ? 'Yes' : 'No'}}</span>
+                                        </div>
+                                    </span>
+                                    <div
+                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
+                                        <span class="truncate"
+                                            *ngIf="!col.shcheduleRemark && !col.scheduleCallFlag && !col.callAction"
+                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
+                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
+                                            " - " : ListItem[col.key] || " - " }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <ng-template #noGridItems>
+            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
+                {{getNodataText()}}
+            </div>
+        </ng-template>
+    </div>
+</div>

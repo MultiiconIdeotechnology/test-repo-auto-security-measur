@@ -8,9 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,20 +18,17 @@ import { Security, messages, module_name } from 'app/security';
 import { RefferralService } from 'app/services/referral.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
-import { ReferralEntryComponent } from '../referral-entry/referral-entry.component';
 import { ReferralEditComponent } from '../referral-edit/referral-edit.component';
-
+import { EntityService } from 'app/services/entity.service';
+import { ReferralSettingsComponent } from '../referral-entry-settings/referral-entry-settings.component';
+import { takeUntil } from 'rxjs';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-referral-list',
     templateUrl: './referral-list.component.html',
     styleUrls: ['./referral-list.component.scss'],
-    styles: [`
-  .tbl-grid {
-    // grid-template-columns:  40px 150px 140px 230px 70px 120px 120px 120px 100px;
-    grid-template-columns:  40px 150px 140px 230px 120px 120px 120px 100px;
-  }
-  `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -45,32 +40,32 @@ import { ReferralEditComponent } from '../referral-edit/referral-edit.component'
         MatButtonModule,
         MatProgressBarModule,
         MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatFormFieldModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
         CommonModule,
-        MatTabsModule
-    ],
+        MatTabsModule,
+        ReferralSettingsComponent,
+        PrimeNgImportsModule
+    ]
 })
 export class ReferralListComponent extends BaseListingComponent {
 
     module_name = module_name.Referrallink
     dataList = [];
-    total = 0;
-
+    isFilterShow: boolean = false;
+    selectedAgent:string;
+    employeeList:any[] = [];
 
     constructor(
-        private matDialog: MatDialog,
         public alertService: ToasterService,
         private conformationService: FuseConfirmationService,
         private toasterService: ToasterService,
         private refferralService: RefferralService,
         private clipboard: Clipboard,
-
+        private entityService: EntityService
     ) {
         super(module_name.Referrallink)
         this.cols = this.columns.map(x => x.key);
@@ -78,68 +73,100 @@ export class ReferralListComponent extends BaseListingComponent {
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this
+
+        this.entityService.onrefreshreferralEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if(item){
+                    this.refreshItems();
+                }
+            }
+        })
+    }
+
+    ngOnInit(): void {
+        this.getEmployeeList("")
     }
 
     columns = [
-        { key: 'referral_link_for', name: 'Referral Link For', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'referral_code', name: 'Referral Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'relationship_manager_name', name: 'RM Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
+        { key: 'campaign_name', name: 'Campaign Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
+        { key: 'referral_link_for', name: 'Campaign Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
+        { key: 'referral_code', name: 'Campaign Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
+        { key: 'relationship_manager_name', name: 'Relationship Manager', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
         { key: 'referral_link', name: 'Link', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view ', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, isicon: true },
-        // { key: 'no_of_visit', name: 'No Of Visit', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
         { key: 'no_of_leads', name: 'No Of Leads', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
         { key: 'no_of_signup', name: 'No Of Signup', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
+        { key: 'entry_date_time', name: 'Create Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'start_date', name: 'Start Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'remark', name: 'Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+    ];
+
+    linkList: any[] = [
+        { value: 'B2B Partner', label: 'B2B Partner' },
+        { value: 'WL', label: 'WL' },
+        { value: 'Corporate', label: 'Corporate' },
+        { value: 'Supplier', label: 'Supplier' },
+        { value: 'API', label: 'API' },
+    ];
+
     cols = [];
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.refferralService.getReferralLinkList(this.getFilterReq()).subscribe({
+        this.refferralService.getReferralLinkList(this.getNewFilterReq(event)).subscribe({
             next: data => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this.total = data.total;
+                this.totalRecords = data.total;
             }, error: err => {
                 this.isLoading = false;
             }
         })
     }
 
+      // Api to get the Employee list data
+    getEmployeeList(value:string){
+        this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data:any) => {
+                this.employeeList = data;
+        });
+    }
+
     edit(record): void {
         if (!Security.hasEditEntryPermission(module_name.Referrallink)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        this.matDialog
-            .open(ReferralEditComponent, {
-                data: { data: record, readonly: true },
-                disableClose: true,
-            })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res) {
-                    this.refreshItems();
-                }
-            });
+        // this.matDialog
+        //     .open(ReferralEditComponent, {
+        //         data: { data: record, readonly: true },
+        //         disableClose: true,
+        //     })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) {
+        //             this.refreshItems();
+        //         }
+        //     });
+        this.entityService.raisereferralEntityCall({data: record, edit: true})
     }
 
     createReferral(): void {
         if (!Security.hasNewEntryPermission(module_name.Referrallink)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        this.matDialog.open(ReferralEntryComponent,
-            { data: null })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res) {
-                    this.alertService.showToast(
-                        'success',
-                        'New record added',
-                        'top-right',
-                        true
-                    );
-                    this.refreshItems();
-                }
-            });
+        // this.matDialog.open(ReferralEntryComponent,
+        //     { data: null })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) {
+        //             this.alertService.showToast(
+        //                 'success',
+        //                 'New record added',
+        //                 'top-right',
+        //                 true
+        //             );
+        //             this.refreshItems();
+        //         }
+        //     });
+        this.entityService.raisereferralEntityCall({create: true})
     }
 
     deleteInternal(record): void {
@@ -175,5 +202,4 @@ export class ReferralListComponent extends BaseListingComponent {
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
     }
-
 }

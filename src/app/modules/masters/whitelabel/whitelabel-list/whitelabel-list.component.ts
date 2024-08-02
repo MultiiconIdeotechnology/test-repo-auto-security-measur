@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Security, messages, module_name, whiteLablePermissions } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { WhitelabelEntryComponent } from '../whitelabel-entry/whitelabel-entry.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { WlService } from 'app/services/wl.service';
@@ -22,6 +22,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { InstallmentComponent } from '../installment/installment.component';
 import { takeUntil } from 'rxjs';
 import { UserService } from 'app/core/user/user.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { isBoolean } from 'lodash';
+import { AgentService } from 'app/services/agent.service';
+
 
 @Component({
     selector: 'app-whitelabel-list',
@@ -50,6 +54,7 @@ import { UserService } from 'app/core/user/user.service';
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class WhitelabelListComponent extends BaseListingComponent {
@@ -57,6 +62,8 @@ export class WhitelabelListComponent extends BaseListingComponent {
     dataList = [];
     user: any = {};
     total = 0;
+    agentList:any[] = [];
+    selectedAgent:string;
 
     columns = [
         {
@@ -210,14 +217,23 @@ export class WhitelabelListComponent extends BaseListingComponent {
             tooltip: false
         },
     ];
-    cols = [];
+
+    checkList = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false }
+    ];
+    
+    cols: any[];
+    _selectedColumns: Column[];
+    isFilterShow: boolean = false;
 
     constructor(
         private wlService: WlService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
         private userService: UserService,
-        private router: Router
+        private router: Router,
+        private agentService: AgentService
     ) {
         super(module_name.whitelabel);
         this.cols = this.columns.map((x) => x.key);
@@ -233,10 +249,33 @@ export class WhitelabelListComponent extends BaseListingComponent {
             });
     }
 
-    refreshItems(): void {
+    ngOnInit() {
+        this.cols = [
+            { field: 'is_payment_due', header: 'Payment Due', isBoolean: true },
+            { field: 'is_wl_expired', header: 'Wl Expired', isBoolean: true },
+            { field: 'address_1', header: 'Address 1', isBoolean: false },
+            { field: 'address_2', header: 'Address 2', isBoolean: false },
+            // { field: 'is_b2b_partner_wl', header: 'B2B Partner WL', isBoolean: true },
+            // { field: 'is_b2c_mobile_wl', header: 'B2C Mobile WL', isBoolean: true },
+            // { field: 'is_enabled', header: 'Enabled', isBoolean: true },
+        ];
+
+         // To call Agent lis api on default data
+         this.getAgent("");
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    refreshItems(event?:any): void {
         this.isLoading = true;
 
-        var model = this.getFilterReq();
+        var model = this.getNewFilterReq(event);
         if (Security.hasPermission(whiteLablePermissions.viewOnlyAssignedPermissions)) {
             model.relationmanagerId = this.user.id
         }
@@ -245,7 +284,7 @@ export class WhitelabelListComponent extends BaseListingComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.alertService.showToast(
@@ -257,6 +296,17 @@ export class WhitelabelListComponent extends BaseListingComponent {
                 this.isLoading = false;
             },
         });
+    }
+
+       // function to get the Agent list from api
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
     }
 
     createInternal(model): void {
@@ -341,52 +391,52 @@ export class WhitelabelListComponent extends BaseListingComponent {
     }
 
     EnableDisable(record): void {
-        if (!Security.hasPermission(whiteLablePermissions.enableDisablePermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+        // if (!Security.hasPermission(whiteLablePermissions.enableDisablePermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
 
-        const label: string = record.is_disabled
-            ? 'Enable Activity'
-            : 'Disable Activity';
-        this.conformationService
-            .open({
-                title: label,
-                message:
-                    'Are you sure to ' +
-                    label.toLowerCase() +
-                    ' ' +
-                    record.agency_name +
-                    ' ?',
-            })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res === 'confirmed') {
-                    this.wlService.setEnableDisable(record.id).subscribe({
-                        next: () => {
-                            record.is_disabled = !record.is_disabled;
-                            if (record.is_disabled) {
-                                this.alertService.showToast(
-                                    'success',
-                                    'WL has been Disabled!',
-                                    'top-right',
-                                    true
-                                );
-                            } else {
-                                this.alertService.showToast(
-                                    'success',
-                                    'WL has been Enabled!',
-                                    'top-right',
-                                    true
-                                );
-                            }
-                        },
-                        error: (err) => {
-                            this.alertService.showToast('error', err, 'top-right', true);
+        // const label: string = record.is_disabled
+        //     ? 'Enable Activity'
+        //     : 'Disable Activity';
+        // this.conformationService
+        //     .open({
+        //         title: label,
+        //         message:
+        //             'Are you sure to ' +
+        //             label.toLowerCase() +
+        //             ' ' +
+        //             record.agency_name +
+        //             ' ?',
+        //     })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res === 'confirmed') {
+        //             this.wlService.setEnableDisable(record.id).subscribe({
+        //                 next: () => {
+        //                     record.is_disabled = !record.is_disabled;
+        //                     if (record.is_disabled) {
+        //                         this.alertService.showToast(
+        //                             'success',
+        //                             'WL has been Disabled!',
+        //                             'top-right',
+        //                             true
+        //                         );
+        //                     } else {
+        //                         this.alertService.showToast(
+        //                             'success',
+        //                             'WL has been Enabled!',
+        //                             'top-right',
+        //                             true
+        //                         );
+        //                     }
+        //                 },
+        //                 error: (err) => {
+        //                     this.alertService.showToast('error', err, 'top-right', true);
 
-                        },
-                    });
-                }
-            });
+        //                 },
+        //             });
+        //         }
+        //     });
     }
 
     Installment(model: any): void {
@@ -411,6 +461,6 @@ export class WhitelabelListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

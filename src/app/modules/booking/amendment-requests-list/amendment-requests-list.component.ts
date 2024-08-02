@@ -25,20 +25,16 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { DateTime } from 'luxon';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { Excel } from 'app/utils/export/excel';
-import { mode } from 'crypto-js';
 import { ToasterService } from 'app/services/toaster.service';
 import { FilterComponent } from './filter/filter.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
+import { KycDocumentService } from 'app/services/kyc-document.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
     selector: 'app-amendment-requests-list',
     templateUrl: './amendment-requests-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 220px 220px 220px 170px 170px 170px 120px 120px 180px 180px 140px;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -53,16 +49,18 @@ import { FilterComponent } from './filter/filter.component';
         MatTableModule,
         MatPaginatorModule,
         MatSortModule,
+        MatDatepickerModule,
         MatMenuModule,
         MatTooltipModule,
         MatDividerModule,
         NgClass,
+        PrimeNgImportsModule
     ],
 })
 export class AmendmentRequestsListComponent
     extends BaseListingComponent
     implements OnDestroy {
-
+    isFilterShow: boolean = false;
     module_name = module_name.amendmentRequests;
     dataList = [];
     total = 0;
@@ -253,11 +251,21 @@ export class AmendmentRequestsListComponent
         },
     ];
     cols = [];
+    selectedAgent!:string
+    selectedSupplier!:string;
+    agentList: any[] = [];
+    supplierList: any[] = [];
     isMenuOpen: boolean = false;
+
+    statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Expired'];
+    typeList = [ 'Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
+
     constructor(
         private amendmentrequestsService: AmendmentRequestsService,
         private matDialog: MatDialog,
         private toasterService: ToasterService,
+        private agentService: AgentService,
+        private kycDocumentService: KycDocumentService,
         private confirmationService: FuseConfirmationService
     ) {
         super(module_name.amendmentRequests);
@@ -282,6 +290,8 @@ export class AmendmentRequestsListComponent
 
     ngOnInit() {
         this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
+        this.getAgent("", true);
+        this.getSupplier("", true)
     }
 
     getFilter(): any {
@@ -300,11 +310,30 @@ export class AmendmentRequestsListComponent
         return filterReq;
     }
 
-    refreshItems(): void {
+    getAgent(value: string, bool: boolean = true) {
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        });
+    }
+
+    getSupplier(value: string, bool: boolean = true) {
+        this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
+            this.supplierList = data;
+        });
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
+        let extraModel = this.getFilter();
+        let newModel = this.getNewFilterReq(event)
+        var model = { ...extraModel, ...newModel };
 
         this.amendmentrequestsService
-            .getAirAmendmentList(this.getFilter())
+            .getAirAmendmentList(model)
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
@@ -352,7 +381,12 @@ export class AmendmentRequestsListComponent
                         }
                     })
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
+                    if (this.dataList && this.dataList.length) {
+                        setTimeout(() => {
+                          this.isFrozenColumn('', ['reference_no']);
+                        }, 200);
+                    }
                 },
                 error: (err) => {
                     this.toasterService.showToast('error', err)
@@ -393,24 +427,24 @@ export class AmendmentRequestsListComponent
             });
     }
 
-    complete(model): void {
-        const amendment = {}
-        amendment['agent_id'] = model.agent_id;
-        amendment['amendment_id'] = model.id;
-        amendment['payment_method'] = 'Wallet';
-        this.confirmationService.open({
-            title: 'Amendment process',
-            message: 'Are you sure to complete this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.amendmentChargesDeduction(amendment).subscribe(() => {
-                    this.alertService.showToast('success', "Amendment process completed!", "top-right", true);
-                    this.refreshItems();
-                })
-            }
-        })
-    }
+    // complete(model): void {
+    //     const amendment = {}
+    //     amendment['agent_id'] = model.agent_id;
+    //     amendment['amendment_id'] = model.id;
+    //     amendment['payment_method'] = 'Wallet';
+    //     this.confirmationService.open({
+    //         title: 'Amendment process',
+    //         message: 'Are you sure to complete this amendment process ?',
+    //         icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+    //     }).afterClosed().subscribe(res => {
+    //         if (res === 'confirmed') {
+    //             this.amendmentrequestsService.amendmentChargesDeduction(amendment).subscribe(() => {
+    //                 this.alertService.showToast('success', "Amendment process completed!", "top-right", true);
+    //                 this.refreshItems();
+    //             })
+    //         }
+    //     })
+    // }
 
     confirm(model) {
         if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
@@ -436,7 +470,7 @@ export class AmendmentRequestsListComponent
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Pending' || status == 'Inprocess' || status == 'Partial Cancellation Pending') {
+        if (status == 'Pending' || status == 'Inprocess' || status == 'Partial Cancellation Pending' || status =='Request Sent to Supplier' || status == 'Cancellation Pending') {
             return 'text-orange-600';
         } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed') {
             return 'text-yellow-600';
@@ -495,7 +529,62 @@ export class AmendmentRequestsListComponent
         })
     }
 
+    inprocess(model): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
+        this.confirmationService.open({
+            title: 'Amendment Inprocess',
+            message: 'Are you sure to inprocess this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentrequestsService.amendmentInprocess({id: model.id}).subscribe(() => {
+                    this.alertService.showToast('success', "Amendment inprocessed!", "top-right", true);
+                    this.refreshItems();
+                })
+            }
+        })
+    }
+
+    refundInitiate(model): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.confirmationService.open({
+            title: 'Amendment Refund Initiate',
+            message: 'Are you sure to refund initiate this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentrequestsService.amendmentRefundInitiate({id: model.id}).subscribe(() => {
+                    this.alertService.showToast('success', "Amendment refund initiated!", "top-right", true);
+                    this.refreshItems();
+                })
+            }
+        })
+    }
+
+    complete(model): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.confirmationService.open({
+            title: 'Amendment Complete',
+            message: 'Are you sure to complete this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentrequestsService.completeAmendment(model.id).subscribe(() => {
+                    this.alertService.showToast('success', "Amendment completed!", "top-right", true);
+                    this.refreshItems();
+                })
+            }
+        })
+    }
 
     statusLogs(model): void {
         if (!Security.hasPermission(amendmentRequestsPermissions.statusLogsPermissions)) {
@@ -528,7 +617,7 @@ export class AmendmentRequestsListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 
     exportExcel(): void {
@@ -541,19 +630,16 @@ export class AmendmentRequestsListComponent
 
         // req.skip = 0;
         // req.take = this._paginator.length;
-        const filterReq = {};
-        filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('dd-MM-yyyy');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('dd-MM-yyyy');
+        let extraModel = this.getFilter();
+        let newModel = this.getNewFilterReq({})
+        const filterReq = { ...extraModel, ...newModel };
+        filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
+        filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['agent_id'] = this.AmendmentFilter?.agent_id?.id || '';
         filterReq['supplier_id'] = this.AmendmentFilter?.supplier_id?.id || '';
         filterReq['status'] = this.AmendmentFilter?.status == 'All' ? '' : this.AmendmentFilter?.status;
         filterReq['type'] = this.AmendmentFilter?.type == 'All' ? '' : this.AmendmentFilter?.type;
-        filterReq['Skip'] = 0;
-        filterReq['Filter'] = this.searchInputControl.value;
-        filterReq['Take'] = this._paginator.length;
-        filterReq['OrderBy'] = 'amendment_request_time';
-        filterReq['OrderDirection'] = 1;
-
+        filterReq['Take'] = this.totalRecords;
 
         this.amendmentrequestsService.getAirAmendmentList(filterReq).subscribe(data => {
             for (var dt of data.data) {
@@ -568,11 +654,14 @@ export class AmendmentRequestsListComponent
                     { header: 'Status', property: 'amendment_status' },
                     { header: 'Agent', property: 'agency_name' },
                     { header: 'Supplier', property: 'company_name' },
+                    { header: 'Flight No.', property: 'booking_ref_no' },
+                    { header: 'PNR', property: 'pnr' },
+                    { header: 'GDS PNR', property: 'gds_pnr' },
                     { header: 'Request On', property: 'amendment_request_time' },
                     { header: 'Travel Date', property: 'travel_date' },
                     { header: 'Confirmed', property: 'amendment_confirmation_time' },
                 ],
-                data.data, "Amendment Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]);
+                data.data, "Amendment Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]);
         });
     }
 }

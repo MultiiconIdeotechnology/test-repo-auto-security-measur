@@ -123,7 +123,7 @@ export class BankEntryComponent {
 
     this.formGroup.get('currencyfilter').valueChanges.subscribe(data => {
       if(data.trim() == ''){
-        this.CurrencyList = this.CurrencyListTemp  
+        this.CurrencyList = this.CurrencyListTemp
       }
       else{
       this.CurrencyList = this.CurrencyListTemp.filter(x => x.currency_short_code.toLowerCase().includes(data.toLowerCase()));
@@ -136,8 +136,8 @@ export class BankEntryComponent {
         next: (data) => {
           this.records = data;
 
-          // this.formGroup.get("cityfilter").patchValue(data.city_name);
-          // this.formGroup.get("city_id").patchValue(data.city_id);
+          this.formGroup.get("agentfilter").patchValue(data.particular_name);
+          this.formGroup.get("master_id").patchValue(data.master_id);
 
           this.readonly = this.data.readonly;
           if (this.readonly) {

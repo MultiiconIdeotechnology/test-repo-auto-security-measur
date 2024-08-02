@@ -29,7 +29,7 @@ export class WalletService {
   }
 
   getWlCombo(filter: string): Observable<any[]> {
-    return this.http.post<any[]>(this.baseUrl + 'Wl/getWlCombo', { filter });
+    return this.http.post<any[]>(this.baseUrl + 'WlSettings/getWlCombo', { filter });
   }
 
   getModeOfPaymentCombo(filter: string): Observable<any[]> {

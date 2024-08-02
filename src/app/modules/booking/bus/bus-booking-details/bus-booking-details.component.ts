@@ -148,7 +148,7 @@ export class BusBookingDetailsComponent {
       }
       this.flighttabService.printBooking(json).subscribe({
         next: (res) => {
-          CommonUtils.downloadPdf(res.data, 'Print.pdf');
+          CommonUtils.downloadPdf(res.data, this.mainDataAll.booking_ref_no + '.pdf');
         }, error: (err) => {
           this.toastr.showToast('error', err)
         }
@@ -171,7 +171,7 @@ export class BusBookingDetailsComponent {
 
     this.flighttabService.Invoice(this.mainData.invoice_id).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, 'invoice.pdf');
+        CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no == null ? this.mainDataAll.booking_ref_no : this.mainDataAll.invoice_no  + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }
@@ -258,16 +258,36 @@ export class BusBookingDetailsComponent {
     })
   }
 
+  // agentInfo(data): void {
+  //   if (data.is_master_agent == true) {
+  //     this.router.navigate([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly'])
+  //   }
+  //   else {
+  //     this.matDialog.open(SubAgentInfoComponent, {
+  //       data: { data: data, readonly: true, id: data.agent_id },
+  //       disableClose: true
+  //     })
+  //   }
+  // }
   agentInfo(data): void {
-    if (data.is_master_agent == true) {
-      this.router.navigate([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly'])
+    if (data.master_agent_id) {
+    //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+         Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
     }
     else {
-      this.matDialog.open(SubAgentInfoComponent, {
-        data: { data: data, readonly: true, id: data.agent_id },
-        disableClose: true
-      })
+      this.B2BPartnerInfo();
+      // this.matDialog.open(SubAgentInfoComponent, {
+      //   data: { data: data, readonly: true, id: data.agent_id },
+      //   disableClose: true
+      // })
     }
+  }
+
+  B2BPartnerInfo(){
+    this.matDialog.open(SubAgentInfoComponent, {
+          data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
+          disableClose: true
+        })
   }
 
   copyLink(link: string): void {

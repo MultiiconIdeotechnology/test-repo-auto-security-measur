@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,12 +21,20 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { module_name } from 'app/security';
+import { Security, messages, module_name, techDashPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
+import { PendingUpdateStatusComponent } from '../pending-update-status/pending-update-status.component';
+import { PendingWLSettingComponent } from '../pending-wl-setting/pending-wl-setting.component';
+import { techDashboardStatusChangedLogComponent } from '../techdashboard-status-changed-log/techdashboard-status-changed-log.component';
+import { PendingLinkComponent } from '../pending-link/pending-link.component';
+import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
@@ -34,7 +42,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
             .tbl-grid {
-                grid-template-columns: 40px 120px 150px 100px 100px 150px 150px 160px 140px;
+                grid-template-columns: 40px 100px 150px 150px 230px 110px 200px 140px 250px;
             }
         `,
     ],
@@ -66,11 +74,64 @@ import { Subject } from 'rxjs';
         MatMenuModule,
         MatDialogModule,
         CommonModule,
-        MatTabsModule
+        MatTabsModule,
+        TechInfoTabsComponent,
+        PrimeNgImportsModule
     ]
 })
-export class TechDashboardPendingComponent {
+export class TechDashboardPendingComponent extends BaseListingComponent {
+    @Input() isFilterShowPending: boolean;
+    @Input() dropdownFirstCallObj:any;
     columns = [
+        {
+            key: 'item_code',
+            name: 'Item Code',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: false,
+        },
+        {
+            key: 'item_name',
+            name: 'Item',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: true,
+            tooltip: false
+        },
+        {
+            key: 'product_name',
+            name: 'Product',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: true,
+            tooltip: false
+        },
+        {
+            key: 'product_status',
+            name: 'Status',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: false,
+            toColor: true
+        },
         {
             key: 'agentCode',
             name: 'Agent Code',
@@ -96,85 +157,51 @@ export class TechDashboardPendingComponent {
             tooltip: true
         },
         {
-            key: 'product_status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'item_code',
-            name: 'Item Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'item_name',
-            name: 'Item',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true
-        },
-        {
-            key: 'product_name',
-            name: 'Product',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true
-        },
-        {
             key: 'integration_start_date_time',
-            name: 'Int. Start Date',
-            is_date: false,
+            name: 'Start Int. Date',
+            is_date: true,
             date_formate: 'dd-MM-yyyy',
             is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: true
+            tooltip: false
         },
         {
-            key: 'rm_remark',
-            name: 'RM Remark',
-            is_date: false,
-            date_formate: '',
+            key: 'entry_date_time',
+            name: 'Entry Date',
+            is_date: true,
+            date_formate: 'dd-MM-yyyy',
             is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: true
-        }
+            tooltip: false
+        },
+        // {
+        //     key: 'special_status_remark',
+        //     name: 'RM Remark',
+        //     is_date: false,
+        //     date_formate: '',
+        //     is_sortable: true,
+        //     class: '',
+        //     is_sticky: false,
+        //     align: 'center',
+        //     indicator: false,
+        //     tooltip: true
+        // }
     ];
     cols = [];
     dataList = [];
-    searchInputControlInbox = new FormControl('');
+    getWLSettingList: any = [];
+    searchInputControlPending = new FormControl('');
     @ViewChild('tabGroup') tabGroup;
     deadLeadId: any;
+    statusList = [ 'Pending', 'Inprocess', 'Delivered','Waiting for Customer Update','Waiting for Account Activation','Rejected from Store'];
 
-    @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
+    @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
 
     Mainmodule: any;
@@ -184,48 +211,63 @@ export class TechDashboardPendingComponent {
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.lead
+    module_name = module_name.techDashboard
     total = 0;
     appConfig = AppConfig;
     data: any
+    selectedAgent:string;
+    agentList:any[] = [];
     filter: any = {}
 
     constructor(
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
-        private alertService: ToasterService
-
+        private agentService: AgentService
     ) {
-        // super(module_name.lead);
+        super(module_name.techDashboard);
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'agentCode';
+        this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this
     }
 
     ngOnInit(): void {
-        this.searchInputControlInbox.valueChanges
+        // this.searchInputControlPending.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginator);
+        //         this.refreshItems();
+        //     });
+        // this.refreshItems();
+
+        this.searchInputControlPending.valueChanges
             .subscribe(() => {
-                GridUtils.resetPaginator(this._paginatorInbox);
-                this.refreshItems();
+                // GridUtils.resetPaginator(this._paginatorPending);
+                // this.refreshItems();
             });
-        this.refreshItems();
+
     }
 
-    refreshItems(): void {
+    ngOnChanges(){
+        this.agentList = this.dropdownFirstCallObj['agentList'];
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorInbox,
-            this._sortInbox,
-            this.searchInputControlInbox.value
-        );
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlPending.value;
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sortInbox,
+        //     this.searchInputControlPending.value, ""
+        // );
         this.crmService.getTechProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginatorInbox.length = data.total;
+                this.totalRecords = data.total;
+                // this._paginator.length = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -234,135 +276,219 @@ export class TechDashboardPendingComponent {
         });
     }
 
+      // Api call to Get Agent data
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
+    }
+
     getNodataText(): string {
         if (this.isLoading)
             return 'Loading...';
-        else if (this.searchInputControlInbox.value)
-            return `no search results found for \'${this.searchInputControlInbox.value}\'.`;
+        else if (this.searchInputControlPending.value)
+            return `no search results found for \'${this.searchInputControlPending.value}\'.`;
         else return 'No data to display';
     }
 
     getStatusColor(status: string): string {
-        if (status == 'New') {
-            return 'text-yellow-600';
-        } else if (status == 'Live') {
-            return 'text-green-600';
-        } else if (status == 'Dead') {
+        if (status == 'Pending') {
             return 'text-red-600';
-        } else {
+        } else if (status == 'Inprocess') {
+            return 'text-yellow-600';
+        } else if (status == 'Delivered') {
+            return 'text-green-600';
+        } else if (status == 'Waiting for Customer Update') {
+            return 'text-blue-600';
+        } else if (status == 'Waiting for Account Activation') {
+            return 'text-blue-600';
+        } else if (status == 'Rejected from Store') {
+            return 'text-red-600';
+        }
+        else {
             return '';
         }
     }
 
-    getPriorityIndicatorClass(priority: string): string {
-        if (priority == 'High') {
-            return 'bg-red-600';
-        } else if (priority == 'Medium') {
-            return 'bg-yellow-600';
-        } else {
-            return 'bullet-pink';
+    updateStatus(record): void {
+        if (!Security.hasPermission(techDashPermissions.updateStatusPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
         }
+
+        this.matDialog.open(PendingUpdateStatusComponent, {
+            data: { data: record, readonly: true },
+            disableClose: true,
+        }).afterClosed()
+            .subscribe((res) => {
+                if (res) {
+                    this.alertService.showToast(
+                        'success',
+                        'Update status successfully!',
+                        'top-right',
+                        true
+                    );
+                    this.refreshItems();
+                }
+            });
     }
 
-    // dialCall(record): void {
-    //     if (!Security.hasPermission(leadPermissions.dailCallPermissions)) {
-    //         return this.alertService.showToast('error', messages.permissionDenied);
-    //     }
+    statusChangedLog(record): void {
+        if (!Security.hasPermission(techDashPermissions.statusChangedLogPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        this.matDialog.open(techDashboardStatusChangedLogComponent, {
+            data: { data: record },
+            disableClose: true
+        });
+    }
 
-    //     this.matDialog.open(CRMDialCallEntryComponent, {
-    //         data: { data: record, readonly: true },
-    //         disableClose: true,
-    //     });
-    // }
+    wlSetting(record): void {
+        if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
-    // callHistory(record): void {
-    //     if (!Security.hasPermission(leadPermissions.callHistoryPermissions)) {
-    //         return this.alertService.showToast('error', messages.permissionDenied);
-    //     }
-    //     if (record?.callCount > 0) {
-    //         this.matDialog.open(CallHistoryComponent, {
-    //             data: { data: record, readonly: true },
-    //             disableClose: true
-    //         });
-    //     }
-    // }
+        this.crmService.getWLSettingList(record?.code).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data[0];
 
-    // scheduleCall(record): void {
-    //     if (!Security.hasPermission(leadPermissions.scheduleCallPermissions)) {
-    //         return this.alertService.showToast('error', messages.permissionDenied);
-    //     }
+                this.matDialog.open(PendingWLSettingComponent, {
+                    data: { data: record, wlsetting: this.getWLSettingList },
+                    disableClose: true,
+                });
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
 
-    //     this.matDialog.open(CRMScheduleCallEntryComponent, {
-    //         data: { data: record, readonly: true },
-    //         disableClose: true,
-    //     });
-    // }
+    link(record): void {
+        if (!Security.hasPermission(techDashPermissions.linkPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
-    // startKycProcess(record): void {
-    //     if (!Security.hasPermission(leadPermissions.startKYCProcessPermissions)) {
-    //         return this.alertService.showToast('error', messages.permissionDenied);
-    //     }
+        this.matDialog.open(PendingLinkComponent, {
+            data: { data: record },
+            disableClose: true,
+        });
+    }
 
-    //     const newJson = {
-    //         "id": "",
-    //         "lead_id": record?.id
-    //     }
-    //     this.crmService.startKycProces(newJson).subscribe({
-    //         next: (data) => {
-    //             this.alertService.showToast('success', "Started KYC process", "top-right", true);
-    //             this.isLoading = false;
-    //             this.refreshItems();
-    //         },
-    //         error: (err) => {
-    //             this.alertService.showToast('error', err, 'top-right', true);
-    //             this.isLoading = false;
-    //         },
-    //     });
-    // }
+    viewDetail(record): void {
+        this.matDialog.open(TechInfoTabsComponent, {
+            data: { data: record, readonly: true },
+            disableClose: true,
+        });
+    }
 
-    // modifyKycDetails(record): void {
-    //     if (!Security.hasEditEntryPermission(module_name.lead)) {
-    //         return this.alertService.showToast('error', messages.permissionDenied);
-    //     }
-    //     window.open(record?.url + `kyc-dashboard/` + record?.enc_agent_leadid + `/email`);
-    // }
+    startIntegration(record): void {
+        // if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
 
-    // marketingMaterials(record): void {
-    //     if (!Security.hasPermission(leadPermissions.marketingMaterialPermissions)) {
-    //         return this.alertService.showToast('error', messages.permissionDenied);
-    //     }
-    //     this.matDialog.open(MarketingMaterialsComponent, {
-    //         data: { data: record, readonly: true },
-    //         disableClose: true
-    //     });
-    // }
+        const label: string = 'Start Integration';
+        this.conformationService
+            .open({
+                title: label,
+                message:
+                    'Do you want to start integration?'
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    let newJson = {
+                        id: record.id,
+                        is_integration_started: true
+                    }
+                    this.crmService.startIntegration(newJson).subscribe({
+                        next: (res) => {
+                            this.alertService.showToast(
+                                'success',
+                                'Start Integration Successfully!',
+                                'top-right',
+                                true
+                            );
+                            if (res) {
+                                this.refreshItems();
+                            }
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
 
-    // deadLead(record, index): void {
-    //     if (!Security.hasPermission(leadPermissions.deadLeadPermissions)) {
-    //         return this.alertService.showToast('error', messages.permissionDenied);
-    //     }
-    //     this.deadLeadId = record?.id;
-    //     const label: string = 'Dead Lead'
-    //     this.conformationService.open({
-    //         title: label,
-    //         message: 'Are you sure to ' + record?.agency_name + ' ?'
-    //     }).afterClosed().subscribe({
-    //         next: (res) => {
-    //             if (res === 'confirmed') {
-    //                 const newJson = {
-    //                     id: this.deadLeadId
-    //                 }
-    //                 this.crmService.deadLead(newJson).subscribe({
-    //                     next: (res) => {
-    //                         if(res){
-    //                             this.dataList.splice(index, 1);
-    //                         }
-    //                         this.alertService.showToast('success', "Dead Lead Successfully!", "top-right", true);
-    //                         this.isLoading = false;
-    //                     }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-    //                 });
-    //             }
-    //         }
-    //     })
-    // }
+                    });
+                }
+            });
+    }
+
+    activate(record, index): void {
+        // if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.crmService.getWLSettingList(record?.code).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data;
+
+                if (this.getWLSettingList && this.getWLSettingList.length > 0) {
+                    const label: string = 'Activate';
+                    this.conformationService
+                        .open({
+                            title: label,
+                            message:
+                                'Do you want to activate?'
+                        })
+                        .afterClosed()
+                        .subscribe((res) => {
+                            if (res === 'confirmed') {
+                                let newJson = {
+                                    id: record.id ? record.id : "",
+                                    is_activated: true,
+                                    agent_id: record?.agentid ? record?.agentid : ""
+                                }
+                                this.crmService.activate(newJson).subscribe({
+                                    next: (res) => {
+                                        this.alertService.showToast(
+                                            'success',
+                                            'Product activated Successfully!',
+                                            'top-right',
+                                            true
+                                        );
+                                        if (res) {
+                                            this.dataList.splice(index, 1);
+                                        }
+                                    },
+                                    error: (err) => {
+                                        this.alertService.showToast(
+                                            'error',
+                                            err,
+                                            'top-right',
+                                            true
+                                        );
+                                    },
+
+                                });
+                            }
+                        });
+                } else {
+                    this.alertService.showToast('error', 'WL not found ', 'top-right', true);
+                }
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
 }

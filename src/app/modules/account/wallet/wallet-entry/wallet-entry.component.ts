@@ -159,7 +159,6 @@ export class WalletEntryComponent {
       this.jFile = jFile;
     });
 
-
     this.alertService.showToast('success', 'Attached file successfully');
     (event.target as HTMLInputElement).value = '';
   }

@@ -2,6 +2,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { AppConfig } from 'app/config/app-config';
 import { FilterRequest } from 'app/_model/grid/filterRequest';
+import { LazyLoadEvent } from 'primeng/api';
+import { Table } from 'primeng/table';
 
 export class GridUtils {
     public static GetFilterReq(paginator: MatPaginator, sortEvent: MatSort, filter: string, defaultSortCol: string = null, defaultSortOrder = 0): FilterRequest {
@@ -29,6 +31,7 @@ export class GridUtils {
 
         return filterReq;
     }
+   
 
     public static resetPaginator(paginator: MatPaginator): void {
         if (paginator)
@@ -52,4 +55,79 @@ export class GridUtils {
         sort.active = data.activeSort;
         sort.direction = data.sortDirection;
     }
+
+    // PrimeNG Table function
+
+    public static GetPrimeNGFilterReq(
+        event: LazyLoadEvent = { first: 0, rows: AppConfig.pageSize, sortField: null, sortOrder: null },
+        primengTable: Table,
+        filter: string = '',
+        defaultSortCol: string = null,
+        defaultSortOrder: number = 0,
+    ): FilterRequest {
+        const index = event.first || 0;
+        const size = (primengTable ? primengTable?._rows : (event.rows || AppConfig.pageSize));
+        let sort = defaultSortCol;
+        let sortOrder = defaultSortOrder;
+        let filtersColumn = (primengTable ? primengTable?.filters : (event.filters || {}));
+        const validatedFilter = this.validateFilter(filtersColumn);
+
+        if (event.sortField && event.sortOrder !== undefined) {
+            sort = event.sortField;
+            sortOrder = event.sortOrder === 1 ? 0 : 1; // PrimeNG uses 1 for asc and -1 for desc
+        }
+
+        if(primengTable && primengTable._sortField) {
+            sort = primengTable._sortField || event.sortField;
+            sortOrder = primengTable._sortOrder === 1 ? 0 : 1;
+        }
+
+        const filterReq: FilterRequest = {
+            Skip: index,
+            Take: size,
+            OrderBy: sort,
+            Filter: filter || '',
+            OrderDirection: sortOrder,
+            columeFilters: validatedFilter,
+        };
+
+        return filterReq;
+    }
+    
+    
+
+    // Column Filter Data
+    private static validateFilter(filter: any): any {
+        const validFilter: any = {};
+        
+        if(filter) {
+            Object.keys(filter).forEach(key => {
+                if (filter[key].value !== null && filter[key].value !== undefined && filter[key].value !== '') {
+                    if(filter[key].value && filter[key].value.length && Array.isArray(filter[key].value)) {
+                        validFilter[key] = {
+                            value : this.convertArrayToString(filter[key].value),
+                            matchMode : filter[key].matchMode
+                        };
+                    } else {
+                        validFilter[key] = filter[key];
+                    }
+                }
+            });
+        }
+
+        return Object.keys(validFilter).length > 0 ? validFilter : {};
+    }
+
+    // Date Range convert in String
+    static convertArrayToString(dates: any): any {
+        if(dates && dates.length) {
+            return dates.map((dateStr: any) => {
+                const date = new Date(dateStr);
+                return date.toISOString().slice(0, -1);
+            }).join(','); 
+        } else {
+            return dates;
+        }
+    }
+    
 }

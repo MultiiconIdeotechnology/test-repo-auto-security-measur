@@ -13,7 +13,7 @@ export class DestinationService {
 
     getdestinationCombo(filter: string): Observable<any[]> {
         return this.http.post<any[]>(
-            this.baseUrl + 'destination/getdestinationCombo',
+            this.baseUrl + 'destination/getDestinationComboForCreate',
             { filter }
         );
     }

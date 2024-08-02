@@ -18,11 +18,11 @@
                 <!-- Rows -->
                 <ng-container *ngIf="dataList?.item?.length > 0; else noGridItems">
                     <ng-container *ngFor="let List of dataList?.item">
-                        <div class="tbl-grid gridwidth grid items-center px-5 py-2 border-b pl-4 cursor-pointer">
+                        <div class="tbl-grid gridwidth grid items-center px-5 py-1 border-b pl-4 cursor-pointer">
                             <ng-container *ngFor="let col of columns">
                                 <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
                                     <span *ngIf="col.toColor && col.key == 'status'">
-                                        <span *ngIf="col.name == 'Status'" [matTooltip]="List[col.key]"
+                                        <span *ngIf="col.name == 'Status'"
                                             [ngClass]="getStatusColor(List[col.key])">{{ List[col.key] }}
                                         </span>
                                     </span>

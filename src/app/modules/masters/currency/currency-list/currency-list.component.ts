@@ -12,19 +12,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-currency-list',
   templateUrl: './currency-list.component.html',
-  styles: [`
-  .tbl-grid {
-    grid-template-columns:  40px 260px 140px 120px 210px;
-  }
-  `],
+  styles: [],
   standalone   : true,
   imports      : [
     NgIf,
@@ -37,17 +33,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatMenuModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule,
     MatInputModule,
     MatButtonModule,
     MatTooltipModule,
+    PrimeNgImportsModule
   ],
 })
 export class CurrencyListComponent extends BaseListingComponent {
 
   module_name = module_name.currency
   dataList = [];
-  total = 0;
+  isFilterShow: boolean = false;
 
   columns = [
     { key: 'currency', name: 'Currency', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
@@ -70,13 +66,13 @@ export class CurrencyListComponent extends BaseListingComponent {
     this.Mainmodule = this
   }
 
-  refreshItems(): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
-    this.currencyService.getcurrencyList(this.getFilterReq()).subscribe({
+    this.currencyService.getcurrencyList(this.getNewFilterReq(event)).subscribe({
       next: data => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
+        this.totalRecords = data.total;
       }, error: err => {
         this.alertService.showToast('error',err,'top-right',true)
         this.isLoading = false;
@@ -142,6 +138,6 @@ export class CurrencyListComponent extends BaseListingComponent {
   }
 
   ngOnDestroy(): void {
-    this.masterService.setData(this.key, this)
+    // this.masterService.setData(this.key, this)
   }
 }

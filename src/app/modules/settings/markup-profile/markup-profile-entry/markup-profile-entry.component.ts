@@ -29,6 +29,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { Linq } from 'app/utils/linq';
 import { SupplierService } from 'app/services/supplier.service';
+import { PspSettingService } from 'app/services/psp-setting.service';
 
 @Component({
     selector: 'app-markup-profile-entry',
@@ -76,6 +77,8 @@ export class MarkupProfileEntryComponent {
     Destination = "Add";
     Visa = "Add";
     Supplier = "Add";
+    compnyList: any[] = [];
+
 
     markupprofileList: any[] = [
         "Company",
@@ -168,6 +171,7 @@ export class MarkupProfileEntryComponent {
         public productFixDepartureService: ProductFixDepartureService,
         public destinationService: DestinationService,
         public cityService: CityService,
+        private pspsettingService: PspSettingService,
         private supplierService: SupplierService
     ) { }
 
@@ -176,6 +180,8 @@ export class MarkupProfileEntryComponent {
         this.formGroup = this.builder.group({
             id: [''],
             profile_name: ['', Validators.required],
+            company_id: [''],
+            companyfilter: [''],
         });
 
         this.DetailFormGroup = this.builder.group({
@@ -340,6 +346,24 @@ export class MarkupProfileEntryComponent {
 
         });
 
+        /*************Company combo**************/
+        this.formGroup
+            .get('companyfilter')
+            .valueChanges.pipe(
+                filter((search) => !!search),
+                startWith(''),
+                debounceTime(200),
+                distinctUntilChanged(),
+                switchMap((value: any) => {
+                    return this.pspsettingService.getCompanyCombo(value);
+                })
+            )
+            .subscribe({
+                next: data => {
+                    this.compnyList = data
+                }
+            });
+
         this.productFixDepartureService.getVisaDestinationCombo('').subscribe({
             next: (res) => {
                 this.AllDestination = res;
@@ -415,6 +439,8 @@ export class MarkupProfileEntryComponent {
                     next: data => {
                         this.record = data;
                         this.formGroup.patchValue(this.record);
+                        this.formGroup.get('companyfilter').patchValue(this.record.company_name)
+                        this.formGroup.get('company_id').patchValue(this.record.company_id)
 
                         if (this.record.markup_details.length >= 1) {
                             for (var md of this.record.markup_details) {
@@ -955,6 +981,7 @@ export class MarkupProfileEntryComponent {
 
         this.disableBtn = true;
         const json = this.formGroup.getRawValue();
+        json['company_id'] =  json.company_id;
         this.markupprofileService.create(json).subscribe({
             next: (res) => {
                 this.disableBtn = false;

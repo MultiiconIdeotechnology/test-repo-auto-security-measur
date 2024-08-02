@@ -35,6 +35,20 @@
                     <mat-label>Profile Name</mat-label>
                     <input matInput [readonly]="readonly" type="text" required [formControlName]="'profile_name'" />
                 </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Company</mat-label>
+                    <mat-select formControlName="company_id"  [compareWith]="compareWith">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching company found'" [formControlName]="'companyfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let ct of compnyList" [value]="ct.company_id">
+                            <span>{{ ct.company_name }}</span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
 
             <div class="flex flex-row space-x-3">

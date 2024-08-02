@@ -5,7 +5,8 @@
             {{ module_name }}
         </div>
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <ng-container *ngIf="tabNameStr == 'Inbox'">
                     <input matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'"
@@ -15,7 +16,35 @@
                     <input matInput [formControl]="searchInputControlpartners" [autocomplete]="'off'"
                         [placeholder]="'Search'">
                 </ng-container>
-            </mat-form-field>
+            </mat-form-field> -->
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Inbox'">
+                <input matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="inboxRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="inboxRefresh()"></mat-icon>
+            </div>
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Partners'">
+                <input matInput [formControl]="searchInputControlpartners" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="partnersRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="partnersRefresh()"></mat-icon>
+            </div>
+
+            <!------global filter------>
+            <button *ngIf="this.tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowInbox  = !isFilterShowInbox">
+                <img *ngIf="!isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <button *ngIf="this.tabNameStr == 'Partners'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading"
+                (click)="isFilterShowPartners  = !isFilterShowPartners ">
+                <img *ngIf="!isFilterShowPartners" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowPartners " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
 
             <ng-container *ngIf="tabNameStr == 'Inbox'">
                 <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Inbox')">
@@ -30,12 +59,14 @@
         </div>
     </div>
 
-    <mat-tab-group class="mt-3 lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+    <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
-            <inbox-agent #inbox></inbox-agent>
+            <inbox-agent #inbox [isFilterShowInbox]="isFilterShowInbox" [dropdownListObj]="dropdownListObj"></inbox-agent>
         </mat-tab>
         <mat-tab label="Partners" [aria-label]="'Partners'" *ngIf="getTabsPermission('partners')">
-            <app-partners #partners></app-partners>
+            <ng-container *ngIf="tabNameStr == 'Partners'">
+                <app-partners #partners [isFilterShowPartners]="isFilterShowPartners" [dropdownListObj]="dropdownListObj"></app-partners>
+            </ng-container>
         </mat-tab>
     </mat-tab-group>
 </div>

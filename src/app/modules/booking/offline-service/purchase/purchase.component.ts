@@ -1,14 +1,14 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import {  MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -18,11 +18,11 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { module_name } from 'app/security';
-import { EntityService } from 'app/services/entity.service';
 import { OfflineserviceService } from 'app/services/offlineservice.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { Subject } from 'rxjs';
 import { PurchaseEntryComponent } from './purchase-entry/purchase-entry.component';
+import { DownloadDocumentComponent } from './download-document/download-document.component';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-purchase',
@@ -30,7 +30,7 @@ import { PurchaseEntryComponent } from './purchase-entry/purchase-entry.componen
   styleUrls: ['./purchase.component.scss'],
   styles: [`
   .tbl-grid {
-    grid-template-columns: 40px 200px 200px 200px 210px 130px 200px 160px 100px 100px 130px;
+    grid-template-columns: 40px 80px 140px 150px 140px 130px 140px;
   }
   `],
   standalone: true,
@@ -56,20 +56,18 @@ import { PurchaseEntryComponent } from './purchase-entry/purchase-entry.componen
   ],
 
 })
-export class PurchaseComponent extends BaseListingComponent {
+export class PurchaseComponent extends BaseListingComponent implements AfterViewInit {
 
   @ViewChild('tabGroup') tabGroup;
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
   @ViewChild(MatSort) public _sortPending: MatSort;
   @Input() id: string;
   @Input() isInvoiceGenerated: boolean;
 
   module_name = module_name.Purchase
-  dataList = [];
-  total = 0;
+  dataList: any[] = [];
+  AlldataList: any[] = [];
   appConfig = AppConfig;
-  pendingFilter: any = {};
-  record: any = {};
+  mysearchInputControl = new FormControl('');
 
   public key: any;
   public sortColumn: any;
@@ -79,16 +77,12 @@ export class PurchaseComponent extends BaseListingComponent {
   public _unsubscribeAll: Subject<any> = new Subject<any>();
 
   columns = [
-    { key: 'supplier_booking_ref_no', name: 'Ref.No', is_date: false, date_formate: '', is_sortable: true, class: '', tooltip: true },
-    { key: 'service_type', name: 'Service Type', is_date: false, date_formate: '', is_sortable: true, class: '', tooltip: true },
-    { key: 'service_particular', name: 'Service Particular', is_date: false, date_formate: '', is_sortable: true, class: '' },
-    { key: 'service_remark', name: 'Remark', tooltip: true, is_date: false, date_formate: '', is_sortable: true, class: '' },
-    { key: 'service_date', name: 'Service Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '' },
-    { key: 'supplier_name', name: 'Supplier Name', is_date: false, date_formate: '', is_sortable: true, class: '', tooltip: true },
-    { key: 'purchase_amount', name: 'Purchase Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', tooltip: true },
-    { key: 'currency_short_code', name: 'Currency', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', tooltip: true },
-    { key: 'roe', name: 'ROE', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', tooltip: true },
     { key: 'supplier_invoice', name: 'Invoice', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view', isicon: true },
+    { key: 'service_type', name: 'Service Type', is_date: false, date_formate: '', is_sortable: true, class: '', tooltip: false },
+    { key: 'supplier_name', name: 'Supplier', is_date: false, date_formate: '', is_sortable: true, class: '', tooltip: true },
+    { key: 'purchase_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', tooltip: false },
+    { key: 'roe', name: 'ROE', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', tooltip: false },
+    { key: 'entry_date_time', name: 'Entry Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm', is_sortable: true, class: '' },
   ]
   cols = [];
 
@@ -96,43 +90,44 @@ export class PurchaseComponent extends BaseListingComponent {
     private conformationService: FuseConfirmationService,
     private offlineService: OfflineserviceService,
     private matDialog: MatDialog,
-    private entityService: EntityService,
   ) {
     super(module_name.Purchase)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'supplier_booking_ref_no';
-    this.sortDirection = 'asc';
+    this.sortColumn = 'entry_date_time';
+    this.sortDirection = 'desc';
     this.Mainmodule = this
   }
 
-  getFilter(): any {
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginator,
-      this._sort,
-      this.searchInputControl.value
-    );
-    filterReq['OsbId'] = this.id
-    return filterReq;
+  ngOnInit(): void {
+    this.refreshItems();
+
+    this.mysearchInputControl.valueChanges.subscribe(val => {
+      if (!val || val.trim() == '')
+        this.dataList = this.AlldataList
+      else
+        this.dataList = this.AlldataList.filter(x => x.service_type.toLowerCase().includes(val.toLowerCase()) || x.supplier_name.toLowerCase().includes(val.toLowerCase()) ||
+          x.purchase_amount.toLowerCase().includes(val.toLowerCase()) || x.roe.toString().toLowerCase().includes(val.toLowerCase()) || x.entry_date_time.toString().toLowerCase().includes(val.toLowerCase()))
+    })
   }
 
   refreshItems() {
     this.isLoading = true;
-
-    this.offlineService.getOsbPurchaseList(this.getFilter()).subscribe(
+    const filterReq = { OsbId: this.id }
+    this.offlineService.getOsbPurchaseList(filterReq).subscribe(
       {
         next: data => {
           this.isLoading = false;
           this.dataList = data.data;
 
           this.dataList.forEach(x => {
-            x.recharge_amount = x.currency + " " + x.recharge_amount
+            x.purchase_amount = x.currency_short_code + " " + x.purchase_amount
           });
-          this._paginatorPending.length = data.total;
-          this.total = data.total;
+
+          this.AlldataList = cloneDeep(this.dataList);
+
         }, error: err => {
           this.alertService.showToast('error', err);
-
           this.isLoading = false;
         }
       }
@@ -197,15 +192,45 @@ export class PurchaseComponent extends BaseListingComponent {
     })
   }
 
+  shortData() {
+    this.dataList.sort((a, b) => this._sortPending.direction === 'asc' ? a[this._sortPending.active].toString().localeCompare(b[this._sortPending.active].toString()) : b[this._sortPending.active].toString().localeCompare(a[this._sortPending.active].toString()));
+  }
+
   downloadfile(data: string) {
     window.open(data, '_blank')
+  }
+
+  supplierInvoice(data: any) {
+    // if (data.supplier_invoice)
+    //   this.downloadfile(data.supplier_invoice);
+    // else {
+    data['from'] = "Supplier Invoice"
+    this.matDialog.open(DownloadDocumentComponent, {
+      data: { data: data, Obs_id: this.id, isInvoiceGenerated: this.isInvoiceGenerated }
+    }).afterClosed().subscribe(x => {
+      this.refreshItems();
+    })
+    // }
+  }
+
+  supplierConfirmation(data: any) {
+    // if (data.supplier_confirmation_proof)
+    //   this.downloadfile(data.supplier_confirmation_proof);
+    // else {
+    data['from'] = "Supplier Confirmation"
+    this.matDialog.open(DownloadDocumentComponent, {
+      data: { data: data, Obs_id: this.id, isInvoiceGenerated: this.isInvoiceGenerated }
+    }).afterClosed().subscribe(x => {
+      this.refreshItems();
+    })
+    // }
   }
 
   getNodataText(): string {
     if (this.isLoading)
       return 'Loading...';
-    else if (this.searchInputControl.value)
-      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else if (this.mysearchInputControl.value)
+      return `no search results found for \'${this.mysearchInputControl.value}\'.`;
     else return 'No data to display';
   }
 

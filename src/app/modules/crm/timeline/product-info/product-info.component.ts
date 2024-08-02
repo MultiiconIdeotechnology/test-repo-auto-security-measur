@@ -19,9 +19,9 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterOutlet} from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, module_name, partnerPurchaseProductPermissions} from 'app/security';
+import { Security, module_name, partnerPurchaseProductPermissions } from 'app/security';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { TimelinePaymentInfoItemComponent } from '../items/payment-info-items.component';
 import { TimelineInstallmentsInfoItemComponent } from '../installments/payment-info-installments.component';
@@ -29,7 +29,6 @@ import { TimelineReceiptsInfoItemComponent } from '../receipts/receipts-info-ins
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
-// import { ReceiptsInfoItemComponent } from '../receipts/receipts-info-installments.component';
 
 @Component({
     selector: 'app-timeline-product-info',
@@ -69,8 +68,10 @@ import { ToasterService } from 'app/services/toaster.service';
         TimelineReceiptsInfoItemComponent
     ]
 })
-export class TimelineAgentProductInfoComponent{
-    dataList = [];
+export class TimelineAgentProductInfoComponent {
+    // dataList = [];
+    dataList: any = {};
+
     searchInputControl = new FormControl('');
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
@@ -90,6 +91,7 @@ export class TimelineAgentProductInfoComponent{
     appConfig = AppConfig;
     record: any = {};
     agencyName: any;
+    accountReceiptFlag: any;
     is_schedule_call: FormControl;
     tabName: any
     tabNameStr: any = 'Items'
@@ -106,16 +108,33 @@ export class TimelineAgentProductInfoComponent{
         private crmService: CrmService
     ) {
         this.key = this.module_name;
+        this.accountReceiptFlag = data?.account_receipt ?? ""
         this.Mainmodule = this,
         this.record = data?.data ?? {}
         this.agencyName = data?.agencyName ?? "";
-        this.agentId = this.record?.agentid;
-        this.productId = this.record?.id;
+
+        if (this.accountReceiptFlag == false) {
+            this.agentId = this.record?.agentid;
+            this.productId = this.record?.id;
+        }
+
+        if (this.accountReceiptFlag == true) {
+            this.agentId = this.record?.agent_id;
+            this.productId = this.record?.product_id;
+        }
     }
 
     ngOnInit(): void {
-        if(this.tabNameStr == 'Items'){
-            this.payments?.refreshItems();
+        if (this.accountReceiptFlag == false) {
+            if (this.tabNameStr == 'Items') {
+                this.payments?.refreshItems();
+            }
+        }
+
+        if (this.accountReceiptFlag == true) {
+            if (this.tabNameStr == 'Items') {
+                this.refreshItemsInfo()
+            }
         }
     }
 
@@ -126,12 +145,35 @@ export class TimelineAgentProductInfoComponent{
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         filterReq['Id'] = this.productId ? this.productId : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res?.data[0];
+                this.dataList = res[0];
+               // this.dataList = res?.data[0];
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    refreshItemsInfo() {
+        this.isLoading = true;
+        const filterReq = GridUtils.GetFilterReq(
+            this._paginator,
+            this._sort,
+            "",
+        );
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        filterReq['Id'] = this.productId ? this.productId : ""
+        this.crmService.getProductInfoList(filterReq).subscribe({
+            next: (res) => {
+                this.isLoading = false;
+                this.dataList = res[0];
+                //this.dataList = res?.data[0];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -159,10 +201,10 @@ export class TimelineAgentProductInfoComponent{
         if (tab == 'items') {
             return Security.hasPermission(partnerPurchaseProductPermissions.itemsTabPermissions)
         }
-        if (tab == 'installments'){
+        if (tab == 'installments') {
             return Security.hasPermission(partnerPurchaseProductPermissions.installmentsTabPermissions)
         }
-        if (tab == 'receipts'){
+        if (tab == 'receipts') {
             return Security.hasPermission(partnerPurchaseProductPermissions.receiptsTabPermissions)
         }
     }
@@ -176,15 +218,30 @@ export class TimelineAgentProductInfoComponent{
         switch (tabName) {
             case 'Items':
                 this.tab = 'items';
-                this.payments?.refreshItems();
+                if (this.accountReceiptFlag == false) {
+                    this.payments?.refreshItems();
+                }
+                if (this.accountReceiptFlag == true) {
+                    this.payments?.refreshItemsReceipt();
+                }
                 break;
             case 'Installments':
                 this.tab = 'installments';
-                this.installments?.refreshItems();
+                if (this.accountReceiptFlag == false) {
+                    this.installments?.refreshItems();
+                }
+                if (this.accountReceiptFlag == true) {
+                    this.installments?.refreshItemsReceipt();
+                }
                 break;
             case 'Receipts':
                 this.tab = 'receipts';
-                this.receipt?.refreshItems();
+                if (this.accountReceiptFlag == false) {
+                    this.receipt?.refreshItems();
+                }
+                if (this.accountReceiptFlag == true) {
+                    this.receipt?.refreshItemsReceipt();
+                }
                 break;
         }
     }

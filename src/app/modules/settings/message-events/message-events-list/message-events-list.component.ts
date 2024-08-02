@@ -2,7 +2,7 @@ import { module_name } from 'app/security';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { MessageEventsEntryComponent } from '../message-events-entry/message-events-entry.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { MessageEventsService } from 'app/services/message-events.service';
@@ -11,14 +11,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+
 
 @Component({
     selector: 'app-message-events-list',
@@ -42,13 +41,11 @@ import { ToasterService } from 'app/services/toaster.service';
         MatInputModule,
         MatButtonModule,
         MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class MessageEventsListComponent
@@ -82,21 +79,10 @@ export class MessageEventsListComponent
             align: '',
             indicator: false,
             tooltip: true
-        },
-        {
-            key: '.',
-            name: '',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true
-        },
+        }
     ];
     cols = [];
+    isFilterShow: boolean = false;
 
     constructor(
         private messageeventService: MessageEventsService,
@@ -112,15 +98,15 @@ export class MessageEventsListComponent
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?:any): void {
         this.isLoading = true;
         this.messageeventService
-            .getMessageEventList(this.getFilterReq())
+            .getMessageEventList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                 },
                 error: (err) => {
                     this.toasterService.showToast('error', err)
@@ -218,6 +204,6 @@ export class MessageEventsListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -26,6 +26,9 @@ import { InfoWalletComponent } from '../info-wallet/info-wallet.component';
 import { DateTime } from 'luxon';
 import { EntityService } from 'app/services/entity.service';
 import { Excel } from 'app/utils/export/excel';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
   selector: 'app-rejected',
@@ -33,7 +36,7 @@ import { Excel } from 'app/utils/export/excel';
   styleUrls: ['./rejected.component.scss'],
   styles: [`
   .tbl-grid {
-    grid-template-columns: 40px 200px 180px 180px 130px 160px 190px 180px 200px;
+    grid-template-columns: 40px 200px 180px 180px 130px 160px 190px 180px 200px 150px;
   }
   `],
   standalone: true,
@@ -55,11 +58,14 @@ import { Excel } from 'app/utils/export/excel';
     MatTooltipModule,
     MatDividerModule,
     CommonModule,
-    MatTabsModule
-
+    MatTabsModule,
+    PrimeNgImportsModule,
   ],
 })
-export class RejectedComponent {
+export class RejectedComponent extends BaseListingComponent {
+
+  @Input() isFilterShowReject: boolean
+  @Input() filterApiData: any;
 
   @ViewChild('tabGroup') tabGroup;
   @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
@@ -78,6 +84,11 @@ export class RejectedComponent {
   public sortColumn: any;
   public sortDirection: any;
   rejectFilter: any = {};
+  agentList: any[] = [];
+  mopList:any[] = [];
+  selectedMop!:string;
+  selectedEmployee!:string;
+
 
   columns = [
     { key: 'reference_number', name: 'Ref. No', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
@@ -88,6 +99,7 @@ export class RejectedComponent {
     { key: 'filename', name: 'Attachment', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view', is_sticky: false, align: '', indicator: false, isicon: true },
     { key: 'rejected_by_name', name: 'Rejected By', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
     { key: 'rejected_date_time', name: 'Reject Time', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
+    { key: 'user_remark', name: 'Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
 
   ]
   cols = [];
@@ -96,15 +108,15 @@ export class RejectedComponent {
   constructor(
     private walletService: WalletService,
     private conformationService: FuseConfirmationService,
-    private alertService: ToasterService,
     private matDialog: MatDialog,
+    public agentService: AgentService,
     private entityService: EntityService,
   ) {
-    // super(module_name.wallet)
+    super(module_name.wallet)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'recharge_for_name';
-    this.sortDirection = 'asc';
+    this.sortColumn = 'request_date_time';
+    this.sortDirection = 'desc';
     this.Mainmodule = this
 
   }
@@ -113,13 +125,37 @@ export class RejectedComponent {
     this.searchInputControlRejected.valueChanges
       .subscribe(() => {
         GridUtils.resetPaginator(this._paginatorPending);
-        this.refreshItemsRejected();
+        // this.refreshItemsRejected();
       });
 
-    this.entityService.onWalletRejectedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-      next: (item) => {
-        this.refreshItemsRejected();
-      }
+      // agent combo api call
+      // this.getAgentList('');
+
+    // this.entityService.onWalletRejectedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+    //   next: (item) => {
+    //     this.refreshItemsRejected();
+    //   }
+    // })
+  }
+
+  ngOnChanges() {
+    this.agentList = this.filterApiData?.agentData;
+    this.mopList = this.filterApiData.mopData;
+    // if (this.isFilterShowReject) {
+    //   this.getAgentList('');
+    // }
+  }
+
+
+  getAgentList(value: string) {
+    this.agentService.getAgentCombo(value).subscribe((data) => {
+      this.agentList = data;
+    })
+  }
+
+  getMopList(value:string){
+    this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
+      this.filterApiData.mopData = data;
     })
   }
 
@@ -172,15 +208,16 @@ export class RejectedComponent {
     })
   }
 
-  refreshItemsRejected() {
+  refreshItemsRejected(event?: any) {
 
     this.isLoading = true;
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginatorPending,
-      this._sortPending,
-      this.searchInputControlRejected.value, "request_date_time", 1
-    );
-
+    // const filterReq = GridUtils.GetFilterReq(
+    //   this._paginatorPending,
+    //   this._sortPending,
+    //   this.searchInputControlRejected.value, "request_date_time", 1
+    // );
+    const filterReq = this.getNewFilterReq(event);
+    filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['Status'] = 'rejected';
     filterReq['particularId'] = this.rejectFilter?.particularId == "all" ? '' : this.rejectFilter?.particularId;
     filterReq['mop'] = this.rejectFilter?.mop || '';
@@ -193,11 +230,12 @@ export class RejectedComponent {
         next: data => {
           this.isLoading = false;
           this.dataList = data.data;
-          this.dataList.forEach(x => {
-            x.recharge_amount = x.currency + " " + x.recharge_amount
-          });
-          this._paginatorPending.length = data.total;
-          this.total = data.total;
+          this.totalRecords = data.total;
+          // this.dataList.forEach(x => {
+          //   x.recharge_amount = x.currency + " " + x.recharge_amount
+          // });
+          // this._paginatorPending.length = data.total;
+          // this.total = data.total;
         }, error: err => {
           this.alertService.showToast('error', err);
 
@@ -219,16 +257,18 @@ export class RejectedComponent {
     else return 'No data to display';
   }
 
-  exportExcel(): void {
+  exportExcel(event?: any): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginatorPending,
-      this._sortPending,
-      this.searchInputControlRejected.value, "request_date_time", 1
-    );
+    // const filterReq = GridUtils.GetFilterReq(
+    //   this._paginatorPending,
+    //   this._sortPending,
+    //   this.searchInputControlRejected.value, "request_date_time", 1
+    // );
 
+    const filterReq = this.getNewFilterReq(event);
+    filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['Status'] = 'rejected';
     filterReq['particularId'] = this.rejectFilter?.particularId == "all" ? '' : this.rejectFilter?.particularId;
     filterReq['mop'] = this.rejectFilter?.mop || '';
@@ -236,7 +276,8 @@ export class RejectedComponent {
     filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.FromDate)).toFormat('yyyy-MM-dd');
     filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.ToDate)).toFormat('yyyy-MM-dd');
     filterReq['Skip'] = 0;
-    filterReq['Take'] = this._paginatorPending.length;
+    filterReq['Take'] = this.totalRecords;
+
 
     this.walletService.getWalletRechargeFilterList(filterReq).subscribe(data => {
       for (var dt of data.data) {
@@ -254,8 +295,9 @@ export class RejectedComponent {
           { header: 'MOP', property: 'mop' },
           { header: 'Rejected By', property: 'rejected_by_name' },
           { header: 'Rejected Time', property: 'rejected_date_time' },
+          { header: 'Remark', property: 'user_remark' },
         ],
-        data.data, "Wallet Recharge Rejected", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }]);
+        data.data, "Wallet Recharge Rejected", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]);
     });
   }
 

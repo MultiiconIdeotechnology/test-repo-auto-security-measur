@@ -204,6 +204,7 @@ export class PspEntryComponent {
           }
           this.formGroup.patchValue(this.record);
           this.formGroup.get('agentfilter').patchValue(this.record.psp_for_name);
+          this.formGroup.get('companyfilter').patchValue(this.record.psp_for_name);
 
           var modes = data.payment_modes.split(',');
           this.payment_modes.patchValue(modes)

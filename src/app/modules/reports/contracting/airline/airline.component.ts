@@ -27,6 +27,9 @@ import { AirlineFilterComponent } from './airline-filter/airline-filter.componen
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { ToasterService } from 'app/services/toaster.service';
 import { forEach } from 'lodash';
+import { AppConfig } from 'app/config/app-config';
+import { takeUntil, debounceTime, Subject } from 'rxjs';
+import { InfoAirlineComponent } from './info-airline/info-airline.component';
 
 @Component({
     selector: 'app-airline',
@@ -79,6 +82,7 @@ export class AirlineComponent {
     dayTotal5: number[] = [];
     searchInputControl = new FormControl('');
     loading: boolean = true;
+    public _unsubscribeAll: Subject<any> = new Subject<any>();
 
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sort: MatSort;
@@ -185,8 +189,8 @@ export class AirlineComponent {
         'oct',
         'nov',
         'dec'
-    ];   
-    
+    ];
+
     @ViewChild(MatPaginator) public _paginator7: MatPaginator;
     @ViewChild(MatSort) public _sort7: MatSort;
     dataSource7 = new MatTableDataSource();
@@ -222,13 +226,70 @@ export class AirlineComponent {
 
     ngOnInit() {
         this.GFG_Fun();
+        // this.searchInputControl.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginator);
+        //         this.refreshItems();
+        //     });
+
         this.searchInputControl.valueChanges
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                debounceTime(AppConfig.searchDelay)
+            )
             .subscribe(() => {
                 GridUtils.resetPaginator(this._paginator);
-                this.refreshItems();
+                // this.refreshItems();
+                if (this.type == 'Month Wise' && (this.status == "Confirmed Count" || this.status == "Failed Count")) {
+                    this.refreshItems();
+                }
+                if (this.type == 'Month Wise' && this.status == 'Confirmed Failed Count') {
+                    this.refreshItems1();
+                }
+                if (this.type == 'Month Wise' && (this.status == 'Confirm Volume' || this.status == 'Failed Volume')) {
+                    this.refreshItems2();
+                }
+                if (this.type == 'Month Wise' && this.status == 'Pax Count') {
+                    this.refreshItems3();
+                }
+                if (this.type == 'Month Wise' && this.status == 'Markup') {
+                    this.refreshItems6();
+                }
+                if (this.type == 'Day Wise' && (this.status == 'Confirmed Count' || this.status == 'Failed Count' || this.status == 'Pax Count' || this.status == 'Markup')) {
+                    this.refreshItems4();
+                }
+                if (this.type == 'Day Wise' && (this.status == 'Confirm Volume' || this.status == 'Failed Volume')) {
+                    this.refreshItems5();
+                }
+                if (this.type == 'Day Wise' && this.status == 'Confirmed Failed Count') {
+                    this.refreshItems7();
+                }
             });
 
         this.refreshItems();
+    }
+
+    info(record, month) {
+        if (this.airlineFilter.Type == 'Day Wise' && this.airlineFilter.status == 'Pax Count') {
+            return;
+        } else {
+            this.matDialog
+                .open(InfoAirlineComponent, {
+                    data: {
+                        title: record.company_name,
+                        supplier_id: record.supplier_id,
+                        status: this.airlineFilter.status,
+                        month: month,
+                        year: this.airlineFilter.Year,
+                        type: this.airlineFilter.Type
+                    },
+                    disableClose: true,
+                })
+                .afterClosed()
+                .subscribe((res) => {
+                })
+        }
+
     }
 
     daysInMonth(month, year) {
@@ -261,7 +322,7 @@ export class AirlineComponent {
     }
 
     refreshItems(): void {
-        console.log("refreshItems");
+        // console.log("refreshItems");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -278,7 +339,7 @@ export class AirlineComponent {
     }
 
     refreshItems1(): void {
-        console.log("refreshItems1");
+        // console.log("refreshItems1");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -294,14 +355,13 @@ export class AirlineComponent {
     }
 
     refreshItems2(): void {
-        console.log("refreshItems2");
+        // console.log("refreshItems2");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
                 this.dataSource2.data = res.data;
                 this.monthTotal2 = res?.monthTotal;
-                console.log(this.monthTotal2);
                 this._paginator2.length = res.total;
                 this.loading = false;
             }, error: (err) => {
@@ -312,7 +372,7 @@ export class AirlineComponent {
     }
 
     refreshItems3(): void {
-        console.log("refreshItems3");
+        // console.log("refreshItems3");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -329,12 +389,12 @@ export class AirlineComponent {
     }
 
     refreshItems4(): void {
-        console.log("refreshItems4");
+        // console.log("refreshItems4");
         this.loading = true;
         var json = this.getFilter()
         this.airlineService.getAirLineReport(json).subscribe({
             next: (res) => {
-                if(json.status == 'Markup'){
+                if (json.status == 'Markup') {
                     res.data.forEach(x => {
                         // this.toFixedValue(x, i);
                         x.day1 = x?.day1?.toFixed(2);
@@ -369,9 +429,9 @@ export class AirlineComponent {
                         x.day30 = x?.day30?.toFixed(2);
                         x.day31 = x?.day31?.toFixed(2);
                     })
-                    
+
                 }
-                
+
                 this.dataSource4.data = res.data;
 
                 this.dayTotal4 = res?.dayTotal;
@@ -391,15 +451,13 @@ export class AirlineComponent {
         });
     }
 
-    toFixedValue(x:any, index: any){
+    toFixedValue(x: any, index: any) {
         let count = (index + 1);
-        console.log("count", count);
-        
-        return x['day'+count].toFixed(2);
+        return x['day' + count].toFixed(2);
     }
 
-    refreshItems5(){
-        console.log("refreshItems5");
+    refreshItems5() {
+        // console.log("refreshItems5");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -423,7 +481,7 @@ export class AirlineComponent {
     }
 
     refreshItems6(): void {
-        console.log("refreshItems6");
+        // console.log("refreshItems6");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -439,9 +497,9 @@ export class AirlineComponent {
         });
     }
 
-    
+
     refreshItems7(): void {
-        console.log("refreshItems7");
+        // console.log("refreshItems7");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -452,9 +510,8 @@ export class AirlineComponent {
                     'company_name',
                 ];
                 for (let index = 1; index <= Lastdate; index++) {
-                    this.columns7.push('day'+ index + '_Confirmed')
+                    this.columns7.push('day' + index + '_Confirmed')
                 }
-                console.log("col7",this.columns7);
                 this._paginator7.length = res.total;
                 this.loading = false;
             }, error: (err) => {
@@ -476,36 +533,36 @@ export class AirlineComponent {
                     this.airlineFilter = res;
                     this.status = this.airlineFilter?.status;
                     this.type = this.airlineFilter?.Type;
-                    if (this.status == 'Confirmed Failed Count') {
+                    if (this.type == 'Month Wise' && (this.status == "Confirmed Count" || this.status == "Failed Count")) {
+                        this.refreshItems();
+                    }
+                    if (this.type == 'Month Wise' && this.status == 'Confirmed Failed Count') {
                         this.refreshItems1();
                     }
-                    if (this.status == 'Confirm Volume' || this.status == 'Failed Volume') {
+                    if (this.type == 'Month Wise' && (this.status == 'Confirm Volume' || this.status == 'Failed Volume')) {
                         this.refreshItems2();
                     }
-                    if (this.status == 'Pax Count') {
+                    if (this.type == 'Month Wise' && this.status == 'Pax Count') {
                         this.refreshItems3();
                     }
-                    if (this.type == 'Day Wise') {
+                    if (this.type == 'Month Wise' && this.status == 'Markup') {
+                        this.refreshItems6();
+                    }
+                    if (this.type == 'Day Wise' && (this.status == 'Confirmed Count' || this.status == 'Failed Count' || this.status == 'Pax Count' || this.status == 'Markup')) {
                         this.refreshItems4();
                     }
                     if (this.type == 'Day Wise' && (this.status == 'Confirm Volume' || this.status == 'Failed Volume')) {
                         this.refreshItems5();
                     }
-                    if (this.type == 'Month Wise' && this.status == 'Markup') {
-                        this.refreshItems6();
-                    }
                     if (this.type == 'Day Wise' && this.status == 'Confirmed Failed Count') {
                         this.refreshItems7();
-                    }
-                    if(this.type == 'Month Wise' && (this.status == "Confirmed Count" || this.status == "Failed Count")){
-                        this.refreshItems();
                     }
                 }
             });
     }
 
-    popInfo(data):void {
-        console.log(data);
+    popInfo(data): void {
+        // console.log(data);
     }
 
     getNodataText(): string {

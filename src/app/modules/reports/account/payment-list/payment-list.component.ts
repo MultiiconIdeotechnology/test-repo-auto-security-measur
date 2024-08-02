@@ -20,7 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, messages, module_name } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { EmailSetupService } from 'app/services/email-setup.service';
@@ -31,6 +31,7 @@ import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PaymentFilterComponent } from '../payment-filter/payment-filter.component';
 import { PaymentInfoComponent } from './payment-info/payment-info.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-payment-list',
@@ -65,6 +66,7 @@ import { PaymentInfoComponent } from './payment-info/payment-info.component';
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatTabsModule,
+    PrimeNgImportsModule
   ],
 })
 export class PaymentListComponent extends BaseListingComponent implements OnDestroy {
@@ -118,18 +120,40 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     { key: 'audit_date_time', name: 'Audited', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
   ]
   cols = [];
+  _selectedColumns: Column[];
+  isFilterShow: boolean = false;
+  selectedStatus: string;
+  statusList = [
+    { label: 'Confirmed', value: 'Confirmed' },
+    { label: 'Rejected', value: 'Rejected' },
+    { label: 'Pending', value: 'Pending' },
+  ];
 
+  ngOnInit() {
 
-  ngOnInit(): void {
+    this.cols = [
+      // { field: 'payment_date', header: 'Payment Date' },
+      { field: 'payment_reject_reason', header: 'Payment Reject Reason' },
+      { field: 'payment_type', header: 'Payment Type' },
+    ];
+  }
+
+  get selectedColumns(): Column[] {
+    return this._selectedColumns;
+  }
+
+  set selectedColumns(val: Column[]) {
+    this._selectedColumns = this.cols.filter((col) => val.includes(col));
   }
 
   getFilter(): any {
 
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginator,
-      this._sort,
-      this.searchInputControl.value
-    );
+    let filterReq = {}
+    // const filterReq = GridUtils.GetFilterReq(
+    //   this._paginator,
+    //   this._sort,
+    //   this.searchInputControl.value
+    // );
     // const filter = this.currentFilter;
     filterReq['status'] = this.currentFilter.status;
     filterReq['fromDate'] = DateTime.fromJSDate(this.currentFilter.fromDate).toFormat('yyyy-MM-dd');
@@ -157,12 +181,15 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   }
 
 
-  refreshItems(): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
-    this.accountService.getPaymentList(this.getFilter()).subscribe({
+    var newModel = this.getNewFilterReq(event);
+    var extraModel = this.getFilter();
+    var Model = { ...newModel, ...extraModel }
+    this.accountService.getPaymentList(Model).subscribe({
       next: (data) => {
         this.dataList = data.data;
-        this.total = data.total;
+        this.totalRecords = data.total;
         this.isLoading = false;
       }, error: (err) => {
         this.alertService.showToast('error', err)
@@ -200,24 +227,18 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    const req = this.getFilter();
-    req.Skip = 0;
-    req.Take = this._paginator.length;
-
-    const filterReq = {};
+    const filterReq = this.getNewFilterReq({});
 
     filterReq['status'] = this.currentFilter.status;
     filterReq['fromDate'] = DateTime.fromJSDate(this.currentFilter.fromDate).toFormat('yyyy-MM-dd');
     filterReq['toDate'] = DateTime.fromJSDate(this.currentFilter.toDate).toFormat('yyyy-MM-dd')
-    filterReq['Skip'] = 0;
-    filterReq['Take'] = this._paginator.length;
-    filterReq['OrderBy'] = 'payment_request_date';
-    filterReq['OrderDirection'] = 1;
+    filterReq['Take'] = this.totalRecords;
 
     this.accountService.getPaymentList(filterReq).subscribe(data => {
       for (var dt of data.data) {
-        dt.payment_request_date = DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a')
+        dt.payment_request_date = DateTime.fromISO(dt.payment_request_date).toFormat('dd-MM-yyyy hh:mm a')
         dt.audit_date_time = DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy hh:mm a')
+        dt.payment_date = DateTime.fromISO(dt.payment_date).toFormat('dd-MM-yyyy hh:mm a')
         dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
       }
       Excel.export(
@@ -225,16 +246,22 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
         [
           { header: 'Transaction ID', property: 'transaction_ref_no' },
           { header: 'Ref no.', property: 'payment_ref_no' },
+          { header: 'Status', property: 'payment_status' },
           { header: 'To', property: 'payment_to' },
           { header: 'For', property: 'service_for' },
           { header: 'Amount', property: 'payment_amount' },
           { header: 'Mode Of Payment', property: 'mode_of_payment' },
           { header: 'Requested', property: 'payment_request_date' },
           { header: 'Audited', property: 'audit_date_time' },
-          { header: 'Status', property: 'payment_status' },
+          { property: 'payment_date', header: 'Payment Date' },
+          { property: 'payment_reject_reason', header: 'Payment Reject Reason' },
+          { property: 'payment_type', header: 'Payment Type' },
         ],
         data.data, "Payment", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }]);
     });
+  }
+  getNewFilters(arg0: {}) {
+    throw new Error('Method not implemented.');
   }
 
   getNodataText(): string {

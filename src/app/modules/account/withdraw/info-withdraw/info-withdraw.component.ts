@@ -1,25 +1,45 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSidenav } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FuseDrawerComponent } from '@fuse/components/drawer';
+import { FuseConfig, Themes } from '@fuse/services/config';
+import { UserService } from 'app/core/user/user.service';
+import { EntityService } from 'app/services/entity.service';
 import { LeadsService } from 'app/services/leads.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { WithdrawService } from 'app/services/withdraw.service';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-info-withdraw',
   templateUrl: './info-withdraw.component.html',
-  styleUrls: ['./info-withdraw.component.scss'],
+  // styleUrls: ['./info-withdraw.component.scss'],
+  styles: [
+    `
+        app-bank-entry-right {
+            position: static;
+            display: block;
+            flex: none;
+            width: auto;
+        }
+    `,
+  ],
   standalone: true,
   imports: [
     NgIf,
@@ -36,56 +56,70 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     MatSnackBarModule,
     MatSlideToggleModule,
     NgxMatSelectSearchModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FuseDrawerComponent,
+    MatDividerModule,
+    MatDatepickerModule,
+    MatMenuModule,
+    NgxMatTimepickerModule,
   ]
 
 })
 export class InfoWithdrawComponent {
 
+  @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+  config: FuseConfig;
+  layout: string;
+  scheme: 'dark' | 'light';
+  theme: string;
+  themes: Themes;
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
+
   record: any = {};
-  title = "Withdraw Info"
   fieldList: {};
   records: any = {};
+  title: string;
+  allrecord: any;
 
   constructor(
-    public matDialogRef: MatDialogRef<InfoWithdrawComponent>,
     public alertService: ToasterService,
     public withdrawService: WithdrawService,
     private leadsService: LeadsService,
-    @Inject(MAT_DIALOG_DATA) public data: any = {}
+    private entityService: EntityService,
+    private _userService: UserService,
   ) {
-    this.record = data?.data ?? {}
+
+    this.entityService.onInfoWithdraw().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+      next: (item) => {
+        this.settingsDrawer.toggle()
+        this.record = item.data
+        if (this.record) {
+          this.recordList()
+        }
+      }
+    })
   }
 
   ngOnInit() {
     if (this.record.id) {
-      this.withdrawService.getWalletWithdrawRecord(this.record.id).subscribe({
-        next: (data) => {
 
-          this.records = data;
-
-          this.fieldList = [
-            { name: 'Agency Name', value: data.agent_name, },
-            { name: 'Withdraw Status', value: data.withdraw_status, },
-            { name: 'Withdraw Currency', value: data.withdraw_currency, },
-            { name: 'Withdraw Amount', value: data.withdraw_amount, },
-            { name: 'Agent Remark', value: data.agent_remark, },
-            { name: 'Is Audited', value: data.is_audited ? 'Yes' : 'No', },
-            { name: 'Audit By', value: data.audit_by, },
-            { name: 'Audit Date', value: data.audit_date_time ? DateTime.fromISO(data.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
-            { name: 'Is Rejected', value: data.is_rejected ? 'Yes' : 'No', },
-            { name: 'Reject By', value: data.reject_by, },
-            { name: 'Reject Date', value: data.reject_date_time ? DateTime.fromISO(data.reject_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
-            { name: 'Reject Remark', value: data.reject_remark, },
-          ];
-        },
-        error: (err) => {
-          this.alertService.showToast('error', err, 'top-right', true);
-
-        },
-      },
-      )
     }
+  }
+
+  downloadInfo(data): void {
+    window.open(data, '_blank');
+  }
+
+  recordList() {
+    this.withdrawService.getWalletWithdrawRecord(this.record).subscribe({
+      next: (data) => {
+        this.record = data
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err, 'top-right', true);
+      },
+    },
+    )
   }
 
 }

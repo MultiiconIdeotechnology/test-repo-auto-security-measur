@@ -17,8 +17,19 @@ export const dateTimeFormats = {
 export const dateRange = {
     today: 'Today',
     last3Days: 'Last 3 Days',
-    lastWeek: 'Last Week',
-    lastMonth: 'Last Month',
+    lastWeek: 'This Week',
+    lastMonth: 'This Month',
+    last3Month: 'Last 3 Month',
+    last6Month: 'Last 6 Month',
+    setCustomDate: 'Set Custom Date',
+};
+
+export const dateRangeLeadRegister = {
+    all: 'All',
+    today: 'Today',
+    last3Days: 'Last 3 Days',
+    lastWeek: 'This Week',
+    lastMonth: 'This Month',
     last3Month: 'Last 3 Month',
     last6Month: 'Last 6 Month',
     setCustomDate: 'Set Custom Date',
@@ -152,6 +163,9 @@ export const Routes = {
 
         product_path: 'masters/products',
         product_route: '/masters/products',
+
+        caching_parameters_path: 'masters/caching_parameters',
+        caching_parameters_route: '/masters/caching_parameters',
     },
 
     hr:{
@@ -178,6 +192,7 @@ export const Routes = {
         agent_path: 'customers/agent',
         agent_route: '/customers/agent',
         agent_entry_route: '/customers/agent/entry',
+        agent_info_route: '/customers/agent/info',
 
         whitelabel_path: 'customers/whitelable',
         whitelabel_route: '/customers/whitelable',
@@ -230,6 +245,20 @@ export const Routes = {
         wallet_outstanding_path: 'account/wallet-outstanding',
         wallet_outstanding_route: 'account/wallet-outstanding',
 
+        receipt_register_path: 'account/receipt_register',
+        receipt_register_route: 'account/receipt_register',
+
+        first_transaction_path: 'account/first_transaction',
+        first_transaction_route: 'account/first_transaction',
+
+        commission_expense_path: 'account/commission_expense',
+        commission_expense_route: 'account/commission_expense',
+
+        commission_income_path: 'account/commission_income',
+        commission_income_route: 'account/commission_income',
+
+        purchase_register_path: 'account/purchase_register',
+        purchase_register_route: 'account/purchase_register',
     },
 
     leads:{
@@ -315,11 +344,23 @@ export const Routes = {
         airline_path: 'reports/airline',
         airline_route: 'reports/airline',
 
+        campaign_summary_path: 'reports/campaign-summary',
+        campaign_summary_path_route: 'reports/campaign-summary',
+
         hotel_path: 'reports/hotel',
         hotel_route: 'reports/hotel',
 
         bus_path: 'reports/bus',
         bus_route: 'reports/bus',
+
+        agents_rmwise_agents_path: 'reports/rmwise-agents',
+        agents_rmwise_agents_route: 'reports/rmwise-agents',
+
+        leads_rmwise_path: 'reports/rmwise-leads',
+        leads_rmwise_route: 'reports/rmwise-leads',
+
+        products_path: 'reports/products',
+        products_route: 'reports/products',
     },
 
 

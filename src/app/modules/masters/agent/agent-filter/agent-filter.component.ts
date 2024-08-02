@@ -77,6 +77,7 @@ export class AgentFilterComponent {
     employeeList: any[] = [];
     cityList: any[] = [];
     profileList: any[] = [];
+    statusList = ['All', 'New', 'Active','Inactive','Dormant',];
 
     constructor(
         public matDialogRef: MatDialogRef<AgentFilterComponent>,
@@ -106,6 +107,7 @@ export class AgentFilterComponent {
             kycProfileId: [''],
             kycfilter: [''],
             blocked: ['All'],
+            Status: [this.statusList[0]],
         });
 
         this.filterForm.patchValue(this.data);

@@ -1,0 +1,141 @@
+<div class="flex flex-col flex-auto min-w-0">
+
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div class="cursor-pointer" [routerLink]="agentListRoute">
+                    <a class="whitespace-nowrap text-primary-500">Agent</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">Detail</a>
+                </div>
+            </div>
+            <div class="mt-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    Agent Detail
+                </h2>
+            </div>
+        </div>
+
+        <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+            class="sticky mr-2 left-0 bg-gray-50 dark:bg-gray-900" style="border-radius: 0%; width: 100%">
+            <mat-icon> more_vert </mat-icon>
+        </button>
+        <mat-menu #optionMenu>
+            <button mat-menu-item (click)="relationahipManagerAgent()">
+                <mat-icon class="mat-18">groups</mat-icon>
+                <span style="font-weight: 600">Relationship Manager</span>
+            </button>
+            <button mat-menu-item (click)="setKYCVerifyAgent()">
+                <mat-icon class="mat-18">fingerprint</mat-icon>
+                <span style="font-weight: 600">{{records["is_kyc_completed"]? "View KYC" : "Verify KYC"}}</span>
+            </button>
+            <button mat-menu-item (click)="setMarkupProfileAgent()">
+                <mat-icon class="mat-18">person</mat-icon>
+                <span style="font-weight: 600">Set Markup Profile</span>
+            </button>
+            <button mat-menu-item (click)="autologinAgent()">
+                <mat-icon class="mat-18">login</mat-icon>
+                <span style="font-weight: 600">Auto Login to B2B</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="setBlockUnblockAgent()">
+                <mat-icon class="mat-18">{{records.is_blocked ? "highlight_off" : "check_circle"}}</mat-icon>
+                <span style="font-weight: 600">{{records.is_blocked ? "Unblock": "Block"}}</span>
+            </button>
+            <button *ngIf="!records.is_email_verified" mat-menu-item (click)="setEmailVerifyAgent()">
+                <mat-icon class="mat-18">verified</mat-icon>
+                <span style="font-weight: 600">Verify Email</span>
+            </button>
+            <button *ngIf="!records.is_mobile_verified" mat-menu-item (click)="setMobileVerifyAgent()">
+                <mat-icon class="mat-18">verified</mat-icon>
+                <span style="font-weight: 600">Verify Mobile</span>
+            </button>
+            <button mat-menu-item (click)="setCurrencyAgent()">
+                <mat-icon [svgIcon]="'heroicons_outline:currency-rupee'"></mat-icon>
+                <span style="font-weight: 600">Set Currency</span>
+            </button>
+            <button mat-menu-item (click)="convertWlAgent()">
+                <mat-icon class="mat-18">sync_alt</mat-icon>
+                <span style="font-weight: 600">Convert to WL</span>
+            </button>
+            <button mat-menu-item (click)="resetPasswordAgent()">
+                <mat-icon class="mat-18">lock</mat-icon>
+                <span style="font-weight: 600;">Reset Password</span>
+            </button>
+            <button mat-menu-item (click)="wallettransfer()">
+                <mat-icon class="mat-18">sync_alt</mat-icon>
+                <span style="font-weight: 600">Wallet Transfer</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="relationahipManager()">
+                <mat-icon class="mat-18">groups</mat-icon>
+                <span style="font-weight: 600">Relationship Manager</span>
+            </button>
+            <button mat-menu-item (click)="relationahipManagerLog()">
+                <mat-icon class="mat-18">groups</mat-icon>
+                <span style="font-weight: 600">Relationship Manager Log</span>
+            </button>
+            <button mat-menu-item (click)="delete()">
+                <mat-icon class="mat-18">delete</mat-icon>
+                <span style="font-weight: 600">Remove All Subagent</span>
+            </button>
+        </mat-menu>
+
+        <button mat-raised-button color="primary" (click)="colseBtn()">
+            Close
+        </button>
+
+    </div>
+
+    <mat-tab-group class="mt-3 wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+
+        <mat-tab label="Basic Details" [aria-label]="'Basic Details'">
+            <ng-container *ngIf="tab == 'Basic Details' && records?.id && isbankapiCall">
+                <app-basic-details [basicDetails]="records" [bankDetails]="bankRecords"  #basicdetails></app-basic-details>
+            </ng-container>
+        </mat-tab>
+
+        <mat-tab label="Business Analytics" [aria-label]="'Business Analytics'" *ngIf="getTabsPermission('businessanalytics')">
+            <ng-container *ngIf="tab == 'Business Analytics'">
+                <app-business-analytics #businessanalytics [basicDetails]="records"></app-business-analytics>
+            </ng-container>
+        </mat-tab>
+
+        <mat-tab label="Sub Agents" [aria-label]="'Sub Agents'" >
+            <app-sub-agent #subagents></app-sub-agent>
+        </mat-tab>
+
+        <mat-tab label="Ledger" [aria-label]="'Ledger'">
+            <app-agent-ledger #ledger></app-agent-ledger>
+        </mat-tab>
+
+        <mat-tab label="Sub Agent Ledger" [aria-label]="'Sub Agent Ledger'">
+            <app-sub-agent-ledger #subagentledger></app-sub-agent-ledger>
+        </mat-tab>
+
+        <mat-tab label="Products" [aria-label]="'Products'">
+            <app-product #products ></app-product>
+        </mat-tab>
+
+        <mat-tab label="Call Logs" [aria-label]="'Call Logs'">
+            <app-call-logs #calllogs></app-call-logs>
+        </mat-tab>
+
+        <mat-tab label="RM Change Log" [aria-label]="'RM Change Log'">
+            <app-rm-change-log #rmchangelog></app-rm-change-log>
+        </mat-tab>
+
+        <mat-tab label="Status Change Logs" [aria-label]="'Status Change Logs'">
+            <app-tab-status-change #statuschangelogs></app-tab-status-change>
+        </mat-tab>
+
+        <mat-tab label="Login Logs" [aria-label]="'Login Logs'">
+            <app-login-logs #loginlogs></app-login-logs>
+        </mat-tab>
+
+
+    </mat-tab-group>
+</div>

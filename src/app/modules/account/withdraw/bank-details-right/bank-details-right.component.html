@@ -1,0 +1,98 @@
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="w-full">
+        <div class="flex flex-col w-[100%] gap-2 m-auto">
+            <div class="flex flex-row justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+                <span class=" text-xl font-semibold">Bank Info</span>
+                <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                    (click)="settingsDrawer.close()"></mat-icon>
+            </div>
+
+            <div style="height: calc(100vh - 130px)" class="overflow-auto p-5">
+                <div class="flex flex-wrap bg-card overflow-hidden">
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Bank Name</span>
+                        <span class="text-base truncate">{{record?.bank_name || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Account Number</span>
+                        <span class="text-base truncate">{{record?.account_number || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Account Holder Name</span>
+                        <span class="text-base truncate">{{record?.account_holder_name || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">IFSC Code</span>
+                        <span class="text-base truncate">{{record?.ifsc_code || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Currency</span>
+                        <span class="text-base truncate">{{record?.bank_currancy || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Account Type</span>
+                        <span class="text-base truncate">{{record?.account_type || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Status</span>
+                        <span class="text-base truncate" [ngClass]="record?.bank_audit ? 'text-green-500' : 'text-red-500'">{{record?.bank_audit ? 'Audited' : 'Unaudit'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2" *ngIf="record?.bank_audit">
+                        <span class="text-md font-semibold text-secondary">Audited By</span>
+                        <span class="text-base truncate">{{record.bank_audit_by || '-'}}</span>
+                    </div>
+                    
+                    <div class="flex flex-col mb-3 truncate w-1/2" *ngIf="record?.bank_audit">
+                        <span class="text-md font-semibold text-secondary">Audit Date</span>
+                        <span class="text-base truncate">{{(record.bank_audit_datetime | date: 'dd-MM-yyyy HH:mm:ss') || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2" *ngIf="record?.bank_reject">
+                        <span class="text-md font-semibold text-secondary">Reject By</span>
+                        <span class="text-base truncate">{{record.bank_reject_by || '-'}}</span>
+                    </div>
+                    
+                    <div class="flex flex-col mb-3 truncate w-1/2" *ngIf="record?.bank_reject">
+                        <span class="text-md font-semibold text-secondary">Reject Date</span>
+                        <span class="text-base truncate">{{(record.bank_reject_datetime | date: 'dd-MM-yyyy HH:mm:ss') || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3  w-full break-words"  *ngIf="record?.bank_reject">
+                        <span class="text-md font-semibold text-secondary">Reject Reason</span>
+                        <span class="text-base ">{{ record?.bank_reject_reason || ' - ' }}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Document Proof</span>
+                        <mat-icon (click)="downloadInfo(record?.document_proof)"
+                            svgIcon="heroicons_outline:arrow-down-tray" class="text-blue-500 cursor-pointer"></mat-icon>
+                    </div>
+                </div>
+            </div>
+
+            <div class="justify-end items-end flex sticky bottom-0 border-t-2 border-gray-border white-bg px-5 py-2 h-15" *ngIf="send == 'Audit'">
+
+                <button class="ml-4 bg-red-500" mat-flat-button  (click)="Reject()">
+                    <span class="ml-2 mr-1 text-white">Reject</span>
+                </button>
+                
+                <button class="ml-4 bg-green-500" mat-flat-button  (click)="Audit()">
+                    <span class="ml-2 mr-1 text-white">Audit</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+</fuse-drawer>

@@ -28,6 +28,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { ToasterService } from 'app/services/toaster.service';
 import { AppConfig } from 'app/config/app-config';
 import { UserService } from 'app/core/user/user.service';
+import { environment } from 'environments/environment';
+import { MarkupProfileDialogeComponent } from '../../agent/markup-profile-dialoge/markup-profile-dialoge.component';
 
 @Component({
   selector: 'app-lead-list',
@@ -91,13 +93,13 @@ export class LeadListComponent {
   cols = [];
 
   constructor(
-      private conformationService: FuseConfirmationService,
-      private leadsService: LeadsService,
-      private agentService: AgentService,
-      private alertService: ToasterService,
-      private userService: UserService,
-      private matDialog: MatDialog,
-      private router: Router,
+    private conformationService: FuseConfirmationService,
+    private leadsService: LeadsService,
+    private agentService: AgentService,
+    private alertService: ToasterService,
+    private userService: UserService,
+    private matDialog: MatDialog,
+    private router: Router,
   ) {
     // super(module_name.employee)
     this.cols = this.columns.map(x => x.key);
@@ -166,12 +168,20 @@ export class LeadListComponent {
   //   })
   // }
 
+
+ 
+
   modifyReditect(record) {
     if (!Security.hasEditEntryPermission(module_name.newSignup)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    window.open( record.url + `kyc-dashboard/` + record.id + `/email`);
+    if (environment.isEnvironment == 'production') {
+      window.open(record.url + `kyc-dashboard/` + record.id + `/email`);
+    } else {
+      window.open(environment.stagingUrl + `kyc-dashboard/` + record.id + `/email`);
+    }
+
   }
 
   setKYCVerify(record): void {

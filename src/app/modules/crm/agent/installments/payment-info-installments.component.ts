@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,7 +34,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 80px 170px 130px 150px 120px;
+            grid-template-columns: 170px 130px 150px 150px 120px;
         }
     `,
     ],
@@ -74,20 +74,9 @@ export class InstallmentsInfoItemComponent {
     cols = [];
     total = 0;
 
+    @Input() installmentDetail: any;
+
     columns = [
-        {
-            key: 'index',
-            name: 'Sr. No',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            callAction: true
-        },
         {
             key: 'installment_date',
             name: 'Installment Date',
@@ -106,11 +95,11 @@ export class InstallmentsInfoItemComponent {
             is_date: false,
             date_formate: '',
             is_sortable: false,
-            class: '',
+            class: ' header-right-view',
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
             is_amount: true
         },
         {
@@ -119,7 +108,7 @@ export class InstallmentsInfoItemComponent {
             is_date: true,
             date_formate: 'dd-MM-yyyy',
             is_sortable: false,
-            class: '',
+            class: ' pl-8',
             is_sticky: false,
             align: '',
             indicator: false,
@@ -127,11 +116,23 @@ export class InstallmentsInfoItemComponent {
         },
         {
             key: 'payment_amount',
-            name: 'Payment Amount',
+            name: 'Received Amount',
             is_date: false,
             date_formate: '',
             is_sortable: false,
-            class: '',
+            class: ' header-right-view',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: false
+        },
+        {
+            key: 'dueammount',
+            name: 'Due Amount',
+            is_date: false,
+            date_formate: '',
+            is_sortable: false,
+            class: ' header-right-view',
             is_sticky: false,
             align: '',
             indicator: false,
@@ -159,7 +160,9 @@ export class InstallmentsInfoItemComponent {
     productId: any;
 
     ngOnInit(): void {
-        this.refreshItems();
+        // this.refreshItems();
+        setTimeout(() => {
+        }, 3000);
     }
 
     refreshItems() {
@@ -169,12 +172,13 @@ export class InstallmentsInfoItemComponent {
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         filterReq['Id'] = this.productId ? this.productId : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res?.data[0];
+                this.dataList = res[0];
+                //this.dataList = res?.data[0];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -183,8 +187,8 @@ export class InstallmentsInfoItemComponent {
         });
     }
 
-    getPaymentIndicatorClass(priority: boolean): string {
-        if (priority == true) {
+    getPaymentIndicatorClass(isPaymentAaudited: boolean): string {
+        if (isPaymentAaudited == true) {
             return 'bg-green-600';
         } else {
             return 'bg-red-600';
@@ -194,7 +198,6 @@ export class InstallmentsInfoItemComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         private alertService: ToasterService,
-        private matDialog: MatDialog,
         private crmService: CrmService
     ) {
         this.record = data?.data ?? {}

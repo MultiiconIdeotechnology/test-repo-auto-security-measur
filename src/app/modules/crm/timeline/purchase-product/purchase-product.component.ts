@@ -33,7 +33,7 @@ import { TimelineAgentProductInfoComponent } from '../product-info/product-info.
 @Component({
     selector: 'app-timeline-purchase-product',
     templateUrl: './purchase-product.component.html',
-    styles: [`.tbl-grid { grid-template-columns: 40px 135px 50px 100px 80px 105px 125px 115px 85px 80px }`],
+    styles: [`.tbl-grid { grid-template-columns: 40px 135px 50px 95px 72px 103px 122px 112px 90px 83px }`],
     standalone: true,
     imports: [
         NgIf,
@@ -101,8 +101,9 @@ export class TimelinePurchaseProductComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
-            applied: false
+            tooltip: false,
+            applied: false,
+            toProduct: true
         },
         {
             key: 'itemCount',
@@ -140,7 +141,7 @@ export class TimelinePurchaseProductComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
             toColor: true,
             applied: false
         },
@@ -199,7 +200,7 @@ export class TimelinePurchaseProductComponent {
             applied: false
         },
         {
-            key: 'entry_date',
+            key: 'entry_date_time',
             name: 'Entry Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -244,7 +245,11 @@ export class TimelinePurchaseProductComponent {
             return 'text-blue-600';
         } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else {
+        }
+        else if (status == 'Expired') {
+            return 'text-red-600';
+        }
+        else {
             return '';
         }
     }
@@ -318,7 +323,7 @@ export class TimelinePurchaseProductComponent {
         // }
 
         this.matDialog.open(TimelineAgentProductInfoComponent, {
-            data: { data: record, agencyName: agencyName, readonly: true },
+            data: { data: record, agencyName: agencyName, readonly: true, account_receipt: false},
             disableClose: true
         });
     }

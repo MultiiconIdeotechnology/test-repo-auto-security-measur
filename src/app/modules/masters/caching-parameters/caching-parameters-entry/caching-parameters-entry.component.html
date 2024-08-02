@@ -1,0 +1,131 @@
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+    <div class="w-full">
+        <div class="flex flex-col w-[100%] gap-2 m-auto">
+            <div class="flex flex-row justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+                <span class=" text-xl font-semibold">{{title}}</span>
+                <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                    (click)="settingsDrawer.close()"></mat-icon>
+            </div>
+            <div style="height: calc(100vh - 130px)" class="overflow-auto p-5">
+                <div class="flex flex-wrap bg-card overflow-hidden" *ngIf="listFlag">
+                    <div class="flex flex-col mb-3 truncate w-full">
+                        <span class="text-md font-semibold text-secondary">Supplier</span>
+                        <span class="text-base truncate">{{record?.supplier_name || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Travel Type</span>
+                        <span class="text-base truncate">{{record?.travel_type || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Trip Type</span>
+                        <span class="text-base truncate">{{record?.trip_type || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Sector</span>
+                        <span class="text-base truncate">{{record?.sector || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Today Travel</span>
+                        <span class="text-base truncate">{{record?.today_travel || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">One Week Travel</span>
+                        <span class="text-base truncate">{{record?.one_week_travel || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">One Month Travel</span>
+                        <span class="text-base truncate">{{record?.one_month_travel || '-'}}</span>
+                    </div>
+
+                    <div class="flex flex-col mb-3 truncate w-1/2">
+                        <span class="text-md font-semibold text-secondary">Far Travel</span>
+                        <span class="text-base truncate">{{record?.far_travel || '-'}}</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap bg-card overflow-hidden" *ngIf="!listFlag && createFlag">
+                    <form class="flex flex-col flex-auto px-0 pt-0" [formGroup]="formGroup">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Supplier</mat-label>
+                            <mat-select formControlName="supplier_id" required="">
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search"
+                                        noEntriesFoundLabel="'no matching supplier found'"
+                                        [formControlName]="'supplierfilter'">
+                                    </ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option *ngFor="let ct of SupplierList | async" [value]="ct.id">{{ ct.company_name
+                                    }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="formGroup.get('supplier_id').hasError('required')">
+                                Supplier is required
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Travel Type</mat-label>
+                            <mat-select formControlName="travel_type">
+                                <mat-option *ngFor="let lt of travelTypeList" [value]="lt.value">{{ lt.viewValue
+                                    }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="formGroup.get('travel_type').hasError('required')">
+                                Travel Type is required
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Trip Type</mat-label>
+                            <mat-select formControlName="trip_type">
+                                <mat-option *ngFor="let lt of tripTypeList" [value]="lt.value">{{ lt.viewValue
+                                    }}</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="formGroup.get('trip_type').hasError('required')">
+                                Trip Type is required
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Sector</mat-label>
+                            <input matInput type="text" formControlName="sector" />
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Today Travel</mat-label>
+                            <input matInput type="text" formControlName="today_travel" />
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>One Week Travel</mat-label>
+                            <input matInput type="text" formControlName="one_week_travel" />
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>One Month Travel</mat-label>
+                            <input matInput type="text" formControlName="one_month_travel" />
+                        </mat-form-field>
+
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Far Travel</mat-label>
+                            <input matInput type="text" formControlName="far_travel" />
+                        </mat-form-field>
+                    </form>
+                </div>
+            </div>
+            <div class="justify-end items-end flex sticky bottom-0 border-t-2 border-gray-border white-bg px-5 py-2 h-15"
+                *ngIf="!listFlag && createFlag">
+                <button class="mr-2" mat-stroked-button (click)="settingsDrawer.close()">Close</button>
+
+                <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+                    {{ btnLabel }}
+                </button>
+            </div>
+        </div>
+    </div>
+</fuse-drawer>

@@ -205,6 +205,7 @@ export const module_name = {
     currencyROE:"Currency ROE",
     activity:"Activity",
     city: "City",
+    cachingparameters: "Caching Parameters",
     department: "Department",
     document :'Types of Documents',
     kycprofile:'KYC Profile',
@@ -250,6 +251,11 @@ export const module_name = {
     agentBalance: 'Agent Balance Register',
     walletOutstanding: 'Wallet Outstanding',
     receipts: 'Receipts',
+    receiptRegister: 'Receipt Register',
+    firstTransaction: 'First Transaction',
+    commissionExpense: 'Commission Expense',
+    commissionIncome: 'Commission Income',
+    purchaseRegister: 'Purchase Register',
     kycDashboard: 'KYC Dashboard',
     bookingsFlight: 'Bookings - Flight',
     bookingsBus: 'Bookings - BUS',
@@ -270,9 +276,15 @@ export const module_name = {
     itemMaster: 'Items',
     product: 'Products',
     leads_register: 'Leads Register',
+    agents_rmwise: 'RM Wise Agents',
+    info_airline: 'Info Airline',
+    leads_rmwise: 'RM Wise Leads',
     airline: 'Airline',
     report_hotel: 'Hotel',
     report_bus: 'Bus',
+    campaign_summary: 'Campaign Summary',
+    agent_ledger: 'Agent Ledger',
+    products: 'Products',
 };
 
 export const cityPermissions = {
@@ -282,6 +294,11 @@ export const cityPermissions = {
 
 export const bankPermissions = {
     auditUnauditPermissions: { module_name: module_name.bank, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+}
+
+export const receiptPermissions = {
+    auditUnauditPermissions: { module_name: module_name.receipt, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    rejectPermissions: { module_name: module_name.receipt, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit }
 }
 
 export const companyPermissions = {
@@ -316,11 +333,29 @@ export const leadPermissions = {
     marketingMaterialPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Marketing Materials', category_name: category_name.operation }
 }
 
+export const techDashPermissions = {
+    pendingTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Pending Tab', category_name: category_name.view },
+    completedTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Completed Tab', category_name: category_name.view },
+    expiredTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Expired Tab', category_name: category_name.view },
+    blockedTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Blocked Tab', category_name: category_name.view },
+    updateStatusPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Update Status', category_name: category_name.operation },
+    statusChangedLogPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Status Changed Log', category_name: category_name.operation },
+    wlSettingPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'WL Setting', category_name: category_name.operation },
+    linkPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Link', category_name: category_name.operation },
+    updateExpiryDatePermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Update Expiry Date', category_name: category_name.operation },
+}
+
 export const agentPermissions = {
     dailCallPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Dail Call', category_name: category_name.operation },
     callHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation },
     marketingMaterialPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Marketing Materials', category_name: category_name.operation },
-    dormantsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Inbox Dormant', category_name: category_name.operation }
+    dormantsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Inbox Dormant', category_name: category_name.operation },
+    timelinePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline', category_name: category_name.operation },
+    // agentProfilePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Agent Profile', category_name: category_name.operation },
+    businessanalyticsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Business Analytics', category_name: category_name.operation },
+    cancelProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Cancel', category_name: category_name.operation }
+    // techServicePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Tech Service', category_name: category_name.operation },
+    // techCallHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline Call History', category_name: category_name.operation }
 }
 
 export const techCollectionPermissions = {
@@ -338,7 +373,8 @@ export const leadsPermissions = {
     verifyEmailPermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Verify Email', category_name: category_name.operation },
     verifyMobilePermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Verify Mobile', category_name: category_name.operation },
     viewOnlyAssignedPermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
-
+    setMarkupProfilePermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Set Markup Profile', category_name: category_name.entry },
+    setKYCProfilePermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Set KYC Profile', category_name: category_name.entry },
 }
 
 export const agentsPermissions = {
@@ -356,13 +392,24 @@ export const agentsPermissions = {
     setCurrencyPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Set Currency', category_name: category_name.entry },
     convertToWLPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Convert To WL', category_name: category_name.operation },
     viewOnlyAssignedPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+    removeAllSubagentPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Remove All Subagent', category_name: category_name.delete },
+
+    changeEmailPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Change Email', category_name: category_name.operation },
+    changeNumberPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Change Number', category_name: category_name.operation },
+
+}
+
+export const saleProductPermissions = {
+    viewOnlyAssignedPermissions: { module_name: module_name.products, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
 }
 
 export const leadRegisterPermissions = {
     relationshipManagerPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Relationship Manager', category_name: category_name.entry },
     callHistoryPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation },
     reshufflePermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Reshuffle', category_name: category_name.re_shuffle },
-    relationshipManagerLogsPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Relationship Manager Logs', category_name: category_name.view }
+    importPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Import Leads', category_name: category_name.entry },
+    relationshipManagerLogsPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Relationship Manager Logs', category_name: category_name.view },
+    deadLeadToLiveLeadPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Dead Lead To Live Lead', category_name: category_name.operation }
 }
 
 
@@ -385,7 +432,7 @@ export const partnerPurchaseProductPermissions = {
     dormantsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Partner Dormant', category_name: category_name.operation },
     itemsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Items Tab', category_name: category_name.view },
     installmentsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Installments Tab', category_name: category_name.view },
-    receiptsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Receipts Tab', category_name: category_name.view },
+    receiptsTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Receipts Tab', category_name: category_name.view }
 }
 
 export const crmLeadPermissions = {
@@ -436,8 +483,11 @@ export const bookingsFlightPermissions = {
 
 export const amendmentRequestsPermissions = {
     updateChargePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Update Charge', category_name: category_name.entry },
-    completePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Complete', category_name: category_name.complete },
+    // completePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Complete', category_name: category_name.complete },
     confirmPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Confirm', category_name: category_name.confirm },
+    inprocessPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Inprocess', category_name: category_name.action },
+    refundInitiatePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Refund Initiate', category_name: category_name.action },
+    completePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Complete', category_name: category_name.action },
     manuDisplayPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Menu Display', category_name: category_name.manu_display },
     changeStatusPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Change Status', category_name: category_name.changeStatus },
     statusLogsPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Status Logs', category_name: category_name.view },

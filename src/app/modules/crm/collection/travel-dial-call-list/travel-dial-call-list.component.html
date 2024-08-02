@@ -1,0 +1,28 @@
+<div class="flex flex-col flex-auto overflow-hidden -m-6">
+    <div class="flex flex-0 justify-between h-13 pr-0 sm:pr-0 pl-0 sm:pl-0">
+        <div class="text-xl font-bold tracking-tight pt-[12px] pl-6">{{this.record?.agencyName}}</div>
+        <div class="mt-2 mr-5">
+            <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                <mat-icon class="text-current notranslate dark:text-white mat-icon-no-color"
+                    [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div
+        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-w-[900px] lg:max-w-[900px] xl:max-w-[900px] mt-[0px]">
+        <mat-tab-group class="crm_tab" [animationDuration]="'0'" [selectedIndex]="selectedTabIndex" (selectedTabChange)="tabChanged($event)">
+            <mat-tab label="Basic Details" [aria-label]="'Basic Details'">
+                <app-crm-travel-basic-details [basicDetails]="record" #basicdetails></app-crm-travel-basic-details>
+            </mat-tab>
+
+            <mat-tab label="Dial Call" [aria-label]="'Dial Call'">
+                <app-crm-travel-dial-call-entry #dailCall></app-crm-travel-dial-call-entry>
+            </mat-tab>
+
+            <mat-tab label="Call History" [aria-label]="'Call History'">
+                <app-travel-call-history #callHistory></app-travel-call-history>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

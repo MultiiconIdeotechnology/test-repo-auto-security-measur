@@ -19,101 +19,163 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet, Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { module_name } from 'app/security';
+import { messages, module_name, Security } from 'app/security';
 import { WalletOutstandingService } from 'app/services/wallet-outstanding.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
+import { AgentService } from 'app/services/agent.service';
+import { RefferralService } from 'app/services/referral.service';
+
 
 @Component({
-  selector: 'app-wallet-outstanding-list',
-  templateUrl: './wallet-outstanding-list.component.html',
-  styleUrls: ['./wallet-outstanding-list.component.scss'],
-  styles: [`
+    selector: 'app-wallet-outstanding-list',
+    templateUrl: './wallet-outstanding-list.component.html',
+    styleUrls: ['./wallet-outstanding-list.component.scss'],
+    styles: [`
   .tbl-grid {
     grid-template-columns: 40px 240px 200px 110px 210px 120px 140px 150px 180px 130px 150px;
   }
   `],
-  standalone: true,
-  imports: [
-    NgIf,
-    NgFor,
-    DatePipe,
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatMenuModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatInputModule,
-    MatButtonModule,
-    MatTooltipModule,
-    NgClass,
-    RouterOutlet,
-    MatProgressSpinnerModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSelectModule,
-    NgxMatSelectSearchModule,
-    MatTabsModule,
-  ],
+    standalone: true,
+    imports: [
+        NgIf,
+        NgFor,
+        DatePipe,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatMenuModule,
+        MatTableModule,
+        MatSortModule,
+        MatPaginatorModule,
+        MatInputModule,
+        MatButtonModule,
+        MatTooltipModule,
+        NgClass,
+        RouterOutlet,
+        MatProgressSpinnerModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatSelectModule,
+        NgxMatSelectSearchModule,
+        MatTabsModule,
+        PrimeNgImportsModule
+    ],
 })
-export class WalletOutstandingListComponent extends BaseListingComponent implements OnDestroy{
+export class WalletOutstandingListComponent extends BaseListingComponent implements OnDestroy {
 
-  dataList = [];
-  total = 0;
-  module_name = module_name.walletOutstanding
+    dataList = [];
+    total = 0;
+    module_name = module_name.walletOutstanding
+    isFilterShow: boolean = false;
+    agentList: any[] = [];
+    selectedAgent!: string;
+    employeeList: any[] = [];
+    selectedRM!: string;
 
+    columns = [
+        { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
+        { key: 'employee_name', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
+        { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
+        { key: 'credit_balance', name: 'Credit', is_date: false, date_formate: '', is_sortable: true, class: 'text-right', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'payment_cycle_policy', name: 'Payment Cycle', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
+        { key: 'payment_cycle_policy_type', name: 'Payment Policy', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'due_date', name: 'Due Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'outstanding_on_due_date', name: 'Outstanding', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+        { key: 'over_due_count', name: 'Over Due Count', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
+    ]
+    // cols = [];
 
-  constructor(
-    private confirmService: FuseConfirmationService,
-    private router: Router,
-    private walletOutstandingService: WalletOutstandingService,
-    private matDialog: MatDialog,
-    // private clipboard: Clipboard
-  ) {
-    super(module_name.walletOutstanding)
-    this.cols = this.columns.map(x => x.key);
-    this.key = 'payment_request_date';
-    this.sortColumn = 'due_date';
-    this.sortDirection = 'asc';
-    this.Mainmodule = this;
-  }
+    constructor(
+        private agentService: AgentService,
+        private refferralService: RefferralService,
+        private walletOutstandingService: WalletOutstandingService,
+        // private clipboard: Clipboard
+    ) {
+        super(module_name.walletOutstanding)
+        // this.cols = this.columns.map(x => x.key);
+        this.key = 'payment_request_date';
+        this.sortColumn = 'due_date';
+        this.sortDirection = 'asc';
+        this.Mainmodule = this;
+    }
 
-  columns = [
-    { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-    { key: 'employee_name', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-    { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'credit_balance', name: 'Credit', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'payment_cycle_policy', name: 'Payment Cycle', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-    { key: 'payment_cycle_policy_type', name: 'Payment Policy', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'due_date', name: 'Due Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'outstanding_on_due_date', name: 'Outstanding', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'over_due_count', name: 'Over Due Count', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-  ]
-  cols = [];
+    ngOnInit(): void {
+        this.getAgent('');
+        this.getEmployeeList("")
+    }
 
-  refreshItems(): void {
-    this.isLoading = true;
-    this.walletOutstandingService.getWalletOutstanding(this.getFilterReq()).subscribe({
-      next: (data) => {
-        this.dataList = data.data;
-        this.total = data.total;
-        this.isLoading = false;
-      }, error: (err) => {
-        this.alertService.showToast('error', err)
-        this.isLoading = false}
-    });
-  }
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
 
-  getNodataText(): string {
-    if (this.isLoading)
-      return 'Loading...';
-    else if (this.searchInputControl.value)
-      return `no search results found for \'${this.searchInputControl.value}\'.`;
-    else return 'No data to display';
-  }
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
+    }
+
+    // Api to get the Employee list data
+    getEmployeeList(value: string) {
+        this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
+            this.employeeList = data;
+        });
+    }
+
+    refreshItems(event?: any): void {
+        this.isLoading = true;
+        this.walletOutstandingService.getWalletOutstanding(this.getNewFilterReq(event)).subscribe({
+            next: (data) => {
+                this.dataList = data.data;
+                // this.total = data.total;
+                this.totalRecords = data.total;
+                this.isLoading = false;
+            }, error: (err) => {
+                this.alertService.showToast('error', err)
+                this.isLoading = false
+            }
+        });
+    }
+
+    getNodataText(): string {
+        if (this.isLoading)
+            return 'Loading...';
+        else if (this.searchInputControl.value)
+            return `no search results found for \'${this.searchInputControl.value}\'.`;
+        else return 'No data to display';
+    }
+
+    exportExcel(event): void {
+        if (!Security.hasExportDataPermission(module_name.walletOutstanding)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.walletOutstandingService.getWalletOutstanding(this.getNewFilterReq(event)).subscribe(data => {
+            for (var dt of data.data) {
+                dt.due_date = DateTime.fromISO(dt.due_date).toFormat('dd-MM-yyyy hh:mm a');
+            }
+            Excel.export(
+                'Wallet Outstanding',
+                [
+                    { header: 'Agent Code', property: 'agentid' },
+                    { header: 'Agent', property: 'agency_name' },
+                    { header: 'Outstanding', property: 'outstanding_on_due_date' },
+                    { header: 'RM', property: 'employee_name' },
+                    { header: 'Mobile', property: 'mobile_number' },
+                    { header: 'Email', property: 'email_address' },
+                    { header: 'Credit', property: 'credit_balance' },
+                    { header: 'Payment Cycle', property: 'payment_cycle_policy' },
+                    { header: 'Payment Policy', property: 'payment_cycle_policy_type' },
+                    { header: 'Due Date', property: 'due_date' },
+                    { header: 'Over Due Count', property: 'over_due_count' }
+                ],
+                data.data, "Wallet Outstanding", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }]);
+        });
+    }
 
 }

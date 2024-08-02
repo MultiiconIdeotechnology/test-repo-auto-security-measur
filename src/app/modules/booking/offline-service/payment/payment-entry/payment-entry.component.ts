@@ -52,6 +52,7 @@ export class PaymentEntryComponent implements OnInit {
   fieldList: {};
   mopList: any[] = ['Wallet', 'Digital Payment'];
   obsId: any;
+  maxAmount: number = 0;
 
   constructor(
     public matDialogRef: MatDialogRef<PaymentEntryComponent>,
@@ -68,16 +69,17 @@ export class PaymentEntryComponent implements OnInit {
 
   formGroup: FormGroup;
   title = "Payment Entry"
-  btnLabel = "Create"
+  btnLabel = "Submit"
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
       id: [''],
       osb_id: this.obsId,
-      net_sale_amount: [''],
+      net_sale_amount: [0],
       supplier_id: [''],
       supplierFilter: [''],
       currency: [''],
+      account_remark: [''],
       roe: [''],
       mop: [this.mopList[0]],
     })
@@ -90,20 +92,20 @@ export class PaymentEntryComponent implements OnInit {
         debounceTime(400),
         distinctUntilChanged(),
         switchMap((value: any) => {
-          if (!this.record.id)
-            return this.supplierService.getSupplierCombo(value);
-          else
-            return new Observable<any>();
+          return this.supplierService.getSupplierCombo(value, this.obsId);
         })
       )
       .subscribe({
         next: (data) => {
           this.SupplierList.next(data);
+          if (this.isFirst && data[0])
+            this.maxAmount = data[0].obs_purches_amount
 
-          if (this.isFirst) {
+          if (this.isFirst && data[0] && !this.record.id) {
             this.formGroup.get('supplier_id').patchValue(data[0]);
             this.formGroup.get('roe').patchValue(data[0].roe);
             this.formGroup.get('currency').patchValue(data[0].currency_short_code);
+            this.formGroup.get('net_sale_amount').patchValue(this.maxAmount);
             this.isFirst = false;
           }
         },
@@ -117,18 +119,30 @@ export class PaymentEntryComponent implements OnInit {
           this.readonly = this.data.readonly;
           if (this.readonly) {
             this.fieldList = [
-              { name: 'Transaction ID', value: data.transaction_ref_no },
-              { name: 'Ref no.', value: data.payment_ref_no },
+              { name: 'Ref no.', value: data.payment_ref_no, isTooltip: true },
               { name: 'Status', value: data.payment_status },
-              { name: 'To', value: data.payment_to },
-              { name: 'Net Sale Amount', value: data.supplier_currency + " " + data.payment_amount },
-              { name: 'Mode of Payment', value: data.mode_of_payment },
+              { name: 'Supplier', value: data.payment_to_name, isTooltip: true },
+              { name: 'Amount', value: data.supplier_currency + " " + data.supplier_amount },
               { name: 'ROE', value: data.roe },
-              { name: 'Requested', value: DateTime.fromISO(data.payment_request_date).toFormat('dd-MM-yyyy HH:mm:ss') },
-              { name: 'Audited', value: data.payment_status != "Confirmed" ? ' - ' : DateTime.fromISO(data.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss') },
+              { name: 'Entry Date', value: data.payment_request_date ? DateTime.fromISO(data.payment_request_date).toFormat('dd-MM-yyyy HH:mm:ss') : '' },
+              { name: 'Audited By', value: '', isTooltip: true },
+              { name: 'Audit Date Time', value: data.audit_date_time ? DateTime.fromISO(data.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '' },
+              { name: 'Rejected By', value: '', isTooltip: true },
+              { name: 'Reject Date Time', value: '' },
+              { name: 'Rejection Remark', value: data.payment_reject_reason },
             ];
+          } else {
+            this.formGroup.patchValue({
+              id: data.id,
+              account_remark: data.payment_remark,
+              mop: data.mode_of_payment,
+              net_sale_amount: data.supplier_amount,
+              roe: data.roe,
+              currency: data.supplier_currency,
+              supplierFilter: data.payment_to_name,
+              supplier_id: { company_name: data.payment_to_name, id: data.payment_to_id },
+            });
           }
-          this.formGroup.patchValue(data);
           this.title = this.readonly ? 'Payment Info' : 'Modify Payment Entry';
           this.btnLabel = this.readonly ? 'Close' : 'Save';
         },
@@ -139,6 +153,7 @@ export class PaymentEntryComponent implements OnInit {
   supplierChange(data: any) {
     this.formGroup.get('roe').patchValue(data.roe);
     this.formGroup.get('currency').patchValue(data.currency_short_code);
+    this.maxAmount = data.obs_purches_amount
   }
 
   submit() {
@@ -150,6 +165,12 @@ export class PaymentEntryComponent implements OnInit {
 
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
+
+    if (json.roe <= 0) {
+      this.alertService.showToast('error', 'ROE must be greater than 0.', 'top-right', true);
+      this.disableBtn = false;
+      return;
+    }
 
     json.supplier_id = json.supplier_id.id;
     json['osb_id'] = this.obsId;

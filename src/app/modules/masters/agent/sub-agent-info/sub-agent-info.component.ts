@@ -105,6 +105,16 @@ export class SubAgentInfoComponent {
     }
   }
 
+  autologinAgent() {
+    this.agentService.autoLogin(this.records.id).subscribe({
+      next: data => {
+        window.open(data.url + 'sign-in/' + data.code);
+      }, error: err => {
+        this.alertService.showToast('error', err)
+      }
+    })
+  }
+
   copyLink(link : string): void {
     this.clipboard.copy(link);
     this.alertService.showToast('success','Link Copied');

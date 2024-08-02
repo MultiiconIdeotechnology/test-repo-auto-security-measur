@@ -6,21 +6,20 @@ import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { Security, messageTemplatesPermissions, messages, module_name } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ViewForTemplateComponent } from '../view-for-template/view-for-template.component';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { MessageTemplatesService } from 'app/services/message-templates.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+
 
 @Component({
     selector: 'app-message-templates-list',
@@ -45,13 +44,11 @@ import { ToasterService } from 'app/services/toaster.service';
         MatInputModule,
         MatButtonModule,
         MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class MessageTemplatesListComponent
@@ -181,6 +178,8 @@ export class MessageTemplatesListComponent
         },
     ];
     cols = [];
+    _selectedColumns: Column[];
+    isFilterShow: boolean = false;
 
     constructor(
         private messageTemplatesService: MessageTemplatesService,
@@ -197,15 +196,30 @@ export class MessageTemplatesListComponent
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    ngOnInit() {
+        this.cols = [
+            { field: 'template_for_name', header: 'Template For Name', type:'text' },
+            { field: 'modify_date_time', header: 'Modify Date Time', type:'date' },
+        ];
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    refreshItems(event?:any): void {
         this.isLoading = true;
         this.messageTemplatesService
-            .getMessageList(this.getFilterReq())
+            .getMessageList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                 },
                 error: (err) => {
                     this.toasterService.showToast('error', err)
@@ -342,6 +356,6 @@ export class MessageTemplatesListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

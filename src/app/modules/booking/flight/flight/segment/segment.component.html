@@ -67,14 +67,16 @@
         <div class="flex gap-3">
             <mat-form-field class="flex-grow w-1/2">
                 <mat-label>Departure Date</mat-label>
-                <input matInput [matDatepicker]="picker" required [min]="this.record.status === 'Edit' ? formGroup.get('arrTime').value: this.recordList?.arrTime" [formControlName]="'depTime'">
+                <!-- [min]="this.record.status === 'Edit' ? formGroup.get('arrTime').value: this.recordList?.arrTime" -->
+                <input matInput [matDatepicker]="picker" required  [formControlName]="'depTime'">
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field class="flex-grow w-1/2">
                 <mat-label>Departure Time</mat-label>
-                <input matInput format="24" name="depTime_time" [min]="this.record.status === 'Edit' ? this.record.depTime: this.recordList?.arrTime | date:'HH:mm'" [formControlName]="'depTime_time'" required
+                <!-- [min]="this.record.status === 'Edit' ? this.record.depTime: this.recordList?.arrTime | date:'HH:mm'" -->
+                <input matInput format="24" name="depTime_time"  [formControlName]="'depTime_time'" required
                     [ngxMatTimepicker]="entryPicker">
                 <mat-icon matSuffix (click)="entryPicker.open()">
                     watch_later
@@ -86,14 +88,16 @@
         <div class="flex gap-3">
             <mat-form-field class="flex-grow w-1/2">
                 <mat-label>Arrival Date</mat-label>
-                <input matInput [matDatepicker]="picker1" required [formControlName]="'arrTime'" [min]="formGroup.get('depTime').value" >
+                <!-- [min]="formGroup.get('depTime').value" -->
+                <input matInput [matDatepicker]="picker1" required [formControlName]="'arrTime'"  >
                 <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                 <mat-datepicker #picker1></mat-datepicker>
             </mat-form-field>
 
             <mat-form-field class="flex-grow w-1/2">
                 <mat-label>Arrival Time</mat-label>
-                <input matInput format="24" name="arrTime_time" [min]="formGroup.get('depTime_time').value"  [formControlName]="'arrTime_time'" required
+                <!-- [min]="formGroup.get('depTime_time').value"   -->
+                <input matInput format="24" name="arrTime_time" [formControlName]="'arrTime_time'"  required
                     [ngxMatTimepicker]="entryPicker1">
                 <mat-icon matSuffix (click)="entryPicker1.open()">
                     watch_later
@@ -116,7 +120,7 @@
 
             <mat-form-field class="flex-grow w-1/3">
                 <mat-label>Oprating Carrier</mat-label>
-                <mat-select formControlName="operating_carrier" required>
+                <mat-select formControlName="operating_carrier" >
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search"
                             noEntriesFoundLabel="'no matching Airline found'" formControlName="opratingFilter" (input)="filterAirlineOparatingCarrier($event.target.value)">

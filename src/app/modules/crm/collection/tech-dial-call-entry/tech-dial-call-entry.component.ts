@@ -104,13 +104,15 @@ export class TechDialCallEntryComponent extends BaseListingComponent implements 
     feedbackList: any[] =
         [
             { value: 'Positive', viewValue: 'Positive' },
-            { value: 'Negative', viewValue: 'Negative' }
+            { value: 'Negative', viewValue: 'Negative' },
+            { value: 'No Answer', viewValue: 'No Answer' }
         ];
 
     purposeList: any[] =
         [
             { value: 'Demo', viewValue: 'Demo' },
-            { value: 'Query', viewValue: 'Query' }
+            { value: 'Query', viewValue: 'Query' },
+            { value: 'Follow-up', viewValue: 'Follow-up' }
         ];
 
     constructor(
@@ -278,7 +280,7 @@ export class TechDialCallEntryComponent extends BaseListingComponent implements 
         this.disableBtn = true;
         const newJson = {
             feedback: json?.feedback,
-            master_for: "agent_master",
+            master_for: "product_purchase",
             master_id: this.record?.id,
             rm_remark: json?.rm_remark,
             is_call_rescheduled: json?.is_call_rescheduled ? json?.is_call_rescheduled : false,

@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -13,19 +13,23 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { dateRange } from 'app/common/const';
 import { Security, messages, module_name } from 'app/security';
-import { ToasterService } from 'app/services/toaster.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
 import { DateTime } from 'luxon';
 import { Excel } from 'app/utils/export/excel';
 import { SalesReturnFilterComponent } from './sales-return-filter/sales-return-filter.component';
 import { SalesReturnService } from 'app/services/sales-return.service';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { GridUtils } from 'app/utils/grid/gridUtils';
+import { KycDocumentService } from 'app/services/kyc-document.service';
+import { AgentService } from 'app/services/agent.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-sales-return',
@@ -53,11 +57,12 @@ import { SalesReturnService } from 'app/services/sales-return.service';
         MatNativeDateModule,
         MatSelectModule,
         NgxMatSelectSearchModule,
+        PrimeNgImportsModule
     ],
     templateUrl: './sales-return.component.html'
 })
-export class SalesReturnComponent {
-    columns = ['action',
+export class SalesReturnComponent extends BaseListingComponent implements OnDestroy {
+    columns = [
         'agent',
         'supplier',
         'complete_date_time',
@@ -79,20 +84,15 @@ export class SalesReturnComponent {
         'tds_2',
         'net_commission',
     ];
-    dataSource = new MatTableDataSource();
-    loading: boolean = true;
 
+    loading: boolean = true;
     data: any[] = []
     total: any;
     currentFilter: any;
     downloading: boolean = false;
     @ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
-
-    searchInternalFilter = new FormControl();
-
+    searchInternalFilter = new FormControl('');
     saleFilter: any;
-
-
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sort: MatSort;
     searchInputControl = new FormControl('');
@@ -105,18 +105,24 @@ export class SalesReturnComponent {
     public StartDate: any;
     public EndDate: any;
     public dateRanges = [];
+    supplierList: any[] = [];
+    agentList: any[] = [];
 
     module_name = module_name.SalesReturn
     tempData: any[] = [];
-
+    isFilterShow: boolean = false;
+    dataList = [];
+    sortColumn: any = 'agent';
+    selectedAgent!:string;
+    selectedEmployee!:string;
 
     constructor(
-        private alertService: ToasterService,
         private salesReturnService: SalesReturnService,
-        private confirmService: FuseConfirmationService,
+        private kycDocumentService: KycDocumentService,
+        public agentService: AgentService,
         private _matdialog: MatDialog,
     ) {
-
+        super(module_name.SalesReturn);
         this.saleFilter = {
             service: '',
             agent_id: '',
@@ -128,11 +134,22 @@ export class SalesReturnComponent {
 
         this.saleFilter.FromDate.setDate(1);
         this.saleFilter.FromDate.setMonth(this.saleFilter.FromDate.getMonth());
-
     }
 
     ngOnInit() {
         this.refreshItems();
+        this.getSupplier("", true)
+        this.getAgent('');
+    }
+
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
     }
 
     filter() {
@@ -150,21 +167,35 @@ export class SalesReturnComponent {
             });
     }
 
-    refreshItems(): void {
-        this.loading = true;
+    getFilter(): any {
+        const filterReq = GridUtils.GetFilterReq(
+            this._paginator,
+            this._sort,
+            this.searchInputControl.value
+        );
 
-        const filterReq = {};
         filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['service'] = this.saleFilter?.service || 'All';
         filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
         filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
         filterReq['date'] = this.saleFilter.date || 'Last Month';
+        return filterReq;
+    }
 
-        this.salesReturnService.getSalesReturnReport(filterReq).subscribe({
+    refreshItems(event?: any): void {
+        this.loading = true;
+        let extraModel = this.getFilter();
+        let newModel = this.getNewFilterReq(event)
+        var model = { ...extraModel, ...newModel };
+
+        this.salesReturnService.getSalesReturnReport(model).subscribe({
             next: (res) => {
-                this.dataSource.data = res;
-                this._paginator.length = res.total;
+                this.dataList = res?.data;
+                for(let i in this.dataList){
+                    this.dataList[i]['complete_date_time'] = new Date(this.dataList[i]['complete_date_time']);
+                 }
+                this.totalRecords = res?.total;
                 this.loading = false;
             }, error: err => {
                 this.alertService.showToast('error', err);
@@ -173,14 +204,19 @@ export class SalesReturnComponent {
         });
     }
 
-    ngAfterViewInit(): void {
-        this.dataSource.paginator = this._paginator;
-        this.dataSource.sort = this._sort;
-        this.searchInternalFilter.valueChanges
-            .subscribe((value) => {
-                this.dataSource.filter = value
-            });
+    getSupplier(value: string, bool: boolean = true) {
+        this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
+            this.supplierList = data;
+        });
     }
+
+    // ngAfterViewInit(): void {
+    //     // this.dataSource.paginator = this._paginator;
+    //     // this.dataSource.sort = this._sort;
+    //     this.searchInternalFilter.valueChanges.subscribe((value: any) => {
+    //             this.dataList.filter = value
+    //         });
+    // }
 
     getNodataText(): string {
         if (this.loading)
@@ -195,27 +231,33 @@ export class SalesReturnComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        const filterReq = {};
-        filterReq['service'] = this.saleFilter?.service || 'All';
-        filterReq['date'] = this.saleFilter.date || 'Last Month';
-        filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-        filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
-        filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
+        // const filterReq = {};
+        // filterReq['service'] = this.saleFilter?.service || 'All';
+        // filterReq['date'] = this.saleFilter.date || 'Last Month';
+        // filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
+        // filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
+        // filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
 
-        this.salesReturnService.getSalesReturnReport(filterReq).subscribe(data => {
+        // this.salesReturnService.getSalesReturnReport(filterReq).subscribe(data => {
+            this.tempData = cloneDeep(this.dataList);
+            for (var dt of this.tempData) {
+            //   dt.complete_date_time = DateTime.fromISO(dt.complete_date_time).toFormat('dd-MM-yyyy HH:mm');
+              dt.complete_date_time = new DatePipe('en-US').transform(dt.complete_date_time, 'dd-MM-yyyy HH:mm');
+            }
+
             Excel.export(
                 'Sales Return',
                 [
                     { header: 'Agent', property: 'agent' },
                     { header: 'Supplier', property: 'supplier' },
-                    { header: 'Return Date time', property: 'complete_date_time' },
+                    { header: 'Return Date Time', property: 'complete_date_time' },
                     { header: 'Amendment Ref No', property: 'amendment_ref_no' },
                     { header: 'Air Ref No', property: 'air_ref_no' },
-                    { header: 'Amendment type', property: 'amendment_type' },
+                    { header: 'Amendment Type', property: 'amendment_type' },
                     { header: 'Pan Number', property: 'pan_numner' },
-                    { header: 'GST Numner', property: 'gst_numner' },
-                    { header: 'Sup Service Charge.', property: 'sup_service_charge' },
+                    { header: 'GST Number', property: 'gst_numner' },
+                    { header: 'Sup Service Charge', property: 'sup_service_charge' },
                     { header: 'Bonton Service Charge', property: 'bonton_service_charge' },
                     { header: 'CGST', property: 'refunded_amount' },
                     { header: 'Service Charge', property: 'service_charge' },
@@ -228,8 +270,7 @@ export class SalesReturnComponent {
                     { header: 'TDS 2', property: 'tds_2' },
                     { header: 'Net Commission', property: 'net_commission' }
                 ],
-                data, "Sales Return", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
-        });
+                this.tempData, "Sales Return", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
+        // });
     }
-
 }

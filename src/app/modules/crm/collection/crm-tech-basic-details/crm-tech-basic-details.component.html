@@ -1,0 +1,42 @@
+<div class="flex flex-raw overflow-hidden overflow-x-auto m-0">
+    <div class="w-[100%] px-0 mt-[-5px] field-blue-bg">
+        <div class="grid py-0 xl:grid-cols-3 grid-cols-3 gap-4 overflow-hidden">
+            <div class="flex flex-col">
+                <span class="text-base font-medium text-secondary dark:text-[#687798]">Agency Name</span>
+                <span class="text-[15px] truncate dark:text-white text-black"
+                    [matTooltip]="record?.agencyName">{{record?.agencyName ? record?.agencyName : "
+                    -"}}</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-base font-medium text-secondary dark:text-[#687798]">Product</span>
+                <div class="text-base truncate">
+                    <span class="text-[15px] truncate dark:text-white text-black">{{record?.product ?
+                        record?.product : '-'}}</span>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-base font-medium text-secondary dark:text-[#687798]">Mobile Number</span>
+                <span class="text-[15px] truncate dark:text-white text-black">
+                    {{ record?.mobile ? record?.mobile : '-' }}
+                </span>
+            </div>
+        </div>
+        <div class="grid py-2 xl:grid-cols-3 grid-cols-3 gap-4 overflow-hidden">
+            <div class="flex flex-col">
+                <span class="text-base font-medium text-secondary dark:text-[#687798]">Amount</span>
+                <span class="text-[15px] truncate dark:text-white text-black">{{record?.amount ?
+                    record?.amount : '-'}}</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-base font-medium text-secondary dark:text-[#687798]">Installment Date</span>
+                <span class="text-[15px] truncate dark:text-white text-black">{{(record?.installmentDate |
+                    date:'dd-MM-yyyy') || ' - '}}</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-base font-medium text-secondary dark:text-[#687798]">Last Call Date</span>
+                <span class="text-[15px] truncate dark:text-white text-black">{{(record?.lastCallDate |
+                    date:'dd-MM-yyyy') || ' - '}}</span>
+            </div>
+        </div>
+    </div>
+</div>

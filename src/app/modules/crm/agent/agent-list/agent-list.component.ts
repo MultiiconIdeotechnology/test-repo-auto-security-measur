@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, OnDestroy, ViewChild} from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -19,6 +19,8 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { AppConfig } from 'app/config/app-config';
 import { InboxAgentComponent } from '../inbox/inbox-agent.component';
 import { PartnersComponent } from "../partners/partners.component";
+import { Table } from 'primeng/table';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
     selector: 'app-crm-agent-list',
@@ -47,7 +49,7 @@ import { PartnersComponent } from "../partners/partners.component";
         PartnersComponent
     ]
 })
-export class CRMAgentListComponent implements OnDestroy{
+export class CRMAgentListComponent implements OnDestroy {
     module_name = module_name.crmagent;
     @ViewChild('inbox') inbox: InboxAgentComponent;
     @ViewChild('partners') partners: PartnersComponent;
@@ -66,8 +68,10 @@ export class CRMAgentListComponent implements OnDestroy{
     dataList = [];
     dataListpartners = [];
     total = 0;
-
+    dropdownListObj:any = {};
+    
     constructor(
+        private agentService: AgentService
     ) {
     }
 
@@ -103,6 +107,21 @@ export class CRMAgentListComponent implements OnDestroy{
             .subscribe((value) => {
                 this.partners.searchInputControlpartners.patchValue(value)
             });
+
+        // calling Api for defatult value for first time to get Agent list.
+        this.getAgent('');
+    }
+
+
+    // Function to get the agentList  from api
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.dropdownListObj['agentList'] = data;
+
+            for(let i in this.dropdownListObj['agentList']){
+                this.dropdownListObj['agentList'][i]['agent_info'] = `${this.dropdownListObj['agentList'][i].code}-${this.dropdownListObj['agentList'][i].agency_name}${this.dropdownListObj['agentList'][i].email_address}`
+            }
+        })
     }
 
     public tabChanged(event: any): void {
@@ -113,13 +132,13 @@ export class CRMAgentListComponent implements OnDestroy{
         switch (tabName) {
             case 'Inbox':
                 this.tab = 'inbox';
-                this.inbox.refreshItems();
+                this.inbox?.refreshItems();
                 break;
 
             case 'Partners':
                 this.tab = 'partners';
                 if (this.isSecound) {
-                    this.partners.refreshItems()
+                    this.partners?.refreshItems()
                     this.isSecound = false
                 }
                 break;
@@ -128,8 +147,16 @@ export class CRMAgentListComponent implements OnDestroy{
 
     refreshItemsTab(tabString: any): void {
         if (tabString == 'Inbox')
-            this.inbox.refreshItems();
+            this.inbox?.refreshItems();
         else
-            this.partners.refreshItems();
+            this.partners?.refreshItems();
+    }
+
+    inboxRefresh() {
+        this.inbox?.refreshItems();
+    }
+
+    partnersRefresh() {
+        this.partners?.refreshItems();
     }
 }

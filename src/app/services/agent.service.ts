@@ -22,6 +22,10 @@ export class AgentService {
         return this.http.post<any[]>(this.baseUrl + 'Agent/getAgentCombo', { filter: filter, is_master_agent: is_master_agent });
     }
 
+    getAgentComboMasterDeshbord(filter: string, is_master_agent: boolean, MasterAgentId: string, Mode: string): Observable<any[]> {
+        return this.http.post<any[]>(this.baseUrl + 'Agent/getAgentCombo', { filter: filter, is_master_agent: is_master_agent, MasterAgentId: MasterAgentId, Mode: Mode });
+    }
+
     getFromEmployee(type: string): Observable<any[]> {
         return this.http.post<any[]>(this.baseUrl + 'CRM/Reshuffle/getFromEmployee', { type: type });
     }
@@ -123,7 +127,63 @@ export class AgentService {
         return this.http.post<any>(this.baseUrl + 'Agent/relationManagerChangeLogs', model);
     }
 
+    setKYCProfile(id: string, KycProfileId: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'AgentLead/setKYCProfile', { id: id, KycProfileId: KycProfileId });
+    }
+
     statusChangedLogsList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'StatusChangeLogs/getStatusChangeLogsList', model);
+    }
+
+    removeAllSubagent(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/deletesubAgnet', { id: id });
+    }
+
+    getLeadStatusCount(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/getLeadStatus', { id: id });
+    }
+
+    getLeadStatusCount1(): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/getLeadStatus', {});
+    }
+
+    getAgentStatusCount(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/getEmployeeAgentStatus', { id: id });
+    }
+
+    getAgentStatusCount1(): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/getEmployeeAgentStatus', {});
+    }
+
+    getLedger(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + "Ledger/getLedger", model);
+    }
+
+    getAgentLoginSession(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + "agent/getAgentLoginSession", model);
+    }
+
+    getBankList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + "Bank/getBankList", model);
+    }
+
+    getMobileCodeCombo(filter?: string): Observable<any[]> {
+        return this.http.post<any[]>(environment.apiUrl + 'city/getMobileCodeCombo', { filter });
+    }
+
+    emailVerificationOTP(model: any): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + 'auth/agent/emailVerificationOTP', model);
+    }
+
+    mobileVerificationOTP(model: any): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + 'auth/agent/mobileVerificationOTP', model);
+    }
+
+    agentEmailVerify(email: string, OTP: number, agent_for?: string): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + ('auth/agent/emailVerify'), { email: email, code: OTP, for: agent_for });
+    }
+
+    agentMobileVerify(otp: string, mobileCode: string, whatsAppNumber: string, for_agent?: string): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + ('auth/agent/mobileVerify'), { code: otp, mobile_code: mobileCode, mobile_number: whatsAppNumber, for: for_agent });
     }
 }

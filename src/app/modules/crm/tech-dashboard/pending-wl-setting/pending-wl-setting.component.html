@@ -1,0 +1,60 @@
+<div class="flex flex-col max-w-120 md:min-w-120 max-h-screen -m-6">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-13 pr-3 sm:pr-5 pl-6 sm:pl-8">
+        <div class="text-lg font-medium dark:text-white">{{ title }}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+    <mat-divider></mat-divider>
+
+    <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-96 " [formGroup]="formGroup">
+        <mat-form-field class="flex-grow">
+            <mat-label>Partner Panel URL</mat-label>
+            <input matInput formControlName="partner_panel_url"/>
+            <mat-error *ngIf="formGroup.get('partner_panel_url').hasError('required')">
+                Partner URL is required
+            </mat-error>
+            <!-- <mat-error *ngIf="formGroup.get('partner_panel_url').hasError('invalidUrl')">
+                Please enter a valid URL.
+            </mat-error> -->
+        </mat-form-field>
+        <mat-form-field class="flex-grow">
+            <mat-label>B2C Portal URL</mat-label>
+            <input matInput formControlName="b2c_portal_url"/>
+            <!-- <mat-error *ngIf="formGroup.get('b2c_portal_url').hasError('invalidUrl')">
+                Please enter a valid URL.
+            </mat-error> -->
+        </mat-form-field>
+        <mat-form-field class="flex-grow">
+            <mat-label>API URL</mat-label>
+            <input matInput formControlName="api_url"/>
+            <!-- <mat-error *ngIf="formGroup.get('api_url').hasError('invalidUrl')">
+                Please enter a valid URL.
+            </mat-error> -->
+        </mat-form-field>
+        <mat-form-field class="flex-grow">
+            <mat-label>Android APP URL</mat-label>
+            <input matInput formControlName="android_app_url"/>
+            <!-- <mat-error *ngIf="formGroup.get('android_app_url').hasError('invalidUrl')">
+                Please enter a valid URL.
+            </mat-error> -->
+        </mat-form-field>
+        <mat-form-field class="flex-grow">
+            <mat-label>IOS APP URL</mat-label>
+            <input matInput formControlName="ios_app_url"/>
+            <!-- <mat-error *ngIf="formGroup.get('ios_app_url').hasError('invalidUrl')">
+                Please enter a valid URL.
+            </mat-error> -->
+        </mat-form-field>
+    </form>
+
+    <div class="flex items-center justify-end pt-4 sm:mt-0 pr-6 pb-4 space-x-3">
+        <!-- Discard -->
+        <button mat-stroked-button (click)="matDialogRef.close()">Close</button>
+        <!-- Save as draft -->
+        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+            {{ btnLabel }}
+        </button>
+    </div>
+</div>

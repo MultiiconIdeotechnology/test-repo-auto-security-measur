@@ -85,6 +85,13 @@
                 <mat-option value="Unblocked">Unblocked</mat-option>
             </mat-select>
         </mat-form-field>
+
+        <mat-form-field class="fuse-mat-dense w-full">
+            <mat-label>Status</mat-label>
+            <mat-select class="w-full flex-grow" formControlName="Status" required class="w-full" #service>
+                <mat-option *ngFor="let s of statusList" [value]="s">{{ s }}</mat-option>
+            </mat-select>
+        </mat-form-field>
     </form>
 
     <div class="flex flex-col justify-end items-end p-5">

@@ -39,7 +39,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Tech Dashboard',
                 type: 'basic',
                 pid: 'CRM_TECHDASHBOARD_VIEW',
-                icon: 'heroicons_outline:queue-list',
+                icon: 'heroicons_outline:squares-plus',
                 link: Routes.crm.tech_route
             },
             {
@@ -75,14 +75,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:building-storefront',
                 link: Routes.masters.compny_route
             },
-            {
-                id: 'master.Bank',
-                title: 'Bank',
-                type: 'basic',
-                pid: 'MASTERS_BANK_VIEW',
-                icon: 'heroicons_outline:building-office',
-                link: Routes.masters.bank_route
-            },
+            // {
+            //     id: 'master.Bank',
+            //     title: 'Bank',
+            //     type: 'basic',
+            //     pid: 'MASTERS_BANK_VIEW',
+            //     icon: 'heroicons_outline:building-office',
+            //     link: Routes.masters.bank_route
+            // },
             {
                 id: 'master.currency',
                 title: 'Currency',
@@ -130,6 +130,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'MASTERS_PRODUCTS_VIEW',
                 icon: 'heroicons_outline:sparkles',
                 link: Routes.masters.product_route
+            },
+            {
+                id: 'master.cachingparameters',
+                title: 'Caching Parameters',
+                type: 'basic',
+                pid: 'MASTERS_CACHINGPARAMETERS_VIEW',
+                icon: 'heroicons_outline:square-3-stack-3d',
+                link: Routes.masters.caching_parameters_route
             }
         ]
     },
@@ -351,6 +359,38 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 // link: Routes.reports.account_route
                 children: [
                     {
+                        id: 'reports.balance_register',
+                        title: 'Agent Balance Register',
+                        type: 'basic',
+                        pid:'REPORTS-ACCOUNTS_AGENT-BALANCE_VIEW',
+                        icon: '',
+                        link: Routes.account.agent_balance_path_route
+                    },
+                    {
+                        id: 'reports.commission_expense',
+                        title: 'Commission Expense',
+                        type: 'basic',
+                        pid:'REPORTS-ACCOUNTS_COMMISSIONEXPENSE_VIEW',
+                        icon: '',
+                        link: Routes.account.commission_expense_route
+                    },
+                    {
+                        id: 'reports.commission_income',
+                        title: 'Commission Income',
+                        type: 'basic',
+                        pid:'REPORTS-ACCOUNTS_COMMISSIONINCOME_VIEW',
+                        icon: '',
+                        link: Routes.account.commission_income_route
+                    },
+                    {
+                        id: 'reports.first_transaction',
+                        title: 'First Transaction',
+                        type: 'basic',
+                        pid:'REPORTS-ACCOUNTS_FIRSTTRANSACTION_VIEW',
+                        icon: '',
+                        link: Routes.account.first_transaction_route
+                    },
+                    {
                         id: 'reports.ledger',
                         title: 'Ledger',
                         type: 'basic',
@@ -359,36 +399,20 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         link: Routes.reports.ledger_route
                     },
                     {
-                        id: 'reports.transaction',
-                        title: 'Transactions',
+                        id: 'reports.purchase_register',
+                        title: 'Purchase Register',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_TRANSACTIONS_VIEW',
+                        pid:'REPORTS-ACCOUNTS_PURCHASEREGISTER_VIEW',
                         icon: '',
-                        link: ""
+                        link: Routes.account.purchase_register_route
                     },
                     {
-                        id: 'reports.wallet_outstanding',
-                        title: 'Wallet Outstanding',
+                        id: 'reports.receipt_register',
+                        title: 'Receipt Register',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_WALLET-OUTSTANDING_VIEW',
+                        pid:'REPORTS-ACCOUNTS_RECEIPTREGISTER_VIEW',
                         icon: '',
-                        link: Routes.account.wallet_outstanding_route
-                    },
-                    // {
-                    //     id: 'reports.balance_register',
-                    //     title: 'Balance Register',
-                    //     type: 'basic',
-                    //     pid:'REPORTS-ACCOUNTS_BALANCE-REGISTER_VIEW',
-                    //     icon: '',
-                    //     link: ""
-                    // },
-                    {
-                        id: 'reports.balance_register',
-                        title: 'Agent Balance Register',
-                        type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_AGENT-BALANCE_VIEW',
-                        icon: '',
-                        link: Routes.account.agent_balance_path_route
+                        link: Routes.account.receipt_register_route
                     },
                     {
                         id: 'reports.sale_book',
@@ -406,6 +430,30 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.account.sales_return_route
                     },
+                    {
+                        id: 'reports.wallet_outstanding',
+                        title: 'Wallet Outstanding',
+                        type: 'basic',
+                        pid:'REPORTS-ACCOUNTS_WALLET-OUTSTANDING_VIEW',
+                        icon: '',
+                        link: Routes.account.wallet_outstanding_route
+                    }
+                    // {
+                    //     id: 'reports.transaction',
+                    //     title: 'Transactions',
+                    //     type: 'basic',
+                    //     pid:'REPORTS-ACCOUNTS_TRANSACTIONS_VIEW',
+                    //     icon: '',
+                    //     link: ""
+                    // },
+                    // {
+                    //     id: 'reports.balance_register',
+                    //     title: 'Balance Register',
+                    //     type: 'basic',
+                    //     pid:'REPORTS-ACCOUNTS_BALANCE-REGISTER_VIEW',
+                    //     icon: '',
+                    //     link: ""
+                    // },
                 ]
             },
             {
@@ -423,6 +471,48 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.leads.leads_register_route
                     },
+                    {
+                        id: 'reports.leadsrep',
+                        title: 'RM Wise Leads',
+                        type: 'basic',
+                        pid:'LEADS-REPORTS_RMWISELEADS_VIEW',
+                        icon: '',
+                        link: Routes.reports.leads_rmwise_route
+                    },
+                ]
+            },
+            {
+                id: 'reports.sales',
+                title: 'Sales',
+                type: 'collapsable',
+                pid:'REPORTS_SALES-REPORTS_VIEW',
+                icon: 'heroicons_outline:cube',
+                children: [
+                    {
+                        id: 'reports.products',
+                        title: 'Products',
+                        type: 'basic',
+                        pid:'SALES-REPORTS_PRODUCTS_VIEW',
+                        icon: '',
+                        link: Routes.reports.products_route
+                    }
+                ]
+            },
+            {
+                id: 'reports.agentsrep',
+                title: 'Agents',
+                type: 'collapsable',
+                pid:'REPORTS_AGENTS-REPORTS_VIEW',
+                icon: 'heroicons_outline:square-3-stack-3d',
+                children: [
+                    {
+                        id: 'reports.agentrmwise',
+                        title: 'RM Wise Agents',
+                        type: 'basic',
+                        pid:'AGENTS-REPORTS_RMWISEAGENTS_VIEW',
+                        icon: '',
+                        link: Routes.reports.agents_rmwise_agents_route
+                    }
                 ]
             },
             {
@@ -456,6 +546,23 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     //     icon: '',
                     //     link: Routes.reports.bus_route
                     // },
+                ]
+            },
+            {
+                id: 'reports.campaign',
+                title: 'Campaign',
+                type: 'collapsable',
+                pid:'REPORTS_CAMPAIGN-REPORTS_VIEW',
+                icon: 'mat_outline:campaign',
+                children: [
+                    {
+                        id: 'reports.campaignsummary',
+                        title: 'Campaign Summary',
+                        type: 'basic',
+                        pid:'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
+                        icon: '',
+                        link: Routes.reports.campaign_summary_path_route
+                    },
                 ]
             }
         ],

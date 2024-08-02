@@ -37,15 +37,19 @@
         <span class="pl-1">Is Dark Theme</span>
     </mat-slide-toggle> -->
 
-    <button mat-menu-item (click)="setScheme('dark')">
-        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:moon'"></mat-icon>
-        <span>Dark</span>
-    </button>
-    <button mat-menu-item (click)="setScheme('light')">
-        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:sun'"></mat-icon>
-        <span>Light</span>
-    </button>
-
+    <ng-container *ngIf="config && config.scheme == 'light'; else other_content">
+        <button mat-menu-item (click)="setScheme('dark')">
+            <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:moon'"></mat-icon>
+            <span>Dark</span>
+        </button>
+    </ng-container>
+    
+    <ng-template #other_content>
+        <button mat-menu-item (click)="setScheme('light')">
+            <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:sun'"></mat-icon>
+            <span>Light</span>
+        </button>
+    </ng-template>
 
     <mat-divider class="my-2"></mat-divider>
     <button

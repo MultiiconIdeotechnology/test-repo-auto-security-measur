@@ -11,9 +11,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { dateRange, dateRangeLeadRegister } from 'app/common/const';
 import { AgentService } from 'app/services/agent.service';
 import { EmployeeService } from 'app/services/employee.service';
 import { LeadsRegisterService } from 'app/services/leads-register.service';
+import { CommonUtils } from 'app/utils/commonutils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { ReplaySubject, filter, startWith, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
@@ -47,6 +49,11 @@ export class FilterComponent {
   disableBtn: boolean = false;
   readonly: boolean = false;
   record: any = {};
+  DR = dateRangeLeadRegister;
+  public FromDate: any;
+  public ToDate: any;
+  public dateRanges = [];
+
 
   StatusList: any[] = [
     { value: 'All', viewValue: 'All' },
@@ -101,6 +108,7 @@ export class FilterComponent {
   ) {
     if (data)
       this.record = data;
+      this.dateRanges = CommonUtils.valuesArray(dateRangeLeadRegister);
   }
 
   title = "Filter Criteria"
@@ -118,13 +126,24 @@ export class FilterComponent {
       KYC_Status: [''],
       priority_text: [''],
       lead_source: [''],
+      date: [''],
+      FromDate: [null],
+      ToDate: [null]
     });
+    this.dateRanges = CommonUtils.valuesArray(dateRangeLeadRegister);
+
+    this.formGroup.get('date').patchValue(dateRangeLeadRegister.all);
+    this.updateDate(dateRangeLeadRegister.all)
+
+    // this.formGroup.get('date').patchValue(dateRange.today);
+    // this.updateDate(dateRange.today)
 
     this.formGroup.get('lead_type').patchValue('All')
     this.formGroup.get('lead_status').patchValue('All')
     this.formGroup.get('lead_source').patchValue('All')
     this.formGroup.get('priority_text').patchValue('All')
     this.formGroup.get('KYC_Status').patchValue('All')
+    // this.formGroup.get('date').patchValue('All')
 
     this.formGroup.get('empfilter').valueChanges.pipe(
       filter(search => !!search),
@@ -193,5 +212,73 @@ export class FilterComponent {
   apply(): void {
     const json = this.formGroup.getRawValue();
     this.matDialogRef.close(json);
+  }
+
+  public updateDate(event: any): void {
+    if (event === dateRangeLeadRegister.all) {
+        this.FromDate = null;
+        this.ToDate = null;
+        // this.FromDate.setDate(null);
+        this.formGroup.get('FromDate').patchValue(this.FromDate);
+        this.formGroup.get('ToDate').patchValue(this.ToDate);
+      }
+    if (event === dateRangeLeadRegister.today) {
+      this.FromDate = new Date();
+      this.ToDate = new Date();
+      this.FromDate.setDate(this.FromDate.getDate());
+      this.formGroup.get('FromDate').patchValue(this.FromDate);
+      this.formGroup.get('ToDate').patchValue(this.ToDate);
+    }
+    else if (event === dateRangeLeadRegister.last3Days) {
+      this.FromDate = new Date();
+      this.ToDate = new Date();
+      this.FromDate.setDate(this.FromDate.getDate() - 3);
+      this.formGroup.get('FromDate').patchValue(this.FromDate);
+      this.formGroup.get('ToDate').patchValue(this.ToDate);
+    }
+    else if (event === dateRangeLeadRegister.lastWeek) {
+      this.FromDate = new Date();
+      this.ToDate = new Date();
+      const dt = new Date(); // current date of week
+      const currentWeekDay = dt.getDay();
+      const lessDays = currentWeekDay === 0 ? 6 : currentWeekDay - 1;
+      const wkStart = new Date(new Date(dt).setDate(dt.getDate() - lessDays));
+      const wkEnd = new Date(new Date(wkStart).setDate(wkStart.getDate() + 6));
+
+      this.FromDate = wkStart;
+      this.ToDate = new Date();
+      this.formGroup.get('FromDate').patchValue(this.FromDate);
+      this.formGroup.get('ToDate').patchValue(this.ToDate);
+    }
+    else if (event === dateRangeLeadRegister.lastMonth) {
+      this.FromDate = new Date();
+      this.ToDate = new Date();
+      this.FromDate.setDate(1);
+      this.FromDate.setMonth(this.FromDate.getMonth());
+      this.formGroup.get('FromDate').patchValue(this.FromDate);
+      this.formGroup.get('ToDate').patchValue(this.ToDate);
+    }
+    else if (event === dateRangeLeadRegister.last3Month) {
+      this.FromDate = new Date();
+      this.ToDate = new Date();
+      this.FromDate.setDate(1);
+      this.FromDate.setMonth(this.FromDate.getMonth() - 3);
+      this.formGroup.get('FromDate').patchValue(this.FromDate);
+      this.formGroup.get('ToDate').patchValue(this.ToDate);
+    }
+    else if (event === dateRangeLeadRegister.last6Month) {
+      this.FromDate = new Date();
+      this.ToDate = new Date();
+      this.FromDate.setDate(1);
+      this.FromDate.setMonth(this.FromDate.getMonth() - 6);
+      this.formGroup.get('FromDate').patchValue(this.FromDate);
+      this.formGroup.get('ToDate').patchValue(this.ToDate);
+    }
+    else if (event === dateRangeLeadRegister.setCustomDate) {
+      this.FromDate = new Date();
+      this.ToDate = new Date();
+      this.formGroup.get('FromDate').patchValue(this.FromDate);
+      this.formGroup.get('ToDate').patchValue(this.ToDate);
+    }
   }
 }

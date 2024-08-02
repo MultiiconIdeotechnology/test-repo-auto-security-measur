@@ -22,6 +22,8 @@ import { AppConfig } from 'app/config/app-config';
 import { BusinessAnalyticsComponent } from '../business-analytics/business-analytics.component';
 import { TimelineCallHistoryComponent } from '../call-history/call-history.component';
 import { TimelinePurchaseProductComponent } from '../purchase-product/purchase-product.component';
+import { TabAgentStatusChangeComponent } from '../agent-tab-status-change/agent-tab-status-change.component';
+import { TabAgentRMChangeComponent } from '../agent-tab-rm-status-change/agent-tab-rm-change.component';
 
 @Component({
     selector: 'app-agent-timeline',
@@ -54,7 +56,9 @@ import { TimelinePurchaseProductComponent } from '../purchase-product/purchase-p
         CRMAgentProfileComponent,
         BusinessAnalyticsComponent,
         TimelineCallHistoryComponent,
-        TimelinePurchaseProductComponent
+        TimelinePurchaseProductComponent,
+        TabAgentStatusChangeComponent,
+        TabAgentRMChangeComponent
     ]
 })
 export class CRMAgentTimelineComponent {
@@ -67,6 +71,8 @@ export class CRMAgentTimelineComponent {
     @ViewChild('businessanalytics') businessAnalytics: BusinessAnalyticsComponent;
     @ViewChild('callhistory') callhistory: TimelineCallHistoryComponent;
     @ViewChild('techservice') techservice: TimelinePurchaseProductComponent;
+    @ViewChild('statuschangedlogs') statuschangedlogs: TabAgentStatusChangeComponent;
+    @ViewChild('rmchangelogs') rmchangelogs: TabAgentRMChangeComponent;
 
     public apiCalls: any = {};
     tabName: any = "Agent Profile";
@@ -106,11 +112,9 @@ export class CRMAgentTimelineComponent {
             case 'Business Analytics':
                 this.tabName = "Business Analytics";
                 this.tab = 'businessAnalytics';
-                // if (this.isSecound) {
-                // this.businessAnalytics?.refreshItems();
-                // this.isSecound = false;
-                // }
+                this.businessAnalytics?.ngOnInit();
                 break;
+
             case 'Tech Service':
                 this.tabName = "Tech Service";
                 this.tab = 'techService';
@@ -120,6 +124,16 @@ export class CRMAgentTimelineComponent {
                 this.tabName = "Call History";
                 this.tab = 'callHistory';
                 this.callhistory?.refreshItems();
+                break;
+            case 'Status Changed Logs':
+                this.tabName = "Status Changed Logs";
+                this.tab = 'statusChangedLogs';
+                this.statuschangedlogs?.ngOnInit();
+                break;
+            case 'RM Change Logs':
+                this.tabName = "RM Change Logs";
+                this.tab = 'rMChangeLogs';
+                this.rmchangelogs?.ngOnInit();
                 break;
         }
     }

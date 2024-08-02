@@ -12,6 +12,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { dateRange } from 'app/common/const';
 import { AgentService } from 'app/services/agent.service';
+import { FlightTabService } from 'app/services/flight-tab.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { CommonUtils } from 'app/utils/commonutils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -42,6 +43,14 @@ import { filter, startWith, debounceTime, distinctUntilChanged, switchMap } from
 })
 export class SaleFilterComponent {
 
+  supplierListAll: any[] = [];
+  supplierList: any[] = [];
+  SupplierList: any[] = [];
+  allVal = {
+    "id": "all",
+    "company_name": "All"
+  };
+
   disableBtn: boolean = false;
   readonly: boolean = false;
   record: any = {};
@@ -56,6 +65,7 @@ export class SaleFilterComponent {
     public matDialogRef: MatDialogRef<SaleFilterComponent>,
     private builder: FormBuilder,
     private pspsettingService: PspSettingService,
+    private flighttabService: FlightTabService,
     private agentService: AgentService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
@@ -73,6 +83,11 @@ export class SaleFilterComponent {
   agentList: any[] = [];
   compnyList: any[] = [];
 
+  vaalchange() {
+    var alldt = this.formGroup.get('supplier_id').value.filter(x => x.id != "all");
+    this.formGroup.get('supplier_id').patchValue(alldt);
+
+  }
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
@@ -84,7 +99,9 @@ export class SaleFilterComponent {
       service: [''],
       date: [''],
       FromDate: [''],
-      ToDate: ['']
+      ToDate: [''],
+      supplier_id: [''],
+      supplierfilter: [''],
     });
 
     this.formGroup.get('filter_date_by').patchValue('BookingDate');
@@ -137,11 +154,32 @@ export class SaleFilterComponent {
         }
       });
 
+      /******Supplier Combo*******/
+      this.flighttabService.getSupplierBoCombo('').subscribe({
+        next: (res) => {
+          this.supplierListAll = res;
+          this.SupplierList.push(...res);
+          // this.formGroup.get('supplier_id').patchValue(this.SupplierList.find(x => x.company_name.includes("All")).id)
+
+        },
+      });
+
+      this.formGroup.get('supplierfilter').valueChanges.subscribe(data => {
+        this.SupplierList = this.supplierListAll
+        this.SupplierList = this.supplierListAll.filter(x => x.company_name.toLowerCase().includes(data.toLowerCase()));
+      })
+
     if (this.record.agent_id) {
         this.formGroup.patchValue(this.record)
         this.formGroup.get("agentfilter").patchValue(this.record.agent_id.agency_name);
         this.formGroup.get("agent_id").patchValue(this.record.agent_id);
+
+      }
+
+    if (this.record) {
+      this.formGroup.get('supplier_id').patchValue(this.record.supplier_id);
     }
+
   }
 
   cancelDate() {

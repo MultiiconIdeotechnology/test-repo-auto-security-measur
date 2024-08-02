@@ -1,84 +1,149 @@
-<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl">
-    <div
-        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[360px] lg:max-h-[360px] xl:min-h-[480px] xl:max-h-[480px]">
-        <ng-container>
-            <div class="grid ">
-                <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold dark:bg-gray-700 bg-white border-b"
-                    matSort matSortDisableClear matSortActive="priority_id" matSortDirection="desc"
-                    (matSortChange)="refreshItems()">
-                    <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
-                        #
-                    </div>
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
+        styleClass="p-datatable-gridlines p-datatable-sm">
 
-                    <ng-container *ngFor="let col of columns">
-                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class"
-                            class="text-secondary">
-                            {{ col.name }}
-                        </div>
-                        <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                            {{ col.name }}
-                        </div>
-                    </ng-container>
-                </div>
-                <!-- Rows -->
-                <ng-container *ngIf="dataList?.length > 0; else noGridItems">
-                    <ng-container *ngFor="let ListItem of dataList">
-                        <div class="tbl-grid gridwidth grid items-center px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
-                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
-                                <mat-icon> more_vert </mat-icon>
-                            </button>
-                            <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+                <th pSortableColumn="lead_status" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn class="dark:bg-[#1e293b]"
+                    [frozen]="frozenObj?.lead_status" [ngClass]="{'left-0': !frozenObj?.lead_status}">
+                    Status <p-sortIcon field="lead_status" />
+                    <span class="float-right" (click)="isFrozenColumn('lead_status');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.lead_status" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.lead_status" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                <th pSortableColumn="agency_name" pResizableColumn>
+                    Agency <p-sortIcon field="agency_name" />
+                </th>
+                <th pSortableColumn="contact_person_email" pResizableColumn>
+                    Email <p-sortIcon field="contact_person_email" />
+                </th>
+                <th pSortableColumn="contact_person_mobile" pResizableColumn>
+                    Mobile <p-sortIcon field="contact_person_mobile" />
+                </th>
+                <th pSortableColumn="last_call_date_time" pResizableColumn>
+                    Last Status Date <p-sortIcon field="last_call_date_time" />
+                </th>
 
-                                    <span *ngIf="col.isicon" class="text-center justify-center">
-                                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                                            (click)="downloadfile(ListItem[col.key])"
-                                            [matTooltip]="'Download'"></mat-icon>
-                                    </span>
 
-                                    <span *ngIf="col.toColor && col.key === 'lead_status'">
-                                        <span *ngIf="col.name == 'Status'" [matTooltip]="ListItem[col.key]" [ngClass]="getStatusColor(ListItem[col.key])">
-                                            {{ ListItem[col.key] || " - " }}
-                                        </span>
-                                    </span>
+                <th pSortableColumn="last_call_feedback" pResizableColumn>
+                    Last Remark <p-sortIcon field="last_call_feedback" />
+                </th>
+                <th pSortableColumn="lead_source" pResizableColumn>
+                    Source <p-sortIcon field="lead_source" />
+                </th>
+            </tr>
 
-                                    <div *ngIf=" col.key === 'mobile_number'">{{ListItem.mobile_code}}</div>
-
-                                    <!-- <div
-                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
-                                        <span class="truncate" *ngIf="!col.toColor"
-                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                            {{ col.toColor ? (ListItem[col.key]) || " - " : ListItem[col.key] || " - " }}
-                                        </span>
-                                    </div> -->
-                                    <div
-                                    [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
-                                    <span class="truncate" *ngIf="!col.toColor "
-                                        [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                        {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
-                                        " - " : ListItem[col.key] || " - " }}
-                                    </span>
-                                </div>
-                                </div>
-                            </ng-container>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
-        </ng-container>
-
-        <ng-template #noGridItems>
-            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                {{getNodataText()}}
-            </div>
+            <tr *ngIf="isFilterShowArchive">
+                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status" class="min-w-[110px]">
+                    <!-- <p-columnFilter field="lead_status" type="text" placeholder="Search by Status"
+                        ariaLabel="Filter Status"></p-columnFilter> -->
+                    <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency"
+                        ariaLabel="Filter Agency" />
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="contact_person_email" placeholder="Search by Email"
+                        ariaLabel="Filter Email" />
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="contact_person_mobile" placeholder="Search by Mobile"
+                        ariaLabel="Filter Mobile" />
+                </th>
+                <th>
+                    <p-columnFilter field="last_call_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Last Status Date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="last_call_feedback" placeholder="Search by Last Remark"
+                        ariaLabel="Filter Last Remark" />
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="lead_source" placeholder="Search by Source"
+                        ariaLabel="Filter Source"/>
+                </th>
+            </tr>
         </ng-template>
-    </div>
 
-    <mat-paginator
-        class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-        [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
-        [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
-    </mat-paginator>
+        <ng-template pTemplate="body" let-element let-i="rowIndex">
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
+
+                    <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="statusChangedLog(element)">
+                            <mat-icon class="mat-18">event_note</mat-icon>
+                            <span style="font-weight: 600">Status Changed Log</span>
+                        </button>
+                        <button mat-menu-item (click)="deadLeadToLiveLead(element)"
+                            *ngIf="element.lead_status == 'Dead'">
+                            <mat-icon svgIcon="heroicons_outline:document-minus"></mat-icon>
+                            <span style="font-weight: 600">Dead Lead To Live Lead</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <td class="min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">
+                    <span [ngClass]="getStatusColor(element.lead_status)">{{(element.lead_status) || '-'}}</span>
+                </td>
+
+                <td>
+                    {{element.agency_name || '-'}}
+                </td>
+
+                <td>
+                    {{element.contact_person_email || '-'}}
+                </td>
+
+                <td>
+                    {{element.contact_person_mobile || '-'}}
+                </td>
+
+                <td>
+                    {{(element.last_call_date_time | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+
+                <td>
+                    {{element.last_call_feedback || '-'}}
+                </td>
+
+                <td class="w-full">
+                    {{element.lead_source || '-'}}
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="10" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>

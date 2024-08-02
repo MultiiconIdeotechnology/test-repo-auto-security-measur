@@ -71,6 +71,10 @@ th .ng-star-inserted {
     margin-right: 10px;
 }
 
+.float-right {
+    float: right;
+}
+
 .pnr_radio .mdc-form-field .mdc-label,
 .pnr_radio .mdc-form-field {
     width: 100%
@@ -91,7 +95,7 @@ app-ledger-filter {
 
 /*****/
 
-.mdc-tooltip__surface{
+.mdc-tooltip__surface {
     margin-top: 10px !important;
 }
 
@@ -148,6 +152,16 @@ app-ledger-filter {
     width: 350px;
 }
 
+.crm_tab .mat-mdc-tab-header .mat-mdc-tab-label-container .mat-mdc-tab-list .mat-mdc-tab-labels {
+    width: 350px;
+    height: 40px;
+}
+
+.crm_tab .mat-mdc-tab-header .mat-mdc-tab-label-container .mat-mdc-tab-list .mat-mdc-tab-labels .mat-mdc-tab {
+    padding: 0;
+    height: 40px;
+}
+
 .lead_tab .mat-mdc-tab-header .mat-mdc-tab-label-container .mat-mdc-tab-list .mat-mdc-tab-labels {
     width: 150px;
 }
@@ -158,12 +172,12 @@ app-ledger-filter {
 }
 
 app-create-lead {
-    .mat-mdc-select-arrow  {
+    .mat-mdc-select-arrow {
         display: none !important;
     }
 }
 
-.dark .sale-tab tbody{
+.dark .sale-tab tbody {
     background-color: #0f172a !important;
 }
 
@@ -330,7 +344,7 @@ app-view-details {
     border: 2px solid #a4a4a4 !important;
 }
 
-.mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+.mdc-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
     border-color: #a4a4a4 !important;
     background-color: #a4a4a4 !important;
 }
@@ -342,4 +356,233 @@ app-view-details {
 
 .theme-teal.light .mat-mdc-mini-fab.mat-accent {
     --mdc-fab-container-color: none !important;
+}
+
+.bottom_none .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+}
+
+.p-datatable.p-datatable-sm .p-datatable-tbody>tr>td,
+th {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 14px;
+
+    p-sortIcon .p-icon {
+        height: 0.7rem !important;
+        display: inline-block;
+    }
+}
+
+.table-container {
+    position: relative;
+
+    .p-inputtext {
+        padding: 0.4rem 0.5rem !important;
+    }
+
+    .p-inputtext:enabled:focus {
+        box-shadow: none !important;
+    }
+
+    .p-dropdown .p-dropdown-trigger {
+        width: 2.4rem !important;
+        height: 2.4rem;
+    }
+
+    .p-datatable-scrollable-table>.p-datatable-thead {
+        top: -1px !important;
+    }
+
+    .p-paginator .p-paginator-first,
+    .p-paginator .p-paginator-prev,
+    .p-paginator .p-paginator-next,
+    .p-paginator .p-paginator-last {
+        min-width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .p-datatable .p-sortable-column .p-sortable-column-icon {
+        margin-left: 0 !important;
+    }
+
+    .p-datatable .p-sortable-column:focus {
+        box-shadow: none;
+    }
+
+    .p-column-filter-clear-button {
+        width: auto;
+    }
+
+    .p-column-filter-row .p-column-filter-menu-button,
+    .p-column-filter-row .p-column-filter-clear-button {
+        margin-left: 0.3rem;
+    }
+
+    .p-column-filter-clear-button:focus {
+        box-shadow: none;
+    }
+
+    .p-link:focus {
+        box-shadow: none;
+    }
+}
+
+.paginator-bottom .p-paginator {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 4px;
+}
+
+.table-content {
+    overflow-y: auto;
+    padding-bottom: 50px;
+}
+
+.p-tooltip.p-tooltip-top,
+.p-tooltip.p-tooltip-bottom {
+    font-size: 11px;
+}
+
+.p-tooltip .p-tooltip-text {
+    padding: 0.50rem 0.55rem;
+}
+
+.p-paginator .p-dropdown {
+    height: 36px !important;
+}
+
+.overlay-panel {
+    .p-inputtext {
+        padding: 0.25rem 0.55rem !important;
+    }
+
+    .p-multiselect .p-multiselect-label {
+        padding: 0.25rem 0.45rem !important;
+    }
+
+    .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+        padding: 0.35rem 1.25rem !important;
+        font-size: 12px;
+    }
+}
+
+.p-inputnumber {
+    .p-inputtext {
+        font-size: 13px;
+    }
+
+    .p-inputnumber-button-group {
+        display: none;
+    }
+}
+
+.p-overlaypanel .p-overlaypanel-content {
+    padding: 1rem !important;
+}
+
+.p-column-filter-overlay .p-column-filter-row-items {
+    padding: 0.25rem 0;
+}
+
+.p-column-filter-overlay .p-column-filter-row-items .p-column-filter-row-item {
+    padding: 0.35rem 0.65rem;
+    font-size: 12px;
+}
+
+.p-column-filter-overlay .p-column-filter-row-items .p-column-filter-row-item:focus {
+    box-shadow: none;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+    overflow: visible;
+    /* Ensure column header overflow is visible */
+}
+
+.p-datatable .p-column-filter .p-column-filter-element {
+    overflow: visible;
+    /* Ensure filter element overflow is visible */
+}
+
+.p-datatable table {
+    border-collapse: separate;
+}
+
+// primeNg dropdown filter 
+.filter-dropdown .p-dropdown {
+    height: 32px;
+
+    svg {
+        height: 10px;
+        width: 10px;
+    }
+}
+
+.table-container .p-inputtext {
+    height: 32px;
+}
+
+.p-dropdown .p-dropdown-clear-icon {
+    margin-top: 0 !important;
+    transform: translatey(-50%) !important;
+}
+
+.p-fluid .p-dropdown {
+    align-items: center;
+}
+
+.custom-tab {
+    .mat-mdc-tab-body-content {
+        padding: 0 !important;
+    }
+
+    .mat-mdc-tab-header .mat-mdc-tab-label-container {
+        margin: 0 0 20px 0;
+    }
+}
+
+p-columnfilterformelement {
+    max-width: 250px;
+}
+
+.mat-mdc-menu-item {
+    min-height: 42px !important;
+}
+
+.searchableDropdown {
+    .p-column-filter-clear-button {
+        display: none;
+    }
+}
+
+//custom input search
+.light .ctm_search {
+    border: 1px solid rgb(202 211 220);
+    background-color: #f8f9fa;
+}
+
+.light .ctm_search .mat-icon {
+    background-color: rgb(13 148 136);
+    color: #fff;
+}
+
+.ctm_search {
+    border: 1px solid #2a3243cc;
+    border-radius: 21px !important;
+    overflow: hidden;
+    background-color: #1e293b;
+    padding: 4px;
+    justify-content: space-between;
+}
+
+.ctm_search input {
+    padding-left: 12px;
+}
+
+.ctm_search .mat-icon {
+    background-color: rgb(47 62 85);
+    width: 33px !important;
+    height: 33px !important;
+    cursor: pointer;
+    border-radius: 100%;
 }

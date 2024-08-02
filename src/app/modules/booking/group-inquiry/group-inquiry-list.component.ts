@@ -22,17 +22,13 @@ import { Excel } from 'app/utils/export/excel';
 import { UpdateChargeComponent } from './update-charge/update-charge.component';
 import { Linq } from 'app/utils/linq';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
+import { KycDocumentService } from 'app/services/kyc-document.service';
 
 @Component({
     selector: 'app-group-inquiry-list',
     templateUrl: './group-inquiry-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 240px 150px 150px 140px 150px 180px 180px 100px 200px;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -51,22 +47,27 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
         MatTooltipModule,
         MatDividerModule,
         NgClass,
+        PrimeNgImportsModule
     ],
 })
 export class GroupInquiryListComponent
     extends BaseListingComponent
     implements OnDestroy {
-
+    isFilterShow: boolean = false;
     module_name = module_name.groupInquiry;
     dataList = [];
     total = 0;
+    selectedAgent!:string;
+    selectedSupplier!:string;
+    agentList:any[] = [];
+    supplierList:any[]= [];
 
     columns = [
         {
             key: 'booking_ref_no',
             name: 'Ref No.',
             is_date: false,
-            is_fixed:true,
+            is_fixed: true,
             date_formate: '',
             is_sortable: true,
             class: '',
@@ -200,12 +201,16 @@ export class GroupInquiryListComponent
         },
 
     ];
+
+    statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Expired'];
     cols = [];
 
     constructor(
         private groupInquiryService: GroupInquiryService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
+        private agentService: AgentService,
+        private kycDocumentService: KycDocumentService
     ) {
         super(module_name.groupInquiry);
         this.cols = this.columns.map((x) => x.key);
@@ -215,23 +220,44 @@ export class GroupInquiryListComponent
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
-        this.isLoading = true;
-        var model = GridUtils.GetFilterReq(this._paginator, this.sort, this.searchInputControl.value, 'departure_date', 1);
+    ngOnInit(): void {
+        this.getSupplier("");
+        this.getAgent("");
+    }
 
-        this.groupInquiryService.getAirGroupInquiryList(model).subscribe({
+    refreshItems(event?: any): void {
+        this.isLoading = true;
+        // var model = GridUtils.GetFilterReq(this._paginator, this.sort, this.searchInputControl.value, 'departure_date', 1);
+        const filterReq = this.getNewFilterReq(event);
+        this.groupInquiryService.getAirGroupInquiryList(filterReq).subscribe({
             next: (data: any) => {
                 this.dataList = data.data;
                 this.dataList.forEach(x => {
                     x.pax = 'Adult:' + x.adults + " child:" + x.child + " Infants:" + x.infants;
                 });
                 this.isLoading = false;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
+                // this._paginator.length = data.total;
             }, error: (err) => {
                 this.isLoading = false;
                 this.alertService.showToast('error', err);
             },
         })
+    }
+
+    getAgent(value: string, bool: boolean = true) {
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+            this.agentList = data;
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        });
+    }
+
+    getSupplier(value: string, bool: boolean = true) {
+        this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
+            this.supplierList = data;
+        });
     }
 
     UpdateCharge(data: any): void {
@@ -253,18 +279,31 @@ export class GroupInquiryListComponent
         Linq.recirect('/booking/group-inquiry/details/' + data.id);
     }
 
+    getFilter(): any {
+        const filterReq = GridUtils.GetFilterReq(
+            this._paginator,
+            this._sort,
+            this.searchInputControl.value,
+            'departure_date', 1
+        );
+        return filterReq;
+    }
+
     exportExcel() {
         if (!Security.hasExportDataPermission(this.module_name)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value, 'departure_date', 1);
-        const req = Object.assign(filterReq);
+        // const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value, 'departure_date', 1);
+        // const req = Object.assign(filterReq);
 
-        req.skip = 0;
-        req.take = this._paginator.length;
+        let extraModel = this.getFilter();
+        let newModel = this.getNewFilterReq({})
+        const request = { ...extraModel, ...newModel };
+        request['Skip'] = 0;
+        request['Take'] = this.totalRecords;
 
-        this.groupInquiryService.getAirGroupInquiryList(req).subscribe(data => {
+        this.groupInquiryService.getAirGroupInquiryList(request).subscribe(data => {
             for (var dt of data.data) {
                 dt.departure_date = DateTime.fromISO(dt.departure_date).toFormat('dd-MM-yyyy hh:mm a');
                 dt.arrival_date = DateTime.fromISO(dt.arrival_date).toFormat('dd-MM-yyyy hh:mm a');
@@ -287,6 +326,22 @@ export class GroupInquiryListComponent
         });
     }
 
+    getStatusColor(status: string): string {
+        if (status == 'Pending' || status == 'Inprocess' || status == 'Partial Cancellation Pending') {
+            return 'text-orange-600';
+        } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed') {
+            return 'text-yellow-600';
+        } else if (status == 'Completed' || status == 'Confirm') {
+            return 'text-green-600';
+        } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected') {
+            return 'text-red-600';
+        } else if (status == 'Quotation Sent') {
+            return 'text-blue-600';
+        } else {
+            return '';
+        }
+    }
+
     getNodataText(): string {
         if (this.isLoading) return 'Loading...';
         else if (this.searchInputControl.value)
@@ -295,7 +350,7 @@ export class GroupInquiryListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 
     setBookingStatus(data: any) {
@@ -326,19 +381,19 @@ export class GroupInquiryListComponent
     Reject(record: any): void {
         const label: string = 'Reject Group Inquiry'
         this.conformationService.open({
-          title: label,
-          message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+            title: label,
+            message: 'Are you sure to ' + label.toLowerCase() + ' ?'
         }).afterClosed().subscribe({
-          next: (res) => {
-            if (res === 'confirmed') {
-              this.groupInquiryService.setBookingStatus({ id: record.id, Status: 'Rejected' }).subscribe({
-                next: () => {
-                  this.alertService.showToast('success', "Group Inquiry Rejected", "top-right", true);
-                  this.refreshItems();
-                }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-              });
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this.groupInquiryService.setBookingStatus({ id: record.id, Status: 'Rejected' }).subscribe({
+                        next: () => {
+                            this.alertService.showToast('success', "Group Inquiry Rejected", "top-right", true);
+                            this.refreshItems();
+                        }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+                    });
+                }
             }
-          }
         })
-      }
+    }
 }

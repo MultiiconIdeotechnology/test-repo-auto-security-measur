@@ -1,4 +1,4 @@
-<div class="flex flex-col max-w-240 md:min-w-140 max-h-screen -m-6">
+<div class="flex flex-col max-w-200 md:min-w-200 max-h-screen -m-6">
 
     <!-- Header -->
     <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
@@ -11,25 +11,22 @@
     <form class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto max-h-120" [formGroup]="formGroup"
         *ngIf="!readonly; else detailView">
 
-        <mat-form-field class="flex-grow">
-            <mat-label>Supplier Booking Ref.No</mat-label>
-            <input matInput type="text" formControlName="supplier_booking_ref_no" required>
-        </mat-form-field>
 
         <div class="flex flex-row gap-3">
             <mat-form-field class="flex-grow">
                 <mat-label>Service Type</mat-label>
-                <mat-select required formControlName="service_type">
+                <mat-select required formControlName="service_type" *ngIf="!records.id">
                     <mat-option *ngFor="let list of serviceList" [value]="list.value">
                         {{ list.viewValue }}
                     </mat-option>
                 </mat-select>
+                <input type="text" matInput readonly *ngIf="records.id" formControlName="service_type">
             </mat-form-field>
 
             <mat-form-field class="flex-grow">
                 <mat-label>Supplier</mat-label>
                 <mat-select formControlName="supplier_id" required (selectionChange)="supplierChange($event.value)"
-                    [compareWith]="compareWith">
+                    *ngIf="!records.id" [compareWith]="compareWith">
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search"
                             noEntriesFoundLabel="'no matching product found'" [formControlName]="'supplierFilter'">
@@ -37,75 +34,114 @@
                     </mat-option>
                     <mat-option *ngFor="let ct of SupplierList | async" [value]="ct">{{ct.company_name}}</mat-option>
                 </mat-select>
+                <input type="text" matInput readonly *ngIf="records.id" formControlName="supplierFilter">
             </mat-form-field>
         </div>
 
         <div class="flex flex-row gap-3">
             <mat-form-field class="flex-grow">
-                <mat-label>Currency</mat-label>
+                <mat-label>Supplier Currency</mat-label>
                 <input matInput type="text" formControlName="currency" required readonly>
             </mat-form-field>
 
             <mat-form-field class="flex-grow">
                 <mat-label>ROE</mat-label>
-                <input matInput type="number" formControlName="roe" required>
+                <input matInput type="number" formControlName="roe" required [readonly]="records.id">
             </mat-form-field>
         </div>
 
         <div class="flex flex-row gap-3">
+            <mat-form-field class="flex-grow w-1/2">
+                <mat-label>Purchase Amount</mat-label>
+                <input matInput type="number" formControlName="purchase_amount" required [readonly]="records.id">
+            </mat-form-field>
+
             <mat-form-field class="flex-grow w-1/2">
                 <mat-label>Service Date</mat-label>
                 <input matInput readonly [matDatepicker]="picker1" required formControlName="service_date">
                 <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                 <mat-datepicker #picker1></mat-datepicker>
             </mat-form-field>
-
-            <mat-form-field class="flex-grow w-1/2">
-                <mat-label>Purchase Amount</mat-label>
-                <input matInput type="number" formControlName="purchase_amount" required>
-            </mat-form-field>
         </div>
 
         <mat-form-field class="flex-grow">
             <mat-label>Service Particular</mat-label>
-            <textarea matInput formControlName="service_particular" required></textarea>
+            <input matInput formControlName="service_particular" required>
         </mat-form-field>
 
         <mat-form-field class="flex-grow">
             <mat-label>Service Remark</mat-label>
-            <textarea matInput formControlName="service_remark" required></textarea>
+            <textarea matInput formControlName="service_remark" class="min-h-22" required></textarea>
         </mat-form-field>
 
-        <div
-            class="flex dark:bg-gray-700 bg-gray-200 min-h-[65px] items-center px-4 mb-3 my-2 second-color justify-between shadow rounded-xl overflow-hidden">
-            <div class="flex flex-row items-center w-full justify-between overflow-hidden">
-                <div class="py-4 flex flex-row items-center gap-3 second-color  overflow-hidden">
-                    <span class="text-lg truncate">
-                        Invoice
-                    </span>
-                </div>
+        <mat-form-field class="flex-grow">
+            <mat-label>Supplier Reference Number</mat-label>
+            <input matInput type="text" formControlName="supplier_booking_ref_no">
+        </mat-form-field>
 
-                <div class="flex flex-row items-end justify-center space-x-1">
-                    <button mat-icon-button [matTooltip]="'Download'" (click)="download()"
-                        [disabled]="!formGroup.get('supplier_invoice').value">
-                        <mat-icon class="icon-size-6"
-                            [ngClass]="formGroup.get('supplier_invoice').value ? 'text-primary':''"
-                            [svgIcon]="'heroicons_outline:download'"></mat-icon>
-                    </button>
-                    <div [hidden]="true">
-                        <input type="file" name="documentUpload" #document (change)="uploadDocument($event)">
+        <div class="flex flex-row gap-4">
+            <div
+                class="flex dark:bg-gray-700 bg-gray-200 min-h-[65px] items-center px-4 mb-3 my-2 w-full second-color justify-between shadow rounded-xl overflow-hidden">
+                <div class="flex flex-row items-center w-full justify-between overflow-hidden">
+                    <div class="py-4 flex flex-row items-center gap-3 second-color  overflow-hidden">
+                        <span class="text-base truncate">
+                            Invoice
+                        </span>
                     </div>
-                    <button (click)="document.click()" [matTooltip]="'Upload'" mat-icon-button>
-                        <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
-                    </button>
+
+                    <div class="flex flex-row items-end justify-center space-x-1">
+                        <button mat-icon-button [matTooltip]="'Download'"
+                            (click)="download(this.formGroup.get('supplier_invoice').value)"
+                            [disabled]="!formGroup.get('supplier_invoice').value">
+                            <mat-icon class="icon-size-6"
+                                [ngClass]="formGroup.get('supplier_invoice').value ? 'text-primary':''"
+                                [svgIcon]="'heroicons_outline:download'"></mat-icon>
+                        </button>
+                        <div [hidden]="true">
+                            <input type="file" name="documentUpload" #document
+                                (change)="uploadDocument($event,'supplier_invoice')">
+                        </div>
+                        <button (click)="document.click()" [matTooltip]="'Upload'" mat-icon-button>
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="flex dark:bg-gray-700 bg-gray-200 min-h-[65px] w-full items-center px-4 mb-3 my-2 second-color justify-between shadow rounded-xl overflow-hidden">
+                <div class="flex flex-row items-center w-full justify-between overflow-hidden">
+                    <div class="py-4 flex flex-row items-center gap-3 second-color  overflow-hidden">
+                        <span class="text-base truncate">
+                            Supplier Confirmation Proof
+                        </span>
+                    </div>
+
+                    <div class="flex flex-row items-end justify-center space-x-1">
+                        <button mat-icon-button [matTooltip]="'Download'"
+                            (click)="download(this.formGroup.get('supplier_confirmation_proof').value)"
+                            [disabled]="!formGroup.get('supplier_confirmation_proof').value">
+                            <mat-icon class="icon-size-6"
+                                [ngClass]="formGroup.get('supplier_confirmation_proof').value ? 'text-primary':''"
+                                [svgIcon]="'heroicons_outline:download'"></mat-icon>
+                        </button>
+                        <div [hidden]="true">
+                            <input type="file" name="documentUpload" #document2
+                                (change)="uploadDocument($event,'supplier_confirmation_proof')">
+                        </div>
+                        <button (click)="document2.click()" [matTooltip]="'Upload'" mat-icon-button>
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
+
     </form>
 
     <ng-template #detailView>
-        <div class="grid grid-cols-4 gap-4 p-6 pb-4 bg-card rounded-2xl overflow-hidden min-w-180">
+        <div class="grid grid-cols-4 gap-3 p-6 pb-0 bg-card rounded-2xl overflow-hidden min-w-180">
             <div class="flex flex-col mb-3" *ngFor="let filed of fieldList">
                 <div class="flex flex-row space-x-2">
                     <span class="text-md font-semibold text-secondary">{{
@@ -113,23 +149,59 @@
                         }}</span>
                     <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
                 </div>
-                <span class="truncate flex items-center">
-                    <span class="text-base truncate"
-                        *ngIf="filed.name === 'Logo size 1' || filed.name === 'Logo size 2' || filed.name === 'Logo size 3'">
-                        <img *ngIf="filed.value" class="w-13  object-cover cursor-pointer" src={{filed.value}}>
-                        <span *ngIf="!filed.value">--</span>
-                    </span>
-                    <span class="text-base truncate" [matTooltip]="filed.value"
-                        *ngIf="filed.name !== 'Logo size 1' && filed.name !== 'Logo size 2' && filed.name !== 'Logo size 3' ">{{
+                <span class="truncate flex items-center" *ngIf="!filed.id_doc">
+                    <span class="text-base truncate" [matTooltip]="isTooltip ? filed.value : ''">{{
                         filed.value || "--" }}</span>
                 </span>
 
+                <span *ngIf="filed.id_doc && filed.value">
+                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                        class="rounded-full cursor-pointer text-blue-600 p-0.5" (click)="downloadfile(filed.value)"
+                        [matTooltip]="'Download'"></mat-icon>
+                </span>
+                <span *ngIf="filed.id_doc && !filed.value">
+                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                        class="rounded-full cursor-pointer text-gray-600 p-0.5"></mat-icon>
+                </span>
             </div>
         </div>
+        <div class="grid grid-cols-1 gap-1 pt-2 px-6">
+            <div class="flex flex-col mb-3">
+                <span class="text-md font-semibold text-secondary">Service Particular</span>
+                <span class="text-base">{{records.service_particular || "--" }}</span>
+            </div>
+
+            <div class="flex flex-col mb-3">
+                <span class="text-md font-semibold text-secondary">Service Remark</span>
+                <span class="text-base">{{records.service_remark || "--" }}</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-3 px-6 pt-3 border-t">
+
+            <div class="flex flex-col mb-3">
+                <span class="text-md font-semibold text-secondary">Invoice</span>
+                <mat-icon svgIcon="heroicons_outline:arrow-down-tray" *ngIf="records.supplier_invoice"
+                    class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                    (click)="downloadfile(records.supplier_invoice)" [matTooltip]="'Download'"></mat-icon>
+                <mat-icon svgIcon="heroicons_outline:arrow-down-tray" *ngIf="!records.supplier_invoice"
+                    class="rounded-full cursor-pointer text-gray-600 p-0.5"></mat-icon>
+            </div>
+
+            <div class="flex flex-col mb-3">
+                <span class="text-md font-semibold text-secondary">Supplier Confirmation Proof</span>
+                <mat-icon svgIcon="heroicons_outline:arrow-down-tray" *ngIf="records.supplier_confirmation_proof"
+                    class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                    (click)="downloadfile(records.supplier_confirmation_proof)" [matTooltip]="'Download'"></mat-icon>
+                <mat-icon svgIcon="heroicons_outline:arrow-down-tray" *ngIf="!records.supplier_confirmation_proof"
+                    class="rounded-full cursor-pointer text-gray-600 p-0.5"></mat-icon>
+            </div>
+        </div>
+
     </ng-template>
 
-    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pt-4 pb-4 space-x-3">
-        <button mat-flat-button [color]="'primary'" (click)="submit()" *ngIf="!readonly" [disabled]="disableBtn">
+    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pt-4 pb-4 space-x-3" *ngIf="!readonly">
+        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
             {{btnLabel}}
         </button>
     </div>

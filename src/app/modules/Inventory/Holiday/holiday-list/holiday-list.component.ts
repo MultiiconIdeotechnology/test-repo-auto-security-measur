@@ -12,9 +12,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -23,17 +20,13 @@ import { ProductEntryComponent } from '../product-entry/product-entry.component'
 import { Linq } from 'app/utils/linq';
 import { DateTime } from 'luxon';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
     selector: 'app-holiday-list',
     templateUrl: './holiday-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 400px 200px 200px 80px 80px 130px 150px 150px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -46,19 +39,24 @@ import { ToasterService } from 'app/services/toaster.service';
         MatInputModule,
         MatButtonModule,
         MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class HolidayListComponent extends BaseListingComponent {
     module_name = module_name.holiday;
     dataList = [];
     total = 0;
+    isFilterShow: boolean = false;
+    supplierListAll: any[] = [];
+    selectedSupplier!: string;
+
+    ngOnInit() {
+        this.getSupplier("")
+    }
 
     columns = [
         {
@@ -182,32 +180,44 @@ export class HolidayListComponent extends BaseListingComponent {
             tooltip: false,
         },
     ];
-    cols = [];
+
+    actionList: any[] = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false },
+    ]
+
+    getSupplier(value) {
+        this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
+            this.supplierListAll = data;
+        })
+    }
 
     constructor(
         private holidayService: HolidayService,
         private toasterService: ToasterService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
+        private flighttabService: FlightTabService,
         private router: Router
     ) {
         super(module_name.holiday);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.holidayService
-            .getHolidayProductList(this.getFilterReq())
+            .getHolidayProductList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
+                    // this._paginator.length = data.total;
                 },
                 error: (err) => {
                     this.toasterService.showToast('error', err)
@@ -417,6 +427,6 @@ export class HolidayListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

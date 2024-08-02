@@ -31,6 +31,14 @@ export class AmendmentRequestsService {
   setAmendmentStatusQ(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + "AirAmendment/setAmendmentStatus", model);
   }
+  
+  amendmentRefundInitiate(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "AirAmendment/amendmentRefundInitiate", model);
+  }
+  
+  amendmentInprocess(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "AirAmendment/amendmentInprocess", model);
+  }
 
   setAmendmentStatus(id: string, status: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'AirAmendment/setAmendmentStatus', { id, status });

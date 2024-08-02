@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,12 +23,16 @@ import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
 import { Security, agentPermissions, messages, module_name, partnerPurchaseProductPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
 import { PurchaseProductComponent } from '../purchase-product/purchase-product.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { Routes } from 'app/common/const';
+import { DialAgentCallListComponent } from '../dial-call-list/dial-call-list.component';
+import { Linq } from 'app/utils/linq';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
     selector: 'app-partners',
@@ -70,9 +74,13 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
         CommonModule,
         MatTabsModule,
         MatProgressBarModule,
+        PrimeNgImportsModule
     ]
 })
-export class PartnersComponent {
+export class PartnersComponent extends BaseListingComponent{
+    @Input() isFilterShowPartners: boolean
+    @Input() dropdownListObj:{};
+
     cols = [];
     total = 0;
 
@@ -156,7 +164,7 @@ export class PartnersComponent {
             name: 'Last Login',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
+            is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
@@ -169,7 +177,7 @@ export class PartnersComponent {
             name: 'Last Transaction',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
+            is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
@@ -184,24 +192,47 @@ export class PartnersComponent {
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
+    statusList = [ 'New', 'Active', 'Inactive', 'Dormant'];
 
     Mainmodule: any;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
-
+    agentList: any[] = [];
+    selectedAgent!: string;
     module_name = module_name.crmagent
     data: any
     filter: any = {}
 
     ngOnInit(): void {
+        // this.searchInputControlpartners.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginatorArchive);
+        //         this.refreshItems();
+        //     });
+        // this.refreshItems();
+
         this.searchInputControlpartners.valueChanges
-            .subscribe(() => {
-                GridUtils.resetPaginator(this._paginatorArchive);
-                this.refreshItems();
-            });
-        this.refreshItems();
+        .subscribe(() => {
+          // GridUtils.resetPaginator(this._paginatorPending);
+        //   this.refreshItems();
+        });
+       
+    }
+
+    ngOnChanges(){
+        this.agentList = this.dropdownListObj['agentList'];
+    }
+
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
     }
 
     getStatusColor(status: string): string {
@@ -211,6 +242,8 @@ export class PartnersComponent {
             return 'text-blue-600';
         } else if (status == 'Inactive') {
             return 'text-red-600';
+        } else if (status == 'Dormant') {
+            return 'text-red-600';
         } else {
             return '';
         }
@@ -218,13 +251,14 @@ export class PartnersComponent {
 
     constructor(
         private crmService: CrmService,
-        private alertService: ToasterService,
         private matDialog: MatDialog,
-        private conformationService: FuseConfirmationService
+        private agentService: AgentService,
+        private conformationService: FuseConfirmationService,
     ) {
+        super(module_name.crmagent);
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'priorityid';
+        this.sortColumn = 'createdDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
     }
@@ -248,18 +282,21 @@ export class PartnersComponent {
         }
     }
 
-    refreshItems() {
+    refreshItems(event?: any) {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorArchive,
-            this._sortArchive,
-            this.searchInputControlpartners.value
-        );
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlpartners.value;
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginatorArchive,
+        //     this._sortArchive,
+        //     this.searchInputControlpartners.value
+        // );
         this.crmService.getPartnerAgentList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginatorArchive.length = data.total;
+                this.totalRecords = data.total;
+                // this._paginatorArchive.length = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -279,6 +316,48 @@ export class PartnersComponent {
         // }
         const latestLogin = this.findLatestDate([iosLogin, androidLogin, webLogin]);
         return latestLogin;
+    }
+
+
+    dialCall(record): void {
+        if (!Security.hasPermission(agentPermissions.dailCallPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        // this.matDialog.open(CRMDialCallEntryComponent, {
+        //     data: { data: record, readonly: true, agentDialCallFlag: true },
+        //     disableClose: true,
+        // });
+
+        // this.matDialog.open(DialAgentCallListComponent, {
+        //     data: { data: record, readonly: true, agentDialCallFlag: true },
+        //     disableClose: true,
+        // });
+
+        this.matDialog.open(DialAgentCallListComponent, {
+            data: { data: record, readonly: true, agentDialCallFlag: true },
+            disableClose: true,
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res) {
+                    this.refreshItems();
+                }
+            }
+        })
+    }
+
+    callHistory(record): void {
+        if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        // this.matDialog.open(CallHistoryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true
+        // });
+        this.matDialog.open(DialAgentCallListComponent, {
+            data: { data: record, readonly: true, selectedTabIndex: 3 },
+            disableClose: true,
+        });
     }
 
     findLatestDate(dates: (Date | null)[]): Date | null {
@@ -301,6 +380,26 @@ export class PartnersComponent {
             data: { data: record, readonly: true },
             disableClose: true,
         });
+
+        // this.entityService.raiseleadEntityCall({})
+        // this.entityService.onrefreshleadEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+        //     next: (item) => {
+        //     }
+        // })
+    }
+
+    agentTimeline(record): void {
+        // if (!Security.hasPermission(agentPermissions.timelinePermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        // this.matDialog.open(CRMAgentTimelineComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true,
+        // });
+
+        // this.router.navigate([Routes.customers.agent_entry_route + '/' + record.agentid + '/readonly'])
+        Linq.recirect([Routes.customers.agent_entry_route + '/' + record.agentid + '/readonly']);
     }
 
     dormants(record): void {
@@ -326,6 +425,45 @@ export class PartnersComponent {
                         next: (res) => {
                             this.alertService.showToast('success', 'Dormant has been completed!', 'top-right', true);
                             this.refreshItems();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+                    });
+                }
+            });
+    }
+
+    reActive(record): void {
+        const label: string = 'Reactive';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Do you want to Reactive?',
+                inputBox: 'Reason',
+                customShow: true
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res?.action === 'confirmed') {
+                    let newJson = {
+                        Id: record.agentid,
+                        status_remark: res?.statusRemark ? res?.statusRemark : ""
+                    }
+                    this.crmService.reactive(newJson).subscribe({
+                        next: (res) => {
+                            this.refreshItems();
+                            this.alertService.showToast(
+                                'success',
+                                'Reactive Successfully!',
+                                'top-right',
+                                true
+                            );
                         },
                         error: (err) => {
                             this.alertService.showToast(

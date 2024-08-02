@@ -3,7 +3,7 @@ import { Routes } from 'app/common/const';
 import { Security, kycprofilePermissions, messages, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { KycService } from './../../../../services/kyc.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -12,22 +12,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
 import { KycFilterComponent } from '../kyc-filter/kyc-filter.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-kyc-profile-list',
   templateUrl: './kyc-profile-list.component.html',
   styles: [`
   .tbl-grid {
-    grid-template-columns:  40px 200px 140px 150px 160px;
+    grid-template-columns:  40px 200px 280px 140px 150px 160px;
   }
   `],
   standalone: true,
@@ -41,14 +39,12 @@ import { KycFilterComponent } from '../kyc-filter/kyc-filter.component';
     MatInputModule,
     MatButtonModule,
     MatProgressBarModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatMenuModule,
     MatDialogModule,
     MatTooltipModule,
     MatDividerModule,
-    CommonModule
+    CommonModule,
+    PrimeNgImportsModule
   ]
 })
 export class KycProfileListComponent extends BaseListingComponent implements OnDestroy {
@@ -60,11 +56,21 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
   module_name = module_name.kycprofile
   columns = [
     { key: 'profile_name', name: 'Profile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
+    { key: 'company_name', name: 'Company', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
     { key: 'profile_for', name: 'Profile For', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
     { key: 'documents', name: 'Documents', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: false },
     { key: 'entry_date_time', name: 'Entry', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
   ]
   cols = [];
+  isFilterShow: boolean = false;
+  selectedMasterStatus:string;
+  selectMasterList = [
+    { label: 'Agent', value: 'Agent' },
+    { label: 'Sub Agent', value: 'Sub Agent' },
+    { label: 'Customer', value: 'Customer' },
+    { label: 'Supplier', value: 'Supplier' },
+    { label: 'Employee', value: 'Employee' },
+]
 
   constructor(
     private kycService: KycService,
@@ -81,15 +87,15 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
     this.Mainmodule = this
   }
 
-  refreshItems(): void {
+  refreshItems(event?:any): void {
     this.isLoading = true;
-    var FData = this.getFilterReq();
+    var FData = this.getNewFilterReq(event);
     FData.profileFor = this.profile_for;
     this.kycService.getkycprofileList(FData).subscribe({
       next: data => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
+        this.totalRecords = data.total;
         this.total = data.total;
 
       }, error: err => {
@@ -131,8 +137,6 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
       }
     })
   }
-
-
 
   copyKYC(record): void {
     if (!Security.hasPermission(kycprofilePermissions.copyPermissions)) {
@@ -211,7 +215,7 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
   }
 
   ngOnDestroy(): void {
-    this.masterService.setData(this.key, this)
+    // this.masterService.setData(this.key, this)
   }
 }
 

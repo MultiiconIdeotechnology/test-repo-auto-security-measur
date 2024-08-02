@@ -32,4 +32,12 @@ export class WithdrawService {
     return this.http.post<any>(this.baseUrl + 'WalletWithdraw/setWithdrawReject', model);
   }
  
+  setAudit(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Bank/setAudit', {id:id});
+  }
+
+  setrejected(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Bank/setrejected', model);
+  }
+
 }

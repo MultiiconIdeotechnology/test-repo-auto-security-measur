@@ -22,18 +22,13 @@ import { VisaDocumentComponent } from '../visa-document/visa-document.component'
 import { VisaChargesComponent } from '../visa-charges/visa-charges.component';
 import { ToasterService } from 'app/services/toaster.service';
 import { VisaSpecialNotesComponent } from '../visa-special-notes/visa-special-notes.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-visa-list',
     templateUrl: './visa-list.component.html',
     styleUrls: ['./visa-list.component.scss'],
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 200px 200px 119px 100px 130px 140px 110px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -53,6 +48,7 @@ import { VisaSpecialNotesComponent } from '../visa-special-notes/visa-special-no
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class VisaListComponent extends BaseListingComponent {
@@ -171,6 +167,8 @@ export class VisaListComponent extends BaseListingComponent {
         },
     ];
     cols = [];
+    isFilterShow: boolean = false;
+
 
     constructor(
         private visaService: VisaService,
@@ -179,20 +177,21 @@ export class VisaListComponent extends BaseListingComponent {
         private matDialog: MatDialog
     ) {
         super(module_name.visa);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'destination_caption';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.visaService.getVisaList(this.getFilterReq()).subscribe({
+        this.visaService.getVisaList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                // this._paginator.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.toasterService.showToast('error', err)
@@ -391,6 +390,6 @@ export class VisaListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

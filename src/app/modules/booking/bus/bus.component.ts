@@ -31,6 +31,10 @@ import { MarkuppriceInfoComponent } from '../flight/flight/markupprice-info/mark
 import { BusFilterComponent } from './bus-filter/bus-filter.component';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { StatusUpdateComponent } from '../flight/flight/status-update/status-update.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
+import { FlightTabService } from 'app/services/flight-tab.service';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -67,6 +71,7 @@ import { StatusUpdateComponent } from '../flight/flight/status-update/status-upd
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatTabsModule,
+    PrimeNgImportsModule
   ],
 
 })
@@ -76,6 +81,17 @@ export class BusComponent extends BaseListingComponent {
   dataList = [];
   total = 0;
   busFilter: any;
+  statusList = ['Payment Failed', 'Waiting for Payment', 'Booking Failed', 'Confirmation Pending', 'Transaction Failed', 'Pending', 'Failed', 'Confirmed', 'Cancelled'];
+  isFilterShow: boolean = false;
+  agentList: any[] = [];
+  selectedAgent!:string;
+  selectedFromCity!:string;
+  selectedToCity!:string;
+  selectedSupplier!:string;
+  fromcityList: any[] = [];
+  tocityList: any[] = [];
+  supplierListAll: any[] = [];
+  isfirst: boolean = true;
 
   columns = [
     {
@@ -132,6 +148,8 @@ export class BusComponent extends BaseListingComponent {
     private toasterService: ToasterService,
     private router: Router,
     private busService: BusService,
+    private agentService: AgentService,
+    private flighttabService: FlightTabService,
     private clipboard: Clipboard,
 
   ) {
@@ -146,14 +164,23 @@ export class BusComponent extends BaseListingComponent {
       From: '',
       To: '',
       agent_id: '',
-      supplierId: '',
-      Status: 'All',
+      supplierId: [{
+        "id": "all",
+        "company_name": "All"
+      }],
+      Status: ['All'],
       FromDate: new Date(),
       ToDate: new Date(),
     };
 
     this.busFilter.FromDate.setDate(1);
-    this.busFilter.FromDate.setMonth(this.busFilter.FromDate.getMonth());
+    this.busFilter.FromDate.setMonth(this.busFilter.FromDate.getMonth() - 3);
+  }
+
+  ngOnInit(): void {
+      this.getAgent("", true);
+      this.getSupplier();
+      this.getFromCity('');
   }
 
   copy(link) {
@@ -161,19 +188,51 @@ export class BusComponent extends BaseListingComponent {
     this.toasterService.showToast('success', 'Copied');
   }
 
+  getAgent(value: string, bool: boolean = true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+      this.agentList = data;
+    });
+  }
+
+  getFromCity(value: string) {
+    this.busService.getBusCityCombo(value).subscribe((data) => {
+      this.fromcityList = data;
+      if(value == ""){
+        this.tocityList = data;
+      }
+    });
+  }
+
+  getToCity(value: string) {
+    this.busService.getBusCityCombo(value).subscribe((data) => {
+      this.tocityList = data;
+    });
+  }
+
+  getSupplier() {
+    this.flighttabService.getSupplierBoCombo('Bus').subscribe((data) => {
+      this.supplierListAll = data;
+    })
+  }
+
+
   getFilter(): any {
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginator,
-      this._sort,
-      this.searchInputControl.value
-    );
+    const filterReq = {};
+    // const filterReq = GridUtils.GetFilterReq(
+    //   this._paginator,
+    //   this._sort,
+    //   this.searchInputControl.value
+    // );
     filterReq['FromDate'] = DateTime.fromJSDate(this.busFilter.FromDate).toFormat('yyyy-MM-dd');
     filterReq['ToDate'] = DateTime.fromJSDate(this.busFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['agent_id'] = this.busFilter?.agent_id?.id || '';
     filterReq['From'] = this.busFilter?.From?.id || '';
     filterReq['To'] = this.busFilter?.To?.id || '';
-    filterReq['supplierId'] = this.busFilter?.supplierId?.id || '';
-    filterReq['Status'] = this.busFilter?.Status == 'All' ? '' : this.busFilter?.Status;
+    // filterReq['supplierId'] = this.busFilter?.supplierId?.id || '';
+    // filterReq['Status'] = this.busFilter?.Status == 'All' ? '' : this.busFilter?.Status;
+    filterReq['supplierId'] = this.busFilter?.supplierId?.map(x => x.id).join(',') == 'all' ? '' : this.busFilter?.supplierId?.map(x => x.id).join(',');
+    filterReq['Status'] = this.busFilter?.Status == 'All' ? '' : this.busFilter?.Status.join(',');
+
     return filterReq;
   }
 
@@ -214,13 +273,22 @@ export class BusComponent extends BaseListingComponent {
     Linq.recirect('/booking/bus/details/' + record.id);
   }
 
-  refreshItems() {
+  refreshItems(event?: any) {
     this.isLoading = true;
-    this.busService.getBusBookingList(this.getFilter()).subscribe({
+    let extraModel = this.getFilter();
+    let newModel = this.getNewFilterReq(event)
+    var model = { ...extraModel, ...newModel };
+    this.busService.getBusBookingList(model).subscribe({
       next: (data) => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
+        this.totalRecords = data.total;
+        // this._paginator.length = data.total;
+        if (this.dataList && this.dataList.length) {
+          setTimeout(() => {
+            this.isFrozenColumn('', ['booking_ref_no', 'status']);
+          }, 200);
+        }
       },
       error: (err) => {
         this.toasterService.showToast('error', err)
@@ -257,24 +325,18 @@ export class BusComponent extends BaseListingComponent {
     if (!Security.hasExportDataPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    // const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value);
-    // const req = Object.assign(filterReq);
 
-    // req.skip = 0;
-    // req.take = this._paginator.length;
-    const request = {};
+    let extraModel = this.getFilter();
+    let newModel = this.getNewFilterReq({})
+    const request = { ...extraModel, ...newModel };
     request['FromDate'] = DateTime.fromJSDate(this.busFilter.FromDate).toFormat('yyyy-MM-dd');
     request['ToDate'] = DateTime.fromJSDate(this.busFilter.ToDate).toFormat('yyyy-MM-dd');
     request['agent_id'] = this.busFilter?.agent_id?.id || '';
     request['From'] = this.busFilter?.From?.id || '';
     request['To'] = this.busFilter?.To?.id || '';
-    request['supplierId'] = this.busFilter?.supplierId?.id || '';
-    request['Status'] = this.busFilter?.Status == 'All' ? '' : this.busFilter?.Status;
-    request['Skip'] = 0;
-    request['Filter'] = this.searchInputControl.value;
-    request['Take'] = this._paginator.length;
-    request['OrderBy'] = 'booking_ref_no';
-    request['OrderDirection'] = 1;
+    request['supplierId'] = this.busFilter?.supplierId?.map(x => x.id).join(',') == 'all' ? '' : this.busFilter?.supplierId?.map(x => x.id).join(',');
+    request['Status'] = this.busFilter?.Status == 'All' ? '' : this.busFilter?.Status.join(',');
+    request['Take'] = this.totalRecords;
 
     this.busService.getBusBookingList(request).subscribe(data => {
       for (var dt of data.data) {
@@ -301,7 +363,7 @@ export class BusComponent extends BaseListingComponent {
           { header: 'PG', property: 'payment_gateway' },
           { header: 'IP Address', property: 'ip_address' },
         ],
-        data.data, "Bus Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]);
+        data.data, "Bus Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
     });
   }
 

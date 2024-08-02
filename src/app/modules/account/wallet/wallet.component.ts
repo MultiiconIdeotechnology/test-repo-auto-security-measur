@@ -90,6 +90,15 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   @ViewChild(MatSort) public _sortRejected: MatSort;
   searchInputControlRejected = new FormControl('');
 
+  isFilterShowPending: boolean = false;
+  isFilterShowAudit: boolean = false;
+  isFilterShowReject: boolean = false;
+  filterApiData:any = {};
+  agentData: any[] = [];
+  mopData:any[] = [];
+  pspData:any[] = [];
+
+
   constructor(
     private walletService: WalletService,
     private conformationService: FuseConfirmationService,
@@ -144,6 +153,10 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
         this.rejected.searchInputControlRejected.patchValue(value)
       });
 
+    this.getAgentList("");
+    this.getMopList("");
+    this.getPspList("");
+
     // this.agentService.getAgentCombo("").subscribe({
     //   next: (value: any) => {
 
@@ -156,6 +169,38 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     // });
 
   }
+
+  getAgentList(value: string) {
+    this.agentService.getAgentCombo(value).subscribe((data) => {
+      this.filterApiData.agentData = data;
+    })
+  }
+
+  getMopList(value:string){
+    this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
+       this.filterApiData.mopData = data;
+    })
+  }
+
+  getPspList(value:string){
+    this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
+      this.filterApiData.pspData = data;
+    })
+  }
+
+  rejectedRefresh(){
+    this.rejected.refreshItemsRejected()
+  }
+
+  auditedRefresh(){
+    this.audited.refreshItemsAudited()
+  }
+  
+  pendingRefresh(){
+    this.pending.refreshItemsPending()
+  }
+
+
 
   public getTabsPermission(tab: string): boolean {
     if (tab == 'pending')
@@ -270,5 +315,5 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       this.pending.exportExcel()
   }
 
-  
+
 }

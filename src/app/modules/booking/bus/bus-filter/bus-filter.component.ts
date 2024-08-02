@@ -55,8 +55,13 @@ export class BusFilterComponent {
   public FromDate: any;
   public ToDate: any;
   public dateRanges = [];
+  allValStatus = 'All';
+  allVal = {
+    "id": "all",
+    "company_name": "All"
+  };
 
-  statusList = ['All', 'Payment Failed', 'Waiting for Payment', 'Booking Failed', 'Confirmation Pending', 'Transaction Failed', 'Pending', 'Failed', 'Confirmed', 'Cancelled'];
+  statusList = ['Payment Failed', 'Waiting for Payment', 'Booking Failed', 'Confirmation Pending', 'Transaction Failed', 'Pending', 'Failed', 'Confirmed', 'Cancelled'];
 
   constructor(
     public matDialogRef: MatDialogRef<BusFilterComponent>,
@@ -67,194 +72,228 @@ export class BusFilterComponent {
     private agentService: AgentService,
     private currencyRoeService: CurrencyRoeService,
     private kycDocumentService: KycDocumentService,
-    private ledgerService:LedgerService,
+    private ledgerService: LedgerService,
     private busService: BusService,
     private alertService: ToasterService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
-    if(data)
-    this.record = data;
+    if (data)
+      this.record = data;
     this.dateRanges = CommonUtils.valuesArray(dateRange);
   }
 
   title = "Filter Criteria"
   btnLabel = "Apply"
   formGroup: FormGroup;
-  isfirst : boolean = true;
+  isfirst: boolean = true;
 
-  SupplierList: any[] =[];
-  fromList: any[]=[];
-  toList: any[]=[];
-  agentList:any[]=[];
+  SupplierList: any[] = [];
+  fromList: any[] = [];
+  toList: any[] = [];
+  agentList: any[] = [];
+  supplierListAll: any[] = [];
+
+
+  vaalStatuschange() {
+    var alldt = this.formGroup.get('Status').value.filter(x => x.Status != "all");
+    this.formGroup.get('Status').patchValue(alldt);
+  }
+
+  vaalchange() {
+    var alldt = this.formGroup.get('supplierId').value.filter(x => x.id != "all");
+    this.formGroup.get('supplierId').patchValue(alldt);
+  }
+
+  changeStatus() {
+    this.formGroup.get('Status').patchValue(this.formGroup.get('Status').value.filter(x => x != 'All'))
+  }
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
       id: [''],
       agent_id: [''],
       agentfilter: [''],
-      Status: [this.statusList[0]],
+      Status: [],
       supplierId: [''],
       supplierfilter: [''],
 
-      From:[''],
-      To:[''],
+      From: [''],
+      To: [''],
       fromfilter: [''],
       tofilter: [''],
 
       date: [''],
       FromDate: [''],
       ToDate: [''],
-      
     });
 
-    this.formGroup.get('date').patchValue(dateRange.lastMonth);
-    this.updateDate(dateRange.lastMonth)
+    this.formGroup.get('date').patchValue(dateRange.last3Month);
+    this.updateDate(dateRange.last3Month)
 
-    this.busService.getBusCityCombo("").subscribe((data)  => {
+    this.busService.getBusCityCombo("").subscribe((data) => {
 
-      this.fromList= []
-      this.fromList.push({"id": "", "display_name": "All"})
+      this.fromList = []
+      this.fromList.push({ "id": "", "display_name": "All" })
       this.fromList.push(...data)
-      if(!this.record.From)
-      this.formGroup.get("From").patchValue(this.fromList[0]);
+      if (!this.record.From)
+        this.formGroup.get("From").patchValue(this.fromList[0]);
 
-      this.toList= [];
-      this.toList.push({"id": "", "display_name": "All"})
+      this.toList = [];
+      this.toList.push({ "id": "", "display_name": "All" })
       this.toList.push(...data)
-      if(!this.record.To)
-      this.formGroup.get("To").patchValue(this.toList[0]);
+      if (!this.record.To)
+        this.formGroup.get("To").patchValue(this.toList[0]);
     });
 
     ///////////////////supplier combo
-      this.formGroup
-      .get('supplierfilter')
-      .valueChanges.pipe(
-          filter((search) => !!search),
-          startWith(''),
-          debounceTime(400),
-          distinctUntilChanged(),
-          switchMap((value: any) => {
-              return this.kycDocumentService.getSupplierCombo(value,'Bus');
-          })
-      )
-      .subscribe((data) =>{
-        this.SupplierList =[];
-        this.SupplierList.push({
-          "id": "",
-          "company_name": "All"
-        })
-        this.SupplierList.push(...data);
+    // this.formGroup
+    //   .get('supplierfilter')
+    //   .valueChanges.pipe(
+    //     filter((search) => !!search),
+    //     startWith(''),
+    //     debounceTime(400),
+    //     distinctUntilChanged(),
+    //     switchMap((value: any) => {
+    //       return this.kycDocumentService.getSupplierCombo(value, 'Bus');
+    //     })
+    //   )
+    //   .subscribe((data) => {
+    //     this.SupplierList = [];
+    //     this.SupplierList.push({
+    //       "id": "",
+    //       "company_name": "All"
+    //     })
+    //     this.SupplierList.push(...data);
 
-      if(!this.record.supplierId)
-      this.formGroup.get("supplierId").patchValue(this.SupplierList[0]);
-      });
-    
+    //     if (!this.record.supplierId)
+    //       this.formGroup.get("supplierId").patchValue(this.SupplierList[0]);
+    //   });
+    this.flighttabService.getSupplierBoCombo('Bus').subscribe({
+      next: (res) => {
+        this.supplierListAll = res;
+        this.SupplierList.push(...res);
+      },
+    });
+
+    this.formGroup.get('supplierfilter').valueChanges.subscribe(data => {
+      this.SupplierList = this.supplierListAll
+      this.SupplierList = this.supplierListAll.filter(x => x.company_name.toLowerCase().includes(data.toLowerCase()));
+    })
+
     ///////////////////bus combo
-          this.formGroup
-            .get('fromfilter')
-            .valueChanges.pipe(
-                filter((search) => !!search),
-                startWith(''),
-                debounceTime(400),
-                distinctUntilChanged(),
-                switchMap((value: any) => {
-                  if(this.isfirst == true){
-                    return new Observable<any[]>();
-                  }else
-                    return this.busService.getBusCityCombo(value);
-                })
-            )
-            .subscribe((data) =>{ 
-              this.fromList = []
-              this.fromList.push({"id": "", "display_name": "All"})
-              this.fromList.push(...data)
-          });
+    this.formGroup
+      .get('fromfilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        startWith(''),
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          if (this.isfirst == true) {
+            return new Observable<any[]>();
+          } else
+            return this.busService.getBusCityCombo(value);
+        })
+      )
+      .subscribe((data) => {
+        this.fromList = []
+        this.fromList.push({ "id": "", "display_name": "All" })
+        this.fromList.push(...data)
+      });
 
-          this.formGroup
-          .get('tofilter')
-          .valueChanges.pipe(
-              filter((search) => !!search),
-              startWith(''),
-              debounceTime(400),
-              distinctUntilChanged(),
-              switchMap((value: any) => {
-                if(this.isfirst == true){
-                  this.isfirst = false;
-                  return new Observable<any[]>();
-                }else
-                  return this.busService.getBusCityCombo(value);
-              })
-          )
-          .subscribe((data) => {
-            this.toList = []
-            this.toList.push({"id": "", "display_name": "All"})
-            this.toList.push(...data)
-          });
+    this.formGroup
+      .get('tofilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        startWith(''),
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          if (this.isfirst == true) {
+            this.isfirst = false;
+            return new Observable<any[]>();
+          } else
+            return this.busService.getBusCityCombo(value);
+        })
+      )
+      .subscribe((data) => {
+        this.toList = []
+        this.toList.push({ "id": "", "display_name": "All" })
+        this.toList.push(...data)
+      });
 
     ///////////////////Agent combo
-          this.formGroup
-          .get('agentfilter')
-          .valueChanges.pipe(
-              filter((search) => !!search),
-              startWith(''),
-              debounceTime(200),
-              distinctUntilChanged(),
-              switchMap((value: any) => {
-                  return this.agentService.getAgentCombo(value);
-              })
-          )
-          .subscribe({ next: data => {
-            this.agentList = data
-            this.agentList= [];
-            this.agentList.push({"id": "", "agency_name": "All"})
-            this.agentList.push(...data)
-            if(!this.record.agent_id)
+    this.formGroup
+      .get('agentfilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        startWith(''),
+        debounceTime(200),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          return this.agentService.getAgentComboMaster(value, true);
+        })
+      )
+      .subscribe({
+        next: data => {
+          this.agentList = data
+          this.agentList = [];
+          this.agentList.push({ "id": "", "agency_name": "All" })
+          this.agentList.push(...data)
+          if (!this.record.agent_id)
             this.formGroup.get("agent_id").patchValue(this.agentList[0]);
-          }});
+        }
+      });
 
 
-          if(this.record.agent_id){
-            this.formGroup.patchValue(this.record)
-            this.formGroup.get("agentfilter").patchValue(this.record.agent_id.agency_name);
-            this.formGroup.get("agent_id").patchValue(this.record.agent_id);
-          }
+    if (this.record.agent_id) {
+      this.formGroup.patchValue(this.record)
+      this.formGroup.get("agentfilter").patchValue(this.record.agent_id.agency_name);
+      this.formGroup.get("agent_id").patchValue(this.record.agent_id);
+    }
 
-          if(this.record.From){
-            this.isfirst = false;
-            this.formGroup.get("fromfilter").patchValue(this.record.From.display_name);
-            this.formGroup.get("From").patchValue(this.record.From);
-          }
+    if (this.record.From) {
+      this.isfirst = false;
+      this.formGroup.get("fromfilter").patchValue(this.record.From.display_name);
+      this.formGroup.get("From").patchValue(this.record.From);
+    }
 
-          if(this.record.To){
-            this.isfirst = false;
-            this.formGroup.get("tofilter").patchValue(this.record.To.display_name);
-            this.formGroup.get("To").patchValue(this.record.To);
-          }
+    if (this.record.To) {
+      this.isfirst = false;
+      this.formGroup.get("tofilter").patchValue(this.record.To.display_name);
+      this.formGroup.get("To").patchValue(this.record.To);
+    }
+
+    if (this.record) {
+      this.formGroup.get('Status').patchValue(this.record.Status ?? []);
+      this.formGroup.get('supplierId').patchValue(this.record.supplierId);
+
+    }
 
   }
 
   public compareWith(v1: any, v2: any) {
     return v1 && v2 && v1.id === v2.id;
-  }    
+  }
 
-  apply():void {
+  apply(): void {
     const json = this.formGroup.getRawValue();
     json.agent_id = json.agent_id
     json.supplierId = json.supplierId
     json.From = json.From
     json.To = json.To
     json.Status = json.Status
-    json.FromDate =  new Date(this.formGroup.get('FromDate').value)
-    json.ToDate =  new Date(this.formGroup.get('ToDate').value)
+    json.FromDate = new Date(this.formGroup.get('FromDate').value)
+    json.ToDate = new Date(this.formGroup.get('ToDate').value)
     this.matDialogRef.close(json);
   }
 
-  resetForm(){
+  resetForm() {
     this.formGroup.reset();
-    this.formGroup.get('date').patchValue(dateRange.lastMonth);
+    this.formGroup.get('date').patchValue(dateRange.last3Month);
     this.formGroup.get("agent_id").patchValue(this.agentList[0]);
-    this.formGroup.get("supplierId").patchValue(this.SupplierList[0]);
-    this.formGroup.get('Status').patchValue(this.statusList[0]);
+    this.formGroup.get("supplierId").patchValue([this.allVal]);
+    this.formGroup.get('Status').patchValue([this.allValStatus]);
     this.formGroup.get('FromDate').patchValue(this.FromDate);
     this.formGroup.get('ToDate').patchValue(this.ToDate);
     this.formGroup.get("From").patchValue(this.fromList[0]);

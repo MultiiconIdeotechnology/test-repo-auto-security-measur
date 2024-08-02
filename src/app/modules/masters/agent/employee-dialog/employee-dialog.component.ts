@@ -13,6 +13,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ReplaySubject, debounceTime, distinctUntilChanged, filter, startWith, switchMap } from 'rxjs';
 import { MarkupprofileService } from 'app/services/markupprofile.service';
 import { EmployeeService } from 'app/services/employee.service';
+import { ToasterService } from 'app/services/toaster.service';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
   selector: 'app-employee-dialog',
@@ -44,9 +46,11 @@ export class EmployeeDialogComponent {
     public matDialogRef: MatDialogRef<EmployeeDialogComponent>,
     private builder: FormBuilder,
     private employeeService: EmployeeService,
+    private alertService: ToasterService,
+    private agentService: AgentService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
-    if(data){
+    if (data) {
       this.record = data
     }
   }
@@ -56,12 +60,11 @@ export class EmployeeDialogComponent {
     this.formGroup = this.builder.group({
       id: [''],
       empId: [''],
-      employee_name:[''],
+      employee_name: [''],
 
       empfilter: [''],
     });
 
-   
 
     this.formGroup.get('empfilter').valueChanges.pipe(
       filter(search => !!search),
@@ -73,14 +76,24 @@ export class EmployeeDialogComponent {
       })
     ).subscribe(data => this.employeeList.next(data));
 
-    if(this.record.relation_manager_name) {
+    if (this.record.relationship_manager_id) {
       this.formGroup.get('empfilter').patchValue(this.record.relation_manager_name);
       this.formGroup.get('empId').patchValue(this.record.relationship_manager_id);
     }
   }
 
   submit(): void {
-    this.matDialogRef.close(this.formGroup.value);
+    this.agentService.setRelationManager(this.record.id, this.formGroup.get('empId').value).subscribe({
+      next: () => {
+        // record.is_blocked = !record.is_blocked;
+        this.alertService.showToast('success', "Relationship Manager Changed!");
+        this.matDialogRef.close(true);
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err, 'top-right', true);
+
+      },
+    })
   }
 
   public compareWith(v1: any, v2: any) {

@@ -106,7 +106,7 @@ export class CallHistoryComponent{
         this.searchInputControl.valueChanges
             .subscribe(() => {
                 GridUtils.resetPaginator(this._paginator);
-                this.refreshItems();
+                // this.refreshItems();
             });
         this.refreshItems();
         this.is_schedule_call = new FormControl(true);
@@ -120,7 +120,8 @@ export class CallHistoryComponent{
             this.searchInputControl.value, "entry_date_time", 1
         );
 
-        filterReq['MasterId'] = this.MasterId ? this.MasterId : ""
+        filterReq['MasterId'] = this.MasterId ? this.MasterId : "",
+        filterReq['MasterFor'] = "lead_master"
         this.crmService.getCallHistoryList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;

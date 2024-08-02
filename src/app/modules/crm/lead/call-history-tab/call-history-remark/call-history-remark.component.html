@@ -1,0 +1,15 @@
+<div class="flex flex-col flex-auto overflow-hidden -m-6 max-w-100 min-w-100 max-h-screen">
+    <div class="flex flex-0 justify-between h-10 pr-0 sm:pr-0 pl-0 sm:pl-0">
+        <div class="text-xl font-bold tracking-tight pt-[7px] pl-6">Remark</div>
+        <div class="mt-[2px] mr-5">
+            <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                <mat-icon class="text-current notranslate dark:text-white mat-icon-no-color"
+                    [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="px-5 py-4 break-words">
+        {{record ? record : "-"}}
+    </div>
+</div>

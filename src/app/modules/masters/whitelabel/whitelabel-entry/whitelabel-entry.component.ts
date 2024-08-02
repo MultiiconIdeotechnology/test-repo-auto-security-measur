@@ -107,73 +107,16 @@ export class WhitelabelEntryComponent {
             id: [''],
             agent_id: [''],
             agency_name: [''],
-            is_b2b_wl: [false],
-            b2b_wl_link: ['', Validators.required],
+            b2b_wl_link: [''],
             api_url: [''],
-            is_b2c_wl: [false],
-            b2c_wl_link: ['', Validators.required],
-            is_android_wl: [false],
-            android_wl_link: ['', Validators.required],
-            is_ios_wl: [false],
-            ios_wl_link: ['', Validators.required],
-            wl_activation_date: [''],
-            wl_expiry_date: [''],
+            b2c_wl_link: [''],
+            android_wl_link: [''],
+            ios_wl_link: [''],
             fav_icon: [''],
             logo_1: [''],
             logo_2: [''],
             logo_3: [''],
-            profile_picture: [''],
             agentfilter: [''],
-        });
-
-        // this.formGroup.get('b2b_wl_link').valueChanges.subscribe((value) => {
-        //     this.formGroup.patchValue({ is_b2b_wl: value ? true : false });
-        // });
-        // this.formGroup.get('b2c_wl_link').valueChanges.subscribe((value) => {
-        //     this.formGroup.patchValue({ is_b2c_wl: value ? true : false });
-        // });
-        // this.formGroup.get('android_wl_link').valueChanges.subscribe((value) => {
-        //     this.formGroup.patchValue({ is_android_wl: value ? true : false });
-        // });
-        // this.formGroup.get('ios_wl_link').valueChanges.subscribe((value) => {
-        //     this.formGroup.patchValue({ is_ios_wl: value ? true : false });
-        // });
-
-        // Add custom validator
-        this.formGroup.get('is_b2b_wl').valueChanges.subscribe(value => {
-            if (value) {
-                this.formGroup.get('b2b_wl_link').setValidators(Validators.required);
-            } else {
-                this.formGroup.get('b2b_wl_link').clearValidators();
-            }
-            this.formGroup.get('b2b_wl_link').updateValueAndValidity();
-        });
-
-        this.formGroup.get('is_b2c_wl').valueChanges.subscribe(value => {
-            if (value) {
-                this.formGroup.get('b2c_wl_link').setValidators(Validators.required);
-            } else {
-                this.formGroup.get('b2c_wl_link').clearValidators();
-            }
-            this.formGroup.get('b2c_wl_link').updateValueAndValidity();
-        });
-
-        this.formGroup.get('is_android_wl').valueChanges.subscribe(value => {
-            if (value) {
-                this.formGroup.get('android_wl_link').setValidators(Validators.required);
-            } else {
-                this.formGroup.get('android_wl_link').clearValidators();
-            }
-            this.formGroup.get('android_wl_link').updateValueAndValidity();
-        });
-
-        this.formGroup.get('is_ios_wl').valueChanges.subscribe(value => {
-            if (value) {
-                this.formGroup.get('ios_wl_link').setValidators(Validators.required);
-            } else {
-                this.formGroup.get('ios_wl_link').clearValidators();
-            }
-            this.formGroup.get('ios_wl_link').updateValueAndValidity();
         });
 
         if (this.record.id && this.data.send != 'Agent-WL') {
@@ -262,11 +205,8 @@ export class WhitelabelEntryComponent {
                         ];
                     }
                     this.formGroup.patchValue(data);
-                    // this.formGroup.patchValue('agentfilter').value
                     this.formGroup.get("agentfilter").patchValue(data.agency_name)
                     this.formGroup.get("agent_id").patchValue(data.agent_id)
-                    // data.wl_activation_date = DateTime.fromISO(data.wl_activation_date).toFormat('dd-mm-yyyy').toString()
-                    // data.wl_expiry_date = DateTime.fromISO(data.wl_expiry_date).toFormat('dd-mm-yyyy').toString()
                     this.logo_1 = data.logo_1;
                     this.logo_2 = data.logo_2;
                     this.logo_3 = data.logo_3;
@@ -375,24 +315,6 @@ export class WhitelabelEntryComponent {
                 base64: '',
             };
         }
-
-        if (json.wl_activation_date instanceof DateTime) {
-            json.wl_activation_date = json.wl_activation_date.toJSDate();
-        } else {
-            json.wl_activation_date = new Date(json.wl_activation_date);
-        }
-
-        if (json.wl_expiry_date instanceof DateTime) {
-            json.wl_expiry_date = json.wl_expiry_date.toJSDate();
-        } else {
-            json.wl_expiry_date = new Date(json.wl_expiry_date);
-        }
-
-        // json.wl_activation_date = json.wl_activation_date.toISOString();
-        // json.wl_expiry_date = json.wl_expiry_date.toISOString();
-
-        json.wl_activation_date = DateTime.fromJSDate(json.wl_activation_date).toFormat('yyyy-MM-dd')
-        json.wl_expiry_date = DateTime.fromJSDate(json.wl_expiry_date).toFormat('yyyy-MM-dd')
 
         this.wlService.create(json).subscribe({
             next: () => {

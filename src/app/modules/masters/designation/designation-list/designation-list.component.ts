@@ -17,6 +17,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-designation-list',
@@ -44,12 +45,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
+        PrimeNgImportsModule
     ],
 })
 export class DesignationListComponent extends BaseListingComponent {
     module_name = module_name.designation;
     dataList = [];
-    total = 0;
+    isFilterShow: boolean = false;
 
     columns = [
         {
@@ -113,7 +115,7 @@ export class DesignationListComponent extends BaseListingComponent {
             tooltip: true,
         },
     ];
-    cols = [];
+    // cols = [];
 
     constructor(
         private designationService: DesignationService,
@@ -122,22 +124,22 @@ export class DesignationListComponent extends BaseListingComponent {
         public toasterService: ToasterService
     ) {
         super(module_name.designation);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'department_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.designationService
-            .getDesignationList(this.getFilterReq())
+            .getDesignationList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                 },
                 error: (err) => {
                     this.alertService.showToast('error', err, 'top-right', true)
@@ -235,6 +237,6 @@ export class DesignationListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

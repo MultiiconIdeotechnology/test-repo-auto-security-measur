@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, bookingsVisaPermissions, messages, module_name } from 'app/security';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
@@ -31,6 +31,9 @@ import { VisaService } from 'app/services/visa.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { UserService } from 'app/core/user/user.service';
 import { takeUntil } from 'rxjs';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
+
 
 @Component({
     selector: 'app-visa',
@@ -65,7 +68,8 @@ import { takeUntil } from 'rxjs';
         MatNativeDateModule,
         MatSelectModule,
         NgxMatSelectSearchModule,
-        MatTabsModule
+        MatTabsModule,
+        PrimeNgImportsModule
     ]
 })
 export class VisaComponent extends BaseListingComponent {
@@ -74,13 +78,19 @@ export class VisaComponent extends BaseListingComponent {
     total = 0;
     visaFilter: any;
     user: any = {};
+    cols = [];
+    agentList: any[] = [];
+    isFilterShow: boolean = false;
+    _selectedColumns: Column[];
+    selectedAgent!:string;
+    statusList = [ 'Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
 
     columns = [
         {
-            key: 'booking_ref_no', name: 'Reference No.',is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toBooking: true
+            key: 'booking_ref_no', name: 'Reference No.', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toBooking: true
         },
         {
-            key: 'visa_status', name: 'Status',is_fixed2: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toColor: true
+            key: 'visa_status', name: 'Status', is_fixed2: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toColor: true
         },
         {
             key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
@@ -116,17 +126,17 @@ export class VisaComponent extends BaseListingComponent {
             key: 'ip_address', name: 'IP Address', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
         },
     ]
-    cols = [];
 
     constructor(
         private matDialog: MatDialog,
         private toasterService: ToasterService,
         private visaService: VisaService,
         private userService: UserService,
-        private conformationService: FuseConfirmationService
+        private conformationService: FuseConfirmationService,
+        private agentService: AgentService
     ) {
         super(module_name.visa);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
@@ -140,6 +150,7 @@ export class VisaComponent extends BaseListingComponent {
             Status: 'All',
             FromDate: new Date(),
             ToDate: new Date(),
+
         };
 
         this.userService.user$
@@ -152,18 +163,54 @@ export class VisaComponent extends BaseListingComponent {
         this.visaFilter.FromDate.setMonth(this.visaFilter.FromDate.getMonth());
     }
 
+    ngOnInit() {
+
+        this.cols = [
+          { field: 'visa_type', header: 'Visa Type', isDate:false, type:'text' },
+          { field: 'length_of_stay', header: 'Length of Stay', isDate:false, type:'numeric' },
+          { field: 'customer_name', header: 'Customer Name', isDate:false, type:'text' },
+          { field: 'payment_request_time', header: 'Payment Request Time', isDate:true, type:'date' },
+          { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate:true, type:'date' },
+          { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate:false, type:'text' },
+          { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate:false, type:'text' },
+        ];
+
+        this.getAgent("", true);
+      }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+      }
+    
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
     getFilter(): any {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
+        const filterReq = {};
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sort,
+        //     this.searchInputControl.value
+        // );
         filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
         filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
+        // filterReq['FromDate'] = "2024-01-01";
+        // filterReq['ToDate'] = "2024-07-19";
         filterReq['agent_id'] = this.visaFilter?.agent_id?.id || '';
         filterReq['Status'] = this.visaFilter?.Status == 'All' ? '' : this.visaFilter?.Status;
         return filterReq;
+    }
+
+    getAgent(value:string, bool:boolean = true){
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        });
     }
 
     filter() {
@@ -237,9 +284,11 @@ export class VisaComponent extends BaseListingComponent {
         });
     }
 
-    refreshItems() {
+    refreshItems(event?: any) {
         this.isLoading = true;
-        var model = this.getFilter();
+        let extraModel = this.getFilter();
+        let newModel = this.getNewFilterReq(event)
+        var model = { ...extraModel, ...newModel };
         if (Security.hasPermission(bookingsVisaPermissions.viewOnlyAssignedPermissions)) {
             model.relationmanagerId = this.user.id
         }
@@ -248,7 +297,12 @@ export class VisaComponent extends BaseListingComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
+                if (this.dataList && this.dataList.length) {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['booking_ref_no', 'visa_status']);
+                    }, 200);
+                }
             },
             error: (err) => {
                 this.toasterService.showToast('error', err)
@@ -273,24 +327,21 @@ export class VisaComponent extends BaseListingComponent {
         // const req = Object.assign(filterReq);
 
         // req.skip = 0;
-        // req.take = this._paginator.length;
-        const filterReq = {};
+        // req.take = this.totalRecords;
+        const filterReq = this.getNewFilterReq({});
         filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
         filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['agent_id'] = this.visaFilter?.agent_id?.id || '';
         filterReq['Status'] = this.visaFilter?.Status == 'All' ? '' : this.visaFilter?.Status;
-        filterReq['Skip'] = 0;
-        filterReq['Filter'] = this.searchInputControl.value;
-        filterReq['Take'] = this._paginator.length;
-        filterReq['OrderBy'] = 'booking_ref_no';
-        filterReq['OrderDirection'] = 1;
+        filterReq['Take'] = this.totalRecords;
 
         this.visaService.getVisaBookingList(filterReq).subscribe(data => {
             for (var dt of data.data) {
                 dt.travel_date = DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy')
                 dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss')
-                dt.payment_request_time = DateTime.fromISO(dt.payment_request_time).toFormat('dd-MM-yyyy hh:mm a')
+                dt.payment_request_time = DateTime.fromISO(dt.payment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
+                dt.payment_confirmation_time = DateTime.fromISO(dt.payment_confirmation_time).toFormat('dd-MM-yyyy HH:mm:ss')
 
             }
             Excel.export(
@@ -308,7 +359,14 @@ export class VisaComponent extends BaseListingComponent {
                     { header: 'Travel Date', property: 'travel_date' },
                     { header: 'Pax', property: 'pax' },
                     { header: 'PG', property: 'payment_gateway' },
-                    { header: 'IP Address', property: 'ip_address' }
+                    { header: 'IP Address', property: 'ip_address' },
+                    { property: 'visa_type', header: 'Visa Type'},
+                    { property: 'length_of_stay', header: 'Length of Stay'},
+                    { property: 'customer_name', header: 'Customer Name'},
+                    { property: 'payment_request_time', header: 'Payment Request Time'},
+                    { property: 'payment_confirmation_time', header: 'Payment Confirmation Time'},
+                    { property: 'psp_ref_number', header: 'PSP Refrence No.'},
+                    { property: 'payment_fail_reason', header: 'Payment Fail Reason'},
                 ],
                 data.data, "Visa Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });

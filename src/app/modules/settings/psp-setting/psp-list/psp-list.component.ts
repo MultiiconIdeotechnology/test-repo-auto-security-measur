@@ -8,17 +8,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { PSPPermissions, Security, messages, module_name } from 'app/security';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { PspEntryComponent } from '../psp-entry/psp-entry.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-psp-list',
@@ -43,13 +41,11 @@ import { PspEntryComponent } from '../psp-entry/psp-entry.component';
     MatInputModule,
     MatButtonModule,
     MatProgressBarModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatMenuModule,
     MatDialogModule,
     MatTooltipModule,
     MatDividerModule,
+    PrimeNgImportsModule
   ],
 })
 export class PspListComponent extends BaseListingComponent {
@@ -115,6 +111,8 @@ export class PspListComponent extends BaseListingComponent {
 
   ];
   cols = [];
+  _selectedColumns: Column[];
+  isFilterShow: boolean = false;
 
   constructor(
     private pspsettingService: PspSettingService,
@@ -130,16 +128,30 @@ export class PspListComponent extends BaseListingComponent {
     this.Mainmodule = this;
   }
 
+  ngOnInit() {
+    this.cols = [
+      { field: 'api_for', header: 'Api For' },
+    ];
+  }
 
-  refreshItems(): void {
+  get selectedColumns(): Column[] {
+    return this._selectedColumns;
+  }
+
+  set selectedColumns(val: Column[]) {
+    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+  }
+
+
+  refreshItems(event?: any): void {
     this.isLoading = true;
     this.pspsettingService
-      .getPaymentGatewayList(this.getFilterReq())
+      .getPaymentGatewayList(this.getNewFilterReq(event))
       .subscribe({
         next: (data) => {
           this.isLoading = false;
           this.dataList = data.data;
-          this._paginator.length = data.total;
+          this.totalRecords = data.total;
         },
         error: (err) => {
           this.toasterService.showToast('error', err)

@@ -69,10 +69,6 @@ export class DepartmentEntryComponent {
       empfilter: ['']
     });
 
-  //   this.formGroup.get('department_name').valueChanges.subscribe(text => {
-  //     this.formGroup.get('department_name').patchValue(Linq.convertToTitleCase(text), { emitEvent: false });
-  //  })
-
     if (this.record.id) {
       this.formGroup.patchValue(this.record)
       this.readonly = this.data.readonly;
@@ -84,8 +80,7 @@ export class DepartmentEntryComponent {
           { name: 'Remark', value: this.record.remark },
         ]
       }
-
-      this.formGroup.get('empfilter').patchValue(this.record.hod);
+      
       this.title = this.readonly ? ("Department - " + this.record.department_name) : 'Modify Department';
       this.btnLabel = this.readonly ? "Close" : 'Save';
     }
@@ -99,6 +94,10 @@ export class DepartmentEntryComponent {
         return this.employeeService.getemployeeCombo(value);
       })
     ).subscribe(data => this.employeeList.next(data));
+
+    if(this.record){
+      this.formGroup.get('empfilter').patchValue(this.record.hod);
+    }
   }
 
   submit(): void {

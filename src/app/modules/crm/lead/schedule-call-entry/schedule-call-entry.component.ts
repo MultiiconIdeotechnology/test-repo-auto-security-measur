@@ -62,7 +62,7 @@ import { ReplaySubject, switchMap, of, distinctUntilChanged, debounceTime, start
     ]
 })
 export class CRMScheduleCallEntryComponent extends BaseListingComponent
-implements OnDestroy{
+    implements OnDestroy {
     readonly: boolean = false;
     record: any = {};
     btnTitle: string = 'Create';
@@ -79,16 +79,18 @@ implements OnDestroy{
     todayDateTime = new Date();
 
     feedbackList: any[] =
-    [
-        { value: 'Positive', viewValue: 'Positive' },
-        { value: 'Negative', viewValue: 'Negative' }
-    ];
+        [
+            { value: 'Positive', viewValue: 'Positive' },
+            { value: 'Negative', viewValue: 'Negative' },
+            { value: 'No Answer', viewValue: 'No Answer' }
+        ];
 
     purposeList: any[] =
-    [
-        { value: 'Demo', viewValue: 'Demo' },
-        { value: 'Query', viewValue: 'Query' }
-    ];
+        [
+            { value: 'Demo', viewValue: 'Demo' },
+            { value: 'Query', viewValue: 'Query' },
+            { value: 'Follow-up', viewValue: 'Follow-up' }
+        ];
 
 
     constructor(
@@ -111,58 +113,58 @@ implements OnDestroy{
         this.formGroup = this.formBuilder.group({
             id: [''],
             is_call_rescheduled: [true],
-            call_assign_to:[''],
+            call_assign_to: [''],
             reschedule_date_time: [''],
-            schedule_date: ['',Validators.required],
-            schedule_time: ['',Validators.required],
-            call_purpose: ['',Validators.required],
-            reschedule_remark: ['',Validators.required],
+            schedule_date: ['', Validators.required],
+            schedule_time: ['', Validators.required],
+            call_purpose: ['', Validators.required],
+            reschedule_remark: ['', Validators.required],
             assignfilter: [''],
         });
 
         this.formGroup
-        .get('assignfilter')
-        .valueChanges.pipe(
-            filter((search) => !!search),
-            startWith(''),
-            debounceTime(200),
-            distinctUntilChanged(),
-            switchMap((value: any) => {
-                const filterReq = this.getFilterReq()
-                filterReq['service_for'] = "lead_assigned";
-                filterReq['Filter'] = value;
-                return this.employeeService.getEmployeeList(filterReq);
-            })
-        )
-        .subscribe({
-            next: data => {
-                this.dataList = data.data;
-                // Sort array in asc order based on employee_name
-                this.dataList.sort((a, b) => {
-                    if (a.employee_name < b.employee_name) {
-                        return -1;
-                    }
-                    if (a.employee_name > b.employee_name) {
-                        return 1;
-                    }
-                    return 0;
-                });
-
-                this.dataList = [];
-                this.dataList.push({
-                    "id": "",
-                    "employee_name": "Self",
+            .get('assignfilter')
+            .valueChanges.pipe(
+                filter((search) => !!search),
+                startWith(''),
+                debounceTime(200),
+                distinctUntilChanged(),
+                switchMap((value: any) => {
+                    // const filterReq = this.getFilterReq()
+                    // filterReq['service_for'] = "lead_assigned";
+                    // filterReq['Filter'] = value;
+                    return this.employeeService.getEmployeeLeadAssignCombo(value);
                 })
-                data.data.forEach(employee => {
-                    this.dataList.push(employee);
-                });
-                this.formGroup.get("call_assign_to").patchValue("");
-            }
-        });
+            )
+            .subscribe({
+                next: data => {
+                    this.dataList = data;
+                    // Sort array in asc order based on employee_name
+                    this.dataList.sort((a, b) => {
+                        if (a.employee_name < b.employee_name) {
+                            return -1;
+                        }
+                        if (a.employee_name > b.employee_name) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+
+                    this.dataList = [];
+                    this.dataList.push({
+                        "id": "",
+                        "employee_name": "Self",
+                    })
+                    data.forEach(employee => {
+                        this.dataList.push(employee);
+                    });
+                    this.formGroup.get("call_assign_to").patchValue("");
+                }
+            });
         // this.assignBy();
     }
 
-    assignBy(){
+    assignBy() {
         const filterReq = this.getFilterReq()
         filterReq['service_for'] = "lead_assigned";
 
@@ -180,7 +182,7 @@ implements OnDestroy{
                 });
             },
             error: (err) => {
-                this.alertService.showToast('error',err,'top-right',true)
+                this.alertService.showToast('error', err, 'top-right', true)
                 this.isLoading = false;
             },
         });
@@ -229,12 +231,27 @@ implements OnDestroy{
         }
         const json = this.formGroup.getRawValue();
         this.disableBtn = true;
+        // const newJson = {
+        //     is_call_rescheduled: true,
+        //     call_assign_to: (json?.call_assign_to && json?.is_call_rescheduled) ? json?.call_assign_to : "",
+        //     reschedule_date_time: (json?.schedule_date && json?.is_call_rescheduled ) ? DateTime.fromJSDate(new Date(json.schedule_date)).toFormat('yyyy-MM-dd') + 'T' + json.schedule_time : "",
+        //     call_purpose:  (json?.call_purpose && json?.is_call_rescheduled) ? json?.call_purpose : "",
+        //     reschedule_remark: (json?.reschedule_remark && json.is_call_rescheduled) ? json?.reschedule_remark : ""
+        // }
+
         const newJson = {
+            master_for: "lead_master",
+            master_id: this.record?.id ? this.record?.id : "",
+            feedback: this.record?.last_call_feedback ? this.record?.last_call_feedback : "",
+            preferred_language: "",
+            reactive_status: false,
             is_call_rescheduled: true,
             call_assign_to: (json?.call_assign_to && json?.is_call_rescheduled) ? json?.call_assign_to : "",
-            reschedule_date_time: (json?.schedule_date && json?.is_call_rescheduled ) ? DateTime.fromJSDate(new Date(json.schedule_date)).toFormat('yyyy-MM-dd') + 'T' + json.schedule_time : "",
-            call_purpose:  (json?.call_purpose && json?.is_call_rescheduled) ? json?.call_purpose : "",
-            reschedule_remark: (json?.reschedule_remark && json.is_call_rescheduled) ? json?.reschedule_remark : ""
+            reschedule_date_time: (json?.schedule_date && json?.is_call_rescheduled) ? DateTime.fromJSDate(new Date(json.schedule_date)).toFormat('yyyy-MM-dd') + 'T' + json.schedule_time : "",
+            call_purpose: (json?.call_purpose && json?.is_call_rescheduled) ? json?.call_purpose : "",
+            reschedule_remark: (json?.reschedule_remark && json.is_call_rescheduled) ? json?.reschedule_remark : "",
+            priority_text: (json?.is_call_rescheduled) ? this.record?.priority_text : "",
+            priority_id: (json?.is_call_rescheduled) ? this.record?.priority_id : ""
         }
         this.crmService.createScheduleCall(newJson).subscribe({
             next: () => {

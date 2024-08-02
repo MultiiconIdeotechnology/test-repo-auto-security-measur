@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,11 +26,14 @@ import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
-import { CRMDialCallEntryComponent } from '../dail-call-entry/dial-call-entry.component';
-import { CRMScheduleCallEntryComponent } from '../schedule-call-entry/schedule-call-entry.component';
-import { CallHistoryComponent } from '../call-history/call-history.component';
+import { Subject, takeUntil } from 'rxjs';
 import { MarketingMaterialsComponent } from '../marketing-materials/marketing-materials.component';
+import { DialCallListComponent } from '../dial-call-list/dial-call-list.component';
+import { CRMScheduleCallListComponent } from '../schedule-call-list/schedule-call-list.component';
+import { EntityService } from 'app/services/entity.service';
+import { LeadStatusChangedLogComponent } from '../lead-status-changed-log/lead-status-changed-log.component';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-inbox',
@@ -70,10 +73,15 @@ import { MarketingMaterialsComponent } from '../marketing-materials/marketing-ma
         MatMenuModule,
         MatDialogModule,
         CommonModule,
-        MatTabsModule
+        MatTabsModule,
+        PrimeNgImportsModule
     ]
 })
-export class InboxComponent {
+export class InboxComponent extends BaseListingComponent{
+    statusList = [ 'New', 'Live', 'Dead'];
+    typeList = [ 'B2B Partner', 'Build My Brand', 'WL','Boost My Brand','Corporate'];
+
+    @Input() isFilterShowInbox: boolean
     columns = [
         {
             key: 'callCount',
@@ -111,7 +119,7 @@ export class InboxComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
             toColor: true
         },
         {
@@ -124,7 +132,7 @@ export class InboxComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'call_purpose',
@@ -136,7 +144,7 @@ export class InboxComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'last_call_date_time',
@@ -148,7 +156,7 @@ export class InboxComponent {
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'assignByName',
@@ -173,7 +181,7 @@ export class InboxComponent {
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'entry_date_time',
@@ -186,6 +194,7 @@ export class InboxComponent {
             align: 'center',
             indicator: false,
             tooltip: false,
+            leadDate: true
         },
     ];
     cols = [];
@@ -214,10 +223,9 @@ export class InboxComponent {
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
-        private alertService: ToasterService
-
+        private entityService: EntityService
     ) {
-        // super(module_name.lead);
+        super(module_name.lead);
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'priority_id';
@@ -226,26 +234,35 @@ export class InboxComponent {
     }
 
     ngOnInit(): void {
+        // this.searchInputControlInbox.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginatorInbox);
+        //         this.refreshItems();
+        //     });
+        // this.refreshItems();
+
         this.searchInputControlInbox.valueChanges
-            .subscribe(() => {
-                GridUtils.resetPaginator(this._paginatorInbox);
-                this.refreshItems();
-            });
-        this.refreshItems();
+        .subscribe(() => {
+          // GridUtils.resetPaginator(this._paginatorPending);
+        //   this.refreshItems();
+        });
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorInbox,
-            this._sortInbox,
-            this.searchInputControlInbox.value
-        );
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlInbox.value;
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginatorInbox,
+        //     this._sortInbox,
+        //     this.searchInputControlInbox.value
+        // );
         this.crmService.getInboxLeadList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginatorInbox.length = data.total;
+                // this._paginatorInbox.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -289,22 +306,35 @@ export class InboxComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.matDialog.open(CRMDialCallEntryComponent, {
-            data: { data: record, readonly: true },
-            disableClose: true,
-        });
+        // this.matDialog.open(CRMDialCallEntryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true,
+        // });
+
+        this.matDialog.open(DialCallListComponent, {
+            data: { data: record, readonly: true},
+            disableClose: true
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if(res){
+                    this.refreshItems();
+                }
+            }
+        })
     }
 
     callHistory(record): void {
         if (!Security.hasPermission(leadPermissions.callHistoryPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        if (record?.callCount > 0) {
-            this.matDialog.open(CallHistoryComponent, {
-                data: { data: record, readonly: true },
-                disableClose: true
-            });
-        }
+        // this.matDialog.open(CallHistoryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true
+        // });
+        this.matDialog.open(DialCallListComponent, {
+            data: { data: record, readonly: true, selectedTabIndex: 3},
+            disableClose: true,
+        });
     }
 
     scheduleCall(record): void {
@@ -312,7 +342,12 @@ export class InboxComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.matDialog.open(CRMScheduleCallEntryComponent, {
+        // this.matDialog.open(CRMScheduleCallEntryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true,
+        // });
+
+        this.matDialog.open(CRMScheduleCallListComponent, {
             data: { data: record, readonly: true },
             disableClose: true,
         });
@@ -367,16 +402,20 @@ export class InboxComponent {
         const label: string = 'Dead Lead'
         this.conformationService.open({
             title: label,
-            message: 'Are you sure to ' + record?.agency_name + ' ?'
+            message: 'Are you sure to ' + record?.agency_name + ' ?',
+            inputBox: 'Status Remark',
+            customShow: true
         }).afterClosed().subscribe({
             next: (res) => {
-                if (res === 'confirmed') {
+                if (res?.action === 'confirmed') {
                     const newJson = {
-                        id: this.deadLeadId
+                        id: this.deadLeadId,
+                        status_remark: res?.statusRemark ? res?.statusRemark : ""
                     }
+
                     this.crmService.deadLead(newJson).subscribe({
                         next: (res) => {
-                            if(res){
+                            if (res) {
                                 this.dataList.splice(index, 1);
                             }
                             this.alertService.showToast('success', "Dead Lead Successfully!", "top-right", true);
@@ -386,5 +425,33 @@ export class InboxComponent {
                 }
             }
         })
+    }
+
+    editLead(record): void {
+        // this.matDialog.open(CRMLeadEntryComponent, {
+        //     data: { data: record, readonly: false, editFlag: true },
+        //     disableClose: true
+        // }).afterClosed().subscribe(res => {
+        //     if (res) {
+        //         this.refreshItems();
+        //     }
+        // })
+        this.entityService.raiseleadEntityCall({data: record, readonly: false, editFlag: true})
+        this.entityService.onrefreshleadEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                this.refreshItems();
+            }
+        })
+    }
+
+    statusChangedLog(record): void {
+        // if (!Security.hasPermission(agentsPermissions.statusChangedLogsPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.matDialog.open(LeadStatusChangedLogComponent, {
+            data: record,
+            disableClose: true
+        });
     }
 }

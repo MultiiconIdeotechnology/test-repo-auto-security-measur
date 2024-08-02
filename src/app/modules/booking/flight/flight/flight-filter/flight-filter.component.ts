@@ -63,9 +63,7 @@ export class FlightFilterComponent {
     "company_name": "All"
   };
 
-  allValStatus =
-    'All'
-    ;
+  allValStatus = 'All';
   public dateRanges = [];
   serviceForList = ['Pending', 'Rejected', 'Waiting for Payment', 'Confirmed', 'Offline Pending', 'Confirmation Pending', 'Payment Failed', 'Booking Failed', 'Cancelled', 'Partially Cancelled', 'Hold'];
 
@@ -264,7 +262,7 @@ export class FlightFilterComponent {
         debounceTime(200),
         distinctUntilChanged(),
         switchMap((value: any) => {
-          return this.agentService.getAgentCombo(value);
+          return this.agentService.getAgentComboMaster(value, true);
         })
       )
       .subscribe({

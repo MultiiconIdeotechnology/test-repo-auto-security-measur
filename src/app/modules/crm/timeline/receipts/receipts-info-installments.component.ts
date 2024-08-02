@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,8 +22,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
 import { Security, messages, module_name } from 'app/security';
+import { AccountService } from 'app/services/account.service';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { CommonUtils } from 'app/utils/commonutils';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
@@ -34,7 +36,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 60px 80px 120px 110px 120px 160px;
+            grid-template-columns: 60px 120px 120px 110px 120px 160px;
         }
     `,
     ],
@@ -71,6 +73,7 @@ import { Subject } from 'rxjs';
     ]
 })
 export class TimelineReceiptsInfoItemComponent {
+    @Input() recordItem: any = {}
     cols = [];
     total = 0;
 
@@ -89,8 +92,8 @@ export class TimelineReceiptsInfoItemComponent {
             isicon: true
         },
         {
-            key: 'is_audited',
-            name: 'Audit',
+            key: 'receipt_Status',
+            name: 'Status',
             is_date: true,
             date_formate: '',
             is_sortable: false,
@@ -178,7 +181,12 @@ export class TimelineReceiptsInfoItemComponent {
     productId: any;
 
     ngOnInit(): void {
-        this.refreshItems();
+        if (Object.keys(this.recordItem).length == 0) {
+            this.refreshItems();
+        }
+        if(Object.keys(this.recordItem).length > 0){
+            this.refreshItemsReceipt();
+        }
     }
 
     getPaymentIndicatorClass(priority: boolean): string {
@@ -192,8 +200,8 @@ export class TimelineReceiptsInfoItemComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         private alertService: ToasterService,
-        private matDialog: MatDialog,
-        private crmService: CrmService
+        private crmService: CrmService,
+        private accountService: AccountService
     ) {
         this.record = data?.data ?? {}
         this.dataList = this.record?.installment;
@@ -203,7 +211,7 @@ export class TimelineReceiptsInfoItemComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this.agentId = this.record?.agentid;
-         this.productId = this.record?.id;
+        this.productId = this.record?.id;
     }
 
     getNodataText(): string {
@@ -236,17 +244,50 @@ export class TimelineReceiptsInfoItemComponent {
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         filterReq['Id'] = this.productId ? this.productId : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res?.data[0];
+                this.dataList = res[0];
+                //this.dataList = res?.data[0];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
                 this.isLoading = false;
             },
         });
+    }
+
+    refreshItemsReceipt() {
+        this.isLoading = true;
+        const filterReq = GridUtils.GetFilterReq(
+            this._paginator,
+            this._sort,
+            "",
+        );
+        // filterReq['agent_id'] = this.recordItem?.receiptfromid ? this.recordItem?.receiptfromid : ""
+        filterReq['Id'] = this.recordItem?.product_id ? this.recordItem?.product_id : ""
+        this.crmService.getProductInfoList(filterReq).subscribe({
+            next: (res) => {
+                this.isLoading = false;
+                this.dataList = res[0];
+                //this.dataList = res?.data[0];
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    downloadInvoice(bookingId: any){
+        this.accountService.downloadInvoice(bookingId).subscribe({
+            next: (res) => {
+                CommonUtils.downloadPdf(res.data, 'Receipt.pdf');
+            }, error: (err) => {
+                this.alertService.showToast('error', err);
+            }
+        })
     }
 }

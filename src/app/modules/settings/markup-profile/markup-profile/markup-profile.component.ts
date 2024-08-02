@@ -14,13 +14,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MarkupprofileService } from 'app/services/markupprofile.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { EntityService } from 'app/services/entity.service';
+import { PspSettingService } from 'app/services/psp-setting.service';
 
 @Component({
     selector: 'app-markup-profile',
@@ -28,7 +29,7 @@ import { MarkupprofileService } from 'app/services/markupprofile.service';
     styles: [
         `
             .tbl-grid {
-                grid-template-columns: 40px 260px 160px 80px;
+                grid-template-columns: 40px 260px 280px 160px;
             }
         `,
     ],
@@ -45,21 +46,24 @@ import { MarkupprofileService } from 'app/services/markupprofile.service';
         MatButtonModule,
         MatProgressBarModule,
         MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule,
+        AgentListDialogComponent
     ],
 })
 export class MarkupProfileComponent
     extends BaseListingComponent
     implements OnDestroy {
+
+
+    companyList: any[] = [];
     module_name = module_name.markupprofile;
     dataList = [];
     total = 0;
-
+    isFilterShow: boolean = false;
     columns = [
         {
             key: 'profile_name',
@@ -71,6 +75,19 @@ export class MarkupProfileComponent
             is_sticky: false,
             align: '',
             indicator: true,
+            applied: false,
+            tooltip: true
+        },
+        {
+            key: 'company_name',
+            name: 'Company',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
             applied: false,
             tooltip: true
         },
@@ -87,19 +104,8 @@ export class MarkupProfileComponent
             applied: true,
             tooltip: true
         },
-        {
-            key: '.',
-            name: '',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            applied: false,
-            tooltip: true
-        },
+
+
     ];
     cols = [];
 
@@ -108,6 +114,8 @@ export class MarkupProfileComponent
         private conformationService: FuseConfirmationService,
         private router: Router,
         public toasterService: ToasterService,
+        public entityService: EntityService,
+        private pspsettingService: PspSettingService,
         private matDialog: MatDialog
     ) {
         super(module_name.markupprofile);
@@ -118,15 +126,25 @@ export class MarkupProfileComponent
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    ngOnInit() {
+        this.getCompanyList("");
+    }
+
+    getCompanyList(value) {
+        this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
+            this.companyList = data;
+        })
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.markupprofileService
-            .getMarkupProfileList(this.getFilterReq())
+            .getMarkupProfileList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
 
                     this.dataList.forEach((row) => {
                         row['assigned_to_length'] = row['assigned_to'].length;
@@ -200,14 +218,11 @@ export class MarkupProfileComponent
     opanAgentsListDialog(rowData: any) {
         const assignedToList = rowData['assigned_to'];
         if (assignedToList.length <= 0) return;
-        this.matDialog.open(AgentListDialogComponent, {
-            disableClose: true,
-            data: assignedToList,
-        });
-    }
-
-    ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        this.entityService.raiseappliedOnCall({ data: assignedToList })
+        // this.matDialog.open(AgentListDialogComponent, {
+        //     disableClose: true,
+        //     data: assignedToList,
+        // });
     }
 
     SetDefault(record): void {
@@ -219,6 +234,8 @@ export class MarkupProfileComponent
         this.conformationService
             .open({
                 title: label,
+
+
                 message:
                     'Are you sure to ' +
                     label.toLowerCase() +

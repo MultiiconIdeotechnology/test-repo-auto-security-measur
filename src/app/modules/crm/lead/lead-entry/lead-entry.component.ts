@@ -1,5 +1,5 @@
-import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, TitleCasePipe } from '@angular/common';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,44 +14,74 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, ActivatedRoute, RouterOutlet } from '@angular/router';
+import { Router, ActivatedRoute, RouterOutlet, RouterLink } from '@angular/router';
 import { Routes } from 'app/common/const';
 import { CityService } from 'app/services/city.service';
 import { CrmService } from 'app/services/crm.service';
 import { DesignationService } from 'app/services/designation.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { ReplaySubject, filter, startWith, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
+import { ReplaySubject, filter, startWith, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDragPreview, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
+import { FuseDrawerComponent } from "../../../../../@fuse/components/drawer/drawer.component";
 
 @Component({
     selector: 'app-crm-lead-entry',
     templateUrl: './lead-entry.component.html',
+    styles       : [
+        ` app-crm-lead-entry {
+                position: static;
+                display: block;
+                flex: none;
+                width: auto;
+            }
+
+            @media (screen and min-width: 1280px) {
+                empty-layout + app-crm-lead-entry .settings-cog {
+                    right: 0 !important;
+                }
+            }
+        `,
+    ],
     standalone: true,
     imports: [
-        NgIf,
-        NgFor,
-        NgClass,
-        DatePipe,
-        AsyncPipe,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSnackBarModule,
-        MatSlideToggleModule,
-        NgxMatSelectSearchModule,
-        MatTooltipModule,
-        MatAutocompleteModule,
-        RouterOutlet,
-        MatOptionModule,
-        MatDividerModule,
-        MatCheckboxModule
-    ]
+    NgIf,
+    NgFor,
+    NgClass,
+    DatePipe,
+    AsyncPipe,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatSlideToggleModule,
+    NgxMatSelectSearchModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
+    RouterOutlet,
+    MatOptionModule,
+    MatDividerModule,
+    MatCheckboxModule,
+    MatSidenavModule,
+    CdkDropList,
+    CdkDrag,
+    CdkDragPreview,
+    CdkDragHandle,
+    RouterLink,
+    TitleCasePipe,
+    DatePipe,
+    FuseDrawerComponent
+]
 })
 export class CRMLeadEntryComponent {
+    @ViewChild('matDrawer', {static: true}) matDrawer: MatDrawer;
+    drawerMode: 'side' | 'over';
+
     readonly: boolean = false;
     record: any = {};
     btnTitle: string = 'Create';
@@ -65,6 +95,8 @@ export class CRMLeadEntryComponent {
     first: boolean = true;
     MobileCodeList: ReplaySubject<any[]> = new ReplaySubject<any[]>();
     mobilecodelist: any[] = [];
+    isEditFlag: any = {};
+    editLeadId: any;
 
     leadTypeList: any[] =
         [
@@ -90,8 +122,10 @@ export class CRMLeadEntryComponent {
         public designationService: DesignationService,
         public alertService: ToasterService,
         public crmService: CrmService,
-        @Inject(MAT_DIALOG_DATA) public data: any = {}
+        @Inject(MAT_DIALOG_DATA) public data: any = {},
+        @Inject(MAT_DIALOG_DATA) public editFlag: any = {}
     ) {
+        this.isEditFlag = this.isEditFlag?.editFlag;
         this.record = data?.data ?? {}
     }
 
@@ -111,7 +145,7 @@ export class CRMLeadEntryComponent {
             Is_Email_Whatsapp: [true]
         });
 
-        if (this.record.id) {
+        if (this.record.id && !this.editFlag) {
             // this.readonly = readonly ? true : false;
             // this.btnTitle = readonly ? 'Close' : 'Save';
             this.cityService.getCityRecord(this.record.id).subscribe({
@@ -178,12 +212,20 @@ export class CRMLeadEntryComponent {
             this.MobileCodeList.next(res);
             this.formGroup.get('mobile_code').patchValue('91');
         });
+
+        if (this.editFlag?.editFlag == true) {
+            this.formGroup.patchValue(this.record)
+            this.title = "Edit Lead"
+            this.editLeadId = this.record?.id;
+            this.formGroup.get('cityfilter').patchValue(this.record?.city_name);
+            this.formGroup.get("city_id").patchValue(this.record?.city_id_enc);
+        }
     }
 
     filterMobileCode(value: string) {
         const Filter = this.mobilecodelist.filter(x =>
-          (x.country_code.toLowerCase().includes(value.toLowerCase()) || x.mobile_code.toLowerCase().includes(value.toLowerCase()))
-          );
+            (x.country_code.toLowerCase().includes(value.toLowerCase()) || x.mobile_code.toLowerCase().includes(value.toLowerCase()))
+        );
         this.MobileCodeList.next(Filter);
     }
 
@@ -215,35 +257,64 @@ export class CRMLeadEntryComponent {
         const json = this.formGroup.getRawValue();
         this.disableBtn = true;
 
-        const modifiedObj = {
-            id: "",
-            lead_type: json.lead_type,
-            city_id: json.city_id,
-            agency_name: json.agency_name,
-            contact_person_name: json.contact_person_name,
-            contact_person_mobile: json.contact_person_mobile,
-            contact_person_email: json.contact_person_email,
-            contact_person_mobile_code: json.mobile_code,
-            lead_source: 'BO',
-            Is_Email_Whatsapp: json.Is_Email_Whatsapp ? json.Is_Email_Whatsapp : false,
-            is_manual_entry: true
+        if (this.editFlag?.editFlag) {
+            const modifiedObj = {
+                id: this.editLeadId,
+                city_id: json.city_id,
+                agency_name: json.agency_name,
+                contact_person_name: json.contact_person_name,
+                contact_person_mobile: json.contact_person_mobile,
+                contact_person_email: json.contact_person_email,
+                contact_person_mobile_code: json.mobile_code
+            };
+            this.crmService.createInboxLead(modifiedObj).subscribe({
+                next: (res) => {
+                    if (res?.status == "Lead Already Exist") {
+                        this.disableBtn = false;
+                        this.alertService.showToast('error', res.status, 'top-right', true);
+                        this.matDialogRef.close(true);
+                    } else {
+                        this.disableBtn = false;
+                        this.alertService.showToast('success', 'Record modified', 'top-right', true);
+                        this.matDialogRef.close(true);
+                    }
+                },
+                error: (err) => {
+                    this.alertService.showToast('error', err, 'top-right', true);
+                    this.disableBtn = false;
+                },
+            });
+        } else {
+            const modifiedObj = {
+                id: "",
+                lead_type: json.lead_type,
+                city_id: json.city_id,
+                agency_name: json.agency_name,
+                contact_person_name: json.contact_person_name,
+                contact_person_mobile: json.contact_person_mobile,
+                contact_person_email: json.contact_person_email,
+                contact_person_mobile_code: json.mobile_code,
+                lead_source: 'BO',
+                Is_Email_Whatsapp: json.Is_Email_Whatsapp ? json.Is_Email_Whatsapp : false,
+                is_manual_entry: true
+            };
+            this.crmService.createInboxLead(modifiedObj).subscribe({
+                next: (res) => {
+                    if (res?.status == "Lead Already Exist") {
+                        this.disableBtn = false;
+                        this.alertService.showToast('error', res.status, 'top-right', true);
+                        this.matDialogRef.close(true);
+                    } else {
+                        this.disableBtn = false;
+                        this.alertService.showToast('success', 'New record added', 'top-right', true);
+                        this.matDialogRef.close(true);
+                    }
+                },
+                error: (err) => {
+                    this.alertService.showToast('error', err.status, 'top-right', true);
+                    this.disableBtn = false;
+                },
+            });
         }
-        this.crmService.createInboxLead(modifiedObj).subscribe({
-            next: () => {
-                this.router.navigate([this.leadListRoute]);
-                this.disableBtn = false;
-                this.matDialogRef.close(true);
-                if (json.id) {
-                    this.alertService.showToast('success', 'Record modified', 'top-right', true);
-                }
-                else {
-                    this.alertService.showToast('success', 'New record added', 'top-right', true);
-                }
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-                this.disableBtn = false;
-            },
-        });
     }
 }

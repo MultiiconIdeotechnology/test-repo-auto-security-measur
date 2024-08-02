@@ -93,7 +93,7 @@ export class CrmService {
     }
 
     getProductInfoList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductInfoList', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductInfo', model);
     }
 
     getInstallmentList(model: any): Observable<any> {
@@ -116,9 +116,95 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + "CRM/agent/dormantAgent", { Id: agentId });
     }
 
+    reactive(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/agent/reactiveAgent', model);
+    }
+
     getTechProductList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardList', model);
     }
+
+    getTechCompletedProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardCompletedList', model);
+    }
+
+    getTechBlockedProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardBlockedList', model);
+    }
+
+    startIntegration(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/startIntegration', model);
+    }
+
+    blocked(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/BlockProduct', model);
+    }
+
+    unblocked(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/UnBlockProduct', model);
+    }
+
+
+    activate(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/ActivateProduct', model);
+    }
+
+    getTechExpiredProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardExpiredList', model);
+    }
+
+    createLinkUrl(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/createLinkurl', model);
+    }
+
+    // getWLSettingList(agentId: any): Observable<any> {
+    //     return this.http.get<any>(this.baseUrl + 'Dashboard/TecDashboard/GetWlSetting?agent_id= + '' +agentId');
+    // }
+
+    getWLSettingList(agentId: any): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?agent_id=${agentId}`);
+    }
+
+    updateStatus(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/updatestatus', model);
+    }
+
+    // getStatusChangedLog(model: any): Observable<any> {
+    //     return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/getStatusChangeLog', model);
+    // }
+
+    getStatusChangedLog(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/getStatusChangeLogsList', model);
+    }
+
+    getStatusChangeLogsList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'StatusChangeLogs/getStatusChangeLogsList', model);
+    }
+
+    createwlSetting(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/createwlSetting', model);
+    }
+
+    deleteProductReceipt(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Receipt/delete', { id: id });
+    }
+
+    getTechSendReminderWAEmail(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/WalletCredit/sendTechRemindersWhatsappEmail', model);
+    }
+
+    getTravelSendReminderWAEmail(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/WalletCredit/sendRemindersWhatsappEmail', model);
+    }
+
+    updateExpiryDate(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/UpdateExpirydate', model);
+    }
+
+    cancelPurchaseProduct(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/CancelProduct', model);
+    }
+
 
     // getBusinessAnalyticsApiData(payload: any): Observable<any> {
     //     const apiData: any = {

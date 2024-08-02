@@ -49,15 +49,16 @@ export class ItemEntryComponent {
   fieldList: {};
 
   codeList: any[] = [
-    { value: '001', viewValue: '001' },
-    { value: '002', viewValue: '002' },
-    { value: '003', viewValue: '003' },
-    { value: '004', viewValue: '004' },
-    { value: '005', viewValue: '005' },
-    { value: '006', viewValue: '006' },
-    { value: '007', viewValue: '007' },
-    { value: '008', viewValue: '008' },
-    { value: '009', viewValue: '009' },
+    { value: '001', viewValue: '001 (B2C Web Portal)' },
+    { value: '002', viewValue: '002 (B2C Mobile Portal)' },
+    { value: '003', viewValue: '003 (B2C Android APP)' },
+    { value: '004', viewValue: '004 (B2C IOS APP)' },
+    { value: '005', viewValue: '005 (Web Portal)' },
+    { value: '006', viewValue: '006 (B2B Android APP)' },
+    { value: '007', viewValue: '007 (B2B IOS APP)' },
+    { value: '008', viewValue: '008 (Whatsapp Service)' },
+    { value: '009', viewValue: '009 (SMS Service)' },
+    { value: '010', viewValue: '010 (SEO Package)' },
   ];
 
   itemList: any[] = [
@@ -96,7 +97,8 @@ export class ItemEntryComponent {
     });
 
     this.formGroup.get('item_code').patchValue('001')
-    this.formGroup.get('item_name').patchValue('B2C Web Portal')
+    // this.formGroup.get('item_name').patchValue('B2C Web Portal')
+    // this.formGroup.get('item_name').patchValue('B2C Web Portal')
 
     if(this.record.id){
       this.formGroup.patchValue(this.record);

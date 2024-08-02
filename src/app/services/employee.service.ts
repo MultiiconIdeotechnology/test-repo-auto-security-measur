@@ -16,6 +16,14 @@ export class EmployeeService {
     return this.http.post<any>(this.baseUrl + 'employee/getEmployeeList', model);
   }
 
+  // getEmployeeLeadAssignCombo(filter: string): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'employee/getEmployeeLeadAssignCombo', {filter});
+  // }
+
+  // getEmployeeLeadAssignCombo(filter: string): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'employee/getEmployeeLeadAssignCombo', { filter });
+  // } 
+
   getemployeeRecord(id: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'employee/getemployeeRecord', { id });
   }
@@ -42,6 +50,10 @@ export class EmployeeService {
 
   getemployeeCombo(filter: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'employee/getemployeeCombo', { filter });
+  } 
+
+  getOperationPersonCombo(filter: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'employee/getOperationPersonCombo', { filter });
   } 
   
   getEmployeeLeadAssignCombo(filter: string): Observable<any> {

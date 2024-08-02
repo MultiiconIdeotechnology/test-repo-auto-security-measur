@@ -1,4 +1,4 @@
-<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-80 max-w-80">
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6 min-w-100 max-w-100">
     <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-4 bg-primary">
         <div class="text-lg font-medium text-white pr-2">{{title}}</div>
         <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
@@ -6,7 +6,7 @@
                 [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
     </div>
-    <div class="xl:min-h-[350px] xl:max-h-[350px] min-h-[350px] max-h-[350px] overflow-y-auto">
+    <div class="xl:min-h-[430px] xl:max-h-[430px] min-h-[430px] max-h-[430px] overflow-y-auto">
         <div class="flex flex-raw overflow-hidden overflow-x-auto rounded-[10px] mt-4 mr-4 ml-4">
             <div class="w-[100%]">
                 <form class="flex flex-col flex-auto overflow-hidden" [formGroup]="formGroup">
@@ -21,7 +21,6 @@
                                 Date is required
                             </mat-error>
                         </mat-form-field> -->
-
                         <div class="flex flex-row">
                             <mat-form-field class="flex-grow">
                                 <mat-label class="text-base font-medium dark:text-[#687798]">Amount</mat-label>
@@ -32,21 +31,48 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-
                         <div class="flex flex-row">
                             <mat-form-field class="flex-grow">
                                 <mat-label class="text-base font-medium dark:text-[#687798]">MOP</mat-label>
-                                <mat-select class="w-full flex-grow" formControlName="mop" required>
-                                    <mat-option *ngFor="let service of serviceForList" [value]="service">{{ service
-                                        }}</mat-option>
+                                <mat-select class="w-full flex-grow" formControlName="mop"
+                                    (selectionChange)="onMopChange($event)" required>
+                                    <mat-option *ngFor="let service of serviceForList" [value]="service.viewValue">{{ service.value }}</mat-option>
                                 </mat-select>
                                 <mat-error *ngIf="formGroup.get('mop').hasError('required')">
                                     MOP is required
                                 </mat-error>
                             </mat-form-field>
                         </div>
-
-                        <div class="flex flex-row">
+                        <div *ngIf="showProofAttachment" class="w-full mt-[-2px]" (click)="fileInput.click()">
+                            <mat-label class="text-base font-medium dark:text-[#687798]">Proof Attachment</mat-label>
+                            <div class="w-full border rounded-md h-[48px] px-[16px] mt-[6px] relative flex"
+                                [ngClass]="{ 'border-red-500': formGroup.get('proofAttachment').hasError('required'), 'border-[#64748b]': !formGroup.get('proofAttachment').hasError('required') }">
+                                <input type="file" #fileInput accept="application/pdf, image/*"
+                                    (change)="onProofAttachmentFile($event)" class="hidden" readonly />
+                                <span *ngIf="!editproofAttachmentSelectedFile" class="flex items-center">{{ proofAttachmentSelectedFile?.name || '' }}</span>
+                                <span *ngIf="editproofAttachmentSelectedFile" class="flex items-center">{{ editproofAttachmentSelectedFile || '' }}</span>
+                                <mat-icon svgIcon="attach_file"
+                                    class="icon-size-6 absolute right-[15px] top-[10px]"></mat-icon>
+                            </div>
+                            <mat-error *ngIf="formGroup.get('proofAttachment').hasError('required')">
+                                Proof Attachment is required
+                            </mat-error>
+                        </div>
+                        <div class="mt-2" *ngIf="formGroup.get('proofAttachment')"></div>
+                        <!-- <span class="flex items-center">{{paymentAttachmentSelectedFile?.name || ''}}</span> -->
+                        <div class="w-full" (click)="fileInput1.click()">
+                            <mat-label class="text-base font-medium dark:text-[#687798]">Payment Attachment</mat-label>
+                            <div
+                                class="w-full border border-[#64748b] rounded-md h-[48px] mt-[6px] px-[16px] relative flex">
+                                <input type="file" accept="application/pdf, image/*" #fileInput1
+                                    (change)="onPaymentAttachmentFile($event)" class="hidden" readonly />
+                                <span *ngIf="!editpaymentAttachmentSelectedFile" class="flex items-center">{{ paymentAttachmentSelectedFile?.name || '' }}</span>
+                                <span *ngIf="editpaymentAttachmentSelectedFile" class="flex items-center">{{ editpaymentAttachmentSelectedFile || '' }}</span>
+                                <mat-icon [svgIcon]="'attach_file'"
+                                    class=" icon-size-6 absolute right-[15px] top-[10px]"></mat-icon>
+                            </div>
+                        </div>
+                        <div class="flex flex-row pt-3">
                             <mat-form-field class="flex-grow">
                                 <mat-label class="text-base font-medium dark:text-[#687798]">Remark</mat-label>
                                 <textarea matInput rows="3" formControlName="remark"></textarea>

@@ -15,12 +15,15 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, messages, module_name, walletCreditPermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet-credit.service';
 import { WalletCreditEntryComponent } from '../wallet-credit-entry/wallet-credit-entry.component';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
+
 
 @Component({
   selector: 'app-walletcredit-list',
@@ -52,6 +55,7 @@ import { DateTime } from 'luxon';
     MatDialogModule,
     MatTooltipModule,
     MatDividerModule,
+    PrimeNgImportsModule
   ],
 })
 export class WalletcreditListComponent extends BaseListingComponent implements OnDestroy {
@@ -59,6 +63,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   module_name = module_name.walletCredit;
   dataList = [];
   total = 0;
+  agentList:any[] = [];
+  selectedAgent:string;
 
   columns = [
     {
@@ -171,34 +177,73 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     },
   ];
   cols = [];
+  _selectedColumns: Column[];
+  isFilterShow: boolean = false;
+  selectedAction: string;
+  actionList: any[] = [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ]
 
   constructor(
     private walletService: WalletService,
     private conformationService: FuseConfirmationService,
     private router: Router,
     private matDialog: MatDialog,
+    private agentService: AgentService
   ) {
     super(module_name.walletCredit);
     this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
-    this.sortColumn = '';
-    this.sortDirection = 'asc';
+    this.sortColumn = 'is_enable';
+    this.sortDirection = 'desc';
     this.Mainmodule = this;
   }
 
-  refreshItems(): void {
+  ngOnInit() {
+
+    this.cols = [
+      { field: 'entry_by', header: 'Entry By' },
+      { field: 'sub_agent_name', header: 'Sub Agent Name' },
+      { field: 'sub_agent_code', header: 'Sub Agent Code' },
+    ];
+
+    // To call Agent lis api on default data
+    this.getAgent("");
+  }
+
+  get selectedColumns(): Column[] {
+    return this._selectedColumns;
+  }
+
+  set selectedColumns(val: Column[]) {
+    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+  }
+
+  refreshItems(event?: any): void {
     this.isLoading = true;
-    this.walletService.getWalletCreditList(this.getFilterReq()).subscribe({
+    this.walletService.getWalletCreditList(this.getNewFilterReq(event)).subscribe({
       next: (data) => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
+        this.totalRecords = data.total;
       },
       error: (err) => {
         this.alertService.showToast('error', err, 'top-right', true);
         this.isLoading = false;
       },
     });
+  }
+
+    // function to get the Agent list from api
+  getAgent(value: string) {
+    this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentList = data;
+
+        for (let i in this.agentList) {
+            this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+        }
+    })
   }
 
   createInternal(model): void {
@@ -334,7 +379,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   }
 
   ngOnDestroy(): void {
-    this.masterService.setData(this.key, this);
+    // this.masterService.setData(this.key, this);
   }
 
   exportExcel(): void {
@@ -342,11 +387,15 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    this.walletService.getWalletCreditList(this.getFilterReq()).subscribe(data => {
+    let modal = this.getNewFilterReq({})
+    modal['Take'] = this.totalRecords;
+
+    this.walletService.getWalletCreditList(modal).subscribe(data => {
       for (var dt of data.data) {
         dt.expiry_date = DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy hh:mm a')
         dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a')
-        // dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
+        // dt.entry_by = DateTime.fromISO(dt.entry_by).toFormat('dd-MM-yyyy hh:mm a')
+        
       }
       Excel.export(
         'Wallet Credit',
@@ -360,6 +409,9 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
           { header: 'Outstanding', property: 'outstanding_on_due_date' },
           { header: 'Over Due', property: 'over_due_count' },
           { header: 'Entry', property: 'entry_date_time' },
+          { property: 'entry_by', header: 'Entry By' },
+          { property: 'sub_agent_name', header: 'Sub Agent Name' },
+          { property: 'sub_agent_code', header: 'Sub Agent Code' },
         ],
         data.data, "Wallet Credit", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }]);
     });

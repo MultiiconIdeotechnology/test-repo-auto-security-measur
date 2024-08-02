@@ -10,13 +10,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { imgExtantions } from 'app/common/const';
 import { AccountService } from 'app/services/account.service';
 import { OfflineserviceService } from 'app/services/offlineservice.service';
-import { SupplierService } from 'app/services/supplier.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { CommonUtils, DocValidationDTO } from 'app/utils/commonutils';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { ReplaySubject, filter, startWith, debounceTime, distinctUntilChanged, switchMap, Observable } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-receipt-entry',
@@ -51,13 +52,12 @@ export class ReceiptEntryComponent implements OnInit {
   isFirst: boolean = true;
   fieldList: {};
   obsId: any;
-  mopList: any[] = ['Wallet', 'Digital Payment'];
+  mopList: any[] = ['Wallet', 'Online'];
 
   constructor(
     public matDialogRef: MatDialogRef<ReceiptEntryComponent>,
     private builder: FormBuilder,
     private offlineService: OfflineserviceService,
-    private supplierService: SupplierService,
     private alertService: ToasterService,
     private accountService: AccountService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
@@ -68,46 +68,18 @@ export class ReceiptEntryComponent implements OnInit {
 
   formGroup: FormGroup;
   title = "Receipt Entry"
-  btnLabel = "Create"
+  btnLabel = "Submit"
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
       id: [''],
       osb_id: this.obsId,
       net_sale_amount: [''],
-      supplier_id: [''],
-      supplierFilter: [''],
-      currency: [''],
-      roe: [''],
+      remark: [''],
+      payment_attachment: [''],
+      proof_attachment: [''],
       mop: [this.mopList[0]],
     })
-
-    this.formGroup
-      .get('supplierFilter')
-      .valueChanges.pipe(
-        filter((search) => !!search),
-        startWith(''),
-        debounceTime(400),
-        distinctUntilChanged(),
-        switchMap((value: any) => {
-          if (!this.record.id)
-            return this.supplierService.getSupplierCombo(value);
-          else
-            return new Observable<any>();
-        })
-      )
-      .subscribe({
-        next: (data) => {
-          this.SupplierList.next(data);
-
-          if (this.isFirst) {
-            this.formGroup.get('supplier_id').patchValue(data[0]);
-            this.formGroup.get('roe').patchValue(data[0].roe);
-            this.formGroup.get('currency').patchValue(data[0].currency_short_code);
-            this.isFirst = false;
-          }
-        },
-      });
 
     if (this.record.id) {
       this.accountService.getReceiptRecord(this.record.id).subscribe({
@@ -117,23 +89,64 @@ export class ReceiptEntryComponent implements OnInit {
           this.readonly = this.data.readonly;
           if (this.readonly) {
             this.fieldList = [
-              { name: 'Transaction ID', value: data.transaction_ref_no },
-              { name: 'Ref no.', value: data.receipt_ref_no },
-              { name: 'Status', value: data.receipt_status },
-              { name: 'To', value: data.receipt_to },
-              { name: 'Net Sale Amount', value: data.supplier_currency + " " + data.payment_amount },
-              { name: 'Mode of Payment', value: data.mode_of_payment },
+              { name: 'Reference Number', value: data.receipt_ref_no, isTooltip: true },
+              { name: 'Amount', value: data.payment_currency + " " + data.payment_amount },
               { name: 'ROE', value: data.roe },
-              { name: 'Requested', value: DateTime.fromISO(data.receipt_request_date).toFormat('dd-MM-yyyy HH:mm:ss') },
-              { name: 'Audited', value: data.receipt_status != "Confirmed" ? ' - ' : DateTime.fromISO(data.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss') },
+              { name: 'MOP', value: data.mode_of_payment },
+
+              { name: 'Audited By', value: "", isTooltip: true },
+              { name: 'Audit Date Time', value: data.audit_date_time ? DateTime.fromISO(data.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : "" },
+
+              { name: 'Rejected By', value: "", isTooltip: true },
+              { name: 'Reject Date Time', value: DateTime.fromISO(data.receipt_request_date).toFormat('dd-MM-yyyy HH:mm:ss') },
+              { name: 'Remark', value: data.receipt_remark },
+              { name: 'Rejection Remark', value: data.receipt_reject_reason },
             ];
+          } else {
+            this.formGroup.patchValue({
+              id: data.id,
+              net_sale_amount: data.payment_amount,
+              remark: data.receipt_remark,
+              payment_attachment: data.payment_attachment,
+              proof_attachment: data.proof_attachment,
+              mop: data.mode_of_payment,
+            });
           }
-          this.formGroup.patchValue(data);
+
           this.title = this.readonly ? 'Receipt Info' : 'Modify Receipt Entry';
           this.btnLabel = this.readonly ? 'Close' : 'Save';
         },
       });
     }
+  }
+
+  downloadfile(data: string) {
+    window.open(data, '_blank')
+  }
+
+  uploadDocument(event: any, from: string): void {
+    const file = (event.target as HTMLInputElement).files[0];
+
+    const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
+    var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 3036, null);
+    if (!validator.valid) {
+      this.alertService.showToast('error', validator.alertMessage);
+      (event.target as HTMLInputElement).value = '';
+      return;
+    }
+
+    CommonUtils.getJsonFile(file, (reader, jFile) => {
+      const doc = Object.assign({});
+      jFile["result"] = reader.result;
+
+      if (from == "proof_attachment")
+        this.formGroup.get('proof_attachment').patchValue(jFile);
+      else
+        this.formGroup.get('payment_attachment').patchValue(jFile);
+
+      this.alertService.showToast('success', "Document Uploaded", "top-right", true);
+      (event.target as HTMLInputElement).value = '';
+    });
   }
 
   supplierChange(data: any) {
@@ -151,8 +164,26 @@ export class ReceiptEntryComponent implements OnInit {
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
 
-    json.supplier_id = json.supplier_id.id;
+    if (json.mop == 'Wallet' && !json.proof_attachment.base64) {
+      this.alertService.showToast('error', 'Proof Attachment is required.', 'top-right', true);
+      this.disableBtn = false;
+      return;
+    }
     json['osb_id'] = this.obsId;
+    if (!json.proof_attachment?.base64) {
+      json.proof_attachment = {
+        base64: "",
+        fileType: "",
+        fileName: ""
+      }
+    }
+    if (!json.payment_attachment?.base64) {
+      json.payment_attachment = {
+        base64: "",
+        fileType: "",
+        fileName: ""
+      }
+    }
 
     this.offlineService.createReceiptEntry(json).subscribe({
       next: () => {
@@ -163,6 +194,42 @@ export class ReceiptEntryComponent implements OnInit {
         this.alertService.showToast('error', err, "top-right", true);
       }
     })
+  }
+
+  MOPChange() {
+    this.formGroup.get('proof_attachment').patchValue('');
+  }
+
+  download(data: any): void {
+    if (data?.base64) {
+      const newTab = window.open('', '_blank');
+      if (newTab) {
+        newTab.document.write(`
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>Document Viewer</title>
+                </head>
+                <style>
+                    html, body, iframe {
+                        margin: 0;
+                        padding: 0;
+                        width: 100%;
+                        height: 100%;
+                        border: none;
+                    }
+                </style>
+                <body>
+                    <iframe src="${data?.result}"></iframe>
+                </body>
+            </html>
+        `);
+        newTab.document.close();
+      } else {
+        alert('Please allow popups for this website');
+      }
+    } else
+      window.open(data, '_blank');
   }
 
   public compareWith(v1: any, v2: any) {

@@ -39,6 +39,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { SubKycProfileComponent } from '../sub-kyc-profile/sub-kyc-profile.component';
 import { SetCurrencyComponent } from '../set-currency/set-currency.component';
 import { WhitelabelEntryComponent } from '../../whitelabel/whitelabel-entry/whitelabel-entry.component';
+import { Security, agentsPermissions, messages } from 'app/security';
 
 @Component({
   selector: 'app-agent-entry',
@@ -327,6 +328,9 @@ export class AgentEntryComponent {
   }
 
   autologinAgent() {
+    if (!Security.hasPermission(agentsPermissions.autoLoginPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
 
     this.agentService.autoLogin(this.records.id).subscribe({
       next: data => {
@@ -384,10 +388,10 @@ export class AgentEntryComponent {
   }
 
   setBlockUnblockAgent(): void {
-    // if (!Security.hasNewEntryPermission(this.module)) {
-    //     this.alertService.error('Permission Denied.');
-    //     return;
-    // }
+    if (!Security.hasPermission(agentsPermissions.blockUnblockPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
+
     if (this.records.is_blocked) {
       const label: string = 'Unblock Agent'
       this.conformationService.open({
@@ -473,6 +477,11 @@ export class AgentEntryComponent {
   }
 
   relationahipManagerAgent(): void {
+    if (!Security.hasPermission(agentsPermissions.relationshipManagerPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
+
+
     this.matDialog.open(EmployeeDialogComponent, {
       data: this.records,
       disableClose: true
@@ -494,6 +503,8 @@ export class AgentEntryComponent {
 
 
   setKYCVerify(record): void {
+   
+
     this.matDialog.open(KycInfoComponent, {
       data: { record: record, subAgent: true },
       disableClose: true
@@ -510,6 +521,10 @@ export class AgentEntryComponent {
   }
 
   setKYCVerifyAgent(): void {
+    if (!Security.hasPermission(agentsPermissions.viewKYCPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
+
     this.matDialog.open(KycInfoComponent, {
       data: { record: this.records, agent: true },
       disableClose: true
@@ -550,6 +565,10 @@ export class AgentEntryComponent {
   }
 
   setMarkupProfileAgent(){
+    if (!Security.hasPermission(agentsPermissions.setMarkupProfilePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
     this.matDialog.open(MarkupProfileDialogeComponent, {
       data: this.records,
       disableClose: true
@@ -589,6 +608,10 @@ export class AgentEntryComponent {
   }
 
   setEmailVerifyAgent(): void {
+    if (!Security.hasPermission(agentsPermissions.verifyEmailPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
+
     const label: string = this.records.is_email_verified ? 'Unverify Email' : 'Verify Email'
     this.conformationService.open({
       title: label,
@@ -608,6 +631,7 @@ export class AgentEntryComponent {
   }
 
   setMobileVerify(record): void {
+
     const label: string = record.is_mobile_verified ? 'Unverify Mobile' : 'Verify Mobile'
     this.conformationService.open({
       title: label,
@@ -631,6 +655,10 @@ export class AgentEntryComponent {
   }
 
   setMobileVerifyAgent(): void {
+    if (!Security.hasPermission(agentsPermissions.verifyMobilePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
+
     const label: string = this.records.is_mobile_verified ? 'Unverify Mobile' : 'Verify Mobile'
     this.conformationService.open({
       title: label,
@@ -673,6 +701,10 @@ export class AgentEntryComponent {
   }
 
   setCurrencyAgent(): void {
+    if (!Security.hasPermission(agentsPermissions.setCurrencyPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
+
     this.matDialog.open(SetCurrencyComponent, {
       data: this.records,
       disableClose: true
@@ -692,6 +724,9 @@ export class AgentEntryComponent {
   }
 
   convertWlAgent(){
+    if (!Security.hasPermission(agentsPermissions.convertToWLPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+  }
     this.matDialog
     .open(WhitelabelEntryComponent, {
       data: { data: this.records, send: 'Agent-WL' },

@@ -1,0 +1,269 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden dark:bg-transparent">
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight ">
+            {{ module_name }}
+        </div>
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!------ Export Excel ------->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+
+    <!--refreshItems($event) -->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['payment_ref_no','entry_date_time', 'agent_code', 'agency_name', 'service_for','booking_ref_no','pnr','gds_pnr','company_name','currency_short_code','payment_amount','booking_Type','company']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="payment_ref_no" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_ref_no"
+                        [ngClass]="{'left-0': !frozenObj?.payment_ref_no}">
+                        Payment Ref. No. <p-sortIcon field="payment_ref_no" />
+                        <span class="float-right" (click)="isFrozenColumn('payment_ref_no');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.payment_ref_no" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.payment_ref_no" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th class="min-w-[225px]" pSortableColumn="entry_date_time" pResizableColumn>
+                        Date<p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th pSortableColumn="agent_code" pResizableColumn>
+                        Agent Code <p-sortIcon field="agent_code" />
+                    </th>
+                    <th pSortableColumn="agency_name" pResizableColumn>
+                        Agency Name <p-sortIcon field="agency_name" />
+                    </th>
+                    <th pSortableColumn="service_for" pResizableColumn>
+                        Service <p-sortIcon field="service_for" />
+                    </th>
+                    <th pSortableColumn="booking_ref_no" pResizableColumn>
+                        Booking Ref. No.<p-sortIcon field="booking_ref_no" />
+                    </th>
+                    <th pSortableColumn="pnr" pResizableColumn>
+                        PNR <p-sortIcon field="pnr" />
+                    </th>
+                    <th pSortableColumn="gds_pnr" pResizableColumn>
+                        GDS PNR <p-sortIcon field="gds_pnr" />
+                    </th>
+                    <th pSortableColumn="company_name" pResizableColumn>
+                        Supplier <p-sortIcon field="company_name" />
+                    </th>
+                    <th pSortableColumn="currency_short_code" pResizableColumn>
+                        Currency <p-sortIcon field="currency_short_code" />
+                    </th>
+                    <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
+                        Amount <p-sortIcon field="payment_amount" />
+                    </th>
+                    <th pSortableColumn="booking_Type" pResizableColumn>
+                        Booking Type <p-sortIcon field="booking_Type" />
+                    </th>
+                    <th class="w-full" pSortableColumn="company" pResizableColumn>
+                        Company <p-sortIcon field="company" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_ref_no">
+                        <p-columnFilter type="text" matchMode="contains" field="payment_ref_no"
+                            placeholder="Search by Payment Ref No." ariaLabel="Filter Payment Ref No." />
+                    </th>
+                    <th>
+                        <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
+                            ariaLabel="Filter Agent Code" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="agency_name"
+                            placeholder="Search by Agency Name" ariaLabel="Filter Agency Name" /> -->
+                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="service_for"
+                            placeholder="Search by Service" ariaLabel="Filter Service" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
+                            placeholder="Search by Booking Ref. No." ariaLabel="Filter Booking Ref. No." />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
+                            ariaLabel="Filter PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GSD PNR"
+                            ariaLabel="Filter GSD PNR" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="company_name"
+                            placeholder="Search by Supplier" ariaLabel="Filter Supplier" /> -->
+                        <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList" [(ngModel)]="selectedSupplier" optionLabel="company_name"
+                                    [filter]="true" filterBy="company_name" (onFilter)="getSupplier($event?.filter)"
+                                    (onChange)="filter($event.value?.company_name)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Supplier">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.company_name">
+                                                <div class="m-0">
+                                                    {{agent.company_name}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="currency_short_code"
+                            placeholder="Search by Currency" ariaLabel="Filter Currency" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="payment_amount" placeholder="Search by Amount"
+                            ariaLabel="Filter Amount" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="booking_Type" placeholder="Search by Booking Type"
+                        ariaLabel="Filter Booking Type" /> -->
+                        <p-columnFilter field="booking_Type" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="typeList"
+                                    (onChange)="filter($event.value)" placeholder="Select Type" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="company" placeholder="Search by Company"
+                            ariaLabel="Filter Company" /> -->
+                        <p-columnFilter class="searchableDropdown" field="company" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
+                                    [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
+                                    (onChange)="filter($event.value?.company_name)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Company">
+                                    <ng-template let-company pTemplate="item">
+                                        <div> {{company.company_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_ref_no">{{element.payment_ref_no ?
+                        element.payment_ref_no : '-'}}</td>
+                    <td>{{element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss'}}</td>
+                    <td>{{element.agent_code ? element.agent_code : 0}}</td>
+                    <td>{{element.agency_name ? element.agency_name : '-'}}</td>
+                    <td>{{element.service_for ? element.service_for : '-'}}</td>
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500 " (click)="viewData(element)">
+                            {{element.booking_ref_no || "-"}}
+                        </span>
+                    </td>
+                    <td>{{element.pnr ? element.pnr : '-'}}</td>
+                    <td>{{element.gds_pnr ? element.gds_pnr : '-'}}</td>
+                    <td>{{element.company_name ? element.company_name : '-'}}</td>
+                    <td>{{element.currency_short_code ? element.currency_short_code : '-'}}</td>
+                    <!-- <td class="text-right">{{element.payment_amount ? element.payment_amount : 0}}</td> -->
+                    <td class="text-right">{{ element.payment_amount |
+                        currency:element.currency_short_code:'symbol':'1.2-2' }}</td>
+                    <td>{{element.booking_Type ? element.booking_Type : '-'}}</td>
+                    <td>{{element.company ? element.company : '-'}}</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="14" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

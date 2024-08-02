@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,25 +20,28 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name, techCollectionPermissions } from 'app/security';
+import { Security, messages, module_name, partnerPurchaseProductPermissions, techCollectionPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
-import { TechDialCallEntryComponent } from '../tech-dial-call-entry/tech-dial-call-entry.component';
-import { TechCallHistoryComponent } from '../tech-call-history/tech-call-history.component';
+import { PurchaseProductComponent } from '../../agent/purchase-product/purchase-product.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { DialTechCallListComponent } from '../tech-dial-call-list/tech-dial-call-list.component';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { EntityService } from 'app/services/entity.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
     selector: 'app-tech',
     templateUrl: './tech.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 60px 100px 245px 120px 190px 100px 150px 150px;
-            }
-        `,
-    ],
+    // styles: [
+    //     `
+    //         .tbl-grid {
+    //             grid-template-columns: 40px 60px 100px 245px 120px 190px 100px 150px 150px;
+    //         }
+    //     `,
+    // ],
     standalone: true,
     imports: [
         NgIf,
@@ -67,10 +70,17 @@ import { TechCallHistoryComponent } from '../tech-call-history/tech-call-history
         MatMenuModule,
         MatDialogModule,
         CommonModule,
-        MatTabsModule
+        MatTabsModule,
+        PrimeNgImportsModule
     ]
 })
-export class TechCollectionComponent {
+export class TechCollectionComponent extends BaseListingComponent{
+    @Input() isFilterShowTech: boolean;
+    @Input() dropdownListObj:{};
+
+    agentList:any[] = [];
+    selectedAgent:string;
+
     columns = [
         {
             key: 'calls',
@@ -82,8 +92,7 @@ export class TechCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: false,
-            callAction: true
+            tooltip: false
         },
         {
             key: 'acCode',
@@ -119,7 +128,7 @@ export class TechCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'product',
@@ -131,7 +140,7 @@ export class TechCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'amount',
@@ -143,14 +152,14 @@ export class TechCollectionComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
         },
         {
             key: 'installmentDate',
             name: 'Installment Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
+            is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
@@ -162,7 +171,7 @@ export class TechCollectionComponent {
             name: 'Last call date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
+            is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
@@ -195,44 +204,80 @@ export class TechCollectionComponent {
 
     constructor(
         private crmService: CrmService,
-        private alertService: ToasterService,
-        private matDialog: MatDialog
-
+        private conformationService: FuseConfirmationService,
+        private matDialog: MatDialog,
+        private entityService: EntityService,
+        private agentService: AgentService
     ) {
+        super(module_name.techDashboard)
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'priorityid';
+        this.sortColumn = 'installmentDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this
     }
 
     ngOnInit(): void {
-        this.searchInputControlTech.valueChanges
-            .subscribe(() => {
-                GridUtils.resetPaginator(this._paginatorTech);
-                this.refreshItems();
-            });
-        this.refreshItems();
+        // this.searchInputControlTech.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginatorTech);
+        //         this.refreshItems();
+        //     });
+        // this.refreshItems();
+
+        this.searchInputControlTech.valueChanges.subscribe(() => {
+        //   this.refreshItems();
+        });
+
     }
 
-    refreshItems(): void {
+    ngOnChanges(){
+        this.agentList = this.dropdownListObj['agentList'];
+    }
+
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorTech,
-            this._sortInbox,
-            this.searchInputControlTech.value
-        );
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlTech.value;
+
+        // filterReq['Filter'] = this.searchInputControlTech.value;
+        // filterReq['Skip'] = 0;
+        // filterReq['Take'] = this._paginator.length;
+        // filterReq['Take'] = this.totalRecords;
+
+        // filterReq['OrderBy'] = 'installmentDate';
+        // filterReq['OrderDirection'] = 1;
+
+        // this.isLoading = true;
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginatorTech,
+        //     this._sortInbox,
+        //     this.searchInputControlTech.value
+        // );
         this.crmService.getTechCollectionList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginatorTech.length = data.total;
+                // this._paginatorTech.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
                 this.isLoading = false;
             },
         });
+
+    }
+
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
     }
 
     getNodataText(): string {
@@ -270,11 +315,20 @@ export class TechCollectionComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.matDialog.open(TechDialCallEntryComponent, {
-            data: { data: record, readonly: true },
-            disableClose: true,
-        }).afterClosed().subscribe(res => {
-            if (res) {
+        // this.matDialog.open(TechDialCallEntryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true,
+        // }).afterClosed().subscribe(res => {
+        //     if (res) {
+        //         this.refreshItems();
+        //     }
+        // })
+
+        this.matDialog.open(DialTechCallListComponent, {
+            data: { data: record, readonly: true},
+            disableClose: true
+        }).afterClosed().subscribe({
+            next: (res) => {
                 this.refreshItems();
             }
         })
@@ -284,13 +338,31 @@ export class TechCollectionComponent {
         if (!Security.hasPermission(techCollectionPermissions.callHistoryPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
+        // this.matDialog.open(TechCallHistoryComponent, {
+        //     data: { data: record, readonly: true },
+        //     disableClose: true
+        // });
 
-        if (record?.calls > 0) {
-            this.matDialog.open(TechCallHistoryComponent, {
-                data: { data: record, readonly: true },
-                disableClose: true
-            });
+        this.matDialog.open(DialTechCallListComponent, {
+            data: { data: record, readonly: true, selectedTabIndex: 3},
+            disableClose: true
+        }).afterClosed().subscribe({
+            next: (res) => {
+                this.refreshItems();
+            }
+        })
+    }
+
+    purchaseProduct(record): void {
+        if (!Security.hasPermission(partnerPurchaseProductPermissions.purchaseProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
         }
+
+        this.matDialog.open(PurchaseProductComponent, {
+            width: '1000px',
+            data: { data: record, readonly: true },
+            disableClose: true,
+        });
     }
 
     sendReminderEmail(record): void {
@@ -301,17 +373,41 @@ export class TechCollectionComponent {
         //     data: { data: record, readonly: true },
         //     disableClose: true
         // });
+        const label: string = 'Send Reminders WA/Email';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.agencyName + ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    const payload = {
+                        agent_id: record?.agentid
+                    }
+                    this.crmService.getTechSendReminderWAEmail(payload).subscribe({
+                        next: () => {
+                            this.alertService.showToast(
+                                'success',
+                                'Send Reminders WA/Email is successfully!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+                    });
+                }
+            });
     }
 
-    paymentUpdate(record): void {
-        // if (!Security.hasPermission(agentPermissions.marketingMaterialPermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
-        // this.matDialog.open(MarketingMaterialsComponent, {
-        //     data: { data: record, readonly: true },
-        //     disableClose: true
-        // });
-    }
 
     timeline(record): void {
         // if (!Security.hasPermission(agentPermissions.marketingMaterialPermissions)) {

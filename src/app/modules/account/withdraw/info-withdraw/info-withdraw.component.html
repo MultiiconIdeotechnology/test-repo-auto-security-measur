@@ -1,43 +1,71 @@
-<div class="flex flex-col max-w-240 md:min-w-192 max-h-screen -m-6">
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
 
-    <!-- Header -->
-    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
-        <div class="text-lg font-medium text-white">{{title}}</div>
-        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
-            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-        </button>
-    </div>
-
-    <div class="grid grid-cols-5 gap-4 p-8 pb-4 bg-card rounded-2xl overflow-hidden">
-        <div class="flex flex-col mb-3" *ngFor="let filed of fieldList">
-            <div class="flex flex-row space-x-2">
-                <span class=" text-md font-semibold text-secondary">{{filed.name}}</span>
-                <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
+    <div class="w-full">
+        <div class="flex flex-col w-[100%] gap-2 m-auto">
+            <div class="flex flex-row justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+                <span class=" text-xl font-semibold">Withdraw Info</span>
+                <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                    (click)="settingsDrawer.close()"></mat-icon>
             </div>
-            <span class="truncate flex items-center">
+        </div>
 
-                <span *ngIf="filed.name === 'Email'" class="text-base truncate min-w-5">
-                    <mat-icon *ngIf="records.is_email_verified"
-                        class="text-green-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
-                        [matTooltip]="'Verified'">verified</mat-icon>
-                    <mat-icon *ngIf="!records.is_email_verified"
-                        class="text-yellow-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
-                        [matTooltip]="'Verification Pending'">warning</mat-icon>
-                </span>
+        <div style="height: calc(100vh - 60px)" class="overflow-auto p-5">
+            <div class="flex flex-wrap bg-card overflow-hidden">
 
-                <span *ngIf="filed.name === 'Mobile Number'" class="text-base truncate ">
-                    <mat-icon *ngIf="records.is_mobile_verified"
-                        class="text-green-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
-                        [matTooltip]="'Verified'">verified</mat-icon>
-                    <mat-icon *ngIf="!records.is_mobile_verified"
-                        class="text-yellow-600 text-lg inline-block h-[20px] min-h-[20px] w-[20px] min-w-[20px]"
-                        [matTooltip]="'Verification Pending'">warning</mat-icon>
-                    <span class="mr-1  relative top-[-3px]">{{records.mobile_code}}</span></span>
+                <div class="flex flex-col mb-4 w-full break-words">
+                    <span class="text-md font-semibold text-secondary">Agency Name</span>
+                    <span class="text-base ">{{record?.agent_name || '-'}}</span>
+                </div>
 
+                <div class="flex flex-col mb-4 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Status</span>
+                    <span class="text-base truncate">{{record?.withdraw_status || '-'}}</span>
+                </div>
 
-                <span class="text-base truncate pr-1 relative top-[-1px]" [matTooltip]="filed.value">{{filed.value ||
-                    '--'}}</span>
-            </span>
+                <div class="flex flex-col mb-4 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Currency</span>
+                    <span class="text-base truncate">{{record?.withdraw_currency || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Amount</span>
+                    <span class="text-base truncate">{{record?.withdraw_currency_symbol}} {{record?.withdraw_amount || '0'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 w-full break-words">
+                    <span class="text-md font-semibold text-secondary">Agent Remark</span>
+                    <span class="text-base ">{{record?.agent_remark || '-'}}</span>
+                </div>
+                
+                <div class="flex flex-col mb-4 truncate w-1/2" *ngIf="record?.is_audited">
+                    <span class="text-md font-semibold text-secondary">Audited By</span>
+                    <span class="text-base truncate">{{record.audit_by || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 truncate w-1/2" *ngIf="record?.is_audited">
+                    <span class="text-md font-semibold text-secondary">Audit Date</span>
+                    <span class="text-base truncate">{{(record.audit_date_time | date: 'dd-MM-yyyy HH:mm:ss') ||
+                        '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4  w-1/2 truncate" *ngIf="record?.is_rejected">
+                    <span class="text-md font-semibold text-secondary">Reject By</span>
+                    <span class="text-base truncate">{{ record?.reject_by || ' - ' }}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 truncate w-1/2" *ngIf="record?.is_rejected">
+                    <span class="text-md font-semibold text-secondary">Reject Date</span>
+                    <span class="text-base truncate">{{(record.reject_date_time | date: 'dd-MM-yyyy HH:mm:ss') ||
+                        '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4  w-full break-words" *ngIf="record?.is_rejected">
+                    <span class="text-md font-semibold text-secondary">Reject Reason</span>
+                    <span class="text-base ">{{ record?.reject_remark || ' - ' }}</span>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+</fuse-drawer>

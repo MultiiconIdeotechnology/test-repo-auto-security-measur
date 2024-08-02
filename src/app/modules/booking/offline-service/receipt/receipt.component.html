@@ -2,7 +2,7 @@
   <div class="flex justify-between mb-5">
       <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
           <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
-          <input matInput [formControl]="searchInputControl"   [autocomplete]="'off'" [placeholder]="'Search'" />
+          <input matInput [formControl]="mysearchInputControl"   [autocomplete]="'off'" [placeholder]="'Search'" />
       </mat-form-field>
 
       <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()" *ngIf="!isInvoiceGenerated">
@@ -20,8 +20,7 @@
           <div class="grid ">
               <!-- Header -->
               <div class="tbl-grid gridwidth z-10 sticky top-0 grid gap-4 py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold dark:bg-gray-700 bg-gray-200 border-b"
-                  matSort matSortDisableClear (matSortChange)="refreshItems()" #_sortPending
-                  matSortActive="request_date_time" matSortDirection="desc">
+                  matSort #_sortPending (matSortChange)="shortData()" matSortDisableClear>
                   <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-gray-200 z-99 text-secondary">
                       #
                   </div>
@@ -50,6 +49,14 @@
                                   <mat-icon class="mat-18">info</mat-icon>
                                   <span style="font-weight: 600">Info</span>
                               </button>
+                              <button mat-menu-item (click)="edit(ListItem)" *ngIf="ListItem.receipt_status != 'Confirmed' && !isInvoiceGenerated">
+                                <mat-icon class="mat-18">edit</mat-icon>
+                                <span style="font-weight: 600">Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="delete(ListItem)" *ngIf="ListItem.receipt_status != 'Confirmed' && !isInvoiceGenerated">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                                <span style="font-weight: 600">Delete</span>
+                            </button>
                           </mat-menu>
 
                           <ng-container *ngFor="let col of columns">
@@ -67,7 +74,7 @@
                                   <div *ngIf=" col.key === 'mobile_number'">{{ListItem.mobile_code}}</div>
 
                                   <div
-                                      [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' ? 'pr-4' : '')">
+                                      [class]="'flex flex-col truncate ' + (col.class == 'header-center-view' || col.class == 'header-right-view' ? 'pr-4' : '')">
                                       <span class="truncate" *ngIf="!col.is_boolean && !col.isicon"
                                           [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
                                           {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
@@ -88,11 +95,4 @@
           </div>
       </ng-template>
   </div>
-
-  <mat-paginator
-      class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-      [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
-      [pageSize]="appConfig.pageSize" (page)="refreshItems()"
-      [showFirstLastButtons]="appConfig.showFirstLastButtons">
-  </mat-paginator>
 </div>

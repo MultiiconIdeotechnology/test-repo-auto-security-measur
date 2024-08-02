@@ -4,7 +4,7 @@
     <div class="flex flex-0 items-center justify-between h-11 px-6 bg-primary">
         <div class="text-lg font-medium max-w-80 truncate text-white" [matTooltip]="title">KYC - {{title}}</div>
 
-        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+        <button mat-icon-button (click)="matDialogRef.close(closeDialog)" [tabIndex]="-1">
             <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
 

@@ -8,135 +8,267 @@
         </div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <!-- Search -->
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
-            </mat-form-field>
-            <!-- Add product button -->
-            <button class="ml-4 hidden" mat-flat-button [color]="'primary'" (click)="create()">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Add</span>
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+            </p-overlayPanel>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!---- Modal Filter -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filterDialog()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
             </button>
 
-            <button class="ml-4" mat-flat-button [disabled]="isLoading" (click)="refreshItems()" [color]="'primary'">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            <!--- Add  -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
             </button>
         </div>
     </div>
 
     <!----------------Table----------------->
-    <div class="flex flex-col flex-auto overflow-hidden">
-        <!-- list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
-            <ng-container>
-                <div class="grid">
-                    <!-- Header -->
-                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card"
-                        matSort matSortDisableClear (matSortChange)="refreshItems()">
-                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
-                            #
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['file_url', 'document_of', 'is_audited', 'document_user_name', 'kyc_profile_name', 'kyc_profile_doc_name', 'audit_by_name', 'entry_date_time']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th  class="min-w-[145px] text-center dark:bg-[#1e293b]" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.file_url" [ngClass]="{'left-0': !frozenObj?.file_url}">
+                        Document 
+                        <span class="float-right" (click)="isFrozenColumn('file_url');$event.stopPropagation()">
+                            <i *ngIf="frozenObj?.file_url" class="pi pi-lock icon-size-3"></i>
+                            <i *ngIf="!frozenObj?.file_url" class="pi pi-lock-open icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="document_of" pResizableColumn>
+                        Document Of <p-sortIcon field="document_of" />
+                    </th>
+                    <th pSortableColumn="is_audited" pResizableColumn>
+                        Status <p-sortIcon field="is_audited" />
+                    </th>
+                    <th pSortableColumn="document_user_name" pResizableColumn>
+                        Particular <p-sortIcon field="document_user_name" />
+                    </th>
+                    <th pSortableColumn="kyc_profile_name" pResizableColumn>
+                        Profile <p-sortIcon field="kyc_profile_name" />
+                    </th>
+                    <th pSortableColumn="kyc_profile_doc_name" pResizableColumn>
+                        Profile Doc <p-sortIcon field="kyc_profile_doc_name" />
+                    </th>
+                    <th pSortableColumn="audit_by_name" pResizableColumn>
+                        Audited By <p-sortIcon field="audit_by_name" />
+                    </th>
+                    <th class="min-w-[200px]" pSortableColumn="entry_date_time" pResizableColumn
+                        [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
+                        Upload <p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                        [ngClass]="{'w-full': isLast }">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.file_url">
+                    </th>
+                    <th>
+                        <p-columnFilter field="document_of" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="selectMasterList"
+                                    (onChange)="filter($event.value)" placeholder="Select Document Of" [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.value}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="status_filter" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.value}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="document_user_name" placeholder="Search by Particular"
+                            ariaLabel="Filter Particular" />
+                            
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="kyc_profile_name" placeholder="Search by Profile"
+                            ariaLabel="Filter Profile" />
+                    </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown"  field="kyc_profile_doc_name" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown"
+                                    [options]="documentList"
+                                    [(ngModel)]="selectedDocument"
+                                    optionLabel="document_name"
+                                    [filter]="true"
+                                    filterBy="document_name"
+                                    (onChange)="filter($event.value?.document_name)"
+                                    [showClear]="true"
+                                    appendTo="body"
+                                    placeholder="Select a Document">
+                                    <ng-template let-doc pTemplate="item">
+                                        <div class="flex align-items-center gap-2">
+                                            <div [value]="doc.document_name">{{ doc.document_name }}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="audit_by_name" placeholder="Search by Audited By"
+                            ariaLabel="Filter Audited By" />
+                    </th>
+                    <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                    placeholder="Search by Upload">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th *ngFor="let col of columns">
+                        <p-columnFilter *ngIf="col.type != 'date'" [matchMode]="col.type == 'text' ? 'contains': ''" [type]="col.type" [field]="col.field" [placeholder]="'Search by '+ col.header"
+                        [ariaLabel]="'Filter '+ col.header" />
+
+                        <p-columnFilter *ngIf="col.type == 'date'" [field]="col.field" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                    [placeholder]="'Search by '+ col.header">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="view(element)">
+                                <mat-icon class="mat-18">info</mat-icon>
+                                <span style="font-weight: 600;">Info</span>
+                            </button>
+                            <button *ngIf="!element.is_audited" mat-menu-item (click)="Audit(element)">
+                                <mat-icon class="mat-18">check_circle</mat-icon>
+                                <span style="font-weight: 600;">Audit</span>
+                            </button>
+                            <button *ngIf="!element.is_rejected" mat-menu-item (click)="Reject(element)">
+                                <mat-icon class="mat-18">close</mat-icon>
+                                <span style="font-weight: 600;">Reject</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.file_url">
+                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                        class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                        (click)="downloadfile(element['file_url'])"
+                        [matTooltip]="'Download'"></mat-icon>
+                    </td>
+                    <td>
+                        {{element.document_of || "-"}}
+                    </td>
+                    <td>
+                        <div *ngIf="element['is_audited']" class="flex items-center cursor-pointer"
+                        [matTooltip]="'Audit'">
+                        <div class="text-green-600">Audited</div>
                         </div>
 
-                        <ng-container *ngFor="let col of columns">
-                            <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
+                        <div *ngIf="!element['is_audited'] && !element['is_rejected']" 
+                                class="flex items-center cursor-pointer" [matTooltip]="'Pending'">
+                            <div class="text-orange-500">Audit Pending</div>
+                        </div>
+
+                        <div *ngIf="element['is_rejected']"
+                            class="flex items-center cursor-pointer">
+                            <div class="flex items-center space-x-1">
+                                <mat-icon class="icon-size-4" svgIcon="mat_outline:info"
+                                    [matTooltip]="element['rejection_note']"></mat-icon>
+                                <div class="text-red-600">Rejected</div>
                             </div>
-                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
+                        </div>
+                    </td>
+                    <td>{{element.document_user_name || "-"}}</td>
+                    <td>{{element.kyc_profile_name || "-"}}</td>
+                    <td>{{element.kyc_profile_doc_name || "-"}}</td>
+                    <td>{{element.audit_by_name || "-"}}</td>
+                    <td>{{(element.entry_date_time | date: "dd-MM-yyyy HH:mm:ss") || "-"}}</td>
+                    
+                    <td *ngFor="let col of columns">
+                        <ng-container *ngIf="col.field == 'reject_date_time'; else noDate">
+                            {{(element.reject_date_time | date: "dd-MM-yyyy HH:mm:ss") || "-"}}
                         </ng-container>
-                    </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                        <ng-container *ngFor="let ListItem of dataList">
-                            <div
-                                class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                                <button mat-icon-button (click)="$event.stopPropagation()"
-                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-gray-50 dark:bg-gray-900"
-                                    style="border-radius: 0%; width: 100%">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
-                                <mat-menu #optionMenu>
-                                    <button mat-menu-item (click)="view(ListItem)">
-                                        <mat-icon class="mat-18">info</mat-icon>
-                                        <span style="font-weight: 600;">Info</span>
-                                    </button>
-                                    <button *ngIf="!ListItem.is_audited" mat-menu-item (click)="Audit(ListItem)">
-                                        <mat-icon class="mat-18">check_circle</mat-icon>
-                                        <span style="font-weight: 600;">Audit</span>
-                                    </button>
-                                    <button *ngIf="!ListItem.is_rejected" mat-menu-item (click)="Reject(ListItem)">
-                                        <mat-icon class="mat-18">close</mat-icon>
-                                        <span style="font-weight: 600;">Reject</span>
-                                    </button>
-                                </mat-menu>
 
-                                <ng-container *ngFor="let col of columns">
-                                    <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
-
-                                        <span *ngIf="col.isicon" class="text-center justify-center">
-                                            <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                                                class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                                                (click)="downloadfile(ListItem[col.key])"
-                                                [matTooltip]="'Download'"></mat-icon>
-                                        </span>
-
-                                        <div *ngIf="col.indicator && !col.isicon"
-                                            class="flex flex-row space-x-2 justify-center items-center">
-                                            <div *ngIf="ListItem['is_audited']" class="flex items-center cursor-pointer"
-                                                [matTooltip]="'Audit'">
-                                                <div class="text-green-600">Audited</div>
-                                            </div>
-
-                                            <div *ngIf="
-                                                    !ListItem['is_audited'] && !ListItem['is_rejected']
-                                                " class="flex items-center cursor-pointer" [matTooltip]="'Pending'">
-                                                <div class="text-orange-500">Audit Pending</div>
-                                            </div>
-
-                                            <div *ngIf="ListItem['is_rejected']"
-                                                class="flex items-center cursor-pointer">
-                                                <div class="flex items-center space-x-1">
-                                                    <mat-icon class="icon-size-4" svgIcon="mat_outline:info"
-                                                        [matTooltip]="ListItem['rejection_note']"></mat-icon>
-                                                    <div class="text-red-600">Rejected</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex flex-col truncate">
-                                            <span class="truncate" [matTooltip]="col.tooltip ? ListItem[col.key] : ''"
-                                                *ngIf="!col.indicator && !col.isicon">
-                                                {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
-                                                ListItem[col.key] || " - " }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-template #noGridItems>
-                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                    {{getNodataText()}}
-                </div>
+                        <ng-template #noDate>
+                            {{element[col.field] || "-"}}
+                        </ng-template>
+                    </td>
+                </tr>
             </ng-template>
-        </div>
 
-        <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-            [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total"
-            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize" (page)="refreshItems()"
-            [showFirstLastButtons]="appConfig.showFirstLastButtons">
-        </mat-paginator>
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="11" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
 </div>

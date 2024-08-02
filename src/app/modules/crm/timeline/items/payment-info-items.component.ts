@@ -1,6 +1,6 @@
 import { AlertService } from './../../../../services/alert.service';
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -75,6 +75,8 @@ export class TimelinePaymentInfoItemComponent {
     cols = [];
     total = 0;
 
+    @Input() recordItem: any = {}
+
     columns = [
         {
             key: 'itemName',
@@ -86,7 +88,7 @@ export class TimelinePaymentInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true
+            tooltip: false
         },
         {
             key: 'status',
@@ -98,7 +100,7 @@ export class TimelinePaymentInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
             toColor: true
         },
         {
@@ -149,7 +151,12 @@ export class TimelinePaymentInfoItemComponent {
     productId: any;
 
     ngOnInit(): void {
-        this.refreshItems();
+        if (Object.keys(this.recordItem).length == 0) {
+            this.refreshItems();
+        }
+        if(Object.keys(this.recordItem).length > 0){
+            this.refreshItemsReceipt();
+        }
     }
 
     getStatusColor(status: string): string {
@@ -163,7 +170,7 @@ export class TimelinePaymentInfoItemComponent {
             return 'text-orange-600';
         } else if (status == 'Inprocess') {
             return 'text-blue-600';
-        } else if (status == 'Rejected from Store') {
+        } else if (status == 'Rejected from Store' || status == 'Cancel') {
             return 'text-red-600';
         } else {
             return '';
@@ -202,12 +209,35 @@ export class TimelinePaymentInfoItemComponent {
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         filterReq['Id'] = this.productId ? this.productId : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res?.data[0];
+                this.dataList = res[0];
+                // this.dataList = res?.data[0];
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    refreshItemsReceipt() {
+        this.isLoading = true;
+        const filterReq = GridUtils.GetFilterReq(
+            this._paginator,
+            this._sort,
+            "",
+        );
+        // filterReq['agent_id'] = this.recordItem?.receiptfromid ? this.recordItem?.receiptfromid : ""
+        filterReq['Id'] = this.recordItem?.product_id ? this.recordItem?.product_id : ""
+        this.crmService.getProductInfoList(filterReq).subscribe({
+            next: (res) => {
+                this.isLoading = false;
+                this.dataList = res[0];
+               // this.dataList = res?.data[0];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

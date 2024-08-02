@@ -7,149 +7,261 @@
             {{ module_name }}
             <!-- Leads -->
         </div>
+
+
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <!-- Global Search -->
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
-            </mat-form-field>
-          
-            <button class="ml-4" mat-flat-button [color]="'primary'"  (click)="refreshItems()">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-            </button>
-            
-            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
-                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!-- Column Filter -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+            </p-overlayPanel>
+
+            <!-- Refresh -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+             <!-- Add -->
+             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
 
+            <!-- Export -->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
             <mat-menu #menu>
                 <button mat-menu-item (click)="exportExcel()">
                     <mat-icon>arrow_downward</mat-icon>
                     <span>Export Excel</span>
                 </button>
+                <!-- <button mat-menu-item (click)="reShuffle()">
+                    <mat-icon svgIcon="heroicons_outline:arrows-right-left"></mat-icon>
+                    <span style="font-weight: 600">Reshuffle</span>
+                </button> -->
             </mat-menu>
         </div>
     </div>
 
     <!-- Table -->
-    <div class="flex flex-col flex-auto overflow-hidden">
-        <!-- list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
-            <ng-container>
-                <div class="grid">
-                    <!-- Header -->
-                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card"
-                        matSort matSortDisableClear (matSortChange)="refreshItems()">
-                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
-                            #
-                        </div>
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true" columnResizeMode="expand"
+            [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize"
+            [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['agency_name', 'lead_status', 'entry_date_time', 'relation_manager', 'email_address', 'mobile_number', 'city_name']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
 
-                        <ng-container *ngFor="let col of columns">
-                            <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                        </ng-container>
-                    </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                        <ng-container *ngFor="let ListItem of dataList">
-                            <div class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer"
-                                [ngClass]="
-                                    ListItem.is_disabled ? 'opacity-38' : ''
-                                ">
-                                <button mat-icon-button (click)="$event.stopPropagation()"
-                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-gray-50 dark:bg-gray-900"
-                                    style="border-radius: 0%; width: 100%">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
-                                <mat-menu #optionMenu>
-                                    <button mat-menu-item (click)="view(ListItem)">
-                                        <mat-icon class="mat-18">info</mat-icon>
-                                        <span style="font-weight: 600;">Info</span>
-                                    </button>
-                                    <button mat-menu-item (click)="setKYCVerify(ListItem)">
-                                        <mat-icon class="mat-18">fingerprint</mat-icon>
-                                        <span style="font-weight: 600">View KYC</span>
-                                    </button>
-                                    <button mat-menu-item (click)="modifyReditect(ListItem)">
-                                        <mat-icon svgIcon="heroicons_solid:pencil-square"></mat-icon>
-                                        <span style="font-weight: 600">Modify Details</span>
-                                    </button>
-                                    <!-- <button mat-menu-item (click)="assignKYC(ListItem)">
-                                        <mat-icon svgIcon="heroicons_outline:arrow-up-on-square-stack"></mat-icon>
-                                        <span style="font-weight: 600">Assign KYC</span>
-                                    </button> -->
-                                    <mat-divider
-                                        *ngIf="!ListItem.is_email_verified || !ListItem.is_mobile_verified"></mat-divider>
-                                    <button *ngIf="!ListItem.is_email_verified" mat-menu-item
-                                        (click)="setEmailVerify(ListItem)">
-                                        <mat-icon class="mat-18">verified</mat-icon>
-                                        <span style="font-weight: 600">Verify Email</span>
-                                    </button>
-                                    <button *ngIf="!ListItem.is_mobile_verified" mat-menu-item
-                                        (click)="setMobileVerify(ListItem)">
-                                        <mat-icon class="mat-18">verified</mat-icon>
-                                        <span style="font-weight: 600">Verify Mobile</span>
-                                    </button>
-                                </mat-menu>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="agency_name" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name"
+                    [ngClass]="{'left-0': !frozenObj?.agency_name}">
+                        Agent <p-sortIcon field="agency_name" />
+                        <span class="float-right" (click)="isFrozenColumn('agency_name');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.agency_name" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.agency_name" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th class="min-w-28 dark:bg-[#1e293b]" pSortableColumn="lead_status" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status"
+                    [ngClass]="{'left-0': !frozenObj?.lead_status}">
+                        Status <p-sortIcon field="lead_status" />
+                        <span class="float-right" (click)="isFrozenColumn('lead_status');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.lead_status" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.lead_status" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="entry_date_time" pResizableColumn>
+                        Date <p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th pSortableColumn="relation_manager" pResizableColumn>
+                        RM <p-sortIcon field="relation_manager" />
+                    </th>
+                    <th pSortableColumn="email_address" pResizableColumn>
+                        Email <p-sortIcon field="email_address" />
+                    </th>
+                    <th pSortableColumn="mobile_number" pResizableColumn>
+                        Mobile <p-sortIcon field="mobile_number" />
+                    </th>
+                    <th pSortableColumn="city_name" pResizableColumn
+                        [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
+                        City <p-sortIcon field="city_name" />
+                    </th>
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                        [ngClass]="{'w-full': isLast }">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+                    </th>
+                </tr>
 
-                                <ng-container *ngFor="let col of columns">
-
-                                    <span *ngIf="col.is_boolean" class="text-center">
-                                        <mat-icon class="text-green-600" *ngIf="ListItem[col.key]">done</mat-icon>
-                                        <mat-icon class="text-red-600" *ngIf="!ListItem[col.key]">clear</mat-icon>
-                                    </span>
-
-                                    <div *ngIf="!col.is_boolean" [class]="
-                                            'flex flex-row items-center space-x-2 truncate pl-4 ' +
-                                            col.class
-                                        ">
-                                        <div class="flex flex-col truncate">
-                                            <span class="truncate" [matTooltip]="
-                                                    col.tooltip
-                                                        ? ListItem[col.key]
-                                                        : ''
-                                                ">
-                                                {{
-                                                col.is_date
-                                                ? (ListItem[col.key]
-                                                | date
-                                                : col.date_formate) ||
-                                                " - "
-                                                : ListItem[col.key] ||
-                                                " "
-                                                }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-template #noGridItems>
-                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                    {{ getNodataText() }}
-                </div>
+                <tr *ngIf="isFilterShow">
+                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">
+                        <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency"
+                            ariaLabel="Filter Agency" />
+                    </th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="lead_status" placeholder="Search by Status"
+                            ariaLabel="Filter Status" /> -->
+                        <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div>{{ option }}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body" [ngModel]="value"
+                                    placeholder="Search by Entry">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="relation_manager" placeholder="Search by RM"
+                            ariaLabel="Filter RM" /> -->
+                        <p-columnFilter class="searchableDropdown"  field="relation_manager" matchMode="contains" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown"
+                                    [options]="employeeList"
+                                    optionLabel="employee_name"
+                                    [(ngModel)]="selectedRm"
+                                    [filter]="true"
+                                    filterBy="employee_name"
+                                    (onFilter)="getRelationManagerList($event?.filter)"
+                                    (onChange)="filter($event.value?.employee_name)"
+                                    [showClear]="true"
+                                    appendTo="body"
+                                    placeholder="Select RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="email_address" placeholder="Search by Email"
+                            ariaLabel="Filter Email" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="mobile_no" placeholder="Search by Mobile"
+                            ariaLabel="Filter Mobile" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="city_name" placeholder="Search by City"
+                            ariaLabel="Filter city_name" />
+                    </th>
+                    <th *ngFor="let col of columns">
+                        <p-columnFilter [type]="col.type" [field]="col.field" [placeholder]="'Search by '+ col.header"
+                            [ariaLabel]="'Filter '+ col.header" />
+                    </th>
+                </tr>
             </ng-template>
-        </div>
 
-        <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-            [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total"
-            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize" (page)="refreshItems()"
-            [showFirstLastButtons]="appConfig.showFirstLastButtons">
-        </mat-paginator>
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="view(element)">
+                                <mat-icon class="mat-18" >info</mat-icon>
+                                <span style="font-weight: 600;">Info</span>
+                            </button>
+                            <button mat-menu-item (click)="setKYCVerify(element)">
+                                <mat-icon class="mat-18">fingerprint</mat-icon>
+                                <span style="font-weight: 600">View KYC</span>
+                            </button>
+                            <button mat-menu-item (click)="modifyReditect(element)">
+                                <mat-icon svgIcon="heroicons_solid:pencil-square"></mat-icon>
+                                <span style="font-weight: 600">Modify Details</span>
+                            </button>
+                            <!-- <button mat-menu-item (click)="setMarkupProfile(element)">
+                                <mat-icon class="mat-18">person</mat-icon>
+                                <span style="font-weight: 600">Set Markup Profile</span>
+                            </button> -->
+                            <button mat-menu-item (click)="kycProfile(element)">
+                                <mat-icon class="mat-18">beenhere</mat-icon>
+                                <span style="font-weight: 600">Set KYC Profile</span>
+                            </button>
+                            <!-- <button mat-menu-item (click)="assignKYC(element)">
+                                <mat-icon svgIcon="heroicons_outline:arrow-up-on-square-stack"></mat-icon>
+                                <span style="font-weight: 600">Assign KYC</span>
+                            </button> -->
+                            <mat-divider
+                                *ngIf="!element.is_email_verified || !element.is_mobile_verified"></mat-divider>
+                            <button *ngIf="!element.is_email_verified" mat-menu-item
+                                (click)="setEmailVerify(element)">
+                                <mat-icon class="mat-18">verified</mat-icon>
+                                <span style="font-weight: 600">Verify Email</span>
+                            </button>
+                            <button *ngIf="!element.is_mobile_verified" mat-menu-item
+                                (click)="setMobileVerify(element)">
+                                <mat-icon class="mat-18">verified</mat-icon>
+                                <span style="font-weight: 600">Verify Mobile</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">{{element.agency_name || "-"}}</td>
+                    <!-- <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">{{element.lead_status || "-"}}</td> -->
+
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status"><span [ngClass]="getStatusColor(element.lead_status)">{{(element.lead_status) || '-'}}</span></td>
+
+                    <td>
+                        {{(element.entry_date_time | date: "dd-MM-yyyy") || "-"}}
+                    </td>
+                    <td>{{element.relation_manager || "-"}}</td>
+                    <td>{{element.email_address || "-"}}</td>
+                    <td>{{element.mobile_number || "-"}}</td>
+                    <td>{{element.city_name || "-"}}</td>
+                    <td *ngFor="let col of columns">
+                        {{element[col.field] || "-"}}
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="10" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
-    
+
 </div>

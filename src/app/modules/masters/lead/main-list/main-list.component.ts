@@ -9,13 +9,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { AppConfig } from 'app/config/app-config';
 import { WAuditedComponent } from 'app/modules/account/withdraw/audited/audited.component';
 import { WPendingComponent } from 'app/modules/account/withdraw/pending/pending.component';
 import { WRejectedComponent } from 'app/modules/account/withdraw/rejected/rejected.component';
@@ -27,14 +23,18 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { UserService } from 'app/core/user/user.service';
 import { AgentService } from 'app/services/agent.service';
 import { LeadsService } from 'app/services/leads.service';
-import { ToasterService } from 'app/services/toaster.service';
 import { KycInfoComponent } from '../../agent/kyc-info/kyc-info.component';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { LeadEntryComponent } from '../lead-entry/lead-entry.component';
 import { AssignKycComponent } from '../assign-kyc/assign-kyc.component';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { CreateLeadComponent } from '../create-lead/create-lead.component';
+import { environment } from 'environments/environment';
+import { MarkupProfileDialogeComponent } from '../../agent/markup-profile-dialoge/markup-profile-dialoge.component';
+import { SetKycProfileComponent } from '../../agent/set-kyc-profile/set-kyc-profile.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { EmployeeService } from 'app/services/employee.service';
 
 @Component({
   selector: 'app-main-list',
@@ -55,13 +55,10 @@ import { CreateLeadComponent } from '../create-lead/create-lead.component';
     MatInputModule,
     MatButtonModule,
     MatProgressBarModule,
-    MatTableModule,
-    MatPaginatorModule,
     MatSortModule,
     MatFormFieldModule,
     MatMenuModule,
     MatDialogModule,
-    MatTooltipModule,
     MatDividerModule,
     CommonModule,
     MatTabsModule,
@@ -69,7 +66,8 @@ import { CreateLeadComponent } from '../create-lead/create-lead.component';
     WAuditedComponent,
     WRejectedComponent,
     LeadListComponent,
-    ConvertedListComponent
+    ConvertedListComponent,
+    PrimeNgImportsModule
   ],
 })
 export class MainListComponent extends BaseListingComponent {
@@ -79,6 +77,10 @@ export class MainListComponent extends BaseListingComponent {
   user: any = {};
   total = 0;
   Mainmodule: any;
+  _selectedColumns: Column[];
+  isFilterShow: boolean = false;
+  selectedRm:string;
+  employeeList:any[] = [];
   // user: any = {};
 
   columns = [
@@ -92,15 +94,18 @@ export class MainListComponent extends BaseListingComponent {
   ]
   cols = [];
 
+  statusList =  [ 'New', 'Converted', 'Live', 'Kyc Pending']
+
   constructor(
     private conformationService: FuseConfirmationService,
     private leadsService: LeadsService,
     private agentService: AgentService,
     // private alertService: ToasterService,
     private userService: UserService,
+    private employeeService: EmployeeService,
     private matDialog: MatDialog,
     private router: Router,
-  ){
+  ) {
     super(module_name.newSignup)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
@@ -113,11 +118,25 @@ export class MainListComponent extends BaseListingComponent {
       .subscribe((user: any) => {
         this.user = user;
       });
-
-
   }
 
-  refreshItems(): void {
+  ngOnInit() {
+    this.cols = [
+      { field: 'contact_person', header: 'Contact Person', type: 'text' },
+    ];
+
+    this.getRelationManagerList("");
+  }
+
+  get selectedColumns(): Column[] {
+    return this._selectedColumns;
+  }
+
+  set selectedColumns(val: Column[]) {
+    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+  }
+
+  refreshItems(event?: any): void {
     this.isLoading = true;
 
     // const filterReq = GridUtils.GetFilterReq(
@@ -126,7 +145,7 @@ export class MainListComponent extends BaseListingComponent {
     //   this.searchInputControlPending.value, "entry_date_time", 1
     // );
 
-    var model = this.getFilterReq();
+    var model = this.getNewFilterReq(event);
     model['Status'] = '';
     if (Security.hasPermission(leadsPermissions.viewOnlyAssignedPermissions)) {
       model['relationmanagerId'] = this.user.id
@@ -136,14 +155,21 @@ export class MainListComponent extends BaseListingComponent {
       next: data => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
-        this.total = data.total;
+        // this._paginator.length = data.total;
+        this.totalRecords = data.total;
       }, error: err => {
         this.alertService.showToast('error', err, 'top-right', true)
         this.isLoading = false;
       }
     })
   }
+
+  // To get Relationship Manager data from employeelist api
+  getRelationManagerList(value: any) {
+    this.employeeService.getemployeeCombo(value).subscribe((data) => {
+        this.employeeList = data;
+    })
+}
 
   create(): void {
     this.matDialog.open(CreateLeadComponent, {
@@ -161,7 +187,13 @@ export class MainListComponent extends BaseListingComponent {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    window.open( record.url + `kyc-dashboard/` + record.id + `/email`);
+    // window.open( record.url + `kyc-dashboard/` + record.id + `/email`);
+
+    if (environment.isEnvironment == 'production') {
+      window.open(record.url + `kyc-dashboard/` + record.id + `/email`);
+    } else {
+      window.open(environment.stagingUrl + `kyc-dashboard/` + record.id + `/email`);
+    }
   }
 
   setKYCVerify(record): void {
@@ -288,9 +320,57 @@ export class MainListComponent extends BaseListingComponent {
     })
   }
 
+  setMarkupProfile(record): void {
+    if (!Security.hasPermission(leadsPermissions.setMarkupProfilePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.matDialog.open(MarkupProfileDialogeComponent, {
+      data: record,
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      if (res) {
+        // this.agentService.setMarkupProfile(record.id, res.transactionId).subscribe({
+        //   next: () => {
+        //     this.alertService.showToast('success', "The markup profile has been set!", "top-right", true);
+        //   },
+        //   error: (err) => {
+        //     this.alertService.showToast('error', err, 'top-right', true);
+
+        //   },
+        // })
+      }
+    })
+  }
+
+  kycProfile(record): void {
+    if (!Security.hasPermission(leadsPermissions.setKYCProfilePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.matDialog.open(SetKycProfileComponent, {
+      data: record,
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      if (res) {
+        this.agentService.setKYCProfile(record.id, res.kyc_profile_id).subscribe({
+          next: () => {
+            this.alertService.showToast('success', "KYC Profile has been set!", "top-right", true);
+            record.kyc_profile_id = res.kyc_profile_id;
+            this.refreshItems()
+          },
+          error: (err) => {
+            this.alertService.showToast('error', err, 'top-right', true);
+
+          },
+        })
+      }
+    })
+  }
+
   exportExcel(): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
 
     // const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value);
@@ -298,35 +378,44 @@ export class MainListComponent extends BaseListingComponent {
 
     // req.skip = 0;
     // req.take = this._paginator.length;
-    const filterReq = {};
-    filterReq["Filter"] = this.searchInputControl.value;
-    filterReq["Status"] = ''
-    filterReq['Skip'] = 0;
-    filterReq['Take'] = this._paginator.length;
-    filterReq['OrderBy'] = 'entry_date_time';
-    filterReq['OrderDirection'] = 1;
-
+    const filterReq = this.getNewFilterReq({});
+    filterReq['Take'] = this.totalRecords;
 
     this.leadsService.getAgentLeadList(filterReq).subscribe(data => {
-        for (var dt of data.data) {
-            // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
-            dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy')
-        }
-        Excel.export(
-            'New Signup',
-            [
-              { header: 'Agent', property: 'agency_name' },
-                { header: 'Status', property: 'lead_status' },
-                { header: 'Date', property: 'entry_date_time' },
-                { header: 'Relationship Manager', property: 'relation_manager' },
-                { header: 'Email', property: 'email_address' },
-                { header: 'Mobile', property: 'mobile_number' },
-                { header: 'City', property: 'city_name' },
-            ],
-            data.data, "New Signup", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]);
+      for (var dt of data.data) {
+        // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
+        dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy')
+      }
+      Excel.export(
+        'New Signup',
+        [
+          { header: 'Agent', property: 'agency_name' },
+          { header: 'Status', property: 'lead_status' },
+          { header: 'Date', property: 'entry_date_time' },
+          { header: 'RM', property: 'relation_manager' },
+          { header: 'Email', property: 'email_address' },
+          { header: 'Mobile', property: 'mobile_number' },
+          { header: 'City', property: 'city_name' },
+          { property: 'contact_person', header: 'Contact Person' },
+        ],
+        data.data, "New Signup", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }]);
     });
-}
+  }
 
+
+  getStatusColor(status: string): string {
+        if (status == 'New') {
+            return 'text-yellow-600';
+        } else if (status == 'Converted' || status == 'Live') {
+            return 'text-green-600';
+        }  else if (status == 'Kyc Pending') {
+            return 'text-blue-600';
+        } else if (status == 'Kyc Rejected') {
+            return 'text-red-600';
+        } else {
+            return '';
+        }
+    }
 
   getNodataText(): string {
     if (this.isLoading)

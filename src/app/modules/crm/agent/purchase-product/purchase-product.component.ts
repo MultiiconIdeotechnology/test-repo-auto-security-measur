@@ -22,14 +22,16 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { module_name } from 'app/security';
+import { agentPermissions, agentsPermissions, messages, module_name, Security } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { PurchaseProductEntryComponent } from '../purchase-product-entry/purchase-product-entry.component';
 import { AgentProductInfoComponent } from '../product-info/product-info.component';
+import { PurchaseProductEntrySettingsComponent } from "../purchase-product-entry-settings/purchase-product-entry-settings.component";
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
     selector: 'app-purchase-product',
@@ -64,7 +66,8 @@ import { AgentProductInfoComponent } from '../product-info/product-info.componen
         MatDialogModule,
         CommonModule,
         MatTabsModule,
-        MatProgressBarModule
+        MatProgressBarModule,
+        PurchaseProductEntrySettingsComponent
     ]
 })
 export class PurchaseProductComponent {
@@ -78,6 +81,7 @@ export class PurchaseProductComponent {
         private crmService: CrmService,
         private alertService: ToasterService,
         private matDialog: MatDialog,
+        private entityService: EntityService,
         private confirmationService: FuseConfirmationService,
         public matDialogRef: MatDialogRef<PurchaseProductComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any = {}
@@ -103,7 +107,8 @@ export class PurchaseProductComponent {
             align: '',
             indicator: false,
             tooltip: true,
-            applied: false
+            applied: false,
+            toProduct: true,
         },
         {
             key: 'itemCount',
@@ -141,7 +146,7 @@ export class PurchaseProductComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
             toColor: true,
             applied: false
         },
@@ -200,7 +205,7 @@ export class PurchaseProductComponent {
             applied: false
         },
         {
-            key: 'entry_date',
+            key: 'entry_date_time',
             name: 'Entry Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -242,10 +247,12 @@ export class PurchaseProductComponent {
         if (status == 'Pending') {
             return 'text-yellow-600';
         } else if (status == 'Inprocess') {
-            return 'text-blue-600';
+            return 'text-green-600';
         } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else {
+        } else if (status == 'Expired' || status == 'Cancel' || status == 'Block') {
+            return 'text-red-600';
+        } {
             return '';
         }
     }
@@ -318,7 +325,7 @@ export class PurchaseProductComponent {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
         this.matDialog.open(AgentProductInfoComponent, {
-            data: { data: record, agencyName: agencyName, readonly: true },
+            data: { data: record, agencyName: agencyName, readonly: true, purchase_product: true },
             disableClose: true
         });
     }
@@ -327,20 +334,26 @@ export class PurchaseProductComponent {
         // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
-        this.matDialog.open(PurchaseProductEntryComponent,
-            { data: this.record, disableClose: true })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res) {
-                    this.refreshItems();
-                    this.alertService.showToast(
-                        'success',
-                        'New record added',
-                        'top-right',
-                        true
-                    );
-                }
-            });
+        // this.matDialog.open(PurchaseProductEntryComponent,
+        //     { data: this.record, disableClose: true })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) {
+        //             this.refreshItems();
+        //             this.alertService.showToast(
+        //                 'success',
+        //                 'New record added',
+        //                 'top-right',
+        //                 true
+        //             );
+        //         }
+        //     });
+        this.entityService.raiseproductPurchaseCall({ data: this.record, addFlag: true })
+        this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                this.refreshItems();
+            }
+        })
     }
 
     deleteProduct(record) {
@@ -370,25 +383,76 @@ export class PurchaseProductComponent {
         })
     }
 
+    cancelProduct(record) {
+        if (!Security.hasPermission(agentPermissions.cancelProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = 'Cancel Purchase product';
+        this.confirmationService
+            .open({
+                title: label,
+                message: 'Do you want to Cancel?',
+                inputBox: 'Remark',
+                customShow: true,
+                dateCustomShow: false
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res?.action === 'confirmed') {
+                    let newJson = {
+                        id: record.id,
+                        cancel_remark: res?.statusRemark ? res?.statusRemark : ""
+                    }
+                    this.crmService.cancelPurchaseProduct(newJson).subscribe({
+                        next: (res) => {
+                            this.alertService.showToast(
+                                'success',
+                                'Purchase product has been cancelled!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems()
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+                    });
+                }
+            });
+    }
+
     editProduct(record) {
         // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
-        this.matDialog.open(PurchaseProductEntryComponent, {
-            data: { editData: record, editFlag: true },
-            disableClose: true
-        }).afterClosed()
-            .subscribe((res) => {
-                if (res) {
-                    this.refreshItems();
-                    this.alertService.showToast(
-                        'success',
-                        'Record modified',
-                        'top-right',
-                        true
-                    );
-                }
-            });
+        // this.matDialog.open(PurchaseProductEntryComponent, {
+        //     data: { editData: record, editFlag: true },
+        //     disableClose: true
+        // }).afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) {
+        //             this.refreshItems();
+        //             this.alertService.showToast(
+        //                 'success',
+        //                 'Record modified',
+        //                 'top-right',
+        //                 true
+        //             );
+        //         }
+        //     });
+
+        this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
+        this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                this.refreshItems();
+            }
+        });
     }
 
     paymentProduct() {

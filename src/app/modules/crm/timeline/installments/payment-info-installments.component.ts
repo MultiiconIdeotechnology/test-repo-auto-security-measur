@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -71,6 +71,7 @@ import { Subject } from 'rxjs';
     ]
 })
 export class TimelineInstallmentsInfoItemComponent {
+    @Input() recordItem: any = {}
     cols = [];
     total = 0;
     agentId: any;
@@ -112,7 +113,7 @@ export class TimelineInstallmentsInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
             is_amount: true
         },
         {
@@ -159,11 +160,16 @@ export class TimelineInstallmentsInfoItemComponent {
     record: any;
 
     ngOnInit(): void {
-        this.refreshItems();
+        if (Object.keys(this.recordItem).length == 0) {
+            this.refreshItems();
+        }
+        if(Object.keys(this.recordItem).length > 0){
+            this.refreshItemsReceipt();
+        }
     }
 
-    getPaymentIndicatorClass(priority: boolean): string {
-        if (priority == true) {
+    getPaymentIndicatorClass(isPaymentAaudited: boolean): string {
+        if (isPaymentAaudited == true) {
             return 'bg-green-600';
         } else {
             return 'bg-red-600';
@@ -202,12 +208,35 @@ export class TimelineInstallmentsInfoItemComponent {
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         filterReq['Id'] = this.productId ? this.productId : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res?.data[0];
+                this.dataList = res[0];
+                // this.dataList = res?.data[0];
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    refreshItemsReceipt() {
+        this.isLoading = true;
+        const filterReq = GridUtils.GetFilterReq(
+            this._paginator,
+            this._sort,
+            "",
+        );
+        // filterReq['agent_id'] = this.recordItem?.receiptfromid ? this.recordItem?.receiptfromid : ""
+        filterReq['Id'] = this.recordItem?.product_id ? this.recordItem?.product_id : ""
+        this.crmService.getProductInfoList(filterReq).subscribe({
+            next: (res) => {
+                this.isLoading = false;
+                this.dataList = res[0];
+                // this.dataList = res?.data[0];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

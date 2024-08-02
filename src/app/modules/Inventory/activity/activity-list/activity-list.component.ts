@@ -20,17 +20,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-activity-list',
     templateUrl: './activity-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 240px 300px 100px 100px 130px 100px 200px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -50,6 +45,7 @@ import { ToasterService } from 'app/services/toaster.service';
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class ActivityListComponent extends BaseListingComponent {
@@ -131,7 +127,7 @@ export class ActivityListComponent extends BaseListingComponent {
             tooltip: true,
         },
         {
-            key: 'inclusions',
+            key: 'is_meal_included',
             name: 'Meal',
             is_date: false,
             date_formate: '',
@@ -160,7 +156,15 @@ export class ActivityListComponent extends BaseListingComponent {
             tooltip: true,
         },
     ];
+
+    actionList = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false}
+    ];
+    
     cols = [];
+    isFilterShow: boolean = false;
+
 
     constructor(
         private activityService: ActivityService,
@@ -170,20 +174,22 @@ export class ActivityListComponent extends BaseListingComponent {
         private router: Router
     ) {
         super(module_name.activity);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'activity_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.activityService.getActivityList(this.getFilterReq()).subscribe({
+        this.activityService.getActivityList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                // this._paginator.length = data.total;
+                this.totalRecords = data.total;
+
             },
             error: (err) => {
                 this.toasterService.showToast('error', err)
@@ -351,6 +357,6 @@ export class ActivityListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

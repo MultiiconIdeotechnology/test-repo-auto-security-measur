@@ -1,0 +1,309 @@
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="w-full">
+        <div class="flex flex-col w-[100%] gap-2 m-auto">
+            <div class="flex flex-row justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+                <span class=" text-xl font-semibold">{{title}}</span>
+                <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                    (click)="emailVerifyFlag = false ; mobileVerifyFlag = false ; settingsDrawer.close()"></mat-icon>
+            </div>
+
+            <div style="height: calc(100vh - 130px)" class="overflow-auto p-5">
+
+                <!-- Mobile Number Section -->
+                <div class="flex flex-col rounded-md max-w-90 min-w-90"
+                    *ngIf="mobileVerifyFlag === false && this.data?.flag == 'mobile'">
+                    <!-- <div class="flex justify-between">
+                        <p class="text-lg font-semibold ">Update Mobile Number</p>
+                    </div> -->
+                    <p class="text-base font-normal text-primary">* Please enter your new mobile number</p>
+
+                    <form [formGroup]="contactForm" class="pt-5">
+                        <mat-label class="  text-base font-normal">Mobile Number</mat-label>
+                        <div class="flex m-auto otp mt-3">
+                            <mat-form-field class="">
+                                <div class="flex items-center mat-form-field-appearance-fill min-h-[20px] rounded-md">
+                                    <mat-select formControlName="mobile_code" #code class="overflow-hidden text-md">
+                                        <mat-option>
+                                            <ngx-mat-select-search placeholderLabel="Search"
+                                                noEntriesFoundLabel="'no matching Country Code found'"
+                                                formControlName="mobilefilter"
+                                                (input)="filterMobile($event.target.value)">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option class="text-md" *ngFor="let ct of MobileCodeList | async"
+                                            [value]="ct.mobile_code">{{ct.mobile_code}} -
+                                            {{ct.country_code}}</mat-option>
+                                    </mat-select>
+                                </div>
+                            </mat-form-field>
+
+                            <mat-form-field class=" w-full pl-2">
+                                <input matInput formControlName="mobile_number" type="number" pattern="[0-9]*"
+                                    class="font-semibold">
+                                <!-- <mat-error *ngIf="contactForm.get('mobile_number').hasError('pattern')">
+                Mobile Number must be 10 digit number.
+            </mat-error> -->
+                            </mat-form-field>
+                        </div>
+                        <div class="flex pt-3 text-right justify-end">
+                            <div class="">
+                                <!-- <div class="flex text-lg font-semibold text-[#1C1C1C] capitalize text-center w-fit cursor-pointer"
+                                    (click)="matDialogRef.close()">
+                                    <span>Cancel</span>
+                                </div> -->
+                                <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button
+                                    (click)="emailVerifyFlag = false ; mobileVerifyFlag = false ; settingsDrawer.close()">
+                                    <span>Cancel</span>
+                                </button>
+
+                            </div>
+                            <!-- <button mat-stroked-button color="primary" (click)="sendOTP()"
+                                class="rounded-[4px] font-medium white-text primary-bg">
+                                <span class="flex flex-row items-center gap-2">
+                                    <span
+                                        class="w-[80px] rounded-[10px] white-text text-base font-semibold capitalize cursor-pointer">send
+                                        OTP</span>
+                                </span>
+                            </button> -->
+
+                            <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                                (click)="sendOTP()">
+                                Send OTP
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Verify OTP Mobile Section-->
+                <div class="flex flex-col rounded-md max-w-90 min-w-90" *ngIf="mobileVerifyFlag === true">
+                    <div class="flex justify-between">
+                        <p class="text-2xl font-semibold  ">Verify OTP</p>
+                        <!-- <mat-icon svgIcon="close" class="black-text icon-size-7 cursor-pointer"
+                            (click)="settingsDrawer.close()"></mat-icon> -->
+                    </div>
+                    <ng-container>
+                        <p class="text-primary text-base font-normal pt-1">We have sent an OTP an your mobile</p>
+                        <p class="text-primary text-base font-normal">{{ '+' + this.contactForm.get('mobile_code')?.value
+                            + ' ' +
+                            this.contactForm.get('mobile_number')?.value }}</p>
+                    </ng-container>
+
+                    <form [formGroup]="verifyForm" class="pt-6">
+                        <mat-label class="  text-base font-normal">OTP</mat-label>
+                        <div class="flex m-auto otp mt-3 justify-between">
+                            <mat-form-field class="w-full flex">
+                                <div>
+                                    <input matInput formControlName="code" placeholder="Enter OTP" type="number"
+                                        pattern="[0-9]*" class="font-medium text-base  ">
+                                </div>
+                                <div>
+                                    <p class="text-center primary-text cursor-pointer pl-10 underline"
+                                        (click)="sendMessage()">Resend
+                                        OTP</p>
+                                </div>
+                                <mat-error *ngIf="verifyForm.get('code').hasError('code')">
+                                    OTP Code must be 6 digits number.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex pt-3 text-right justify-end">
+                            <div class="">
+                                <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button
+                                    (click)="emailVerifyFlag = false ; mobileVerifyFlag = false ; settingsDrawer.close()">
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+
+                            <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                                (click)="verifyOTP()">
+                                Verify
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Verify Mobile-->
+                <div class="flex flex-col rounded-md max-w-90 min-w-90"
+                    *ngIf="this.data?.flag == 'verify-mobile' && mobileVerifyFlag === false">
+                    <div class="flex justify-between">
+                        <p class="text-2xl font-semibold  ">Verify OTP</p>
+                        <!-- <mat-icon svgIcon="close" class="black-text icon-size-7 cursor-pointer"
+                            (click)="matDialogRef.close()"></mat-icon> -->
+                    </div>
+                    <ng-container>
+                        <p class="light-text text-base font-normal pt-1">We have sent an OTP an your mobile</p>
+                        <p class="light-text text-base font-normal">{{ '+' + this.data?.data?.mobile_code + ' ' +
+                            this.data?.data?.mobile_number }}</p>
+                    </ng-container>
+
+                    <form [formGroup]="verifyForm" class="pt-6">
+                        <mat-label class="  text-base font-normal">OTP</mat-label>
+                        <div class="flex m-auto otp mt-3 justify-between">
+                            <mat-form-field class="w-full flex">
+                                <div>
+                                    <input matInput formControlName="code" placeholder="Enter OTP" type="number"
+                                        pattern="[0-9]*" class="font-medium text-base  ">
+                                </div>
+                                <div>
+                                    <p class="text-center primary-text cursor-pointer pl-10 underline"
+                                        (click)="sendMessage()">Resend
+                                        OTP</p>
+                                </div>
+                                <mat-error *ngIf="verifyForm.get('code').hasError('code')">
+                                    OTP Code must be 6 digits number.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex pt-3 text-right justify-end">
+                            <div class="">
+                                <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button
+                                    (click)="emailVerifyFlag = false ; mobileVerifyFlag = false ; settingsDrawer.close()">
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+
+                            <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                                (click)="verifyOTP()">
+                                Verify
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+
+                <!-- Email Section-->
+                <div class="flex flex-col rounded-md max-w-90 min-w-90"
+                    *ngIf="emailVerifyFlag === false && this.data?.flag == 'email'">
+                    <!-- <div class="flex justify-between">
+                        <p class="text-lg font-semibold  ">Update Email Address</p>
+                        <!-- <mat-icon svgIcon="close" class="black-text icon-size-7 cursor-pointer"
+                            (click)="matDialogRef.close()"></mat-icon> -->
+                    <!-- </div>  -->
+                    <p class="text-primary text-base font-normal ">* Please enter your new email address</p>
+
+                    <form [formGroup]="emailForm" class="pt-5">
+                        <mat-label class="  text-base font-normal">Email Address</mat-label>
+                        <div class="flex m-auto otp mt-3">
+                            <mat-form-field class=" w-full">
+                                <input matInput formControlName="email" class="font-semibold">
+                                <mat-error *ngIf="emailForm.get('email').hasError('email')">
+                                    Enter a valid email address
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex pt-3 text-right justify-end">
+                            <div class="">
+                                <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button
+                                    (click)="emailVerifyFlag = false ; mobileVerifyFlag = false ; settingsDrawer.close()">
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+                            <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                                (click)="sendOTP()">
+                                Send OTP
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Verify OTP Email Address Section-->
+                <div class="flex flex-col rounded-md max-w-90 min-w-90" *ngIf="emailVerifyFlag === true">
+                    <div class="flex justify-between">
+                        <p class="text-2xl font-semibold  ">Verify OTP</p>
+                        <!-- <mat-icon svgIcon="close" class="black-text icon-size-7 cursor-pointer"
+                            (click)="matDialogRef.close()"></mat-icon> -->
+                    </div>
+
+                    <ng-container>
+                        <p class="text-primary text-base font-normal pt-1">We have sent an OTP an your email address</p>
+                        <p class="text-primary text-base font-normal">{{ this.emailForm.get('email')?.value }}</p>
+                    </ng-container>
+
+                    <form [formGroup]="verifyForm" class="pt-6">
+                        <mat-label class="  text-base font-normal">OTP</mat-label>
+                        <div class="flex m-auto otp mt-3 justify-between">
+                            <mat-form-field class="w-full flex">
+                                <div>
+                                    <input matInput formControlName="code" placeholder="Enter OTP" type="number"
+                                        pattern="[0-9]*" class="font-medium text-base  ">
+                                </div>
+                                <div>
+                                    <p class="text-center primary-text cursor-pointer pl-10 underline"
+                                        (click)="sendMessage()">Resend
+                                        OTP</p>
+                                </div>
+                                <mat-error *ngIf="verifyForm.get('code').hasError('code')">
+                                    OTP Code must be 6 digits number.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex pt-3 text-right justify-end">
+                            <div class="">
+                                <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button
+                                    (click)="emailVerifyFlag = false ; mobileVerifyFlag = false ; settingsDrawer.close()">
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+
+                            <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                                (click)="verifyOTP()">
+                                Verify
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!--Verify Email -->
+                <div class="flex flex-col rounded-md max-w-90 min-w-90"
+                    *ngIf="this.data?.flag == 'verify-email' && emailVerifyFlag === false">
+                    <div class="flex justify-between">
+                        <p class="text-2xl font-semibold  ">Verify OTP</p>
+                        <!-- <mat-icon svgIcon="close" class="black-text icon-size-7 cursor-pointer"
+                            (click)="matDialogRef.close()"></mat-icon> -->
+                    </div>
+
+                    <ng-container>
+                        <p class="light-text text-base font-normal pt-1">We have sent an OTP an your email address</p>
+                        <p class="light-text text-base font-normal">{{ this.data?.data?.email }}</p>
+                    </ng-container>
+
+                    <form [formGroup]="verifyForm" class="pt-6">
+                        <mat-label class="  text-base font-normal">OTP</mat-label>
+                        <div class="flex m-auto otp mt-3 justify-between">
+                            <mat-form-field class="w-full flex">
+                                <div>
+                                    <input matInput formControlName="code" placeholder="Enter OTP" type="number"
+                                        pattern="[0-9]*" class="font-medium text-base  ">
+                                </div>
+                                <div>
+                                    <p class="text-center primary-text cursor-pointer pl-10 underline"
+                                        (click)="sendMessage()">Resend
+                                        OTP</p>
+                                </div>
+                                <mat-error *ngIf="verifyForm.get('code').hasError('code')">
+                                    OTP Code must be 6 digits number.
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex pt-3 text-right justify-end">
+                            <div class="">
+                                <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button
+                                    (click)="emailVerifyFlag = false ; mobileVerifyFlag = false ; settingsDrawer.close()">
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+
+                            <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                                (click)="verifyOTP()">
+                                Verify
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</fuse-drawer>

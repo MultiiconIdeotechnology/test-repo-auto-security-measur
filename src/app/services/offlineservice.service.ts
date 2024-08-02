@@ -20,6 +20,10 @@ export class OfflineserviceService {
     return this.http.post<any>(this.baseUrl + 'OsbPurchase/getOsbPurchaseList', model);
   }
   
+  updateOperationPerson(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'OfflineServiceBooking/updateOperationPerson', model);
+  }
+  
   getOsbPaymentList(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'OfflineServiceBooking/getOsbPaymentList', model);
   }

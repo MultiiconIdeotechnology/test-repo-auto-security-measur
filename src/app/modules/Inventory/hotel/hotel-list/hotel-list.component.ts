@@ -20,17 +20,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-hotel-list',
     templateUrl: './hotel-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 180px 130px 220px 200px 250px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -50,6 +45,7 @@ import { ToasterService } from 'app/services/toaster.service';
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class HotelListComponent extends BaseListingComponent {
@@ -135,6 +131,8 @@ export class HotelListComponent extends BaseListingComponent {
         },
     ];
     cols = [];
+    isFilterShow: boolean = false;
+
 
     constructor(
         private hotelService: HotelService,
@@ -144,20 +142,21 @@ export class HotelListComponent extends BaseListingComponent {
         private matDialog: MatDialog
     ) {
         super(module_name.holiday);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'hotel_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.hotelService.getHotelList(this.getFilterReq()).subscribe({
+        this.hotelService.getHotelList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                // this._paginator.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.toastrService.showToast('error', err)
@@ -239,6 +238,6 @@ export class HotelListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

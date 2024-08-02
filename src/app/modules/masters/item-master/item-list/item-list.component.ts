@@ -7,25 +7,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { module_name } from 'app/security';
 import { ItemService } from 'app/services/item.service';
 import { ItemEntryComponent } from '../item-entry/item-entry.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-item-list',
   templateUrl: './item-list.component.html',
   styleUrls: ['./item-list.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns:  40px 100px 140px 120px 210px;
-  }
-  `],
+  styles: [],
   standalone: true,
   imports: [
     NgIf,
@@ -36,12 +30,10 @@ import { ItemEntryComponent } from '../item-entry/item-entry.component';
     MatFormFieldModule,
     MatIconModule,
     MatMenuModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
     MatInputModule,
     MatButtonModule,
     MatTooltipModule,
+    PrimeNgImportsModule
   ],
 })
 export class ItemListComponent extends BaseListingComponent {
@@ -49,6 +41,7 @@ export class ItemListComponent extends BaseListingComponent {
   module_name = module_name.itemMaster
   dataList = [];
   total = 0;
+  isFilterShow: boolean = false;
 
   columns = [
     { key: 'item_code', name: 'Item Code', is_date: false, date_formate: '', is_boolean: false, is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
@@ -57,6 +50,11 @@ export class ItemListComponent extends BaseListingComponent {
     { key: 'entry_date_time', name: 'Entry Date', is_date: true, date_formate: 'dd-MM-yyyy', is_boolean: false, is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: false },
   ]
   cols = [];
+
+  actionList: any[] = [
+      { label: 'Yes', value: true },
+      { label: 'No', value: false },
+  ]
 
   constructor(
     private itemService: ItemService,
@@ -71,13 +69,13 @@ export class ItemListComponent extends BaseListingComponent {
     this.Mainmodule = this
   }
 
-  refreshItems(): void {
+  refreshItems(event?:any): void {
     this.isLoading = true;
-    this.itemService.getItemMasterList(this.getFilterReq()).subscribe({
+    this.itemService.getItemMasterList(this.getNewFilterReq(event)).subscribe({
       next: data => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
+        this.totalRecords = data.total;
       }, error: err => {
         this.alertService.showToast('error', err, 'top-right', true)
         this.isLoading = false;
@@ -131,6 +129,7 @@ export class ItemListComponent extends BaseListingComponent {
     })
   }
 
+
   getNodataText(): string {
     if (this.isLoading)
       return 'Loading...';
@@ -140,7 +139,7 @@ export class ItemListComponent extends BaseListingComponent {
   }
 
   ngOnDestroy(): void {
-    this.masterService.setData(this.key, this)
+    // this.masterService.setData(this.key, this)
   }
 
 }

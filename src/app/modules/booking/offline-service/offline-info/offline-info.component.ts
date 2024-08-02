@@ -70,6 +70,7 @@ export class OfflineInfoComponent {
   tab: string = 'Purchase';
   id: string
   agent_currency_id: string = '';
+  currency_short_code: string = '';
   OfflineRoute = Routes.booking.offline_service_route;
 
   constructor(
@@ -92,6 +93,7 @@ export class OfflineInfoComponent {
       this.offlineService.getOfflineServiceBookingRecord(this.id).subscribe({
         next: (data) => {
           this.agent_currency_id = data.currency_id;
+          this.currency_short_code = data.currency_short_code;
           this.isInvoiceGenerated = data.status.toLowerCase() == "completed";
           this.fieldList = [
             { name: 'Ref.No', value: data.booking_ref_number, },

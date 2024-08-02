@@ -313,6 +313,7 @@ export class SegmentComponent {
 
     const Fdata = this.formGroup.getRawValue()
     Fdata['segmentId'] = this.recordList.id
+    Fdata['operating_carrier'] = Fdata.operating_carrier ? Fdata.operating_carrier : '';
 
     if (this.record.status !== 'Edit') {
       Fdata['existingSegmentId'] = this.recordList.id
@@ -327,7 +328,6 @@ export class SegmentComponent {
     // Fdata['to'] = newTo
     Fdata['depTime'] = DateTime.fromISO(this.formGroup.get('depTime').value).toFormat('yyyy-MM-dd') + 'T' + this.formGroup.get('depTime_time').value
     Fdata['arrTime'] = DateTime.fromISO(this.formGroup.get('arrTime').value).toFormat('yyyy-MM-dd') + 'T' + this.formGroup.get('arrTime_time').value
-
     this.flighttabService.createSegment(Fdata).subscribe({
       next: (data: any) => {
         this.matDialogRef.close(true);

@@ -1,4 +1,4 @@
-<div class="flex flex-col max-w-240 md:min-w-140 max-h-screen -m-6">
+<div class="flex flex-col max-w-200 md:min-w-200 max-h-screen -m-6">
 
   <!-- Header -->
   <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
@@ -38,8 +38,9 @@
 
     <div class="flex gap-3">
       <mat-form-field class="flex-grow">
-        <mat-label>Net Sale Amount</mat-label>
-        <input matInput type="number" formControlName="net_sale_amount" required>
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" [max]="maxAmount" formControlName="net_sale_amount" required>
+        <mat-error>Maximum amount is {{maxAmount}}</mat-error>
       </mat-form-field>
 
       <mat-form-field class="flex-grow">
@@ -50,25 +51,24 @@
       </mat-form-field>
     </div>
 
+    <mat-form-field class="flex-grow mt-1">
+      <mat-label>Account Remark</mat-label>
+      <textarea matInput formControlName="account_remark" class="min-h-22" required></textarea>
+    </mat-form-field>
+
   </form>
 
   <ng-template #detailView>
     <div class="grid grid-cols-4 gap-4 p-6 pb-4 bg-card rounded-2xl overflow-hidden min-w-180">
-      <div class="flex flex-col mb-3" *ngFor="let filed of fieldList">
+      <div class="flex flex-col mb-3" *ngFor="let filed of fieldList" [style]="filed.name == 'Rejection Remark' ? 'grid-column: 1 / 5;' : ''">
         <div class="flex flex-row space-x-2">
           <span class="text-md font-semibold text-secondary">{{
             filed.name
             }}</span>
           <mat-icon *ngIf="filed.show_info" [matTooltip]="filed.info_tooltip">info</mat-icon>
         </div>
-        <span class="truncate flex items-center">
-          <span class="text-base truncate"
-            *ngIf="filed.name === 'Logo size 1' || filed.name === 'Logo size 2' || filed.name === 'Logo size 3'">
-            <img *ngIf="filed.value" class="w-13  object-cover cursor-pointer" src={{filed.value}}>
-            <span *ngIf="!filed.value">--</span>
-          </span>
-          <span class="text-base truncate" [matTooltip]="filed.value"
-            *ngIf="filed.name !== 'Logo size 1' && filed.name !== 'Logo size 2' && filed.name !== 'Logo size 3' ">{{
+        <span class="flex items-center">
+          <span class="text-base truncate" [ngClass]="filed.name == 'Rejection Remark' ? '' : 'truncate'" [matTooltip]="filed.isTooltip ? filed.value : ''">{{
             filed.value || "--" }}</span>
         </span>
 

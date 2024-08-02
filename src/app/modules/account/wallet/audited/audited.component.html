@@ -1,95 +1,214 @@
-<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl">
-    <!-- list -->
-    <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[360px] lg:max-h-[360px] xl:min-h-[480px] xl:max-h-[480px]">
-        <ng-container>
-            <div class="grid ">
-                <!-- Header -->
-                <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold dark:bg-gray-700 bg-white border-b"
-                    matSort matSortDisableClear (matSortChange)="refreshItemsAudited()" #_sortPending matSortActive="request_date_time" matSortDirection="desc">
-                    <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
-                        #
-                    </div>
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItemsAudited($event)" [lazyLoadOnInit]="false" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        [globalFilterFields]="['reference_number', 'request_date_time', 'recharge_for_name', 'recharge_amount','settled_amount','mop','psp_name','psp_ref_number', 'audited_by_name','audited_date_time','user_remark']"
+        styleClass="p-datatable-gridlines p-datatable-sm">
 
-                    <ng-container *ngFor="let col of columns">
-                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class"
-                            class="text-secondary">
-                            {{ col.name }}
-                        </div>
-                        <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class" class="text-secondary">
-                            {{ col.name }}
-                        </div>
-                    </ng-container>
-                </div>
-                <!-- Rows -->
-                <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                    <ng-container *ngFor="let ListItem of dataList">
-                        <div
-                            class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
-                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
-                                <mat-icon> more_vert </mat-icon>
-                            </button>
-                            <mat-menu #optionMenu>
-                                <button mat-menu-item (click)="view(ListItem)">
-                                    <mat-icon class="mat-18">info</mat-icon>
-                                    <span style="font-weight: 600">Info</span>
-                                </button>
-                                <!-- <button *ngIf="!ListItem.is_audited" mat-menu-item (click)="Audit(ListItem)">
-                                    <mat-icon class="mat-18">check_circle</mat-icon>
-                                    <span style="font-weight: 600;">Audit</span>
-                                </button>
-                                <button *ngIf="!ListItem.is_rejected" mat-menu-item (click)="Reject(ListItem)">
-                                    <mat-icon class="mat-18">close</mat-icon>
-                                    <span style="font-weight: 600;">Reject</span>
-                                </button> -->
-                            </mat-menu>
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn pResizableColumn alignFrozen="left"
+                    pFrozenColumn [frozen]="frozenObj?.reference_number"
+                    [ngClass]="{'left-0': !frozenObj?.reference_number}">
+                    Ref. No <p-sortIcon field="reference_number" />
+                    <span class="float-right" (click)="isFrozenColumn('reference_number');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.reference_number" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.reference_number" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                <th pSortableColumn="request_date_time" pResizableColumn>
+                    Request <p-sortIcon field="request_date_time" />
+                </th>
+                <th pSortableColumn="recharge_for_name" pResizableColumn>
+                    Agent <p-sortIcon field="recharge_for_name" />
+                </th>
+                <th class="text-right" pSortableColumn="recharge_amount" pResizableColumn>
+                    Amount <p-sortIcon field="recharge_amount" />
+                </th>
+                <th class="text-right" pSortableColumn="settled_amount" pResizableColumn>
+                    Settled Amount <p-sortIcon field="settled_amount" />
+                </th>
+                <th pSortableColumn="mop" pResizableColumn>
+                    MOP <p-sortIcon field="mop" />
+                </th>
+                <th pSortableColumn="psp_name" pResizableColumn>
+                    PSP <p-sortIcon field="psp_name" />
+                </th>
+                <th pSortableColumn="psp_ref_number" pResizableColumn>
+                    PSP Ref No. <p-sortIcon field="psp_ref_number" />
+                </th>
+                <th pSortableColumn="audited_by_name" pResizableColumn>
+                    Audit By <p-sortIcon field="audited_by_name" />
+                </th>
+                <th pSortableColumn="audited_date_time" pResizableColumn>
+                    Audit Time <p-sortIcon field="audited_date_time" />
+                </th>
+                <th class="w-full min-w-[200px]" pSortableColumn="user_remark" pResizableColumn>
+                    Remark <p-sortIcon field="user_remark" />
+                </th>
+            </tr>
 
-                            <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
-
-                                    <span *ngIf="col.isicon && ListItem[col.key]" class="text-center justify-center">
-                                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                                            (click)="downloadfile(ListItem[col.key])"
-                                            [matTooltip]="'Download'"></mat-icon>
-                                    </span>
-                                    <span *ngIf="col.isicon && !ListItem[col.key]" class="text-center justify-center">
-                                        -
-                                    </span>
-
-                                    <span *ngIf="col.is_boolean" class="text-center">
-                                        <mat-icon class="text-green-600" *ngIf="ListItem[col.key]">done</mat-icon>
-                                        <mat-icon class="text-red-600" *ngIf="!ListItem[col.key]">clear</mat-icon>
-                                    </span>
-
-                                    <div *ngIf=" col.key === 'mobile_number'">{{ListItem.mobile_code}}</div>
-
-                                    <div [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' ? 'pr-4' : '')">
-                                        <span class="truncate" *ngIf="!col.is_boolean && !col.isicon"
-                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " :
-                                            ListItem[col.key] || " - " }}
-                                        </span>
+            <tr *ngIf="isFilterShowAudit">
+                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">
+                    <p-columnFilter type="text" matchMode="contains" field="reference_number" placeholder="Search by Reference Number"
+                        ariaLabel="Filter Reference Number" />
+                </th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.request_date_time">
+                    <!-- <p-columnFilter field="request_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                placeholder="Search by Entry Date"></p-calendar>
+                        </ng-template>
+                    </p-columnFilter> -->
+                    <p-columnFilter field="request_date_time" matchMode="custom" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar
+                                    selectionMode="range"
+                                    [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)"
+                                    [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy"
+                                    appendTo="body"
+                                    placeholder="Search by Date Range">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter class="searchableDropdown" field="recharge_for_id" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
+                                optionLabel="agency_name" [filter]="true" filterBy="agency_name"
+                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                [showClear]="true" appendTo="body" placeholder="Select a Agent">
+                                <ng-template let-employee pTemplate="item">
+                                    <div class="flex align-items-center gap-2">
+                                        <div [value]="employee.id">{{ employee.agency_name }}</div>
                                     </div>
-                                </div>
-                            </ng-container>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
-        </ng-container>
-
-        <ng-template #noGridItems>
-            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                {{getNodataTextAudited()}}
-            </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="recharge_amount" placeholder="Search by Recharge Amount"
+                        ariaLabel="Filter Recharge Amount" />
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="settled_amount" placeholder="Search by Settled Amount"
+                        ariaLabel="Filter Settled Amount" />
+                </th>
+                <th>
+                    <!-- <p-columnFilter type="text" field="mop" placeholder="Search by MOP" ariaLabel="Filter MOP" /> -->
+                    <p-columnFilter class="searchableDropdown" field="mop" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="mopList" [(ngModel)]="selectedMop"
+                                optionLabel="mop" [filter]="true" filterBy="mop"
+                                (onFilter)="getMopList($event?.filter)" (onChange)="filter($event.value?.mop)"
+                                [showClear]="true" appendTo="body" placeholder="Select a MOP">
+                                <ng-template let-option pTemplate="item">
+                                        <div >{{ option.mop }}</div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <!-- <p-columnFilter type="text" field="psp_name" placeholder="Search by PSP Name" ariaLabel="Filter PSP Name" /> -->
+                    <p-columnFilter class="searchableDropdown" field="psp_name" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="pspList" [(ngModel)]="selectedPsp"
+                                optionLabel="provider" [filter]="true" filterBy="provider"
+                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value?.provider)"
+                                [showClear]="true" appendTo="body" placeholder="Select a PSP">
+                                <ng-template let-option pTemplate="item">
+                                        <div >{{ option.provider }}</div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="psp_ref_number" placeholder="Search by PSP Ref Name" ariaLabel="Filter PSP Ref Name" />
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="audited_by_name" placeholder="Search by Audited By" ariaLabel="Filter Audited By" />
+                </th>
+                <th>
+                    <p-columnFilter field="audited_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                placeholder="Search by Audit Date"></p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="user_remark" placeholder="Search by User Remark" ariaLabel="Filter User Remark" />
+                </th>
+            </tr>
         </ng-template>
-    </div>
 
-    <mat-paginator
-        class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-        [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
-        [pageSize]="appConfig.pageSize" (page)="refreshItemsAudited()"
-        [showFirstLastButtons]="appConfig.showFirstLastButtons">
-    </mat-paginator>
+        <ng-template pTemplate="body" let-element>
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
+
+                    <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="view(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600">Info</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">
+                    {{(element.reference_number) || '-'}}
+                </td>
+                <td>
+                    {{(element.request_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
+                </td>
+                <td>
+                    {{element.recharge_for_name || '-'}}
+                </td>
+                <td class="text-right">
+                    {{element.recharge_amount || '-'}}
+                </td>
+                <td class="text-right">
+                    {{element.settled_amount || '-'}}
+                </td> 
+                <td>
+                    {{element.mop || '-'}}
+                </td>
+                <td>
+                    {{element.psp_name || '-'}}
+                </td>
+                <td>
+                    {{element.psp_ref_number || '-'}}
+                </td>
+                <td>
+                    {{element.audited_by_name || '-'}}
+                </td>
+                <td>
+                    {{(element.audited_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
+                </td>
+                <td>
+                    {{element.user_remark || '-'}}
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="12" class="text-center font-semibold text-lg">
+                    {{getNodataTextAudited()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>

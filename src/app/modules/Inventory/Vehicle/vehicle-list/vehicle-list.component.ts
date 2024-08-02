@@ -12,27 +12,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-import { VehicleImageComponent } from '../vehicle-image/vehicle-image.component';
 import { ImagesComponent } from 'app/modules/masters/destination/images/images.component';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-vehicle-list',
     templateUrl: './vehicle-list.component.html',
-    styles: [
-      `
-          .tbl-grid {
-              grid-template-columns: 40px 220px 160px 260px 140px 130px 200px 240px;
-          }
-      `,
-  ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -45,19 +36,19 @@ import { ToasterService } from 'app/services/toaster.service';
         MatInputModule,
         MatButtonModule,
         MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class VehicleListComponent extends BaseListingComponent {
     module_name = module_name.vehicle;
     dataList = [];
     total = 0;
+    cols = [];
+    isFilterShow: boolean = false;
 
     columns = [
         {
@@ -166,7 +157,13 @@ export class VehicleListComponent extends BaseListingComponent {
             tooltip: true,
         },
     ];
-    cols = [];
+    
+    selectedAction:string;
+    actionList: any[] = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false },
+    ]
+
 
     constructor(
         private vehicleService: VehicleService,
@@ -176,20 +173,22 @@ export class VehicleListComponent extends BaseListingComponent {
         private router: Router
     ) {
         super(module_name.vehicle);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'vehicle_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.vehicleService.getVehicleList(this.getFilterReq()).subscribe({
+        this.vehicleService.getVehicleList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                // this._paginator.length = data.total;
+                this.totalRecords = data.total;
+
             },
             error: (err) => {
                 this.toasterService.showToast('error',err)
@@ -420,6 +419,6 @@ export class VehicleListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

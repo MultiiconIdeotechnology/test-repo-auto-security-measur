@@ -136,7 +136,7 @@ export class FilterComponent {
         debounceTime(200),
         distinctUntilChanged(),
         switchMap((value: any) => {
-          return this.agentService.getAgentCombo(value);
+          return this.agentService.getAgentComboMaster(value,true);
         })
       )
       .subscribe({

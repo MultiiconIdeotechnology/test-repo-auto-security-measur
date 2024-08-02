@@ -72,6 +72,7 @@ export class SalesEntryComponent {
   obsId: any
   CurrencyList: any[] = [];
   CurrencyListTemp: any[] = [];
+  currency_short_code: string = '';
 
   serviceList: any[] = [
     { value: 'Airline', viewValue: 'Airline' },
@@ -93,12 +94,12 @@ export class SalesEntryComponent {
   ) {
     this.record = data?.data ?? {}
     this.obsId = this.data.Obs_id
+    this.currency_short_code = this.data.currency_short_code
   }
 
   formGroup: FormGroup;
   title = "Sales Entry"
-  btnLabel = "Create"
-
+  btnLabel = "Submit"
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
@@ -109,14 +110,15 @@ export class SalesEntryComponent {
       service_remark: [''],
       service_date: new Date(),
       agent_currency_id: [this.data.agent_currency_id],
-      sale_amount: [''],
-      service_charge: [''],
+      sale_amount: [1],
+      service_charge: [0],
+      total_tax: [0],
+      net_sale_amount: [0],
       sgst: [''],
       cgst: [''],
       igst: [''],
       vat: [''],
-      total_tax: [''],
-      net_sale_amount: [''],
+      currency: [this.currency_short_code],
     })
 
     if (this.record.id) {
@@ -126,19 +128,20 @@ export class SalesEntryComponent {
           this.readonly = this.data.readonly;
           if (this.readonly) {
             this.fieldList = [
-              { name: 'Service Type', value: data.service_type },
+              { name: 'Service Type', value: data.service_type ,isTooltip : true },
+              { name: 'Service Date', value: data.service_date ? DateTime.fromISO(data.service_date).toFormat('dd-MM-yyyy') : '' },
+              { name: 'Sale Amount', value: data.agent_currency + " " + data.sale_amount },
+              { name: 'Service Charge', value: data.agent_currency + " " + data.service_charge },
+              { name: 'Total Tax', value: data.agent_currency + " " + data.total_tax },
+
+              { name: 'SGST', value: data.sgst, isHide: this.currency_short_code.toLowerCase() != 'ind' },
+              { name: 'CGST', value: data.cgst, isHide: this.currency_short_code.toLowerCase() != 'ind' },
+              { name: 'IGST', value: data.igst, isHide: this.currency_short_code.toLowerCase() != 'ind' },
+              { name: 'VAT', value: data.vat, isHide: this.currency_short_code.toLowerCase() == 'ind' },
+
+              { name: 'Net Sale Amount', value: data.agent_currency + " " + data.net_sale_amount },
               { name: 'Service Particular', value: data.service_particular },
               { name: 'Service Remark', value: data.service_remark },
-              { name: 'Service Charge', value: data.service_charge },
-              { name: 'Service Date', value: data.service_date ? DateTime.fromISO(data.service_date).toFormat('dd-MM-yyyy') : '' },
-              { name: 'Sale Amount', value: data.sale_amount },
-              { name: 'Net Sale Amount', value: data.net_sale_amount },
-              { name: 'Total Tax', value: data.total_tax },
-              { name: 'Entry By', value: data.entry_by },
-              { name: 'CGST', value: data.cgst },
-              { name: 'IGST', value: data.igst },
-              { name: 'SGST', value: data.sgst },
-              { name: 'VAT', value: data.vat },
             ];
           }
           this.formGroup.patchValue(data);
@@ -162,6 +165,11 @@ export class SalesEntryComponent {
 
     json['osb_id'] = this.obsId
     json['service_date'] = DateTime.fromJSDate(new Date(this.formGroup.get('service_date').value)).toFormat('yyyy-MM-dd')
+    json.net_sale_amount = json.sale_amount + json.service_charge + json.total_tax;
+    json.sgst = json.sgst ? json.sgst : 0;
+    json.cgst = json.cgst ? json.cgst : 0;
+    json.igst = json.igst ? json.igst : 0;
+    json.vat = json.vat ? json.vat : 0;
 
     this.offlineService.salesCreate(json).subscribe({
       next: () => {

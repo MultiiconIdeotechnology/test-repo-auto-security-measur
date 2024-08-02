@@ -1,23 +1,41 @@
 <div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
-    <!-- Header -->
     <div
         class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
-        <!-- Title -->
         <div class="text-3xl font-extrabold tracking-tight">
-            {{ module_name }}
+            {{module_name}}
         </div>
-        <!-- Actions -->
+
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
-            </mat-form-field>
-           
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
-                <mat-icon class="w-10 h-10">filter_alt</mat-icon>
-                <span class="">Filter</span>
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="this.isFilterShow = !this.isFilterShow">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!--- Modal filter -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+                <mat-icon class="w-10 h-10">filter_alt</mat-icon>
+                <span class="mr-1">Filter</span>
+            </button>
+
+            <!------ Export Excel ------->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
             </button>
@@ -27,121 +45,346 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-            </button>
         </div>
     </div>
 
     <!----------------Table----------------->
-    <div class="flex flex-col flex-auto overflow-hidden">
-        <!-- list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
-            <ng-container>
-                <div class="grid">
-                    <!-- Header -->
-                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card"
-                        matSort matSortDisableClear (matSortChange)="refreshItems()">
-                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
-                            #
-                        </div>
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
+            styleClass="p-datatable-gridlines p-datatable-sm">
 
-                        <ng-container *ngFor="let col of columns">
-                            <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class" [ngClass]="col.is_fixed ? 'z-99 sticky left-10 dark:bg-card bg-white' : ''">
-                                {{ col.name }}
-                            </div>
-                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class" [ngClass]="col.is_fixed ? 'z-99 sticky left-10 dark:bg-card bg-white' : ''">
-                                {{ col.name }}
-                            </div>
-                        </ng-container>
-                    </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                        <ng-container *ngFor="let ListItem of dataList">
-                            <div
-                                class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <!-- <th class="min-w-[175px] max-w-[175px]" pSortableColumn="reference_no" pResizableColumn alignFrozen="left"
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
+                        [ngClass]="{'left-0': !frozenObj?.reference_no}">
+                        Ref. No <p-sortIcon field="reference_no" />
+                        <span class="float-right" (click)="isFrozenColumn('reference_no');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.reference_no" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.reference_no" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th> -->
 
-                                <button mat-icon-button (click)="$event.stopPropagation();"
-                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-gray-50 dark:bg-gray-900"
-                                    style="border-radius: 0%; width: 100%">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
+                    <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="reference_no"
+                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
+                        [ngClass]="{'left-0': !frozenObj?.reference_no}">
+                        Ref. No <p-sortIcon field="reference_no" />
+                        <span class="float-right" (click)="isFrozenColumn('reference_no');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.reference_no" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.reference_no" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
 
-                                <mat-menu #optionMenu>
-                                    <button mat-menu-item (click)="view(ListItem)">
-                                        <mat-icon class="mat-18">info</mat-icon>
-                                        <span style="font-weight: 600">Info</span>
-                                    </button>
-                                    <button mat-menu-item *ngIf="showUpdateCharge(ListItem) || isMenuOpen"
-                                        (click)="updateCharge(ListItem)">
-                                        <mat-icon class="mat-18">edit</mat-icon>
-                                        <span style="font-weight: 600">Update Charge</span>
-                                    </button>
-                                    <!-- <button mat-menu-item
-                                        *ngIf="ListItem.amendment_status === 'Confirm' && ListItem.amendment_status !== 'Quotation Sent'"
-                                        (click)="complete(ListItem)">
-                                        <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
-                                        <span style="font-weight: 600">Complete</span>
-                                    </button> -->
-                                    
-                                    <button mat-menu-item (click)="completeAmendment(ListItem)" *ngIf="ListItem.amendment_status == 'Confirm' || isMenuOpen">
-                                        <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
-                                        <span style="font-weight: 600">Complete</span>
-                                    </button>
+                    <th pSortableColumn="amendment_type" pResizableColumn>
+                        Type <p-sortIcon field="amendment_type" />
+                    </th>
+                    <!-- <th pSortableColumn="amendment_status" pResizableColumn>
+                        Status <p-sortIcon field="amendment_status" />
+                    </th> -->
+                    <th class="min-w-[145px]" pSortableColumn="amendment_status" pResizableColumn>
+                        Status <p-sortIcon field="amendment_status" />
+                        <span class="float-right" (click)="isFrozenColumn('amendment_status');$event.stopPropagation()">
+                        </span>
+                    </th>
+                    <th pSortableColumn="agency_name" pResizableColumn>
+                        Agent <p-sortIcon field="agency_name" />
+                    </th>
+                    <th class="" pSortableColumn="company_name" pResizableColumn>
+                        Supplier <p-sortIcon field="company_name" />
+                    </th>
+                    <th pSortableColumn="booking_ref_no" pResizableColumn>
+                        Flight No. <p-sortIcon field="booking_ref_no" />
+                    </th>
+                    <th pSortableColumn="pnr" pResizableColumn>
+                        PNR <p-sortIcon field="pnr" />
+                    </th>
+                    <th pSortableColumn="gds_pnr" pResizableColumn>
+                        GDS PNR <p-sortIcon field="gds_pnr" />
+                    </th>
+                    <th class="text-right" pSortableColumn="amendment_request_time" pResizableColumn>
+                        Requested On <p-sortIcon field="amendment_request_time" />
+                    </th>
+                    <th pSortableColumn="travel_date" pResizableColumn>
+                        Travel Date <p-sortIcon field="travel_date" />
+                    </th>
+                    <th pSortableColumn="amendment_confirmation_time" pResizableColumn>
+                        Confirmed <p-sortIcon field="amendment_confirmation_time" />
+                    </th>
+                </tr>
 
-                                    <button mat-menu-item (click)="confirm(ListItem)" *ngIf="(ListItem.amendment_status == 'Quotation Sent' || ListItem.amendment_status == 'Partial Cancellation Pending') || isMenuOpen">
-                                        <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
-                                        <span style="font-weight: 600">Confirm</span>
-                                    </button>
-
-                                    <button mat-menu-item (click)="changeStatus(ListItem, status)"
-                                        *ngFor="let status of ListItem.actionStatus">
-                                        <mat-icon class="mat-18">{{status.icon}}</mat-icon>
-                                        <span style="font-weight: 600">{{status.label}}</span>
-                                    </button>
-                                    
-                                    <button mat-menu-item (click)="statusLogs(ListItem)">
-                                        <mat-icon class="mat-18">text_snippet</mat-icon>
-                                        <span style="font-weight: 600">Status Logs</span>
-                                    </button>
-                                </mat-menu>
-
-                                <ng-container *ngFor="let col of columns">
-                                    <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class" [ngClass]="col.is_fixed ? 'sticky left-10 dark:dark bg-[#f1f5f9]' : ''">
-                                        <div class="flex flex-col truncate">
-                                            <span class="truncate" *ngIf="!col.toColor" [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                                {{ col.is_date ? (ListItem[col.key] | date : col.date_formate) || " - "
-                                                : ListItem[col.key] || " - " }}
-                                            </span>
-
-                                            <span *ngIf="col.toColor && col.key === 'amendment_status'">
-                                                <span [matTooltip]="ListItem[col.key]" *ngIf="col.name == 'Status'" [ngClass]="getStatusColor(ListItem[col.key])">{{ ListItem[col.key]
-                                                    }}
-                                                </span>
-                                            </span>
+                <tr *ngIf="isFilterShow">
+                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
+                        <p-columnFilter type="text" matchMode="contains" field="reference_no"
+                            placeholder="Search by Ref. No" ariaLabel="Filter Ref. No" />
+                    </th>
+                    <!-- <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status">
+                        <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th> -->
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.amendment_type">
+                        <p-columnFilter field="amendment_type" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="typeList"
+                                    (onChange)="filter($event.value)" placeholder="Select Type" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.amendment_status">
+                        <p-columnFilter field="amendment_status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList"
+                                    optionLabel="agent_info" [filter]="true" filterBy="agent_info"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.id)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </ng-container>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="company_name" placeholder="Search by Supplier"
+                            ariaLabel="Filter Supplier" /> -->
+                        <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList" [(ngModel)]="selectedSupplier" optionLabel="company_name"
+                                    [filter]="true" filterBy="company_name" (onFilter)="getSupplier($event?.filter)"
+                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Supplier">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.company_name">
+                                                <div class="m-0">
+                                                    {{agent.company_name}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
+                            placeholder="Search by Flight No." ariaLabel="Filter Flight No." />
+                    </th>
 
-            <!------No Data------->
-            <ng-template #noGridItems>
-                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                    {{ getNodataText() }}
-                </div>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
+                            ariaLabel="Filter PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR"
+                            ariaLabel="Filter GDS PNR" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter field="amendment_request_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Requested On">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter> -->
+
+                        <p-columnFilter field="amendment_request_time" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="travel_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Travel Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="amendment_confirmation_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Confirmed">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th *ngFor="let col of columns">
+                    </th>
+                </tr>
             </ng-template>
-        </div>
 
-        <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-            [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total"
-            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize" (page)="refreshItems()"
-            [showFirstLastButtons]="appConfig.showFirstLastButtons">
-        </mat-paginator>
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="view(element)">
+                                <mat-icon class="mat-18">info</mat-icon>
+                                <span style="font-weight: 600">Info</span>
+                            </button>
+                            <button mat-menu-item *ngIf="showUpdateCharge(element) || isMenuOpen"
+                                (click)="updateCharge(element)">
+                                <mat-icon class="mat-18">edit</mat-icon>
+                                <span style="font-weight: 600">Update Charge</span>
+                            </button>
+                            <!-- <button mat-menu-item
+                                *ngIf="element.amendment_status === 'Confirm' && element.amendment_status !== 'Quotation Sent'"
+                                (click)="complete(element)">
+                                <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
+                                <span style="font-weight: 600">Complete</span>
+                            </button> -->
+
+                            <button mat-menu-item (click)="completeAmendment(element)"
+                                *ngIf="element.amendment_status == 'Confirm' || isMenuOpen">
+                                <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
+                                <span style="font-weight: 600">Complete</span>
+                            </button>
+
+                            <button mat-menu-item (click)="confirm(element)"
+                                *ngIf="(element.amendment_status == 'Quotation Sent' || element.amendment_status == 'Partial Cancellation Pending') || isMenuOpen">
+                                <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
+                                <span style="font-weight: 600">Confirm</span>
+                            </button>
+
+                            <button mat-menu-item (click)="changeStatus(element, status)"
+                                *ngFor="let status of element.actionStatus">
+                                <mat-icon class="mat-18">{{status.icon}}</mat-icon>
+                                <span style="font-weight: 600">{{status.label}}</span>
+                            </button>
+
+                            <!-- <mat-divider
+                                *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || 
+                                    element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed'"></mat-divider>
+
+                            <button mat-menu-item (click)="inprocess(element)"
+                                *ngIf="element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta'">
+                                <mat-icon class="mat-18">text_snippet</mat-icon>
+                                <span style="font-weight: 600">Inprocess</span>
+                            </button>
+                            <button mat-menu-item (click)="refundInitiate(element)"
+                                *ngIf="element.amendment_status.toLowerCase() == 'confirmation sent to supplier'">
+                                <mat-icon class="mat-18">text_snippet</mat-icon>
+                                <span style="font-weight: 600">Refund Initiate</span>
+                            </button>
+                            <button mat-menu-item (click)="complete(element)"
+                                *ngIf="element.amendment_status.toLowerCase() == 'refund completed'">
+                                <mat-icon class="mat-18">text_snippet</mat-icon>
+                                <span style="font-weight: 600">Complete</span>
+                            </button> -->
+
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="statusLogs(element)">
+                                <mat-icon class="mat-18">text_snippet</mat-icon>
+                                <span style="font-weight: 600">Status Logs</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td class="min-w-[175px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
+                        {{element.reference_no || "-"}}
+                    </td>
+
+                    <td>
+                        {{element.amendment_type || "-"}}
+                    </td>
+                    <td>
+                        <span [ngClass]="getStatusColor(element.amendment_status)">
+                            {{element.amendment_status || "-"}}
+                        </span>
+                    </td>
+                    <td>
+                        {{element.agency_name || "-"}}
+                    </td>
+                    <td>
+                        {{element.company_name || "-"}}
+                    </td>
+                    <td>
+                        {{element.booking_ref_no || "-"}}
+                    </td>
+                    <td>
+                        {{element.pnr || "-"}}
+                    </td>
+                    <td>
+                        {{element.gds_pnr || "-"}}
+                    </td>
+                    <td>
+                        {{(element.amendment_request_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                    <td>
+                        {{(element.travel_date | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                    <td class="w-full min-w-[160px]">
+                        {{(element.amendment_confirmation_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                    <td *ngFor="let col of columns">
+                        <!-- <ng-container *ngIf="!col['isDate']">
+                            {{element[col.field] || "-"}}
+                        </ng-container>
+
+                        <ng-container *ngIf="col['isDate']">
+                            {{(element[col.field] | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
+                        </ng-container> -->
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="16" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
 </div>

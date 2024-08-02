@@ -56,22 +56,38 @@ export class PaymentInfoComponent {
     }
     else if(this.data.receipt) {
       this.fieldList = [
-          { name: 'Receipt Date', value: this.data.receipt.receipt_request_date? DateTime.fromISO(this.data.receipt.receipt_request_date).toFormat('dd-MM-yyyy HH:mm:ss').toString():''},
-          { name: 'Status', value: this.data.receipt.receipt_status, class: this.data.receipt.receipt_status === 'Confirmed' ? 'text-green-600 font-semibold' :
-          this.data.receipt.receipt_status === 'Pending' ? 'text-blue-600 font-semibold' :
-          this.data.receipt.receipt_status === 'Reject' ? 'text-red-600 font-semibold' : ''},
-          { name: 'Audit Date', value: this.data.receipt.audit_date_time? DateTime.fromISO(this.data.receipt.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString():'' },
-          { name: 'Ref. No.', value: this.data.receipt.receipt_ref_no },
-          { name: 'Used For', value: this.data.receipt.service_for },
-          { name: 'To', value: this.data.receipt.receipt_to },
-          { name: 'From', value: this.data.receipt.receipt_from },
-          { name: 'MOP', value: this.data.receipt.mode_of_payment },
-          { name: 'Transaction Ref. No.', value: this.data.receipt.transaction_ref_no},
-          { name: 'Supplier Amount', value: this.data.receipt.supplier_currency + ' ' + this.data.receipt.supplier_amount},
-          { name: 'Payment Amount', value: this.data.receipt.payment_currency + ' ' + this.data.receipt.payment_amount},
-          { name: 'ROE', value: this.data.receipt.roe},
-          { name: 'Remark', value: this.data.receipt.receipt_remark},
-          { name: 'Reject Reason', value: this.data.receipt.receipt_reject_reason},
+        { name: 'Reference No.', value: this.data.receipt.receipt_ref_no },
+        { name: 'Status', value: this.data.receipt.receipt_status, class: this.data.receipt.receipt_status === 'Confirmed' ? 'text-green-600 font-semibold' :
+            this.data.receipt.receipt_status === 'Pending' ? 'text-blue-600 font-semibold' :
+            this.data.receipt.receipt_status === 'Reject' ? 'text-red-600 font-semibold' : ''},
+        { name: 'Receipt For', value: this.data.receipt.service_for },
+        { name: 'Booking Ref. No.', value: this.data.receipt.transaction_ref_no},
+        { name: 'Currency', value: this.data.receipt.payment_currency },
+        { name: 'Amount', value: this.data.receipt.payment_amount},
+        { name: 'ROE', value: this.data.receipt.roe},
+        { name: 'MOP', value: this.data.receipt.mode_of_payment },
+        { name: 'Request', value: this.data.receipt.receipt_request_date? DateTime.fromISO(this.data.receipt.receipt_request_date).toFormat('dd-MM-yyyy HH:mm:ss').toString():''},
+        { name: 'Audit', value: this.data.receipt.audit_date_time? DateTime.fromISO(this.data.receipt.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString():'' },
+        { name: 'PG', value: this.data.receipt.pg_name},
+        { name: 'PG Ref. No.', value: this.data.receipt.pg_payment_ref_no },
+        { name: 'Agent', value: this.data.receipt.agent_name }
+
+        //   { name: 'Receipt Date', value: this.data.receipt.receipt_request_date? DateTime.fromISO(this.data.receipt.receipt_request_date).toFormat('dd-MM-yyyy HH:mm:ss').toString():''},
+        //   { name: 'Status', value: this.data.receipt.receipt_status, class: this.data.receipt.receipt_status === 'Confirmed' ? 'text-green-600 font-semibold' :
+        //   this.data.receipt.receipt_status === 'Pending' ? 'text-blue-600 font-semibold' :
+        //   this.data.receipt.receipt_status === 'Reject' ? 'text-red-600 font-semibold' : ''},
+        //   { name: 'Audit Date', value: this.data.receipt.audit_date_time? DateTime.fromISO(this.data.receipt.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString():'' },
+        //   { name: 'Ref. No.', value: this.data.receipt.receipt_ref_no },
+        //   { name: 'Used For', value: this.data.receipt.service_for },
+        //   { name: 'To', value: this.data.receipt.receipt_to },
+        //   { name: 'From', value: this.data.receipt.receipt_from },
+        //   { name: 'MOP', value: this.data.receipt.mode_of_payment },
+        //   { name: 'Transaction Ref. No.', value: this.data.receipt.transaction_ref_no},
+        //   { name: 'Supplier Amount', value: this.data.receipt.supplier_currency + ' ' + this.data.receipt.supplier_amount},
+        //   { name: 'Payment Amount', value: this.data.receipt.payment_currency + ' ' + this.data.receipt.payment_amount},
+        //   { name: 'ROE', value: this.data.receipt.roe},
+        //   { name: 'Remark', value: this.data.receipt.receipt_remark},
+        //   { name: 'Reject Reason', value: this.data.receipt.receipt_reject_reason},
       ]
     }
   }
@@ -80,6 +96,4 @@ export class PaymentInfoComponent {
     this.clipboard.copy(link);
     this.alertService.showToast('success','Copied');
   }
-
-
 }

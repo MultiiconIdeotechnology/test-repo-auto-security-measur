@@ -2,7 +2,7 @@ import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,26 +17,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppConfig } from 'app/config/app-config';
 import { Security, crmLeadPermissions, messages, module_name } from 'app/security';
 import { takeUntil, debounceTime, Subject } from 'rxjs';
-import { CRMLeadEntryComponent } from '../lead-entry/lead-entry.component';
 import { InboxComponent } from '../inbox/inbox.component';
 import { ArchiveComponent } from '../archive/archive.component';
 import { ToasterService } from 'app/services/toaster.service';
-
+import { EntityService } from 'app/services/entity.service';
+import { LeadEntrySettingsComponent } from '../lead-entry-settings/lead-entry-settings.component';
 
 @Component({
     selector: 'app-crm-lead-list',
     templateUrl: './lead-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 350px 130px 180px 200px 200px 150px 200px 130px 100px;
-            }
-
-            .tbl-grid1 {
-                grid-template-columns: 40px 150px 150px 150px 260px 250px 210px 210px;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -58,7 +47,8 @@ import { ToasterService } from 'app/services/toaster.service';
         CommonModule,
         MatTabsModule,
         InboxComponent,
-        ArchiveComponent
+        ArchiveComponent,
+        LeadEntrySettingsComponent
     ],
 })
 export class CRMLeadListComponent implements OnDestroy {
@@ -70,23 +60,27 @@ export class CRMLeadListComponent implements OnDestroy {
     tabName: any
     tabNameStr: any = 'Inbox'
     tab: string = 'Inbox';
-
     isSecound: boolean = true
     isThird: boolean = true
     filterData: any = {};
     searchInputControlInbox = new FormControl('');
     _unsubscribeAll: Subject<any> = new Subject<any>();
     searchInputControlArchive = new FormControl('');
-
     dataList = [];
     dataListArchive = [];
     total = 0;
 
     constructor(
-        private matDialog: MatDialog,
         private alertService: ToasterService,
+        private entityService: EntityService
     ) {
+        this.entityService.onrefreshleadEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                this.inbox.refreshItems();
+            }
+        })
     }
+
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.unsubscribe();
@@ -110,6 +104,7 @@ export class CRMLeadListComponent implements OnDestroy {
                 this.inbox.searchInputControlInbox.patchValue(value)
             });
 
+
         this.searchInputControlArchive.valueChanges
             .pipe(
                 takeUntil(this._unsubscribeAll),
@@ -128,13 +123,13 @@ export class CRMLeadListComponent implements OnDestroy {
         switch (this.tabNameStr) {
             case 'Inbox':
                 this.tab = 'inbox';
-                this.inbox.refreshItems();
+                this.inbox?.refreshItems();
                 break;
 
             case 'Archive':
                 this.tab = 'archive';
                 if (this.isSecound) {
-                    this.archive.refreshItems()
+                    this.archive?.refreshItems()
                     this.isSecound = false
                 }
                 break;
@@ -143,30 +138,33 @@ export class CRMLeadListComponent implements OnDestroy {
 
     refreshItemsTab(tabString: any): void {
         if (tabString == 'Inbox') {
-            this.inbox.refreshItems();
+            this.inbox?.refreshItems();
         }
         else {
-            this.archive.refreshItems();
+            this.archive?.refreshItems();
         }
+    }
+
+    inboxRefresh() {
+        this.inbox?.refreshItems();
+    }
+
+    archiveRefresh() {
+        this.archive?.refreshItems();
     }
 
     createInternal(): void {
         if (!Security.hasNewEntryPermission(module_name.lead)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        this.matDialog.open(CRMLeadEntryComponent,
-            { data: null, disableClose: true, })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res) {
-                    this.alertService.showToast(
-                        'success',
-                        'New record added',
-                        'top-right',
-                        true
-                    );
-                    this.inbox.refreshItems();
-                }
-            });
+        // this.matDialog.open(CRMLeadEntryComponent,
+        //     { data: null, disableClose: true, })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) {
+        //             this.inbox.refreshItems();
+        //         }
+        //     });
+        this.entityService.raiseleadEntityCall({})
     }
 }

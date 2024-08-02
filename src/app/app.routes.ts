@@ -93,6 +93,7 @@ export const appRoutes: Route[] = [
             {path: Routes.masters.supplier_path, loadChildren: () => import('app/modules/masters/supplier/supplier-list/supplier-list.routes')},
             {path: Routes.masters.item_path, loadChildren: () => import('app/modules/masters/item-master/item-list/item-list.routes')},
             {path: Routes.masters.product_path, loadChildren: () => import('app/modules/masters/product-master/product-list/product-list.routes')},
+            {path: Routes.masters.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes')},
 
             // Customers
             {path: Routes.customers.lead_path, loadChildren: () => import('app/modules/masters/lead/main-list/lead.routes')},
@@ -124,6 +125,11 @@ export const appRoutes: Route[] = [
              {path: Routes.account.sales_return_path, loadChildren: () => import('app/modules/reports/sales-return/sales-return.routes')},
              {path: Routes.account.wallet_outstanding_path, loadChildren: () => import('app/modules/reports/wallet-outstanding/wallet-outstanding-list/wallet-outstanding.routes')},
              {path: Routes.leads.leads_register_path, loadChildren: () => import('app/modules/reports/leads/lead-register/leads-register.routes')},
+             {path: Routes.account.receipt_register_path, loadChildren: () => import('app/modules/reports/account/receipt-register/receipt-register.routes')},
+             {path: Routes.account.first_transaction_path, loadChildren: () => import('app/modules/reports/account/first-transaction/first-transaction.routes')},
+             {path: Routes.account.commission_expense_path, loadChildren: () => import('app/modules/reports/account/commission-expense/commission-expense.routes')},
+             {path: Routes.account.commission_income_path, loadChildren: () => import('app/modules/reports/account/commission-income/commission-income.routes')},
+             {path: Routes.account.purchase_register_path, loadChildren: () => import('app/modules/reports/account/purchase-register/purchase-register.routes')},
 
             //Inventory
             {path: Routes.inventory.activity_path, loadChildren: () => import('app/modules/Inventory/activity/activity-list/activity-list.routes')},
@@ -141,6 +147,10 @@ export const appRoutes: Route[] = [
             {path: Routes.reports.airline_path, loadChildren: () => import('app/modules/reports/contracting/airline/airline.routes')},
             {path: Routes.reports.hotel_path, loadChildren: () => import('app/modules/reports/contracting/hotel/hotel.routes')},
             {path: Routes.reports.bus_path, loadChildren: () => import('app/modules/reports/contracting/bus/bus.routes')},
+            {path: Routes.reports.agents_rmwise_agents_path, loadChildren: () => import('app/modules/reports/agents/agent-rmwise/agent-rmwise.routes')},
+            {path: Routes.reports.campaign_summary_path, loadChildren: () => import('app/modules/reports/campaign/campaign-summary/campaign-summary/campaign-summary.routes')},
+            {path: Routes.reports.leads_rmwise_path, loadChildren: () => import('app/modules/reports/leads/lead-rmwise/lead-rmwise.routes')},
+            {path: Routes.reports.products_path, loadChildren: () => import('app/modules/reports/sales/product/sales-product/sales-product.routes')},
 
             // MY BOOKINGS
             {path: Routes.booking.flight_path, loadChildren: () => import('app/modules/booking/flight/flight/flights.routes')},

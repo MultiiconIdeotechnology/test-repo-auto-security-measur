@@ -71,6 +71,7 @@ export class WalletCreditEntryComponent {
 
 
   policyType: any[] = [
+    { value: 'One Time', viewValue: 'One Time' },
     { value: 'Fix Week Day', viewValue: 'Fix Week Day' },
     { value: 'Fix Date', viewValue: 'Fix Date' },
   ];
@@ -84,6 +85,7 @@ export class WalletCreditEntryComponent {
     { value: 'Saturday', viewValue: 'Saturday' },
     { value: 'Sunday', viewValue: 'Sunday' },
   ];
+  currency: any;
 
 
   constructor(
@@ -118,7 +120,7 @@ export class WalletCreditEntryComponent {
       is_enable: [true],
     });
 
-    this.formGroup.get('payment_cycle_policy_type').patchValue('Fix Week Day')
+    this.formGroup.get('payment_cycle_policy_type').patchValue('One Time')
 
     /*************Agent combo**************/
     this.formGroup
@@ -135,7 +137,8 @@ export class WalletCreditEntryComponent {
       .subscribe({
         next: data => {
           this.agentList = data
-          this.formGroup.get("master_agent_id").patchValue(this.agentList[0].id);
+          // this.formGroup.get("master_agent_id").patchValue(this.agentList[0]);
+          this.currency = this.agentList[0]?.base_currency;
         }
       });
 
@@ -146,7 +149,7 @@ export class WalletCreditEntryComponent {
         next: (data) => {
           this.readonly = this.data.readonly;
           this.formGroup.patchValue(data);
-          
+
           if (this.readonly) {
             this.fieldList = [
               { name: 'Agent', value: data.master_agent_name, },
@@ -174,6 +177,22 @@ export class WalletCreditEntryComponent {
     }
   }
 
+  navigationChanged(data){
+    this.currency = data.base_currency
+  }
+
+  changeValue(data:any){
+    this.formGroup.get('payment_cycle_policy').patchValue('')
+    if(data == 'Fix Week Day' || data == 'Fix Date'){
+      var date = new Date(this.formGroup.get('expiry_date').value)
+      date.setFullYear(new Date().getFullYear() + 1)
+      this.formGroup.get('expiry_date').patchValue(date)
+    }else{
+      this.formGroup.get('expiry_date').patchValue(new Date())
+    }
+
+  }
+
   public compareWith(v1: any, v2: any) {
     return v1 && v2 && v1.id === v2.id;
   }
@@ -186,8 +205,9 @@ export class WalletCreditEntryComponent {
     }
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
-
+    json['master_agent_id'] = json.master_agent_id.id || '';
     json['expiry_date'] =  DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd')
+
 
     this.walletService.create(json).subscribe({
       next: () => {

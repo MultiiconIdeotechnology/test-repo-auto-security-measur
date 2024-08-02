@@ -1,135 +1,224 @@
-<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl">
-    <div
-        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[360px] lg:max-h-[360px] xl:min-h-[480px] xl:max-h-[480px]">
-        <ng-container>
-            <div class="grid ">
-                <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold dark:bg-gray-700 bg-white border-b"
-                    matSort matSortDisableClear matSortActive="priority_id" matSortDirection="desc"
-                    (matSortChange)="refreshItems()">
-                    <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
-                        #
-                    </div>
-                    <ng-container *ngFor="let col of columns">
-                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class"
-                            class="text-secondary">
-                            {{ col.name }}
-                        </div>
-                        <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class" class="text-secondary">
-                            {{ col.name }}
-                        </div>
-                    </ng-container>
-                </div>
-                <!-- Rows -->
-                <ng-container *ngIf="dataList?.length > 0; else noGridItems">
-                    <ng-container *ngFor="let ListItem of dataList; let i=index;">
-                        <div class="tbl-grid gridwidth grid items-center px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
-                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
-                                <mat-icon> more_vert </mat-icon>
-                            </button>
-                            <mat-menu #optionMenu>
-                                <button mat-menu-item (click)="dialCall(ListItem)">
-                                    <mat-icon class="mat-18">phone</mat-icon>
-                                    <span style="font-weight: 600">Dial Call</span>
-                                </button>
-                                <button mat-menu-item (click)="callHistory(ListItem)">
-                                    <mat-icon class="mat-18">history</mat-icon>
-                                    <span style="font-weight: 600">Call History</span>
-                                </button>
-                                <button mat-menu-item (click)="scheduleCall(ListItem)">
-                                    <mat-icon class="mat-18">schedule</mat-icon>
-                                    <span style="font-weight: 600">Schedule Call</span>
-                                </button>
-                                <button mat-menu-item (click)="startKycProcess(ListItem)"
-                                    *ngIf="ListItem.agent_lead_id == null">
-                                    <mat-icon class="mat-18">how_to_reg</mat-icon>
-                                    <span style="font-weight: 600">Start KYC Process</span>
-                                </button>
-                                <button mat-menu-item (click)="modifyKycDetails(ListItem)"
-                                    *ngIf="ListItem.agent_lead_id !== null">
-                                    <mat-icon class="mat-18">edit</mat-icon>
-                                    <span style="font-weight: 600">Modify KYC Details</span>
-                                </button>
-                                <button mat-menu-item (click)="marketingMaterials(ListItem)">
-                                    <mat-icon svgIcon="heroicons_outline:document-magnifying-glass"></mat-icon>
-                                    <span style="font-weight: 600">Marketing Materials</span>
-                                </button>
-                                <button mat-menu-item (click)="deadLead(ListItem, i)">
-                                    <mat-icon svgIcon="heroicons_outline:document-minus"></mat-icon>
-                                    <span style="font-weight: 600">Dead Lead</span>
-                                </button>
-                            </mat-menu>
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
+        styleClass="p-datatable-gridlines p-datatable-sm">
 
-                            <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center truncate pl-4 ' + col.class">
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+                <th pSortableColumn="callCount" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn class="dark:bg-[#1e293b]"
+                    [frozen]="frozenObj?.callCount" [ngClass]="{'left-0': !frozenObj?.callCount}">
+                    Calls <p-sortIcon field="callCount" />
+                    <span class="float-right" (click)="isFrozenColumn('callCount');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.callCount" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.callCount" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                <th pSortableColumn="agency_name" pResizableColumn>
+                    Agency <p-sortIcon field="agency_name" />
+                </th>
+                <th pSortableColumn="lead_status" pResizableColumn>
+                    Status <p-sortIcon field="lead_status" />
+                </th>
+                <th pSortableColumn="lead_type" pResizableColumn>
+                    Type <p-sortIcon field="lead_type" />
+                </th>
+                <th pSortableColumn="call_purpose" pResizableColumn>
+                    Purpose <p-sortIcon field="lead_type" />
+                </th>
+                <th pSortableColumn="last_call_date_time" pResizableColumn>
+                    Last Call <p-sortIcon field="last_call_date_time" />
+                </th>
+                <th pSortableColumn="assignByName" pResizableColumn>
+                    Assigned By <p-sortIcon field="assignByName" />
+                </th>
+                <th pSortableColumn="lead_source" pResizableColumn>
+                    Source <p-sortIcon field="lead_source" />
+                </th>
+                <th pSortableColumn="entry_date_time" pResizableColumn class="min-w-[150px]">
+                    Lead Date <p-sortIcon field="entry_date_time" />
+                </th>
+            </tr>
 
-                                    <span *ngIf="col.isicon" class="text-center justify-center">
-                                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                                            (click)="downloadfile(ListItem[col.key])"
-                                            [matTooltip]="'Download'"></mat-icon>
-                                    </span>
-
-                                    <span *ngIf="col.toColor && col.key === 'lead_status'">
-                                        <span *ngIf="col.name == 'Status'" [matTooltip]="ListItem[col.key]"
-                                            [ngClass]="getStatusColor(ListItem[col.key])">{{ ListItem[col.key] }}
-                                        </span>
-                                    </span>
-
-                                    <div class="flex">
-                                        <div *ngIf="col.indicator"
-                                            [matTooltip]="ListItem.agent_lead_id ? 'KYC process is started' : 'KYC process is not started'"
-                                            class="w-2 h-2 rounded-full mr-[6px]"
-                                            [ngClass]="ListItem.agent_lead_id ? 'bg-green-600' : 'bg-yellow-600'">
-                                        </div>
-
-                                        <div *ngIf="col.indicator" [matTooltip]="ListItem['priority_text']"
-                                            class="w-2 h-2 rounded-full mr-[6px]"
-                                            [ngClass]="getPriorityIndicatorClass(ListItem['priority_text'])"></div>
-                                    </div>
-
-                                    <span *ngIf="col.callAction && col.key === 'callCount'">
-                                        <div *ngIf="col.name == 'Calls'">
-                                            <span class="flex flex-row space-x-2 justify-center cursor-pointer border-b-2 solid border-gray-600"
-                                                (click)="callHistory(ListItem)">{{ListItem[col.key]}}</span>
-                                        </div>
-                                    </span>
-
-                                    <div class="truncate"
-                                        [matTooltip]="ListItem[col.key] ? ListItem[col.key] : 'SYSTEM'"
-                                        *ngIf="col.assignFlag">{{ListItem[col.key] ? ListItem[col.key] : 'SYSTEM'}}
-                                    </div>
-
-                                    <div *ngIf="col.key === 'mobile_number'">{{ListItem.mobile_code}}</div>
-
-                                    <div
-                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
-                                        <span class="truncate"
-                                            *ngIf="!col.toColor && !col.assignFlag && !col.callAction"
-                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
-                                            " - " : ListItem[col.key] || " - " }}
-                                        </span>
-
-                                    </div>
-                                </div>
-                            </ng-container>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
-        </ng-container>
-
-        <ng-template #noGridItems>
-            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                {{getNodataText()}}
-            </div>
+            <tr *ngIf="isFilterShowInbox">
+                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.callCount" class="min-w-[110px]">
+                    <p-columnFilter field="callCount" type="numeric" placeholder="Search by Count"
+                        ariaLabel="Filter Count"></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency"
+                        ariaLabel="Filter Agency" />
+                </th>
+                <th>
+                <!-- <p-columnFilter type="text" matchMode="contains" field="lead_status" placeholder="Search by Status"
+                    ariaLabel="Filter Status" /> -->
+                    <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                <!-- <p-columnFilter type="text" matchMode="contains" field="lead_type" placeholder="Search by Type"
+                    ariaLabel="Filter Type" /> -->
+                    <p-columnFilter field="lead_type" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="typeList"
+                                (onChange)="filter($event.value)" placeholder="Select Type" [showClear]="true"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="call_purpose" placeholder="Search by Purpose"
+                        ariaLabel="Filter Purpose" />
+                </th>
+                <th>
+                    <p-columnFilter field="last_call_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Last Call">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="assignByName" placeholder="Search by Assigned By"
+                        ariaLabel="Filter Assigned By" />
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="lead_source" placeholder="Search by Source"
+                        ariaLabel="Filter Source"/>
+                </th>
+                <th>
+                    <p-columnFilter field="entry_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Lead Date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+            </tr>
         </ng-template>
-    </div>
 
-    <mat-paginator
-        class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-        [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
-        [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
-    </mat-paginator>
+        <ng-template pTemplate="body" let-element let-i="rowIndex">
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
+
+                    <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="dialCall(element)">
+                            <mat-icon class="mat-18">phone</mat-icon>
+                            <span style="font-weight: 600">Dial Call</span>
+                        </button>
+                        <button mat-menu-item (click)="callHistory(element)">
+                            <mat-icon class="mat-18">history</mat-icon>
+                            <span style="font-weight: 600">Call History</span>
+                        </button>
+                        <button mat-menu-item (click)="scheduleCall(element)">
+                            <mat-icon class="mat-18">schedule</mat-icon>
+                            <span style="font-weight: 600">Schedule Call</span>
+                        </button>
+                        <button mat-menu-item (click)="startKycProcess(element)"
+                            *ngIf="element.agent_lead_id == null">
+                            <mat-icon class="mat-18">how_to_reg</mat-icon>
+                            <span style="font-weight: 600">Start KYC Process</span>
+                        </button>
+                        <button mat-menu-item (click)="modifyKycDetails(element)"
+                            *ngIf="element.agent_lead_id !== null">
+                            <mat-icon class="mat-18">edit</mat-icon>
+                            <span style="font-weight: 600">Modify KYC Details</span>
+                        </button>
+                        <button mat-menu-item (click)="marketingMaterials(element)">
+                            <mat-icon svgIcon="heroicons_outline:document-magnifying-glass"></mat-icon>
+                            <span style="font-weight: 600">Marketing Materials</span>
+                        </button>
+                        <button mat-menu-item (click)="deadLead(element, i)">
+                            <mat-icon svgIcon="heroicons_outline:document-minus"></mat-icon>
+                            <span style="font-weight: 600">Dead Lead</span>
+                        </button>
+                        <button mat-menu-item (click)="editLead(element, i)" *ngIf="element.agent_lead_id == null">
+                            <mat-icon class="mat-18">edit</mat-icon>
+                            <span style="font-weight: 600">Edit</span>
+                        </button>
+                        <button mat-menu-item (click)="statusChangedLog(element)">
+                            <mat-icon class="mat-18">event_note</mat-icon>
+                            <span style="font-weight: 600">Status Changed Log</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.callCount">
+                    <span class="inline-block cursor-pointer border-b border-gray-500"
+                        (click)="callHistory(element)">{{(element.callCount) || 0}}</span>
+                </td>
+
+                <td>
+                    <span [matTooltip]="element.agent_lead_id ? 'KYC process is started' : 'KYC process is not started'" class="inline-block me-2 w-2 h-2 min-w-2 max-w-2 min-h-2 max-h-2 rounded-full mr-[6px]"
+                    [ngClass]="element.agent_lead_id ? 'bg-green-600' : 'bg-yellow-600'"></span>
+
+                    <span [matTooltip]="element.priority_text" class="inline-block me-2 w-2 h-2 min-w-2 max-w-2 min-h-2 max-h-2 rounded-full mr-[6px]"
+                        [ngClass]="getPriorityIndicatorClass(element.priority_text)"></span>
+                    {{element.agency_name || '-'}}
+                </td>
+
+                <td>
+                    <span [ngClass]="getStatusColor(element.lead_status)">{{(element.lead_status) || '-'}}</span>
+                </td>
+
+                <td>
+                    {{element.lead_type || '-'}}
+                </td>
+
+                <td>
+                    {{element.call_purpose || '-'}}
+                </td>
+
+                <td>
+                    {{(element.last_call_date_time | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+
+                <td>
+                    {{element.assignByName ? element.assignByName : 'SYSTEM'}}
+                </td>
+
+                <td>
+                    {{element.lead_source || '-'}}
+                </td>
+
+                <td class="w-full">
+                    <!-- {{(element.entry_date_time | date: 'dd-MM-yyyy') || "-"}} -->
+                      <span class="cursor-pointer flex flex-col ">
+                        <p>{{element.entry_date_time | date:'dd-MM-yyyy'}}</p>
+                        <p class="text-primary leading-3 text-xs">{{element.entry_date_time | date:'HH:mm'}}</p>
+                    </span>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="10" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>

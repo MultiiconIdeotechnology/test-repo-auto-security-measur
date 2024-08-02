@@ -29,6 +29,12 @@ import { OfflineEntryComponent } from '../offline-entry/offline-entry.component'
 import { Routes } from 'app/common/const';
 import { UserService } from 'app/core/user/user.service';
 import { takeUntil } from 'rxjs';
+import { OperationPersonComponent } from '../operation-person/operation-person.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { OsbLogsComponent } from '../osb-logs/osb-logs.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { EmployeeService } from 'app/services/employee.service';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
   selector: 'app-offline-list',
@@ -36,7 +42,7 @@ import { takeUntil } from 'rxjs';
   styleUrls: ['./offline-list.component.scss'],
   styles: [`
     .tbl-grid {
-      grid-template-columns:  40px 200px 200px 200px 200px 100px 200px 230px 150px 200px;
+      grid-template-columns:  40px 200px 130px 120px 200px 200px 200px 200px;
     }
   `],
   standalone: true,
@@ -63,7 +69,9 @@ import { takeUntil } from 'rxjs';
     MatNativeDateModule,
     MatSelectModule,
     NgxMatSelectSearchModule,
-    MatTabsModule
+    MatTabsModule,
+    MatDividerModule,
+    PrimeNgImportsModule
   ]
 })
 export class OfflineListComponent extends BaseListingComponent {
@@ -73,37 +81,36 @@ export class OfflineListComponent extends BaseListingComponent {
   total = 0;
   visaFilter: any;
   user: any = {};
+  selectedEmployee:string;
 
   columns = [
     {
-      key: 'booking_ref_number', name: 'Booking Ref',is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, tooltip: true, toBooking: false,
-    },
-    {
-      key: 'agent_name', name: 'Agent Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, toBooking: false ,tooltip: true,
-    },
-    {
-      key: 'operation_person', name: 'Operation Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'sales_person', name: 'Sales Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, tooltip: true, toColor: false
+      key: 'booking_ref_number', name: 'Booking Ref', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, tooltip: true, toBooking: false,
     },
     {
       key: 'status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
     },
     {
-      key: 'lead_pax_name', name: 'Lead Pax Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
+      key: 'dec_agent_id', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
     },
     {
-      key: 'lead_pax_email', name: 'Lead Pax Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
+      key: 'agent_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, toBooking: false, tooltip: true,
     },
     {
-      key: 'lead_pax_mobile', name: 'Lead Pax Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
+      key: 'operation_person', name: 'Operation Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
     },
     {
-      key: 'invoice_generate_date', name: 'Invoice Generate Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
+      key: 'sales_person', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, tooltip: true, toColor: false
+    },
+    {
+      key: 'entry_date_time', name: 'Entry Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
     },
   ]
   cols = [];
+  statusList = [ 'New', 'Completed', 'Pending'];
+  isFilterShow: boolean = false;
+  employeeList:any[] = [];
+  agentList:any[] = [];
 
   constructor(
     private matDialog: MatDialog,
@@ -111,12 +118,14 @@ export class OfflineListComponent extends BaseListingComponent {
     private router: Router,
     private offlineService: OfflineserviceService,
     private userService: UserService,
-    private conformationService: FuseConfirmationService
+    private conformationService: FuseConfirmationService,
+    private employeeService: EmployeeService,
+    private agentService: AgentService
   ) {
     super(module_name.offlineService);
     this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'booking_ref_number';
+    this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
 
@@ -125,6 +134,11 @@ export class OfflineListComponent extends BaseListingComponent {
       .subscribe((user: any) => {
         this.user = user;
       });
+  }
+
+  ngOnInit(): void {
+    this.getRelationManagerList("");
+    this.getAgent("");
   }
 
   getFilter(): any {
@@ -136,9 +150,11 @@ export class OfflineListComponent extends BaseListingComponent {
     return filterReq;
   }
 
-  refreshItems() {
+  refreshItems(event?: any) {
     this.isLoading = true;
-    var model = this.getFilter();
+    let extraModel = this.getFilter();
+    let oldModel = this.getNewFilterReq(event)
+    let model = { ...extraModel, ...oldModel };
 
     if (Security.hasPermission(offlineServicePermissions.viewOnlyAssignedPermissions)) {
       model.relationmanagerId = this.user.id
@@ -148,7 +164,9 @@ export class OfflineListComponent extends BaseListingComponent {
       next: (data: any) => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
+        // this._paginator.length = data.total;
+        this.totalRecords = data.total;
+
       },
       error: (err) => {
         this.toasterService.showToast('error', err)
@@ -156,6 +174,24 @@ export class OfflineListComponent extends BaseListingComponent {
       },
     });
   }
+
+  //Function to get Agent List from api
+  getAgent(value: string) {
+    this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentList = data;
+
+        for (let i in this.agentList) {
+            this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+        }
+    })
+}
+
+  // To get Relationship Manager data from employeelist api
+  getRelationManagerList(value: any) {
+    this.employeeService.getemployeeCombo(value).subscribe((data) => {
+        this.employeeList = data;
+    })
+}
 
   viewInternal(record): void {
     this.router.navigate([
@@ -210,6 +246,36 @@ export class OfflineListComponent extends BaseListingComponent {
         })
       }
     })
+  }
+
+  getStatusColor(status: string): string {
+    if (status == 'Pending') {
+      return 'text-orange-600';
+    } else if (status == 'Completed') {
+      return 'text-green-600';
+    } else if ( status == 'Rejected' || status == 'Cancelled') {
+      return 'text-red-600';
+    } else if (status == 'New') {
+      return 'text-blue-600';
+    } else {
+      return '';
+    }
+  }
+
+  OperationPerson(data: any) {
+    this.matDialog.open(OperationPersonComponent, {
+      data: data,
+    }).afterClosed().subscribe(res => {
+      if (res)
+        this.refreshItems();
+    })
+  }
+
+  StatusChangeLog(data: any) {
+    this.matDialog.open(OsbLogsComponent,
+      {
+        data: data
+      })
   }
 
   getNodataText(): string {

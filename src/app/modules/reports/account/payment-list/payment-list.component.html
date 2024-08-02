@@ -9,8 +9,7 @@
         </div>
         <!-- Title -->
         <!-- <div class="text-4xl font-extrabold tracking-tight">Currency Master</div> -->
-        <div
-            class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
             <span class="text-3xl">{{module_name}}</span>
             <span class="hidden max-sm:flex">
                 <!-- <button class="ml-4" mat-flat-button style="background-color: #5046E5;" (click)="create()">
@@ -19,20 +18,56 @@
                 </button> -->
             </span>
         </div>
+        
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4 max-sm:mt-2 max-sm:justify-between">
 
-            <!-- Search -->
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'">
-            </mat-form-field>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+            </div>
 
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+            </p-overlayPanel>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!-------Modal Filter -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
             </button>
 
+            <!------Create------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
+            </button>
+
+            <!------- Export Excel -->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
             </button>
@@ -42,112 +77,211 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-          
-            <button class="ml-4" mat-flat-button [disabled]="isLoading" (click)="refreshItems()" [color]="'primary'">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-            </button>
         </div>
     </div>
 
     <!----------------Table----------------->
-    <div class="flex flex-col flex-auto overflow-hidden">
-        <!-- list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
-            <ng-container>
-                <div class="grid">
-                    <!-- Header -->
-                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card"
-                        matSort
-                        matSortDisableClear
-                        (matSortChange)="refreshItems()">
-                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
-                            #
-                        </div>
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['transaction_ref_no', 'payment_ref_no', 'payment_status', 'payment_to', 'service_for', 'payment_amount', 'mode_of_payment', 'payment_request_date', 'audit_date_time']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
 
-                        <ng-container *ngFor="let col of columns">
-                            <div *ngIf="col.is_sortable"
-                                [mat-sort-header]="col.key"
-                                [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                        </ng-container>
-                    </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                        <ng-container *ngFor="let ListItem of dataList">
-                            <div
-                                class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer"
-                            >
-                                <button
-                                    mat-icon-button
-                                    (click)="$event.stopPropagation()"
-                                    [matMenuTriggerFor]="optionMenu"
-                                    class="sticky left-0 bg-gray-50 dark:bg-gray-900"
-                                    style="border-radius: 0%; width: 100%">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
-                                <mat-menu #optionMenu>
-                                    <button mat-menu-item (click)="view(ListItem)">
-                                        <mat-icon class="mat-18">info</mat-icon>
-                                        <span style="font-weight: 600">Info</span>
-                                    </button>
-                                </mat-menu>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="transaction_ref_no" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.transaction_ref_no" [ngClass]="{'left-0': !frozenObj?.transaction_ref_no}">
+                        Transaction ID <p-sortIcon field="transaction_ref_no" />
+                        <span class="float-right"
+                            (click)="isFrozenColumn('transaction_ref_no');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.transaction_ref_no" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.transaction_ref_no" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="payment_ref_no" pResizableColumn>
+                        Ref no <p-sortIcon field="payment_ref_no" />
+                    </th>
+                    <th pSortableColumn="payment_status" pResizableColumn>
+                        Status <p-sortIcon field="payment_status" />
+                    </th>
+                    <th pSortableColumn="payment_to" pResizableColumn>
+                        To <p-sortIcon field="payment_to" />
+                    </th>
+                    <th pSortableColumn="service_for" pResizableColumn>
+                        For <p-sortIcon field="service_for" />
+                    </th>
+                    <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
+                        Amount <p-sortIcon field="payment_amount" />
+                    </th>
+                    <th pSortableColumn="mode_of_payment" pResizableColumn>
+                        Mode of Payment <p-sortIcon field="mode_of_payment" />
+                    </th>
+                    <th pSortableColumn="payment_request_date" pResizableColumn>
+                        Requested <p-sortIcon field="payment_request_date" />
+                    </th>
+                    <th class="w-full min-w-[200px]" pSortableColumn="audit_date_time" pResizableColumn>
+                        Audited <p-sortIcon field="audit_date_time" />
+                    </th>
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+                    </th>
+                </tr>
 
-                                <ng-container *ngFor="let col of columns">
-                                    <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
+                <tr *ngIf="isFilterShow">
+                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.transaction_ref_no">
+                        <p-columnFilter type="text" matchMode="contains" field="transaction_ref_no" placeholder="Search by Transaction ID"
+                            ariaLabel="Filter Transaction ID" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="payment_ref_no" placeholder="Search by Ref no"
+                            ariaLabel="Filter Ref no" />
+                    </th>
+                    <th>
+                        <p-columnFilter field="payment_status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Payment Status" [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.value}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="payment_to" placeholder="Search by To"
+                            ariaLabel="Filter To" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="service_for" placeholder="Search by For"
+                            ariaLabel="Filter For" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="payment_amount" placeholder="Search by Amount"
+                            ariaLabel="Filter Display Amount" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment" placeholder="Search by Payment Mode"
+                            ariaLabel="Filter Payment Mode" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter field="payment_request_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                    placeholder="Search by Requested">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter> -->
+                        <p-columnFilter field="payment_request_date" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar
+                                        selectionMode="range"
+                                        [ngModel]="value"
+                                        (ngModelChange)="onDateRangeChange($event, filter)"
+                                        [readonlyInput]="true"
+                                        dateFormat="dd-mm-yy"
+                                        appendTo="body"
+                                        placeholder="Search by Date Range">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="audit_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                    placeholder="Search by Audited">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                                        <span *ngIf="col.iscolor" class="text-center justify-center"  [matTooltip]="ListItem[col.key]" [ngClass]="ListItem[col.key] == 'Confirmed' ? 'text-green-600' : ListItem[col.key] == 'Pending' ? 'text-blue-600' :'text-red-600'">
-                                            {{ListItem[col.key]}}
-                                        </span>
-
-                                        <span *ngIf="col.isview" class="pr-2" (click)="view(ListItem)"  [matTooltip]="ListItem[col.key]">
-                                            {{ListItem[col.key]}}
-                                        </span>
-
-                                        <span *ngIf="col.isamount" class="pr-2">
-                                            {{ListItem.payment_currency}} {{ListItem[col.key]}}
-                                        </span>
-                                        
-                                        <div class="flex flex-col truncate">
-                                            <span class="truncate" [matTooltip]="col.tooltip ? ListItem[col.key] : ''" *ngIf="!col.iscolor && !col.isamount && !col.isview">
-                                                {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) || " - " : ListItem[col.key] || "  " }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-template #noGridItems>
-                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                    {{getNodataText()}}
-                </div>
+                    <th *ngFor="let col of columns">
+                        <!-- <ng-container *ngIf="col.field == 'payment_date'">
+                            <p-columnFilter [field]="col.field" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                        [placeholder]="'Search by' + col.header">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                        </ng-container> -->
+                        
+                        <!-- <ng-container *ngIf="col.field !== 'payment_date'"> -->
+                            <p-columnFilter  type="text" matchMode="contains" [field]="col.field" [placeholder]="'Search by '+ col.header"
+                            [ariaLabel]="'Filter '+ col.header" />
+                        <!-- </ng-container> -->
+                    </th>
+                </tr>
             </ng-template>
-        </div>
 
-        <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-            [ngClass]="{ 'pointer-events-none': isLoading }"
-            [length]="total"
-            [pageSizeOptions]="appConfig.pageSizeOptions"
-            [pageSize]="appConfig.pageSize"
-            (page)="refreshItems()"
-            [showFirstLastButtons]="appConfig.showFirstLastButtons"
-        >
-        </mat-paginator>
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="view(element)">
+                                <mat-icon class="mat-18">info</mat-icon>
+                                <span style="font-weight: 600">Info</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.transaction_ref_no">
+                        {{element.transaction_ref_no || "-"}}
+                    </td>
+                    <td>{{element.payment_ref_no || "-"}}</td>
+                    <td [ngClass]="element.payment_status == 'Confirmed' ? 'text-green-600' : element.payment_status == 'Pending' ? 'text-blue-600' :'text-red-600'">
+                        {{element.payment_status || "-"}}
+                    </td>
+                    <td>{{element.payment_to || "-"}}</td>
+                    <td>{{element.service_for || "-"}}</td>
+                    <td class="text-right" *ngIf="element.payment_amount">
+                        {{element.payment_amount.toFixed(2) |  currency:element.payment_currency:'symbol':'1.2-2'}}
+                    </td>
+                    <td>{{element.mode_of_payment || "-"}}</td>
+                    <td>
+                        {{(element.payment_request_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                    <td>
+                        {{(element.audit_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                    <td *ngFor="let col of columns">
+                        <ng-container *ngIf="col.field == 'payment_date'">
+                            {{(element[col.field] | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
+                        </ng-container>
+
+                        <ng-container *ngIf="col.field != 'payment_date'">
+                            {{element[col.field] || "-"}}
+                        </ng-container>
+                        
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="13" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
 
 </div>
 
 
 
-<!--------Info--------->                                
+<!--------Info--------->
 <!-- 
 <div class="w-400"  *ngIf="ListItem.show">
     <div class="grid grid-cols-5   mb-8 p-8  bg-card rounded-2xl overflow-hidden mx-10">

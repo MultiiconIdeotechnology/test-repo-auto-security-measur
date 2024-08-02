@@ -20,16 +20,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-transfer-list',
     templateUrl: './transfer-list.component.html',
-    styles: [
-        `.tbl-grid {
-                grid-template-columns: 40px 150px 150px 300px 140px 130px 150px 200px 200px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -50,6 +46,8 @@ import { ToasterService } from 'app/services/toaster.service';
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
+
     ],
 })
 export class TransferListComponent extends BaseListingComponent {
@@ -179,7 +177,15 @@ export class TransferListComponent extends BaseListingComponent {
             tooltip: true,
         },
     ];
+
+    actionList = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false}
+    ];
+    
     cols = [];
+    isFilterShow: boolean = false;
+
 
     constructor(
         private transferService: TransferService,
@@ -189,22 +195,24 @@ export class TransferListComponent extends BaseListingComponent {
         private router: Router
     ) {
         super(module_name.transfer);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'city_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.transferService
-            .getTransferActivityList(this.getFilterReq())
+            .getTransferActivityList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    // this._paginator.length = data.total;
+                    this.totalRecords = data.total;
+
                 },
                 error: (err) => {
                     this.toasterService.showToast('error', err)
@@ -337,6 +345,6 @@ export class TransferListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

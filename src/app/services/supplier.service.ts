@@ -28,8 +28,8 @@ export class SupplierService {
     return this.http.post<any>(this.baseUrl + 'Supplier/delete', { id });
   }
 
-  getSupplierCombo(filter: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'Supplier/getSupplierCombo', { filter });
+  getSupplierCombo(filter: string,OsbId?:string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Supplier/getSupplierCombo', { filter ,OsbId});
   }
 
   getSupplierComboOfflinePNR(filter: string, type:string): Observable<any> {

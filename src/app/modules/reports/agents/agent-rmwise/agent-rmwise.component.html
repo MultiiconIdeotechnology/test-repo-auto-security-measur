@@ -1,0 +1,174 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+            <span class="text-3xl">{{module_name}}</span>
+            <span class="hidden max-sm:flex">
+            </span>
+        </div>
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 gap-4 items-center mt-6 sm:mt-0 sm:ml-4 max-sm:mt-2 max-sm:justify-between">
+
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+                <mat-icon class="w-10 h-10">filter_alt</mat-icon>
+                <span class="">Filter</span>
+            </button> -->
+
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+            <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Refresh------>
+            <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!---Excel--->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+                <!-- <button mat-menu-item (click)="reShuffle()">
+                    <mat-icon svgIcon="heroicons_outline:arrows-right-left"></mat-icon>
+                    <span style="font-weight: 600">Reshuffle</span>
+                </button> -->
+            </mat-menu>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['rm', 'totalAgent', 'total_New_Agent', 'total_Active_Agent', 'total_Inactive_Agent', 'total_Block_Agent']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="rm" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.rm" [ngClass]="{'left-0': !frozenObj?.rm}">
+                        RM <p-sortIcon field="rm" />
+                        <span class="float-right" (click)="isFrozenColumn('rm');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.rm" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.rm" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="totalAgent" pResizableColumn class="text-center">
+                        Total <p-sortIcon field="totalAgent" />
+                    </th>
+                    <th pSortableColumn="total_New_Agent" pResizableColumn class="text-center">
+                        New <p-sortIcon field="total_New_Agent" />
+                    </th>
+                    <th pSortableColumn="total_Active_Agent" pResizableColumn class="text-center">
+                        Active <p-sortIcon field="total_Active_Agent" />
+                    </th>
+                    <th pSortableColumn="total_Inactive_Agent" pResizableColumn class="text-center">
+                        Inactive <p-sortIcon field="total_Inactive_Agent" />
+                    </th>
+                    <th class="w-full" pSortableColumn="total_Block_Agent" pResizableColumn>
+                        Blocked <p-sortIcon field="total_Block_Agent" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.rm">
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="rm" placeholder="Search by RM"
+                            ariaLabel="Filter RM" /> -->
+                        <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown"
+                                    [options]="employeeList"
+                                    optionLabel="employee_name"
+                                    [(ngModel)]="selectedRM"
+                                    [filter]="true"
+                                    filterBy="employee_name"
+                                    (onFilter)="getEmployeeList($event?.filter)"
+                                    (onChange)="filter($event.value?.employee_name)"
+                                    [showClear]="true"
+                                    appendTo="body"
+                                    placeholder="Select RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="totalAgent" placeholder="Search by Total"
+                            ariaLabel="Filter Total" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="total_New_Agent" placeholder="Search by New"
+                            ariaLabel="Filter New" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="total_Active_Agent" placeholder="Search by Active"
+                            ariaLabel="Filter Active" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" field="total_Inactive_Agent" placeholder="Search by Inactive"
+                            ariaLabel="Filter Inactive" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="total_Block_Agent" placeholder="Search by Blocked"
+                        ariaLabel="Filter Blocked" />
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.rm">
+                        {{element.rm || "-"}}
+                    </td>
+                    <td class="text-center">{{element.totalAgent ? element.totalAgent : 0}}</td>
+                    <td class="text-center">{{element.total_New_Agent ? element.total_New_Agent : 0}}</td>
+                    <td class="text-center">{{element.total_Active_Agent ? element.total_Active_Agent : 0}}</td>
+                    <td class="text-center">{{element.total_Inactive_Agent ? element.total_Inactive_Agent : 0}}</td>
+                    <td>
+                        <div class="pl-[25px]">
+                            {{element.total_Block_Agent ? element.total_Block_Agent : 0}}
+                        </div></td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="7" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 export const AppConfig = {
-    pageSizeOptions: [5, 10, 15, 25, 100],
-    pageSize: 15,
+    pageSizeOptions: [5, 10, 20, 25, 100],
+    pageSize: 20,
     searchDelay: 500,
     showFirstLastButtons: true,
 };

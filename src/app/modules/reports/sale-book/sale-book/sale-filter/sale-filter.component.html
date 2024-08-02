@@ -59,6 +59,19 @@
                 </mat-form-field>
             </div>
 
+            <mat-form-field class="w-full">
+                <mat-label>Supplier</mat-label>
+                <mat-select formControlName="supplier_id" multiple [compareWith]="compareWith" (selectionChange)="vaalchange()">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching supplier found'" [formControlName]="'supplierfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option [value]="allVal" (click)="formGroup.get('supplier_id').patchValue([allVal])">{{ allVal.company_name }}</mat-option>
+                    <mat-option *ngFor="let topping of SupplierList" [value]="topping">{{ topping.company_name }}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
             <mat-form-field class="flex-grow">
                 <mat-label>Billing Company</mat-label>
                 <mat-select formControlName="billing_company_id" required [compareWith]="compareWith">

@@ -1,6 +1,6 @@
 import { BooleanInput } from '@angular/cdk/coercion';
-import { NgClass, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { DOCUMENT, NgClass, NgIf } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -47,6 +47,7 @@ export class UserComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _matdialog: MatDialog,
         private _userService: UserService,
+        @Inject(DOCUMENT) private document: Document
     ) {
         localStorage.getItem('theam')
     }
@@ -137,6 +138,14 @@ export class UserComponent implements OnInit, OnDestroy {
         // this.applyScheme(scheme);
 
         this._fuseConfigService.config = { scheme };
+
+        // Update PrimeNg Themes
+        let themeLink = this.document.getElementById('primeng-theme-css') as HTMLLinkElement;
+        if (themeLink) {
+            let themeName = scheme == 'light' ? "lara-light-blue": "md-dark-indigo";
+            themeLink.href = `assets/primeng-themes/${themeName}/theme.css`;
+        }
+
     }
 
     changePassword(){

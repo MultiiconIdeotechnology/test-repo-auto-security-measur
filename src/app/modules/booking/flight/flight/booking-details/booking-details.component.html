@@ -42,13 +42,13 @@
                                     <span class="text-md leading-none ml-2">Invoice</span>
                                 </div>
                                 <!-- *ngIf="Status === 'Confirmed'" -->
-                                <div class="flex space-x-3 mr-2" >
+                                <div class="flex space-x-3 mr-2">
                                     <div (click)="amendment()"
                                         class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
                                         <div>
                                             <img src="assets/icons/amendment.svg" alt="">
                                         </div>
-                                        <span class="text-md leading-none ml-2" >Amendment</span>
+                                        <span class="text-md leading-none ml-2">Amendment</span>
                                     </div>
                                 </div>
 
@@ -71,7 +71,7 @@
                                     <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
                                         Confirmed</span>
                                 </div>
-                                <div *ngIf="Status === 'Pending' || Status === 'Waiting for Payment' || Status === 'Confirmation Pending' || Status === 'Offline Pending' || Status === 'Partially Cancelled' || Status === 'Hold'"
+                                <div *ngIf="Status === 'Pending' || Status === 'Waiting for Payment' || Status === 'Confirmation Pending' || Status === 'Offline Pending'"
                                     class="pl-2 pr-3 py-1 rounded-lg  flex items-center border light-border">
                                     <mat-icon class="secondary-text text-2xl">watch_later</mat-icon>
                                     <span class="text-md font-semibold ml-2 leading-none theme-black-text">Your Ticket
@@ -82,16 +82,30 @@
                                     <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
                                     <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Failed</span>
                                 </div>
-                                <div *ngIf="Status === 'Booking Failed' || Status === 'Cancelled'"
+                                <div *ngIf="Status === 'Booking Failed' || Status === 'Cancelled' || Status === 'Partially Cancelled' || Status === 'Hold' || Status === 'Hold Released' "
                                     class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
                                     <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is {{Status}}</span>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
+                                        {{Status}}</span>
                                 </div>
-                                <div *ngIf="Status === 'Partially Cancelled'"
+                                <div *ngIf="Status === 'Rejected'"
                                     class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
                                     <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is {{Status}}</span>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Rejected
+                                    </span>
                                 </div>
+                                <!-- <div *ngIf="Status === 'Partially Cancelled'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
+                                        {{Status}}</span>
+                                </div>
+                                <div *ngIf="Status === 'Hold'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(99,77,228,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
+                                        {{Status}}</span>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -119,7 +133,8 @@
                                 <span class="text-md font-semibold text-secondary">Agent Contact Number</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="bookingBy?.agent_contact">{{bookingBy?.agent_contact || ' -'}}</span>
+                                        [matTooltip]="bookingBy?.agent_contact">{{bookingBy?.agent_contact || '
+                                        -'}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -132,21 +147,26 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">RM</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate" [matTooltip]="bookingBy?.rm">{{bookingBy?.rm || ' -'}}</span>
+                                    <span class="text-base truncate" [matTooltip]="bookingBy?.rm">{{bookingBy?.rm || '
+                                        -'}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">B2B Partner</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="bookingBy?.b2b_partner">{{bookingBy?.b2b_partner || ' - '}}</span>
+                                        [ngClass]="bookingBy?.b2b_partner ? 'cursor-pointer border-b border-gray-500' : ''"
+                                        [matTooltip]="bookingBy?.b2b_partner"
+                                        (click)="bookingBy?.b2b_partner ? B2BPartnerInfo() : null">{{bookingBy?.b2b_partner
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">B2C Customer</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="bookingBy?.b2c_customer">{{bookingBy?.b2c_customer || ' -'}}</span>
+                                        [matTooltip]="bookingBy?.b2c_customer">{{bookingBy?.b2c_customer || '
+                                        -'}}</span>
                                 </div>
                             </div>
                         </div>
@@ -160,7 +180,8 @@
                                 <span class="text-md font-semibold text-secondary">Reference Number</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.booking_ref_no">{{mainDataAll?.booking_ref_no || ' -'}}</span>
+                                        [matTooltip]="mainDataAll?.booking_ref_no">{{mainDataAll?.booking_ref_no || '
+                                        -'}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -168,7 +189,7 @@
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate" [matTooltip]="mainDataAll?.pnr">{{mainDataAll?.pnr
                                         || ' - '}}</span>
-                                    <img *ngIf="mainDataAll?.pnr" class="w-4 cursor-pointer"
+                                    <img  class="w-4 cursor-pointer"
                                         (click)="pnr(mainDataAll,'PNR')" src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
@@ -177,7 +198,7 @@
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate"
                                         [matTooltip]="mainDataAll?.gds_pnr">{{mainDataAll?.gds_pnr || ' - '}}</span>
-                                    <img *ngIf="mainDataAll?.pnr" (click)="pnr(mainDataAll,'GDS PNR')"
+                                    <img  (click)="pnr(mainDataAll,'GDS PNR')"
                                         class="w-4 cursor-pointer" src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
@@ -207,8 +228,12 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Supplier Ref. No.</span>
                                 <div class="truncate flex gap-2">
-                                    <span class="text-base truncate" [matTooltip]="mainDataAll?.supplier_ref_no">{{mainDataAll?.supplier_ref_no || ' - '}}</span>
-                                    <img *ngIf="mainDataAll?.supplier_ref_no" (click)="pnr(mainDataAll,'Supplier Ref. No.')" class="w-4 cursor-pointer" src="assets/icons/edit.svg" alt="">
+                                    <span class="text-base truncate"
+                                        [matTooltip]="mainDataAll?.supplier_ref_no">{{mainDataAll?.supplier_ref_no || '
+                                        - '}}</span>
+                                    <img 
+                                        (click)="pnr(mainDataAll,'Supplier Ref. No.')" class="w-4 cursor-pointer"
+                                        src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -254,8 +279,8 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Pax</span>
                                 <div class="truncate flex  gap-2">
-                                    <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.pax">{{mainDataAll?.pax || ' - '}}
+                                    <span class="text-base truncate" [matTooltip]="mainDataAll?.pax">{{mainDataAll?.pax
+                                        || ' - '}}
                                     </span>
                                 </div>
 
@@ -274,6 +299,20 @@
                                         [matTooltip]="mainDataAll?.ip_address">{{mainDataAll?.ip_address || ' - '}}</span>
                                 </div>
                             </div>
+                            <div class="flex flex-col ">
+                                <span class="text-md font-semibold text-secondary">Booking From</span>
+                                <div class="truncate">
+                                    <span class="text-base truncate">{{mainDataAll?.is_manual_entry ? 'Import' :
+                                        'Online'}}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col" *ngIf="Status === 'Hold' || Status === 'Hold Released'">
+                                <span class="text-md font-semibold text-secondary">Hold Expiry Date</span>
+                                <div class="truncate">
+                                    <span class="text-base truncate">{{mainDataAll?.hold_ticket_expiry}}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -281,7 +320,9 @@
                     <div class="border rounded-2xl overflow-hidden mb-5">
                         <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px]  justify-between flex items-center">
                             <span class="text-lg">Payment</span>
-                            <button (click)="refund()" *ngIf="Status === 'Payment Failed' || Status === 'Rejected' || Status === 'Booking Failed'" class="text-default font-normal px-4 py-1 rounded-[14px] bg-[#0D9488]">
+                            <button (click)="refund()"
+                                *ngIf="Status === 'Payment Failed' || Status === 'Rejected' || Status === 'Booking Failed'"
+                                class="text-default font-normal px-4 py-1 rounded-[14px] bg-[#0D9488]">
                                 <span class="text-white">Refund</span>
                             </button>
                         </div>
@@ -366,7 +407,8 @@
                                 <span class="text-md font-semibold text-secondary">Refund Status</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="paymentBy?.refund_status">{{paymentBy?.refund_status || ' - '}}</span>
+                                        [matTooltip]="paymentBy?.refund_status">{{paymentBy?.refund_status || ' -
+                                        '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -378,14 +420,16 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Date Time</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime | date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
+                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime | date:'dd-MM-yyyy
+                                        HH:mm:ss') || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Reason</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="paymentBy?.refund_reason">{{paymentBy?.refund_reason || ' - '}}</span>
+                                        [matTooltip]="paymentBy?.refund_reason">{{paymentBy?.refund_reason || ' -
+                                        '}}</span>
                                 </div>
                             </div>
                         </div>
@@ -555,8 +599,10 @@
                 </div>
             </div>
 
-            <div class="rounded-md overflow-hidden border-gray-border border mb-5" *ngIf="bookingBy?.type == 'B2B Partner' || bookingBy?.type == 'B2C'">
-                <div class="text-lg  pb-3 dark:bg-card bg-gray-200  border-gray-bg py-3 pl-3">{{bookingBy?.type}} Detail</div>
+            <div class="rounded-md overflow-hidden border-gray-border border mb-5"
+                *ngIf="bookingBy?.type == 'B2B Partner' || bookingBy?.type == 'B2C'">
+                <div class="text-lg  pb-3 dark:bg-card bg-gray-200  border-gray-bg py-3 pl-3">{{bookingBy?.type}} Detail
+                </div>
                 <div class="overflow-x-auto white-bg">
                     <div class=" overflow-x-auto dark:bg-transparent bg-white">
                         <div class="w-full flex text-secondary  pl-4 border-b">
@@ -565,9 +611,12 @@
                             <div class="w-1/3 py-2 min-w-40">Mobile</div>
                         </div>
                         <div class="w-full flex pl-4 border-b">
-                            <div class="w-1/3 py-2 min-w-50">{{bookingBy?.type == 'B2C' ? bookingBy?.b2c_customer : bookingBy?.b2b_partner }}</div>
-                            <div class="w-1/3 py-2 min-w-24">{{bookingBy?.type == 'B2C' ? bookingBy?.b2c_customer_email : bookingBy?.b2b_partner_email}}</div>
-                            <div class="w-1/3 py-2 min-w-40">{{bookingBy?.type == 'B2C' ? bookingBy?.b2c_customer_mobile : bookingBy?.b2b_partner_mobile}}</div>
+                            <div class="w-1/3 py-2 min-w-50">{{bookingBy?.type == 'B2C' ? bookingBy?.b2c_customer :
+                                bookingBy?.b2b_partner }}</div>
+                            <div class="w-1/3 py-2 min-w-24">{{bookingBy?.type == 'B2C' ? bookingBy?.b2c_customer_email
+                                : bookingBy?.b2b_partner_email}}</div>
+                            <div class="w-1/3 py-2 min-w-40">{{bookingBy?.type == 'B2C' ? bookingBy?.b2c_customer_mobile
+                                : bookingBy?.b2b_partner_mobile}}</div>
                         </div>
                     </div>
                 </div>
@@ -596,13 +645,17 @@
                         *ngFor="let data of customerDataList"
                         [ngClass]="data.cancelled === 2 ? 'bg-[rgba(255,0,0,0.11)] pointer-events-none' : ''">
                         <div class="pl-2 flex cursor-pointer">
-                             <mat-icon class="w-[10px] min-w-[17px] text-[#1674e6]" svgIcon="heroicons_outline:exclamation-circle" (click)="info(data)"></mat-icon>
+                            <mat-icon class="w-[10px] min-w-[17px] text-[#1674e6]"
+                                svgIcon="heroicons_outline:exclamation-circle" (click)="info(data)"></mat-icon>
                         </div>
                         <div class="pl-2 cursor-pointer">
-                            <mat-icon class="w-[10px] min-w-[17px] mt-[3px] text-[#1674e6]" svgIcon="heroicons_outline:pencil-square" (click)="pax(data)"></mat-icon>
+                            <mat-icon class="w-[10px] min-w-[17px] mt-[3px] text-[#1674e6]"
+                                svgIcon="heroicons_outline:pencil-square" (click)="pax(data)"></mat-icon>
                         </div>
                         <div class="w-[250px] px-4 flex flex-col gap-3">
-                            <span>{{ data.name || ' - '}} <p class="text-secondary text-sm">{{data.email}}</p> <p class="text-sm text-[#156cd6]">{{data.contact}}</p></span>
+                            <span>{{ data.name || ' - '}} <p class="text-secondary text-sm">{{data.email}}</p>
+                                <p class="text-sm text-[#156cd6]">{{data.contact}}</p>
+                            </span>
                             <span [matTooltip]="getTooltip(data.remark)" [matTooltipClass]="'custom-tooltip'"
                                 *ngIf="data.cancelled === 1"
                                 class="text-orange-500 text-sm font-semibold leading-3">Partially Cancelled</span>
@@ -613,8 +666,12 @@
                         <div class="w-[110px] px-4 truncate">{{ data.gender }}</div>
                         <div class="w-[140px] px-4 truncate">{{ data.pax_type }}</div>
                         <div class="w-[200px] px-4 truncate">{{ data.ticket_number || ' - '}}</div>
-                        <div class="w-[200px] px-4 truncate"><mat-icon class="material-symbols-outlined text-default text-xl relative top-1">luggage</mat-icon>{{data.checkin_baggage || ' - '}}</div>
-                        <div class="w-[190px] px-4 truncate"><mat-icon class="material-symbols-outlined text-default text-xl ml-1 relative top-1">local_mall</mat-icon>{{data.cabin_baggage || ' - '}}
+                        <div class="w-[200px] px-4 truncate"><mat-icon
+                                class="material-symbols-outlined text-default text-xl relative top-1">luggage</mat-icon>{{data.checkin_baggage
+                            || ' - '}}</div>
+                        <div class="w-[190px] px-4 truncate"><mat-icon
+                                class="material-symbols-outlined text-default text-xl ml-1 relative top-1">local_mall</mat-icon>{{data.cabin_baggage
+                            || ' - '}}
                         </div>
                     </div>
                 </div>
@@ -622,7 +679,8 @@
                 <div *ngIf="baggageDataList.length > 0"
                     class="flex flex-col mt-7 overflow-x-hidden overflow-y-auto rounded-2xl border"
                     style="max-height: 40% !important">
-                    <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center bg-card sticky top-0 text-lg px-4">
+                    <div
+                        class="flex flex-row border-b-2 max-h-10 min-h-10 items-center bg-card sticky top-0 text-lg px-4">
                         Extra meal & Baggage Details</div>
                     <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0">
                         <div class="w-1/4 px-4">Passenger Name</div>
@@ -676,7 +734,8 @@
                         </div>
                         <div class=" px-4 flex flex-row gap-3">
                             <div class="w-5 cursor-pointer" [matTooltip]="data.invoice_type">
-                                <img *ngIf="data.invoice_id && data.amendment_status == 'Completed'" src="assets/icons/voucher.svg" alt="" (click)="invoice(data.invoice_id)">
+                                <img *ngIf="data.invoice_id && data.amendment_status == 'Completed'"
+                                    src="assets/icons/voucher.svg" alt="" (click)="invoice(data.invoice_id)">
                             </div>
                         </div>
                         <div class="w-1/4 px-4 flex flex-row gap-3">{{ data.ref_no || ' - ' }}</div>

@@ -24,14 +24,14 @@ import { GridUtils } from 'app/utils/grid/gridUtils';
 import { Subject, takeUntil } from 'rxjs';
 import { SalesEntryComponent } from './sales-entry/sales-entry.component';
 import { ToasterService } from 'app/services/toaster.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-sales',
   templateUrl: './sales.component.html',
-  styleUrls: ['./sales.component.scss'],
   styles: [`
   .tbl-grid {
-    grid-template-columns: 40px 160px 200px 170px 130px 140px 130px 140px 100px 100px 100px 100px 110px 160px;
+    grid-template-columns: 40px 130px 110px 130px 100px 140px 130px;
   }
   `],
   standalone: true,
@@ -60,20 +60,21 @@ import { ToasterService } from 'app/services/toaster.service';
 export class SalesComponent {
 
   @ViewChild('tabGroup') tabGroup;
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
   @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControl = new FormControl('');
 
   @Input() id: string
   @Input() agent_currency_id: string
+  @Input() currency_short_code: boolean;
   @Input() isInvoiceGenerated: boolean;
 
   module_name = module_name.Sales
   dataList = [];
-  total = 0;
+  AlldataList = [];
   appConfig = AppConfig;
   pendingFilter: any = {};
   record: any = {};
+  mysearchInputControl = new FormControl('');
 
   public key: any;
   public sortColumn: any;
@@ -85,18 +86,11 @@ export class SalesComponent {
 
   columns = [
     { key: 'service_type', name: 'Service Type', is_date: false, date_formate: '', is_sortable: true, class: '', align: '', tooltip: true },
-    { key: 'service_particular', name: 'Service Particular', is_date: false, date_formate: '', is_sortable: true, class: '', align: '', tooltip: true },
-    { key: 'service_remark', name: 'Remark', tooltip: true, is_date: false, date_formate: '', is_sortable: true, class: '', align: '', },
-    { key: 'service_date', name: 'Service Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', align: '', },
-    { key: 'agent_currency', name: 'Agent Currency', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', align: '', tooltip: true },
-    { key: 'sale_amount', name: 'Sale Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
-    { key: 'service_charge', name: 'Service Charge', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
-    { key: 'sgst', name: 'SGST', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
-    { key: 'cgst', name: 'CGST', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
-    { key: 'igst', name: 'IGST', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
-    { key: 'vat', name: 'VAT', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
-    { key: 'total_tax', name: 'Total Tax', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
-    { key: 'net_sale_amount', name: 'Net Sale Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: true },
+    { key: 'recharge_amount', name: 'Sale Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: false },
+    { key: 'service_charge', name: 'Service Charge', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', align: '', tooltip: false },
+    { key: 'total_tax', name: 'Tax', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', align: '', tooltip: false },
+    { key: 'net_sale_amount', name: 'Net Sale Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', align: '', tooltip: false },
+    { key: 'entry_date_time', name: 'Entry Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm', is_sortable: true, class: '', align: '', },
   ]
   cols = [];
 
@@ -105,51 +99,41 @@ export class SalesComponent {
     private offlineService: OfflineserviceService,
     private matDialog: MatDialog,
     private alertService: ToasterService,
-    private entityService: EntityService,
   ) {
-    // super(module_name.wallet)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'service_date';
-    this.sortDirection = 'asc';
+    this.sortColumn = 'entry_date_time';
+    this.sortDirection = 'desc';
     this.Mainmodule = this
   }
 
   ngOnInit(): void {
-    this.searchInputControl.valueChanges
-      .subscribe(() => {
-        GridUtils.resetPaginator(this._paginatorPending);
-        this.refreshItemsSales();
-      });
-
-    this.entityService.onWalletAuditedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-      next: (item) => {
-        this.refreshItemsSales();
-      }
+    this.mysearchInputControl.valueChanges.subscribe(val => {
+      if (!val || val.trim() == '')
+        this.dataList = this.AlldataList
+      else
+        this.dataList = this.AlldataList.filter(x => x.service_type.toLowerCase().includes(val.toLowerCase()) || x.total_tax.toString().toLowerCase().includes(val.toLowerCase()) || x.net_sale_amount.toString().toLowerCase().includes(val.toLowerCase()) ||
+          x.recharge_amount.toLowerCase().includes(val.toLowerCase()) || x.service_charge.toString().toLowerCase().includes(val.toLowerCase()) || x.entry_date_time.toString().toLowerCase().includes(val.toLowerCase()))
     })
+
     this.refreshItemsSales();
   }
 
   refreshItemsSales() {
     this.isLoading = true;
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginatorPending,
-      this._sortPending,
-      this.searchInputControl.value, "service_date", 1
-    );
-
-    filterReq["OsbId"] = this.id;
-    this.offlineService.getOsbSalesList(filterReq).subscribe(
+   
+    this.offlineService.getOsbSalesList({OsbId: this.id}).subscribe(
       {
         next: data => {
           this.isLoading = false;
           this.dataList = data.data;
 
           this.dataList.forEach(x => {
-            x.recharge_amount = x.currency + " " + x.recharge_amount
+            x.recharge_amount = x.agent_currency + " " + x.sale_amount;
+            x.service_charge = x.service_charge || "0";
+            x.total_tax = x.total_tax || "0";
           });
-          this._paginatorPending.length = data.total;
-          this.total = data.total;
+          this.AlldataList = cloneDeep(this.dataList);
         }, error: err => {
           this.alertService.showToast('error', err);
 
@@ -165,7 +149,7 @@ export class SalesComponent {
     }
 
     this.matDialog.open(SalesEntryComponent, {
-      data: { data: record, readonly: true },
+      data: { data: record, readonly: true, currency_short_code: this.currency_short_code },
       disableClose: true
     })
   }
@@ -177,7 +161,7 @@ export class SalesComponent {
 
     this.matDialog.open(SalesEntryComponent,
       {
-        data: { Obs_id: this.id, agent_currency_id: this.agent_currency_id },
+        data: { Obs_id: this.id, agent_currency_id: this.agent_currency_id, currency_short_code: this.currency_short_code },
         disableClose: true
       })
       .afterClosed()
@@ -200,7 +184,7 @@ export class SalesComponent {
     }
 
     this.matDialog.open(SalesEntryComponent, {
-      data: { data: record, Obs_id: this.id, readonly: false, agent_currency_id: this.agent_currency_id },
+      data: { data: record, Obs_id: this.id, readonly: false, agent_currency_id: this.agent_currency_id, currency_short_code: this.currency_short_code },
       disableClose: true
     }).afterClosed().subscribe(res => {
       if (res) {
@@ -233,6 +217,10 @@ export class SalesComponent {
     })
   }
 
+  shortData() {
+    this.dataList.sort((a, b) => this._sortPending.direction === 'asc' ? a[this._sortPending.active].toString().localeCompare(b[this._sortPending.active].toString()) : b[this._sortPending.active].toString().localeCompare(a[this._sortPending.active].toString()));
+  }
+
   downloadfile(data: string) {
     window.open(data, '_blank')
   }
@@ -240,8 +228,8 @@ export class SalesComponent {
   getNodataText(): string {
     if (this.isLoading)
       return 'Loading...';
-    else if (this.searchInputControl.value)
-      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else if (this.mysearchInputControl.value)
+      return `no search results found for \'${this.mysearchInputControl.value}\'.`;
     else return 'No data to display';
   }
 

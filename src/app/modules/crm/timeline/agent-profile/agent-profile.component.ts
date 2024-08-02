@@ -63,7 +63,7 @@ import { KycInfoComponent } from 'app/modules/masters/agent/kyc-info/kyc-info.co
     ]
 })
 export class CRMAgentProfileComponent {
-    dataList = [];
+    dataList: any;
     searchInputControl = new FormControl('');
     @ViewChild('tabGroup') tabGroup;
 

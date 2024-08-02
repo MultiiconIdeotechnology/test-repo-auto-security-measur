@@ -12,7 +12,7 @@
 
         <mat-form-field class="flex-grow">
             <mat-label>Master Agent</mat-label>
-            <mat-select formControlName="agent_id" required>
+            <mat-select formControlName="agent_id" required *ngIf="!record.id">
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching agent found'"
                         [formControlName]="'agentfilter'">
@@ -26,26 +26,8 @@
                     </div>
                 </mat-option>
             </mat-select>
+            <input type="text" readonly matInput *ngIf="record.id" [formControlName]="'agent_name'">
         </mat-form-field>
-
-        <!-- <mat-form-field class="flex-grow">
-            <mat-label>Agent</mat-label>
-            <mat-select formControlName="agent_id" required>
-                <mat-option>
-                    <ngx-mat-select-search placeholderLabel="Search"
-                        noEntriesFoundLabel="'no matching agent found'"
-                        [formControlName]="'agentfilterSub'">
-                    </ngx-mat-select-search>
-                </mat-option>
-                <mat-option *ngFor="let ct of agentListSub" [value]="ct.id">
-                    <span><span *ngIf="ct.code">{{ ct.code }} - </span>{{ ct.agency_name }} <span
-                            *ngIf="ct.master_agent_name"> ({{ ct.master_agent_name }}) </span></span>
-                    <div class="-mt-2">
-                        <span class="text-secondary text-sm">{{ ct.email_address }}</span>
-                    </div>
-                </mat-option>
-            </mat-select>
-        </mat-form-field> -->
 
         <mat-form-field class="flex-grow">
             <mat-label>Lead Pax Name</mat-label>

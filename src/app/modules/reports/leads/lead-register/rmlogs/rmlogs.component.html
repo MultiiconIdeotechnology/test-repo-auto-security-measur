@@ -13,9 +13,9 @@
                 <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
                     matSort matSortDisableClear matSortActive="date" matSortDirection="desc"
                     (matSortChange)="refreshItems()">
-                    <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
+                    <!-- <div style="text-align: center" class="sticky left-0 dark:bg-gray-700 bg-white z-99 text-secondary">
                         #
-                    </div>
+                    </div> -->
 
                     <ng-container *ngFor="let col of columns">
                         <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class"
@@ -30,11 +30,11 @@
                 <!-- Rows -->
                 <ng-container *ngIf="dataList?.length > 0; else noGridItems">
                     <ng-container *ngFor="let ListItem of dataList">
-                        <div class="tbl-grid gridwidth grid items-center px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                        <div class="tbl-grid gridwidth grid items-center px-6 md:pr-8 border-b p-[10px] pl-0 cursor-pointer">
+                            <!-- <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
                                 class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
                                 <mat-icon> more_vert </mat-icon>
-                            </button>
+                            </button> -->
                             <ng-container *ngFor="let col of columns">
                                 <div [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
                                     <div

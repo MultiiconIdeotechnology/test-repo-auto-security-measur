@@ -1,0 +1,364 @@
+import { messages, module_name, Security } from 'app/security';
+import { Component, OnDestroy } from '@angular/core';
+import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AppConfig } from 'app/config/app-config';
+import { AccountService } from 'app/services/account.service';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
+import { Linq } from 'app/utils/linq';
+import { KycDocumentService } from 'app/services/kyc-document.service';
+import { PspSettingService } from 'app/services/psp-setting.service';
+import { AgentService } from 'app/services/agent.service';
+
+@Component({
+    selector: 'app-purchase-register',
+    templateUrl: './purchase-register.component.html',
+    styles: [],
+    standalone: true,
+    imports: [
+        NgIf,
+        NgFor,
+        DatePipe,
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatButtonModule,
+        MatProgressBarModule,
+        MatMenuModule,
+        MatDialogModule,
+        MatDividerModule,
+        FormsModule,
+        PrimeNgImportsModule
+    ],
+})
+export class PurchaseRegisterComponent
+    extends BaseListingComponent
+    implements OnDestroy {
+    module_name = module_name.purchaseRegister;
+    dataList = [];
+    total = 0;
+    user: any;
+    is_first: any;
+    currentFilter: any;
+    infoList = [];
+    public Filter: any;
+    public key: any = 'entry_date_time';
+    appConfig = AppConfig;
+    settings: any;
+    typeList = ['Normal', 'Corporate'];
+    companyList: any[] = [];
+
+    columns = [
+        {
+            key: 'payment_ref_no',
+            name: 'Payment Ref. No.',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        },
+        {
+            key: 'entry_date_time',
+            name: 'Date',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        },
+        {
+            key: 'agent_code',
+            name: 'Agent Code',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: false,
+        },
+        {
+            key: 'agency_name',
+            name: 'Agency Name',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'service_for',
+            name: 'Service',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'booking_ref_no',
+            name: 'Booking Ref. No.',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'pnr',
+            name: 'PNR',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'gds_pnr',
+            name: 'GDS PNR',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'company_name',
+            name: 'Supplier',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'currency_short_code',
+            name: 'Currency',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'payment_amount',
+            name: 'Amount',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'booking_Type',
+            name: 'Booking Type',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+        , {
+            key: 'company',
+            name: 'Company',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        }
+    ];
+
+    cols: Column[];
+    isFilterShow: boolean = false;
+    supplierList: any[] = [];
+    selectedCompany!: string;
+    agentList: any[] = [];
+    selectedSupplier!:string;
+    selectedAgent!:string;
+
+    constructor(
+        private accountService: AccountService,
+        private kycDocumentService: KycDocumentService,
+        private pspsettingService: PspSettingService,
+        public agentService: AgentService
+    ) {
+        super(module_name.purchaseRegister);
+        // this.cols = this.columns.map((x) => x.key);
+        this.key = this.module_name;
+        this.sortColumn = 'entry_date_time';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+    }
+
+    ngOnInit() {
+        this.getAgent('');
+        this.getSupplier("", true);
+        this.getCompanyList("");
+    }
+
+    getCompanyList(value) {
+        this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
+            this.companyList = data;
+        })
+    }
+
+    getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
+    }
+
+    viewData(record): void {
+        // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
+        //     return this.alertService.showToast(
+        //         'error',
+        //         messages.permissionDenied
+        //     );
+        // }
+
+        if (record?.booking_ref_no?.substring(0, 3) == 'FLT') {
+            Linq.recirect('/booking/flight/details/' + record.service_for_id);
+        }
+        else if (record?.booking_ref_no?.substring(0, 3) == 'VIS') {
+            Linq.recirect('/booking/visa/details/' + record.purchase_id);
+        }
+        else if (record?.booking_ref_no?.substring(0, 3) == 'BUS') {
+            Linq.recirect('/booking/bus/details/' + record.purchase_id);
+        }
+        else if (record?.booking_ref_no?.substring(0, 3) == 'HTL') {
+            Linq.recirect('/booking/hotel/details/' + record.purchase_id);
+        }
+        else if (record?.booking_ref_no?.substring(0, 3) == 'AGI') {
+            Linq.recirect('/booking/group-inquiry/details/' + record.purchase_id);
+        }
+        else if (record?.booking_ref_no?.substring(0, 3) == 'OSB') {
+            Linq.recirect('/booking/offline-service/entry/' + record.purchase_id + '/readonly');
+        }
+    }
+
+    getSupplier(value: string, bool: boolean = true) {
+        this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
+            this.supplierList = data;
+        });
+    }
+
+    refreshItems(event?: any): void {
+        this.accountService.getpurchaseRegister(this.getNewFilterReq(event)).subscribe({
+            next: (data) => {
+                this.dataList = data.data;
+                this.total = data.total;
+                this.totalRecords = data.total;
+                this.isLoading = false;
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    getNodataText(): string {
+        if (this.isLoading) return 'Loading...';
+        else if (this.searchInputControl.value)
+            return `no search results found for \'${this.searchInputControl.value}\'.`;
+        else return 'No data to display';
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+    }
+
+    exportExcel(): void {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast(
+                'error',
+                messages.permissionDenied
+            );
+        }
+
+        const filterReq = this.getNewFilterReq({});
+        filterReq['Take'] = this.totalRecords;
+        this.accountService.getpurchaseRegister(filterReq).subscribe((data) => {
+            for (var dt of data.data) {
+                dt.booking_date = DateTime.fromISO(dt.booking_date).toFormat('dd-MM-yyyy hh:mm a');
+            }
+            Excel.export(
+                'Purchase Register',
+                [
+                    { header: 'Payment Ref. No.', property: 'payment_ref_no' },
+                    { header: 'Date', property: 'entry_date_time' },
+                    { header: 'Agent Code', property: 'agent_code' },
+                    { header: 'Agency Name', property: 'agency_name' },
+                    { header: 'Service', property: 'service_for' },
+                    { header: 'Booking Ref. No.', property: 'booking_ref_no' },
+                    { header: 'PNR', property: 'pnr' },
+                    { header: 'GDS PNR', property: 'gds_pnr' },
+                    { header: 'Supplier ', property: 'company_name' },
+                    { header: 'Currency', property: 'currency_short_code' },
+                    { header: 'Amount', property: 'payment_amount' },
+                    { header: 'Booking Type', property: 'booking_Type' },
+                    { header: 'Company', property: 'company' }
+                ],
+                data.data,
+                'Purchase Register',
+                [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]
+            );
+        });
+    }
+}

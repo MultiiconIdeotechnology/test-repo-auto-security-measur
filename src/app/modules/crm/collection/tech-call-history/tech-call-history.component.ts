@@ -5,7 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,11 +28,20 @@ import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
+import { CallHisoryRemarkComponent } from '../travel-call-history/call-history-remark/call-history-remark.component';
+import { ScheduleCallRemarkComponent } from '../travel-call-history/schedule-call-details/schedule-call-details.component';
 
 @Component({
   selector: 'app-tech-call-history',
   templateUrl: './tech-call-history.component.html',
 standalone: true,
+styles: [
+    `
+.tbl-grid {
+    grid-template-columns: 160px 170px 171px 95px 80px 122px;
+}
+`,
+],
 imports: [
     NgIf,
     NgFor,
@@ -79,6 +88,85 @@ export class TechCallHistoryComponent{
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
+    columns = [
+        {
+            key: 'entry_date_time',
+            name: 'Date Time',
+            is_date: true,
+            date_formate: 'dd/MM/yyyy HH:mm:ss',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: 'center',
+            indicator: false,
+            tooltip: false,
+        },
+        {
+            key: 'entry_by_id_Name',
+            name: 'Call By',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: true,
+            tooltip: false,
+
+        },
+        {
+            key: 'call_purpose',
+            name: 'Purpose',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true
+        },
+        {
+            key: 'feedback',
+            name: 'Feedback',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: true,
+        },
+        {
+            key: 'rm_remark',
+            name: 'Remark',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: false,
+            shcheduleRemark: true
+        },
+        {
+            key: 'is_call_rescheduled',
+            name: 'Schedule Call',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: 'center',
+            indicator: false,
+            tooltip: true,
+            scheduleCallFlag: true
+        }
+    ];
+    cols = [];
+
 
     module_name = module_name.lead
     total = 0;
@@ -92,6 +180,7 @@ export class TechCallHistoryComponent{
         public matDialogRef: MatDialogRef<TechCallHistoryComponent>,
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
+        private matDialog: MatDialog,
         private router: Router,
         private alertService: ToasterService,
         @Inject(MAT_DIALOG_DATA) public data: any = {}
@@ -106,7 +195,7 @@ export class TechCallHistoryComponent{
         this.searchInputControl.valueChanges
             .subscribe(() => {
                 GridUtils.resetPaginator(this._paginator);
-                this.refreshItems();
+                // this.refreshItems();
             });
         this.refreshItems();
         this.is_schedule_call = new FormControl(true);
@@ -121,6 +210,7 @@ export class TechCallHistoryComponent{
         );
 
         filterReq['MasterId'] = this.MasterId ? this.MasterId : ""
+        filterReq['MasterFor'] = "agent_master"
         this.crmService.getCallHistoryList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
@@ -142,7 +232,27 @@ export class TechCallHistoryComponent{
         else return 'No data to display';
     }
 
-    callsAction(){
+    remark(data: any) {
+        this.matDialog.open(CallHisoryRemarkComponent, {
+            data: data,
+            disableClose: true
+        }).afterClosed().subscribe(res => {
+            if (!res) {
+                return
+            }
+        })
+    }
 
+    isScheduleCall(data: any) {
+        if (data.is_call_rescheduled == true) {
+            this.matDialog.open(ScheduleCallRemarkComponent, {
+                data: data,
+                disableClose: true
+            }).afterClosed().subscribe(res => {
+                if (!res) {
+                    return
+                }
+            })
+        }
     }
 }

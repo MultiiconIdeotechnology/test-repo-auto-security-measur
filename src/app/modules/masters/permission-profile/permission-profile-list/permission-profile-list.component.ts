@@ -19,15 +19,17 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+
+interface Column {
+    field: string;
+    header: string;
+}
 
 @Component({
     selector: 'app-permission-profile-list',
     templateUrl: './permission-profile-list.component.html',
-    styles: [`
-    .tbl-grid {
-      grid-template-columns:  40px 220px 160px 160px 80px 80px;
-    }
-    `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -44,6 +46,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         ReactiveFormsModule,
         MatButtonModule,
         MatTooltipModule,
+        PrimeNgImportsModule
     ],
 })
 export class PermissionProfileListComponent extends BaseListingComponent {
@@ -124,6 +127,8 @@ export class PermissionProfileListComponent extends BaseListingComponent {
         },
     ];
     cols = [];
+    isFilterShow: boolean = false;
+
 
     constructor(
         private conformationService: FuseConfirmationService,
@@ -133,22 +138,23 @@ export class PermissionProfileListComponent extends BaseListingComponent {
         private toasterService: ToasterService
     ) {
         super(module_name.permissionProfile);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'profile_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.permissionProfileService
-            .getPermissionProfileList(this.getFilterReq())
+            .getPermissionProfileList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    // this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                     this.dataList.forEach((row) => {
                         row['applied_on'] = row['applied_on_list'].length;
                     });
@@ -276,6 +282,6 @@ export class PermissionProfileListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

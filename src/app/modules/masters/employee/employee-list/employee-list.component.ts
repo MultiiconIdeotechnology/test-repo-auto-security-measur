@@ -12,7 +12,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, employeePermissions, messages, module_name } from 'app/security';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -24,17 +24,12 @@ import { PermissionProfileDiaComponent } from '../dialogs/permission-profile-dia
 import { EmployeeKycInfoComponent } from '../employee-kyc-info/employee-kyc-info.component';
 import { KycProfileDialogComponent } from '../kyc-profile-dialog/kyc-profile-dialog.component';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-employee-list',
     templateUrl: './employee-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 160px 230px 130px 190px 150px 200px 200px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         CommonModule,
@@ -54,6 +49,7 @@ import { ToasterService } from 'app/services/toaster.service';
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class EmployeeListComponent
@@ -149,7 +145,9 @@ export class EmployeeListComponent
             tooltip: true,
         },
     ];
-    cols = [];
+    cols: Column[];
+    _selectedColumns: Column[];
+    isFilterShow: boolean = false;
 
     constructor(
         private employeeService: EmployeeService,
@@ -159,20 +157,37 @@ export class EmployeeListComponent
         private router: Router
     ) {
         super(module_name.employee);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'employee_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    ngOnInit() {
+
+        this.cols = [
+            { field: 'company_name', header: 'Company' },
+        ];
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.employeeService.getEmployeeList(this.getFilterReq()).subscribe({
+        this.employeeService.getEmployeeList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                // this._paginator.length = data.total;
+                this.totalRecords = data.total;
+
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true)
@@ -464,6 +479,6 @@ export class EmployeeListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

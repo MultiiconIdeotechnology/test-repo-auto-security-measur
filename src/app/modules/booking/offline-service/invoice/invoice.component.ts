@@ -59,7 +59,6 @@ import { CommonUtils } from 'app/utils/commonutils';
 export class InvoiceComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
   @ViewChild(MatSort) public _sortPending: MatSort;
   @Input() id: string;
   @Input() agent_currency_id: string
@@ -69,7 +68,6 @@ export class InvoiceComponent extends BaseListingComponent {
 
   module_name = module_name.OsbInvoice
   dataList = [];
-  total = 0;
   appConfig = AppConfig;
   pendingFilter: any = {};
   record: any = {};
@@ -150,8 +148,6 @@ export class InvoiceComponent extends BaseListingComponent {
 
           this.dataList = data.data;
 
-          this._paginatorPending.length = data.total;
-          this.total = data.total;
         }, error: err => {
           this.alertService.showToast('error', err);
 

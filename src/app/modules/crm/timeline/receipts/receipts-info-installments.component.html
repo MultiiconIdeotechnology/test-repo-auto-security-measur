@@ -27,12 +27,18 @@
                                 <div [class]="'flex flex-row items-center space-x-2 truncate pl-5 ' + col.class"
                                     [ngClass]="{ 'justify-center': col.align === 'left' }">
 
-                                    <span *ngIf="col.isicon" class="text-center justify-center">
+                                    <!-- <span *ngIf="col.isicon" class="text-center justify-center">
                                         <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                             class="rounded-full cursor-pointer text-blue-600 p-0.5"
                                             [matTooltip]="'Download'"></mat-icon>
-                                        <!-- (click)="downloadfile()" -->
-                                    </span>
+                                    </span> -->
+                                    <span *ngIf="col.isicon" class="text-center justify-center">
+                                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                            (click)="downloadInvoice(ListItem['receiptid'])"
+                                            [attr.disabled]="!ListItem['isInvoice'] ? true : null"
+                                            [ngClass]="{'cursor-pointer text-blue-600': ListItem['isInvoice'], 'cursor-not-allowed text-blue-400': !ListItem['isInvoice']}"
+                                            [matTooltip]="'Download'"></mat-icon></span>
 
                                     <span *ngIf="col.isAudited" class="text-center">
                                         <span *ngIf="ListItem[col.key]" class="text-green-600">Yes</span>

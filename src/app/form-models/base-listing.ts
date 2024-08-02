@@ -1,5 +1,5 @@
 // import { MasterService } from './../services/master.service';
-import { Component, OnInit, ViewChild, ElementRef, Inject } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef, Inject, HostListener } from "@angular/core";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort, Sort } from "@angular/material/sort";
@@ -20,14 +20,21 @@ import { Pdf } from "app/utils/export/pdf";
 import { Excel } from "app/utils/export/excel";
 import { ToasterService } from "app/services/toaster.service";
 import { Security, messages } from "app/security";
+import { LazyLoadEvent } from "primeng/api";
+import { Table } from "primeng/table";
+
+export interface Column {
+    field: string;
+    header: string;
+}
 
 @Component({
     template: '',
 })
+
 export abstract class BaseListingComponent implements OnInit {
 
     //#region View Childs
-
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
@@ -40,6 +47,8 @@ export abstract class BaseListingComponent implements OnInit {
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sort: MatSort;
 
+    @ViewChild('datatable') public primengTable: Table;
+
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
@@ -47,8 +56,12 @@ export abstract class BaseListingComponent implements OnInit {
     Mainmodule: any;
 
     isLoading = false;
-
+    totalRecords: number = 0;
+    tablesTotal: any;
+    scrollHeight: string;
+    scrollHeightWTab: string;
     //#endregion
+    frozenObj: any = {};
 
     protected masterService: MasterService;
     protected alertService: ToasterService;
@@ -70,9 +83,25 @@ export abstract class BaseListingComponent implements OnInit {
         this.authService = ReflectionInjector.get(AuthService);
         this.masterService = ReflectionInjector.get(MasterService);
         this.alertService = ReflectionInjector.get(ToasterService);
+        this.updateScrollHeight();
     }
 
     ngOnInit(): void {
+
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize(event: any) {
+      this.updateScrollHeight();
+    }
+
+    updateScrollHeight() {
+        const headerHeight = 40; // Assuming header height is 56px, adjust as necessary
+        const paginatorHeight = 20; // Assuming paginator height is 40px, adjust as necessary
+        const headerTabHeight = 58;
+        const availableHeight = window.innerHeight - headerHeight - paginatorHeight - 80; // Adjust the 100px padding as necessary
+        this.scrollHeight = availableHeight + 'px';
+        this.scrollHeightWTab = (availableHeight - headerTabHeight)  + 'px';
     }
 
     ngAfterViewInit(): void {
@@ -80,25 +109,37 @@ export abstract class BaseListingComponent implements OnInit {
 
             const qw = this.masterService.getData(this.key, this.Mainmodule);
             if (!qw) {
-                this._sort.sort({
-                    id: this.sortColumn,
-                    start: this.sortDirection,
-                    disableClear: true,
-                });
+                if(this._sort) {
+                    this._sort.sort({
+                        id: this.sortColumn,
+                        start: this.sortDirection,
+                        disableClear: true,
+                    });
+                }
             }
 
-            this.searchInputControl.valueChanges
-                .pipe(
-                    takeUntil(this._unsubscribeAll),
-                    debounceTime(AppConfig.searchDelay)
-                )
-                .subscribe(() => {
-                    GridUtils.resetPaginator(this._paginator);
-                    this.refreshItems();
-                });
+            // this.searchInputControl.valueChanges
+            //     .pipe(
+            //         takeUntil(this._unsubscribeAll),
+            //         debounceTime(AppConfig.searchDelay)
+            //     )
+            //     .subscribe(() => {
+            //         GridUtils.resetPaginator(this._paginator);
+            //         this.refreshItems();
+            //     });
         });
 
+        document.addEventListener('scroll', this.preventScrollClose, true);
     }
+
+    // To prevent the closing of filter dropdown on scroll
+    preventScrollClose = (event: Event) => {
+        const datepicker = document.querySelector('.p-datepicker');
+        const pOverlay = document.querySelector('.p-overlay')
+        if (datepicker || pOverlay) {
+            event.stopPropagation();
+        }
+    };
 
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
@@ -107,6 +148,7 @@ export abstract class BaseListingComponent implements OnInit {
     }
 
     onInit(): void {
+
     }
 
     //#region Protected Methods
@@ -120,6 +162,22 @@ export abstract class BaseListingComponent implements OnInit {
     }
 
     //#endregion
+
+
+    // Table Frozen Column
+    isFrozenColumn(key: any, opetion?: any) {
+        if(key) {
+            if(this.frozenObj && this.frozenObj[key]) {
+                this.frozenObj[key] = !this.frozenObj[key];
+            } else {
+                this.frozenObj[key] = true;
+            }
+        }
+        if(opetion && opetion.length) {
+            opetion.every((field: any) => this.frozenObj[field] = true);
+        }
+    }
+    // ###
 
     //#region Public Methods
 
@@ -146,7 +204,21 @@ export abstract class BaseListingComponent implements OnInit {
             this.sort,
             this.searchInputControl.value,
             this.sortColumn,
-            (this.sortDirection === 'desc' ? 1 : 0));
+            (this.sortDirection === 'desc' ? 1 : 0)
+        );
+
+        return filterReq;
+    }
+
+    // Primeng Filter  Request Methods
+    public getNewFilterReq(event: LazyLoadEvent): any {
+        const filterReq = GridUtils.GetPrimeNGFilterReq(
+            event,
+            this.primengTable,
+            this.searchInputControl.value,
+            this.sortColumn,
+            (this.sortDirection === 'desc' ? 1 : 0)
+        );
 
         return filterReq;
     }
@@ -294,6 +366,17 @@ export abstract class BaseListingComponent implements OnInit {
             model.data);
     }
 
+    // Primeng Date Range Change
+    onDateRangeChange(dates: Date[], filter: Function) {
+        if (dates && dates.length === 2 && dates[0] && dates[1]) {
+          const [startDate, endDate] = dates;
+
+          // Adjust end date to include the entire day
+          const adjustedEndDate = new Date(endDate);
+          adjustedEndDate.setHours(23, 59, 59, 999);
+          filter([startDate, adjustedEndDate]);
+        }
+    }
     // #endregion
 
 }

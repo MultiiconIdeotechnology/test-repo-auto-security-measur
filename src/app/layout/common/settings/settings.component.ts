@@ -1,13 +1,15 @@
 import { NgClass, NgFor } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, Pipe, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDrawer, MatSidenav } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { FuseConfig, FuseConfigService, Scheme, Theme, Themes } from '@fuse/services/config';
+import { EntityService } from 'app/services/entity.service';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, Subscription } from 'rxjs';
 
 @Component({
     selector     : 'settings',
@@ -41,15 +43,21 @@ export class SettingsComponent implements OnInit, OnDestroy
     theme: string;
     themes: Themes;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
+    @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
     /**
      * Constructor
      */
     constructor(
         private _router: Router,
         private _fuseConfigService: FuseConfigService,
+        private entityService : EntityService
     )
     {
+        // this.entityService.onleadEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+        //     next: (item) => {
+        //         this.settingsDrawer.toggle()
+        //     }
+        // })
     }
 
     // -----------------------------------------------------------------------------------------------------

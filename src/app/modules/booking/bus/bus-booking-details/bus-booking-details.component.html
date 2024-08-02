@@ -174,8 +174,9 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">B2B Partner</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate"
-                                        [matTooltip]="bookingBy?.b2b_partner">{{bookingBy?.b2b_partner || ' - '}}</span>
+                                    <span class="text-base truncate" [ngClass]="bookingBy?.b2b_partner ? 'cursor-pointer border-b border-gray-500' : ''"
+                                        [matTooltip]="bookingBy?.b2b_partner"
+                                        (click)="bookingBy?.b2b_partner ? B2BPartnerInfo() : null">{{bookingBy?.b2b_partner || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">

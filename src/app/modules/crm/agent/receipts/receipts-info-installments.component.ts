@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,10 +24,14 @@ import { AppConfig } from 'app/config/app-config';
 import { module_name } from 'app/security';
 import { ToasterService } from 'app/services/toaster.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ReceiptInfoEntryComponent } from '../receipt-info-entry/receipt-info-entry.component';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { CrmService } from 'app/services/crm.service';
+import { AccountService } from 'app/services/account.service';
+import { CommonUtils } from 'app/utils/commonutils';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
     selector: 'app-receipts-info-items',
@@ -35,41 +39,41 @@ import { CrmService } from 'app/services/crm.service';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 60px 80px 120px 110px 120px 160px;
+            grid-template-columns: 40px 70px 150px 100px 150px;
         }
     `,
     ],
     standalone: true,
     imports: [
-        NgIf,
-        NgFor,
-        NgClass,
-        DatePipe,
-        AsyncPipe,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSnackBarModule,
-        MatSlideToggleModule,
-        NgxMatSelectSearchModule,
-        MatTooltipModule,
-        MatAutocompleteModule,
-        RouterOutlet,
-        MatOptionModule,
-        MatDividerModule,
-        MatSortModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatMenuModule,
-        MatDialogModule,
-        CommonModule,
-        MatTabsModule,
-        MatProgressBarModule,
-    ]
+    NgIf,
+    NgFor,
+    NgClass,
+    DatePipe,
+    AsyncPipe,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatSlideToggleModule,
+    NgxMatSelectSearchModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
+    RouterOutlet,
+    MatOptionModule,
+    MatDividerModule,
+    MatSortModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatDialogModule,
+    CommonModule,
+    MatTabsModule,
+    MatProgressBarModule,
+]
 })
 export class ReceiptsInfoItemComponent {
     cols = [];
@@ -79,6 +83,9 @@ export class ReceiptsInfoItemComponent {
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         private alertService: ToasterService,
         private matDialog: MatDialog,
+        private accountService: AccountService,
+        private conformationService: FuseConfirmationService,
+        private entityService: EntityService,
         private crmService: CrmService
     ) {
         this.record = data?.data ?? {}
@@ -90,7 +97,15 @@ export class ReceiptsInfoItemComponent {
         this.Mainmodule = this;
         this.agentId = this.record?.agentid;
         // this.productId = this.record?.product_id;
-         this.productId = this.record?.id;
+        this.productId = this.record?.id;
+
+        this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if (item) {
+                    this.refreshItemsNew();
+                }
+            }
+        })
     }
 
     columns = [
@@ -108,20 +123,6 @@ export class ReceiptsInfoItemComponent {
             isicon: true
         },
         {
-            key: 'is_audited',
-            name: 'Audit',
-            is_date: true,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            isicon: false,
-            isAudited: true
-        },
-        {
             key: 'receipt_date',
             name: 'Date',
             is_date: true,
@@ -130,8 +131,8 @@ export class ReceiptsInfoItemComponent {
             class: '',
             is_sticky: false,
             align: '',
-            indicator: false,
-            tooltip: true,
+            indicator: true,
+            tooltip: false,
             is_amount: true,
             isicon: false
         },
@@ -141,7 +142,7 @@ export class ReceiptsInfoItemComponent {
             is_date: false,
             date_formate: '',
             is_sortable: true,
-            class: '',
+            class: 'header-right-view',
             is_sticky: false,
             align: '',
             indicator: false,
@@ -151,19 +152,6 @@ export class ReceiptsInfoItemComponent {
         {
             key: 'mop',
             name: 'MOP',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            isicon: false
-        },
-        {
-            key: 'rm_name',
-            name: 'Entry By',
             is_date: false,
             date_formate: '',
             is_sortable: true,
@@ -196,8 +184,29 @@ export class ReceiptsInfoItemComponent {
     agentId: any;
     productId: any;
 
+    @Input() receiptDetail: any;
+
     ngOnInit(): void {
-        this.refreshItems();
+        // this.refreshItemsNew();
+        setTimeout(() => { }, 3000);
+    }
+
+    getStatusIndicatorClass(status: string): string {
+        if (status == 'Pending') {
+            return 'bg-red-600';
+        } else if (status == 'Confirmed') {
+            return 'bg-green-600';
+        } else if (status == 'Rejected') {
+            return 'bg-red-600';
+        } else {
+            return 'bullet-pink';
+        }
+    }
+
+    getTooltip(ListItem: any): string {
+        if (ListItem?.receipt_Status == 'Rejected') {
+            return ListItem?.receipt_reject_reason ? ListItem?.receipt_reject_reason : '-';
+        }
     }
 
     createReceipt() {
@@ -211,7 +220,7 @@ export class ReceiptsInfoItemComponent {
         }).afterClosed().subscribe({
             next: (res) => {
                 if (res) {
-                    this.refreshItems();
+                    this.refreshItemsNew();
                 }
             }
         });
@@ -225,19 +234,19 @@ export class ReceiptsInfoItemComponent {
         }
     }
 
-    refreshItems() {
+    refreshItemsNew() {
         this.isLoading = true;
         const filterReq = GridUtils.GetFilterReq(
             this._paginator,
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         filterReq['Id'] = this.productId ? this.productId : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res?.data[0];
+                this.receiptDetail = res[0];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -254,19 +263,77 @@ export class ReceiptsInfoItemComponent {
         else return 'No data to display';
     }
 
-    downloadfile(): void {
-        // if (!Security.hasPermission(bookingsHotelPermissions.invoicePermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+    downloadInvoice(bookingId: any) {
+        this.accountService.downloadInvoice(bookingId).subscribe({
+            next: (res) => {
+                CommonUtils.downloadPdf(res?.data, 'Receipt.pdf');
+            }, error: (err) => {
+                this.alertService.showToast('error', err);
+            }
+        })
+    }
 
-        // console.log("262", this.record);
-        // console.log("263", this.agentId);
-        // this.crmService.Invoice(this.record?.id).subscribe({
-        //     next: (res) => {
-        //         CommonUtils.downloadPdf(res.data, 'receipt.pdf');
-        //     }, error: (err) => {
-        //         this.alertService.showToast('error', err)
+    editAction(record): void {
+        // this.matDialog
+        //     .open(ReceiptInfoEntryComponent, {
+        //         data: record,
+        //         disableClose: true,
+        //     })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) {
+        //             this.refreshItemsNew();
+        //         }
+        //     });
+
+        this.entityService.raisereceiptCall({data: record, edit: true});
+        // this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+        //     next: (item) => {
+        //         if (item) {
+        //             this.refreshItemsNew();
+        //         }
         //     }
         // })
+    }
+
+    deleteAction(record): void {
+        const label: string = 'Delete Receipt';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    this.crmService.deleteProductReceipt(record?.receiptid).subscribe({
+                        next: () => {
+                            this.alertService.showToast(
+                                'success',
+                                'Receipt has been deleted!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItemsNew();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        }
+                    });
+                }
+            });
+    }
+
+    proofAttachment(data: any) {
+        window.open(data, '_blank')
+    }
+
+    paymentAttachment(data: any) {
+        window.open(data, '_blank')
     }
 }

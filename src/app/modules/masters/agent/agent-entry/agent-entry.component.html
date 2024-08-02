@@ -23,7 +23,6 @@
             class="sticky mr-2 left-0 bg-gray-50 dark:bg-gray-900" style="border-radius: 0%; width: 100%">
             <mat-icon> more_vert </mat-icon>
         </button>
-
         <mat-menu #optionMenu>
             <button mat-menu-item (click)="relationahipManagerAgent()">
                 <mat-icon class="mat-18">groups</mat-icon>
@@ -297,8 +296,7 @@
                                         </button>
                                         <button mat-menu-item (click)="setKYCVerify(dt)">
                                             <mat-icon class="mat-18">fingerprint</mat-icon>
-                                            <span style="font-weight: 600;">{{dt.is_kyc_completed ? 'View KYC' : 'Verify
-                                                KYC'}}</span>
+                                            <span style="font-weight: 600;">{{dt.is_kyc_completed ? 'View KYC' : 'Verify KYC'}}</span>
                                         </button>
                                         <!-- <button mat-menu-item >
                                                 <mat-icon class="mat-18">login</mat-icon>

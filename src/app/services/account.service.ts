@@ -24,8 +24,47 @@ export class AccountService {
     return this.http.post<any>(environment.apiUrl + "Payment/getPaymentRecord", { id });
   }
 
+  delete(id: string): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "Payment/delete", { id });
+  }
+
   getReceiptRecord(id: string): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptRecord", { id });
   }
 
+  setAuditUnaudit(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Receipt/audit', { id });
+  }
+
+  Receiptdelete(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Receipt/delete', { id });
+  }
+
+  reject(id: any, note?:string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Receipt/reject', { id:id, reject_reason:note });
+  }
+
+  downloadInvoice(bookingId: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Receipt/printInvoice', { invoiceId: bookingId });
+  }
+
+  getReceiptRegister(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptListRegister", model);
+  }
+
+  getFirstTransaction(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/FirstTransactionReport", model);
+  }
+
+  getcommissionExpense(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/CommissionExpenseReport", model);
+  }
+
+  getcommissionIncome(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/CommissionIncomeReport", model);
+  }
+
+  getpurchaseRegister(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/PurchaseRegisterReport", model);
+  }
 }

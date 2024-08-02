@@ -1,3 +1,4 @@
+
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -19,7 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, bookingsFlightPermissions, messages, module_name } from 'app/security';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Excel } from 'app/utils/export/excel';
@@ -33,6 +34,8 @@ import { ImportPnrComponent } from './import-pnr/import-pnr.component';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { ToasterService } from 'app/services/toaster.service';
 import { StatusUpdateComponent } from './status-update/status-update.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { AgentService } from 'app/services/agent.service';
 
 
 @Component({
@@ -41,7 +44,7 @@ import { StatusUpdateComponent } from './status-update/status-update.component';
     styleUrls: ['./flight.component.scss'],
     styles: [`
     .tbl-grid {
-      grid-template-columns:  40px 240px 170px 170px 130px 130px 150px 140px  120px 100px 300px 90px 90px 180px 120px 140px 120px 170px 150px 140px 141px;
+      grid-template-columns:  40px 240px 170px 170px 130px 130px 150px 140px 140px 120px 100px 300px 90px 90px 180px 120px 140px 120px 170px 150px 140px 140px 141px;
     }
     `],
     standalone: true,
@@ -69,13 +72,20 @@ import { StatusUpdateComponent } from './status-update/status-update.component';
         MatSelectModule,
         NgxMatSelectSearchModule,
         MatTabsModule,
+        PrimeNgImportsModule
     ],
 })
 export class FlightComponent extends BaseListingComponent {
     flightFilter: any;
     module_name = module_name.flight;
     dataList = [];
+    agentList:any[] = [];
+    airportFromList:any[] = [];
+    airportToList:any[] = [];
+    supplierList:any[] = [];
     total = 0;
+    isFilterShow: boolean = false;
+    _selectedColumns: Column[];
 
     public startDate = new FormControl();
     public endDate = new FormControl();
@@ -155,6 +165,19 @@ export class FlightComponent extends BaseListingComponent {
         {
             key: 'supplier_name',
             name: 'Supplier',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: 'left',
+            indicator: true,
+            applied: false,
+            tooltip: true
+        },
+         {
+            key: 'operating_carrier',
+            name: 'Carrier',
             is_date: false,
             date_formate: '',
             is_sortable: true,
@@ -338,6 +361,20 @@ export class FlightComponent extends BaseListingComponent {
             tooltip: false
         },
         {
+            key: 'is_manual_entry',
+            name: 'Booking From',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: 'left',
+            indicator: false,
+            applied: false,
+            tooltip: false,
+            is_from: true,
+        },
+        {
             key: 'ipAddress',
             name: 'IP Address',
             is_date: false,
@@ -353,6 +390,23 @@ export class FlightComponent extends BaseListingComponent {
 
     ];
     cols = [];
+    selectedToAirport:string;
+    selectedFromAirport:string;
+    selectedSupplier:string;
+    selectedAgent:string;
+    statusList = [
+        { label: 'Pending', value: 'Pending' },
+        { label: 'Rejected', value: 'Rejected' },
+        { label: 'Waiting for Payment', value: 'Waiting for Payment' },
+        { label: 'Confirmed', value: 'Confirmed' },
+        { label: 'Offline Pending', value: 'Offline Pending' },
+        { label: 'Confirmation Pending', value: 'Confirmation Pending' },
+        { label: 'Payment Failed', value: 'Payment Failed' },
+        { label: 'Booking Failed', value: 'Booking Failed' },
+        { label: 'Cancelled', value: 'Cancelled' },
+        { label: 'Partially Cancelled', value: 'Partially Cancelled' },
+        { label: 'Hold', value: 'Hold' }
+      ];
     // clipboard: any;
     // toastr: any;
 
@@ -361,12 +415,12 @@ export class FlightComponent extends BaseListingComponent {
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
         private toastr: ToasterService,
-
+        private agentService: AgentService,
         private clipboard: Clipboard,
         private router: Router
     ) {
         super(module_name.flight);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'bookingDate';
         this.sortDirection = 'desc';
@@ -390,7 +444,30 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
+
+        this.getAgentList("", true);
+        this.getAirportFromList("");
+        this.getSupplierList();
+
+        this.cols = [
+            // { field: 'visa_type', header: 'Visa Type', isDate: false },
+            // { field: 'length_of_stay', header: 'Length of Stay', isDate: false },
+            // { field: 'customer_name', header: 'Customer Name', isDate: false },
+            // { field: 'payment_request_time', header: 'Payment Request Time', isDate: true },
+            // { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true },
+            // { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false },
+            // { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false },
+        ];
+
     }
+
+    // get selectedColumns(): Column[] {
+    //     return this._selectedColumns;
+    // }
+
+    // set selectedColumns(val: Column[]) {
+    //     this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    // }
 
     copy(link) {
         this.clipboard.copy(link);
@@ -398,11 +475,12 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     getFilter(): any {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
+        const filterReq = {};
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sort,
+        //     this.searchInputControl.value
+        // );
 
         filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
@@ -417,18 +495,66 @@ export class FlightComponent extends BaseListingComponent {
         return filterReq;
     }
 
-    refreshItems(): void {
+    refreshItems(event?:any): void {
         this.isLoading = true;
-        this.flighttabService.getAirBookingList(this.getFilter()).subscribe({
+        let extraModel = this.getFilter();
+        let regularModel = this.getNewFilterReq(event);
+        let model = {...extraModel, ...regularModel};
+        this.flighttabService.getAirBookingList(model).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
+                if( this.dataList && this.dataList.length) {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['booking_ref_no', 'status']);
+                    }, 200);
+                }
             },
             error: (err) => {
                 this.isLoading = false;
             },
         });
+    }
+
+    onTableFilter() {
+        this.isFilterShow = !this.isFilterShow;
+    }
+
+    // Api to get the Agent list data
+    getAgentList(value:string, bool=true){
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data:any) => {
+             this.agentList = data;
+
+             for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        });
+    }
+
+    // Api to get the Airportlist Data (from)
+    getAirportFromList(value:any){
+        this.flighttabService.getAirportMstCombo(value).subscribe((data:any) => {
+            this.airportFromList = data;
+
+            if(!value){
+                this.airportToList = data;
+            }
+        })
+    }
+
+     // Api to get the Airportlist Data (To)
+    getAirportToList(value:any){
+        this.flighttabService.getAirportMstCombo(value).subscribe((data:any) => {
+            this.airportToList = data;
+        })
+    }
+
+    // Api to get the Supplier List
+    getSupplierList(){
+        this.flighttabService.getSupplierBoCombo('Airline').subscribe((data:any) => {
+            this.supplierList = data;
+        })
     }
 
     importPnr() {
@@ -503,9 +629,9 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending' || status == 'Partially Cancelled') {
+        if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending' || status == 'Partially Cancelled' || status == 'Hold Released') {
             return 'text-orange-600';
-        } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed') {
+        } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed' || status == 'Assign To Refund' || status == 'Payment Completed') {
             return 'text-yellow-600';
         } else if (status == 'Confirmed') {
             return 'text-green-600';
@@ -526,7 +652,7 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 
     offlinePnr() {
@@ -546,8 +672,8 @@ export class FlightComponent extends BaseListingComponent {
         // const req = Object.assign(filterReq);
 
         // req.skip = 0;
-        // req.take = this._paginator.length;
-        const filterReq = {};
+        // req.take = this.totalRecords;
+        const filterReq = this.getNewFilterReq({});
 
         filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
@@ -558,10 +684,7 @@ export class FlightComponent extends BaseListingComponent {
         filterReq['supplier_id'] = this.flightFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? '' : this.flightFilter?.supplier_id?.map(x => x.id).join(',');
         filterReq['status'] = this.flightFilter?.status.join(',');
         filterReq['Filter'] = this.searchInputControl.value;
-        filterReq['Skip'] = 0;
-        filterReq['Take'] = this._paginator.length;
-        filterReq['OrderBy'] = 'booking_ref_no';
-        filterReq['OrderDirection'] = 1;
+        filterReq['Take'] = this.totalRecords;
 
         this.flighttabService.getAirBookingList(filterReq).subscribe(data => {
             for (var dt of data.data) {
@@ -583,6 +706,7 @@ export class FlightComponent extends BaseListingComponent {
                     { header: 'PNR', property: 'pnr' },
                     { header: 'GDS PNR', property: 'gds_pnr' },
                     { header: 'Supplier', property: 'supplier_name' },
+                    { header: 'Carrier', property: 'operating_carrier' },
                     { header: 'Purchase Price', property: 'purchase_price' },
                     { header: 'Type', property: 'user_type' },
                     { header: 'MOP', property: 'mop' },

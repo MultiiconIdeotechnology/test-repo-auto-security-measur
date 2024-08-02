@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,7 +34,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 40px 150px 150px 150px;
+            grid-template-columns: 120px 120px 120px 180px;
         }
     `,
     ],
@@ -74,6 +74,8 @@ export class AgentStatusChangedLogComponent {
     cols = [];
     total = 0;
 
+    @Input() agentTimelineStatusChangeLog: any = {}
+
     columns = [
         {
             key: 'entry_date_time',
@@ -110,19 +112,19 @@ export class AgentStatusChangedLogComponent {
             align: '',
             indicator: false,
             tooltip: true,
+        },
+        {
+            key: 'status_remark',
+            name: 'Reason',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: true,
+            tooltip: true,
         }
-        // {
-        //     key: 'reason',
-        //     name: 'Reason',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: true,
-        //     tooltip: true,
-        // }
     ]
 
     dataList: any;
@@ -182,7 +184,9 @@ export class AgentStatusChangedLogComponent {
             this._sort,
             this.searchInputControl.value
         );
-        filterReq['Id']= this.record?.id;
+        // filterReq['Id']= this.record?.id;
+        filterReq['module_for_id'] = this.record?.id;
+        filterReq['module_for'] = "agent_master";
         this.agentService.statusChangedLogsList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;

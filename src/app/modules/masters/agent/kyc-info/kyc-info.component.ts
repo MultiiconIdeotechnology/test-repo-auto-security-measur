@@ -67,6 +67,7 @@ export class KycInfoComponent {
   title: string
   isLeadeConvert: boolean = false;
   isKycViewDetailFlag: boolean = false;
+  closeDialog = ''
 
   constructor(
     public matDialogRef: MatDialogRef<KycInfoComponent>,
@@ -118,10 +119,10 @@ export class KycInfoComponent {
               this.isLeadeConvert = true;
             }
             this.alertService.showToast('success', "Lead has been Converted to travel agent!", "top-right", true);
+            this.matDialogRef.close('confirmed')
             this.refreshItems();
           }, error: (err) => {
             this.alertService.showToast('error', err, "top-right", true);
-
           },
         })
       }
@@ -208,7 +209,7 @@ export class KycInfoComponent {
 
       if (document.is_remark_required)
         this.matDialog.open(KycRemarkComponent, {
-          data: {title : document.remark_caption, remark : document?.remarks || '' , document_name : document?.document_name},
+          data: { title: document.remark_caption, remark: document?.remarks || '', document_name: document?.document_name },
           disableClose: true
         }).afterClosed().subscribe(res => {
           if (!res) {
@@ -252,6 +253,7 @@ export class KycInfoComponent {
 
               this.alertService.showToast('success', "Document Audited", "top-right", true);
               // this.refreshItems();
+              this.closeDialog = 'confirmed';
             }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
           });
         }
@@ -275,7 +277,7 @@ export class KycInfoComponent {
               record.rejection_note = res
               this.alertService.showToast('success', "Document Rejected", "top-right", true);
               // this.refreshItems()
-
+              this.closeDialog = 'confirmed';
             },
             error: (err) => this.alertService.showToast('error', err, "top-right", true)
           })

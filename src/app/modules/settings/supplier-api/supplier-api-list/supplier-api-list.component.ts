@@ -2,7 +2,7 @@ import { Security, messages, module_name, supplierAPIPermissions } from 'app/sec
 import { NgIf, NgFor, DatePipe, NgClass, CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { SupplierApiEntryComponent } from '../supplier-api-entry/supplier-api-entry.component';
 import { SupplierApiService } from 'app/services/supplier-api.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -13,12 +13,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
     selector: 'app-supplier-api-list',
@@ -44,13 +43,11 @@ import { ToasterService } from 'app/services/toaster.service';
         MatInputModule,
         MatButtonModule,
         MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class SupplierApiListComponent
@@ -59,6 +56,8 @@ export class SupplierApiListComponent
     module_name = module_name.supplierapi;
     dataList = [];
     total = 0;
+    supplierList:any[] = [];
+    selectedSupplier:string;
 
     columns = [
         {
@@ -157,27 +156,21 @@ export class SupplierApiListComponent
             align: '',
             indicator: false,
             tooltip: true
-        },
-       
-        // {
-        //     key: '.',
-        //     name: '',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: false,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: false,
-        //     tooltip: true
-        // },
+        }
     ];
     cols = [];
+    _selectedColumns: Column[];
+    isFilterShow: boolean = false;
+    liveStatusList = [
+        {label: 'Live', value: true},
+        {label: 'Test', value: false},
+    ]
 
     constructor(
         private supplierapiService: SupplierApiService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
+        private flighttabService: FlightTabService,
         private toasterService: ToasterService
     ) {
         super(module_name.supplierapi);
@@ -188,21 +181,44 @@ export class SupplierApiListComponent
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    ngOnInit() {
+        this.cols = [
+            { field: 'api_for', header: 'Api For' },
+        ];
+
+        this.getSupplierList();
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    refreshItems(event?:any): void {
         this.isLoading = true;
         this.supplierapiService
-            .getSupplierWiseApiList(this.getFilterReq())
+            .getSupplierWiseApiList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                 },
                 error: (err) => {
                     this.toasterService.showToast('error', err)
                     this.isLoading = false;
                 },
             });
+    }
+
+    // Api to get the Supplier List
+    getSupplierList(){
+        this.flighttabService.getSupplierBoCombo('').subscribe((data:any) => {
+            this.supplierList = data;
+        })
     }
 
     getNodataText(): string {
@@ -219,7 +235,7 @@ export class SupplierApiListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 
     /***/

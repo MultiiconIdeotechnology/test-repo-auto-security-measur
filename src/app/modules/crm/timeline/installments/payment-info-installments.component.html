@@ -32,8 +32,7 @@
                                     </span>
 
                                     <div *ngIf="col.indicator"
-                                        [matTooltip]="ListItem['is_payment_audited'] == true ? 'Audit' : 'Unaudit'"
-                                        class="w-2 h-2 rounded-full mr-[6px]"
+                                    [matTooltip]="ListItem['is_payment_audited'] == true ? 'Payment Received' : 'Payment Pending'"                                        class="w-2 h-2 rounded-full mr-[6px]"
                                         [ngClass]="getPaymentIndicatorClass(ListItem['is_payment_audited'])"></div>
 
                                     <div

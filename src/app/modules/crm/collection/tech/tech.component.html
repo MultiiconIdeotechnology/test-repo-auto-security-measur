@@ -1,98 +1,176 @@
-<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl">
-    <div
-        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[360px] lg:max-h-[360px] xl:min-h-[480px] xl:max-h-[480px]">
-        <ng-container>
-            <div class="grid ">
-                <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
-                    matSort matSortDisableClear matSortActive="lastCallDate" matSortDirection="desc"
-                    (matSortChange)="refreshItems()">
-                    <div style="text-align: center" class="sticky left-0  z-99">
-                        #
-                    </div>
-                    <ng-container *ngFor="let col of columns">
-                        <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4' + col.class">
-                            {{ col.name }}
-                        </div>
-                        <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                            {{ col.name }}
-                        </div>
-                    </ng-container>
-                </div>
-                <!-- Rows -->
-                <ng-container *ngIf="dataList?.length > 0; else noGridItems">
-                    <ng-container *ngFor="let ListItem of dataList">
-                        <div class="tbl-grid gridwidth grid items-center px-6 md:pr-8 border-b pl-0 cursor-pointer">
-                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
-                                class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
-                                <mat-icon> more_vert </mat-icon>
-                            </button>
-                            <mat-menu #optionMenu>
-                                <button mat-menu-item (click)="dialCall(ListItem)">
-                                    <mat-icon class="mat-18">phone</mat-icon>
-                                    <span style="font-weight: 600">Dial Call</span>
-                                </button>
-                                <button mat-menu-item (click)="callHistory(ListItem)">
-                                    <mat-icon class="mat-18">history</mat-icon>
-                                    <span style="font-weight: 600">Call History</span>
-                                </button>
-                                <button mat-menu-item (click)="sendReminderEmail(ListItem)">
-                                    <mat-icon class="mat-18">schedule</mat-icon>
-                                    <span style="font-weight: 600">Send Reminders WA / Email</span>
-                                </button>
-                                <button mat-menu-item (click)="paymentUpdate(ListItem)">
-                                    <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
-                                    <span style="font-weight: 600">Payment Update</span>
-                                </button>
-                                <button mat-menu-item (click)="timeline(ListItem)">
-                                    <mat-icon svgIcon="heroicons_solid:clock"></mat-icon>
-                                    <span style="font-weight: 600">Timeline</span>
-                                </button>
-                            </mat-menu>
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
+        styleClass="p-datatable-gridlines p-datatable-sm">
 
-                            <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center truncate pl-4' + col.class">
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+                <th pSortableColumn="calls" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn class="dark:bg-[#1e293b]"
+                    [frozen]="frozenObj?.calls" [ngClass]="{'left-0': !frozenObj?.calls}">
+                    Calls <p-sortIcon field="calls" />
+                    <span class="float-right" (click)="isFrozenColumn('calls');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.calls" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.calls" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                <th pSortableColumn="acCode" pResizableColumn>
+                    AC Code <p-sortIcon field="acCode" />
+                </th>
+                <th pSortableColumn="agencyName" pResizableColumn>
+                    Name <p-sortIcon field="agencyName" />
+                </th>
+                <th pSortableColumn="mobile" pResizableColumn>
+                    Mobile <p-sortIcon field="mobile" />
+                </th>
+                <th pSortableColumn="product" pResizableColumn>
+                    Product <p-sortIcon field="product" />
+                </th>
+                <th class="text-right" pSortableColumn="amount" pResizableColumn>
+                    Amount <p-sortIcon field="amount" />
+                </th>
+                <th pSortableColumn="installmentDate" pResizableColumn>
+                    Installment Date <p-sortIcon field="installmentDate" />
+                </th>
+                <th pSortableColumn="lastCallDate" pResizableColumn>
+                    Last Call Date <p-sortIcon field="lastCallDate" />
+                </th>
+            </tr>
 
-                                    <span *ngIf="col.isicon" class="text-center justify-center">
-                                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                                            (click)="downloadfile(ListItem[col.key])"
-                                            [matTooltip]="'Download'"></mat-icon>
-                                    </span>
-
-                                    <span *ngIf="col.callAction && col.key === 'calls'">
-                                        <div *ngIf="col.name == 'Calls'">
-                                            <span class="flex flex-row space-x-2 justify-center cursor-pointer border-b-2 solid border-gray-600"
-                                                (click)="callHistory(ListItem)">{{ListItem[col.key]}}</span>
+            <tr *ngIf="isFilterShowTech">
+                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.calls" class="min-w-[110px]">
+                    <p-columnFilter field="calls" type="numeric" placeholder="Search by calls" ariaLabel="Filter calls">
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="acCode" placeholder="Search by AC Code"
+                        ariaLabel="Filter AC Code" />
+                </th>
+                <th>
+                    <!-- <p-columnFilter type="text" matchMode="contains" field="agencyName" placeholder="Search by Name"
+                        ariaLabel="Filter Name" /> -->
+                    <p-columnFilter class="searchableDropdown" field="agencyName" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                <ng-template let-agent pTemplate="item">
+                                    <div class="flex align-items-center gap-1">
+                                        <div [value]="agent.id">
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                            </div>
                                         </div>
-                                    </span>
-
-                                    <div
-                                        [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
-                                        <span class="truncate"
-                                            *ngIf="!col.toColor && !col.callAction"
-                                            [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                            {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
-                                            " - " : ListItem[col.key] || " - " }}
-                                        </span>
                                     </div>
-                                </div>
-                            </ng-container>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
-        </ng-container>
-
-        <ng-template #noGridItems>
-            <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                {{getNodataText()}}
-            </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="mobile" placeholder="Search by Mobile"
+                        ariaLabel="Filter Mobile" />
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="product" placeholder="Search by Product"
+                        ariaLabel="Filter Product" />
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="amount" placeholder="Search by Amount"
+                        ariaLabel="Filter Amount" />
+                </th>
+                <th>
+                    <p-columnFilter field="installmentDate" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Last Installment date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="lastCallDate" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Last call date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+            </tr>
         </ng-template>
-    </div>
 
-    <mat-paginator
-        class="sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-        [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total" [pageSizeOptions]="appConfig.pageSizeOptions"
-        [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
-    </mat-paginator>
+        <ng-template pTemplate="body" let-element>
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
+
+                    <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="dialCall(element)">
+                            <mat-icon class="mat-18">phone</mat-icon>
+                            <span style="font-weight: 600">Dial Call</span>
+                        </button>
+                        <button mat-menu-item (click)="callHistory(element)">
+                            <mat-icon class="mat-18">history</mat-icon>
+                            <span style="font-weight: 600">Call History</span>
+                        </button>
+                        <button mat-menu-item (click)="sendReminderEmail(element)">
+                            <mat-icon class="mat-18">schedule</mat-icon>
+                            <span style="font-weight: 600">Send Reminders WA / Email</span>
+                        </button>
+                        <button mat-menu-item (click)="purchaseProduct(element)">
+                            <mat-icon svgIcon="heroicons_outline:circle-stack" class="mat-18"></mat-icon>
+                            <span style="font-weight: 600">Products</span>
+                        </button>
+                        <button mat-menu-item (click)="timeline(element)">
+                            <mat-icon svgIcon="heroicons_solid:clock"></mat-icon>
+                            <span style="font-weight: 600">Timeline</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.calls">
+                    <span class="inline-block cursor-pointer border-b border-gray-500"
+                        (click)="callHistory(element)">{{(element.calls) || 0}}</span>
+                </td>
+                <td>
+                    {{element.acCode || '0'}}
+                </td>
+                <td>
+                    {{element.agencyName || '-'}}
+                </td>
+                <td>
+                    {{element.mobile || '-'}}
+                </td>
+                <td>
+                    {{element.product || '-'}}
+                </td>
+                <td class="text-right">
+                    {{element.amount || '-'}}
+                </td>
+                <td>
+                    {{(element.installmentDate | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+                <td class="w-full">
+                    {{(element.lastCallDate | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="9" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>

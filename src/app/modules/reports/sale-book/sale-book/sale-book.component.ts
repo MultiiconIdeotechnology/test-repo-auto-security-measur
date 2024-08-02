@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -13,21 +13,23 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { dateRange } from 'app/common/const';
-import { AppConfig } from 'app/config/app-config';
 import { Security, messages, module_name } from 'app/security';
 import { SaleBookService } from 'app/services/sale-book.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject, takeUntil, debounceTime } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SaleFilterComponent } from './sale-filter/sale-filter.component';
 import { DateTime } from 'luxon';
 import { Excel } from 'app/utils/export/excel';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { GridUtils } from 'app/utils/grid/gridUtils';
+import { AgentService } from 'app/services/agent.service';
+import { FlightTabService } from 'app/services/flight-tab.service';
+import { PspSettingService } from 'app/services/psp-setting.service';
 import { cloneDeep } from 'lodash';
 
 @Component({
@@ -58,13 +60,11 @@ import { cloneDeep } from 'lodash';
     MatNativeDateModule,
     MatSelectModule,
     NgxMatSelectSearchModule,
-
+    PrimeNgImportsModule
   ],
 })
-export class SaleBookComponent {
-
-  columns = ['action',
-    'agent_code',
+export class SaleBookComponent extends BaseListingComponent implements OnDestroy {
+  columns = ['agent_code',
     'master_agent',
     'service_type',
     'sales_type',
@@ -107,21 +107,21 @@ export class SaleBookComponent {
     'supplier_invoice_number',
     'payment_mode'
   ];
-  dataSource = new MatTableDataSource();
-  loading: boolean = true;
 
+  loading: boolean = true;
+  supplierList: any[] = [];
+  companyList: any[] = [];
+  selectedCompany!: string;
+  selectedSupplier!: string;
+  agentList: any[] = [];
+  isFilterShow: boolean = false;
   data: any[] = []
   total: any;
   currentFilter: any;
   downloading: boolean = false;
   @ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
-
   searchInternalFilter = new FormControl();
-
   saleFilter: any;
-
-
-
   @ViewChild(MatPaginator) public _paginator: MatPaginator;
   @ViewChild(MatSort) public _sort: MatSort;
   searchInputControl = new FormControl('');
@@ -134,18 +134,25 @@ export class SaleBookComponent {
   public StartDate: any;
   public EndDate: any;
   public dateRanges = [];
-
   module_name = module_name.SaleBook
   tempData: any[] = [];
+  dataList = [];
+  sortColumn: any = 'agent_code';
+
+
+  dateBy = [{ value: 'BookingDate', label: 'Booking Date' }, { value: 'InvoiceDate', label: 'Invoice Date' }, { value: 'TravelDate', label: 'Travel Date' }];
+  ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }];
+  // companyBy = [{value:'BONTON HOLIDAYS PVT. LTD.', label:'BONTON HOLIDAYS PVT. LTD.'},{value:'BONTON TOURS & TRAVELS DMCC', label:'BONTON TOURS & TRAVELS DMCC'}];
 
 
   constructor(
-    private alertService: ToasterService,
     private SalebookService: SaleBookService,
-    private confirmService: FuseConfirmationService,
+    public agentService: AgentService,
     private _matdialog: MatDialog,
+    private flighttabService: FlightTabService,
+    private pspsettingService: PspSettingService
   ) {
-
+    super(module_name.SaleBook);
     this.saleFilter = {
       filter_date_by: '',
       service: '',
@@ -154,15 +161,44 @@ export class SaleBookComponent {
       billing_company_id: '',
       FromDate: new Date(),
       ToDate: new Date(),
+      supplier_id: [{
+        "id": "all",
+        "company_name": "All"
+      }],
     };
-
     this.saleFilter.FromDate.setDate(1);
     this.saleFilter.FromDate.setMonth(this.saleFilter.FromDate.getMonth());
-
   }
 
   ngOnInit() {
     this.refreshItems();
+    this.getSupplier("")
+    this.getAgent('');
+    this.getCompanyList("");
+  }
+
+  getAgent(value: string) {
+    this.agentService.getAgentCombo(value).subscribe((data) => {
+      this.agentList = data;
+
+      for(let i in this.agentList){
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      }
+    })
+  }
+
+  getCompanyList(value) {
+    this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
+      this.companyList = data;
+    })
+  }
+
+  // this.pspsettingService.getCompanyCombo(value)
+
+  getSupplier(value) {
+    this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
+      this.supplierList = data;
+    })
   }
 
   filter() {
@@ -180,33 +216,50 @@ export class SaleBookComponent {
       });
   }
 
-  // getFilter(): any {
-  //   const filterReq = {};
-  //   filterReq['filter_date_by'] = this.saleFilter?.filter_date_by;
-  //   filterReq['service'] = this.saleFilter?.service;
-  //   filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-  //   filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
-  //   filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
-  //   filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
-  //   return filterReq;
-  // }
+  getFilter(): any {
+    const filterReq = GridUtils.GetFilterReq(
+      this._paginator,
+      this._sort,
+      this.searchInputControl.value
+    );
 
-  refreshItems(): void {
-    this.loading = true;
-
-    const filterReq = {};
     filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
     filterReq['service'] = this.saleFilter?.service || 'All';
     filterReq['date'] = this.saleFilter.date || 'Last Month';
     filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-    filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
+    filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.company_id || 'All';
     filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
     filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
+    filterReq['supplier_id'] = this.saleFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? 'All' : this.saleFilter?.supplier_id?.map(x => x.id).join(',');
+    return filterReq;
+  }
 
-    this.SalebookService.getSalesBookReport(filterReq).subscribe({
+  refreshItems(event?: any): void {
+    this.loading = true;
+
+    // const filterReq = {};
+    // filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
+    // filterReq['service'] = this.saleFilter?.service || 'All';
+    // filterReq['date'] = this.saleFilter.date || 'Last Month';
+    // filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
+    // filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.company_id || 'All';
+    // filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
+    // filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
+    // filterReq['supplier_id'] = this.saleFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? 'All' : this.saleFilter?.supplier_id?.map(x => x.id).join(',');
+    let extraModel = this.getFilter();
+    let newModel = this.getNewFilterReq(event)
+    var model = { ...extraModel, ...newModel };
+
+    this.SalebookService.getSalesBookReport(model).subscribe({
       next: (res) => {
-        this.dataSource.data = res;
-        this._paginator.length = res.total;
+        this.dataList = res?.data;
+        for(let i in this.dataList){
+           this.dataList[i]['inquiry_date'] = new Date(this.dataList[i]['inquiry_date']);
+           this.dataList[i]['invoice_date'] = new Date(this.dataList[i]['invoice_date']);
+           this.dataList[i]['travel_date'] = new Date(this.dataList[i]['travel_date']);
+           this.dataList[i]['booking_date'] = new Date(this.dataList[i]['booking_date']);
+        }
+        this.totalRecords = res?.total;
         this.loading = false;
       }, error: err => {
         this.alertService.showToast('error', err);
@@ -215,14 +268,14 @@ export class SaleBookComponent {
     });
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this._paginator;
-    this.dataSource.sort = this._sort;
-    this.searchInternalFilter.valueChanges
-      .subscribe((value) => {
-        this.dataSource.filter = value
-      });
-  }
+  //   ngAfterViewInit(): void {
+  //     this.dataSource.paginator = this._paginator;
+  //     this.dataSource.sort = this._sort;
+  //     this.searchInternalFilter.valueChanges
+  //       .subscribe((value) => {
+  //         this.dataSource.filter = value
+  //       });
+  //   }
 
   getNodataText(): string {
     if (this.loading)
@@ -242,69 +295,89 @@ export class SaleBookComponent {
 
     // req.skip = 0;
     // req.take = this._paginator.length;
-    const filterReq = {};
-    filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
-    filterReq['service'] = this.saleFilter?.service || 'All';
-    filterReq['date'] = this.saleFilter.date || 'Last Month';
-    filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-    filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
-    filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
-    filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
+    // const filterReq = {};
+    // filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
+    // filterReq['service'] = this.saleFilter?.service || 'All';
+    // filterReq['date'] = this.saleFilter.date || 'Last Month';
+    // filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
+    // filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.company_id || 'All';
+    // filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
+    // filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
+    // filterReq['supplier_id'] = this.saleFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? 'All' : this.saleFilter?.supplier_id?.map(x => x.id).join(',');
 
-    this.SalebookService.getSalesBookReport(filterReq).subscribe(data => {
-      for (var dt of data) {
-        // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
-      }
-      Excel.export(
-        'Sale Book',
-        [
-          { header: 'Agent Code', property: 'agent_code' },
-          { header: 'Agent', property: 'master_agent' },
-          { header: 'Service Type', property: 'service_type' },
-          { header: 'Sales Type', property: 'sales_type' },
-          { header: 'Agent Pan No.', property: 'agent_pan_no' },
-          { header: 'Agent GST No.', property: 'agent_gst_no' },
-          { header: 'Agent Pincode', property: 'agent_pincode' },
-          { header: 'Agent State', property: 'agent_state' },
-          { header: 'Booking Date', property: 'booking_date' },
-          { header: 'Travel Date', property: 'travel_date' },
-          { header: 'Inquiry Date', property: 'inquiry_date' },
-          { header: 'Invoice Date', property: 'invoice_date' },
-          { header: 'Invoice No.', property: 'invoice_no' },
-          { header: 'Destination', property: 'destination' },
-          { header: 'Pax', property: 'pax' },
-          { header: 'Booking Reference No.', property: 'booking_ref_no' },
-          { header: 'PNR', property: 'pnr' },
-          { header: 'GDS PNR', property: 'gds_pnr' },
-          { header: 'Purchase Amount', property: 'purchase_amount' },
-          { header: 'Commission Income', property: 'commission_income' },
-          { header: 'TDS On Commission Income', property: 'tds_on_commission_income' },
-          { header: 'Net Purchase', property: 'net_purchase' },
-          { header: 'Service Charge', property: 'service_charge' },
-          { header: 'Service Charge Tax', property: 'service_charge_tax' },
-          { header: 'SGST', property: 'sgst' },
-          { header: 'CGST', property: 'cgst' },
-          { header: 'IGST', property: 'igst' },
-          { header: 'Commission Passedon', property: 'commission_passedon' },
-          { header: 'TDS On Commission Passed On', property: 'tds_on_commission_passedon' },
-          { header: 'Sale Price', property: 'sale_price' },
-          { header: 'Commission Given', property: 'commission_given' },
-          { header: 'TDS On Commission Given', property: 'tds_on_commission_given' },
-          { header: 'Booking Currency', property: 'booking_currency' },
-          { header: 'ROE', property: 'roe' },
-          { header: 'Billing Company', property: 'billing_company' },
-          { header: 'Supplier', property: 'supplier' },
-          { header: 'GST Number Passed To Supplier', property: 'gst_number_passed_to_supplier' },
-          { header: 'Travel Type', property: 'travel_type' },
-          { header: 'Ticket Status', property: 'ticket_status' },
-          { header: 'Booking Type', property: 'booking_type' },
-          { header: 'Supplier Invoice Number', property: 'supplier_invoice_number' },
-          { header: 'Payment Mode', property: 'payment_mode' },
-        ],
-        data, "Sale Book", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
-    });
+    // this.SalebookService.getSalesBookReport(filterReq).subscribe(data => {
+    //   for (var dt of data?.data) {
+    //     // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
+    //   }
+    this.tempData = cloneDeep(this.dataList);
+    for (var dt of this.tempData) {
+      // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm');
+      dt.inquiry_date = new DatePipe('en-US').transform(dt.inquiry_date, 'dd-MM-yyyy HH:mm');
+      dt.invoice_date = new DatePipe('en-US').transform(dt.invoice_date, 'dd-MM-yyyy HH:mm');
+      dt.travel_date = new DatePipe('en-US').transform(dt.travel_date, 'dd-MM-yyyy HH:mm');
+      dt.booking_date = new DatePipe('en-US').transform(dt.booking_date, 'dd-MM-yyyy HH:mm');
+    }
+
+
+    Excel.export(
+      'Sale Book',
+      [
+        { header: 'Agent Code', property: 'agent_code' },
+        { header: 'Agent', property: 'master_agent' },
+        { header: 'Service Type', property: 'service_type' },
+        { header: 'Sales Type', property: 'sales_type' },
+        { header: 'Agent Pan No.', property: 'agent_pan_no' },
+        { header: 'Agent GST No.', property: 'agent_gst_no' },
+        { header: 'Agent Pincode', property: 'agent_pincode' },
+        { header: 'Agent State', property: 'agent_state' },
+        { header: 'Booking Date', property: 'booking_date' },
+        { header: 'Travel Date', property: 'travel_date' },
+        { header: 'Inquiry Date', property: 'inquiry_date' },
+        { header: 'Invoice Date', property: 'invoice_date' },
+        { header: 'Invoice No.', property: 'invoice_no' },
+        { header: 'Destination', property: 'destination' },
+        { header: 'Pax', property: 'pax' },
+        { header: 'Booking Reference No.', property: 'booking_ref_no' },
+        { header: 'PNR', property: 'pnr' },
+        { header: 'GDS PNR', property: 'gds_pnr' },
+        { header: 'Purchase Amount', property: 'purchase_amount' },
+        { header: 'Commission Income', property: 'commission_income' },
+        { header: 'TDS On Commission Income', property: 'tds_on_commission_income' },
+        { header: 'Net Purchase', property: 'net_purchase' },
+        { header: 'Service Charge', property: 'service_charge' },
+        { header: 'Service Charge Tax', property: 'service_charge_tax' },
+        { header: 'SGST', property: 'sgst' },
+        { header: 'CGST', property: 'cgst' },
+        { header: 'IGST', property: 'igst' },
+        { header: 'Commission Passed On', property: 'commission_passedon' },
+        { header: 'TDS On Commission Passed On', property: 'tds_on_commission_passedon' },
+        { header: 'Sale Price', property: 'sale_price' },
+        { header: 'Commission Given', property: 'commission_given' },
+        { header: 'TDS On Commission Given', property: 'tds_on_commission_given' },
+        { header: 'Booking Currency', property: 'booking_currency' },
+        { header: 'ROE', property: 'roe' },
+        { header: 'Billing Company', property: 'billing_company' },
+        { header: 'Supplier', property: 'supplier' },
+        { header: 'GST Number Passed To Supplier', property: 'gst_number_passed_to_supplier' },
+        { header: 'Travel Type', property: 'travel_type' },
+        { header: 'Ticket Status', property: 'ticket_status' },
+        { header: 'Booking Type', property: 'booking_type' },
+        { header: 'Supplier Invoice Number', property: 'supplier_invoice_number' },
+        { header: 'Payment Mode', property: 'payment_mode' },
+      ],
+      this.tempData, "Sale Book", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
+    // });
   }
 
-
- 
+  getStatusColor(status: string): string {
+    if (status == 'Assign To Refund') {
+      return 'text-orange-600';
+    } else if (status == 'Confirmed') {
+      return 'text-green-600';
+    } else if (status == 'Partially Cancelled' || status =='Cancelled') {
+      return 'text-red-600';
+    } else {
+      return '';
+    }
+  }
 }

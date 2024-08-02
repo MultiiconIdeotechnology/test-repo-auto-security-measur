@@ -3,7 +3,7 @@ import { DatePipe, NgIf, NgFor, CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BlockReasonComponent } from './../block-reason/block-reason.component';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { SupplierEntryComponent } from '../supplier-entry/supplier-entry.component';
 import { SupplierService } from 'app/services/supplier.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -13,13 +13,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { AssignKycDialogComponent } from '../assign-kyc-dialog/assign-kyc-dialog.component';
 import { KycInfoComponent } from '../../agent/kyc-info/kyc-info.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { PspSettingService } from 'app/services/psp-setting.service';
 
 @Component({
     selector: 'app-supplier-list',
@@ -40,18 +40,23 @@ import { KycInfoComponent } from '../../agent/kyc-info/kyc-info.component';
         MatIconModule,
         MatMenuModule,
         MatTableModule,
-        MatSortModule,
-        MatPaginatorModule,
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
+
 export class SupplierListComponent extends BaseListingComponent {
     module_name = module_name.supplier;
     dataList = [];
     total = 0;
+    _selectedColumns: Column[];
+    isFilterShow: boolean = false;
+    cols = [];
+    companyList: any[] = [];
+
 
     columns = [
         {
@@ -106,8 +111,6 @@ export class SupplierListComponent extends BaseListingComponent {
             is_code: false,
             tooltip: true 
         },
-      
-        
         {
             key: 'city_name',
             name: 'City',
@@ -148,11 +151,12 @@ export class SupplierListComponent extends BaseListingComponent {
             tooltip: true 
         },
     ];
-    cols = [];
+  
 
     constructor(
         private supplierService: SupplierService,
         private conformationService: FuseConfirmationService,
+        private pspsettingService: PspSettingService,
         private matDialog: MatDialog
     ) {
         super(module_name.supplier);
@@ -163,13 +167,38 @@ export class SupplierListComponent extends BaseListingComponent {
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    ngOnInit(): void {
+
+        this.getCompanyList("");
+
+        
+        this.cols = [
+            { field: 'currency', header: 'Currency', type: 'text' },
+            { field: 'priority', header: 'Priority', type:'numeric'}
+        ];
+    }
+
+    getCompanyList(value) {
+        this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
+          this.companyList = data;
+        })
+      }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    refreshItems(event?:any): void {
         this.isLoading = true;
-        this.supplierService.getSupplierList(this.getFilterReq()).subscribe({
+        this.supplierService.getSupplierList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, "top-right", true)
@@ -400,6 +429,6 @@ export class SupplierListComponent extends BaseListingComponent {
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

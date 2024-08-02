@@ -1,10 +1,9 @@
-import { Routes } from 'app/common/const';
 import { Router } from '@angular/router';
 import { Security, cityPermissions, messages, module_name } from 'app/security';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { CityService } from 'app/services/city.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,29 +11,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { CitysEntryComponent } from '../citys-entry/citys-entry.component';
 import { ImagesComponent } from '../../destination/images/images.component';
 import { UserService } from 'app/core/user/user.service';
-import { takeUntil } from 'rxjs';
-import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-password.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-city-list',
     templateUrl: './city-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 170px 280px 120px 450px 210px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -47,18 +35,14 @@ import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-pa
         MatInputModule,
         MatButtonModule,
         MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
-        MatTooltipModule,
         MatDividerModule,
+        FormsModule,
+        PrimeNgImportsModule
     ],
 })
-export class CityListComponent
-    extends BaseListingComponent
-    implements OnDestroy {
+export class CityListComponent extends BaseListingComponent implements OnDestroy {
     module_name = module_name.city;
     dataList = [];
     total = 0;
@@ -127,7 +111,10 @@ export class CityListComponent
             tooltip: false,
         },
     ];
-    cols = [];
+
+    cols: Column[];
+    _selectedColumns: Column[];
+    isFilterShow: boolean = false;
 
     constructor(
         private cityService: CityService,
@@ -137,22 +124,37 @@ export class CityListComponent
         private _userService: UserService
     ) {
         super(module_name.city);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'country';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
-
-     
     }
 
-    refreshItems(): void {
+    ngOnInit() {
+
+        this.cols = [
+            { field: 'gst_state_code', header: 'GST State Code'},
+            { field: 'country_code', header: 'Country Code' },
+            { field: 'mobile_code', header: 'Mobile Code' },
+        ];
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
-        this.cityService.getCityList(this.getFilterReq()).subscribe({
+        this.cityService.getCityList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -161,7 +163,7 @@ export class CityListComponent
         });
     }
 
-    createInternal(model): void {
+    createInternal(model: any): void {
         // this.router.navigate([Routes.masters.city_entry_route]);
         this.matDialog.open(CitysEntryComponent,
             { data: null, disableClose: true, })
@@ -205,12 +207,7 @@ export class CityListComponent
         this.conformationService
             .open({
                 title: label,
-                message:
-                    'Are you sure to ' +
-                    label.toLowerCase() +
-                    ' ' +
-                    record.display_name +
-                    ' ?',
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.display_name + ' ?',
             })
             .afterClosed()
             .subscribe((res) => {
@@ -311,6 +308,6 @@ export class CityListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

@@ -4,7 +4,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DocumentsEntryComponent } from '../documents-entry/documents-entry.component';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { MatMenuModule } from '@angular/material/menu';
@@ -12,9 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -23,6 +20,9 @@ import { DocumentsFilterComponent } from '../documents-filter/documents-filter.c
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 import { ToasterService } from 'app/services/toaster.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
+
 
 @Component({
     selector: 'app-documents-list',
@@ -43,14 +43,12 @@ import { ToasterService } from 'app/services/toaster.service';
         MatInputModule,
         MatButtonModule,
         MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
         MatMenuModule,
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
-        CommonModule
+        CommonModule,
+        PrimeNgImportsModule
     ],
 })
 export class DocumentsListComponent
@@ -58,9 +56,10 @@ export class DocumentsListComponent
     implements OnDestroy {
     total = 0;
     dataList = [];
-
+    documentList: any[] = [];
     documentFilter: any;
     module_name = module_name.kycdocument;
+    _selectedColumns: Column[];
 
     columns = [
         {
@@ -165,16 +164,35 @@ export class DocumentsListComponent
             isicon: false,
         },
     ];
+
     cols = [];
+    isFilterShow: boolean = false;
+    selectedStatus:string;
+    selectedDocument:string;
+    selectedMasterStatus:string;
+    statusList = [
+        { label: 'Audited', value: 'Audited' },
+        { label: 'Rejected', value: 'Rejected' },
+        { label: 'Pending', value: 'Pending' },
+    ];
+
+    selectMasterList = [
+        { label: 'Agent', value: 'Agent' },
+        { label: 'Sub Agent', value: 'Sub Agent' },
+        { label: 'Customer', value: 'Customer' },
+        { label: 'Supplier', value: 'Supplier' },
+        { label: 'Employee', value: 'Employee' },
+    ]
 
     constructor(
         private KycdocumentService: KycDocumentService,
         private conformationService: FuseConfirmationService,
         private toastrService: ToasterService,
+        private kycDocService: KycDocumentService,
         private matDialog: MatDialog,
     ) {
         super(module_name.kycdocument);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
@@ -187,14 +205,33 @@ export class DocumentsListComponent
             DocName: ''
         }
     }
+    
+    ngOnInit(): void {
+        this.getDocList();
+
+        this.cols = [
+            { field: 'rejection_note', header: 'Rejection Note', type:'text' },
+            { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
+        ];
+        
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
 
 
     getFilter(): any {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
+        const filterReq = {};
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sort,
+        //     this.searchInputControl.value
+        // );
         filterReq["MasterFor"] = this.documentFilter?.MasterFor;
         filterReq["Status"] = this.documentFilter?.Status == "All" ? "" : this.documentFilter?.Status;
         filterReq["Particular"] = this.documentFilter?.Particular?.id || "";
@@ -202,15 +239,17 @@ export class DocumentsListComponent
         return filterReq;
     }
 
-    refreshItems(): void {
+    refreshItems(event?:any): void {
         this.isLoading = true;
-        this.KycdocumentService.getdocumentList(this.getFilter()).subscribe({
+        let extraModel = this.getFilter();
+        let oldModel = this.getNewFilterReq(event)
+        let model = {...extraModel, ...oldModel};
+        this.KycdocumentService.getdocumentList(model).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginator.length = data.total;
+                this.totalRecords = data.total;
                 this.total = data.total;
-
             },
             error: (err) => {
                 this.toastrService.showToast('error', err)
@@ -219,7 +258,7 @@ export class DocumentsListComponent
         });
     }
 
-    filter() {
+    filterDialog() {
         this.matDialog.open(DocumentsFilterComponent, {
             data: this.documentFilter,
             disableClose: true,
@@ -229,6 +268,11 @@ export class DocumentsListComponent
                 this.refreshItems();
             }
         })
+    }
+
+       // Currency List api
+    getDocList(){
+        this.kycDocService.getDocumentTypeCombo("").subscribe((data) => this.documentList = data);
     }
 
     createInternal(model): void {
@@ -322,7 +366,7 @@ export class DocumentsListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 
     Audit(data: any): void {

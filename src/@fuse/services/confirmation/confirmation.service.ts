@@ -10,6 +10,10 @@ export class FuseConfirmationService
     private _matDialog: MatDialog = inject(MatDialog);
     private _defaultConfig: FuseConfirmationConfig = {
         title      : 'Confirm action',
+        customShow   : false,
+        dateCustomShow : false,
+        datepickerParameter: new Date(),
+        inputBox   : 'Status Remark',
         message    : 'Are you sure you want to confirm this action?',
         icon       : {
             show : true,

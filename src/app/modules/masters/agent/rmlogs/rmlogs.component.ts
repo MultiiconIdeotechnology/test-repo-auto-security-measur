@@ -35,7 +35,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 40px 110px 150px 150px 310px;
+            grid-template-columns: 110px 150px 150px 310px;
         }
     `,
     ],

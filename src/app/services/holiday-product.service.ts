@@ -17,7 +17,7 @@ export class HolidayProductService {
   }
 
   getDestinationCombo(filter: string): Observable<any[]> {
-    return this.http.post<any[]>(environment.apiUrl + 'Destination/getDestinationCombo', { filter });
+    return this.http.post<any[]>(environment.apiUrl + 'Destination/getDestinationComboForCreate', { filter });
   }
 
   getHolidayAgentProductDetails(id: string): Observable<any> {

@@ -17,7 +17,7 @@
 
         <mat-form-field class="flex-grow">
             <mat-label>HOD</mat-label>
-            <mat-select *ngIf="!readonly" formControlName="hod_id" required>
+            <mat-select *ngIf="!readonly" formControlName="hod_id" required >
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search"
                         noEntriesFoundLabel="'no matching employee found'" [formControlName]="'empfilter'">

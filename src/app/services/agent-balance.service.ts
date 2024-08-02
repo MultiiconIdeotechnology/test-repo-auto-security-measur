@@ -7,9 +7,9 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class AgentService {
+export class AgentBalanceService {
 
-  
+
   private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
@@ -18,6 +18,6 @@ export class AgentService {
     return this.http.post<any>(this.baseUrl + 'Wallet/getWalletReportList', model);
   }
 
-  
+
 
 }

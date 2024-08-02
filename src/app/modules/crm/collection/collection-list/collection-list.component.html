@@ -5,37 +5,70 @@
             {{ module_name }}
         </div>
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <ng-container *ngIf="tabNameStr == 'Tech'">
-                    <input matInput [formControl]="searchInputControlTech" [autocomplete]="'off'"
+                    <input [class.hidden]="this.tabNameStr == 'Travel'" matInput [formControl]="searchInputControlTech" [autocomplete]="'off'"
                         [placeholder]="'Search'">
                 </ng-container>
                 <ng-container *ngIf="tabNameStr == 'Travel'">
-                    <input matInput [formControl]="searchInputControlTravel" [autocomplete]="'off'"
+                    <input [class.hidden]="this.tabNameStr == 'Tech'" matInput [formControl]="searchInputControlTravel" [autocomplete]="'off'"
                         [placeholder]="'Search'">
                 </ng-container>
-            </mat-form-field>
+            </mat-form-field> -->
 
-            <ng-container *ngIf="tabNameStr == 'Tech'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Tech')">
-                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-                </button>
-            </ng-container>
-            <ng-container *ngIf="tabNameStr == 'Travel'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Travel')">
-                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-                </button>
-            </ng-container>
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Tech'">
+                <input matInput [formControl]="searchInputControlTech" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="techRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="techRefresh()"></mat-icon>
+            </div>
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Travel'">
+                <input matInput [formControl]="searchInputControlTravel" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="travelRefresh()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="travelRefresh()"></mat-icon>
+            </div>
+
+
+
+            <!------global filter------>
+            <button *ngIf="this.tabNameStr == 'Tech'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShowTech  = !isFilterShowTech ">
+                <img *ngIf="!isFilterShowTech " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowTech " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <button *ngIf="this.tabNameStr == 'Travel'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            [disabled]="isLoading" (click)="isFilterShowTravel  = !isFilterShowTravel ">
+            <img *ngIf="!isFilterShowTravel " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                alt="c">
+            <img *ngIf="isFilterShowTravel " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                alt="c">
+        </button>
+
+        <ng-container *ngIf="tabNameStr == 'Tech'">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Tech')">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+        </ng-container>
+        <ng-container *ngIf="tabNameStr == 'Travel'">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Travel')">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+        </ng-container>
         </div>
     </div>
 
-    <mat-tab-group class="mt-3 lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)" >
+    <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Tech" [aria-label]="'Tech'" *ngIf="getTabsPermission('tech')">
-            <app-tech #tech></app-tech>
+            <app-tech #tech [isFilterShowTech]="isFilterShowTech" [dropdownListObj]="dropdownListObj"></app-tech>
         </mat-tab>
+
         <mat-tab label="Travel" [aria-label]="'Travel'" *ngIf="getTabsPermission('travel')">
-            <app-travel #travel></app-travel>
+            <!-- <ng-container *ngIf="tabNameStr == 'Travel'"> -->
+            <app-travel #travel [isFilterShowTravel]="isFilterShowTravel" [dropdownListObj]="dropdownListObj"></app-travel>
+        <!-- </ng-container> -->
         </mat-tab>
     </mat-tab-group>
 </div>

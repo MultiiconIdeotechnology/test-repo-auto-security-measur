@@ -11,10 +11,11 @@
     <div class="px-5 py-2 mt-2">
         <form [formGroup]="formGroup" class="flex flex-col">
             <div class="flex">
-                <mat-form-field class="fuse-mat-dense w-full">
+                <mat-form-field class="w-full">
                     <mat-label>Status</mat-label>
-                    <mat-select class="w-full flex-grow" formControlName="Status" required class="w-full" #service>
-                        <mat-option *ngFor="let s of statusList" [value]="s">{{ s }}</mat-option>
+                    <mat-select formControlName="Status" multiple >
+                        <mat-option [value]="allValStatus" (click)="formGroup.get('Status').patchValue([allValStatus])">{{allValStatus}}</mat-option>
+                        <mat-option *ngFor="let topping of statusList" [value]="topping" (click)="changeStatus()">{{ topping }}</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -72,7 +73,7 @@
             </div>
 
             <div class="w-full">
-                <mat-form-field class="w-full">
+                <!-- <mat-form-field class="w-full">
                     <mat-label>Supplier</mat-label>
                     <mat-select formControlName="supplierId" required [compareWith]="compareWith">
                         <mat-option>
@@ -81,6 +82,18 @@
                             </ngx-mat-select-search>
                         </mat-option>
                         <mat-option *ngFor="let ct of SupplierList" [value]="ct">{{ ct.company_name }}</mat-option>
+                    </mat-select>
+                </mat-form-field> -->
+                <mat-form-field class="w-full">
+                    <mat-label>Supplier</mat-label>
+                    <mat-select formControlName="supplierId" multiple [compareWith]="compareWith" (selectionChange)="vaalchange()">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching supplier found'" [formControlName]="'supplierfilter'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option [value]="allVal" (click)="formGroup.get('supplierId').patchValue([allVal])">{{ allVal.company_name }}</mat-option>
+                        <mat-option *ngFor="let topping of SupplierList" [value]="topping">{{ topping.company_name }}</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>

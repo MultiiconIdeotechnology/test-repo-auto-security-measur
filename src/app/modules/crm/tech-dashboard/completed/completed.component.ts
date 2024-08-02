@@ -1,10 +1,10 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,23 +21,21 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { module_name } from 'app/security';
+import { Security, messages, module_name, techDashPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
+import { PendingWLSettingComponent } from '../pending-wl-setting/pending-wl-setting.component';
+import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { DateTime } from 'luxon';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-completed',
     templateUrl: './completed.component.html',
-    styles: [
-        `
-        .tbl-grid {
-            grid-template-columns: 40px 100px 270px 230px 110px 140px 150px 120px;
-        }
-    `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -68,29 +66,20 @@ import { Subject } from 'rxjs';
         CommonModule,
         MatTabsModule,
         MatProgressBarModule,
+        TechInfoTabsComponent,
+        PrimeNgImportsModule
     ]
 })
-export class TechDashboardCompletedComponent {
+export class TechDashboardCompletedComponent extends BaseListingComponent {
+    @Input() isFilterShowCompleted: boolean;
+    @Input() dropdownFirstCallObj:any;
     cols = [];
     total = 0;
 
     columns = [
         {
-            key: 'lead_status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-            toColor: true
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency',
+            key: 'item_code',
+            name: 'Item Code',
             is_date: false,
             date_formate: '',
             is_sortable: true,
@@ -101,32 +90,68 @@ export class TechDashboardCompletedComponent {
             tooltip: true,
         },
         {
-            key: 'contact_person_email',
-            name: 'Email',
+            key: 'item_name',
+            name: 'Item',
             is_date: false,
             date_formate: '',
             is_sortable: true,
             class: '',
             is_sticky: false,
             align: '',
-            indicator: false,
-            tooltip: true,
+            indicator: true,
+            tooltip: false
         },
         {
-            key: 'contact_person_mobile',
-            name: 'Mobile',
+            key: 'product_name',
+            name: 'Product',
             is_date: false,
             date_formate: '',
             is_sortable: true,
             class: '',
             is_sticky: false,
-            align: 'center',
+            align: '',
+            indicator: true,
+            tooltip: false
+        },
+        {
+            key: 'agentCode',
+            name: 'Agent Code',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
             indicator: false,
             tooltip: false,
         },
         {
-            key: 'last_call_date_time',
-            name: 'Last Status Date',
+            key: 'agency_name',
+            name: 'Agency Name',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: true,
+            tooltip: true
+        },
+        // {
+        //     key: 'integration_start_date_time',
+        //     name: 'Int. Start Date',
+        //     is_date: false,
+        //     date_formate: 'dd-MM-yyyy',
+        //     is_sortable: false,
+        //     class: '',
+        //     is_sticky: false,
+        //     align: 'center',
+        //     indicator: false,
+        //     tooltip: true
+        // },
+        {
+            key: 'activation_date_sub',
+            name: 'Activation Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
             is_sortable: true,
@@ -134,39 +159,30 @@ export class TechDashboardCompletedComponent {
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: false,
+            tooltip: false
         },
         {
-            key: 'last_call_feedback',
-            name: 'Last Remark',
-            is_date: false,
-            date_formate: '',
+            key: 'expiry_date_sub',
+            name: 'Expiry Date',
+            is_date: true,
+            date_formate: 'dd-MM-yyyy',
             is_sortable: true,
             class: '',
             is_sticky: false,
             align: 'center',
             indicator: false,
-            tooltip: true,
+            tooltip: false
         },
-        {
-            key: 'lead_source',
-            name: 'Source',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: true,
-        }
-    ]
+    ];
+
     dataList: any;
     appConfig = AppConfig;
     isLoading: any;
+    getWLSettingList = [];
+
     searchInputControlCompleted = new FormControl('');
     @ViewChild('tabGroup') tabGroup;
-    @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
+    @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
 
     Mainmodule: any;
@@ -175,40 +191,62 @@ export class TechDashboardCompletedComponent {
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.lead
-    data: any
+    module_name = module_name.techDashboard
+    data: any;
+    selectedAgent:string;
+    agentList:any[] = [];
     filter: any = {}
 
     ngOnInit(): void {
+        // this.searchInputControlCompleted.valueChanges
+        //     .subscribe(() => {
+        //         GridUtils.resetPaginator(this._paginator);
+        //         this.refreshItems();
+        //     });
+        // this.refreshItems();
+
         this.searchInputControlCompleted.valueChanges
             .subscribe(() => {
-                GridUtils.resetPaginator(this._paginatorArchive);
-                this.refreshItems();
+                // GridUtils.resetPaginator(this._paginatorPending);
+                // this.refreshItems();
             });
-        this.refreshItems();
+    }
+
+    ngOnChanges(){
+        this.agentList = this.dropdownFirstCallObj['agentList'];
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Converted') {
-            return 'text-green-600';
-        } else if (status == 'Live') {
-            return 'text-green-600';
-        } else if (status == 'Dead') {
+        if (status == 'Pending') {
             return 'text-red-600';
-        } else {
+        } else if (status == 'Inprocess') {
+            return 'text-yellow-600';
+        } else if (status == 'Delivered') {
+            return 'text-green-600';
+        } else if (status == 'Waiting for Customer Update') {
+            return 'text-blue-600';
+        } else if (status == 'Waiting for Account Activation') {
+            return 'text-blue-600';
+        } else if (status == 'Rejected from Store') {
+            return 'text-red-600';
+        }
+        else {
             return '';
         }
     }
 
     constructor(
         private crmService: CrmService,
-        private alertService: ToasterService
+        private matDialog: MatDialog,
+        private conformationService: FuseConfirmationService,
+        private agentService: AgentService
     ) {
+        super(module_name.techDashboard);
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'priority_id';
+        this.sortColumn = 'activation_date_sub';
         this.sortDirection = 'desc';
-        this.Mainmodule = this;
+        this.Mainmodule = this
     }
 
     getNodataText(): string {
@@ -219,18 +257,21 @@ export class TechDashboardCompletedComponent {
         else return 'No data to display';
     }
 
-    refreshItems() {
+    refreshItems(event?: any) {
         this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorArchive,
-            this._sortArchive,
-            this.searchInputControlCompleted.value, "entry_date_time"
-        );
-        this.crmService.getArchiveLeadList(filterReq).subscribe({
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlCompleted.value;
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sortArchive,
+        //     this.searchInputControlCompleted.value, ""
+        // );
+        this.crmService.getTechCompletedProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                this._paginatorArchive.length = data?.total;
+                this.totalRecords = data.total;
+                // this._paginator.length = data?.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -238,4 +279,180 @@ export class TechDashboardCompletedComponent {
             },
         });
     }
+
+      // Api call to Get Agent data
+      getAgent(value: string) {
+        this.agentService.getAgentCombo(value).subscribe((data) => {
+            this.agentList = data;
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            }
+        })
+    }
+
+    wlSetting(record): void {
+        if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.crmService.getWLSettingList(record?.code).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data[0];
+
+                this.matDialog.open(PendingWLSettingComponent, {
+                    data: { data: record, wlsetting: this.getWLSettingList },
+                    disableClose: true,
+                });
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    link(record): void {
+        if (!Security.hasPermission(techDashPermissions.linkPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        window.open("//" + record?.link_url, '_blank');
+    }
+
+    viewDetail(record): void {
+        this.matDialog.open(TechInfoTabsComponent, {
+            data: { data: record, readonly: true },
+            disableClose: true,
+        });
+    }
+
+    blockAction(record, index): void {
+        // if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        const label: string = 'Blocked';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Do you want to Blocked?',
+                inputBox: 'Status Remark',
+                customShow: true,
+                dateCustomShow: false
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res?.action === 'confirmed') {
+                    let newJson = {
+                        id: record.id,
+                        is_block: true,
+                        special_status_remark: res?.statusRemark ? res?.statusRemark : ""
+                    }
+                    this.crmService.blocked(newJson).subscribe({
+                        next: (res) => {
+                            this.alertService.showToast(
+                                'success',
+                                'Blocked Successfully!',
+                                'top-right',
+                                true
+                            );
+                            if (res) {
+                                this.dataList.splice(index, 1);
+                            }
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+
+                    });
+                }
+            });
+    }
+
+    updateExpiryDate(record): void {
+        if (!Security.hasPermission(techDashPermissions.updateExpiryDatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = 'Update Expiry Date';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Do you want to Update Expiry Date?',
+                inputBox: 'Date',
+                dateCustomShow: true,
+                customShow: false,
+                datepickerParameter: record?.activation_date_sub
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res?.action === 'confirmed') {
+                    let newJson = {
+                        id: record?.id ? record?.id : "",
+                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                    }
+                    this.crmService.updateExpiryDate(newJson).subscribe({
+                        next: (res) => {
+                            this.alertService.showToast(
+                                'success',
+                                'Update Expiry Date has been updated!',
+                                'top-right',
+                                true
+                            );
+                            if (res) {
+                                this.refreshItems();
+                            }
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+                    });
+                }
+            });
+    }
+
+    // techDate(record): void {
+    //     // const label: string = 'Delete City';
+    //     // this.conformationService
+    //     //     .open({
+    //     //         title: label,
+    //     //         message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.display_name + ' ?',
+    //     //     })
+    //     //     .afterClosed()
+    //     //     .subscribe((res) => {
+    //     //         if (res === 'confirmed') {
+    //     //             this.cityService.delete(record.id).subscribe({
+    //     //                 next: () => {
+    //     //                     this.alertService.showToast(
+    //     //                         'success',
+    //     //                         'City has been deleted!',
+    //     //                         'top-right',
+    //     //                         true
+    //     //                     );
+    //     //                     this.refreshItems();
+    //     //                 },
+    //     //                 error: (err) => {
+    //     //                     this.alertService.showToast(
+    //     //                         'error',
+    //     //                         err,
+    //     //                         'top-right',
+    //     //                         true
+    //     //                     );
+    //     //                 },
+
+    //     //             });
+    //     //         }
+    //     //     });
+    // }
 }

@@ -8,127 +8,199 @@
         </div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
-            </mat-form-field>
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createData()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-            </button>
+
+
         </div>
     </div>
 
     <!----------------Table----------------->
-    <div class="flex flex-col flex-auto overflow-hidden">
-        <!-- list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
-            <ng-container>
-                <div class="grid">
-                    <!-- Header -->
-                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card"
-                        matSort matSortDisableClear (matSortChange)="refreshItems()">
-                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
-                            #
-                        </div>
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['destination_caption', 'country', 'visa_type', 'validity_period','length_of_stay','processing_time','no_of_entry']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
 
-                        <ng-container *ngFor="let col of columns">
-                            <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                        </ng-container>
-                    </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                        <ng-container *ngFor="let ListItem of dataList">
-                            <div class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer"
-                                [ngClass]="!ListItem.is_enable ? 'opacity-38' : ''">
-                                <button mat-icon-button (click)="$event.stopPropagation()"
-                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-gray-50 dark:bg-gray-900"
-                                    style="border-radius: 0%; width: 100%">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
-                                <mat-menu #optionMenu>
-                                    <button mat-menu-item (click)="viewData(ListItem)">
-                                        <mat-icon class="mat-18">info</mat-icon>
-                                        <span style="font-weight: 600">Info</span>
-                                    </button>
-                                    <button mat-menu-item (click)="editData(ListItem)">
-                                        <mat-icon class="mat-18">edit</mat-icon>
-                                        <span style="font-weight: 600">Edit</span>
-                                    </button>
-                                    <button mat-menu-item (click)="deleteData(ListItem)">
-                                        <mat-icon class="mat-18">delete</mat-icon>
-                                        <span style="font-weight: 600">Delete</span>
-                                    </button>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th  class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="destination_caption" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.destination_caption"
+                        [ngClass]="{'left-0': !frozenObj?.destination_caption}">
+                        Destination <p-sortIcon field="destination_caption" />
+                        <span class="float-right"
+                            (click)="isFrozenColumn('destination_caption');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.destination_caption" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.destination_caption" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="country" pResizableColumn>
+                        Country <p-sortIcon field="country" />
+                    </th>
+                    <th pSortableColumn="visa_type" pResizableColumn>
+                        Visa Type <p-sortIcon field="visa_type" />
+                    </th>
+                    <th pSortableColumn="validity_period" pResizableColumn class="text-center">
+                        Validity <p-sortIcon field="validity_period" />
+                    </th>
+                    <th pSortableColumn="length_of_stay" pResizableColumn class="text-center">
+                        Length of Stay <p-sortIcon field="length_of_stay" />
+                    </th>
+                    <th pSortableColumn="processing_time" pResizableColumn>
+                        Processing Time <p-sortIcon field="processing_time" />
+                    </th>
+                    <th class="w-full min-w-[200px]" pSortableColumn="no_of_entry" pResizableColumn>
+                        No of Entry <p-sortIcon field="no_of_entry" />
+                    </th>
 
-                                    <button mat-menu-item (click)="document(ListItem)">
-                                        <mat-icon svgIcon="heroicons_solid:clipboard-document"></mat-icon>
-                                        <span style="font-weight: 600">Visa Documents</span>
-                                    </button>
+                </tr>
 
-                                    <button mat-menu-item (click)="charges(ListItem)">
-                                        <mat-icon svgIcon="heroicons_outline:identification"></mat-icon>
-                                        <span style="font-weight: 600">Visa Charges</span>
-                                    </button>
-
-                                    <button mat-menu-item (click)="specialNotes(ListItem)">
-                                        <mat-icon svgIcon="heroicons_outline:banknotes"></mat-icon>
-                                        <span style="font-weight: 600">Special Notes</span>
-                                    </button>
-
-                                    <mat-divider></mat-divider>
-                                    <button mat-menu-item (click)="EnableDisable(ListItem)">
-                                        <mat-icon class="mat-18">{{
-                                            ListItem.is_enable
-                                            ? "highlight_off"
-                                            : "check_circle"
-                                            }}</mat-icon>
-                                        <span style="font-weight: 600">{{
-                                            ListItem.is_enable ? "Disable" : "Enable"
-                                            }}</span>
-                                    </button>
-                                </mat-menu>
-
-                                <ng-container *ngFor="let col of columns">
-
-                                    <div
-                                        [class]="'flex flex-ListItem items-center space-x-2 truncate pl-4 ' + col.class">
-                                        <div class="flex flex-col truncate">
-                                            <span class="truncate" [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
-                                                {{
-                                                col.is_date ? (ListItem[col.key] | date : col.date_formate) || " - " :
-                                                ListItem[col.key] || " "
-                                                }} <span *ngIf="col.applied"> Days</span>
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-template #noGridItems>
-                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                    {{ getNodataText() }}
-                </div>
+                <tr *ngIf="isFilterShow">
+                    <th class=" left-[-1px]" pFrozenColumn></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.destination_caption">
+                        <p-columnFilter type="text" matchMode="contains" field="destination_caption"
+                            placeholder="Search by Destination Caption" ariaLabel="Filter Destination Caption" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="country" placeholder="Search by Country"
+                            ariaLabel="Filter Country" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="visa_type" placeholder="Search by Visa Type"
+                            ariaLabel="Filter Visa Type" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="validity_period" placeholder="Search by Validity Period"
+                            ariaLabel="Filter Validity Period" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="length_of_stay" placeholder="Search by Length of stay"
+                            ariaLabel="Filter Length of stay" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="processing_time" placeholder="Search by Processing time"
+                            ariaLabel="Filter Processing time" /> -->
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="no_of_entry" placeholder="Search by No of entry"
+                            ariaLabel="Filter No of entry" />
+                    </th>
+                </tr>
             </ng-template>
-        </div>
 
-        <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-            [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total"
-            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize" (page)="refreshItems()"
-            [showFirstLastButtons]="appConfig.showFirstLastButtons">
-        </mat-paginator>
+            <ng-template pTemplate="body" let-element>
+                <tr [ngClass]="!element.is_enable ? 'opacity-38' : ''">
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="viewData(element)">
+                                <mat-icon class="mat-18">info</mat-icon>
+                                <span style="font-weight: 600">Info</span>
+                            </button>
+                            <button mat-menu-item (click)="editData(element)">
+                                <mat-icon class="mat-18">edit</mat-icon>
+                                <span style="font-weight: 600">Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="deleteData(element)">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                                <span style="font-weight: 600">Delete</span>
+                            </button>
+
+                            <button mat-menu-item (click)="document(element)">
+                                <mat-icon svgIcon="heroicons_solid:clipboard-document"></mat-icon>
+                                <span style="font-weight: 600">Visa Documents</span>
+                            </button>
+
+                            <button mat-menu-item (click)="charges(element)">
+                                <mat-icon svgIcon="heroicons_outline:identification"></mat-icon>
+                                <span style="font-weight: 600">Visa Charges</span>
+                            </button>
+
+                            <button mat-menu-item (click)="specialNotes(element)">
+                                <mat-icon svgIcon="heroicons_outline:banknotes"></mat-icon>
+                                <span style="font-weight: 600">Special Notes</span>
+                            </button>
+
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="EnableDisable(element)">
+                                <mat-icon class="mat-18">{{
+                                    element.is_enable
+                                    ? "highlight_off"
+                                    : "check_circle"
+                                    }}</mat-icon>
+                                <span style="font-weight: 600">{{
+                                    element.is_enable ? "Disable" : "Enable"
+                                    }}</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.destination_caption">
+                        {{element.destination_caption}}
+                    </td>
+
+                    <td>{{element.country}}</td>
+
+                    <td>{{element.visa_type}}</td>
+
+                    <td class="text-center">{{element.validity_period}}</td>
+
+                    <td class="text-center">
+                        {{element.length_of_stay}}
+                    </td>
+
+                    <td>
+                        {{element.processing_time}} Days
+                    </td>
+
+                    <td>
+                        <div class="pl-[40px]">
+                            {{element.no_of_entry}}
+                        </div>
+                    </td>
+
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="8" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
+
 </div>

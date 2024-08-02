@@ -4,4 +4,5 @@ export class FilterRequest {
     public OrderBy: string;
     public OrderDirection: number;
     public Filter: string;
+    public columeFilters?: object;
 }

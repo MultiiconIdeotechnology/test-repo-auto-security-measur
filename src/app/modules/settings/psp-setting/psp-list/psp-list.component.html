@@ -8,117 +8,177 @@
         </div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
-            </mat-form-field>
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+            </p-overlayPanel>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!--- Add  -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
-            </button>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
         </div>
     </div>
 
     <!----------------Table----------------->
-    <div class="flex flex-col flex-auto overflow-hidden">
-        <!-- list -->
-        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden overflow-y-auto overflow-x-auto max-sm:pb-15">
-            <ng-container>
-                <div class="grid">
-                    <!-- Header -->
-                    <div class="tbl-grid gridwidth z-10 sticky top-0 grid   py-2 px-6 md:pr-8 pl-0 shadow text-md font-semibold bg-card grid-flow-col"
-                        matSort matSortDisableClear (matSortChange)="refreshItems()">
-                        <div style="text-align: center" class="sticky left-0 bg-card z-99">
-                            #
-                        </div>
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['provider', 'psp_for', 'psp_for_name']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
 
-                        <ng-container *ngFor="let col of columns">
-                            <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                            <div *ngIf="!col.is_sortable" [class]="'pl-4 ' + col.class">
-                                {{ col.name }}
-                            </div>
-                        </ng-container>
-                    </div>
-                    <!-- Rows -->
-                    <ng-container *ngIf="dataList.length > 0; else noGridItems">
-                        <ng-container *ngFor="let ListItem of dataList">
-                            <div
-                                class="tbl-grid gridwidth grid items-center   px-6 md:pr-8 border-b pl-0 cursor-pointer grid-flow-col"
-                                [ngClass]="{'opacity-38' : !ListItem.is_active}">
-                                <button mat-icon-button (click)="$event.stopPropagation()"
-                                    [matMenuTriggerFor]="optionMenu" class="sticky left-0 bg-gray-50 dark:bg-gray-900"
-                                    style="border-radius: 0%; width: 100%">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
-                                <mat-menu #optionMenu>
-                                    <button mat-menu-item (click)="view(ListItem)">
-                                        <mat-icon class="mat-18">info</mat-icon>
-                                        <span style="font-weight: 600">Info</span>
-                                    </button>
-                                    <button mat-menu-item (click)="edit(ListItem)">
-                                        <mat-icon class="mat-18">edit</mat-icon>
-                                        <span style="font-weight: 600">Edit</span>
-                                    </button>
-                                    <button mat-menu-item (click)="delete(ListItem)">
-                                        <mat-icon class="mat-18">delete</mat-icon>
-                                        <span style="font-weight: 600">Delete</span>
-                                    </button>
-                                    <mat-divider *ngIf="!ListItem.is_default"></mat-divider>
-                                    <button mat-menu-item (click)="SetDefault(ListItem)" *ngIf="!ListItem.is_default">
-                                        <mat-icon class="mat-18">check_circle</mat-icon>
-                                        <span style="font-weight: 600">Set Default</span>
-                                    </button>
-                                    <button mat-menu-item (click)="setActiveDeactive(ListItem)">
-                                        <mat-icon class="mat-18">{{ ListItem.is_active ?  "highlight_off" : "check_circle"}}</mat-icon>
-                                        <span style="font-weight: 600">{{ ListItem.is_active ? "Deactive" : "Active"  }}</span>
-                                    </button>
-                                </mat-menu>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="provider" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.provider"
+                        [ngClass]="{'left-0': !frozenObj?.provider}">
+                        Provider <p-sortIcon field="provider" />
+                        <span class="float-right" (click)="isFrozenColumn('provider');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.provider" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.provider" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="is_live" pResizableColumn>
+                        Status <p-sortIcon field="is_live" />
+                    </th>
+                    <th pSortableColumn="psp_for" pResizableColumn>
+                        PSP For <p-sortIcon field="psp_for" />
+                    </th>
+                    <!-- <th pSortableColumn="psp_for_name" pResizableColumn class="w-full">
+                        PSP For Name <p-sortIcon field="psp_for_name" />
+                    </th>
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+                    </th> -->
 
-                                <ng-container *ngFor="let col of columns">
-                                    <span *ngIf="col.is_boolean" class="text-center">
-                                        <mat-icon class="text-green-600" *ngIf="ListItem[col.key]">done</mat-icon>
-                                        <mat-icon class="text-red-600" *ngIf="!ListItem[col.key]">clear</mat-icon>
-                                    </span>
+                    <th class="min-w-[200px]" pSortableColumn="psp_for_name" pResizableColumn
+                        [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
+                        PSP For Name <p-sortIcon field="psp_for_name" />
+                    </th>
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                        [ngClass]="{'w-full': isLast }">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+                    </th>
+                </tr>
 
-                                    <div *ngIf="!col.is_boolean" [class]="'flex flex-row items-center space-x-2 truncate pl-4 ' + col.class">
-                                        <div *ngIf="col.isicon" [matTooltip]="ListItem['is_default'] ? 'Default' : ''" class="w-2 h-2 rounded-full" [ngClass]="ListItem['is_default'] ? 'bg-green-500' : '-mr-3'">
-                                        </div>
-
-                                        <span *ngIf="col.isLive" class="text-center">
-                                            <span  *ngIf="ListItem[col.key]">LIVE</span>
-                                            <span *ngIf="!ListItem[col.key]">TEST</span>
-                                        </span>
-
-                                        <div class="flex flex-col truncate" *ngIf="!col.isLive">
-                                            <span class="truncate" [matTooltip]=" col.tooltip ? ListItem[col.key] : ''">
-                                                {{ col.is_date ? (ListItem[col.key] | date : col.date_formate) || " - " : ListItem[col.key] || " - " }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </ng-container>
-                </div>
-            </ng-container>
-
-            <ng-template #noGridItems>
-                <div class="p-8 sm:p-16 border-t text-3xl tracking-tight text-center pt-20">
-                    {{ getNodataText() }}
-                </div>
+                <tr *ngIf="isFilterShow">
+                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.provider">
+                        <p-columnFilter type="text" matchMode="contains" field="provider" placeholder="Search by Provider"
+                            ariaLabel="Filter Provider" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="is_live" placeholder="Search by Status"
+                            ariaLabel="Filter Status" /> -->
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="psp_for" placeholder="Search by PSP For"
+                            ariaLabel="Filter PSP For" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="psp_for_name" placeholder="Search by PSP For Name"
+                            ariaLabel="Filter PSP For Name" />
+                    </th>
+                    <th *ngFor="let col of columns">
+                    </th>
+                </tr>
             </ng-template>
-        </div>
 
-        <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 max-sm:bottom-0 max-sm:fixed max-sm:inset-x-0 z-10 bg-white dark:bg-gray-900 dark:bg-opacity-5"
-            [ngClass]="{ 'pointer-events-none': isLoading }" [length]="total"
-            [pageSizeOptions]="appConfig.pageSizeOptions" [pageSize]="appConfig.pageSize" (page)="refreshItems()"
-            [showFirstLastButtons]="appConfig.showFirstLastButtons">
-        </mat-paginator>
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr [ngClass]="!element.is_active ? 'opacity-38' : ''">
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="view(element)">
+                                <mat-icon class="mat-18">info</mat-icon>
+                                <span style="font-weight: 600">Info</span>
+                            </button>
+                            <button mat-menu-item (click)="edit(element)">
+                                <mat-icon class="mat-18">edit</mat-icon>
+                                <span style="font-weight: 600">Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="delete(element)">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                                <span style="font-weight: 600">Delete</span>
+                            </button>
+                            <mat-divider *ngIf="!element.is_default"></mat-divider>
+                            <button mat-menu-item (click)="SetDefault(element)"
+                                *ngIf="!element.is_default && element.psp_for != 'Agent'">
+                                <mat-icon class="mat-18">check_circle</mat-icon>
+                                <span style="font-weight: 600">Set Default</span>
+                            </button>
+                            <button mat-menu-item (click)="setActiveDeactive(element)">
+                                <mat-icon class="mat-18">{{ element.is_active ? "highlight_off" :
+                                    "check_circle"}}</mat-icon>
+                                <span style="font-weight: 600">{{ element.is_active ? "Deactive" : "Active" }}</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.provider">
+                        <span [matTooltip]="element['is_default'] ? 'Default' : ''"
+                            class="w-2 h-2 inline-block rounded-full"
+                            [ngClass]="element['is_default'] ? 'bg-green-500' : '-mr-3'">
+                        </span>
+                        {{element.provider || "-"}}
+                    </td>
+                    <td>
+                        <span *ngIf="element.is_live" class="text-green-500">LIVE</span>
+                        <span *ngIf="!element.is_live" class="text-red-500">TEST</span>
+                    </td>
+                    <td>
+                        {{element.psp_for || "-"}}
+                    </td>
+                    <td>{{element.psp_for_name || "-"}}</td>
+                    <td *ngFor="let col of columns">
+                        {{element[col.field] || "-"}}
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="6" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
 </div>

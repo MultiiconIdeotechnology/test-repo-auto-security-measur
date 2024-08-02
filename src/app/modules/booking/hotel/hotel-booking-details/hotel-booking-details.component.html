@@ -53,8 +53,8 @@
                                         </div>
                                     </div>
 
-                                    <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
-                                        (click)="logs()">
+                                    <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                        (click)="logs()" [ngClass]="Status === 'Confirmed' ? 'ml-2' : ''">
                                         <div>
                                             <img src="assets/icons/logs.svg" alt="">
                                         </div>
@@ -139,8 +139,9 @@
                                         <span class="text-md font-semibold text-secondary">B2B Partner</span>
                                         <div class="truncate">
                                             <span class="text-base truncate"
-                                                [matTooltip]="bookingBy?.b2b_partner">{{bookingBy?.b2b_partner || ' -
-                                                '}}</span>
+                                            [ngClass]="bookingBy?.b2b_partner ? 'cursor-pointer border-b border-gray-500' : ''"
+                                        [matTooltip]="bookingBy?.b2b_partner"
+                                        (click)="bookingBy?.b2b_partner ? B2BPartnerInfo() : null">{{bookingBy?.b2b_partner || ' - '}}</span>
                                         </div>
                                     </div>
                                     <div class="flex flex-col ">

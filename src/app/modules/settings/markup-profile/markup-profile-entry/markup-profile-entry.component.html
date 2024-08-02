@@ -26,6 +26,23 @@
                     <input [readonly]="readonly" matInput required formControlName="profile_name" />
                 </mat-form-field>
 
+                <mat-form-field class="flex-grow" >
+                    <mat-label>Company</mat-label>
+                        <mat-select formControlName="company_id" *ngIf="!readonly">
+                            <mat-option>
+                                <ngx-mat-select-search placeholderLabel="Search"
+                                    noEntriesFoundLabel="'no matching company found'"
+                                    [formControlName]="'companyfilter'">
+                                </ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option *ngFor="let ct of compnyList" [value]="ct.company_id" >
+                                <span>{{ ct.company_name }}</span>
+                            </mat-option>
+                        </mat-select>
+                    <input *ngIf="readonly" matInput required [compareWith]="compareWith" formControlName="companyfilter" />
+
+                </mat-form-field>
+
                 <button mat-raised-button color="primary" *ngIf="!readonly" [disabled]=" disableBtn" (click)="submit()">
                     {{ btnTitle }}
                 </button>
@@ -730,10 +747,13 @@
                                     <mat-select required formControlName="airline_id" [compareWith]="compareWith">
                                         <mat-option>
                                             <ngx-mat-select-search placeholderLabel="Search"
-                                                noEntriesFoundLabel="'no matching Airline found'" [formControlName]="'airlinefilter'" (input)="filterAirline($event.target.value)">
+                                                noEntriesFoundLabel="'no matching Airline found'"
+                                                [formControlName]="'airlinefilter'"
+                                                (input)="filterAirline($event.target.value)">
                                             </ngx-mat-select-search>
                                         </mat-option>
-                                        <mat-option *ngFor="let ct of AirlineList" [value]="ct">{{ct.short_code}} - {{ ct.airline_name }}</mat-option>
+                                        <mat-option *ngFor="let ct of AirlineList" [value]="ct">{{ct.short_code}} - {{
+                                            ct.airline_name }}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
 
@@ -805,8 +825,9 @@
                             <ng-container>
                                 <div class="mt-2 mb-5 flex space-x-6 items-center">
                                     <!-- <h2>B2B</h2> -->
-                                    <input class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900" type="text"
-                                        [(ngModel)]="b2bSearchQuery" (input)="applySearchFilters()"
+                                    <input
+                                        class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900"
+                                        type="text" [(ngModel)]="b2bSearchQuery" (input)="applySearchFilters()"
                                         placeholder="Search" />
                                 </div>
                                 <div *ngIf="filteredB2BList.length > 0" class="overflow-auto">
@@ -819,16 +840,20 @@
                                             class="font-bold border-r-2 p-2 max-w-50 min-w-50 sticky left-10 bg-white dark:bg-gray-900">
                                             Airline Name
                                         </div>
-                                        <div class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
+                                        <div
+                                            class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
                                             Airline Domestic One Way
                                         </div>
-                                        <div class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
+                                        <div
+                                            class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
                                             Airline Domestic Round Trip
                                         </div>
-                                        <div class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900c">
+                                        <div
+                                            class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900c">
                                             Airline International One Way
                                         </div>
-                                        <div class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
+                                        <div
+                                            class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
                                             Airline International Round Trip
                                         </div>
                                     </div>
@@ -849,7 +874,8 @@
                                                 </button>
                                             </mat-menu>
                                         </div>
-                                        <div class="border-r-2 p-2 max-w-50 min-w-50 sticky left-10 z-10 bg-white dark:bg-gray-900">
+                                        <div
+                                            class="border-r-2 p-2 max-w-50 min-w-50 sticky left-10 z-10 bg-white dark:bg-gray-900">
                                             {{ al.airline_name }}
                                         </div>
                                         <div class="border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
@@ -1112,21 +1138,23 @@
                             <ng-container>
                                 <div class="mt-2 mb-5 flex space-x-6 items-center">
                                     <!-- <h2>B2B</h2> -->
-                                    <input class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900" type="text"
-                                        [(ngModel)]="db2bSearchQuery" (input)="dapplySearchFilters()"
+                                    <input
+                                        class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900"
+                                        type="text" [(ngModel)]="db2bSearchQuery" (input)="dapplySearchFilters()"
                                         placeholder="Search" />
                                 </div>
                                 <div *ngIf="dfilteredB2BList.length > 0" class="overflow-auto">
                                     <div class="flex flex-row border-2 w-fit">
                                         <div
-                                            class="font-bold w-10 border-r-2 p-2 flex items-center justify-center sticky left-0 z-10 bg-gray-900 bg-white ">
+                                            class="font-bold w-10 border-r-2 p-2 flex items-center justify-center sticky left-0 z-10 dark:bg-gray-900 bg-white ">
                                             #
                                         </div>
                                         <div
                                             class="font-bold border-r-2 p-2 max-w-60 min-w-60 sticky left-10 z-10 bg-white dark:bg-gray-900">
                                             Destination Name
                                         </div>
-                                        <div class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
+                                        <div
+                                            class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
                                             Markup
                                         </div>
                                     </div>
@@ -1151,7 +1179,8 @@
                                                 </button>
                                             </mat-menu>
                                         </div>
-                                        <div class="border-r-2 p-2 max-w-60 min-w-60 sticky left-10 bg-white dark:bg-gray-900">
+                                        <div
+                                            class="border-r-2 p-2 max-w-60 min-w-60 sticky left-10 bg-white dark:bg-gray-900">
                                             {{
                                             dt.destination_id
                                             .destination_name
@@ -1254,10 +1283,12 @@
                                         <mat-option>
                                             <ngx-mat-select-search placeholderLabel="Search"
                                                 noEntriesFoundLabel="'no matching city found'"
-                                                [formControlName]="'cityfilter'" (input)="filterDestination($event.target.value)">
+                                                [formControlName]="'cityfilter'"
+                                                (input)="filterDestination($event.target.value)">
                                             </ngx-mat-select-search>
                                         </mat-option>
-                                        <mat-option *ngFor="let ct of DestinationListV" [value]="ct">{{ ct.destination}}</mat-option>
+                                        <mat-option *ngFor="let ct of DestinationListV" [value]="ct">{{
+                                            ct.destination}}</mat-option>
                                     </mat-select>
                                 </mat-form-field>
 
@@ -1286,8 +1317,9 @@
                             <ng-container>
                                 <div class="mt-2 mb-5 flex space-x-6 items-center">
                                     <!-- <h2>B2B</h2> -->
-                                    <input class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900" type="text"
-                                        [(ngModel)]="vb2bSearchQuery" (input)="vapplySearchFilters()"
+                                    <input
+                                        class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900"
+                                        type="text" [(ngModel)]="vb2bSearchQuery" (input)="vapplySearchFilters()"
                                         placeholder="Search" />
                                 </div>
                                 <div *ngIf="vfilteredB2BList.length > 0" class="overflow-auto">
@@ -1300,7 +1332,8 @@
                                             class="font-bold border-r-2 p-2 max-w-72 min-w-72 sticky left-10 z-10 bg-white dark:bg-gray-900">
                                             City
                                         </div>
-                                        <div class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
+                                        <div
+                                            class="font-bold border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
                                             Markup
                                         </div>
                                     </div>
@@ -1321,7 +1354,8 @@
                                                 </button>
                                             </mat-menu>
                                         </div>
-                                        <div class="border-r-2 p-2 max-w-72 min-w-72 sticky left-10 z-10  bg-white dark:bg-gray-900">
+                                        <div
+                                            class="border-r-2 p-2 max-w-72 min-w-72 sticky left-10 z-10  bg-white dark:bg-gray-900">
                                             {{ vl.city_id.display_name }}
                                         </div>
                                         <div class="border-r-2 p-2 max-w-90 min-w-90 bg-white dark:bg-gray-900">
@@ -1449,8 +1483,9 @@
                             <ng-container>
                                 <div class="mt-2 mb-5 flex space-x-6 items-center">
                                     <!-- <h2>B2B</h2> -->
-                                    <input class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900" type="text"
-                                        [(ngModel)]="sb2bSearchQuery" (input)="sapplySearchFilters()"
+                                    <input
+                                        class="rounded-lg border border-gray-border px-4 py-2 bg-white dark:bg-gray-900"
+                                        type="text" [(ngModel)]="sb2bSearchQuery" (input)="sapplySearchFilters()"
                                         placeholder="Search" />
                                 </div>
                                 <div *ngIf="sfilteredB2BList.length > 0" class="overflow-auto">
@@ -1463,7 +1498,8 @@
                                             class="font-bold border-r-2 p-2 max-w-72 min-w-72 sticky left-10 z-10 dark:bg-gray-900 bg-white">
                                             Supplier
                                         </div>
-                                        <div class="font-bold border-r-2 p-2 max-w-90 min-w-90 dark:bg-gray-900 bg-white">
+                                        <div
+                                            class="font-bold border-r-2 p-2 max-w-90 min-w-90 dark:bg-gray-900 bg-white">
                                             Markup
                                         </div>
                                     </div>
@@ -1484,7 +1520,8 @@
                                                 </button>
                                             </mat-menu>
                                         </div>
-                                        <div class="border-r-2 p-2 max-w-72 min-w-72 sticky left-10 z-10 dark:bg-gray-900 bg-white">
+                                        <div
+                                            class="border-r-2 p-2 max-w-72 min-w-72 sticky left-10 z-10 dark:bg-gray-900 bg-white">
                                             {{ vl.supplier_id.suppler_name || vl.supplier_id.company_name}}
                                         </div>
                                         <div class="border-r-2 p-2 max-w-90 min-w-90 dark:bg-gray-900 bg-white">

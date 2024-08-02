@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -30,6 +30,9 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { takeUntil, debounceTime, Subject } from 'rxjs';
 import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
 import { EntityService } from 'app/services/entity.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
   selector: 'app-wrejected',
@@ -37,7 +40,7 @@ import { EntityService } from 'app/services/entity.service';
   styleUrls: ['./rejected.component.scss'],
   styles: [`
   .tbl-grid {
-    grid-template-columns: 40px 180px 110px 200px 150px 200px 180px 200px 180px 200px;
+    grid-template-columns: 40px 170px 140px 110px 204px 210px;
   }
   `],
   standalone: true,
@@ -65,13 +68,17 @@ import { EntityService } from 'app/services/entity.service';
     MatMenuModule,
     MatTabsModule,
     MatPaginatorModule,
-    MatSortModule
-
+    MatSortModule,
+    InfoWithdrawComponent,
+    PrimeNgImportsModule,
   ],
 })
-export class WRejectedComponent {
+export class WRejectedComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
+  @Input() isFilterShowReject: boolean
+  @Input() agentData:any;
+
 
   @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
   @ViewChild(MatSort) public _sortPending: MatSort;
@@ -90,16 +97,15 @@ export class WRejectedComponent {
   appConfig = AppConfig;
   data: any;
   filter: any = {};
+  agentList: any[] = [];
+
 
   columns = [
     { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: false },
-    { key: 'withdraw_status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_name', name: 'Agent Name', is_date: false, date_formate: '', is_sortable: true, class: 'max-w-48 min-w-48', is_sticky: false, align: '', indicator: false, tooltip: true },
     { key: 'withdraw_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_remark', name: 'Agent Remark', is_date: false, date_formate: '', is_sortable: true, class: 'truncate', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'reject_date_time', name: 'Reject Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'reject_by', name: 'Reject By', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'reject_remark', name: 'Reject Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
+    { key: 'agent_Code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
+    { key: 'agent_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: 'max-w-48 min-w-48', is_sticky: false, align: '', indicator: false, tooltip: true },
+    { key: 'account_number', name: 'Bank', is_date: false, is_info: true, date_formate: '', is_sortable: true, class: 'truncate', is_sticky: false, align: '', indicator: true, tooltip: true },
 
   ]
   cols = [];
@@ -109,32 +115,58 @@ export class WRejectedComponent {
   constructor(
     private withdrawService: WithdrawService,
     private conformationService: FuseConfirmationService,
-    private alertService: ToasterService,
     private matDialog: MatDialog,
+    public agentService: AgentService,
     private entityService: EntityService,
   ) {
-    // super(module_name.wallet)
+    super(module_name.withdraw)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'withdraw_status';
+    this.sortColumn = 'entry_date_time';
     this.sortDirection = 'asc';
     this.Mainmodule = this
 
+    this.filter = {
+      agent_id: 'all',
+      FromDate: new Date(),
+      ToDate: new Date(),
+    };
+
+    this.filter.FromDate.setDate(1);
+    this.filter.FromDate.setMonth(this.filter.FromDate.getMonth());
+
+    this.entityService.onrefreshbankDetailsCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+      next: (item) => {
+        this.refreshItemsRejected()
+      }
+    })
   }
 
   ngOnInit(): void {
-    this.entityService.onWithdrawRejectedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-      next: (item) => {
-        this.refreshItemsRejected();
-      }
-    })
+    // this.entityService.onWithdrawRejectedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+    //   next: (item) => {
+    //     this.refreshItemsRejected();
+    //   }
+    // })
 
     this.searchInputControlRejected.valueChanges
       .subscribe(() => {
-        GridUtils.resetPaginator(this._paginatorPending);
-        this.refreshItemsRejected();
+        // GridUtils.resetPaginator(this._paginatorPending);
+        // this.refreshItemsRejected();
       });
+  }
 
+  ngOnChanges() {
+    this.agentList = this.agentData;
+    // if (this.isFilterShowReject) {
+    //   this.getAgentList('');
+    // }
+  }
+
+  getAgentList(value: string) {
+      this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentList = data;
+      })
   }
 
   view(record) {
@@ -142,10 +174,27 @@ export class WRejectedComponent {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    this.matDialog.open(InfoWithdrawComponent, {
-      data: { data: record, readonly: true },
-      disableClose: true
-    })
+    this.entityService.raiseInfoWithdraw({ data: record.id })
+
+
+    // this.matDialog.open(InfoWithdrawComponent, {
+    //   data: { data: record, readonly: true, send: 'Info' },
+    //   disableClose: true
+    // })
+  }
+
+  bankDetails(record) {
+    if (!Security.hasViewDetailPermission(module_name.wallet)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.entityService.raisebankDetailsCall({ data: record, send: 'Info' })
+
+
+    // this.matDialog.open(InfoWithdrawComponent, {
+    //   data: { data: record, readonly: true, send: 'Bank' },
+    //   disableClose: true
+    // })
   }
 
   Audit(data: any): void {
@@ -188,13 +237,16 @@ export class WRejectedComponent {
   }
 
 
-  refreshItemsRejected() {
+  refreshItemsRejected(event?: any) {
     this.isLoading = true;
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginatorPending,
-      this._sortPending,
-      this.searchInputControlRejected.value, "entry_date_time", 1
-    );
+    // const filterReq = GridUtils.GetFilterReq(
+    //   this._paginatorPending,
+    //   this._sortPending,
+    //   this.searchInputControlRejected.value, "entry_date_time", 1
+    // );
+
+    const filterReq = this.getNewFilterReq(event);
+    filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['status'] = 'rejected';
     filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd')
     filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd')
@@ -204,11 +256,15 @@ export class WRejectedComponent {
         next: data => {
           this.isLoading = false;
           this.dataList = data.data;
-          this.dataList.forEach(x => {
-            x.withdraw_amount = x.withdraw_currency + " " + x.withdraw_amount
-          })
-          this._paginatorPending.length = data.total;
-          this.total = data.total;
+          // this.dataList.forEach(x => {
+          //   x.withdraw_amount = x.withdraw_currency + " " + x.withdraw_amount
+          //   x.account_number = x.account_number + " - " + x.bank_name
+
+          // })
+          // this._paginatorPending.length = data.total;
+          // this.total = data.total;
+          this.totalRecords = data.total;
+
         }, error: err => {
           this.alertService.showToast('error', err, "top-right", true)
           this.isLoading = false;

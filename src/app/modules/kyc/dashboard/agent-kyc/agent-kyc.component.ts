@@ -1,25 +1,31 @@
-import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
+import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { KycInfoComponent } from 'app/modules/masters/agent/kyc-info/kyc-info.component';
 import { LeadEntryComponent } from 'app/modules/masters/lead/lead-entry/lead-entry.component';
 import { Security, kycDashboardPermissions, messages, module_name } from 'app/security';
 import { KycDashboardService } from 'app/services/kyc-dashboard.service';
 import { LeadsService } from 'app/services/leads.service';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { KycService } from 'app/services/kyc.service';
+import { EmployeeService } from 'app/services/employee.service';
+
 
 @Component({
   selector: 'app-agent-kyc',
@@ -27,7 +33,7 @@ import { LeadsService } from 'app/services/leads.service';
   styleUrls: ['./agent-kyc.component.scss'],
   styles: [`
   .tbl-grid {
-    grid-template-columns:  40px 200px 200px 200px 220px 150px 200px 200px ;
+    grid-template-columns:  40px 200px 200px 200px 220px 150px 200px 200px 200px;
   }
   `],
   standalone: true,
@@ -40,64 +46,104 @@ import { LeadsService } from 'app/services/leads.service';
     MatInputModule,
     MatButtonModule,
     MatProgressBarModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatFormFieldModule,
     MatMenuModule,
     MatDialogModule,
     MatTooltipModule,
     MatDividerModule,
-    CommonModule
+    CommonModule,
+    NgClass,
+    RouterOutlet,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
+    PrimeNgImportsModule
   ]
 
 })
-export class AgentKycComponent extends BaseListingComponent implements OnDestroy  {
+export class AgentKycComponent extends BaseListingComponent implements OnDestroy {
 
   total = 0;
   dataList = [];
-
-
+  serviceForList = ['All', 'Rejected'];
+  public Status = new FormControl(this.serviceForList[0]);
   module_name = module_name.agentkyc
-  columns = [
-    { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false,  align: '', indicator: false, tooltip: true },
-    { key: 'kyc_profile', name: 'KYC Profile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false,  align: '', indicator: false , tooltip: true},
-    { key: 'relation_manager', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false,  align: '', indicator: false , tooltip: true},
-    { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false,  align: '', indicator: false , tooltip: true},
-    { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false,  align: '', indicator: false },
-    { key: 'city_name', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false,  align: '', indicator: false },
-    { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false,  align: '', indicator: false},
+  kycProfileList:any[] = [];
+  selectedKycProfile:string;
+  employeeList:any[] = [];
+  selectedEmployee:string;
 
-  ]
+  columns = [
+    { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
+    { key: 'kyc_profile', name: 'KYC Profile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
+    { key: 'relation_manager', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
+    { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
+    { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
+    { key: 'city_name', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
+    { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
+    { key: 'update_date_time', name: 'Update Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
+  ];
+
+  statusList = [
+    { label: 'Rejected', value: true },
+    { label: 'Pending', value: false}
+  ];
   cols = [];
+  _selectedColumns: Column[];
+  isFilterShow: boolean = false;
 
   constructor(
     private kycDashboardService: KycDashboardService,
+    private kycService: KycService,
     private conformationService: FuseConfirmationService,
+    private employeeService: EmployeeService,
     private matDialog: MatDialog,
   ) {
     super(module_name.agentkyc)
-    this.cols = this.columns.map(x => x.key);
+    // this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'entry_date_time';
+    this.sortColumn = 'update_date_time';
     this.sortDirection = 'desc';
     this.Mainmodule = this
   }
 
-  viewInternal(record){
+  ngOnInit() {
+    this.cols = [
+      { field: 'contact_person', header: 'Contact Person' },
+    ];
+
+    this.getKycCombo();
+    this.getRelationManagerList("");
+  }
+
+  get selectedColumns(): Column[] {
+    return this._selectedColumns;
+  }
+
+  set selectedColumns(val: Column[]) {
+    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+  }
+
+
+  viewInternal(record) {
     this.matDialog.open(LeadEntryComponent, {
       data: { data: record, title: 'Agent Info', readonly: true },
       disableClose: true
     })
   }
 
-  refreshItems(): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
-    this.kycDashboardService.getAgentLeadKycList(this.getFilterReq()).subscribe({
+
+    const request = this.getNewFilterReq(event)
+    request['Status'] = this.Status.value == 'All' ? '' : this.Status.value;
+
+    this.kycDashboardService.getAgentLeadKycList(request).subscribe({
       next: data => {
         this.isLoading = false;
         this.dataList = data.data;
-        this._paginator.length = data.total;
+        this.totalRecords = data.total;
         this.total = data.total;
 
       }, error: err => {
@@ -106,22 +152,37 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     })
   }
 
+  getKycCombo(){
+    this.kycService.getkycprofileCombo('agent').subscribe((data) => {
+        this.kycProfileList = data;
+    })
+  }
+
+  // To get Relationship Manager data from employeelist api
+  getRelationManagerList(value: any) {
+    this.employeeService.getemployeeCombo(value).subscribe((data) => {
+        this.employeeList = data;
+    })
+}
+
   setKYCVerify(record): void {
     if (!Security.hasPermission(kycDashboardPermissions.agentViewKYCPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    
+
     this.matDialog.open(KycInfoComponent, {
-      data: {record:record,agent:true, isLead : 'Lead', isMaster : record.is_master_agent, send: 'agentKYC'},
+      data: { record: record, agent: true, isLead: 'Lead', isMaster: record.is_master_agent, send: 'agentKYC' },
       disableClose: true
     }).afterClosed().subscribe(res => {
-      if (res) {
+      if (res == 'confirmed') {
         // this.agentService.setMarkupProfile(record.id, res.transactionId).subscribe({
         //   next: () => {
         //     // record.is_blocked = !record.is_blocked;
         //     this.alertService.showToast('success', "The markup profile has been set", "top-right", true);
         //   }
         // })
+
+        this.refreshItems();
       }
     })
   }
@@ -130,7 +191,7 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     if (!Security.hasPermission(kycDashboardPermissions.agentConvertToTAPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    
+
     const label: string = 'Convert to Travel Agent'
     this.conformationService.open({
       title: label,
@@ -142,9 +203,9 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
             // record.is_blocked = !record.is_blocked;
             this.alertService.showToast('success', "Lead has been Converted to travel agent!", "top-right", true);
             this.refreshItems();
-          },error:(err) => {
+          }, error: (err) => {
             this.alertService.showToast('error', err, "top-right", true);
-            
+
           },
         })
       }
@@ -160,7 +221,7 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   }
 
   ngOnDestroy(): void {
-    this.masterService.setData(this.key, this)
+    // this.masterService.setData(this.key, this)
   }
 
 }

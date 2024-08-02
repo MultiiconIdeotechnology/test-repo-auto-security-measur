@@ -18,17 +18,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+
+interface Column {
+    field: string;
+    header: string;
+}   
 
 @Component({
     selector: 'app-department-list',
     templateUrl: './department-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 220px 180px 240px 120px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -48,6 +48,7 @@ import { MatDividerModule } from '@angular/material/divider';
         MatDialogModule,
         MatTooltipModule,
         MatDividerModule,
+        PrimeNgImportsModule
     ],
 })
 export class DepartmentListComponent
@@ -107,7 +108,8 @@ export class DepartmentListComponent
             tooltip: true,
         },
     ];
-    cols = [];
+   
+    isFilterShow: boolean = false;
 
     constructor(
         private departmentService: DepartmentService,
@@ -115,22 +117,26 @@ export class DepartmentListComponent
         private matDialog: MatDialog
     ) {
         super(module_name.department);
-        this.cols = this.columns.map((x) => x.key);
+        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'department_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
     }
 
-    refreshItems(): void {
+    ngOnInit() {
+       
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.departmentService
-            .getDepartmentList(this.getFilterReq())
+            .getDepartmentList(this.getNewFilterReq(event))
             .subscribe({
                 next: (data) => {
                     this.isLoading = false;
                     this.dataList = data.data;
-                    this._paginator.length = data.total;
+                    this.totalRecords = data.total;
                 },
                 error: (err) => {
                     this.alertService.showToast('error', err, 'top-right', true)
@@ -228,6 +234,6 @@ export class DepartmentListComponent
     }
 
     ngOnDestroy(): void {
-        this.masterService.setData(this.key, this);
+        // this.masterService.setData(this.key, this);
     }
 }

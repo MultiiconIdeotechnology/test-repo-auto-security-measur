@@ -1,7 +1,12 @@
 export interface FuseConfirmationConfig
 {
     title?: string;
+    inputBox?: string;
+    datepickerBox?: Date;
+    dateCustomShow?:  boolean;
+    datepickerParameter?: Date;
     message?: string;
+    customShow?:  boolean;
     icon?: {
         show?: boolean;
         name?: string;

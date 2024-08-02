@@ -115,7 +115,8 @@ export class TimelineCallHistoryComponent{
             this.searchInputControl.value, "entry_date_time", 1
         );
 
-        filterReq['MasterId'] = this.MasterId ? this.MasterId : ""
+        filterReq['MasterId'] = this.MasterId ? this.MasterId : "",
+        filterReq['MasterFor'] = "agent_master"
         this.crmService.getCallHistoryList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;

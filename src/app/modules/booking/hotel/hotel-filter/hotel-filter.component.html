@@ -11,10 +11,17 @@
     <div class="px-5 py-2 mt-2">
         <form [formGroup]="formGroup" class="flex flex-col">
             <div class="flex">
-                <mat-form-field class="fuse-mat-dense w-full">
+                <!-- <mat-form-field class="fuse-mat-dense w-full">
                     <mat-label>Status</mat-label>
                     <mat-select class="w-full flex-grow" formControlName="Status" required class="w-full" #service>
                         <mat-option *ngFor="let s of statusList" [value]="s">{{ s }}</mat-option>
+                    </mat-select>
+                </mat-form-field> -->
+                <mat-form-field class="w-full">
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="Status" multiple >
+                        <mat-option [value]="allValStatus" (click)="formGroup.get('Status').patchValue([allValStatus])">{{allValStatus}}</mat-option>
+                        <mat-option *ngFor="let topping of statusList" [value]="topping" (click)="changeStatus()">{{ topping }}</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -53,7 +60,7 @@
                 </mat-select>
             </mat-form-field> -->
 
-            <mat-form-field class="w-full">
+            <!-- <mat-form-field class="w-full">
                 <mat-label>Date</mat-label>
                 <mat-date-range-input [rangePicker]="picker">
                     <input matStartDate formControlName="FromDate" placeholder="Start date" />
@@ -61,7 +68,43 @@
                 </mat-date-range-input>
                 <mat-datepicker-toggle matSuffix [for]="picker" class="-mr-4"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field> -->
+
+            <mat-form-field class="w-full">
+                <mat-label>Supplier</mat-label>
+                <mat-select formControlName="supplierId" multiple [compareWith]="compareWith" (selectionChange)="vaalchange()">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching supplier found'" [formControlName]="'supplierfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option [value]="allVal" (click)="formGroup.get('supplierId').patchValue([allVal])">{{ allVal.company_name }}</mat-option>
+                    <mat-option *ngFor="let topping of SupplierList" [value]="topping">{{ topping.company_name }}</mat-option>
+                </mat-select>
             </mat-form-field>
+
+            <div class="w-full">
+                <mat-form-field class="w-full" *ngIf="formGroup.get('date').value !== DR.setCustomDate">
+                    <mat-label>Select Date</mat-label>
+                    <mat-select name="date" formControlName="date" (selectionChange)="updateDate($event.value)">
+                        <mat-option *ngFor="let dr of dateRanges" [value]="dr">{{ dr }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div *ngIf="formGroup.get('date').value === DR.setCustomDate"
+                    class="flex flex-row items-center space-x-1">
+                    <mat-form-field class="w-full">
+                        <mat-label>Date</mat-label>
+                        <mat-date-range-input [rangePicker]="picker">
+                            <input matStartDate formControlName="FromDate" placeholder="Start date" />
+                            <input matEndDate formControlName="ToDate" placeholder="End date" />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                    <mat-icon class="icon-size-4"
+                        (click)="this.formGroup.get('date').patchValue('Today')">cancel</mat-icon>
+                </div>
+            </div>
            
         </form>
     </div>

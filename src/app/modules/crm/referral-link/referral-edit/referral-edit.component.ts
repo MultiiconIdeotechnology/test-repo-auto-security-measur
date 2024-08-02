@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -13,6 +14,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RefferralService } from 'app/services/referral.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { filter, startWith, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -40,6 +42,7 @@ import { filter, startWith, debounceTime, distinctUntilChanged, switchMap } from
         MatMenuModule,
         NgxMatSelectSearchModule,
         NgxMatTimepickerModule,
+        MatDividerModule
     ],
 })
 export class ReferralEditComponent {
@@ -72,7 +75,7 @@ export class ReferralEditComponent {
     }
 
     formGroup: FormGroup;
-    title = 'Referral Link';
+    title = 'Edit Referral Link';
     btnLabel = 'Submit';
 
     ngOnInit(): void {
@@ -82,6 +85,9 @@ export class ReferralEditComponent {
             // referral_code: [''],
             relationship_manager_id: [''],
             rmfilter: [''],
+            campaign_name: [''],
+            remark: [''],
+            start_date: [''],
         });
 
         if (!this.record?.data){
@@ -116,6 +122,7 @@ export class ReferralEditComponent {
             // this.formGroup.get('rmfilter').patchValue(this.record?.data?.relationship_manager_name);
             // this.formGroup.get('referral_code').patchValue(this.record?.data?.referral_code);
         }
+        this.formGroup.patchValue(this.record.data)
     }
 
 
@@ -130,7 +137,10 @@ export class ReferralEditComponent {
         const json = this.formGroup.getRawValue();
         const newJson = {
             id: this.record?.data?.id ? this.record?.data?.id : "",
-            relationship_manager_id: json.relationship_manager_id ? json.relationship_manager_id : ""
+            relationship_manager_id: json.relationship_manager_id ? json.relationship_manager_id : "",
+            campaign_name: json.campaign_name,
+            remark: json.remark,
+            start_date: DateTime.fromJSDate(new Date(this.formGroup.get('start_date').value)).toFormat('yyyy-MM-dd')
         }
         this.refferralService.create(newJson).subscribe({
             next: () => {

@@ -1,6 +1,5 @@
-import { AlertService } from './../../../../services/alert.service';
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -78,7 +77,7 @@ export class PaymentInfoItemComponent {
     columns = [
         {
             key: 'itemName',
-            name: 'Item',
+            name: 'Service',
             is_date: false,
             date_formate: '',
             is_sortable: false,
@@ -86,7 +85,8 @@ export class PaymentInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true
+            tooltip: false,
+            itemName: true
         },
         {
             key: 'status',
@@ -98,11 +98,11 @@ export class PaymentInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: true,
+            tooltip: false,
             toColor: true
         },
         {
-            key: 'activationDate',
+            key: 'acivation_date',
             name: 'Activation Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -114,7 +114,7 @@ export class PaymentInfoItemComponent {
             tooltip: false,
         },
         {
-            key: 'expirtDate',
+            key: 'expiry_date',
             name: 'Expiry Date',
             is_date: true,
             date_formate: 'dd-MM-yyyy',
@@ -142,6 +142,8 @@ export class PaymentInfoItemComponent {
     public sortColumn: any;
     public sortDirection: any;
 
+    @Input() servicesDetail: any;
+
     module_name = module_name.crmagent
     filter: any = {}
     record: any;
@@ -149,7 +151,8 @@ export class PaymentInfoItemComponent {
     productId: any;
 
     ngOnInit(): void {
-        this.refreshItems();
+        setTimeout(() => {
+        }, 3000);
     }
 
     refreshItems() {
@@ -159,12 +162,13 @@ export class PaymentInfoItemComponent {
             this._sort,
             "",
         );
-        filterReq['agent_id'] = this.agentId ? this.agentId : ""
+        // filterReq['agent_id'] = this.agentId ? this.agentId : ""
         filterReq['Id'] = this.productId ? this.productId : ""
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res?.data[0];
+                this.dataList = res[0];
+                //this.dataList = res?.data[0];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -184,9 +188,12 @@ export class PaymentInfoItemComponent {
             return 'text-orange-600';
         } else if (status == 'Inprocess') {
             return 'text-blue-600';
-        } else if (status == 'Rejected from Store') {
+        } else if (status == 'Rejected from Store' || status == 'Cancel') {
             return 'text-red-600';
-        } else {
+        } else if (status == 'Expired') {
+            return 'text-red-600';
+        }
+        else {
             return '';
         }
     }
@@ -194,11 +201,10 @@ export class PaymentInfoItemComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         private alertService: ToasterService,
-        private matDialog: MatDialog,
         private crmService: CrmService
     ) {
         this.record = data?.data ?? {}
-        this.dataList = this.record?.item;
+        // this.dataList = this.record?.item;
         this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'priorityid';

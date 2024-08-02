@@ -30,8 +30,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { ReplaySubject, switchMap, of, filter, startWith, debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
-import { Security, module_name, crmLeadPermissions } from 'app/security';
-import { GridUtils } from 'app/utils/grid/gridUtils';
+import { module_name } from 'app/security';
 import { DateTime } from 'luxon';
 import { CrmService } from 'app/services/crm.service';
 import { UserService } from 'app/core/user/user.service';
@@ -104,13 +103,15 @@ export class TravelDialCallEntryComponent extends BaseListingComponent implement
     feedbackList: any[] =
         [
             { value: 'Positive', viewValue: 'Positive' },
-            { value: 'Negative', viewValue: 'Negative' }
+            { value: 'Negative', viewValue: 'Negative' },
+            { value: 'No Answer', viewValue: 'No Answer' }
         ];
 
     purposeList: any[] =
         [
             { value: 'Demo', viewValue: 'Demo' },
-            { value: 'Query', viewValue: 'Query' }
+            { value: 'Query', viewValue: 'Query' },
+            { value: 'Follow-up', viewValue: 'Follow-up' }
         ];
 
     constructor(

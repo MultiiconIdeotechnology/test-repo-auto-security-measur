@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -26,6 +27,8 @@ import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { LedgerFilterComponent } from '../ledger-filter/ledger-filter.component';
 import { PerticularInfoComponent } from '../perticular-info/perticular-info.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+
 
 @Component({
   selector: 'app-ledger-list',
@@ -59,22 +62,24 @@ import { PerticularInfoComponent } from '../perticular-info/perticular-info.comp
     MatNativeDateModule,
     MatSelectModule,
     NgxMatSelectSearchModule,
-
+    PrimeNgImportsModule
   ],
 })
 export class LedgerListComponent extends BaseListingComponent {
+  @ViewChild(MatPaginator) public _paginator: MatPaginator;
 
   legerFilter: any;
   total: any;
+  isFilterShow:boolean = false;
   public Filter: any;
 
-  @ViewChild(MatPaginator) public _paginator: MatPaginator;
 
   module_name = module_name.ledger
   columns = [
     { key: 'datetime', name: 'Date',isShow:true, is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: false, class: '', is_sticky: false, indicator: false, },
     { key: 'reference_number', name: 'Reference Number', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
     { key: 'particular', name: 'Particular',isview:true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
+    // { key: 'remark', name: 'Remark',isRemark:false, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
     { key: 'debit', name: 'Debit',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-red-500' },
     { key: 'credit', name: 'Credit',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-green-500' },
     { key: 'balance', name: 'Balance',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false },
@@ -82,9 +87,12 @@ export class LedgerListComponent extends BaseListingComponent {
   ]
   cols = [];
   dataList: any[] = [];
+  tempData: any[] = [];
   Alldata: any[] = [];
+  balance: any
 
-  searchInternalFilter = new FormControl();
+
+  searchInternalFilter = new FormControl('');
   agentName: any;
 
   constructor(
@@ -95,7 +103,7 @@ export class LedgerListComponent extends BaseListingComponent {
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'datetime';
-    this.sortDirection = '';
+    this.sortDirection = 'asc';
     this.Mainmodule = this
 
     this.legerFilter = {
@@ -123,8 +131,8 @@ export class LedgerListComponent extends BaseListingComponent {
         || x.debit?.toString().toLowerCase().includes(text.toLowerCase())
         || x.balance?.toString().toLowerCase().includes(text.toLowerCase())
       );
-      this.paginator.pageIndex = 0;
-      this.setPaginator(filterdData);
+      // this.paginator.pageIndex = 0;
+      // this.setPaginator(filterdData);
     })
 
   }
@@ -156,7 +164,6 @@ export class LedgerListComponent extends BaseListingComponent {
 
 
   getFilter(): any {
-
     const filterReq = {};
     // filterReq["fromDate"] = this.legerFilter?.fromDate;
     // filterReq["toDate"] = this.legerFilter?.toDate;
@@ -164,18 +171,18 @@ export class LedgerListComponent extends BaseListingComponent {
     filterReq['toDate'] = DateTime.fromJSDate(this.legerFilter.toDate).toFormat('yyyy-MM-dd');
     filterReq["agent_for"] = this.legerFilter?.agent_for;
     filterReq["service_for"] = this.legerFilter?.service_for;
-
     filterReq["agent_id"] = this.legerFilter?.agent_id?.id || "";
     filterReq["currencyId"] = this.legerFilter?.currencyId?.id || "";
     return filterReq;
   }
 
-  balance: any
 
-  refreshItems(): void {
+  refreshItems(event?:any): void {
     this.isLoading = true;
-
-    this.ledgerService.getLedger(this.getFilter()).subscribe({
+    let newModel = this.getNewFilterReq(event)
+    let extraModel = this.getFilter();
+    let model = {...newModel, ...extraModel}
+    this.ledgerService.getLedger(model).subscribe({
       next: (res) => {
         this.isLoading = false;
         // res.data[res.data.length - 1].balance = '';
@@ -194,18 +201,35 @@ export class LedgerListComponent extends BaseListingComponent {
           // parseFloat(countCredit). toFixed(2);
           this.dataList[i].countCredit = parseFloat(countCredit).toFixed(2);
           this.dataList[i].countDebit = countDebit.toFixed(2);
+          this.dataList[i].datetime = new Date(this.dataList[i].datetime);  
         }
 
         this.Alldata = res.data;
-        this._paginator.length = res.data.length;
+        this.totalRecords = res.data.length;
 
-        this.setPaginator();
+        // this.setPaginator();
 
       }, error: err => {
         this.alertService.showToast('error', err);
         this.isLoading = false;
       },
     });
+  }
+
+  parseBookingInfo(info: string) {
+    const pnrMatch = info.match(/PNR:([\w/]+)/);
+    const bookingRefMatch = info.match(/Booking Ref:([\w]+)/);
+    const paymentRefMatch = info.match(/Payment Ref:([\w]+)/);
+  
+    const pnr = pnrMatch ? pnrMatch[1] : '';
+    const bookingRef = bookingRefMatch ? bookingRefMatch[1] : '';
+    const paymentRef = paymentRefMatch ? paymentRefMatch[1] : '';
+  
+    // Get the main description (everything before PNR, Booking Ref, or Payment Ref, whichever comes first)
+    const mainDescription = info.split(/(PNR:|Booking Ref:|Payment Ref:)/)[0].trim();
+  
+    return { mainDescription, pnr, bookingRef, paymentRef };
+
   }
 
   getNodataText(): string {
@@ -216,15 +240,15 @@ export class LedgerListComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
-  setPaginator(filterdData?): void {
-    const index = this._paginator?.pageIndex || 0;
-    const size = this._paginator?.pageSize;
-    let data = filterdData ? filterdData : this.Alldata;
-    this.dataList = data.slice(index * size, (index * size) + size);
-  }
+  // setPaginator(filterdData?): void {
+  //   const index = this._paginator?.pageIndex || 0;
+  //   const size = this._paginator?.pageSize;
+  //   let data = filterdData ? filterdData : this.Alldata;
+  //   this.dataList = data.slice(index * size, (index * size) + size);
+  // }
 
   ngOnDestroy(): void {
-    this.masterService.setData(this.key, this)
+    // this.masterService.setData(this.key, this)
   }
 
   exportExcel(): void {
@@ -232,15 +256,12 @@ export class LedgerListComponent extends BaseListingComponent {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    // const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value);
-    // const req = Object.assign(filterReq);
-
-    // req.skip = 0;
-    // req.take = this._paginator.length;
-
-    this.ledgerService.getLedger(this.getFilter()).subscribe(data => {
-      for (var dt of data.data) {
-        dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
+    // this.ledgerService.getLedger(this.getFilter()).subscribe(data => {
+    this.tempData = cloneDeep(this.dataList)
+      for (var dt of this.tempData) {
+        // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
+        dt.datetime = new DatePipe('en-US').transform(dt.datetime, 'dd-MM-yyyy HH:mm');
+        
       }
       Excel.export(
         'Ledger',
@@ -248,12 +269,13 @@ export class LedgerListComponent extends BaseListingComponent {
           { header: 'Date', property: 'datetime' },
           { header: 'Reference Number', property: 'reference_number' },
           { header: 'Particular', property: 'particular' },
+          { header: 'Remark', property: 'remark' },
           { header: 'Credit', property: 'credit' },
           { header: 'Debit', property: 'debit' },
           { header: 'Balance', property: 'balance' },
         ],
-        data.data, "Ledger", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
-    });
+        this.tempData, "Ledger", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }]);
+    // });
   }
 }
 

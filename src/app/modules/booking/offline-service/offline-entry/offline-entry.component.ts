@@ -73,6 +73,7 @@ export class OfflineEntryComponent {
       lead_pax_name: [''],
       lead_pax_email: ['', Validators.email],
       lead_pax_mobile: [''],
+      agent_name:['']
     });
 
     this.formGroup

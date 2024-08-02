@@ -1,19 +1,36 @@
-<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden dark:bg-transparent">
-
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidde dark:bg-transparent">
     <!-- Header -->
     <div
-        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8   -b">
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
         <!-- Title -->
         <div class="text-3xl font-extrabold tracking-tight">{{module_name}}</div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <!-- Search -->
-            <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
-                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
-                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'">
-            </mat-form-field>
 
-            <!-- Add product button -->
+            <!------Global Search ------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (input)="datatable.filterGlobal($event.target.value, 'contains')">
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'" (input)="datatable.filterGlobal($event.target.value, 'contains')" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" ></mat-icon>
+            </div>
+
+            <!------Global Filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!-- Filter -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
@@ -28,571 +45,552 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
-            <button class="ml-4" mat-flat-button [disabled]="loading" (click)="refreshItems()" [color]="'primary'">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-            </button>
         </div>
     </div>
 
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['agent_code','master_agent','service_type','sales_type','agent_pan_no','agent_gst_no','agent_pincode','agent_state','booking_date','travel_date','inquiry_date','invoice_date','invoice_no','destination','pax','booking_ref_no','pnr','gds_pnr','purchase_amount','commission_income','tds_on_commission_income','net_purchase','service_charge','service_charge_tax','sgst','cgst','igst','commission_passedon','tds_on_commission_passedon','sale_price','commission_given','tds_on_commission_given','booking_currency','roe','billing_company','supplier','gst_number_passed_to_supplier','travel_type','ticket_status','booking_type','supplier_invoice_number','payment_mode']" styleClass="p-datatable-gridlines p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="min-w-[150px] max-w-[175px]" pSortableColumn="agent_code" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.agent_code" [ngClass]="{'left-0': !frozenObj?.agent_code}">
+                        Agent Code <p-sortIcon field="agent_code" />
+                        <span class="float-right" (click)="isFrozenColumn('agent_code');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.agent_code" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.agent_code" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
 
+                    <th pSortableColumn="master_agent" pResizableColumn>
+                        Agent<p-sortIcon field="master_agent" />
+                    </th>
 
-    <div class="flex flex-col flex-auto overflow-hidden ">
-        <!-- list -->
-        <div class="overflow-auto flex flex-col">
-            <div class="flex flex-col overflow-auto max-w-full h-full rounded-b-lg"
-               >
-                <table mat-table [dataSource]="dataSource" class="sale-tab" matSort matSortDisableClear
-                    matSortDirection="desc" matSortActive="booking_date" >
-                    <ng-container matColumnDef="action" [sticky]="true">
-                        <th mat-header-cell class="font-bold text-md text-center p-0  max-w-10 min-w-10" *matHeaderCellDef>#</th>
-                        <td mat-cell *matCellDef="let element" class="  max-w-10 min-w-10 dark:bg-gray-900 bg-[#f8fafc]">
-                            <div class="flex items-center justify-center">
-                                <button mat-icon-button [matMenuTriggerFor]="optionMenu" class="sticky left-0">
-                                    <mat-icon> more_vert </mat-icon>
-                                </button>
-                            </div>
-                            <!-- <mat-menu #optionMenu>
-                                <button mat-menu-item (click)="info(element)">
-                                    <mat-icon class="mat-18">info</mat-icon>
-                                    <span style="font-weight: 600">Info</span>
-                                </button>
-                                <mat-divider></mat-divider>
-                            </mat-menu> -->
-                        </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="agent_code">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md truncate   min-w-30 max-w-30" *matHeaderCellDef>
-                            Agent Code
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-30 max-w-30">
-                            <span class=" px-1 flex items-center min-w-20 rounded-md w-fit text-md truncate font-medium">
-                                <span>{{ element.agent_code }} </span>
-                            </span>
-                        </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="agent_gst_no">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md truncate   min-w-40 max-w-40"
-                            *matHeaderCellDef>
-                            Agent GST No.
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-40 max-w-40">
-                            <p class="text-md  font-medium truncate pr-1  " [matTooltip]="element.agent_gst_no">
-                                {{ element.agent_gst_no || ' - ' }}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="service_type" pResizableColumn>
+                        Service Type<p-sortIcon field="service_type" />
+                    </th>
 
-                    <!-- <ng-container matColumnDef="agent">
-                        <th mat-header-cell class="font-bold text-md truncate   min-w-50 max-w-50"
-                            *matHeaderCellDef>
-                            agent
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-50 max-w-50  ">
-                            <p class="text-md  font-medium truncate pr-1  " >
-                                {{ element.agent }}
-                            </p>
-                        </td>
-                    </ng-container> -->
-    
-                    <ng-container matColumnDef="agent_pan_no">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-40 max-w-40" *matHeaderCellDef>
-                            Agent PAN No.
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-40 max-w-40">
-                            <p class="text-md  font-medium pr-1 truncate" [matTooltip]="element.agent_pan_no">
-                                {{ element.agent_pan_no || ' - ' }}
-                            </p>
-                        </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="agent_pincode">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-36 max-w-36" *matHeaderCellDef>
-                            Agent Pincode
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-36 max-w-36">
-                            <p class="text-md  font-medium truncate pr-1" >
-                                {{ element.agent_pincode }}
-                            </p>
-                        </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="agent_state">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-40 max-w-40"
-                            *matHeaderCellDef>
-                            Agent State
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-40 max-w-40">
-                            <p class="text-md truncate font-medium">
-                                {{ element.agent_state }} 
-                            </p>
-                        </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="billing_company">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-44 max-w-44" *matHeaderCellDef>
-                            Billing Company
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-44 max-w-44">
-                            <p class="text-md truncate font-medium" [matTooltip]="element.billing_company">
-                                {{ element.billing_company }}
-                            </p>
-                        </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="booking_currency">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-44 max-w-44" *matHeaderCellDef>
-                            Booking Currency
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-44 max-w-44">
-                            <p class="text-md truncate font-medium">
-                                {{element.booking_currency}}
-                            </p>
-                        </td>
-                    </ng-container>
-    
-                    <ng-container matColumnDef="booking_date">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-32 max-w-32" *matHeaderCellDef>
-                            Booking Date
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{ element.booking_date | date : "dd-MM-yyyy"}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="sales_type" pResizableColumn>
+                        Sales Type<p-sortIcon field="sales_type" />
+                    </th>
 
-                    <ng-container matColumnDef="booking_ref_no">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-50 max-w-50" *matHeaderCellDef>
-                            Booking Reference No.
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-50 max-w-50">
-                            <p class="text-md truncate font-medium" [matTooltip]="element.booking_ref_no">
-                                {{element.booking_ref_no}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="agent_pan_no" pResizableColumn>
+                        Agent PAN No.<p-sortIcon field="agent_pan_no" />
+                    </th>
 
-                    <ng-container matColumnDef="booking_type">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-32 max-w-32" *matHeaderCellDef>
-                            Booking Type
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.booking_type}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="agent_gst_no" pResizableColumn>
+                        Agent GST No.<p-sortIcon field="agent_gst_no" />
+                    </th>
 
-                    <ng-container matColumnDef="cgst">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-22 max-w-22" *matHeaderCellDef>
-                            CGST
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-22 max-w-22">
-                            <p class="text-md truncate font-medium">
-                                {{element.cgst}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="agent_pincode" pResizableColumn>
+                        Agent Pincode<p-sortIcon field="agent_pincode" />
+                    </th>
 
-                    <ng-container matColumnDef="commission_given">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-40 max-w-40" *matHeaderCellDef>
-                            Commission Given
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-40 max-w-40">
-                            <p class="text-md truncate font-medium">
-                                {{element.commission_given}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="agent_state" pResizableColumn>
+                        Agent State<p-sortIcon field="agent_state" />
+                    </th>
 
-                    <ng-container matColumnDef="commission_income">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-48 max-w-48" *matHeaderCellDef>
-                            Commission Income
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-48 max-w-48">
-                            <p class="text-md truncate font-medium">
-                                {{element.commission_income ? element.commission_income.toFixed(2) : ' 0 '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="booking_date" pResizableColumn>
+                        Booking Date<p-sortIcon field="booking_date" />
+                    </th>
 
-                    <ng-container matColumnDef="commission_passedon">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-48 max-w-48" *matHeaderCellDef>
-                            Commission Passed On
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-48 max-w-48">
-                            <p class="text-md truncate font-medium">
-                                {{element.commission_passedon}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="travel_date" pResizableColumn>
+                        Travel Date<p-sortIcon field="travel_date" />
+                    </th>
 
-                    <ng-container matColumnDef="destination">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-32 max-w-32" *matHeaderCellDef>
-                            Destination
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.destination}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="inquiry_date" pResizableColumn>
+                        Inquiry Date<p-sortIcon field="inquiry_date" />
+                    </th>
 
-                    <ng-container matColumnDef="gds_pnr">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-22 max-w-22" *matHeaderCellDef>
-                            GDS PNR
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-22 max-w-22">
-                            <p class="text-md truncate font-medium" >
-                                {{element.gds_pnr || ' - '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="invoice_date" pResizableColumn>
+                        Invoice Date<p-sortIcon field="invoice_date" />
+                    </th>
 
-                    <ng-container matColumnDef="gst_number_passed_to_supplier">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-60 max-w-60" *matHeaderCellDef>
-                            GST Number Passed To Supplier
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-60 max-w-60">
-                            <p class="text-md truncate font-medium">
-                                {{element.gst_number_passed_to_supplier || ' - '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="invoice_no" pResizableColumn>
+                        Invoice No.<p-sortIcon field="invoice_no" />
+                    </th>
 
-                    <ng-container matColumnDef="igst">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-22 max-w-22" *matHeaderCellDef>
-                            IGST
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-22 max-w-22">
-                            <p class="text-md truncate font-medium">
-                                {{element.igst}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="destination" pResizableColumn>
+                        Destination<p-sortIcon field="destination" />
+                    </th>
 
-                    <ng-container matColumnDef="inquiry_date">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-32 max-w-32" *matHeaderCellDef>
-                            Inquiry Date
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{(element.inquiry_date | date:'dd-MM-yyyy') || ' - '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="pax" pResizableColumn class="text-center">
+                        Pax<p-sortIcon field="pax" />
+                    </th>
 
-                    <ng-container matColumnDef="invoice_date">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-32 max-w-32" *matHeaderCellDef>
-                            Invoice Date
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{(element.invoice_date | date:'dd-MM-yyyy') || ' - '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="booking_ref_no" pResizableColumn>
+                        Booking Reference No.<p-sortIcon field="booking_ref_no" />
+                    </th>
 
-                    <ng-container matColumnDef="invoice_no">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-40 max-w-40" *matHeaderCellDef>
-                            Invoice No.
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-40 max-w-40">
-                            <p class="text-md truncate font-medium">
-                                {{element.invoice_no}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="pnr" pResizableColumn>
+                        PNR<p-sortIcon field="pnr" />
+                    </th>
 
-                    <ng-container matColumnDef="master_agent">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-48 max-w-48" *matHeaderCellDef>
-                            Agent
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-48 max-w-48">
-                            <p class="text-md truncate font-medium" [matTooltip]="element.master_agent">
-                                {{element.master_agent}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="gds_pnr" pResizableColumn>
+                        GDS PNR<p-sortIcon field="gds_pnr" />
+                    </th>
 
-                    <ng-container matColumnDef="net_purchase">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-32 max-w-32" *matHeaderCellDef>
-                            Net Purchase
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.net_purchase ? element.net_purchase.toFixed(2) : ' 0 ' }}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="purchase_amount" pResizableColumn class="text-right">
+                        Purchase Amount<p-sortIcon field="purchase_amount" />
+                    </th>
 
-                    <ng-container matColumnDef="pax">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-22 max-w-22" *matHeaderCellDef>
-                            Pax
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-22 max-w-22">
-                            <p class="text-md truncate font-medium">
-                                {{element.pax}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="commission_income" pResizableColumn class="text-right">
+                        Commission Income<p-sortIcon field="commission_income" />
+                    </th>
 
-                    <ng-container matColumnDef="pnr">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-22 max-w-22" *matHeaderCellDef>
-                            PNR
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-22 max-w-22">
-                            <p class="text-md truncate font-medium">
-                                {{element.pnr || ' - '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="tds_on_commission_income" pResizableColumn class="text-right">
+                        TDS On Commission Income<p-sortIcon field="tds_on_commission_income" />
+                    </th>
 
-                    <ng-container matColumnDef="purchase_amount">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-40 max-w-40" *matHeaderCellDef>
-                            Purchase Amount
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-40 max-w-40">
-                            <p class="text-md truncate font-medium">
-                                {{element.purchase_amount ? element.purchase_amount.toFixed(2) : ' 0 '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="net_purchase" pResizableColumn class="text-right">
+                        Net Purchase<p-sortIcon field="net_purchase" />
+                    </th>
 
-                    <ng-container matColumnDef="roe">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-22 max-w-222" *matHeaderCellDef>
-                            ROE
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-22 max-w-22">
-                            <p class="text-md truncate font-medium">
-                                {{element.roe}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="service_charge" pResizableColumn class="text-right">
+                        Service Charge<p-sortIcon field="service_charge" />
+                    </th>
 
-                    <ng-container matColumnDef="sale_price">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-32 max-w-32" *matHeaderCellDef>
-                            Sale Price
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.sale_price}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="service_charge_tax" pResizableColumn class="text-right">
+                        Service Charge Tax<p-sortIcon field="service_charge_tax" />
+                    </th>
 
-                    <ng-container matColumnDef="sales_type">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-32 max-w-32" *matHeaderCellDef>
-                            Sales Type
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.sales_type}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="sgst" pResizableColumn class="text-right">
+                        SGST<p-sortIcon field="sgst" />
+                    </th>
 
-                    <ng-container matColumnDef="service_charge">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-36 max-w-36" *matHeaderCellDef>
-                            Service Charge
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-36 max-w-36">
-                            <p class="text-md truncate font-medium">
-                                {{element.service_charge}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="cgst" pResizableColumn class="text-right">
+                        CGST<p-sortIcon field="cgst" />
+                    </th>
 
-                    <ng-container matColumnDef="service_charge_tax">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-40 max-w-40" *matHeaderCellDef>
-                            Service Charge Tax
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-40 max-w-40">
-                            <p class="text-md truncate font-medium">
-                                {{element.service_charge_tax}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="igst" pResizableColumn class="text-right">
+                        IGST<p-sortIcon field="igst" />
+                    </th>
 
-                    <ng-container matColumnDef="service_type">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-32 max-w-32" *matHeaderCellDef>
-                            Service Type
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.service_type}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="commission_passedon" pResizableColumn class="text-right">
+                        Commission Passed On<p-sortIcon field="commission_passedon" />
+                    </th>
 
-                    <ng-container matColumnDef="sgst">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-22 max-w-22" *matHeaderCellDef>
-                            SGST
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="   min-w-22 max-w-22">
-                            <p class="text-md truncate font-medium">
-                                {{element.sgst}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="tds_on_commission_passedon" pResizableColumn class="text-right">
+                        TDS On Commission Passed On<p-sortIcon field="tds_on_commission_passedon" />
+                    </th>
 
-                    <ng-container matColumnDef="supplier">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-40 max-w-40" *matHeaderCellDef>
-                            Supplier
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-40 max-w-40">
-                            <p class="text-md truncate font-medium">
-                                {{element.supplier}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="sale_price" pResizableColumn class="text-right">
+                        Sale Price<p-sortIcon field="sale_price" />
+                    </th>
 
-                    <ng-container matColumnDef="supplier_invoice_number">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-48 max-w-48" *matHeaderCellDef>
-                            Supplier Invoice No.
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-48 max-w-48">
-                            <p class="text-md truncate font-medium">
-                                {{element.supplier_invoice_number || ' - '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="commission_given" pResizableColumn class="text-right">
+                        Commission Given<p-sortIcon field="commission_given" />
+                    </th>
 
-                    <ng-container matColumnDef="tds_on_commission_given">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-50 max-w-50" *matHeaderCellDef>
-                            Tds On Commission Given
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-50 max-w-50">
-                            <p class="text-md truncate font-medium">
-                                {{element.tds_on_commission_given}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="tds_on_commission_given" pResizableColumn class="text-right">
+                        Tds On Commission Given<p-sortIcon field="tds_on_commission_given" />
+                    </th>
 
-                    <ng-container matColumnDef="tds_on_commission_income">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-56 max-w-56" *matHeaderCellDef>
-                            TDS On Commission Income
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-56 max-w-56">
-                            <p class="text-md truncate font-medium">
-                                {{element.tds_on_commission_income ? element.tds_on_commission_income.toFixed(2) : ' 0 '}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="booking_currency" pResizableColumn>
+                        Booking Currency<p-sortIcon field="booking_currency" />
+                    </th>
 
-                    <ng-container matColumnDef="tds_on_commission_passedon">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate   min-w-60 max-w-60" *matHeaderCellDef>
-                            TDS On Commission Passed On
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-60 max-w-60">
-                            <p class="text-md truncate font-medium">
-                                {{element.tds_on_commission_passedon}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="roe" pResizableColumn class="text-right">
+                        ROE<p-sortIcon field="roe" />
+                    </th>
 
-                    <ng-container matColumnDef="ticket_status">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-32 max-w-32" *matHeaderCellDef>
-                            Ticket Status
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.ticket_status}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="billing_company" pResizableColumn>
+                        Billing Company<p-sortIcon field="billing_company" />
+                    </th>
 
-                    <ng-container matColumnDef="travel_date">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-32 max-w-32" *matHeaderCellDef>
-                            Travel Date
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.travel_date | date: 'dd-MM-yyyy'}}
-                            </p>
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="travel_type">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-32 max-w-32" *matHeaderCellDef>
-                            Travel Type
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.travel_type}}
-                            </p>
-                        </td>
-                    </ng-container>
+                    <th pSortableColumn="supplier" pResizableColumn>
+                        Supplier<p-sortIcon field="supplier" />
+                    </th>
 
-                    <ng-container matColumnDef="payment_mode">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md truncate min-w-32 max-w-32" *matHeaderCellDef>
-                            Payment Mode
+                    <th pSortableColumn="gst_number_passed_to_supplier" pResizableColumn>
+                        GST Number Passed To Supplier<p-sortIcon field="gst_number_passed_to_supplier" />
+                    </th>
+
+                    <th pSortableColumn="travel_type" pResizableColumn>
+                        Travel Type<p-sortIcon field="travel_type" />
+                    </th>
+
+                    <th pSortableColumn="ticket_status" pResizableColumn>
+                        Ticket Status<p-sortIcon field="ticket_status" />
+                    </th>
+
+                    <th pSortableColumn="booking_type" pResizableColumn>
+                        Booking Type<p-sortIcon field="booking_type" />
+                    </th>
+
+                    <th pSortableColumn="supplier_invoice_number" pResizableColumn>
+                        Supplier Invoice No.<p-sortIcon field="supplier_invoice_number" />
+                    </th>
+
+                    <th pSortableColumn="payment_mode" pResizableColumn>
+                        Payment Mode<p-sortIcon field="payment_mode" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+
+                        <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
+                            <p-columnFilter type="text" matchMode="contains" field="agent_code" placeholder="Search by Agent Code" ariaLabel="Filter Agent Code" />
                         </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-32 max-w-32">
-                            <p class="text-md truncate font-medium">
-                                {{element.payment_mode || ' - '}}
-                            </p>
-                        </td>
-                    </ng-container>
-    
-                    <tr class="h-9 min-h-9 sticky top-0  z-10" mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
-                    <tr class="h-9 " mat-row *matRowDef="let row; columns: columns"></tr>
-                </table>
-            </div>
-            
-            <div *ngIf="dataSource.filteredData.length <= 0">
-                <div class="p-8 sm:p-16  text-3xl tracking-tight text-center pt-20">
-                    {{getNodataText()}}
-                </div>
-            </div>
 
-            <mat-paginator class="absolute z-10  w-full bottom-0 border-t dark:bg-gray-900 " #_paginator
-                [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10"  showFirstLastButtons>
-            </mat-paginator>
-        </div>
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="master_agent" placeholder="Search by Agent" ariaLabel="Filter Agent" /> -->
+                            <p-columnFilter class="searchableDropdown" field="master_agent" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                        (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                        <ng-template let-agent pTemplate="item">
+                                            <div class="flex align-items-center gap-1">
+                                                <div [value]="agent.id">
+                                                    <div class="m-0">
+                                                        {{agent.code}} - {{agent.agency_name}}
+                                                        <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
 
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="service_type" placeholder="Search by Service Type" ariaLabel="Filter Service Type" /> -->
+                            <p-columnFilter field="service_type" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="ServicesBy"
+                                        (onChange)="filter($event.value)" placeholder="Select Service" appendTo="body"
+                                        [showClear]="true">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option.value}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="sales_type" placeholder="Search by Sales Type" ariaLabel="Filter Sales Type" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="agent_pan_no" placeholder="Search by Agent PAN No." ariaLabel="Filter Agent PAN No." />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="agent_gst_no" placeholder="Search by Agent GST No." ariaLabel="Filter Agent GST No." />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="agent_pincode" placeholder="Search by Agent Pincode" ariaLabel="Filter Agent Pincode" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="agent_state" placeholder="Search by Agent State" ariaLabel="Filter Agent State" />
+                        </th>
+
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="booking_date" placeholder="Search by Booking Date" ariaLabel="Filter Booking Date" /> -->
+                            <p-columnFilter field="booking_date" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                        [ngModel]="value" placeholder="Search by Return Date Time">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
+
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="travel_date" placeholder="Search by Travel Date" ariaLabel="Filter Travel Date" /> -->
+                            <p-columnFilter field="travel_date" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                        [ngModel]="value" placeholder="Search by Return Date Time">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
+
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="inquiry_date" placeholder="Search by Inquiry Date" ariaLabel="Filter Inquiry Date" /> -->
+                            <p-columnFilter field="inquiry_date" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                        [ngModel]="value" placeholder="Search by Return Date Time">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
+
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="invoice_date" placeholder="Search by Invoice Date" ariaLabel="Filter Invoice Date" /> -->
+                            <p-columnFilter field="invoice_date" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                        [ngModel]="value" placeholder="Search by Return Date Time">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="invoice_no" placeholder="Search by Invoice No." ariaLabel="Filter Invoice No." />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="destination" placeholder="Search by Destination" ariaLabel="Filter Destination" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="booking_ref_no" placeholder="Search by Booking Reference No." ariaLabel="Filter Booking Reference No." />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR" ariaLabel="Filter PNR" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR" ariaLabel="Filter GDS PNR" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="purchase_amount" placeholder="Search by Purchase Amount" ariaLabel="Filter Purchase Amount" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="commission_income" placeholder="Search by Commission Income" ariaLabel="Filter Commission Income" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="tds_on_commission_income" placeholder="Search by TDS On Commission Income" ariaLabel="Filter TDS On Commission Income" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="net_purchase" placeholder="Search by Net Purchase" ariaLabel="Filter Net Purchase" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="service_charge" placeholder="Search by Service Charge" ariaLabel="Filter Service Charge" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="service_charge_tax" placeholder="Search by Service Charge Tax" ariaLabel="Filter Service Charge Tax" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="sgst" placeholder="Search by SGST" ariaLabel="Filter SGST" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="cgst" placeholder="Search by CGST" ariaLabel="Filter CGST" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="igst" placeholder="Search by IGST" ariaLabel="Filter IGST" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="commission_passedon" placeholder="Search by Commission Passed On" ariaLabel="Filter Commission Passed On" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="tds_on_commission_passedon" placeholder="Search by TDS On Commission Passed On" ariaLabel="Filter TDS On Commission Passed On" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="sale_price" placeholder="Search by Sale Price" ariaLabel="Filter Sale Price" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="commission_given" placeholder="Search by Commission Given" ariaLabel="Filter Commission Given" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="tds_on_commission_given" placeholder="Search by Tds On Commission Given" ariaLabel="Filter Tds On Commission Given" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="booking_currency" placeholder="Search by Booking Currency" ariaLabel="Filter Booking Currency" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="numeric" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
+                        </th>
+
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="billing_company" placeholder="Search by Billing Company" ariaLabel="Filter Billing Company" /> -->
+                            <p-columnFilter class="searchableDropdown" field="billing_company" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
+                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
+                                        (onChange)="filter($event.value?.company_name)"
+                                        [showClear]="true" appendTo="body" placeholder="Select Company">
+                                        <ng-template let-company pTemplate="item">
+                                                <div> {{company.company_name}}</div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
+
+                        <th>
+                            <!-- <p-columnFilter type="text" matchMode="contains" field="supplier" placeholder="Search by Supplier" ariaLabel="Filter Supplier" /> -->
+                            <p-columnFilter class="searchableDropdown" field="supplier" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
+                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedSupplier" (onChange)="filter($event.value?.company_name)"
+                                        [showClear]="true" appendTo="body" placeholder="Select Supplier">
+                                        <ng-template let-supplier pTemplate="item">
+                                                <div>
+                                                {{supplier.company_name}}
+                                                </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="gst_number_passed_to_supplier" placeholder="Search by GST Number Passed To Supplier" ariaLabel="Filter GST Number Passed To Supplier" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="travel_type" placeholder="Search by Travel Type" ariaLabel="Filter Travel Type" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="ticket_status" placeholder="Search by Ticket Status" ariaLabel="Filter Ticket Status" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="booking_type" placeholder="Search by Booking Type" ariaLabel="Filter Booking Type" />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="supplier_invoice_number" placeholder="Search by Supplier Invoice No." ariaLabel="Filter Supplier Invoice No." />
+                        </th>
+
+                        <th>
+                            <p-columnFilter type="text" matchMode="contains" field="payment_mode" placeholder="Search by Payment Mode" ariaLabel="Filter Payment Mode" />
+                        </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td class="min-w-[150px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
+                        <span> {{element.agent_code || "-"}} </span>
+                    </td>
+
+                    <td>{{element.master_agent || '-'}}</td>
+
+                    <td>{{element.service_type || '-'}}</td>
+
+                    <td>{{element.sales_type || '-'}}</td>
+
+                    <td>{{element.agent_pan_no || '-'}}</td>
+
+                    <td>{{element.agent_gst_no || '-'}}</td>
+
+                    <td>{{element.agent_pincode || '-'}}</td>
+
+                    <td>{{element.agent_state || '-'}}</td>
+
+                    <td>{{(element.booking_date | date: 'dd-MM-yyyy') || '-'}}</td>
+
+                    <td>{{(element.travel_date | date: 'dd-MM-yyyy') || '-'}}</td>
+
+                    <td>{{(element.inquiry_date | date: 'dd-MM-yyyy') || '-'}}</td>
+
+                    <td>{{(element.invoice_date | date: 'dd-MM-yyyy') || '-'}}</td>
+
+                    <td>{{element.invoice_no || '-'}}</td>
+
+                    <td>{{element.destination || '-'}}</td>
+
+                    <td class="text-center">{{element.pax || '-'}}</td>
+
+                    <td>{{element.booking_ref_no || '-'}}</td>
+
+                    <td>{{element.pnr || '-'}}</td>
+
+                    <td>{{element.gds_pnr || '-'}}</td>
+
+                    <td class="text-right">{{element.purchase_amount ? element.purchase_amount.toFixed(2) : 0}}</td>
+
+                    <td class="text-right">{{element.commission_income ? element.commission_income.toFixed(2) : 0 }}</td>
+
+                    <td class="text-right">{{element.tds_on_commission_income ? element.tds_on_commission_income.toFixed(2) : 0 }}</td>
+
+                    <td class="text-right">{{element.net_purchase ? element.net_purchase.toFixed(2) : 0 }}</td>
+
+                    <td class="text-right">{{element.service_charge ? element.service_charge.toFixed(2) : 0 }}</td>
+
+                    <td class="text-right">{{element.service_charge_tax ? element.service_charge_tax.toFixed(2) : 0 }}</td>
+
+                    <td class="text-right">{{element.sgst ? element.sgst.toFixed(2): 0 }}</td>
+
+                    <td class="text-right">{{element.cgst ? element.cgst.toFixed(2): 0 }}</td>
+
+                    <td class="text-right">{{element.igst ? element.igst.toFixed(2): 0 }}</td>
+
+                    <td class="text-right">{{element.commission_passedon ? element.commission_passedon.toFixed(2): 0 }}</td>
+
+                    <td class="text-right">{{element.tds_on_commission_passedon ? element.tds_on_commission_passedon.toFixed(2): 0 }}</td>
+
+                    <td class="text-right">{{element.sale_price ? element.sale_price.toFixed(2): 0 }}</td>
+
+                    <td class="text-right">{{element.commission_given ? element.commission_given.toFixed(2): 0 }}</td>
+
+                    <td class="text-right">{{element.tds_on_commission_given ? element.tds_on_commission_given.toFixed(2): 0 }}</td>
+
+                    <td>{{element.booking_currency || '-'}}</td>
+
+                    <td class="text-right">{{element.roe ? element.roe.toFixed(2) : 0 }}</td>
+
+                    <td>{{element.billing_company || '-'}}</td>
+
+                    <td>{{element.supplier || '-'}}</td>
+
+                    <td>{{element.gst_number_passed_to_supplier || '-'}}</td>
+
+                    <td>{{element.travel_type || '-'}}</td>
+
+                    <!-- <td>{{element.ticket_status || '-'}}</td> -->
+
+                    <td>
+                        <span [ngClass]="getStatusColor(element.ticket_status)">
+                            {{element.ticket_status || "-"}}
+                        </span>
+                    </td>
+
+                    <td>{{element.booking_type || '-'}}</td>
+
+                    <td>{{element.supplier_invoice_number || '-'}}</td>
+
+                    <td>{{element.payment_mode || '-'}}</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="43" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
-
 </div>
