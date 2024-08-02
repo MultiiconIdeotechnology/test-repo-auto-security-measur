@@ -205,6 +205,9 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
             { header: 'Amount', property: 'Amount' }
         ];
 
+        if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
+            req.relationmanagerId = this.user.id
+        }
         this.salesProductsService.getProductReport(req).subscribe(data => {
             let productData = this.transformData(data.data);
 
