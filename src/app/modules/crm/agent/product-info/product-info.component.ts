@@ -1,11 +1,11 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,7 +29,7 @@ import { ReceiptsInfoItemComponent } from '../receipts/receipts-info-installment
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
 import { ReceiptRightComponent } from "../receipt-right/receipt-right.component";
 import { PaymentInfoWLSetttingLinkComponent } from '../wl-settings-link/payment-info-wl-settings-link.component';
@@ -75,7 +75,7 @@ import { PaymentInfoWLSetttingLinkComponent } from '../wl-settings-link/payment-
 ]
 })
 export class AgentProductInfoComponent {
-    dataList = [];
+    dataList: any = [];
     itemdataList = [];
     searchInputControl = new FormControl('');
     @ViewChild('tabGroup') tabGroup;
@@ -252,6 +252,12 @@ export class AgentProductInfoComponent {
             case 'WL-Setting Links':
                 this.tab = 'wlsettinglinks';
                 break;
+        }
+    }
+
+    downloadfile(data: any) {
+        if(data){
+            window.open(data, '_blank')
         }
     }
 
