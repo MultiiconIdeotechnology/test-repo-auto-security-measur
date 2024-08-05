@@ -84,13 +84,13 @@
                     <th pSortableColumn="rm" pResizableColumn>
                         RM <p-sortIcon field="rm" />
                     </th>
+                    <th pSortableColumn="Amount" pResizableColumn class="text-right">
+                        Amount <p-sortIcon field="Amount" />
+                    </th>
                     <th pSortableColumn="Due_amount" pResizableColumn class="text-right">
                         Due Amount <p-sortIcon field="Due_amount" />
                     </th>
 
-                    <th pSortableColumn="Amount" pResizableColumn class="text-right">
-                        Amount <p-sortIcon field="Amount" />
-                    </th>
 
                     <ng-container *ngFor="let item of dataList[0]?.itemCodes">
                         <th (mouseover)="getToolTip(item.key)" [matTooltip]="selectedToolTip">
@@ -150,12 +150,12 @@
                         </p-columnFilter>
                     </th>
                     <th alignFrozen="left">
-                        <p-columnFilter type="numeric" field="Due_amount" placeholder="Search by Due Amount"
-                            ariaLabel="Filter Due Amount" />
-                    </th>
-                    <th alignFrozen="left">
                         <p-columnFilter type="numeric" field="Amount" placeholder="Search by Amount"
                             ariaLabel="Filter Amount" />
+                    </th>
+                    <th alignFrozen="left">
+                        <p-columnFilter type="numeric" field="Due_amount" placeholder="Search by Due Amount"
+                            ariaLabel="Filter Due Amount" />
                     </th>
                     <ng-container *ngFor="let item of dataList[0]?.itemCodes">
                         <th [pSortableColumn]="item.key">
@@ -171,8 +171,8 @@
                     </td>
                     <td>{{element.agency_name || "-"}}</td>
                     <td>{{element.rm || "-"}}</td>
-                    <td class="text-right">{{element.Due_amount ? element.Due_amount.toFixed(2) : '0'}}</td>
                     <td class="text-right">{{element.Amount ? element.Amount.toFixed(2) : '0'}}</td>
+                    <td class="text-right">{{element.Due_amount ? element.Due_amount.toFixed(2) : '0'}}</td>
                     <!-- <td *ngFor="let item of element.itemCodes">
                         {{(item.value | date:'dd-MM-yyyy') || '-'}}
                     </td> -->
