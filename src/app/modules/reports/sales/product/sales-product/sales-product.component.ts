@@ -12,12 +12,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { messages, module_name, Security, saleProductPermissions } from 'app/security';
 import { MatDialog } from '@angular/material/dialog';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { SalesProductsService } from 'app/services/slaes-products.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -80,8 +79,6 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     isFilterShow: boolean = false;
 
     constructor(
-        private confirmService: FuseConfirmationService,
-        private router: Router,
         private salesProductsService: SalesProductsService,
         private matDialog: MatDialog,
         private _userService: UserService,
@@ -201,8 +198,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
             { header: 'Agent Code', property: 'agent_code' },
             { header: 'Agency Name', property: 'agency_name' },
             { header: 'RM', property: 'rm' },
-            { header: 'Due Amount', property: 'Due_amount' },
-            { header: 'Amount', property: 'Amount' }
+            { header: 'Amount', property: 'Amount' },
+            { header: 'Due Amount', property: 'Due_amount' }
         ];
 
         if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
@@ -217,9 +214,9 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
 
             Excel.export(
                 'Products',
-                 exportHeaderArr, 
-                 productData, 
-                 "Products", 
+                 exportHeaderArr,
+                 productData,
+                 "Products",
                  [{ s: { r: 0, c: 0 }, e: { r: 0, c: 20 } }]
             );
         });
@@ -230,7 +227,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
             let newAgent = { ...agent };
             agent.itemCodes.forEach(item => {
                 if (item.value) {
-                    newAgent[item.key] = DateTime.fromISO(item.value).toFormat('dd-MM-yyyy HH:mm:ss');
+                    newAgent[item.key] = DateTime.fromISO(item.value).toFormat('dd-MM-yyyy');
                 } else {
                     newAgent[item.key] = item.value || " "
                 }

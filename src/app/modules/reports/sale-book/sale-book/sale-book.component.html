@@ -508,13 +508,15 @@
 
                     <td>{{element.agent_state || '-'}}</td>
 
-                    <td>{{(element.booking_date | date: 'dd-MM-yyyy') || '-'}}</td>
+                    <!-- <td>{{(element?.booking_date | date: 'dd-MM-yyyy') || '-'}}</td> -->
+                    <td>{{element.booking_date ? (element.booking_date | date: 'dd-MM-yyyy') : '-'}}</td>
 
-                    <td>{{(element.travel_date | date: 'dd-MM-yyyy') || '-'}}</td>
 
-                    <td>{{(element.inquiry_date | date: 'dd-MM-yyyy') || '-'}}</td>
+                    <td>{{element.travel_date ? (element.travel_date | date: 'dd-MM-yyyy') : '-'}}</td>
 
-                    <td>{{(element.invoice_date | date: 'dd-MM-yyyy') || '-'}}</td>
+                    <td>{{(element?.inquiry_date | date: 'dd-MM-yyyy') || '-'}}</td>
+
+                    <td>{{(element?.invoice_date | date: 'dd-MM-yyyy') || '-'}}</td>
 
                     <td>{{element.invoice_no || '-'}}</td>
 

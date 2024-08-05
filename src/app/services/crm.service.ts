@@ -84,6 +84,10 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'Dashboard/AgentDashboard/agentBasicDetails', { id: id });
     }
 
+    updateInstallment(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/Updateinstallmentdate', model);
+    }
+
     createReceipt(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createReceiptMaster', model);
     }

@@ -4,7 +4,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,10 +23,12 @@ import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
 import { module_name } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
+import { EntityService } from 'app/services/entity.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
+import { InstallmentRightComponent } from '../installment-right/installment-right.component';
 
 @Component({
     selector: 'app-installments-info-items',
@@ -34,9 +36,8 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 170px 130px 150px 150px 120px;
-        }
-    `,
+            grid-template-columns: 40px 170px 130px 150px 150px 120px;
+        }`,
     ],
     standalone: true,
     imports: [
@@ -68,6 +69,7 @@ import { Subject } from 'rxjs';
         CommonModule,
         MatTabsModule,
         MatProgressBarModule,
+        InstallmentRightComponent
     ]
 })
 export class InstallmentsInfoItemComponent {
@@ -177,7 +179,8 @@ export class InstallmentsInfoItemComponent {
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;
-                this.dataList = res[0];
+                // this.dataList = res[0];
+                this.installmentDetail = res[0];
                 //this.dataList = res?.data[0];
             },
             error: (err) => {
@@ -198,7 +201,8 @@ export class InstallmentsInfoItemComponent {
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         private alertService: ToasterService,
-        private crmService: CrmService
+        private crmService: CrmService,
+        private entityService: EntityService
     ) {
         this.record = data?.data ?? {}
         this.dataList = this.record?.installment;
@@ -210,6 +214,14 @@ export class InstallmentsInfoItemComponent {
         this.agentId = this.record?.agentid;
         // this.productId = this.record?.product_id;
         this.productId = this.record?.id;
+
+        this.entityService.onrefreshInstallmentCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if(item){
+                    this.refreshItems();
+                }
+            }
+        })
     }
 
     getNodataText(): string {
@@ -218,5 +230,9 @@ export class InstallmentsInfoItemComponent {
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
+    }
+
+    editAction(record): void {
+        this.entityService.raiserInstallmentCall({data: record, edit: true});
     }
 }

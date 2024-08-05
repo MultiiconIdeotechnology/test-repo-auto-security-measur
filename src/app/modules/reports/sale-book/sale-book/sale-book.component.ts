@@ -31,6 +31,7 @@ import { AgentService } from 'app/services/agent.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { cloneDeep } from 'lodash';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-sale-book',
@@ -64,6 +65,8 @@ import { cloneDeep } from 'lodash';
   ],
 })
 export class SaleBookComponent extends BaseListingComponent implements OnDestroy {
+  @ViewChild('datatable') public primengTable: Table;
+
   columns = ['agent_code',
     'master_agent',
     'service_type',
@@ -257,6 +260,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
            this.dataList[i]['inquiry_date'] = new Date(this.dataList[i]['inquiry_date']);
            this.dataList[i]['invoice_date'] = new Date(this.dataList[i]['invoice_date']);
            this.dataList[i]['travel_date'] = new Date(this.dataList[i]['travel_date']);
+           
            this.dataList[i]['booking_date'] = new Date(this.dataList[i]['booking_date']);
         }
         this.totalRecords = res?.total;
@@ -309,7 +313,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     //   for (var dt of data?.data) {
     //     // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
     //   }
-    this.tempData = cloneDeep(this.dataList);
+    this.tempData = this.primengTable['_value'] || [];
     for (var dt of this.tempData) {
       // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm');
       dt.inquiry_date = new DatePipe('en-US').transform(dt.inquiry_date, 'dd-MM-yyyy HH:mm');

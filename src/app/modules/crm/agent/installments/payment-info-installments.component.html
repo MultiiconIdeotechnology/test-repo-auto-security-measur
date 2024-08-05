@@ -3,8 +3,11 @@
         class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-h-[350px] lg:max-h-[350px] xl:min-h-[350px] xl:max-h-[350px]">
         <ng-container>
             <div class="grid ">
-                <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 pl-5 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
+                <div class="tbl-grid gridwidth z-10 sticky top-0 grid py-2 pl-0 shadow text-md font-semibold text-secondary dark:bg-gray-700 bg-white border-b"
                     matSort matSortDisableClear matSortActive="priorityid" matSortDirection="desc">
+                    <div style="text-align: center" class="sticky left-0 z-99 dark:bg-gray-700 bg-white">
+                        #
+                    </div>
                     <ng-container *ngFor="let col of columns">
                         <div *ngIf="col.is_sortable" [mat-sort-header]="col.key" [class]="'' + col.class"
                             [ngClass]="{ 'justify-center': col.align === 'left' }"
@@ -19,13 +22,20 @@
                 <!-- Rows -->
                 <ng-container *ngIf="installmentDetail?.installment?.length > 0; else noGridItems">
                     <ng-container *ngFor="let ListItem of installmentDetail?.installment; let i = index">
-                        <div class="tbl-grid gridwidth grid items-center px-5 py-2 border-b pl-5 cursor-pointer">
-                            <!-- <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                        <div class="tbl-grid gridwidth grid items-center px-0 py-0 border-b cursor-pointer">
+                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
                                 class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
                                 <mat-icon> more_vert </mat-icon>
-                            </button> -->
+                            </button>
+                            <!-- *ngIf="ListItem.receipt_Status !== 'Confirmed'" -->
+                            <mat-menu #optionMenu>
+                                <button mat-menu-item (click)="editAction(ListItem)">
+                                    <mat-icon class="mat-18">edit</mat-icon>
+                                    <span style="font-weight: 600">Modify</span>
+                                </button>
+                            </mat-menu>
                             <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center space-x-2 truncate' + col.class" [ngClass]="ListItem.installment_date ? 'pl-0': col.align === 'left' ? 'justify-center' : 'pl-5'">
+                                <div [class]="'flex flex-row items-center space-x-2 truncate' + col.class" [ngClass]="ListItem.installment_date ? 'pl-0': col.align === 'left' ? 'justify-center' : 'pl-0'">
                                     <span *ngIf="col.callAction && col.key === 'dueammount'">
                                         <span *ngIf="col.name == 'Due Amount'">{{ListItem[col.key] ? ListItem[col.key] : 0 }}</span>
                                     </span>
@@ -62,3 +72,4 @@
     [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
 </mat-paginator> -->
 </div>
+<installment-right></installment-right>
