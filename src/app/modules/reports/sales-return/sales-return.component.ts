@@ -112,7 +112,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     tempData: any[] = [];
     isFilterShow: boolean = false;
     dataList = [];
-    sortColumn: any = 'agent';
+    sortColumn: any = 'complete_date_time';
     selectedAgent!:string;
     selectedEmployee!:string;
 

@@ -56,8 +56,9 @@
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['agent','supplier', 'complete_date_time', 'amendment_ref_no', 'amendment_type','air_ref_no','pan_numner', 'gst_numner',
-'sup_service_charge', 'bonton_service_charge','refunded_amount','service_charge','tax','net_refund','commission','tds','refundable_price','commission_2','tds_2',
-        'net_commission']" styleClass="p-datatable-gridlines p-datatable-sm">
+            'sup_service_charge', 'bonton_service_charge','refunded_amount','service_charge','tax','net_refund','commission','tds','refundable_price',
+            'commission_2','tds_2','net_commission']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
             <ng-template pTemplate="header">
                 <tr>
                     <th class="min-w-[150px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="agent" pResizableColumn alignFrozen="left"
