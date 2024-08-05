@@ -137,7 +137,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   module_name = module_name.SaleBook
   tempData: any[] = [];
   dataList = [];
-  sortColumn: any = 'agent_code';
+  sortColumn: any = 'booking_date';
 
 
   dateBy = [{ value: 'BookingDate', label: 'Booking Date' }, { value: 'InvoiceDate', label: 'Invoice Date' }, { value: 'TravelDate', label: 'Travel Date' }];
