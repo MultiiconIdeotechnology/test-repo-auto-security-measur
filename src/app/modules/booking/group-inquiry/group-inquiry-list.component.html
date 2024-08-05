@@ -90,8 +90,9 @@
                     <th pSortableColumn="trip_type" pResizableColumn>
                         Trip Type <p-sortIcon field="trip_type" />
                     </th>
-                    <th pSortableColumn="pax" pResizableColumn>
-                        Pax <p-sortIcon field="pax" />
+                    <th pResizableColumn>
+                        Pax 
+                        <!-- <p-sortIcon field="pax" /> -->
                     </th>
                 </tr>
 
@@ -104,7 +105,7 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent"
                             ariaLabel="Filter Agent" /> -->
-                            <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals" [showMenu]="false">
+                            <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList" optionLabel="agent_info"
                                         [filter]="true" filterBy="agent_info" (onFilter)="getAgent($event?.filter)"
@@ -188,7 +189,7 @@
                             ariaLabel="Filter Trip Type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" />
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" /> -->
                     </th>
                 </tr>
             </ng-template>

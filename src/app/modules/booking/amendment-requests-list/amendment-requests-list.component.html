@@ -164,7 +164,7 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList"

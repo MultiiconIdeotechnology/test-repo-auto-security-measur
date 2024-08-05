@@ -171,7 +171,7 @@
                     </th>
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="agent" placeholder="Search by Agent" ariaLabel="Filter Agent" /> -->
-                        <p-columnFilter class="searchableDropdown" field="agent" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown"
                                     [options]="agentList"

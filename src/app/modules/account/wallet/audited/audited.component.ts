@@ -169,6 +169,10 @@ export class AuditedComponent extends BaseListingComponent {
   getAgentList(value: string) {
     this.agentService.getAgentCombo(value).subscribe((data) => {
       this.agentList = data;
+
+      for(let i in this.agentList){
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      }
     })
 }
 
