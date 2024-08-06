@@ -59,7 +59,7 @@
                             </div>
                             <div class="mt-2" *ngIf="formGroup.get('proofAttachment')"></div>
                             <!-- <span class="flex items-center">{{paymentAttachmentSelectedFile?.name || ''}}</span> -->
-                            <div class="w-full" (click)="fileInput1.click()">
+                            <div class="w-full" (click)="fileInput1.click()" *ngIf="paymentAttachmentFlag">
                                 <mat-label class="text-base font-medium ">Payment
                                     Attachment</mat-label>
                                 <div

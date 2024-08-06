@@ -88,6 +88,7 @@ export class BasicDetailsComponent {
     'document_proof',
     'bank_name',
     'account_number',
+    'account_holder_name',
     'ifsc_code',
     'account_currency_code',
     'account_type',

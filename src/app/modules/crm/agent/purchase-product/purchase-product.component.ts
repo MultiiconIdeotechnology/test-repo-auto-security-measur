@@ -93,6 +93,14 @@ export class PurchaseProductComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this.agentId = this.record?.agentid;
+
+        this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if(item){
+                    this.refreshItems();
+                }
+            }
+        });
     }
 
     columns = [
@@ -349,11 +357,6 @@ export class PurchaseProductComponent {
         //         }
         //     });
         this.entityService.raiseproductPurchaseCall({ data: this.record, addFlag: true })
-        this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-            next: (item) => {
-                this.refreshItems();
-            }
-        })
     }
 
     deleteProduct(record) {
@@ -448,11 +451,6 @@ export class PurchaseProductComponent {
         //     });
 
         this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
-        this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-            next: (item) => {
-                this.refreshItems();
-            }
-        });
     }
 
     paymentProduct() {
