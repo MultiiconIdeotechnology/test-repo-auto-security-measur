@@ -110,7 +110,7 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent Name"
                             ariaLabel="Filter Agent Name" /> -->
-                        <p-columnFilter class="searchableDropdown" field="agent_id" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="dec_agent_id" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
@@ -138,12 +138,12 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="sales_person" placeholder="Search by RM"
                             ariaLabel="Filter RM" /> -->
-                        <p-columnFilter class="searchableDropdown" field="sales_person" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="sales_person_flitres" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList"
                                     [(ngModel)]="selectedEmployee" optionLabel="employee_name" [filter]="true"
                                     filterBy="employee_name" (onFilter)="getRelationManagerList($event?.filter)"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                    (onChange)="filter($event.value?.employee_name)" [showClear]="true" appendTo="body"
                                     placeholder="Select a RM">
                                     <ng-template let-employee pTemplate="item">
                                         <div class="flex align-items-center gap-2">

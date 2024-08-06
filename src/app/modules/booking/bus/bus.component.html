@@ -231,19 +231,17 @@
                             ariaLabel="Filter Purchase Price" />
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="sourceCity" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="from_id_filters" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="fromcityList" optionLabel="display_name"
                                     [filter]="true" filterBy="display_name" (onFilter)="getFromCity($event?.filter)"
-                                    (onChange)="filter($event.value?.display_name)" [(ngModel)]="selectedFromCity" [showClear]="true" appendTo="body"
+                                    (onChange)="filter($event.value?.id)" [(ngModel)]="selectedFromCity" [showClear]="true" appendTo="body"
                                     placeholder="Select From">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
                                                 <div class="m-0">
                                                     {{agent.display_name}}
                                                 </div>
-                                            </div>
                                         </div>
                                     </ng-template>
                                 </p-dropdown>
@@ -251,11 +249,11 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="destination" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="to_id_filters" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="tocityList" optionLabel="display_name"
                                     [filter]="true" filterBy="display_name" [(ngModel)]="selectedToCity" (onFilter)="getToCity($event?.filter)"
-                                    (onChange)="filter($event.value?.display_name)" [showClear]="true" appendTo="body"
+                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
                                     placeholder="Select To">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
