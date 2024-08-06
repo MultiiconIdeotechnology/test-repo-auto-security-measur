@@ -61,7 +61,7 @@ import { Linq } from 'app/utils/linq';
     ],
 })
 export class AmendmentRequestsListComponent
-    extends BaseListingComponent  {
+    extends BaseListingComponent {
     isFilterShow: boolean = false;
     module_name = module_name.amendmentRequests;
     dataList = [];
@@ -133,9 +133,7 @@ export class AmendmentRequestsListComponent
 
         this.entityService.onraiserefreshUpdateChargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                console.log("item", item);
-                if(item) {
-                    // this.alertService.showToast('success', "Charge has been Updated!", "top-right", true);
+                if (item) {
                     this.refreshItems();
                 }
             }
@@ -188,7 +186,7 @@ export class AmendmentRequestsListComponent
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
             }
         });
@@ -365,6 +363,10 @@ export class AmendmentRequestsListComponent
 
     // Confirmation Action
     confirmation(data: any): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
         this.confirmationService.open({
             title: "Confirm Amendment",
             message: 'Are you sure to confirm ' + data.reference_no + ' amendment?'

@@ -12,8 +12,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -284,33 +286,34 @@
                                 <span style="font-weight: 600">Update Charge</span>
                             </button>
 
-                            <mat-divider
-                                *ngIf="((element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || 
+                            <!-- ((element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || 
                                     element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed' || 
-                                    (element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received')) || isMenuOpen"></mat-divider>
-                          
-                                    <button mat-menu-item (click)="inprocess(element)"
-                                *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || isMenuOpen">
+                                    (element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received')) ||  -->
+                            <mat-divider *ngIf="isMenuOpen"></mat-divider>
+
+                            <!-- (element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') ||  -->
+                            <button mat-menu-item (click)="inprocess(element)" *ngIf="isMenuOpen">
                                 <mat-icon class="mat-18">send</mat-icon>
                                 <span style="font-weight: 600">Confirmation Sent to Supplier</span>
                             </button>
 
-                            <button mat-menu-item (click)="refundInitiate(element)" *ngIf="(element.amendment_status.toLowerCase() == 'confirmation sent to supplier' && 
+                            <!-- (element.amendment_status.toLowerCase() == 'confirmation sent to supplier' && 
                                 (element.amendment_type.toLowerCase() != 'reissue quotation' && element.amendment_type.toLowerCase() != 'correction quotation' &&
                                 element.amendment_type.toLowerCase() != 'wheel chair request' && element.amendment_type.toLowerCase() != 'meal quotation(ssr)'
-                                && element.amendment_type.toLowerCase() != 'baggage quotation(ssr)' )) || isMenuOpen">
+                                && element.amendment_type.toLowerCase() != 'baggage quotation(ssr)' )) ||  -->
+                            <button mat-menu-item (click)="refundInitiate(element)" *ngIf="isMenuOpen">
                                 <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
                                 <span style="font-weight: 600">Refund Initiate</span>
                             </button>
 
-                            <button mat-menu-item (click)="complete(element)"
-                                *ngIf="(element.amendment_status.toLowerCase() == 'refund completed') || isMenuOpen">
+                            <!-- (element.amendment_status.toLowerCase() == 'refund completed') ||  -->
+                            <button mat-menu-item (click)="complete(element)" *ngIf="isMenuOpen">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Complete</span>
                             </button>
 
-                            <button mat-menu-item (click)="confirmation(element)"
-                                *ngIf="(element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received') || isMenuOpen">
+                            <!-- (element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received') ||  -->
+                            <button mat-menu-item (click)="confirmation(element)" *ngIf="isMenuOpen">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Confirm</span>
                             </button>
