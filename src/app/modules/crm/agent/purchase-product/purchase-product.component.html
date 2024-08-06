@@ -46,13 +46,13 @@
                                     <mat-icon class="mat-18">info</mat-icon>
                                     <span style="font-weight: 600">Info</span>
                                 </button>
-                                <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.receipt_status !== 'Confirmed'">
-                                    <mat-icon class="mat-18">delete</mat-icon>
-                                    <span style="font-weight: 600">Delete</span>
-                                </button>
                                 <button mat-menu-item (click)="editProduct(ListItem)">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Modify</span>
+                                </button>
+                                <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.receipt_status !== 'Confirmed'">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600">Delete</span>
                                 </button>
                                 <button mat-menu-item (click)="cancelProduct(ListItem)" *ngIf="ListItem.receipt_status == 'Confirmed'">
                                     <mat-icon class="mat-18">close</mat-icon>
