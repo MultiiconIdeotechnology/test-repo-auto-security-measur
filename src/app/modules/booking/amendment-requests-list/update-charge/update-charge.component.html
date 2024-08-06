@@ -31,6 +31,12 @@
                     </div>
                     <span class="text-base truncate">{{amendmentData?.agent_name || "--" }}</span>
                 </div>
+                <div class="flex flex-col col-span-2 mb-1">
+                    <div class="flex flex-row space-x-2">
+                        <span class="text-md font-semibold text-secondary">Flight No.</span>
+                    </div>
+                    <span class="text-base truncate underline hover:text-primary-200 cursor-pointer" (click)="amendmentData?.air_booking_id ? viewFlightData() : null">{{amendmentData?.air_booking_number || " -- " }}</span>
+                </div>
                 <div class="flex flex-col mb-1">
                     <div class="flex flex-row space-x-2">
                         <span class="text-md font-semibold text-secondary">Total Pax</span>
@@ -133,11 +139,11 @@
             </mat-card>
 
             <div
-                class="flex items-center justify-end pt-4 h-15 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-3 dark:bg-[#1e293b] bg-white border-t m-auto">
+                class="flex items-center justify-end pt-4 h-15 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-4 dark:bg-[#1e293b] bg-white border-t m-auto">
                 <button mat-stroked-button (click)="updateChargeDrawer.close()">Close</button>
                 <button mat-flat-button [color]="'primary'" type="submit" (click)="submit(amendmentForm.form)"
                     [disabled]="disableBtn">
-                    Update
+                    Send Quotation
                 </button>
             </div>
         </form>

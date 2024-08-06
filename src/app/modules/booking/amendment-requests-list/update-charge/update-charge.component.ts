@@ -18,6 +18,7 @@ import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subject, takeUntil } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
+import { Linq } from 'app/utils/linq';
 
 @Component({
     selector: 'app-update-charge',
@@ -94,12 +95,16 @@ export class UpdateChargeComponent implements OnInit {
 
     }
 
+    viewFlightData(): void {
+        Linq.recirect('/booking/flight/details/' + this.amendmentData?.air_booking_id);
+    }
+
     getAmendment() {
         this.amendmentRequestsService.initialAmendmentCharges(this.record.id).subscribe({
             next: (res) => {
                 if (res && res.pax) {
                     this.amendmentData = JSON.parse(JSON.stringify(res));
-                    
+
                     this.formObj.adult_charge = (this.amendmentData?.adult_price || 0);
                     this.formObj.child_charge = (this.amendmentData?.child_price || 0);
                     this.formObj.Infant_charge = (this.amendmentData?.infant_price || 0);

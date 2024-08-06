@@ -316,7 +316,7 @@
                                     <button mat-menu-item (click)="inprocess(element)"
                                 *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || isMenuOpen">
                                 <mat-icon class="mat-18">send</mat-icon>
-                                <span style="font-weight: 600">Inprocess</span>
+                                <span style="font-weight: 600">Confirmation Sent to Supplier</span>
                             </button>
 
                             <button mat-menu-item (click)="refundInitiate(element)" *ngIf="(element.amendment_status.toLowerCase() == 'confirmation sent to supplier' && 

@@ -21,6 +21,7 @@ import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { EntityService } from 'app/services/entity.service';
 import { Subject, takeUntil } from 'rxjs';
+import { Routes } from 'app/common/const';
 
 @Component({
     selector: 'app-amendment-request-entry',
@@ -130,13 +131,13 @@ export class AmendmentRequestEntryComponent {
                             { name: 'GDS PNR', value: data.amendment_info.gds_pnr, classes: '' },
                             { name: 'Flight No', value: data.amendment_info.air_booking_no, classes: '', toFlight: true },
                             { name: 'Pax', value: data.amendment_info.information, classes: '', toPax: true },
-                            { name: 'Remark', value: data.amendment_info.remark, classes: '' , isShowRemark: data.amendment_info.remark ? false : true},
+                            { name: 'Remark', value: data.amendment_info.remark, classes: '', isShowRemark: data.amendment_info.remark ? false : true },
                             { name: 'Agent Remark', value: data.remark, classes: '' },
                         ];
                         if (data.amendment_info.type === 'Reissue Quotation') {
                             this.paxInfoList = data.pax_info.map(pax => [
                                 { name: 'Passenger Name', value: pax.passenger_name },
-                                { name: 'Traveller Detail', value: pax.traveller_detail },
+                                { name: 'Segment Detail', value: pax.traveller_detail },
                                 { name: 'Old Booking Date', value: pax.old_booking_date ? DateTime.fromISO(pax.old_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
                                 { name: 'New Booking Date', value: pax.new_booking_date ? DateTime.fromISO(pax.new_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
                             ]);
@@ -148,7 +149,7 @@ export class AmendmentRequestEntryComponent {
                             this.paxInfoList = data.pax_info.map(pax => [
                                 { name: 'Passenger Name', value: pax.passenger_name, toCorrection: false },
                                 { name: 'New Passenger Name', value: pax.new_passenger_name, toCorrection: isFlag },
-                                { name: 'Traveller Detail', value: pax.traveller_detail, toCorrection: false },
+                                { name: 'Segment Detail', value: pax.traveller_detail, toCorrection: false },
                             ]);
                         }
                         let name1;
@@ -191,6 +192,11 @@ export class AmendmentRequestEntryComponent {
         // }
         Linq.recirect('/booking/flight/details/' + this.booking_id);
     }
+
+    openAgent(id: string): void {
+        Linq.recirect(Routes.customers.agent_entry_route + '/' + this.recordList.agent_info.agent_id + '/readonly')
+    }
+
 
     updateCharge(): void {
         // this.matDialogRef.close();
