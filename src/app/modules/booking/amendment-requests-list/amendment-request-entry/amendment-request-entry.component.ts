@@ -250,4 +250,94 @@ export class AmendmentRequestEntryComponent {
         }
     }
 
+    inprocess(): void {
+        // if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.conformationService.open({
+            title: 'Amendment Inprocess',
+            message: 'Are you sure to inprocess this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentRequestsService.amendmentInprocess({ id: this.record.id }).subscribe({
+                    next: (data) => {
+                        this.alertService.showToast('success', "Amendment inprocessed!", "top-right", true);
+                        this.amendmentInfoDrawer.close();
+                        this.entityService.raiserefreshUpdateChargeCall(true);
+                    }, error: (err) => {
+                        this.alertService.showToast("error", err);
+                    },
+                })
+            }
+        })
+    }
+
+    refundInitiate(): void {
+        // if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.conformationService.open({
+            title: 'Amendment Refund Initiate',
+            message: 'Are you sure to refund initiate this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentRequestsService.amendmentRefundInitiate({ id: this.record.id }).subscribe({
+                    next: (data) => {
+                        this.alertService.showToast('success', "Amendment refund initiated!", "top-right", true);
+                        this.amendmentInfoDrawer.close();
+                        this.entityService.raiserefreshUpdateChargeCall(true);
+                    }, error: (err) => {
+                        this.alertService.showToast("error", err);
+                    },
+                })
+            }
+        })
+    }
+
+    complete(): void {
+        // if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.conformationService.open({
+            title: 'Amendment Complete',
+            message: 'Are you sure to complete this amendment process ?',
+            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                this.amendmentRequestsService.completeAmendment(this.record.id).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', "Amendment completed!", "top-right", true);
+                        this.amendmentInfoDrawer.close();
+                        this.entityService.raiserefreshUpdateChargeCall(true);
+                    }, error: (err) => {
+                        this.alertService.showToast("error", err);
+                    },
+                })
+            }
+        })
+    }
+
+    confirmation(): void {
+        this.conformationService.open({
+            title: "Confirm Amendment",
+            message: 'Are you sure want to confirm amendment?'
+        }).afterClosed().subscribe(ress => {
+            if (ress === 'confirmed') {
+                this.amendmentRequestsService.confirmAmendment({ id: this.record.id }).subscribe({
+                    next: (res) => {
+                        this.alertService.showToast('success', 'Amendment Confirmed!');
+                        this.amendmentInfoDrawer.close();
+                        this.entityService.raiserefreshUpdateChargeCall(true);
+                    }, error: (err) => {
+                        this.alertService.showToast('error', err)
+                    }
+                })
+            }
+        })
+    }
 }

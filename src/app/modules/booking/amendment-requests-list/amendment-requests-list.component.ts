@@ -315,9 +315,7 @@ export class AmendmentRequestsListComponent
 
         this.entityService.onraiserefreshUpdateChargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                console.log("item", item);
                 if(item) {
-                    // this.alertService.showToast('success', "Charge has been Updated!", "top-right", true);
                     this.refreshItems();
                 }
             }
