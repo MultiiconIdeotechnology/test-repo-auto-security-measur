@@ -18,6 +18,7 @@ import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Subject, takeUntil } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'app-update-charge',
@@ -70,6 +71,7 @@ export class UpdateChargeComponent implements OnInit {
         private alertService: ToasterService,
         private amendmentRequestsService: AmendmentRequestsService,
         private entityService: EntityService,
+        private conformationService: FuseConfirmationService,
     ) {
         this.entityService.onUpdateChargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -146,29 +148,38 @@ export class UpdateChargeComponent implements OnInit {
             return;
         }
 
-        this.disableBtn = true;
-        const json = {
-            total_pax: this.amendmentData.pax,
-            amendment_id: this.record.id,
-            roe: this.amendmentData?.roe || '',
-            company_remark: this.formObj.company_remark || '',
-            isRefundAMDT: this.amendmentData.is_refund,
-            amountType: this.amendmentData.amountType,
-            addon_markup: this.formObj.addon_markup_value || 0,
-            infant: this.formObj.Infant_charge || 0,
-            child: this.formObj.child_charge || 0,
-            adult: this.formObj.adult_charge || 0,
-            segmentAmount: this.formObj.segment_amount || 0
-        }
-        this.amendmentRequestsService.amendmentCharges(json).subscribe({
-            next: () => {
-                this.alertService.showToast('success', 'Amendment charges updated!', "top-right", true);
-                this.disableBtn = false;
-                this.entityService.raiserefreshUpdateChargeCall(true);
-                this.updateChargeDrawer.close();
-            }, error: (err) => {
-                this.disableBtn = false;
-                this.alertService.showToast('error', err, "top-right", true);
+        this.conformationService.open({
+            title: 'Send Quotation',
+            message: 'Are you sure want to Send Quotation ?'
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this.disableBtn = true;
+                    const json = {
+                        total_pax: this.amendmentData.pax,
+                        amendment_id: this.record.id,
+                        roe: this.amendmentData?.roe || '',
+                        company_remark: this.formObj.company_remark || '',
+                        isRefundAMDT: this.amendmentData.is_refund,
+                        amountType: this.amendmentData.amountType,
+                        addon_markup: this.formObj.addon_markup_value || 0,
+                        infant: this.formObj.Infant_charge || 0,
+                        child: this.formObj.child_charge || 0,
+                        adult: this.formObj.adult_charge || 0,
+                        segmentAmount: this.formObj.segment_amount || 0
+                    }
+                    this.amendmentRequestsService.amendmentCharges(json).subscribe({
+                        next: () => {
+                            this.alertService.showToast('success', 'Amendment charges updated!', "top-right", true);
+                            this.disableBtn = false;
+                            this.entityService.raiserefreshUpdateChargeCall(true);
+                            this.updateChargeDrawer.close();
+                        }, error: (err) => {
+                            this.disableBtn = false;
+                            this.alertService.showToast('error', err, "top-right", true);
+                        }
+                    });
+                }
             }
         })
     }

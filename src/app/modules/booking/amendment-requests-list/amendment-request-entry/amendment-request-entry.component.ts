@@ -21,6 +21,7 @@ import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { EntityService } from 'app/services/entity.service';
 import { Subject, takeUntil } from 'rxjs';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'app-amendment-request-entry',
@@ -76,6 +77,7 @@ export class AmendmentRequestEntryComponent {
         public alertService: ToasterService,
         public amendmentRequestsService: AmendmentRequestsService,
         private entityService: EntityService,
+        private conformationService: FuseConfirmationService,
     ) {
         this.entityService.onAmendmentInfoCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -208,12 +210,21 @@ export class AmendmentRequestEntryComponent {
     }
 
     sendMail() {
-        this.amendmentRequestsService.SendAmendmentEmailToSupplier(this.record.id).subscribe({
-            next: (value: any) => {
-                this.alertService.showToast('success', value.status, "top-right", true);
-            }, error: (err) => {
-                this.alertService.showToast('error', err, "top-right", true);
-            },
+        this.conformationService.open({
+            title: 'Send Mail',
+            message: 'Are you sure want to Send Mail To Supplier ?'
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this.amendmentRequestsService.SendAmendmentEmailToSupplier(this.record.id).subscribe({
+                        next: (value: any) => {
+                            this.alertService.showToast('success', value.status, "top-right", true);
+                        }, error: (err) => {
+                            this.alertService.showToast('error', err, "top-right", true);
+                        },
+                    });
+                }
+            }
         })
     }
 
