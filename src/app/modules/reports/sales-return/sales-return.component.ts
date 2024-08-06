@@ -113,8 +113,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     isFilterShow: boolean = false;
     dataList = [];
     sortColumn: any = 'complete_date_time';
-    selectedAgent!:string;
-    selectedEmployee!:string;
+    selectedAgent!: string;
+    selectedEmployee!: string;
 
     constructor(
         private salesReturnService: SalesReturnService,
@@ -146,7 +146,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         this.agentService.getAgentCombo(value).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
             }
         })
@@ -192,9 +192,9 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         this.salesReturnService.getSalesReturnReport(model).subscribe({
             next: (res) => {
                 this.dataList = res?.data;
-                for(let i in this.dataList){
+                for (let i in this.dataList) {
                     this.dataList[i]['complete_date_time'] = new Date(this.dataList[i]['complete_date_time']);
-                 }
+                }
                 this.totalRecords = res?.total;
                 this.loading = false;
             }, error: err => {
@@ -240,37 +240,39 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         // filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
 
         // this.salesReturnService.getSalesReturnReport(filterReq).subscribe(data => {
-            this.tempData = cloneDeep(this.dataList);
-            for (var dt of this.tempData) {
-            //   dt.complete_date_time = DateTime.fromISO(dt.complete_date_time).toFormat('dd-MM-yyyy HH:mm');
-              dt.complete_date_time = new DatePipe('en-US').transform(dt.complete_date_time, 'dd-MM-yyyy HH:mm');
-            }
+            let salesData = this.primengTable['_value'] || [];
+            this.tempData = cloneDeep(salesData);
 
-            Excel.export(
-                'Sales Return',
-                [
-                    { header: 'Agent', property: 'agent' },
-                    { header: 'Supplier', property: 'supplier' },
-                    { header: 'Return Date Time', property: 'complete_date_time' },
-                    { header: 'Amendment Ref No', property: 'amendment_ref_no' },
-                    { header: 'Air Ref No', property: 'air_ref_no' },
-                    { header: 'Amendment Type', property: 'amendment_type' },
-                    { header: 'Pan Number', property: 'pan_numner' },
-                    { header: 'GST Number', property: 'gst_numner' },
-                    { header: 'Sup Service Charge', property: 'sup_service_charge' },
-                    { header: 'Bonton Service Charge', property: 'bonton_service_charge' },
-                    { header: 'CGST', property: 'refunded_amount' },
-                    { header: 'Service Charge', property: 'service_charge' },
-                    { header: 'TAX', property: 'tax' },
-                    { header: 'Net Refund', property: 'net_refund' },
-                    { header: 'Commission', property: 'commission' },
-                    { header: 'TDS', property: 'tds' },
-                    { header: 'Refundable Price', property: 'refundable_price' },
-                    { header: 'Commission 2', property: 'commission_2' },
-                    { header: 'TDS 2', property: 'tds_2' },
-                    { header: 'Net Commission', property: 'net_commission' }
-                ],
-                this.tempData, "Sales Return", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
+        for (var dt of this.tempData) {
+            //   dt.complete_date_time = DateTime.fromISO(dt.complete_date_time).toFormat('dd-MM-yyyy HH:mm');
+            dt.complete_date_time = new DatePipe('en-US').transform(dt.complete_date_time, 'dd-MM-yyyy HH:mm');
+        }
+
+        Excel.export(
+            'Sales Return',
+            [
+                { header: 'Agent', property: 'agent' },
+                { header: 'Supplier', property: 'supplier' },
+                { header: 'Return Date Time', property: 'complete_date_time' },
+                { header: 'Amendment Ref No', property: 'amendment_ref_no' },
+                { header: 'Air Ref No', property: 'air_ref_no' },
+                { header: 'Amendment Type', property: 'amendment_type' },
+                { header: 'Pan Number', property: 'pan_numner' },
+                { header: 'GST Number', property: 'gst_numner' },
+                { header: 'Sup Service Charge', property: 'sup_service_charge' },
+                { header: 'Bonton Service Charge', property: 'bonton_service_charge' },
+                { header: 'CGST', property: 'refunded_amount' },
+                { header: 'Service Charge', property: 'service_charge' },
+                { header: 'TAX', property: 'tax' },
+                { header: 'Net Refund', property: 'net_refund' },
+                { header: 'Commission', property: 'commission' },
+                { header: 'TDS', property: 'tds' },
+                { header: 'Refundable Price', property: 'refundable_price' },
+                { header: 'Commission 2', property: 'commission_2' },
+                { header: 'TDS 2', property: 'tds_2' },
+                { header: 'Net Commission', property: 'net_commission' }
+            ],
+            this.tempData, "Sales Return", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
         // });
     }
 }

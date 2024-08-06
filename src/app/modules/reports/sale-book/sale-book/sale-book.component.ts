@@ -259,7 +259,9 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
         for(let i in this.dataList){
            this.dataList[i]['inquiry_date'] = new Date(this.dataList[i]['inquiry_date']);
            this.dataList[i]['invoice_date'] = new Date(this.dataList[i]['invoice_date']);
-           this.dataList[i]['travel_date'] = new Date(this.dataList[i]['travel_date']);
+           if(this.dataList[i]['travel_date']) {
+             this.dataList[i]['travel_date'] = new Date(this.dataList[i]['travel_date']);
+           }
            
            this.dataList[i]['booking_date'] = new Date(this.dataList[i]['booking_date']);
         }
@@ -313,12 +315,16 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     //   for (var dt of data?.data) {
     //     // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
     //   }
-    this.tempData = this.primengTable['_value'] || [];
+    // this.tempData = cloneDeep(this.dataList);
+    let salesData = this.primengTable['_value'] || [];
+    this.tempData = cloneDeep(salesData);
     for (var dt of this.tempData) {
       // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm');
       dt.inquiry_date = new DatePipe('en-US').transform(dt.inquiry_date, 'dd-MM-yyyy HH:mm');
       dt.invoice_date = new DatePipe('en-US').transform(dt.invoice_date, 'dd-MM-yyyy HH:mm');
-      dt.travel_date = new DatePipe('en-US').transform(dt.travel_date, 'dd-MM-yyyy HH:mm');
+      if(dt.travel_date) {
+        dt.travel_date = new DatePipe('en-US').transform(dt.travel_date, 'dd-MM-yyyy HH:mm');
+      } 
       dt.booking_date = new DatePipe('en-US').transform(dt.booking_date, 'dd-MM-yyyy HH:mm');
     }
 
