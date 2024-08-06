@@ -462,7 +462,7 @@ th {
     }
 
     .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
-        padding: 0.35rem 1.25rem !important;
+        padding: 0.35rem 0.75rem !important;
         font-size: 12px;
     }
 }
@@ -478,8 +478,9 @@ th {
 }
 
 .p-overlaypanel .p-overlaypanel-content {
-    padding: 1rem !important;
+    padding: .5rem !important;
 }
+
 
 .p-column-filter-overlay .p-column-filter-row-items {
     padding: 0.25rem 0;
