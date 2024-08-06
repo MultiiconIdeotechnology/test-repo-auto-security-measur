@@ -22,21 +22,20 @@
                 <div class="border border-dashed"></div>
 
                 <div class="text-lg font-semibold pt-4 text-primary">Amendment Info</div>
-                <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl ">
-                    <div class="flex flex-col mb-3 truncate"
-                        [ngClass]="af.name == 'Remark' ? 'w-full' : af.name == 'Agent Remark' ? 'w-full' : 'w-1/4'"
-                        *ngFor="let af of amendmentInfoList">
-                        <div class="flex flex-row space-x-2">
-                            <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
-                        </div>
-                        <div class="truncate" *ngIf="af.value && !af.toFlight">
-                            <span class="text-base truncate" [ngClass]="af.classes" [matTooltip]="af.value">{{af.value || '--'}}</span>
-                        </div>
-                        <span class="cursor-pointer truncate hover:text-primary-200" *ngIf="af.toFlight && af.name === 'Air Booking No'"
-                            (click)="flightDetails()">{{af.value || ' 0 '}}</span>
-                        <!-- <span class="text-base"  [matTooltip]="af.value">
-                            <span *ngIf="af.value == 0">{{af.value || ' 0 '}}</span>
-                        </span> -->
+                <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                    <div class="flex flex-col mb-3 truncate" *ngFor="let af of amendmentInfoList"
+                        [ngClass]="af.name == 'Remark' ? 'w-full' : af.name == 'Agent Remark' ? 'w-full' : 'w-1/4'">
+                        <ng-container *ngIf="!af.isShowRemark">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <div class="truncate" *ngIf="af.value && !af.toFlight">
+                                <span class="text-base truncate" [ngClass]="af.classes" [matTooltip]="af.value">{{af.value || '--'}}</span>
+                            </div>
+                            <span class="cursor-pointer truncate hover:text-primary-200" *ngIf="af.toFlight && af.name === 'Flight No'"
+                                (click)="flightDetails()">{{af.value || ' 0 '}}
+                            </span>
+                        </ng-container>
                     </div>
                 </div>
                 <div *ngIf="paxInfoList && paxInfoList?.length > 0">

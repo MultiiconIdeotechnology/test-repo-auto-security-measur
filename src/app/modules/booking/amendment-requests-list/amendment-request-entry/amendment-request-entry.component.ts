@@ -128,9 +128,9 @@ export class AmendmentRequestEntryComponent {
                             { name: 'Request Date', value: data.amendment_info.req_date ? DateTime.fromISO(data.amendment_info.req_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '', classes: '' },
                             { name: 'PNR', value: data.amendment_info.pnr, classes: '' },
                             { name: 'GDS PNR', value: data.amendment_info.gds_pnr, classes: '' },
-                            { name: 'Air Booking No', value: data.amendment_info.air_booking_no, classes: '', toFlight: true },
+                            { name: 'Flight No', value: data.amendment_info.air_booking_no, classes: '', toFlight: true },
                             { name: 'Pax', value: data.amendment_info.information, classes: '', toPax: true },
-                            { name: 'Remark', value: data.amendment_info.remark, classes: '' },
+                            { name: 'Remark', value: data.amendment_info.remark, classes: '' , isShowRemark: data.amendment_info.remark ? false : true},
                             { name: 'Agent Remark', value: data.remark, classes: '' },
                         ];
                         if (data.amendment_info.type === 'Reissue Quotation') {
