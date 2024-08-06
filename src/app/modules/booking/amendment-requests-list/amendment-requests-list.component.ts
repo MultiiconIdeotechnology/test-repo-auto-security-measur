@@ -12,7 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, amendmentRequestsPermissions, messages, module_name } from 'app/security';
 import { AmendmentRequestsService } from 'app/services/amendment-requests.service';
 import { UpdateChargeComponent } from './update-charge/update-charge.component';
@@ -31,6 +31,7 @@ import { KycDocumentService } from 'app/services/kyc-document.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { EntityService } from 'app/services/entity.service';
 import { takeUntil } from 'rxjs';
+import { Linq } from 'app/utils/linq';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -67,190 +68,8 @@ export class AmendmentRequestsListComponent
     total = 0;
 
     AmendmentFilter: any;
+    _selectedColumns: Column[];
 
-    columns = [
-        // {
-        //     key: 'is_request_sent_to_supplier',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     width: '10',
-        //     align: 'center',
-        //     indicator: false,
-        //     is_required: false,
-        //     is_boolean: false,
-        //     inicon: true,
-        // },
-        {
-            key: 'reference_no',
-            name: 'Ref. No',
-            is_date: false,
-            is_fixed: true,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'amendment_type',
-            name: 'Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'amendment_status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-            toColor: true,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agent',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'company_name',
-            name: 'Supplier',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'booking_ref_no',
-            name: 'Flight No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'pnr',
-            name: 'PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'gds_pnr',
-            name: 'GDS PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'amendment_request_time',
-            name: 'Requested On',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: false,
-        },
-        {
-            key: 'travel_date',
-            name: 'Travel Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: false,
-        },
-        {
-            key: 'amendment_confirmation_time',
-            name: 'Confirmed',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-    ];
     cols = [];
     selectedAgent!: string;
     selectedSupplier!: string;
@@ -296,7 +115,6 @@ export class AmendmentRequestsListComponent
         private entityService: EntityService
     ) {
         super(module_name.amendmentRequests);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'amendment_request_time';
         this.sortDirection = 'desc';
@@ -326,8 +144,26 @@ export class AmendmentRequestsListComponent
 
     ngOnInit() {
         this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
+
+        this.cols = [
+            { field: 'gds_pnr', header: 'GDS PNR'},
+            { field: 'travel_date', header: 'Travel Date' },
+            { field: 'status_for_agent', header: 'Agent Status' },
+            { field: 'reject_reason', header: 'Reject Reason' },
+            { field: 'amendment_confirmation_time', header: 'Confirmed' },
+        ];
+        
         this.getAgent("", true);
         this.getSupplier("", true);
+        
+    }
+
+    get selectedColumns(): Column[] {
+        return this._selectedColumns;
+    }
+
+    set selectedColumns(val: Column[]) {
+        this._selectedColumns = this.cols.filter((col) => val.includes(col));
     }
 
     // Get Filter
@@ -443,6 +279,15 @@ export class AmendmentRequestsListComponent
                 this.refreshItems();
             }
         });
+    }
+
+    // Navigate To Flight Details
+    viewData(record: any): void {
+        if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        Linq.recirect('/booking/flight/details/' + record.air_booking_id);
     }
 
     // Status wise color
@@ -670,11 +515,11 @@ export class AmendmentRequestsListComponent
                 'Amendment Booking',
                 [
                     { header: 'Ref No.', property: 'reference_no' },
-                    { header: 'Type', property: 'amendment_type' },
+                    { header: 'Amendment Type', property: 'amendment_type' },
                     { header: 'Status', property: 'amendment_status' },
                     { header: 'Agent', property: 'agency_name' },
                     { header: 'Supplier', property: 'company_name' },
-                    { header: 'Flight No.', property: 'booking_ref_no' },
+                    { header: 'Booking Ref. No.', property: 'booking_ref_no' },
                     { header: 'PNR', property: 'pnr' },
                     { header: 'GDS PNR', property: 'gds_pnr' },
                     { header: 'Request On', property: 'amendment_request_time' },
