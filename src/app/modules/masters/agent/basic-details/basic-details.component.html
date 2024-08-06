@@ -154,6 +154,18 @@
                             </p>
                         </td>
                     </ng-container>
+                    
+                    <ng-container matColumnDef="account_holder_name">
+                        <th mat-header-cell class="font-bold text-md border-l field-blue-bg min-w-48 max-w-48"
+                            *matHeaderCellDef>
+                            Account Holder Name
+                        </th>
+                        <td mat-cell *matCellDef="let element" class="border min-w-48 max-w-48 cursor-pointer">
+                            <p class="text-md font-medium truncate pr-1" [matTooltip]="element.account_holder_name">
+                                {{ element.account_holder_name || '-' }}
+                            </p>
+                        </td>
+                    </ng-container>
 
                     <ng-container matColumnDef="ifsc_code">
                         <th mat-header-cell class="font-bold text-md border-l field-blue-bg min-w-44 max-w-44"
