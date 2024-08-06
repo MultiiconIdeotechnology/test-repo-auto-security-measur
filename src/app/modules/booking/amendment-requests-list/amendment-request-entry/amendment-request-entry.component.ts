@@ -323,6 +323,10 @@ export class AmendmentRequestEntryComponent {
     }
 
     confirmation(): void {
+        // if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
         this.conformationService.open({
             title: "Confirm Amendment",
             message: 'Are you sure want to confirm amendment?'
