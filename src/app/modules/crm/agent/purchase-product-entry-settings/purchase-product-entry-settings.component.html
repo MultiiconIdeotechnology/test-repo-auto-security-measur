@@ -36,12 +36,41 @@
                             <mat-form-field class="flex-grow">
                                 <mat-label class="text-base font-medium ">Product Price</mat-label>
                                 <input matInput required type="number" (keypress)="numberOnly($event)"
-                                    formControlName="price">
+                                    (change)="onPriceChange($event)" formControlName="price">
                                 <mat-error *ngIf="formGroup.get('price').hasError('required')">
                                     Price is required
                                 </mat-error>
                             </mat-form-field>
                         </div>
+
+                        <!-- <div class="flex flex-row" *ngIf="proofAttachment">
+                                <mat-label class="text-base font-medium ">Proof Attachment</mat-label>
+                            <input type="file" accept="application/pdf, image/*" #fileInput1 class="hidden" readonly />
+                            <span *ngIf="!editpaymentAttachmentSelectedFile" class="flex items-center">{{
+                                paymentAttachmentSelectedFile?.name || '' }}</span>
+                            <span *ngIf="editpaymentAttachmentSelectedFile" class="flex items-center">{{
+                                editpaymentAttachmentSelectedFile || '' }}</span>
+                            <mat-icon [svgIcon]="'attach_file'"
+                                class=" icon-size-6 absolute right-[15px] top-[10px]"></mat-icon>
+                        </div> -->
+
+                        <div class="flex flex-row pb-4" (click)="fileInput1.click()" *ngIf="proofAttachment">
+                            <div class="flex-grow">
+                                <mat-label class="text-base font-medium">Proof Attachment</mat-label>
+                                <div
+                                    class="w-full border border-[#64748b] rounded-md h-[48px] mt-[6px] px-[16px] relative flex">
+                                    <input type="file" accept="application/pdf, image/*" #fileInput1 class="hidden"
+                                        (change)="onProofAttachmentFile($event)" readonly />
+                                        <span *ngIf="!editproofAttachmentSelectedFile" class="flex items-center">{{
+                                            proofAttachmentSelectedFile?.name || '' }}</span>
+                                        <span *ngIf="editproofAttachmentSelectedFile" class="flex items-center">{{
+                                            editproofAttachmentSelectedFile || '' }}</span>
+                                    <mat-icon [svgIcon]="'attach_file'"
+                                        class=" icon-size-6 absolute right-[15px] top-[10px]"></mat-icon>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="flex flex-row">
                             <!-- <mat-form-field class="flex-grow">
                             <mat-label class="text-base font-medium dark:text-[#687798]">Installments</mat-label>
@@ -81,8 +110,7 @@
                                     <!-- [min]="i == 0 ? todayDateTime : installment.maxDate" -->
 
                                     <mat-form-field class="flex-grow w-1/2">
-                                        <mat-label
-                                            class="text-base font-medium ">Amount(₹)</mat-label>
+                                        <mat-label class="text-base font-medium ">Amount(₹)</mat-label>
                                         <input matInput type="number" (keypress)="numberOnly($event)"
                                             [(ngModel)]="installment.installment_amount"
                                             [ngModelOptions]="{standalone: true}" />
