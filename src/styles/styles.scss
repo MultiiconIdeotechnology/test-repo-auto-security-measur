@@ -509,7 +509,7 @@ th {
     border-collapse: separate;
 }
 
-// primeNg dropdown filter 
+// primeNg dropdown filter
 .filter-dropdown .p-dropdown {
     height: 32px;
 
@@ -586,4 +586,16 @@ p-columnfilterformelement {
     height: 33px !important;
     cursor: pointer;
     border-radius: 100%;
+}
+
+.custom-sidebar {
+    width: 350px;
+
+    .p-sidebar-header {
+        display: none;
+    }
+}
+
+.p-sidebar-content {
+    position: static !important;
 }

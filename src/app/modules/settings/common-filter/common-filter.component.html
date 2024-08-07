@@ -1,39 +1,51 @@
-<!-- <div class="flex flex-col w-full overflow-auto bg-card">
-    <div class="flex flex-0 items-center">
-        <div class="text-lg font-medium text-white">{{title}}</div>
-    </div>
-
-    <div
-        class="flex items-center justify-end pt-4 h-16 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-5 dark:bg-[#1e293b] bg-white border-t m-auto">
-        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
-            {{ btnLabel }}
+<div class="flex flex-col pt-3">
+    <div class="flex justify-between">
+        <div class="text-xl font-bold text-[#0D9488] pt-[7px]">{{title}}</div>
+        <button mat-icon-button [tabIndex]="-1" (click)="_userService.sidebarVisible = false">
+            <mat-icon class="text-current notranslate dark:text-white mat-icon-no-color"
+                [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
     </div>
-</div> -->
-
-<!-- <div class="flex flex-col w-full overflow-auto bg-card">
-    <div class="flex flex-row items-center px-10 h-13 dark:text-white">
-        <div class="text-lg font-medium tracking-tight">{{title}}</div>
-        <button class="ml-auto" mat-icon-button>
-            <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-        </button>
+    <div class="flex flex-0 justify-between pb-2">
+        <div class="text-sm font-bold dark:text-white pt-[2px]">ABC</div>
+        <a href="#" class="mat-flat-button" color="primary">
+            <span class="text-sm font-medium text-blue-500 underline pr-[0px]">Save Changes</span>
+        </a>
     </div>
     <mat-divider></mat-divider>
-
-    <div
-        class="flex items-center justify-end pt-4 h-16 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-0 dark:bg-[#1e293b] bg-white border-t m-auto">
-        <button mat-stroked-button>Close</button>
-        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
-            {{ btnLabel }}
-        </button>
+    <div class="w-full pt-0 pb-0">
+        <div class="flex flex-row w-full justify-between">
+            <label class="text-sm dark:text-white font-noraml text-black pt-[14px]">ABC Filter</label>
+            <div>
+                <span class="text-left justify-left mt-3 flex">
+                    <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit">
+                    <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy">
+                    <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg" alt="delete">
+                </span>
+            </div>
+        </div>
+        <div class="flex flex-row w-full justify-between">
+            <label class="text-sm dark:text-white font-noraml text-black pt-[14px]">DEF Filter</label>
+            <div>
+                <span class="text-left justify-left mt-3 flex">
+                    <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit">
+                    <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy">
+                    <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg" alt="delete">
+                </span>
+            </div>
+        </div>
     </div>
-</div> -->
 
-<ng-template pTemplate="header">Header Content</ng-template>
-<ng-template pTemplate="content">Body Content</ng-template>
-<ng-template pTemplate="footer">Footer Content</ng-template>
-<!-- <p-button (onClick)="sidebarVisible = true" icon="pi pi-arrow-right" /> -->
+    <!-- <mat-divider></mat-divider> -->
+     <div class="pe-5">
+         <div class="flex items-center justify-center text-center h-16 sm:mt-0 pb-4 bottom-0 absolute w-full dark:bg-[#0F172A] bg-white m-auto pe-7 border-t">
+             <button mat-flat-button [color]="'primary'" (click)="submit()" class="w-full" [disabled]="disableBtn">
+                 {{ btnLabel }}
+             </button>
+         </div>
+     </div>
+</div>
 
-<button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
-    {{ btnLabel }}
-</button>
+<!-- <ng-template pTemplate="header">Header Content</ng-template>
+    <ng-template pTemplate="content">Body Content</ng-template>
+    <ng-template pTemplate="footer">Footer Content</ng-template> -->
