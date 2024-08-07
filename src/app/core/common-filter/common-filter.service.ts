@@ -30,12 +30,12 @@ export class CommonFilterService {
         this.sidebarVisible = true;
         let localFilterData = this.getFilterData();
         if (localFilterData && localFilterData.length) {
-            let filter = localFilterData.find((item: any) => item.grid_name == 'Bus-Booking');
+            let filter = localFilterData.find((item: any) => item.grid_name == table_name);
             this.filter_grid_array = (filter || []);
-            console.log("filter_grid_array", this.filter_grid_array);
+            // console.log("filter_grid_array", this.filter_grid_array);
         }
 
-        console.log("grid_name", table_name);
+        // console.log("grid_name", table_name);
     }
 
     closeDrawer() {
