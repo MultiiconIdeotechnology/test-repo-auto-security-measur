@@ -50,8 +50,10 @@ export class CommonFilterComponent implements OnChanges {
     constructor(
         private conformationService: FuseConfirmationService,
         private _userService: UserService,
-        public _filterService: CommonFilterService
-    ) { }
+        public _filterService: CommonFilterService,
+    ) {
+
+    }
 
     ngOnInit(): void {
         console.log("Common Filter called");
