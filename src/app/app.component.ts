@@ -11,13 +11,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subject, takeUntil } from 'rxjs';
 import { UserService } from './core/user/user.service';
 import { SetPasswordComponent } from './layout/common/user/set-password/set-password.component';
+import { SidebarModule } from 'primeng/sidebar';
+import { CommonFilterComponent } from './modules/settings/common-filter/common-filter.component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     standalone: true,
-    imports: [RouterOutlet, MatSnackBarModule, CommonModule, MatIconModule],
+    imports: [RouterOutlet, MatSnackBarModule, CommonModule, MatIconModule, SidebarModule, CommonFilterComponent],
     animations: [
         trigger('slideRight', [
             transition(':enter', [
@@ -48,7 +50,7 @@ export class AppComponent implements AfterViewInit {
         private toastr: ToasterService,
         private _fuseConfigService: FuseConfigService,
         private matDialog: MatDialog,
-        private _userService: UserService,
+        public _userService: UserService,
         @Inject(DOCUMENT) private document: Document
     ) {
         setReflectionActivator(this.injector);

@@ -18,6 +18,7 @@ import { CitysEntryComponent } from '../citys-entry/citys-entry.component';
 import { ImagesComponent } from '../../destination/images/images.component';
 import { UserService } from 'app/core/user/user.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterComponent } from 'app/modules/settings/common-filter/common-filter.component';
 
 @Component({
     selector: 'app-city-list',
@@ -39,7 +40,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        CommonFilterComponent
     ],
 })
 export class CityListComponent extends BaseListingComponent implements OnDestroy {
@@ -121,7 +123,7 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
         private conformationService: FuseConfirmationService,
         private router: Router,
         private matDialog: MatDialog,
-        private _userService: UserService
+        public _userService: UserService
     ) {
         super(module_name.city);
         // this.cols = this.columns.map((x) => x.key);

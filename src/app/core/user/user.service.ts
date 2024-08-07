@@ -8,6 +8,7 @@ import { map, Observable, ReplaySubject, tap } from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class UserService
 {
+    sidebarVisible: boolean = false;
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
 
     /**
@@ -35,7 +36,7 @@ export class UserService
 
         // if(value.is_first) {
         //     setTimeout(() => {
-                
+
         //         this.matDialog.open(SetPasswordComponent, {
         //             data: value,
         //             disableClose: true
