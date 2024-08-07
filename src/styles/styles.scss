@@ -509,7 +509,7 @@ th {
     border-collapse: separate;
 }
 
-// primeNg dropdown filter 
+// primeNg dropdown filter
 .filter-dropdown .p-dropdown {
     height: 32px;
 
@@ -685,4 +685,15 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
         border: 1px solid #e2e8f0;
         color: black;
     } 
+}
+.custom-sidebar {
+    width: 350px;
+
+    .p-sidebar-header {
+        display: none;
+    }
+}
+
+.p-sidebar-content {
+    position: static !important;
 }
