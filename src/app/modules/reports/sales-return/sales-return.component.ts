@@ -178,7 +178,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['service'] = this.saleFilter?.service || 'All';
         filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-        filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
+        filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.company_id || 'All';
         filterReq['date'] = this.saleFilter.date || 'Last Month';
         return filterReq;
     }
