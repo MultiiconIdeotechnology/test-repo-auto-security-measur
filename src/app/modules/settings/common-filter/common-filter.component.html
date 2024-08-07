@@ -9,16 +9,15 @@
     <div class="flex flex-0 justify-between pb-2">
         <div class="text-base font-bold dark:text-white pt-[2px]">ABC</div>
         <a href="#" class="mat-flat-button" color="primary">
-            <span class="text-sm font-medium text-[#117DFF] underline pr-[0px]">Save Changes</span>
+            <span class="text-base font-medium text-[#117DFF] underline pr-[0px]">Save Changes</span>
         </a>
     </div>
-    <mat-divider></mat-divider>
 </div>
-
+<mat-divider></mat-divider>
 <div class="w-full pt-0 pb-0 filter-popup-body">
     <ng-container *ngFor="let item of _filterService.filter_grid_array?.filters">
         <div class="flex flex-row w-full justify-between">
-            <label class="text-sm dark:text-white font-noraml text-black pt-[14px]">{{item.filter_name}}</label>
+            <label class="text-base dark:text-white font-noraml text-black pt-[14px]">{{item.filter_name}}</label>
             <div>
                 <span class="text-left justify-left mt-3 dark:flex hidden">
                     <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit">
@@ -34,12 +33,11 @@
             </div>
         </div>
     </ng-container>
+</div>
 
-     <div class="pe-5">
-         <div class="flex items-center justify-center text-center h-16 sm:mt-0 pb-4 bottom-0 absolute w-full dark:bg-[#0F172A] bg-white m-auto pe-7 border-t">
-             <button mat-flat-button [color]="'primary'" (click)="submit()" class="w-full" [disabled]="disableBtn">
-                Create New Filter
-             </button>
-         </div>
-     </div>
+<div
+    class="flex items-center justify-center text-center h-16 sm:mt-0 pb-4 bottom-0 absolute w-11/12 dark:bg-[#0F172A] bg-white m-auto pt-3 border-t">
+    <button mat-flat-button [color]="'primary'" (click)="submit()" class="w-full" [disabled]="disableBtn">
+        Create New Filter
+    </button>
 </div>
