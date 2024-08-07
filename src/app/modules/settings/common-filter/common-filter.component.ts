@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,11 +8,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import Swal from 'sweetalert2';
-import { UserService } from 'app/core/user/user.service';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { SidebarModule } from 'primeng/sidebar';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'app-common-filter',
@@ -51,6 +49,7 @@ export class CommonFilterComponent implements OnInit {
         this._filterService.closeDrawer();
     }
 
+    // Submit Data
     submit(): void {
         Swal.fire({
             text: "Create New Filter",
