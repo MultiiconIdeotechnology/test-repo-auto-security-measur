@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { Security, cityPermissions, messages, module_name } from 'app/security';
+import { Security, cityPermissions, messages, module_name, filter_module_name } from 'app/security';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -19,6 +19,8 @@ import { ImagesComponent } from '../../destination/images/images.component';
 import { UserService } from 'app/core/user/user.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CommonFilterComponent } from 'app/modules/settings/common-filter/common-filter.component';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-city-list',
@@ -46,6 +48,7 @@ import { CommonFilterComponent } from 'app/modules/settings/common-filter/common
 })
 export class CityListComponent extends BaseListingComponent implements OnDestroy {
     module_name = module_name.city;
+    filter_table_name = filter_module_name.city_master;
     dataList = [];
     total = 0;
     user: any;
@@ -117,13 +120,15 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     cols: Column[];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
+    private settingsUpdatedSubscription: Subscription;
 
     constructor(
         private cityService: CityService,
         private conformationService: FuseConfirmationService,
         private router: Router,
         private matDialog: MatDialog,
-        public _userService: UserService
+        public _userService: UserService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.city);
         // this.cols = this.columns.map((x) => x.key);
@@ -134,12 +139,15 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     }
 
     ngOnInit() {
-
         this.cols = [
             { field: 'gst_state_code', header: 'GST State Code'},
             { field: 'country_code', header: 'Country Code' },
             { field: 'mobile_code', header: 'Mobile Code' },
         ];
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            console.log("resp city", resp);
+        });
     }
 
     get selectedColumns(): Column[] {
@@ -309,7 +317,9 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
+    ngOnDestroy() {
+        if (this.settingsUpdatedSubscription) {
+          this.settingsUpdatedSubscription.unsubscribe();
+        }
     }
 }

@@ -11,6 +11,8 @@ import Swal from 'sweetalert2';
 import { UserService } from 'app/core/user/user.service';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { SidebarModule } from 'primeng/sidebar';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'app-common-filter',
@@ -46,7 +48,9 @@ export class CommonFilterComponent implements OnChanges {
     title = "Filters"
 
     constructor(
-        public _userService: UserService
+        private conformationService: FuseConfirmationService,
+        private _userService: UserService,
+        public _filterService: CommonFilterService
     ) { }
 
     ngOnInit(): void {
@@ -54,6 +58,11 @@ export class CommonFilterComponent implements OnChanges {
     }
 
     ngOnChanges() {
+    }
+
+    saveSettings() {
+        this._filterService.updateDrawers(this._filterService.filter_grid_array);
+        this._filterService.closeDrawer();
     }
 
     submit(): void {

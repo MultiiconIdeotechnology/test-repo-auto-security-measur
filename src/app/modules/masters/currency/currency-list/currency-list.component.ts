@@ -1,4 +1,4 @@
-import { module_name } from 'app/security';
+import { filter_module_name, module_name } from 'app/security';
 import { Component } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -16,13 +16,16 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { UserService } from 'app/core/user/user.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-currency-list',
   templateUrl: './currency-list.component.html',
   styles: [],
-  standalone   : true,
-  imports      : [
+  standalone: true,
+  imports: [
     NgIf,
     NgFor,
     DatePipe,
@@ -40,6 +43,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
   ],
 })
 export class CurrencyListComponent extends BaseListingComponent {
+  private settingsUpdatedSubscription: Subscription;
+  filter_table_name = filter_module_name.currency_master;
 
   module_name = module_name.currency
   dataList = [];
@@ -57,6 +62,9 @@ export class CurrencyListComponent extends BaseListingComponent {
     private currencyService: CurrencyService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
+    public _userService: UserService,
+    public _filterService: CommonFilterService,
+
   ) {
     super(module_name.currency)
     this.cols = this.columns.map(x => x.key);
@@ -64,6 +72,12 @@ export class CurrencyListComponent extends BaseListingComponent {
     this.sortColumn = 'currency';
     this.sortDirection = 'asc';
     this.Mainmodule = this
+  }
+
+  ngOnInit() {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      console.log("resp currency", resp);
+    });
   }
 
   refreshItems(event?: any): void {
@@ -74,7 +88,7 @@ export class CurrencyListComponent extends BaseListingComponent {
         this.dataList = data.data;
         this.totalRecords = data.total;
       }, error: err => {
-        this.alertService.showToast('error',err,'top-right',true)
+        this.alertService.showToast('error', err, 'top-right', true)
         this.isLoading = false;
       }
     })
@@ -94,7 +108,7 @@ export class CurrencyListComponent extends BaseListingComponent {
 
   editInternal(record): void {
     this.matDialog.open(CurrencyEntryComponent, {
-      data: {data: record, readonly: false},
+      data: { data: record, readonly: false },
       disableClose: true
     }).afterClosed().subscribe(res => {
       if (res) {
@@ -106,7 +120,7 @@ export class CurrencyListComponent extends BaseListingComponent {
 
   viewInternal(record): void {
     this.matDialog.open(CurrencyEntryComponent, {
-      data: {data: record, readonly: true},
+      data: { data: record, readonly: true },
       disableClose: true
     })
   }
@@ -122,8 +136,9 @@ export class CurrencyListComponent extends BaseListingComponent {
           next: () => {
             this.alertService.showToast('success', "Currency has been deleted!", "top-right", true);
             this.refreshItems();
-          },error: (err) => {this.alertService.showToast('error',err,'top-right',true);
-      }
+          }, error: (err) => {
+            this.alertService.showToast('error', err, 'top-right', true);
+          }
         })
       }
     })
@@ -137,7 +152,9 @@ export class CurrencyListComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
-  ngOnDestroy(): void {
-    // this.masterService.setData(this.key, this)
+  ngOnDestroy() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+    }
   }
 }

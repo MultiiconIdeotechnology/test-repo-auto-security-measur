@@ -8,7 +8,6 @@ import { map, Observable, ReplaySubject, tap } from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class UserService
 {
-    sidebarVisible: boolean = false;
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
 
     /**

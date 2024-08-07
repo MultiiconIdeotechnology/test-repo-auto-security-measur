@@ -13,6 +13,7 @@ import { UserService } from './core/user/user.service';
 import { SetPasswordComponent } from './layout/common/user/set-password/set-password.component';
 import { SidebarModule } from 'primeng/sidebar';
 import { CommonFilterComponent } from './modules/settings/common-filter/common-filter.component';
+import { CommonFilterService } from './core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-root',
@@ -51,6 +52,8 @@ export class AppComponent implements AfterViewInit {
         private _fuseConfigService: FuseConfigService,
         private matDialog: MatDialog,
         public _userService: UserService,
+        public _filterService: CommonFilterService,
+
         @Inject(DOCUMENT) private document: Document
     ) {
         setReflectionActivator(this.injector);
