@@ -587,3 +587,102 @@ p-columnfilterformelement {
     cursor: pointer;
     border-radius: 100%;
 }
+
+// primeng sidebar
+.p-sidebar-mask {
+    display: none;
+}
+
+
+//swal2 css popup
+
+.swal2-html-container {
+    display: flex !important;
+    justify-content: flex-start !important;
+    font-size: 1rem;
+    font-weight: 500 !important;
+    padding:  1rem 1.3rem .3rem 1.3rem !important;
+    border-radius: 15px;
+}
+
+div:where(.swal2-container) input:where(.swal2-input):focus {
+    border: 1px solid #0d9488 !important;
+    box-shadow: none !important;
+}
+
+.swal2-input {
+    margin: 1rem 1.3rem .3rem 1.3rem !important;
+    font-size: 14px;
+}
+
+.swal2-actions {
+    justify-content: flex-end;
+    margin-right: 1.2rem
+}
+
+.swal2-confirm{
+    background-color: #0d9488;
+    color: white;
+    border-radius: 9999px !important;
+    padding: 0 20px !important;
+    min-height: 40px;
+    box-sizing: border-box;
+    min-width: 64px;
+    border: none;
+    outline: none;
+    line-height: inherit;
+    user-select: none;
+    overflow: visible;
+    vertical-align: middle;
+    order: 2;
+    font-size: 14px;
+}
+
+.swal2-cancel {
+    background: transparent;
+    border-radius: 9999px !important;
+    padding: 0 20px !important;
+    min-height: 40px;
+    box-sizing: border-box;
+    min-width: 64px;
+    outline: none;
+    line-height: inherit;
+    user-select: none;
+    overflow: visible;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.dark{
+
+    .swal2-html-container {
+        color: white;
+    }
+
+    .swal2-popup {
+        background: #1e293b;
+    }
+
+    .swal2-input {
+        color: #ffffffde;
+    }
+    
+    .swal2-confirm{
+        background-color: #0d9488;
+        color: white;
+    }
+    
+    .swal2-cancel {
+        color: white;
+        background: transparent;
+        border: 1px solid #ffffffde
+    }
+}
+
+.light {
+    
+    .swal2-cancel{
+        border: 1px solid #e2e8f0;
+        color: black;
+    } 
+}

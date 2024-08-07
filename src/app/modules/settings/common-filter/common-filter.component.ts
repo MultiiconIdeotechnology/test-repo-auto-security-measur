@@ -64,7 +64,7 @@ export class CommonFilterComponent implements OnChanges {
               autocapitalize: "off"
             },
             showCancelButton: true,
-            confirmButtonText: "Look up",
+            confirmButtonText: "Save",
             showLoaderOnConfirm: true,
             preConfirm: async (login) => {
                 console.log("result login", login);
