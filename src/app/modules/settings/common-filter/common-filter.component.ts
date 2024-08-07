@@ -1,4 +1,4 @@
-import { Component, OnChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -38,26 +38,12 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
     templateUrl: './common-filter.component.html',
     styleUrls: ['./common-filter.component.scss']
 })
-export class CommonFilterComponent implements OnChanges {
-    disableBtn: boolean = false
-    readonly: boolean = false;
-    record: any = {};
-    fieldList: {};
-    btnLabel: any = "Create New Filter";
-    formGroup: FormGroup;
-    title = "Filters"
+export class CommonFilterComponent implements OnInit {
 
-    constructor(
-        private conformationService: FuseConfirmationService,
-        private _userService: UserService,
-        public _filterService: CommonFilterService
-    ) { }
+    disableBtn: boolean = false
+    constructor(public _filterService: CommonFilterService) { }
 
     ngOnInit(): void {
-        console.log("Common Filter called");
-    }
-
-    ngOnChanges() {
     }
 
     saveSettings() {
@@ -69,22 +55,25 @@ export class CommonFilterComponent implements OnChanges {
         Swal.fire({
             text: "Create New Filter",
             input: "text",
+            inputPlaceholder: 'Enter Filter name',
             inputAttributes: {
-              autocapitalize: "off"
+                autocapitalize: "off"
             },
             showCancelButton: true,
             confirmButtonText: "Save",
+            cancelButtonText: "Close",
             showLoaderOnConfirm: true,
-            preConfirm: async (login) => {
-                console.log("result login", login);
+            preConfirm: async (value) => {
+                if (!value) {
+                    return false;
+                }
             },
-            allowOutsideClick: () => !Swal.isLoading()
-          }).then((result) => {
+            allowOutsideClick: () => Swal.isLoading()
+        }).then((result) => {
             if (result.isConfirmed) {
                 console.log("result", result);
-
             }
-          });
+        });
         return
     }
 }
