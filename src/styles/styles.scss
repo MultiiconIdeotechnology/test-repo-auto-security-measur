@@ -692,8 +692,9 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     .p-sidebar-header {
         display: none;
     }
-}
-
-.p-sidebar-content {
-    position: static !important;
+    
+    .p-sidebar-content {
+        padding: 0;
+        position: static !important;
+    }
 }

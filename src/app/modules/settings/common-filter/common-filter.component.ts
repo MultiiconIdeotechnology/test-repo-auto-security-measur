@@ -49,8 +49,9 @@ export class CommonFilterComponent implements OnInit {
         this._filterService.closeDrawer();
     }
 
-    // Submit Data
-    submit(): void {
+    // Create New Filter
+    createNewFilter(): void {
+        this._filterService.closeDrawer();
         Swal.fire({
             text: "Create New Filter",
             input: "text",
@@ -70,9 +71,10 @@ export class CommonFilterComponent implements OnInit {
             allowOutsideClick: () => Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log("result", result);
+                this._filterService.sidebarVisible = true;
+            } else if (result.isDismissed) {
+                this._filterService.sidebarVisible = true;
             }
-        });
-        return
+        }); 
     }
 }
