@@ -97,7 +97,7 @@
                         Bonton Service Charge <p-sortIcon field="bonton_service_charge" />
                     </th>
                     <th pSortableColumn="refunded_amount" pResizableColumn class="text-right">
-                        CGST<p-sortIcon field="refunded_amount" />
+                        Refunded Amount<p-sortIcon field="refunded_amount" />
                     </th>
                     <th pSortableColumn="service_charge" pResizableColumn class="text-right">
                         Service Charge <p-sortIcon field="service_charge" />
@@ -274,7 +274,7 @@
                     </td>
                     <td class="text-right">{{element.bonton_service_charge ? element.bonton_service_charge.toFixed(2) :
                         0}}</td>
-                    <td class="text-right">{{element.refunded_amount || 0}}</td>
+                    <td class="text-right">{{element.refunded_amount || '0'}}</td>
                     <td class="text-right">{{element.service_charge ? element.service_charge.toFixed(2) : 0}}</td>
                     <td class="text-right">{{element.tax ? element.tax.toFixed(2) : 0}}</td>
                     <td class="text-right">{{element.net_refund ? element.net_refund.toFixed(2) : 0}}</td>
