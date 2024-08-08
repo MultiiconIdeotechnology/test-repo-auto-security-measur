@@ -602,7 +602,10 @@ p-columnfilterformelement {
     font-size: 1rem;
     font-weight: 500 !important;
     padding:  1rem 1.3rem .3rem 1.3rem !important;
-    border-radius: 15px;
+}
+
+div:where(.swal2-container) div:where(.swal2-popup) {
+    border-radius: 15px !important;
 }
 
 div:where(.swal2-container) input:where(.swal2-input):focus {
@@ -617,7 +620,9 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
 
 .swal2-actions {
     justify-content: flex-end;
-    margin-right: 1.2rem
+    width: 100%;
+    padding-right: 1.3rem;
+    gap:10px;
 }
 
 .swal2-confirm{
@@ -636,6 +641,7 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     vertical-align: middle;
     order: 2;
     font-size: 14px;
+    margin:0;
 }
 
 .swal2-cancel {
@@ -651,6 +657,7 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     overflow: visible;
     vertical-align: middle;
     font-size: 14px;
+    margin-right:0;
 }
 
 .dark{
