@@ -220,12 +220,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   }
 
   getFilter(): any {
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginator,
-      this._sort,
-      this.searchInputControl.value
-    );
-
+    let filterReq = {}
     filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
     filterReq['service'] = this.saleFilter?.service || 'All';
     filterReq['date'] = this.saleFilter.date || 'Last Month';
@@ -234,6 +229,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
     filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['supplier_id'] = this.saleFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? 'All' : this.saleFilter?.supplier_id?.map(x => x.id).join(',');
+    filterReq['columeFilters'] = {};
     return filterReq;
   }
 
@@ -251,7 +247,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     // filterReq['supplier_id'] = this.saleFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? 'All' : this.saleFilter?.supplier_id?.map(x => x.id).join(',');
     let extraModel = this.getFilter();
     let newModel = this.getNewFilterReq(event)
-    var model = { ...extraModel, ...newModel };
+    var model = { ...newModel, ...extraModel };
 
     this.SalebookService.getSalesBookReport(model).subscribe({
       next: (res) => {

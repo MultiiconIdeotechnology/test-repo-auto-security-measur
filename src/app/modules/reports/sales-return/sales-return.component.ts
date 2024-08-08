@@ -168,18 +168,14 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     }
 
     getFilter(): any {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value
-        );
-
+        const filterReq = {};
         filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['service'] = this.saleFilter?.service || 'All';
         filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
         filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.company_id || 'All';
         filterReq['date'] = this.saleFilter.date || 'Last Month';
+        filterReq['columeFilters'] = {};
         return filterReq;
     }
 
@@ -187,7 +183,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         this.loading = true;
         let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq(event)
-        var model = { ...extraModel, ...newModel };
+        var model = { ...newModel, ...extraModel };
 
         this.salesReturnService.getSalesReturnReport(model).subscribe({
             next: (res) => {

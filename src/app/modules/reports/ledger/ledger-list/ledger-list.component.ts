@@ -173,6 +173,7 @@ export class LedgerListComponent extends BaseListingComponent {
     filterReq["service_for"] = this.legerFilter?.service_for;
     filterReq["agent_id"] = this.legerFilter?.agent_id?.id || "";
     filterReq["currencyId"] = this.legerFilter?.currencyId?.id || "";
+    filterReq['columeFilters'] = {};
     return filterReq;
   }
 
