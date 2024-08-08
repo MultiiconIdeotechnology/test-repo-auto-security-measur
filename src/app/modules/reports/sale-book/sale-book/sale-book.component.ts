@@ -140,7 +140,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   module_name = module_name.SaleBook
   tempData: any[] = [];
   dataList = [];
-  sortColumn: any = 'booking_date';
+  sortColumn: any = 'inquiry_date';
 
 
   dateBy = [{ value: 'BookingDate', label: 'Booking Date' }, { value: 'InvoiceDate', label: 'Invoice Date' }, { value: 'TravelDate', label: 'Travel Date' }];
@@ -338,7 +338,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
         { header: 'Agent State', property: 'agent_state' },
         { header: 'Booking Date', property: 'booking_date' },
         { header: 'Travel Date', property: 'travel_date' },
-        { header: 'Inquiry Date', property: 'inquiry_date' },
+        { header: 'Inquiry / Completed Date', property: 'inquiry_date' },
         { header: 'Invoice Date', property: 'invoice_date' },
         { header: 'Invoice No.', property: 'invoice_no' },
         { header: 'Destination', property: 'destination' },
