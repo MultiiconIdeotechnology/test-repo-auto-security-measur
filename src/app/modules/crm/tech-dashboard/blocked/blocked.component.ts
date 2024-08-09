@@ -191,11 +191,11 @@ export class TechDashboardBlockedComponent extends BaseListingComponent{
         //     });
         // this.refreshItems();
 
-        this.searchInputControlBlocked.valueChanges
-        .subscribe(() => {
-          // GridUtils.resetPaginator(this._paginatorPending);
-        //   this.refreshItems();
-        });
+        // this.searchInputControlBlocked.valueChanges
+        // .subscribe(() => {
+        //   // GridUtils.resetPaginator(this._paginatorPending);
+        // //   this.refreshItems();
+        // });
     }
 
     getStatusColor(status: string): string {

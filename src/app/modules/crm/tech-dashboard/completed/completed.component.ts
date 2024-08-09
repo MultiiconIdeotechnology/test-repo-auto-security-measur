@@ -205,11 +205,11 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         //     });
         // this.refreshItems();
 
-        this.searchInputControlCompleted.valueChanges
-            .subscribe(() => {
-                // GridUtils.resetPaginator(this._paginatorPending);
-                // this.refreshItems();
-            });
+        // this.searchInputControlCompleted.valueChanges
+        //     .subscribe(() => {
+        //         // GridUtils.resetPaginator(this._paginatorPending);
+        //         // this.refreshItems();
+        //     });
     }
 
     ngOnChanges(){

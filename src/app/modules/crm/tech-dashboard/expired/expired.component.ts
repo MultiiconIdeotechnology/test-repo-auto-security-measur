@@ -193,11 +193,11 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         //     });
         // this.refreshItems();
 
-        this.searchInputControlExpired.valueChanges
-        .subscribe(() => {
-          // GridUtils.resetPaginator(this._paginatorPending);
-        //   this.refreshItems();
-        });
+        // this.searchInputControlExpired.valueChanges
+        // .subscribe(() => {
+        //   // GridUtils.resetPaginator(this._paginatorPending);
+        // //   this.refreshItems();
+        // });
     }
 
     getStatusColor(status: string): string {

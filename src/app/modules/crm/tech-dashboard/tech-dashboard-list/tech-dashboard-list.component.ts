@@ -97,41 +97,41 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     }
 
     ngOnInit(): void {
-        this.searchInputControlPending.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.pending.searchInputControlPending.patchValue(value);
-            });
+        // this.searchInputControlPending.valueChanges
+        //     .pipe(
+        //         takeUntil(this._unsubscribeAll),
+        //         debounceTime(AppConfig.searchDelay)
+        //     )
+        //     .subscribe((value) => {
+        //         this.pending.searchInputControlPending.patchValue(value);
+        //     });
 
-        this.searchInputControlCompleted.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.completed.searchInputControlCompleted.patchValue(value);
-            });
+        // this.searchInputControlCompleted.valueChanges
+        //     .pipe(
+        //         takeUntil(this._unsubscribeAll),
+        //         debounceTime(AppConfig.searchDelay)
+        //     )
+        //     .subscribe((value) => {
+        //         this.completed.searchInputControlCompleted.patchValue(value);
+        //     });
 
-        this.searchInputControlExpired.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.expired.searchInputControlExpired.patchValue(value);
-            });
+        // this.searchInputControlExpired.valueChanges
+        //     .pipe(
+        //         takeUntil(this._unsubscribeAll),
+        //         debounceTime(AppConfig.searchDelay)
+        //     )
+        //     .subscribe((value) => {
+        //         this.expired.searchInputControlExpired.patchValue(value);
+        //     });
 
-        this.searchInputControlBlocked.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.blocked.searchInputControlBlocked.patchValue(value);
-            });
+        // this.searchInputControlBlocked.valueChanges
+        //     .pipe(
+        //         takeUntil(this._unsubscribeAll),
+        //         debounceTime(AppConfig.searchDelay)
+        //     )
+        //     .subscribe((value) => {
+        //         this.blocked.searchInputControlBlocked.patchValue(value);
+        //     });
 
             // calling agent Api for first time on dropdown
             this.getAgent("");
@@ -150,26 +150,26 @@ export class CRMTechDashboardListComponent implements OnDestroy {
 
             case 'Completed':
                 this.tab = 'completed';
-                if (this.isSecond) {
+                // if (this.isSecond) {
                     this.completed?.refreshItems();
                     this.isSecond = false;
-                }
+                // }
                 break;
 
             case 'Blocked':
                 this.tab = 'blocked';
-                if (this.isThird) {
+                // if (this.isThird) {
                     this.blocked?.refreshItems();
                     this.isThird = false;
-                }
+                // }
                 break;
 
             case 'Expired':
                 this.tab = 'expired';
-                if (this.isFourth) {
+                // if (this.isFourth) {
                     this.expired?.refreshItems();
                     this.isFourth = false;
-                }
+                // }
                 break;
         }
     }
@@ -191,24 +191,24 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
     }
 
-    pendingRefresh() {
+    pendingRefresh(event) {
+        this.pending.searchInputControlPending.patchValue(event);
         this.pending?.refreshItems();
-
     }
 
-    completedRefresh() {
+    completedRefresh(event) {
+        this.completed.searchInputControlCompleted.patchValue(event);
         this.completed?.refreshItems();
-
     }
 
-    expiredRefresh() {
+    expiredRefresh(event) {
+        this.expired.searchInputControlExpired.patchValue(event);
         this.expired?.refreshItems();
-
     }
 
-    blockedRefresh() {
+    blockedRefresh(event) {
+        this.blocked.searchInputControlBlocked.patchValue(event);
         this.blocked?.refreshItems();
-
     }
 
     // Api call to Get Agent data

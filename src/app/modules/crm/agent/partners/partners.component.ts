@@ -206,18 +206,6 @@ export class PartnersComponent extends BaseListingComponent{
     filter: any = {}
 
     ngOnInit(): void {
-        // this.searchInputControlpartners.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginatorArchive);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
-
-        this.searchInputControlpartners.valueChanges
-        .subscribe(() => {
-          // GridUtils.resetPaginator(this._paginatorPending);
-        //   this.refreshItems();
-        });
        
     }
 

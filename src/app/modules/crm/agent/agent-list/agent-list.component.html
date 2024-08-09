@@ -19,13 +19,17 @@
             </mat-form-field> -->
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Inbox'">
-                <input matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="inboxRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="inboxRefresh()"></mat-icon>
+                <input #inboxRef matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="inboxRefresh(inboxRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="inboxRefresh(inboxRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Partners'">
-                <input matInput [formControl]="searchInputControlpartners" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="partnersRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="partnersRefresh()"></mat-icon>
+                <input #partnerRef matInput [formControl]="searchInputControlpartners" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="partnersRefresh(partnerRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="partnersRefresh(partnerRef.value)"></mat-icon>
             </div>
 
             <!------global filter------>
@@ -61,11 +65,15 @@
 
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
-            <inbox-agent #inbox [isFilterShowInbox]="isFilterShowInbox" [dropdownListObj]="dropdownListObj"></inbox-agent>
+            <ng-container *ngIf="tabNameStr == 'Inbox'">
+            <inbox-agent #inbox [isFilterShowInbox]="isFilterShowInbox"
+                [dropdownListObj]="dropdownListObj"></inbox-agent>
+            </ng-container>
         </mat-tab>
         <mat-tab label="Partners" [aria-label]="'Partners'" *ngIf="getTabsPermission('partners')">
             <ng-container *ngIf="tabNameStr == 'Partners'">
-                <app-partners #partners [isFilterShowPartners]="isFilterShowPartners" [dropdownListObj]="dropdownListObj"></app-partners>
+                <app-partners #partners [isFilterShowPartners]="isFilterShowPartners"
+                    [dropdownListObj]="dropdownListObj"></app-partners>
             </ng-container>
         </mat-tab>
     </mat-tab-group>
