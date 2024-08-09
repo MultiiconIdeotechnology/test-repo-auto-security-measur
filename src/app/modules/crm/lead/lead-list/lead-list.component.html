@@ -19,13 +19,13 @@
                 </ng-container>
             </mat-form-field> -->
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Inbox'">
-                <input matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="inboxRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="inboxRefresh()"></mat-icon>
+                <input #inboxRef matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="inboxRefresh(inboxRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="inboxRefresh(inboxRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Archive'">
-                <input matInput [formControl]="searchInputControlArchive" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="archiveRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="archiveRefresh()"></mat-icon>
+                <input #archiveRef matInput [formControl]="searchInputControlArchive" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="archiveRefresh(archiveRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="archiveRefresh(archiveRef.value)"></mat-icon>
             </div>
 
           
@@ -69,7 +69,9 @@
 
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
-            <app-inbox #inbox [isFilterShowInbox]="isFilterShowInbox"></app-inbox>
+            <ng-container *ngIf="tabNameStr == 'Inbox'">
+                <app-inbox #inbox [isFilterShowInbox]="isFilterShowInbox"></app-inbox>
+            </ng-container>
         </mat-tab>
 
         <mat-tab label="Archive" [aria-label]="'Archive'" *ngIf="getTabsPermission('archive')">

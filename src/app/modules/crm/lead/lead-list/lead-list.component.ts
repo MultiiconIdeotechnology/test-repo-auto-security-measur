@@ -81,11 +81,6 @@ export class CRMLeadListComponent implements OnDestroy {
         })
     }
 
-    ngOnDestroy(): void {
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.unsubscribe();
-    }
-
     public getTabsPermission(tab: string): boolean {
         if (tab == 'inbox') {
             return Security.hasPermission(crmLeadPermissions.inboxTabPermissions)
@@ -95,24 +90,6 @@ export class CRMLeadListComponent implements OnDestroy {
     }
 
     ngOnInit(): void {
-        this.searchInputControlInbox.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.inbox.searchInputControlInbox.patchValue(value)
-            });
-
-
-        this.searchInputControlArchive.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.archive.searchInputControlArchive.patchValue(value)
-            });
     }
 
     public tabChanged(event: any): void {
@@ -128,10 +105,10 @@ export class CRMLeadListComponent implements OnDestroy {
 
             case 'Archive':
                 this.tab = 'archive';
-                if (this.isSecound) {
+                // if (this.isSecound) {
                     this.archive?.refreshItems()
-                    this.isSecound = false
-                }
+                    // this.isSecound = false
+                // }
                 break;
         }
     }
@@ -145,11 +122,13 @@ export class CRMLeadListComponent implements OnDestroy {
         }
     }
 
-    inboxRefresh() {
+    inboxRefresh(event) {
+        this.inbox.searchInputControlInbox.patchValue(event);
         this.inbox?.refreshItems();
     }
 
-    archiveRefresh() {
+    archiveRefresh(event) {
+        this.archive.searchInputControlArchive.patchValue(event)
         this.archive?.refreshItems();
     }
 
@@ -166,5 +145,10 @@ export class CRMLeadListComponent implements OnDestroy {
         //         }
         //     });
         this.entityService.raiseleadEntityCall({})
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.unsubscribe();
     }
 }
