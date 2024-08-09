@@ -113,7 +113,7 @@
             </mat-card>
 
             <mat-card class="mt-2 p-3 rounded-md shadow-lg"
-                *ngIf="amendmentData && amendmentData.amountType == 'Receipt'">
+                *ngIf="amendmentData && amendmentData.amountType == 'Receipt' && amendmentData.is_segment_amount">
                 <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">

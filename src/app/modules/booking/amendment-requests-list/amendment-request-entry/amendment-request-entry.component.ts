@@ -23,6 +23,7 @@ import { EntityService } from 'app/services/entity.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Routes } from 'app/common/const';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { amendmentRequestsPermissions, messages, Security } from 'app/security';
 
 @Component({
     selector: 'app-amendment-request-entry',
@@ -251,13 +252,13 @@ export class AmendmentRequestEntryComponent {
     }
 
     inprocess(): void {
-        // if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+        if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
         this.conformationService.open({
             title: 'Amendment Inprocess',
-            message: 'Are you sure to inprocess this amendment process ?',
+            message: 'Are you sure to inprocess this amendment process?',
             icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
@@ -275,13 +276,13 @@ export class AmendmentRequestEntryComponent {
     }
 
     refundInitiate(): void {
-        // if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
         this.conformationService.open({
             title: 'Amendment Refund Initiate',
-            message: 'Are you sure to refund initiate this amendment process ?',
+            message: 'Are you sure to refund initiate this amendment process?',
             icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
@@ -299,13 +300,13 @@ export class AmendmentRequestEntryComponent {
     }
 
     complete(): void {
-        // if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+        if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
         this.conformationService.open({
             title: 'Amendment Complete',
-            message: 'Are you sure to complete this amendment process ?',
+            message: 'Are you sure to complete this amendment process?',
             icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
@@ -323,13 +324,13 @@ export class AmendmentRequestEntryComponent {
     }
 
     confirmation(): void {
-        // if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+        if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
         this.conformationService.open({
             title: "Confirm Amendment",
-            message: 'Are you sure want to confirm amendment?'
+            message: 'Are you sure want to confirm amendment by TA?'
         }).afterClosed().subscribe(ress => {
             if (ress === 'confirmed') {
                 this.amendmentRequestsService.confirmAmendment({ id: this.record.id }).subscribe({
