@@ -217,18 +217,6 @@ export class InboxAgentComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-        // this.searchInputControlInbox.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginatorInbox);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
-
-        this.searchInputControlInbox.valueChanges
-            .subscribe(() => {
-                // GridUtils.resetPaginator(this._paginatorPending);
-                // this.refreshItems();
-            });
     }
 
     ngOnChanges(){
@@ -250,17 +238,11 @@ export class InboxAgentComponent extends BaseListingComponent {
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlInbox.value;
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginatorInbox,
-        //     this._sortInbox,
-        //     this.searchInputControlInbox.value
-        // );
         this.crmService.getInboxAgentList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
                 this.totalRecords = data.total;
-                // this._paginatorInbox.length = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

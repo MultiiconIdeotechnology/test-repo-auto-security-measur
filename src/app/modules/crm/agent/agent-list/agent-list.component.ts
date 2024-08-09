@@ -75,11 +75,6 @@ export class CRMAgentListComponent implements OnDestroy {
     ) {
     }
 
-    ngOnDestroy(): void {
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.unsubscribe();
-    }
-
     public getTabsPermission(tab: string): boolean {
         if (tab == 'inbox') {
             return Security.hasPermission(crmLeadPermissions.agentInboxTabPermissions)
@@ -90,23 +85,6 @@ export class CRMAgentListComponent implements OnDestroy {
 
 
     ngOnInit(): void {
-        this.searchInputControlInbox.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.inbox.searchInputControlInbox.patchValue(value)
-            });
-
-        this.searchInputControlpartners.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.partners.searchInputControlpartners.patchValue(value)
-            });
 
         // calling Api for defatult value for first time to get Agent list.
         this.getAgent('');
@@ -137,10 +115,10 @@ export class CRMAgentListComponent implements OnDestroy {
 
             case 'Partners':
                 this.tab = 'partners';
-                if (this.isSecound) {
+                // if (this.isSecound) {
                     this.partners?.refreshItems()
                     this.isSecound = false
-                }
+                // }
                 break;
         }
     }
@@ -152,11 +130,18 @@ export class CRMAgentListComponent implements OnDestroy {
             this.partners?.refreshItems();
     }
 
-    inboxRefresh() {
+    inboxRefresh(event) {
+        this.inbox.searchInputControlInbox.patchValue(event)
         this.inbox?.refreshItems();
     }
 
-    partnersRefresh() {
+    partnersRefresh(event) {
+        this.partners.searchInputControlpartners.patchValue(event)
         this.partners?.refreshItems();
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.unsubscribe();
     }
 }
