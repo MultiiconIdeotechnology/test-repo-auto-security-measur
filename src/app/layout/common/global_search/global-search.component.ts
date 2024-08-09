@@ -143,6 +143,14 @@ export class GlobalSearchComponent {
                         this.entityService.raiseInfoWithdraw({ data: this.bookingRefValue, global_withdraw: true })
                     }
 
+                    else if (this.bookingRefKey == 'air_group_inqury') {
+                        if (!Security.hasViewDetailPermission(module_name.groupInquiry)) {
+                            return this.alertService.showToast('error', messages.permissionDenied);
+                        }
+                        this.formGroup.get('searchfilter').patchValue("");
+                        Linq.recirect('/booking/group-inquiry/details/' + this.bookingRefValue);
+                     }
+
                     // else if (this.bookingRefKey == 'air_amendment') {
                     //     if (!Security.hasViewDetailPermission(module_name.wallet)) {
                     //         return this.alertService.showToast('error', messages.permissionDenied);

@@ -20,22 +20,12 @@ import { ToasterService } from 'app/services/toaster.service';
 import { WithdrawService } from 'app/services/withdraw.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-info-withdraw',
     templateUrl: './info-withdraw.component.html',
     // styleUrls: ['./info-withdraw.component.scss'],
-    styles: [
-        `
-        app-bank-entry-right {
-            position: static;
-            display: block;
-            flex: none;
-            width: auto;
-        }
-    `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -57,55 +47,62 @@ import { Subject, takeUntil } from 'rxjs';
         MatDividerModule,
         MatDatepickerModule,
         MatMenuModule,
-        NgxMatTimepickerModule,
+        NgxMatTimepickerModule
     ]
-
 })
 export class InfoWithdrawComponent {
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
     config: FuseConfig;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     record: any = {};
-    fieldList: {};
-    title: string;
-    allrecord: any;
+    private settingsUpdatedSubscription: Subscription;
 
     constructor(
         public alertService: ToasterService,
         public withdrawService: WithdrawService,
         private entityService: EntityService,
     ) {
-
-        this.entityService.onInfoWithdraw().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-            next: (item) => {
-                this.settingsDrawer.toggle()
-                this.record = item.data
-                if (this.record && !item?.global_withdraw) {
-                    this.refreshItem()
+        this.settingsUpdatedSubscription = this.entityService.onInfoWithdraw()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe({
+                next: (item) => {
+                    this.settingsDrawer?.toggle();
+                    this.record = item.data;
+                    if (!item.global_withdraw && this.record) {
+                        this.refreshItem();
+                    }
+                    if (item.global_withdraw) {
+                        this.refreshItem();
+                    }
+                },
+                error: (err) => {
+                    this.alertService.showToast('error', err, 'top-right', true);
                 }
-                if (item?.global_withdraw && this.record) {
-                    this.refreshItem();
-                }
-            }
-        })
+            });
     }
 
-    ngOnInit() {
-    }
-
-    downloadInfo(data): void {
+    downloadInfo(data: string): void {
         window.open(data, '_blank');
     }
 
     refreshItem() {
-        this.withdrawService.getWalletWithdrawRecord(this.record).subscribe({
-            next: (data) => {
-                this.record = data
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        },
-        )
+        if (this.record) {
+            this.withdrawService.getWalletWithdrawRecord(this.record).subscribe({
+                next: (data) => {
+                    this.record = data;
+                },
+                error: (err) => {
+                    this.alertService.showToast('error', err, 'top-right', true);
+                },
+            });
+        }
+    }
+
+    ngOnDestroy() {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+        }
+        // this._unsubscribeAll.next();
+        // this._unsubscribeAll.complete();
     }
 }
