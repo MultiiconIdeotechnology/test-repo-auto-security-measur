@@ -103,7 +103,7 @@ export class AuditedComponent extends BaseListingComponent {
     { key: 'audited_by_name', name: 'Audit By', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
     { key: 'audited_date_time', name: 'Audit Time', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
     { key: 'user_remark', name: 'Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    
+
   ]
   cols = [];
 
@@ -192,10 +192,10 @@ export class AuditedComponent extends BaseListingComponent {
     if (!Security.hasViewDetailPermission(module_name.wallet)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    
+
     this.matDialog.open(InfoWalletComponent, {
-      data: { data: record, readonly: true },
-      disableClose: true
+        data: { data: record.id, readonly: true },
+        disableClose: true
     })
   }
 

@@ -55,8 +55,8 @@ export class InfoWalletComponent {
   }
 
   ngOnInit() {
-    if (this.record.id) {
-      this.walletService.getWalletRechargeRecord(this.record.id).subscribe({
+    if (this.record) {
+      this.walletService.getWalletRechargeRecord(this.record).subscribe({
         next: (data) => {
 
           this.records = data;
@@ -88,10 +88,8 @@ export class InfoWalletComponent {
         error: (err) => {
           this.alertService.showToast('error', err, 'top-right', true);
         },
-
       },
       )
     }
   }
-
 }

@@ -91,6 +91,7 @@ export class WPendingComponent extends BaseListingComponent {
 
 
   columns = [
+    { key: 'withdraw_ref_no', name: 'Ref No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
     { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: false },
     { key: 'withdraw_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
     { key: 'agent_Code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },

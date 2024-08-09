@@ -278,10 +278,12 @@ export class HotelsListComponent extends BaseListingComponent {
   }
 
   viewData(record): void {
-    if (!Security.hasPermission(bookingsHotelPermissions.modifyPermissions)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
+    // if (!Security.hasPermission(bookingsHotelPermissions.modifyPermissions)) {
+    //   return this.alertService.showToast('error', messages.permissionDenied);
+    // }
+    if (!Security.hasViewDetailPermission(module_name.bookingsHotel)) {
+        return this.alertService.showToast('error', messages.permissionDenied);
     }
-
     Linq.recirect('/booking/hotel/details/' + record.id);
   }
 
