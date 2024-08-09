@@ -27,9 +27,8 @@
                                 class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
                                 <mat-icon> more_vert </mat-icon>
                             </button>
-                            <!-- *ngIf="ListItem.receipt_Status !== 'Confirmed'" -->
                             <mat-menu #optionMenu>
-                                <button mat-menu-item (click)="editAction(ListItem)">
+                                <button mat-menu-item (click)="editAction(ListItem)" *ngIf="!ListItem.is_payment_audited">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Modify</span>
                                 </button>

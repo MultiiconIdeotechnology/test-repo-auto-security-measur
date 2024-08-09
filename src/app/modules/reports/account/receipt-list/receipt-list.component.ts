@@ -493,7 +493,7 @@ export class ReceiptListComponent
     viewInternal(data: any): void {
         this.matDialog.open(PaymentInfoComponent, {
             disableClose: true,
-            data: { receipt: data },
+            data: { receipt: data.id },
         });
     }
 
@@ -512,12 +512,12 @@ export class ReceiptListComponent
     }
 
     viewData(record): void {
-        if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
-            return this.alertService.showToast(
-                'error',
-                messages.permissionDenied
-            );
-        }
+        // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
+        //     return this.alertService.showToast(
+        //         'error',
+        //         messages.permissionDenied
+        //     );
+        // }
 
         if (record?.transaction_ref_no?.substring(0, 3) == 'FLT') {
             Linq.recirect('/booking/flight/details/' + record.product_id);

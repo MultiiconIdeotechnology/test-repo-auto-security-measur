@@ -162,7 +162,7 @@ export class PendingComponent extends BaseListingComponent {
     }
 
     this.matDialog.open(InfoWalletComponent, {
-      data: { data: record, readonly: true },
+      data: { data: record.id, readonly: true },
       disableClose: true
     })
   }

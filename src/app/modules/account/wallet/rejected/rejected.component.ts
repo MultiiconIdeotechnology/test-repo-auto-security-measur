@@ -165,8 +165,8 @@ export class RejectedComponent extends BaseListingComponent {
     }
 
     this.matDialog.open(InfoWalletComponent, {
-      data: { data: record, readonly: true },
-      disableClose: true
+        data: { data: record.id, readonly: true },
+        disableClose: true
     })
   }
 

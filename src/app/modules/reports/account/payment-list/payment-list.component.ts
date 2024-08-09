@@ -176,7 +176,7 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   viewInternal(data: any): void {
     this.matDialog.open(PaymentInfoComponent, {
       disableClose: true,
-      data: { payment: data }
+      data: { payment: data.id }
     });
   }
 
@@ -203,7 +203,7 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
 
 
   info(data: any): void {
-    // // only one show tab 
+    // // only one show tab
     // // if(!data.show)
     // // this.dataList.forEach(x => x.show = false)
 
@@ -211,7 +211,7 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     // this.infoList = [data]
 
     // // Change the name of the button.
-    // if(this.show)  
+    // if(this.show)
     //   this.buttonName = "Hide";
     // else
     //   this.buttonName = "Show";

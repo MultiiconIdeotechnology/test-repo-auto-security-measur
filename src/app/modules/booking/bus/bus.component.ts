@@ -273,6 +273,9 @@ export class BusComponent extends BaseListingComponent {
 
 
   viewInternal(record): void {
+    if (!Security.hasViewDetailPermission(module_name.bus)) {
+        return this.alertService.showToast('error', messages.permissionDenied);
+    }
     // let queryParams: any= this.router.navigate([Routes.booking.booking_details_route + '/' + record.id + '/readonly'])
     Linq.recirect('/booking/bus/details/' + record.id);
   }

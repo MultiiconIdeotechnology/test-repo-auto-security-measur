@@ -20,7 +20,7 @@ export default [
         path: 'details/:id',
         component: VisaBookingDetailsComponent,
         canActivate: [AuthGuard],
-        data: { module: 'Bookings - Visa', group: 'Listing', operation: 'View All Data', category: 'View' }
+        data: { module: 'Bookings - Visa', group: 'Listing', operation: 'View Detail', category: 'View Detail' }
     }
 ] as Routes
 

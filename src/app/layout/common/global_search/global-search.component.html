@@ -1,0 +1,12 @@
+<div class="search-container p-4">
+    <form [formGroup]="formGroup" class="flex">
+        <div class="w-full min-w-160 max-w-160">
+            <input class="w-full border-b border-white" formControlName="searchfilter" (keyup.enter)="search()">
+        </div>
+
+        <div class="cursor-pointer ml-4" (click)="search()">
+            <mat-icon>search</mat-icon>
+        </div>
+    </form>
+</div>
+<app-info-withdraw></app-info-withdraw>

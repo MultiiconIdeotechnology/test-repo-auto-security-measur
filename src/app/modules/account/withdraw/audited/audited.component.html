@@ -11,13 +11,18 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="entry_date_time" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-                    [frozen]="frozenObj?.entry_date_time" [ngClass]="{'left-0': !frozenObj?.entry_date_time}">
-                    Date <p-sortIcon field="entry_date_time" />
-                    <span class="float-right" (click)="isFrozenColumn('entry_date_time');$event.stopPropagation()">
-                        <i *ngIf="!frozenObj?.entry_date_time" class="pi pi-lock-open icon-size-3"></i>
-                        <i *ngIf="frozenObj?.entry_date_time" class="pi pi-lock icon-size-3"></i>
+                <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="withdraw_ref_no" pResizableColumn
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.withdraw_ref_no"
+                    [ngClass]="{'left-0': !frozenObj?.withdraw_ref_no}">
+                    Ref. No. <p-sortIcon field="withdraw_ref_no" />
+                    <span class="float-right" (click)="isFrozenColumn('withdraw_ref_no');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.withdraw_ref_no" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.withdraw_ref_no" class="pi pi-lock icon-size-3"></i>
                     </span>
+                </th>
+
+                <th pSortableColumn="entry_date_time">
+                    Date <p-sortIcon field="entry_date_time" />
                 </th>
                 <th class="text-right" pSortableColumn="withdraw_amount" pResizableColumn>
                     Amount <p-sortIcon field="withdraw_amount" />
@@ -35,23 +40,17 @@
 
             <tr *ngIf="isFilterShowAudit">
                 <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.withdraw_ref_no">
+                    <p-columnFilter type="text" field="withdraw_ref_no" placeholder="Search by Ref. No"
+                        ariaLabel="Filter Ref. No" />
+                </th>
+
                 <th>
-                    <!-- <p-columnFilter field="entry_date_time" type="date">
-                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                placeholder="Search by Entry Date"></p-calendar>
-                        </ng-template>
-                    </p-columnFilter> -->
                     <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar
-                                    selectionMode="range"
-                                    [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)"
-                                    [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy"
-                                    appendTo="body"
-                                    placeholder="Search by Date Range">
+                            <p-calendar selectionMode="range" [ngModel]="value"
+                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                             </p-calendar>
                         </ng-template>
                     </p-columnFilter>
@@ -112,7 +111,10 @@
                         </button>
                     </mat-menu>
                 </td>
-                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.entry_date_time">
+                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.withdraw_ref_no">
+                    {{(element.withdraw_ref_no) || '-'}}
+                </td>
+                <td>
                     {{(element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                 </td>
                 <td class="text-right">
@@ -139,7 +141,7 @@
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="6" class="text-center font-semibold text-lg">
+                <td colspan="7" class="text-center font-semibold text-lg">
                     {{getNodataTextAudited()}}
                 </td>
             </tr>
