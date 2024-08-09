@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FuseAlertComponent } from '@fuse/components/alert';
 import { InfoWalletComponent } from 'app/modules/account/wallet/info-wallet/info-wallet.component';
 import { PaymentInfoComponent } from 'app/modules/reports/account/payment-list/payment-info/payment-info.component';
@@ -16,6 +16,7 @@ import { GlobalSearchService } from 'app/services/global-search.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Linq } from 'app/utils/linq';
 import { InfoWithdrawComponent } from "../../../modules/account/withdraw/info-withdraw/info-withdraw.component";
+import { Routes } from 'app/common/const';
 
 @Component({
     selector: 'app-global-search',
@@ -35,6 +36,7 @@ export class GlobalSearchComponent {
         private alertService: ToasterService,
         private matDialog: MatDialog,
         private entityService: EntityService,
+        private router: Router,
         private builder: FormBuilder) {
     }
 
@@ -67,42 +69,55 @@ export class GlobalSearchComponent {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        Linq.recirect('/booking/flight/details/' + this.bookingRefValue);
+                        this.router.navigate([Routes.booking.booking_details_route + '/' + this.bookingRefValue])
+                        //Linq.recirect('/booking/flight/details/' + this.bookingRefValue);
+                        this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'bus_booking') {
                         if (!Security.hasViewDetailPermission(module_name.bus)) {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        Linq.recirect('/booking/bus/details/' + this.bookingRefValue);
+
+                        this.router.navigate(['/booking/bus/details/' + this.bookingRefValue])
+                        // Linq.recirect('/booking/bus/details/' + this.bookingRefValue);
+                        this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'hotel_booking') {
                         if (!Security.hasViewDetailPermission(module_name.bookingsHotel)) {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        Linq.recirect('/booking/hotel/details/' + this.bookingRefValue);
+                        this.router.navigate(['/booking/hotel/details/' + this.bookingRefValue])
+                        // Linq.recirect('/booking/hotel/details/' + this.bookingRefValue);
+                        this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'visa_booking') {
                         if (!Security.hasViewDetailPermission(module_name.bookingsVisa)) {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        Linq.recirect('/booking/visa/details/' + this.bookingRefValue);
+                        // Linq.recirect('/booking/visa/details/' + this.bookingRefValue);
+                        this.router.navigate(['/booking/visa/details/' + this.bookingRefValue])
+                        this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'offline_service_booking') {
                         if (!Security.hasViewDetailPermission(module_name.offlineService)) {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        Linq.recirect('/booking/offline-service/entry/' + this.bookingRefValue + '/readonly');
+                        // Linq.recirect('/booking/offline-service/entry/' + this.bookingRefValue + '/readonly');
+                        this.router.navigate(['/booking/offline-service/entry/' + this.bookingRefValue + '/readonly'])
+                        this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'agent_detail') {
                         if (!Security.hasViewDetailPermission(module_name.agent)) {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        Linq.recirect('/customers/agent/entry/' + this.bookingRefValue + '/readonly');
+                        // Linq.recirect('/customers/agent/entry/' + this.bookingRefValue + '/readonly');
+                        this.router.navigate(['/customers/agent/entry/' + this.bookingRefValue + '/readonly'])
+                        this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'payment_detail') {
                         if (!Security.hasViewDetailPermission(module_name.payment)) {
@@ -148,8 +163,10 @@ export class GlobalSearchComponent {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        Linq.recirect('/booking/group-inquiry/details/' + this.bookingRefValue);
-                     }
+                        // Linq.recirect('/booking/group-inquiry/details/' + this.bookingRefValue);
+                        this.router.navigate(['/booking/group-inquiry/details' + this.bookingRefValue])
+                        this.matDialog.closeAll();
+                    }
 
                     // else if (this.bookingRefKey == 'air_amendment') {
                     //     if (!Security.hasViewDetailPermission(module_name.wallet)) {
