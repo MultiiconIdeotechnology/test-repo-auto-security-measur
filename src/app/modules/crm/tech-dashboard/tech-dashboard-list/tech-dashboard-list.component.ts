@@ -74,7 +74,6 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     searchInputControlCompleted = new FormControl('');
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
-    completedSearchVal:string = "";
 
     dataList = [];
     dataListArchive = [];
@@ -198,7 +197,6 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     }
 
     completedRefresh(event) {
-        this.completedSearchVal = event;
         this.completed.searchInputControlCompleted.patchValue(event);
         this.completed?.refreshItems();
     }
@@ -206,7 +204,6 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     expiredRefresh(event) {
         this.expired.searchInputControlExpired.patchValue(event);
         this.expired?.refreshItems();
-
     }
 
     blockedRefresh(event) {
