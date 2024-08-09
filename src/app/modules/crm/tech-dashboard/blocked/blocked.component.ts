@@ -184,6 +184,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent{
     filter: any = {}
 
     ngOnInit(): void {
+         console.log("blocked ngOnInit")
         // this.searchInputControlBlocked.valueChanges
         //     .subscribe(() => {
         //         GridUtils.resetPaginator(this._paginator);
@@ -191,11 +192,11 @@ export class TechDashboardBlockedComponent extends BaseListingComponent{
         //     });
         // this.refreshItems();
 
-        this.searchInputControlBlocked.valueChanges
-        .subscribe(() => {
-          // GridUtils.resetPaginator(this._paginatorPending);
-        //   this.refreshItems();
-        });
+        // this.searchInputControlBlocked.valueChanges
+        // .subscribe(() => {
+        //   // GridUtils.resetPaginator(this._paginatorPending);
+        // //   this.refreshItems();
+        // });
     }
 
     getStatusColor(status: string): string {
@@ -291,6 +292,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent{
     }
 
     refreshItems(event?: any) {
+        console.log("blocked refreshiutem")
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlBlocked.value;

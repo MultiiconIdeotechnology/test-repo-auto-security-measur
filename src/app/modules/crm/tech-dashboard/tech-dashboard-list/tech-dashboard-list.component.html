@@ -8,8 +8,8 @@
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
 
             <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'"> -->
-               
-                <!-- <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+
+            <!-- <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <ng-container *ngIf="tabNameStr == 'Pending'">
                     <input matInput [formControl]="searchInputControlPending" [autocomplete]="'off'"
                         [placeholder]="'Search'">
@@ -30,23 +30,31 @@
             </mat-form-field> -->
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Pending'">
-                <input matInput [formControl]="searchInputControlPending" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="pendingRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="pendingRefresh()"></mat-icon>
+                <input #pendingRef matInput [formControl]="searchInputControlPending" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="pendingRefresh(pendingRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="pendingRefresh(pendingRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Completed'">
-                <input matInput [formControl]="searchInputControlCompleted" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="completedRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="completedRefresh()"></mat-icon>
+                <input #completedRef matInput [formControl]="searchInputControlCompleted" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="completedRefresh(completedRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="completedRefresh(completedRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Expired'">
-                <input matInput [formControl]="searchInputControlExpired" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="expiredRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="expiredRefresh()"></mat-icon>
+                <input #expiredRef matInput [formControl]="searchInputControlExpired" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="expiredRefresh(expiredRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="expiredRefresh(expiredRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Blocked'">
-                <input matInput [formControl]="searchInputControlBlocked" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="blockedRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="blockedRefresh()"></mat-icon>
+                <input #blockedRef matInput [formControl]="searchInputControlBlocked" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="blockedRefresh(blockedRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="blockedRefresh(blockedRef.value)"></mat-icon>
             </div>
 
 
@@ -114,28 +122,30 @@
 
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
-            <app-crm-tech-dashboard-pending #pending
-                [isFilterShowPending]="isFilterShowPending" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-pending>
+            <ng-container *ngIf="tabNameStr == 'Pending'">
+                <app-crm-tech-dashboard-pending #pending [isFilterShowPending]="isFilterShowPending"
+                    [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-pending>
+            </ng-container>
         </mat-tab>
 
         <mat-tab label="Completed" [aria-label]="'Completed'" *ngIf="getTabsPermission('completed')">
             <ng-container *ngIf="tabNameStr == 'Completed'">
-            <app-crm-tech-dashboard-completed #completed
-                [isFilterShowCompleted]="isFilterShowCompleted" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-completed>
+                <app-crm-tech-dashboard-completed #completed [isFilterShowCompleted]="isFilterShowCompleted"
+                    [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-completed>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Blocked" [aria-label]="'Blocked'" *ngIf="getTabsPermission('blocked')">
             <ng-container *ngIf="tabNameStr == 'Blocked'">
-            <app-crm-tech-dashboard-blocked #blocked
-                [isFilterShowBlocked]="isFilterShowBlocked" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-blocked>
+                <app-crm-tech-dashboard-blocked #blocked [isFilterShowBlocked]="isFilterShowBlocked"
+                    [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-blocked>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Expired" [aria-label]="'Expired'" *ngIf="getTabsPermission('expired')">
             <ng-container *ngIf="tabNameStr == 'Expired'">
-            <app-crm-tech-dashboard-expired #expired
-                [isFilterShowExpired]="isFilterShowExpired" [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-expired>
+                <app-crm-tech-dashboard-expired #expired [isFilterShowExpired]="isFilterShowExpired"
+                    [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-expired>
             </ng-container>
         </mat-tab>
     </mat-tab-group>

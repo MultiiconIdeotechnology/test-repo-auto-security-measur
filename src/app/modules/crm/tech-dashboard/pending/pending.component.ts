@@ -241,11 +241,11 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         //     });
         // this.refreshItems();
 
-        this.searchInputControlPending.valueChanges
-            .subscribe(() => {
-                // GridUtils.resetPaginator(this._paginatorPending);
-                // this.refreshItems();
-            });
+        // this.searchInputControlPending.valueChanges
+        //     .subscribe(() => {
+        //         // GridUtils.resetPaginator(this._paginatorPending);
+        //         // this.refreshItems();
+        //     });
 
     }
 
@@ -257,11 +257,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlPending.value;
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sortInbox,
-        //     this.searchInputControlPending.value, ""
-        // );
+     
         this.crmService.getTechProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
