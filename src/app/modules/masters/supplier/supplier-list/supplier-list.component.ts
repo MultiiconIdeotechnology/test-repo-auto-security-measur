@@ -1,4 +1,4 @@
-import { Security, messages, module_name, supplierPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, supplierPermissions } from 'app/security';
 import { DatePipe, NgIf, NgFor, CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,8 @@ import { AssignKycDialogComponent } from '../assign-kyc-dialog/assign-kyc-dialog
 import { KycInfoComponent } from '../../agent/kyc-info/kyc-info.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { PspSettingService } from 'app/services/psp-setting.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-supplier-list',
@@ -50,6 +52,8 @@ import { PspSettingService } from 'app/services/psp-setting.service';
 
 export class SupplierListComponent extends BaseListingComponent {
     module_name = module_name.supplier;
+    filter_table_name = filter_module_name.supplier_master;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     _selectedColumns: Column[];
@@ -157,7 +161,8 @@ export class SupplierListComponent extends BaseListingComponent {
         private supplierService: SupplierService,
         private conformationService: FuseConfirmationService,
         private pspsettingService: PspSettingService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.supplier);
         this.cols = this.columns.map((x) => x.key);
@@ -165,17 +170,28 @@ export class SupplierListComponent extends BaseListingComponent {
         this.sortColumn = 'company_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
 
         this.getCompanyList("");
 
-        
         this.cols = [
             { field: 'currency', header: 'Currency', type: 'text' },
             { field: 'priority', header: 'Priority', type:'numeric'}
         ];
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if( resp['table_config']['entry_date_time'] && resp['table_config']['entry_date_time'].value ){
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
 
     getCompanyList(value) {
@@ -430,5 +446,9 @@ export class SupplierListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+          }
     }
 }

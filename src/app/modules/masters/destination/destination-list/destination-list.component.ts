@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { DestinationService } from './../../../../services/destination.service';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
-import { Security, destinationPermissions, messages, module_name } from 'app/security';
+import { Security, destinationPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -23,6 +23,8 @@ import { ExclusionListDialogComponent } from '../exclusion-list-dialog/exclusion
 import { DefaultExclusionsComponent } from '../default-exclusions/default-exclusions.component';
 import { ImagesComponent } from '../images/images.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-destination-list',
@@ -53,6 +55,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 })
 export class DestinationListComponent extends BaseListingComponent {
     module_name = module_name.destination;
+    filter_table_name = filter_module_name.destination_master;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     isFilterShow: boolean = false;
 
@@ -117,7 +121,8 @@ export class DestinationListComponent extends BaseListingComponent {
         private destinationService: DestinationService,
         private conformationService: FuseConfirmationService,
         private router: Router,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.destination);
         this.cols = this.columns.map((x) => x.key);
@@ -125,6 +130,17 @@ export class DestinationListComponent extends BaseListingComponent {
         this.sortColumn = 'destination_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
+    }
+
+    ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
 
     refreshItems(event?: any): void {
@@ -352,5 +368,9 @@ export class DestinationListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+          }
     }
 }

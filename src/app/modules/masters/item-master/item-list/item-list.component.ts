@@ -10,10 +10,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { module_name } from 'app/security';
+import { filter_module_name, module_name } from 'app/security';
 import { ItemService } from 'app/services/item.service';
 import { ItemEntryComponent } from '../item-entry/item-entry.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-item-list',
@@ -38,7 +40,9 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 })
 export class ItemListComponent extends BaseListingComponent {
 
-  module_name = module_name.itemMaster
+  module_name = module_name.itemMaster;
+  filter_table_name = filter_module_name.items_master;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
   isFilterShow: boolean = false;
@@ -60,14 +64,29 @@ export class ItemListComponent extends BaseListingComponent {
     private itemService: ItemService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.itemMaster)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
+
+  ngOnInit(): void {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        if(resp['table_config']['entry_date_time'].value){
+            resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+        }
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShow = true;
+        this.primengTable._filter();
+    });
+}
 
   refreshItems(event?:any): void {
     this.isLoading = true;
@@ -140,6 +159,10 @@ export class ItemListComponent extends BaseListingComponent {
 
   ngOnDestroy(): void {
     // this.masterService.setData(this.key, this)
+
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+    }
   }
 
 }
