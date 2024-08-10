@@ -356,14 +356,14 @@ export class ReceiptListComponent
         //     this.searchInputControl.value
         // );
         // const filter = this.currentFilter;
-        filterReq['status'] = this.currentFilter.status;
-        filterReq['payment_gateway'] = 'All';
-        filterReq['fromDate'] = DateTime.fromJSDate(
-            this.currentFilter.fromDate
-        ).toFormat('yyyy-MM-dd');
-        filterReq['toDate'] = DateTime.fromJSDate(
-            this.currentFilter.toDate
-        ).toFormat('yyyy-MM-dd');
+        // filterReq['status'] = this.currentFilter.status;
+        // filterReq['payment_gateway'] = 'All';
+        // filterReq['fromDate'] = DateTime.fromJSDate(
+        //     this.currentFilter.fromDate
+        // ).toFormat('yyyy-MM-dd');
+        // filterReq['toDate'] = DateTime.fromJSDate(
+        //     this.currentFilter.toDate
+        // ).toFormat('yyyy-MM-dd');
         return filterReq;
     }
 
@@ -634,14 +634,14 @@ export class ReceiptListComponent
         const filterReq = this.getNewFilterReq({});
 
         filterReq['Filter'] = this.searchInputControl.value;
-        filterReq['status'] = this.currentFilter.status;
-        filterReq['fromDate'] = DateTime.fromJSDate(
-            this.currentFilter.fromDate
-        ).toFormat('yyyy-MM-dd');
-        filterReq['toDate'] = DateTime.fromJSDate(
-            this.currentFilter.toDate
-        ).toFormat('yyyy-MM-dd');
-        filterReq['payment_gateway'] = 'All';
+        // filterReq['status'] = this.currentFilter.status;
+        // filterReq['fromDate'] = DateTime.fromJSDate(
+        //     this.currentFilter.fromDate
+        // ).toFormat('yyyy-MM-dd');
+        // filterReq['toDate'] = DateTime.fromJSDate(
+        //     this.currentFilter.toDate
+        // ).toFormat('yyyy-MM-dd');
+        // filterReq['payment_gateway'] = 'All';
         filterReq['Take'] = this.totalRecords;
 
         this.accountService.getReceiptList(filterReq).subscribe((data) => {
