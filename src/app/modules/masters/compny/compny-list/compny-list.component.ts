@@ -14,12 +14,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, companyPermissions, messages, module_name } from 'app/security';
+import { Security, companyPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { CompnyService } from 'app/services/compny.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { CompnyEntryComponent } from '../compny-entry/compny-entry.component';
 import { CompanyToCompanyMarkupListComponent } from '../company-to-company-markup-list/company-to-company-markup-list.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-compny-list',
@@ -49,7 +51,9 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 })
 export class CompnyListComponent extends BaseListingComponent {
 
-  module_name = module_name.compny
+  module_name = module_name.compny;
+  filter_table_name = filter_module_name.company_master;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
   cols = [];
@@ -69,14 +73,16 @@ export class CompnyListComponent extends BaseListingComponent {
     private matDialog: MatDialog,
     public alertService: ToasterService,
     private conformationService: FuseConfirmationService,
-    private compnyService: CompnyService
+    private compnyService: CompnyService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.compny)
     // this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'company_name';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit() {
@@ -84,6 +90,14 @@ export class CompnyListComponent extends BaseListingComponent {
     this.cols = [
       { field: 'base_currency', header: 'Currency' }
     ];
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+  });
   }
 
   get selectedColumns(): Column[] {
@@ -172,5 +186,11 @@ export class CompnyListComponent extends BaseListingComponent {
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
   }
+
+  ngOnDestroy() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+    }
+}
 
 }

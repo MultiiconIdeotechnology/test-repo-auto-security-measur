@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { module_name } from 'app/security';
+import { filter_module_name, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,8 @@ import { EntityService } from 'app/services/entity.service';
 import { CachingParametersEntryComponent } from '../caching-parameters-entry/caching-parameters-entry.component';
 import { takeUntil } from 'rxjs';
 import { FlightTabService } from 'app/services/flight-tab.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-caching-parameters-list',
@@ -49,6 +51,8 @@ export class CachingParametersListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.cachingparameters;
+    filter_table_name = filter_module_name.caching_parameters_master;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -166,7 +170,8 @@ export class CachingParametersListComponent
         private flighttabService: FlightTabService,
         private matDialog: MatDialog,
         private entityService: EntityService,
-        private _userService: UserService
+        private _userService: UserService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.city);
         // this.cols = this.columns.map((x) => x.key);
@@ -174,6 +179,7 @@ export class CachingParametersListComponent
         this.sortColumn = 'supplier_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.entityService.onrefreshcachingParametersCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -191,6 +197,14 @@ export class CachingParametersListComponent
         //     { field: 'mobile_code', header: 'Mobile Code' },
         // ];
         this.getSupplier("")
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
 
     getSupplier(value) {
@@ -311,5 +325,8 @@ export class CachingParametersListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+          }
     }
 }
