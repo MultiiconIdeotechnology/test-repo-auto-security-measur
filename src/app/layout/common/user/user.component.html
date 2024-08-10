@@ -12,6 +12,12 @@
         <mat-icon *ngIf="!showAvatar || !user.avatar" [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
     </span>
 </button>
+
+<!-- Global Search Button -->
+<button mat-button class="mt-1" (click)="openGlobalSearchDialog()" >
+        <!-- <mat-icon class="icon-size-5">search</mat-icon> -->
+        <mat-icon class="icon-size-[18px]" svgIcon="heroicons_outline:magnifying-glass"></mat-icon>
+</button>
 </div>
 
 <mat-menu [xPosition]="'before'" #userActions="matMenu">
