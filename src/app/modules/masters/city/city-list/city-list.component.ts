@@ -136,6 +136,7 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
         this.sortColumn = 'country';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
@@ -146,8 +147,13 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
         ];
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            console.log("resp city", resp);
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
         });
+        
     }
 
     get selectedColumns(): Column[] {

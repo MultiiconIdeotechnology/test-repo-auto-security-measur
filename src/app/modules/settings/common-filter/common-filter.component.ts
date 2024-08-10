@@ -1,16 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import Swal from 'sweetalert2';
-import { ClipboardModule } from '@angular/cdk/clipboard';
-import { SidebarModule } from 'primeng/sidebar';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ToasterService } from 'app/services/toaster.service';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'app-common-filter',
@@ -20,37 +16,40 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         NgFor,
         DatePipe,
         CommonModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
         MatIconModule,
-        MatInputModule,
         MatButtonModule,
         MatDividerModule,
-        FormsModule,
-        MatTooltipModule,
-        AsyncPipe,
-        NgClass,
-        ClipboardModule,
-        SidebarModule
+        NgClass
     ],
     templateUrl: './common-filter.component.html',
     styleUrls: ['./common-filter.component.scss']
 })
 export class CommonFilterComponent implements OnInit {
 
-    disableBtn: boolean = false
-    constructor(public _filterService: CommonFilterService) { }
+    disableBtn: boolean = false;
+    constructor(public _filterService: CommonFilterService,
+        private alertService: ToasterService,
+        private conformationService: FuseConfirmationService) { }
 
     ngOnInit(): void {
     }
 
-    saveSettings() {
-        this._filterService.updateDrawers(this._filterService.filter_grid_array);
+    // Apply Filter
+    applyFilter(item: any) {
+        this.setActiveFilter(item);
+        let gridData = JSON.parse(item.grid_config);
+        this._filterService.updateDrawers(gridData);
         this._filterService.closeDrawer();
     }
 
     // Create New Filter
     createNewFilter(): void {
+        let isFilter = this.checkFilterApplied(this._filterService.fliterTableConfig['filters']);
+        if (!isFilter) {
+            this.alertService.showToast('error', "No filter has been applied.", 'top-right', true);
+            return;
+        }
+
         this._filterService.closeDrawer();
         Swal.fire({
             text: "Create New Filter",
@@ -71,10 +70,198 @@ export class CommonFilterComponent implements OnInit {
             allowOutsideClick: () => Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
-                this._filterService.sidebarVisible = true;
+                this.disableBtn = true;
+                let body = {
+                    filter_name: result.value,
+                    grid_name: this._filterService.filter_table_name,
+                    panel_name: "BO",
+                    grid_configuration: JSON.stringify({
+                        sortColumn: this._filterService.fliterTableConfig['_sortField'],
+                        table_config: this._filterService.fliterTableConfig['filters']
+                    })
+                }
+
+                this._filterService.createNewFilter(body).subscribe({
+                    next: (data: any) => {
+                        console.log("data", data);
+                        if (data && data.status && data?.data.length) {
+                            this._filterService.setLocalFilterData(data.data);
+                        }
+                        this.disableBtn = false;
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                        this.disableBtn = false;
+                    },
+                });
+                this._filterService.filterDrawerVisible = true;
             } else if (result.isDismissed) {
-                this._filterService.sidebarVisible = true;
+                this._filterService.filterDrawerVisible = true;
             }
-        }); 
+        });
+    }
+
+    // Update Filter
+    updateFilter(item: any) {
+        this._filterService.closeDrawer();
+        Swal.fire({
+            text: "Update Filter Name",
+            input: "text",
+            inputValue: item.filter_name,
+            inputPlaceholder: 'Enter Filter name',
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Update",
+            cancelButtonText: "Close",
+            showLoaderOnConfirm: true,
+            preConfirm: async (value) => {
+                if (!value) {
+                    return false;
+                }
+            },
+            allowOutsideClick: () => Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.disableBtn = true;
+                let body = {
+                    id: item.id,
+                    filter_name: result.value,
+                }
+
+                this._filterService.createNewFilter(body).subscribe({
+                    next: (data: any) => {
+                        console.log("data", data);
+                        if (data && data.status && data?.data.length) {
+                            this._filterService.setLocalFilterData(data.data);
+                        }
+                        this.disableBtn = false;
+                    }, error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                        this.disableBtn = false;
+                    },
+                });
+                this._filterService.filterDrawerVisible = true;
+            } else if (result.isDismissed) {
+                this._filterService.filterDrawerVisible = true;
+            }
+        });
+    }
+
+    // Clone Filter
+    cloneFilter(item: any) {
+        this._filterService.closeDrawer();
+        Swal.fire({
+            text: "Clone Filter",
+            input: "text",
+            inputPlaceholder: 'Enter Filter name',
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            cancelButtonText: "Close",
+            showLoaderOnConfirm: true,
+            preConfirm: async (value) => {
+                if (!value) {
+                    return false;
+                }
+            },
+            allowOutsideClick: () => Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.disableBtn = true;
+                let body = {
+                    filter_name: result.value,
+                    grid_name: this._filterService.filter_table_name,
+                    panel_name: "BO",
+                    grid_configuration: item.grid_config
+                }
+
+                this._filterService.createNewFilter(body).subscribe({
+                    next: (data: any) => {
+                        if (data && data.status && data?.data.length) {
+                            this._filterService.setLocalFilterData(data.data);
+                        }
+                        this.disableBtn = false;
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                        this.disableBtn = false;
+                    },
+                });
+                this._filterService.filterDrawerVisible = true;
+            } else if (result.isDismissed) {
+                this._filterService.filterDrawerVisible = true;
+            }
+        });
+    }
+
+    // Delete Filter
+    deleteFilter(item: any) {
+        this._filterService.closeDrawer();
+        this.conformationService.open({
+            title: "Delete Filter",
+            message: `Are you sure you want to delete ${item.filter_name}`
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this._filterService.deleteFiter(item.id).subscribe({
+                        next: (data) => {
+                            if (data && data.status && data?.data.length) {
+                                this._filterService.setLocalFilterData(data.data);
+                                this.alertService.showToast('success', `${item.filter_name} has been deleted successfully.`, "top-right", true);
+                            }
+                        }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+                    });
+                    this._filterService.filterDrawerVisible = true;
+                } else {
+                    this._filterService.filterDrawerVisible = true;
+                }
+            }
+        })
+    }
+
+    // is_default Update
+    async setActiveFilter(item: any){ 
+        this._filterService.filter_grid_data?.filters.forEach((filter: any) => {
+          filter.is_default = false;
+        });
+
+        const matchedItem = this._filterService.filter_grid_data?.filters.find((filter: any) => filter.id === item.id);
+        if (matchedItem) {
+            matchedItem.is_default = true;
+        }
+
+        // Update Local data is_default set
+        let localData = await this._filterService.getFilterData();
+        const filterData = localData.find((filter: any) => filter.grid_name === this._filterService.filter_table_name);
+        if (filterData) {
+            filterData.filters = this._filterService.filter_grid_data?.filters;
+            this._filterService.setLocalFilterData(localData);
+        }
+    }
+
+    // Check any filter applied
+    checkFilterApplied(filters: any) {
+        const validFilter: any = {};
+
+        if (filters) {
+            Object.keys(filters).forEach(key => {
+                if (filters[key].value !== null && filters[key].value !== undefined && filters[key].value !== '') {
+                    if (filters[key].value && filters[key].value.length && Array.isArray(filters[key].value)) {
+                        validFilter[key] = {
+                            value: filters[key].value,
+                            matchMode: filters[key].matchMode
+                        };
+                    } else {
+                        validFilter[key] = filters[key];
+                    }
+                }
+            });
+        }
+
+        return Object.keys(validFilter).length > 0 ? validFilter : false;
     }
 }

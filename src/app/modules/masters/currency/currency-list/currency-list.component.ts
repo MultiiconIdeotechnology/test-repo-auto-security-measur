@@ -70,14 +70,17 @@ export class CurrencyListComponent extends BaseListingComponent {
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'currency';
-    this.sortDirection = 'asc';
     this.Mainmodule = this
   }
 
   ngOnInit() {
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      console.log("resp currency", resp);
-    });
+      this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        Object.assign(this.primengTable['filters'], resp['table_config']);
+        this.isFilterShow = true;
+        this.primengTable._filter();
+      });
   }
 
   refreshItems(event?: any): void {
