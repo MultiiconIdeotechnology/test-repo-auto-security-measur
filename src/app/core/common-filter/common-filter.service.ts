@@ -55,15 +55,17 @@ export class CommonFilterService {
     setActiveData(filerData: any){
         if(filerData && filerData.filters) {
             this.activeFiltData = filerData.filters.find((element: any) => element.is_default);
+        } else {
+            this.activeFiltData = {};
         }
     }
 
     // Common Filter Drawer
-    async openDrawer(table_name: any, primengTable: Table) {
+    openDrawer(table_name: any, primengTable: Table) {
         this.filterDrawerVisible = true;
         this.filter_table_name = table_name;
         this.fliterTableConfig = primengTable;
-        let localFilterData = await this.getFilterData();
+        let localFilterData = this.getFilterData();
 
         if (localFilterData && localFilterData.length) {
             let filter = localFilterData.find((item: any) => item.grid_name == table_name);
@@ -73,10 +75,10 @@ export class CommonFilterService {
     }
 
     // Apply Page Defult Filter
-    async applyDefaultFilter(table_name: any) {
+    applyDefaultFilter(table_name: any) {
         this.filter_table_name = table_name;
         // this.fliterTableConfig = primengTable;
-        let localFilterData = await this.getFilterData();
+        let localFilterData = JSON.parse(localStorage.getItem('filterData'));
 
         if (localFilterData && localFilterData.length) {
             let filter = localFilterData.find((item: any) => item.grid_name == table_name);

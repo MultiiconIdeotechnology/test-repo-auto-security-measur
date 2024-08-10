@@ -22,6 +22,7 @@ import { ToasterService } from "app/services/toaster.service";
 import { Security, messages } from "app/security";
 import { LazyLoadEvent } from "primeng/api";
 import { Table } from "primeng/table";
+import { CommonFilterService } from "app/core/common-filter/common-filter.service";
 
 export interface Column {
     field: string;
@@ -66,6 +67,7 @@ export abstract class BaseListingComponent implements OnInit {
     protected masterService: MasterService;
     protected alertService: ToasterService;
     protected authService: AuthService;
+    protected commonFilterService: CommonFilterService;
     searchInputControl = new FormControl('');
 
     protected dataColumns: IDataColumn[];
@@ -83,6 +85,8 @@ export abstract class BaseListingComponent implements OnInit {
         this.authService = ReflectionInjector.get(AuthService);
         this.masterService = ReflectionInjector.get(MasterService);
         this.alertService = ReflectionInjector.get(ToasterService);
+        this.commonFilterService = ReflectionInjector.get(CommonFilterService);
+        
         this.updateScrollHeight();
     }
 
@@ -215,6 +219,7 @@ export abstract class BaseListingComponent implements OnInit {
         const filterReq = GridUtils.GetPrimeNGFilterReq(
             event,
             this.primengTable,
+            (this.commonFilterService?.activeFiltData || {}),
             this.searchInputControl.value,
             this.sortColumn,
             (this.sortDirection === 'desc' ? 1 : 0)

@@ -153,7 +153,16 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             this.isFilterShow = true;
             this.primengTable._filter();
         });
-        
+      
+    }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     get selectedColumns(): Column[] {
@@ -326,6 +335,7 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     ngOnDestroy() {
         if (this.settingsUpdatedSubscription) {
           this.settingsUpdatedSubscription.unsubscribe();
+          this._filterService.activeFiltData = {};
         }
     }
 }

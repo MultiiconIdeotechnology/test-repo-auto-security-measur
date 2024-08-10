@@ -84,6 +84,15 @@ export class CurrencyListComponent extends BaseListingComponent {
       });
   }
 
+  ngAfterViewInit(){
+    // Defult Active filter show
+    if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShow = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        this.primengTable['filters'] = filterData['table_config'];
+    }
+  }
+
   refreshItems(event?: any): void {
     this.isLoading = true;
     this.currencyService.getcurrencyList(this.getNewFilterReq(event)).subscribe({
@@ -98,7 +107,7 @@ export class CurrencyListComponent extends BaseListingComponent {
     })
   }
 
-  createInternal(model): void {
+  createInternal(model: any): void {
     this.matDialog.open(CurrencyEntryComponent, {
       data: null,
       disableClose: true
@@ -159,6 +168,7 @@ export class CurrencyListComponent extends BaseListingComponent {
   ngOnDestroy() {
     if (this.settingsUpdatedSubscription) {
       this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
     }
   }
 }
