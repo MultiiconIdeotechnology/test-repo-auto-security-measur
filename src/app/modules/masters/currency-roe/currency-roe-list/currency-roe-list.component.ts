@@ -18,7 +18,7 @@ import { CurrencyRoeEntryComponent } from '../currency-roe-entry/currency-roe-en
 import { CurrencyRoeBulkDialogComponent } from '../currency-roe-bulk-dialog/currency-roe-bulk-dialog.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
-import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service'; 
 
 @Component({
     selector: 'app-currency-roe-list',
@@ -89,6 +89,18 @@ export class CurrencyRoeListComponent extends BaseListingComponent {
             this.isFilterShow = true;
             this.primengTable._filter();
         });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+          this.isFilterShow = true;
+          let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+          if(filterData['table_config']['sync_date_time'].value){
+            filterData['table_config']['sync_date_time'].value = new Date(filterData['table_config']['sync_date_time'].value);
+        }
+          this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -200,6 +212,7 @@ export class CurrencyRoeListComponent extends BaseListingComponent {
 
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
         }
     }
 

@@ -143,6 +143,15 @@ export class DestinationListComponent extends BaseListingComponent {
         });
     }
 
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+    }
+
     refreshItems(event?: any): void {
         this.isLoading = true;
         this.destinationService
@@ -371,6 +380,7 @@ export class DestinationListComponent extends BaseListingComponent {
 
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
-          }
+            this._filterService.activeFiltData = {};
+        }
     }
 }

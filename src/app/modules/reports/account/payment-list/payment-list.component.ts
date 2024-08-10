@@ -21,7 +21,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { EmailSetupService } from 'app/services/email-setup.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -32,6 +32,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PaymentFilterComponent } from '../payment-filter/payment-filter.component';
 import { PaymentInfoComponent } from './payment-info/payment-info.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-payment-list',
@@ -72,6 +74,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 export class PaymentListComponent extends BaseListingComponent implements OnDestroy {
 
   module_name = module_name.payment;
+  filter_table_name = filter_module_name.account_payments;
+  private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   flashMessage: 'success' | 'error' | null = null;
   dataList = [];
@@ -82,31 +86,6 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   appConfig = AppConfig;
   settings: any;
   currentFilter: any;
-
-
-  constructor(
-    private accountService: AccountService,
-    private confirmService: FuseConfirmationService,
-    private router: Router,
-    private matDialog: MatDialog,
-    private clipboard: Clipboard
-  ) {
-    super(module_name.payment)
-    this.cols = this.columns.map(x => x.key);
-    this.key = 'payment_request_date';
-    this.sortColumn = 'payment_request_date';
-    this.sortDirection = 'desc';
-    this.Mainmodule = this;
-
-    this.currentFilter = {
-      status: 'All',
-      fromDate: new Date(),
-      toDate: new Date(),
-
-    }
-    this.currentFilter.fromDate.setDate(1);
-    this.currentFilter.fromDate.setMonth(this.currentFilter.fromDate.getMonth());
-  }
 
   columns = [
     { key: 'transaction_ref_no', name: 'Transaction ID', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, isview: true },
@@ -129,6 +108,32 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     { label: 'Pending', value: 'Pending' },
   ];
 
+  constructor(
+    private accountService: AccountService,
+    private confirmService: FuseConfirmationService,
+    private router: Router,
+    private matDialog: MatDialog,
+    private clipboard: Clipboard,
+    public _filterService: CommonFilterService
+  ) {
+    super(module_name.payment)
+    this.cols = this.columns.map(x => x.key);
+    this.key = 'payment_request_date';
+    this.sortColumn = 'payment_request_date';
+    this.sortDirection = 'desc';
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
+
+    this.currentFilter = {
+      status: 'All',
+      fromDate: new Date(),
+      toDate: new Date(),
+
+    }
+    this.currentFilter.fromDate.setDate(1);
+    this.currentFilter.fromDate.setMonth(this.currentFilter.fromDate.getMonth());
+  }
+
   ngOnInit() {
 
     this.cols = [
@@ -136,7 +141,39 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
       { field: 'payment_reject_reason', header: 'Payment Reject Reason' },
       { field: 'payment_type', header: 'Payment Type' },
     ];
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      // console.log("resp['table_config']['payment_request_date']", resp['table_config']['payment_request_date'] );
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      if(resp['table_config']['payment_request_date'].value && resp['table_config']['payment_request_date'].value.length){
+          resp['table_config']['payment_request_date'].value[0] = new Date(resp['table_config']['payment_request_date'].value[0]);
+          resp['table_config']['payment_request_date'].value[1] = new Date(resp['table_config']['payment_request_date'].value[1]);
+          resp['table_config']['payment_request_date'].value.join(",");
+      }
+      if(resp['table_config']['audit_date_time'].value){
+        resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
   }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      if(filterData['table_config']['payment_request_date'].value){
+        filterData['table_config']['payment_request_date'].value = new Date(filterData['table_config']['payment_request_date'].value);
+      }
+      if(filterData['table_config']['audit_date_time'].value){
+        filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+    }
+}
 
   get selectedColumns(): Column[] {
     return this._selectedColumns;
@@ -270,5 +307,12 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  ngOnDestroy() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 }

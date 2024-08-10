@@ -283,6 +283,21 @@ export class WhitelabelListComponent extends BaseListingComponent {
          this.getAgent("");
     }
 
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['wl_expiry_date'].value){
+                filterData['table_config']['wl_expiry_date'].value = new Date(filterData['table_config']['wl_expiry_date'].value);
+            }
+            if(filterData['table_config']['wl_activation_date'].value){
+                filterData['table_config']['wl_activation_date'].value = new Date(filterData['table_config']['wl_activation_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
+
     get selectedColumns(): Column[] {
         return this._selectedColumns;
     }

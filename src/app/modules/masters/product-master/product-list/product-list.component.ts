@@ -89,6 +89,15 @@ export class ProductListComponent extends BaseListingComponent {
     });
 }
 
+ngAfterViewInit(){
+  // Defult Active filter show
+  if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.primengTable['filters'] = filterData['table_config'];
+  }
+}
+
   //   const index = this.checkinTemp.indexOf(item);
   // this.checkinTemp.splice(index, 1);
 
@@ -179,6 +188,7 @@ export class ProductListComponent extends BaseListingComponent {
 
     if (this.settingsUpdatedSubscription) {
       this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
     }
   }
 

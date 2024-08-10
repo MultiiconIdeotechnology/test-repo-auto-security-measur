@@ -207,6 +207,15 @@ export class CachingParametersListComponent
         });
     }
 
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
+
     getSupplier(value) {
         this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
           this.supplierListAll = data;
@@ -327,6 +336,7 @@ export class CachingParametersListComponent
         // this.masterService.setData(this.key, this);
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
           }
     }
 }

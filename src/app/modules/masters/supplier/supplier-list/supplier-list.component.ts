@@ -194,6 +194,18 @@ export class SupplierListComponent extends BaseListingComponent {
         });
     }
 
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['entry_date_time'].value ){
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
+
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
           this.companyList = data;
@@ -449,6 +461,7 @@ export class SupplierListComponent extends BaseListingComponent {
 
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
           }
     }
 }

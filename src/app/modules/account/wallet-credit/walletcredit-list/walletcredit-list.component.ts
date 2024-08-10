@@ -16,13 +16,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, messages, module_name, walletCreditPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, walletCreditPermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet-credit.service';
 import { WalletCreditEntryComponent } from '../wallet-credit-entry/wallet-credit-entry.component';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
@@ -61,6 +63,8 @@ import { AgentService } from 'app/services/agent.service';
 export class WalletcreditListComponent extends BaseListingComponent implements OnDestroy {
 
   module_name = module_name.walletCredit;
+  filter_table_name = filter_module_name.wallet_credited;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
   agentList:any[] = [];
@@ -190,7 +194,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     private conformationService: FuseConfirmationService,
     private router: Router,
     private matDialog: MatDialog,
-    private agentService: AgentService
+    private agentService: AgentService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.walletCredit);
     this.cols = this.columns.map((x) => x.key);
@@ -198,6 +203,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     this.sortColumn = 'is_enable';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit() {
@@ -208,8 +214,37 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       { field: 'sub_agent_code', header: 'Sub Agent Code' },
     ];
 
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      if(resp['table_config']['expiry_date'].value){
+          resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+      }
+      if(resp['table_config']['entry_date_time'].value){
+        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+  });
+
     // To call Agent lis api on default data
     this.getAgent("");
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      if(filterData['table_config']['expiry_date'].value){
+        filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+      }
+      if(filterData['table_config']['entry_date_time'].value){
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+    }
   }
 
   get selectedColumns(): Column[] {
@@ -378,10 +413,6 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     else return 'No data to display';
   }
 
-  ngOnDestroy(): void {
-    // this.masterService.setData(this.key, this);
-  }
-
   exportExcel(): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
@@ -415,6 +446,14 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         ],
         data.data, "Wallet Credit", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }]);
     });
+  }
+
+  ngOnDestroy(): void {
+    // this.masterService.setData(this.key, this);
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 
 }
