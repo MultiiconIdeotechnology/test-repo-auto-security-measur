@@ -200,7 +200,7 @@ export class CurrencyRoeListComponent extends BaseListingComponent {
 
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
-          }
+        }
     }
 
 }

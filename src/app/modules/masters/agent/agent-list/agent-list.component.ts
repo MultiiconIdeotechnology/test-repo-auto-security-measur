@@ -1,6 +1,6 @@
 import { Routes } from 'app/common/const';
 import { Router } from '@angular/router';
-import { Security, agentsPermissions, messages, module_name } from 'app/security';
+import { Security, agentsPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { Component } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -41,7 +41,8 @@ import { MarkupprofileService } from 'app/services/markupprofile.service';
 import { KycService } from 'app/services/kyc.service';
 import { EntityService } from 'app/services/entity.service';
 import { ChangeEmailNumberComponent } from '../sub-agent/change-email-number/change-email-number.component';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-agent-list',
@@ -73,7 +74,9 @@ import { ChangeEmailNumberComponent } from '../sub-agent/change-email-number/cha
     ]
 })
 export class AgentListComponent extends BaseListingComponent {
-    module_name = module_name.agent
+    module_name = module_name.agent;
+    filter_table_name = filter_module_name.agent_customer;
+    private settingsUpdatedSubscription: Subscription;
     agentFilter: any;
     user: any = {};
     dataList = [];
@@ -137,13 +140,16 @@ export class AgentListComponent extends BaseListingComponent {
         private markupprofileService: MarkupprofileService,
         private employeeService: EmployeeService,
         private router: Router,
+        public _filterService: CommonFilterService
+
     ) {
         super(module_name.agent)
         // this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'agent_code';
         this.sortDirection = 'desc';
-        this.Mainmodule = this
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.agentFilter = {
             relationmanagerId: '',
@@ -181,6 +187,18 @@ export class AgentListComponent extends BaseListingComponent {
             { field: 'is_test', header: 'Read Only' },
             { field: 'subagent_count', header: 'Sub Agent Count' },
         ];
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedEmployee = resp['table_config']['rm_id_filters'].value
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['entry_date_time'].value){
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
 
         //filter api
         this.getCityList("");
@@ -769,10 +787,6 @@ export class AgentListComponent extends BaseListingComponent {
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this)
-    }
-
     delete(record): void {
 
         if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
@@ -815,5 +829,13 @@ export class AgentListComponent extends BaseListingComponent {
                     });
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+        }
     }
 }
