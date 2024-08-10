@@ -1,16 +1,16 @@
 <div class="flex flex-col items-center">
+ <!-- Global Search Button -->
+<button mat-stroked-button (click)="openGlobalSearchDialog()" class="mb-3">
+        <!-- <mat-icon class="icon-size-5">search</mat-icon> -->
+        <mat-icon class="icon-size-[18px]" svgIcon="heroicons_outline:magnifying-glass"></mat-icon>
+</button>
+
 <!-- Button -->
-<button mat-icon-button [matMenuTriggerFor]="userActions">
+<button mat-icon-button [matMenuTriggerFor]="userActions" class="mt-1">
     <span class="relative">
         <img class="w-7 h-7 rounded-full" *ngIf="showAvatar && user.avatar" [src]="user.avatar">
         <mat-icon *ngIf="!showAvatar || !user.avatar" [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
     </span>
-</button>
-
-<!-- Global Search Button -->
-<button mat-stroked-button class="mt-1" (click)="openGlobalSearchDialog()" >
-        <!-- <mat-icon class="icon-size-5">search</mat-icon> -->
-        <mat-icon class="icon-size-[18px]" svgIcon="heroicons_outline:magnifying-glass"></mat-icon>
 </button>
 </div>
 

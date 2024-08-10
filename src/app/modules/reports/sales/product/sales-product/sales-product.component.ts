@@ -196,6 +196,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         req.take = this.totalRecords;
         const exportHeaderArr = [
             { header: 'Agent Code', property: 'agent_code' },
+            { header: 'Old Agent Code', property: 'old_agent_code' },
             { header: 'Agency Name', property: 'agency_name' },
             { header: 'RM', property: 'rm' },
             { header: 'Amount', property: 'Amount' },
