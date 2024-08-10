@@ -71,6 +71,7 @@ export class CurrencyListComponent extends BaseListingComponent {
     this.key = this.module_name;
     this.sortColumn = 'currency';
     this.Mainmodule = this
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit() {
