@@ -69,8 +69,10 @@ export class GlobalSearchComponent {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        this.router.navigate([Routes.booking.booking_details_route + '/' + this.bookingRefValue])
+                        // this.router.navigate([Routes.booking.booking_details_route + '/' + this.bookingRefValue])
                         //Linq.recirect('/booking/flight/details/' + this.bookingRefValue);
+                        let uri = '/booking/flight/details/' + this.bookingRefValue
+                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'bus_booking') {
@@ -79,7 +81,9 @@ export class GlobalSearchComponent {
                         }
                         this.formGroup.get('searchfilter').patchValue("");
 
-                        this.router.navigate(['/booking/bus/details/' + this.bookingRefValue])
+                        let uri = '/booking/bus/details/' + this.bookingRefValue
+                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        // this.router.navigate(['/booking/bus/details/' + this.bookingRefValue])
                         // Linq.recirect('/booking/bus/details/' + this.bookingRefValue);
                         this.matDialog.closeAll();
                     }
@@ -88,8 +92,10 @@ export class GlobalSearchComponent {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        this.router.navigate(['/booking/hotel/details/' + this.bookingRefValue])
+                        // this.router.navigate(['/booking/hotel/details/' + this.bookingRefValue])
                         // Linq.recirect('/booking/hotel/details/' + this.bookingRefValue);
+                        let uri = '/booking/hotel/details/' + this.bookingRefValue
+                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'visa_booking') {
@@ -98,7 +104,9 @@ export class GlobalSearchComponent {
                         }
                         this.formGroup.get('searchfilter').patchValue("");
                         // Linq.recirect('/booking/visa/details/' + this.bookingRefValue);
-                        this.router.navigate(['/booking/visa/details/' + this.bookingRefValue])
+                        // this.router.navigate(['/booking/visa/details/' + this.bookingRefValue])
+                        let uri = 'booking/visa/details/' + this.bookingRefValue
+                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'offline_service_booking') {
@@ -107,7 +115,9 @@ export class GlobalSearchComponent {
                         }
                         this.formGroup.get('searchfilter').patchValue("");
                         // Linq.recirect('/booking/offline-service/entry/' + this.bookingRefValue + '/readonly');
-                        this.router.navigate(['/booking/offline-service/entry/' + this.bookingRefValue + '/readonly'])
+                        // this.router.navigate(['/booking/offline-service/entry/' + this.bookingRefValue + '/readonly'])
+                        let uri = '/booking/offline-service/entry/' + this.bookingRefValue + '/readonly'
+                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'agent_detail') {
@@ -116,7 +126,9 @@ export class GlobalSearchComponent {
                         }
                         this.formGroup.get('searchfilter').patchValue("");
                         // Linq.recirect('/customers/agent/entry/' + this.bookingRefValue + '/readonly');
-                        this.router.navigate(['/customers/agent/entry/' + this.bookingRefValue + '/readonly'])
+                        // this.router.navigate([])
+                        let uri = '/customers/agent/entry/' + this.bookingRefValue + '/readonly'
+                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'payment_detail') {
@@ -164,7 +176,9 @@ export class GlobalSearchComponent {
                         }
                         this.formGroup.get('searchfilter').patchValue("");
                         // Linq.recirect('/booking/group-inquiry/details/' + this.bookingRefValue);
-                        this.router.navigate(['/booking/group-inquiry/details' + this.bookingRefValue])
+                        // this.router.navigate(['/booking/group-inquiry/details' + this.bookingRefValue])
+                        let uri = '/booking/group-inquiry/details' + this.bookingRefValue
+                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
 

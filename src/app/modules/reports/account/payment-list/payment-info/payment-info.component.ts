@@ -67,7 +67,7 @@ export class PaymentInfoComponent {
         }
 
         if (this.data?.receipt) {
-            this.accountService.getPaymentRecord(this.data?.receipt).subscribe({
+            this.accountService.getReceiptRecord(this.data?.receipt).subscribe({
                 next: (data) => {
                     this.data.receipt = data;
                     if (this.data.receipt) {
