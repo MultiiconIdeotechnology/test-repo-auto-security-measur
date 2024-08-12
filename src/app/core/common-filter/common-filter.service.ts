@@ -87,6 +87,13 @@ export class CommonFilterService {
         }
     }
 
+    // Range date convert to string format from array 
+    rangeDateConvert(dateArr:any){
+        dateArr.value[0] = new Date(dateArr.value[0]);
+        dateArr.value[1] = new Date(dateArr.value[1]);
+        dateArr.value.join(",");
+    }
+
     // Close Filter Drawer
     closeDrawer() {
         this.filterDrawerVisible = false;

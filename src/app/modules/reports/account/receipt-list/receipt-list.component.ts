@@ -349,9 +349,7 @@ export class ReceiptListComponent
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
-                resp['table_config']['receipt_request_date'].value[0] = new Date(resp['table_config']['receipt_request_date'].value[0]);
-                resp['table_config']['receipt_request_date'].value[1] = new Date(resp['table_config']['receipt_request_date'].value[1]);
-                resp['table_config']['receipt_request_date'].value.join(",");
+                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
             if (resp['table_config']['audit_date_time'].value) {
                 resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
@@ -368,9 +366,7 @@ export class ReceiptListComponent
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
-                filterData['table_config']['receipt_request_date'].value[0] = new Date(filterData['table_config']['receipt_request_date'].value[0]);
-                filterData['table_config']['receipt_request_date'].value[1] = new Date(filterData['table_config']['receipt_request_date'].value[1]);
-                filterData['table_config']['receipt_request_date'].value.join(",");
+                this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
             if (filterData['table_config']['audit_date_time'].value) {
                 filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
