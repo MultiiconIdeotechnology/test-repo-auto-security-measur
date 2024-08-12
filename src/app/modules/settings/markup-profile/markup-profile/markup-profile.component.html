@@ -35,6 +35,11 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
+
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -48,7 +53,7 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['profile_name', 'company_name']"
             styleClass="p-datatable-gridlines p-datatable-sm">
-    
+
             <ng-template pTemplate="header">
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
@@ -67,7 +72,7 @@
                         Applied On
                     </th>
                 </tr>
-    
+
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.profile_name">
@@ -93,14 +98,14 @@
                     <th></th>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="body" let-element>
                 <tr>
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
-    
+
                         <mat-menu #optionMenu>
                             <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
@@ -136,7 +141,7 @@
                     </td>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
                     <td colspan="4" class="text-center font-semibold text-lg">
