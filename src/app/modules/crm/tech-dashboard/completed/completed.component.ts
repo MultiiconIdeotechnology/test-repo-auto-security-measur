@@ -388,7 +388,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                 inputBox: 'Date',
                 dateCustomShow: true,
                 customShow: false,
-                datepickerParameter: record?.activation_date_sub
+                datepickerParameter: record?.expiry_date_sub
             })
             .afterClosed()
             .subscribe((res) => {

@@ -77,6 +77,7 @@ export class FuseConfirmationDialogComponent {
         public formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<FuseConfirmationDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: FuseConfirmationConfig) {
+            console.log("object",data);
     }
 
     ngOnInit() {
@@ -87,6 +88,8 @@ export class FuseConfirmationDialogComponent {
         this.formGroupDate = this.formBuilder.group({
             date: ['', Validators.required]
         })
+
+        this.formGroupDate.get('date').patchValue(this.data?.datepickerParameter)
     }
 
     updateConfirmData() {
