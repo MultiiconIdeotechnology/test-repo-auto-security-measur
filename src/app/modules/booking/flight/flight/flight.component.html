@@ -212,7 +212,6 @@
                         <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR" ariaLabel="Filter GDS PNR" />
                     </th>
                     <th>
-                        {{selectedSupplier | json}}
                         <p-columnFilter class="searchableDropdown"  field="supplier_name" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown"
