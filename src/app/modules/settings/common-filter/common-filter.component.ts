@@ -87,7 +87,6 @@ export class CommonFilterComponent implements OnInit {
 
                 this._filterService.createNewFilter(body).subscribe({
                     next: (data: any) => {
-                        console.log("data", data);
                         if (data && data.status && data?.data.length) {
                             this._filterService.setLocalFilterData(data.data);
                             this.alertService.showToast('success', `New Filter created successfully.`, "top-right", true);
@@ -139,7 +138,6 @@ export class CommonFilterComponent implements OnInit {
 
                 this._filterService.createNewFilter(body).subscribe({
                     next: (data: any) => {
-                        console.log("data", data);
                         if (data && data.status && data?.data.length) {
                             this._filterService.setLocalFilterData(data.data);
                         }
@@ -176,7 +174,7 @@ export class CommonFilterComponent implements OnInit {
                             table_config: this._filterService.fliterTableConfig['filters']
                         })
                     }
-                    console.log("body", body);
+
                     this._filterService.createNewFilter(body).subscribe({
                         next: (data: any) => {
                             if (data && data.status && data?.data.length) {
