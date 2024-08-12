@@ -26,12 +26,16 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 })
 export class CommonFilterComponent implements OnInit {
 
-    disableBtn: boolean = false;
+    isLoading: boolean = false;
+    isEditable: boolean = false;
     constructor(public _filterService: CommonFilterService,
         private alertService: ToasterService,
         private conformationService: FuseConfirmationService) { }
 
     ngOnInit(): void {
+        this._filterService.showFilter$.subscribe(() => {
+            this.isEditable = this.checkIsEditable();
+        });
     }
 
     // Apply Filter
@@ -70,7 +74,7 @@ export class CommonFilterComponent implements OnInit {
             allowOutsideClick: () => Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
-                this.disableBtn = true;
+                this.isLoading = true;
                 let body = {
                     filter_name: result.value,
                     grid_name: this._filterService.filter_table_name,
@@ -86,23 +90,26 @@ export class CommonFilterComponent implements OnInit {
                         console.log("data", data);
                         if (data && data.status && data?.data.length) {
                             this._filterService.setLocalFilterData(data.data);
+                            this.alertService.showToast('success', `New Filter created successfully.`, "top-right", true);
                         }
-                        this.disableBtn = false;
+                        this.isLoading = false;
                     },
                     error: (err) => {
                         this.alertService.showToast('error', err, 'top-right', true);
-                        this.disableBtn = false;
+                        this.isLoading = false;
                     },
                 });
                 this._filterService.filterDrawerVisible = true;
+                this._filterService.showFiltSubject();
             } else if (result.isDismissed) {
                 this._filterService.filterDrawerVisible = true;
+                this._filterService.showFiltSubject();
             }
         });
     }
 
     // Update Filter
-    updateFilter(item: any) {
+    updateFilterName(item: any) {
         this._filterService.closeDrawer();
         Swal.fire({
             text: "Update Filter Name",
@@ -124,7 +131,7 @@ export class CommonFilterComponent implements OnInit {
             allowOutsideClick: () => Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
-                this.disableBtn = true;
+                this.isLoading = true;
                 let body = {
                     id: item.id,
                     filter_name: result.value,
@@ -136,17 +143,62 @@ export class CommonFilterComponent implements OnInit {
                         if (data && data.status && data?.data.length) {
                             this._filterService.setLocalFilterData(data.data);
                         }
-                        this.disableBtn = false;
+                        this.isLoading = false;
                     }, error: (err) => {
                         this.alertService.showToast('error', err, 'top-right', true);
-                        this.disableBtn = false;
+                        this.isLoading = false;
                     },
                 });
                 this._filterService.filterDrawerVisible = true;
+                this._filterService.showFiltSubject();
             } else if (result.isDismissed) {
                 this._filterService.filterDrawerVisible = true;
+                this._filterService.showFiltSubject();
             }
         });
+    }
+
+    // Save Changes
+    saveChanges() {
+        this._filterService.closeDrawer();
+        this.conformationService.open({
+            title: "Update",
+            message: `Are you sure you want to update chanegs`
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this.isLoading = true;
+                    let body = {
+                        id: this._filterService.activeFiltData["id"],
+                        panel_name: "BO",
+                        grid_configuration: JSON.stringify({
+                            sortColumn: this._filterService.fliterTableConfig['_sortField'],
+                            table_config: this._filterService.fliterTableConfig['filters']
+                        })
+                    }
+                    console.log("body", body);
+                    this._filterService.createNewFilter(body).subscribe({
+                        next: (data: any) => {
+                            if (data && data.status && data?.data.length) {
+                                this._filterService.setLocalFilterData(data.data);
+                                this.isEditable = this.checkIsEditable();
+                                this.alertService.showToast('success', `Filter updated successfully.`, "top-right", true);
+                            }
+                            this.isLoading = false;
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+                            this.isLoading = false;
+                        },
+                    });
+                    this._filterService.filterDrawerVisible = true;
+                    this._filterService.showFiltSubject();
+                } else {
+                    this._filterService.filterDrawerVisible = true;
+                    this._filterService.showFiltSubject();
+                }
+            }
+        })
     }
 
     // Clone Filter
@@ -171,7 +223,7 @@ export class CommonFilterComponent implements OnInit {
             allowOutsideClick: () => Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
-                this.disableBtn = true;
+                this.isLoading = true;
                 let body = {
                     filter_name: result.value,
                     grid_name: this._filterService.filter_table_name,
@@ -183,17 +235,20 @@ export class CommonFilterComponent implements OnInit {
                     next: (data: any) => {
                         if (data && data.status && data?.data.length) {
                             this._filterService.setLocalFilterData(data.data);
+                            this.alertService.showToast('success', `Filter Clone successfully.`, "top-right", true);
                         }
-                        this.disableBtn = false;
+                        this.isLoading = false;
                     },
                     error: (err) => {
                         this.alertService.showToast('error', err, 'top-right', true);
-                        this.disableBtn = false;
+                        this.isLoading = false;
                     },
                 });
                 this._filterService.filterDrawerVisible = true;
+                this._filterService.showFiltSubject();
             } else if (result.isDismissed) {
                 this._filterService.filterDrawerVisible = true;
+                this._filterService.showFiltSubject();
             }
         });
     }
@@ -216,17 +271,42 @@ export class CommonFilterComponent implements OnInit {
                         }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
                     });
                     this._filterService.filterDrawerVisible = true;
+                    this._filterService.showFiltSubject();
                 } else {
                     this._filterService.filterDrawerVisible = true;
+                    this._filterService.showFiltSubject();
                 }
             }
         })
     }
 
+    // Check Edit Changes
+    checkIsEditable() {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            const activeData = JSON.parse(this._filterService.activeFiltData?.grid_config || '{}')
+            const activeKeys = Object.keys(activeData?.table_config);
+            let currentFiltData: any = this._filterService.fliterTableConfig['filters'];
+
+            for (const key of activeKeys) {
+                const activeValue = activeData.table_config[key]?.value || '';
+                const currentValue = currentFiltData[key]?.value || '';
+                const activeMatchMode = activeData.table_config[key]?.matchMode;
+                const currentMatchMode = currentFiltData[key]?.matchMode;
+
+                // If any value or matchMode is different
+                if (activeValue !== currentValue || activeMatchMode !== currentMatchMode) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // is_default Update
-    async setActiveFilter(item: any){ 
+    async setActiveFilter(item: any) {
         this._filterService.filter_grid_data?.filters.forEach((filter: any) => {
-          filter.is_default = false;
+            filter.is_default = false;
         });
 
         const matchedItem = this._filterService.filter_grid_data?.filters.find((filter: any) => filter.id === item.id);
@@ -264,4 +344,5 @@ export class CommonFilterComponent implements OnInit {
 
         return Object.keys(validFilter).length > 0 ? validFilter : false;
     }
+
 }
