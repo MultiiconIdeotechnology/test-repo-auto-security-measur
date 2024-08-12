@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Routes } from 'app/common/const';
 import { Component } from '@angular/core';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { BaseListingComponent } from 'app/form-models/base-listing';
@@ -21,6 +21,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-hotel-list',
@@ -50,6 +52,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 })
 export class HotelListComponent extends BaseListingComponent {
     module_name = module_name.hotel;
+    filter_table_name = filter_module_name.hotel;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
 
@@ -133,12 +137,12 @@ export class HotelListComponent extends BaseListingComponent {
     cols = [];
     isFilterShow: boolean = false;
 
-
     constructor(
         private hotelService: HotelService,
         private toastrService: ToasterService,
         private conformationService: FuseConfirmationService,
         private router: Router,
+        public _filterService: CommonFilterService,
         private matDialog: MatDialog
     ) {
         super(module_name.holiday);
@@ -147,7 +151,26 @@ export class HotelListComponent extends BaseListingComponent {
         this.sortColumn = 'hotel_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
+
+    ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit(){
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -239,5 +262,9 @@ export class HotelListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

@@ -33,6 +33,12 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -104,11 +110,11 @@
                     <th>
                         <p-columnFilter field="is_airport_pickup" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Airport Pickup" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Airport Pickup"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
@@ -122,11 +128,11 @@
                     <th>
                         <p-columnFilter field="is_airport_dropoff" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Airport Dropoff" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Airport Dropoff"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
@@ -140,11 +146,11 @@
                     <th>
                         <p-columnFilter field="is_inter_hotel_transfer" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Inter Hotel Transfer" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Inter Hotel Transfer"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
