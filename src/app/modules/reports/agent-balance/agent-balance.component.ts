@@ -74,7 +74,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
     dataList = [];
     total = 0;
     module_name = module_name.agentBalance;
-    filter_table_name = filter_module_name.account_receipts;
+    filter_table_name = filter_module_name.agent_balance_register;
     private settingsUpdatedSubscription: Subscription;
     isFilterShow: boolean = false;
     agentList: any[] = [];

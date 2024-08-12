@@ -75,7 +75,8 @@
             </mat-menu>
 
             <!------Common Filter------->
-           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
                 <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
                 <span class="ml-2 mr-1">Filter</span>
             </button>
@@ -311,22 +312,22 @@
                                 <span style="font-weight: 600">Invoice</span>
                             </button>
 
-                            <button mat-menu-item  [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 
+                            <button mat-menu-item
+                                [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 
                                                             'cursor-not-allowed text-blue-400 opacity-20': !element['proof_attachment']}"
-                            (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])">
-                                <mat-icon [svgIcon]="'attach_file'"
-                                    class=" mat-18 min-h-[20px] h-[20px] rounded-full"
+                                (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])">
+                                <mat-icon [svgIcon]="'attach_file'" class=" mat-18 min-h-[20px] h-[20px] rounded-full"
                                     [matTooltip]="'Proof Attachment'"
                                     [attr.disabled]="!element['proof_attachment'] ? true : null">
                                 </mat-icon>
                                 <span style="font-weight: 600">Proof Attachment</span>
                             </button>
 
-                            <button mat-menu-item [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'], 
+                            <button mat-menu-item
+                                [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'], 
                                                             'cursor-not-allowed text-yellow-400 opacity-20': !element['payment_attachment']}"
-                            (click)="!element['payment_attachment'] ? null : downloadProoffile(element['payment_attachment'])">
-                                <mat-icon [svgIcon]="'attach_file'"
-                                    class="mat-18 min-h-[20px] h-[20px] rounded-full"
+                                (click)="!element['payment_attachment'] ? null : downloadProoffile(element['payment_attachment'])">
+                                <mat-icon [svgIcon]="'attach_file'" class="mat-18 min-h-[20px] h-[20px] rounded-full"
                                     [matTooltip]="'Receipt Attachment'"
                                     [attr.disabled]="!element['payment_attachment'] ? true : null">
                                 </mat-icon>
