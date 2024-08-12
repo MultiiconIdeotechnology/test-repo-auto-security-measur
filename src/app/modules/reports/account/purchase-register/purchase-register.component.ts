@@ -1,4 +1,4 @@
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,8 @@ import { Linq } from 'app/utils/linq';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-purchase-register',
@@ -48,6 +50,8 @@ export class PurchaseRegisterComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.purchaseRegister;
+    filter_table_name = filter_module_name.purchase_register;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -232,7 +236,8 @@ export class PurchaseRegisterComponent
         private accountService: AccountService,
         private kycDocumentService: KycDocumentService,
         private pspsettingService: PspSettingService,
-        public agentService: AgentService
+        public agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.purchaseRegister);
         // this.cols = this.columns.map((x) => x.key);
@@ -240,12 +245,37 @@ export class PurchaseRegisterComponent
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
         this.getAgent('');
         this.getSupplier("", true);
         this.getCompanyList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getCompanyList(value) {
@@ -320,10 +350,6 @@ export class PurchaseRegisterComponent
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
-    }
-
     exportExcel(): void {
         if (!Security.hasExportDataPermission(this.module_name)) {
             return this.alertService.showToast(
@@ -360,5 +386,14 @@ export class PurchaseRegisterComponent
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]
             );
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }
