@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { BusService } from 'app/services/bus.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
@@ -34,7 +34,8 @@ import { StatusUpdateComponent } from '../flight/flight/status-update/status-upd
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
-import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
@@ -77,7 +78,9 @@ import { Observable } from 'rxjs';
 })
 export class BusComponent extends BaseListingComponent {
 
-  module_name = module_name.bus
+  module_name = module_name.bus;
+  filter_table_name = filter_module_name.bus_booking;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
   busFilter: any;
@@ -151,7 +154,7 @@ export class BusComponent extends BaseListingComponent {
     private agentService: AgentService,
     private flighttabService: FlightTabService,
     private clipboard: Clipboard,
-
+    public _filterService: CommonFilterService
   ) {
     super(module_name.bus);
     this.cols = this.columns.map((x) => x.key);
@@ -159,6 +162,7 @@ export class BusComponent extends BaseListingComponent {
     this.sortColumn = 'bookingDate';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.busFilter = {
       From: '',
@@ -181,7 +185,31 @@ export class BusComponent extends BaseListingComponent {
       this.getAgent("", true);
       this.getSupplier();
       this.getFromCity('');
+
+      // common filter
+      this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+          this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+      }
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShow = true;
+        this.primengTable._filter();
+    });
   }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShow = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+          this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+      }
+        this.primengTable['filters'] = filterData['table_config'];
+    }
+}
 
   copy(link) {
     this.clipboard.copy(link);
@@ -222,11 +250,6 @@ export class BusComponent extends BaseListingComponent {
 
   getFilter(): any {
     const filterReq = {};
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginator,
-    //   this._sort,
-    //   this.searchInputControl.value
-    // );
     filterReq['FromDate'] = DateTime.fromJSDate(this.busFilter.FromDate).toFormat('yyyy-MM-dd');
     filterReq['ToDate'] = DateTime.fromJSDate(this.busFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['agent_id'] = this.busFilter?.agent_id?.id || '';
@@ -373,6 +396,14 @@ export class BusComponent extends BaseListingComponent {
         data.data, "Bus Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
     });
   }
+
+  ngOnDestroy(): void {
+
+    if (this.settingsUpdatedSubscription) {
+        this.settingsUpdatedSubscription.unsubscribe();
+        this._filterService.activeFiltData = {};
+    }
+}
 
 }
 

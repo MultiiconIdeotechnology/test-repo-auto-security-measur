@@ -21,7 +21,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, bookingsFlightPermissions, messages, module_name } from 'app/security';
+import { Security, bookingsFlightPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Excel } from 'app/utils/export/excel';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -36,6 +36,8 @@ import { ToasterService } from 'app/services/toaster.service';
 import { StatusUpdateComponent } from './status-update/status-update.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
@@ -78,6 +80,8 @@ import { AgentService } from 'app/services/agent.service';
 export class FlightComponent extends BaseListingComponent {
     flightFilter: any;
     module_name = module_name.flight;
+    filter_table_name = filter_module_name.flight_booking;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     agentList:any[] = [];
     airportFromList:any[] = [];
@@ -417,7 +421,8 @@ export class FlightComponent extends BaseListingComponent {
         private toastr: ToasterService,
         private agentService: AgentService,
         private clipboard: Clipboard,
-        private router: Router
+        private router: Router,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.flight);
         // this.cols = this.columns.map((x) => x.key);
@@ -425,6 +430,7 @@ export class FlightComponent extends BaseListingComponent {
         this.sortColumn = 'bookingDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.flightFilter = {
             fromCity: '',
@@ -449,16 +455,36 @@ export class FlightComponent extends BaseListingComponent {
         this.getAirportFromList("");
         this.getSupplierList();
 
-        this.cols = [
-            // { field: 'visa_type', header: 'Visa Type', isDate: false },
-            // { field: 'length_of_stay', header: 'Length of Stay', isDate: false },
-            // { field: 'customer_name', header: 'Customer Name', isDate: false },
-            // { field: 'payment_request_time', header: 'Payment Request Time', isDate: true },
-            // { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true },
-            // { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false },
-            // { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false },
-        ];
+          // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+            }
+            if (resp['table_config']['travelDate'].value) {
+                resp['table_config']['travelDate'].value = new Date(resp['table_config']['travelDate'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
 
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+            }
+            if (filterData['table_config']['travelDate'].value) {
+                filterData['table_config']['travelDate'].value = new Date(filterData['table_config']['travelDate'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     // get selectedColumns(): Column[] {
@@ -651,10 +677,6 @@ export class FlightComponent extends BaseListingComponent {
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
-    }
-
     offlinePnr() {
         if (!Security.hasPermission(bookingsFlightPermissions.offlinePNRPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
@@ -724,5 +746,14 @@ export class FlightComponent extends BaseListingComponent {
                 ],
                 data.data, "Flight Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }
