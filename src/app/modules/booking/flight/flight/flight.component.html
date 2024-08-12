@@ -70,7 +70,7 @@
             </mat-menu>
 
             <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
                 <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
                 <span class="ml-2 mr-1">Filter</span>
             </button>
@@ -212,6 +212,7 @@
                         <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR" ariaLabel="Filter GDS PNR" />
                     </th>
                     <th>
+                        {{selectedSupplier | json}}
                         <p-columnFilter class="searchableDropdown"  field="supplier_name" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown"
