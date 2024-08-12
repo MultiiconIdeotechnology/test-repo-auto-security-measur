@@ -68,7 +68,7 @@ export class WPendingComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowPending: boolean;
-  @Input() agentData:any;
+  @Input() agentData: any;
 
   @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
   @ViewChild(MatSort) public _sortPending: MatSort;
@@ -88,6 +88,11 @@ export class WPendingComponent extends BaseListingComponent {
   data: any
   filter: any = {}
   agentList: any[] = [];
+
+  withdrawList = [
+    { label: 'Deduction', value: 'Deduction' },
+    { label: 'Bank Withdraw', value: 'Bank Withdraw' },
+  ];
 
 
   columns = [
@@ -151,9 +156,9 @@ export class WPendingComponent extends BaseListingComponent {
   }
 
   getAgentList(value: string) {
-      this.agentService.getAgentCombo(value).subscribe((data) => {
-        this.agentList = data;
-      })
+    this.agentService.getAgentCombo(value).subscribe((data) => {
+      this.agentList = data;
+    })
   }
 
   view(record) {

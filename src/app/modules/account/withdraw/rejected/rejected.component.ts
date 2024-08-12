@@ -99,6 +99,11 @@ export class WRejectedComponent extends BaseListingComponent {
   filter: any = {};
   agentList: any[] = [];
 
+  withdrawList = [
+    { label: 'Deduction', value: 'Deduction' },
+    { label: 'Bank Withdraw', value: 'Bank Withdraw' },
+  ];
+
 
   columns = [
     { key: 'withdraw_ref_no', name: 'Ref No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },

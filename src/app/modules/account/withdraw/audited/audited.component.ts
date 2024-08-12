@@ -99,6 +99,11 @@ export class WAuditedComponent extends BaseListingComponent {
   filter: any = {};
   agentList: any[] = [];
 
+  withdrawList = [
+    { label: 'Deduction', value: 'Deduction' },
+    { label: 'Bank Withdraw', value: 'Bank Withdraw' },
+  ];
+
   columns = [
     { key: 'withdraw_ref_no', name: 'Ref No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
     { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: false },
