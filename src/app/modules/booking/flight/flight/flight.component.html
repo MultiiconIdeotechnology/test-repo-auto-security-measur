@@ -68,6 +68,12 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -79,7 +85,7 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['Reference No.', 'Status', 'Date', 'PNR', 'GDS PNR', 'Supplier', 'Carrier', 'Purchase Price', 'Type', 'MOP', 'Agent', 'From', 'To', 'Travel Date', 'Trip Type', 'Cabin', 'Device', 'Supplier Ref. No.', 'PG', 'Travel Type', 'Booking From', 'IP Address']"
+            [globalFilterFields]="['booking_ref_no', 'status', 'bookingDate', 'pnr', 'gds_pnr', 'supplier_name', 'operating_carrier', 'purchase_price', 'user_type', 'mop', 'agent_name', 'from_airport_code', 'to_airport_code', 'travelDate', 'tripType', 'cabin', 'device', 'supplier_ref_no', 'payment_gateway_name', 'travelType', 'is_manual_entry', 'ipAddress']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
