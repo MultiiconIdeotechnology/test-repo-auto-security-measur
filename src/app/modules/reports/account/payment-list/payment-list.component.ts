@@ -165,9 +165,11 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      if(filterData['table_config']['payment_request_date'].value){
-        filterData['table_config']['payment_request_date'].value = new Date(filterData['table_config']['payment_request_date'].value);
-      }
+      if(filterData['table_config']['payment_request_date'].value && filterData['table_config']['payment_request_date'].value.length){
+        filterData['table_config']['payment_request_date'].value[0] = new Date(filterData['table_config']['payment_request_date'].value[0]);
+        filterData['table_config']['payment_request_date'].value[1] = new Date(filterData['table_config']['payment_request_date'].value[1]);
+        filterData['table_config']['payment_request_date'].value.join(",");
+    }
       if(filterData['table_config']['audit_date_time'].value){
         filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
       }
