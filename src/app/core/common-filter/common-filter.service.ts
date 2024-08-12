@@ -12,7 +12,9 @@ export class CommonFilterService {
     // Filter Data behavior
     private drawersUpdated = new Subject<void>();
     drawersUpdated$ = this.drawersUpdated.asObservable();
-
+    private showFilterSubject = new Subject<void>();
+    showFilter$ = this.showFilterSubject.asObservable();
+ 
     private baseUrl = environment.apiUrl;
     filterDrawerVisible: boolean = false;
     filter_grid_data: any = {};
@@ -66,12 +68,18 @@ export class CommonFilterService {
         this.filter_table_name = table_name;
         this.fliterTableConfig = primengTable;
         let localFilterData = this.getFilterData();
+        this.showFiltSubject();
 
         if (localFilterData && localFilterData.length) {
             let filter = localFilterData.find((item: any) => item.grid_name == table_name);
             this.filter_grid_data = (filter || {});
             this.setActiveData(this.filter_grid_data);
         }
+    }
+
+    // Show
+    showFiltSubject() {
+        this.showFilterSubject.next();
     }
 
     // Apply Page Defult Filter
