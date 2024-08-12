@@ -77,7 +77,6 @@ export class FuseConfirmationDialogComponent {
         public formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<FuseConfirmationDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: FuseConfirmationConfig) {
-            console.log("object",data);
     }
 
     ngOnInit() {
