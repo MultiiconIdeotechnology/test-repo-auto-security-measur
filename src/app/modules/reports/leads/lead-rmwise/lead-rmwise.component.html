@@ -44,6 +44,12 @@
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="mr-1">Filter</span>
+            </button>
+
             <!---Excel--->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
@@ -103,7 +109,7 @@
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.rm">
                         <!-- <p-columnFilter type="text" matchMode="contains" field="rm" placeholder="Search by RM"
                             ariaLabel="Filter RM" /> -->
-                        
+
                         <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown"
