@@ -21,7 +21,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
-import { FuseConfig, FuseConfigService, Themes } from '@fuse/services/config';
+import { FuseConfig, FuseConfigService } from '@fuse/services/config';
 import { Routes } from 'app/common/const';
 import { JsonFile } from 'app/common/jsonFile';
 import { UserService } from 'app/core/user/user.service';
@@ -104,6 +104,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     selectedProductList: any;
     installmentsArray = [];
     todayDateTime = new Date();
+    dateBeforeAllow: Date;
     installmentList: number[] = [];
     selectedMaxInstallment: any;
     user: any;
@@ -145,6 +146,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // @Inject(MAT_DIALOG_DATA) public data: any = {},
         // @Inject(MAT_DIALOG_DATA) public editFlag: any = {}
     ) {
+        this.dateBeforeAllow = this.calculateDateBeforeDays(10);
         // this.isEditFlag = this.isEditFlag?.editFlag;
         // this.record = data?.data ?? {}
         this.entityService.onproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
@@ -194,6 +196,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             .subscribe((config: FuseConfig) => {
                 this.config = config;
             });
+    }
+
+    calculateDateBeforeDays(days: number): Date {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        return date;
     }
 
     onDateChange(index: number): void {
@@ -379,7 +387,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.selectedMaxInstallment = res?.[0]?.max_installment;
                     this.installmentsArray = res?.[0]?.installment?.map(x => ({ installment_amount: x.installment_amount, installment_date: x.installment_date }));
                     this.productId = res?.[0]?.productid;
-                    // console.log("383", res?.[0]);
                     this.productPurchaseMasterId = res?.[0]?.id;
                 }
 
@@ -409,9 +416,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         this.installmentsArray.forEach(installment => {
             totalAmount += installment.installment_amount;
         });
-
-        // console.log("totalAmount ::", totalAmount);
-        // console.log("price ::", this.formGroup.get("price").value);
 
         const price = parseFloat(this.formGroup.get("price").value);
         // if (price != 0 && totalAmount != 0 ) {
@@ -445,10 +449,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             proof_attachment: json.proof_attachment
         };
 
-        // console.log("430 ::", this.formGroup.get("price").value);
         if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {
-            // console.log("451 :::", this.productPurchaseMasterId);
-            // console.log("452 :::", newJson);
             this.crmService.createPurchaseProduct(newJson).subscribe({
                 next: () => {
                     this.router.navigate([this.leadListRoute]);
@@ -484,7 +485,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getMinDate(index: number): Date | null {
         if (index === 0) {
-            return this.todayDateTime;
+            return this.dateBeforeAllow;
+            // return this.todayDateTime;
         }
         const previousInstallmentDate = this.installmentsArray[index - 1]?.installment_date;
         if (!previousInstallmentDate) {
@@ -505,7 +507,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getMaxDate(index: number) {
         if (index == 0)
-            return this.todayDateTime
+            return this.dateBeforeAllow;
+            // return this.todayDateTime
         else {
             let maxDate = new Date(this.installmentsArray[index - 1].installment_date.toString())
             maxDate.setDate(maxDate.getDate() + 1)

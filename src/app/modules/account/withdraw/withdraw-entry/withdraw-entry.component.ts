@@ -127,7 +127,6 @@ export class WithdrawEntryComponent {
 
         const json = this.formGroup.getRawValue();
         this.disableBtn = true;
-        console.log("json",json);
         this.withdrawService.create(json).subscribe({
             next: (value :any) => {
                 // this.disableBtn = false;

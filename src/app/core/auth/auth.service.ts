@@ -79,7 +79,6 @@ export class AuthService {
         return this._httpClient.post(this.baseUrl + 'auth/emp/login', { code, is_master }).pipe(
             switchMap((response: any) => {
                 // Store the access token in the local storage
-                console.log("response", response);
                 localStorage.setItem('filterData', JSON.stringify(response?.filterData || '[]'));
                 // Set the authenticated flag to true
                 this._authenticated = true;
@@ -134,7 +133,7 @@ export class AuthService {
     captchaTerminal(): Observable<any> {
         return this._httpClient.post<any>(environment.apiUrl + 'auth/b2c/captchaTerminal', {});
     }
-    
+
 
     /**
      * Sign in using the access token
@@ -244,7 +243,7 @@ export class AuthService {
     // public hasPermission(group_name: string, operation_type: string, category_name: string, module_name: string): boolean {
     //     return this.getPermissions().findIndex(p => p.module_name === module_name && p.group_name === group_name && p.operation_type === operation_type && p.category_name === category_name) > -1;
     // }
-    
+
     public hasPermission(group_name: string, operation_type: string, category_name: string, module_name: string): boolean {
         return this.getPermissions().findIndex(p => p.module_name === module_name && p.group_name === group_name && p.operation_type === operation_type && p.category_name === category_name) > -1;
     }
