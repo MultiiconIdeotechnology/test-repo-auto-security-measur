@@ -18,7 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, leadRegisterPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, leadRegisterPermissions, messages, module_name } from 'app/security';
 import { LeadsRegisterService } from 'app/services/leads-register.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { FilterComponent } from './filter/filter.component';
@@ -36,7 +36,8 @@ import { LeadStatusChangedLogComponent } from 'app/modules/crm/lead/lead-status-
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { EmployeeService } from 'app/services/employee.service';
 import { AgentService } from 'app/services/agent.service';
-
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-lead-register',
@@ -76,10 +77,11 @@ import { AgentService } from 'app/services/agent.service';
     ],
 })
 export class LeadRegisterComponent extends BaseListingComponent implements OnDestroy {
-
     dataList = [];
     total = 0;
     module_name = module_name.leads_register
+    filter_table_name = filter_module_name.leads_register;
+    private settingsUpdatedSubscription: Subscription;
     leadFilter: any;
     deadLeadId: any;
     isFilterShow: boolean = false;
@@ -102,42 +104,42 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         { key: 'leadDate', name: 'Lead Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
     ]
 
-    selectedStatus:string;
-    selectedPriority:string;
-    selectedLeadType:string;
-    selectedLeadSource:string;
-    selectedKyc:string;
-    selectedAgent:string;
-    leadList:any[] = [];
-    employeeList:any[] = [];
-    agentList:any[] = [];
+    selectedStatus: string;
+    selectedPriority: string;
+    selectedLeadType: string;
+    selectedLeadSource: string;
+    selectedKyc: string;
+    selectedAgent: string;
+    leadList: any[] = [];
+    employeeList: any[] = [];
+    agentList: any[] = [];
 
     statusList: any[] = [
-        {label: 'New', value: 'New',  },
-        {label: 'Live', value: 'Live',  },
-        {label: 'Converted', value: 'Converted',  },
-        {label: 'Dead', value: 'Dead',  }
-      ];
+        { label: 'New', value: 'New', },
+        { label: 'Live', value: 'Live', },
+        { label: 'Converted', value: 'Converted', },
+        { label: 'Dead', value: 'Dead', }
+    ];
 
-      priorityText: any[] = [
+    priorityText: any[] = [
         { label: 'High', value: 'High' },
         { label: 'Medium', value: 'Medium' },
         { label: 'Low', value: 'Low' },
-      ];
+    ];
 
-      leadType: any[] = [
+    leadType: any[] = [
         { label: 'B2B Partner', value: 'B2B Partner' },
         { label: 'WL', value: 'WL' },
         { label: 'Corporate', value: 'Corporate' },
         { label: 'Supplier', value: 'Supplier' },
         { label: 'Boost My Brand', value: 'Boost My Brand' },
         { label: 'Build My Brand', value: 'Build My Brand' }
-      ];
+    ];
 
-      kycList: any[] = [
+    kycList: any[] = [
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'No' },
-      ]
+    ]
 
     cols = [];
     _selectedColumns: Column[];
@@ -146,6 +148,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     constructor(
         private leadsRegisterService: LeadsRegisterService,
         private matDialog: MatDialog,
+        public _filterService: CommonFilterService,
         private conformationService: FuseConfirmationService,
         private employeeService: EmployeeService,
         private agentService: AgentService
@@ -168,6 +171,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             FromDate: null,
             ToDate: null
         };
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
@@ -176,6 +180,19 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         ];
 
         this.getAgent("");
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['lastCall'].value) {
+                resp['table_config']['lastCall'].value = new Date(resp['table_config']['lastCall'].value);
+            }
+            if (resp['table_config']['leadDate'].value) {
+                resp['table_config']['leadDate'].value = new Date(resp['table_config']['leadDate'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
 
     get selectedColumns(): Column[] {
@@ -184,6 +201,21 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
 
     set selectedColumns(val: Column[]) {
         this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['lastCall'].value) {
+                filterData['table_config']['lastCall'].value = new Date(filterData['table_config']['lastCall'].value);
+            }
+            if (filterData['table_config']['leadDate'].value) {
+                filterData['table_config']['leadDate'].value = new Date(filterData['table_config']['leadDate'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getFilter(): any {
@@ -210,11 +242,11 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         return filterReq;
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         let extraModel = this.getFilter();
         let oldModel = this.getNewFilterReq(event)
-        let model = {...extraModel, ...oldModel};
+        let model = { ...extraModel, ...oldModel };
         this.leadsRegisterService.leadMasterRegisterList(model).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -240,7 +272,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     }
 
     // on clicking on filter for table column
-    onFilter(){
+    onFilter() {
         this.isFilterShow = !this.isFilterShow;
 
         // first time api called to get the lead status data
@@ -249,20 +281,20 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     }
 
     // lead status data api to get data bind to dropdown on filter
-    getLeadStatus(val:string){
+    getLeadStatus(val: string) {
         this.leadsRegisterService.leadSouceCombo(val).subscribe({
             next: data => {
-              this.leadList = data;
+                this.leadList = data;
             }
-          });
+        });
     }
 
-    getEmployee(value:string){
+    getEmployee(value: string) {
         this.employeeService.getemployeeCombo(value).subscribe({
             next: data => {
-              this.employeeList = data;
+                this.employeeList = data;
             }
-          });
+        });
     }
 
     filter() {
@@ -504,4 +536,12 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             disableClose: true
         });
     }
+
+    ngOnDestroy() {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
+    }
 }
+

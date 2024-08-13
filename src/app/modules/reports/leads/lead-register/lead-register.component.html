@@ -52,6 +52,12 @@
                 <span class="">Filter</span>
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
+
             <!--- Export Excel  -->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
@@ -148,7 +154,7 @@
                     <th>
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [(ngModel)]="selectedStatus" [options]="statusList"
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
                                     (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>

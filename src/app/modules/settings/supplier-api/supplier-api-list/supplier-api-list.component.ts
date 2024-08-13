@@ -1,4 +1,4 @@
-import { Security, messages, module_name, supplierAPIPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, supplierAPIPermissions } from 'app/security';
 import { NgIf, NgFor, DatePipe, NgClass, CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { FlightTabService } from 'app/services/flight-tab.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-supplier-api-list',
@@ -54,10 +56,13 @@ export class SupplierApiListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.supplierapi;
+    filter_table_name = filter_module_name.supplier_api;
+    private settingsUpdatedSubscription: Subscription;
+
     dataList = [];
     total = 0;
-    supplierList:any[] = [];
-    selectedSupplier:string;
+    supplierList: any[] = [];
+    selectedSupplier: string;
 
     columns = [
         {
@@ -162,14 +167,15 @@ export class SupplierApiListComponent
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     liveStatusList = [
-        {label: 'Live', value: true},
-        {label: 'Test', value: false},
+        { label: 'Live', value: true },
+        { label: 'Test', value: false },
     ]
 
     constructor(
         private supplierapiService: SupplierApiService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
+        public _filterService: CommonFilterService,
         private flighttabService: FlightTabService,
         private toasterService: ToasterService
     ) {
@@ -179,6 +185,7 @@ export class SupplierApiListComponent
         this.sortColumn = 'supplier_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
@@ -187,6 +194,22 @@ export class SupplierApiListComponent
         ];
 
         this.getSupplierList();
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     get selectedColumns(): Column[] {
@@ -197,7 +220,7 @@ export class SupplierApiListComponent
         this._selectedColumns = this.cols.filter((col) => val.includes(col));
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.supplierapiService
             .getSupplierWiseApiList(this.getNewFilterReq(event))
@@ -215,8 +238,8 @@ export class SupplierApiListComponent
     }
 
     // Api to get the Supplier List
-    getSupplierList(){
-        this.flighttabService.getSupplierBoCombo('').subscribe((data:any) => {
+    getSupplierList() {
+        this.flighttabService.getSupplierBoCombo('').subscribe((data: any) => {
             this.supplierList = data;
         })
     }
@@ -236,6 +259,10 @@ export class SupplierApiListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 
     /***/

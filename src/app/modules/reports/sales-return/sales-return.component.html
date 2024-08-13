@@ -14,7 +14,8 @@
                     (input)="datatable.filterGlobal($event.target.value, 'contains')">
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'" (input)="datatable.filterGlobal($event.target.value, 'contains')" />
+                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (input)="datatable.filterGlobal($event.target.value, 'contains')" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
             </div>
 
@@ -45,6 +46,13 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -57,12 +65,12 @@
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['agent','supplier', 'complete_date_time', 'amendment_ref_no', 'amendment_type','air_ref_no','pan_numner', 'gst_numner',
             'sup_service_charge', 'bonton_service_charge','refunded_amount','service_charge','tax','net_refund','commission','tds','refundable_price',
-            'commission_2','tds_2','net_commission']"
-            styleClass="p-datatable-gridlines p-datatable-sm">
+            'commission_2','tds_2','net_commission']" styleClass="p-datatable-gridlines p-datatable-sm">
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[150px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="agent" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.agent" [ngClass]="{'left-0': !frozenObj?.agent}">
+                    <th class="min-w-[150px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="agent" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent"
+                        [ngClass]="{'left-0': !frozenObj?.agent}">
                         Agent <p-sortIcon field="agent" />
                         <span class="float-right" (click)="isFrozenColumn('agent');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.agent" class="pi pi-lock-open icon-size-3"></i>
@@ -132,8 +140,7 @@
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent">
                         <!-- <p-columnFilter type="text" matchMode="contains" field="agent" placeholder="Search by Agent"
                             ariaLabel="Filter Agent" /> -->
-                        <p-columnFilter class="searchableDropdown" field="agent" matchMode="equals"
-                            [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="agent" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
@@ -189,24 +196,24 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="amendment_ref_no" placeholder="Search by Amendment Ref No"
-                            ariaLabel="Filter Amendment Ref No" />
+                        <p-columnFilter type="text" matchMode="contains" field="amendment_ref_no"
+                            placeholder="Search by Amendment Ref No" ariaLabel="Filter Amendment Ref No" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="amendment_type" placeholder="Search by Amendment Type"
-                            ariaLabel="Filter Amendment Type" />
+                        <p-columnFilter type="text" matchMode="contains" field="amendment_type"
+                            placeholder="Search by Amendment Type" ariaLabel="Filter Amendment Type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="air_ref_no" placeholder="Search by Air Ref No"
-                            ariaLabel="Filter Air Ref No" />
+                        <p-columnFilter type="text" matchMode="contains" field="air_ref_no"
+                            placeholder="Search by Air Ref No" ariaLabel="Filter Air Ref No" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pan_numner" placeholder="Search by Pan Number"
-                            ariaLabel="Filter Pan Number" />
+                        <p-columnFilter type="text" matchMode="contains" field="pan_numner"
+                            placeholder="Search by Pan Number" ariaLabel="Filter Pan Number" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="gst_numner" placeholder="Search by GST Number"
-                            ariaLabel="Filter GST Number" />
+                        <p-columnFilter type="text" matchMode="contains" field="gst_numner"
+                            placeholder="Search by GST Number" ariaLabel="Filter GST Number" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="sup_service_charge"
