@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -28,11 +28,12 @@ import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { takeUntil, debounceTime, Subject } from 'rxjs';
+import { takeUntil, debounceTime, Subject, Subscription } from 'rxjs';
 import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
 import { EntityService } from 'app/services/entity.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-waudited',
@@ -73,17 +74,14 @@ import { AgentService } from 'app/services/agent.service';
     PrimeNgImportsModule,
   ],
 })
-export class WAuditedComponent extends BaseListingComponent {
+export class WAuditedComponent extends BaseListingComponent implements OnChanges {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowAudit: boolean;
-  @Input() agentData:any;
+  @Input() activeTab:any;
 
-
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlAudit = new FormControl('');
-
+  public withdrawAuitedSubscription: Subscription;
   Mainmodule: any;
   isLoading = false;
   public _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -99,15 +97,6 @@ export class WAuditedComponent extends BaseListingComponent {
   filter: any = {};
   agentList: any[] = [];
 
-  columns = [
-    { key: 'withdraw_ref_no', name: 'Ref No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: false },
-    { key: 'withdraw_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_Code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: 'max-w-48 min-w-48', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'account_number', name: 'Bank', is_date: false, is_info: true, date_formate: '', is_sortable: true, class: 'truncate', is_sticky: false, align: '', indicator: true, tooltip: true },
-
-  ]
   cols = [];
 
   protected masterService: MasterService;
@@ -119,9 +108,9 @@ export class WAuditedComponent extends BaseListingComponent {
     private matDialog: MatDialog,
     public agentService: AgentService,
     private entityService: EntityService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.withdraw)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'agent_name';
     this.sortDirection = 'asc';
@@ -138,23 +127,34 @@ export class WAuditedComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    // this.entityService.onWithdrawAuditedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-    //   next: (item) => {
-    //     this.refreshItemsAudited();
-    //   }
-    // })
-    this.searchInputControlAudit.valueChanges
-      .subscribe(() => {
-        // GridUtils.resetPaginator(this._paginatorPending);
-        // this.refreshItemsAudited();
-      });
+   
   }
 
   ngOnChanges() {
-    this.agentList = this.agentData;
-    // if (this.isFilterShowAudit) {
-    //   this.getAgentList('');
-    // }
+    if (this.activeTab == 'Audited') {
+      this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+          this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+        }
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShowAudit = true;
+        this.primengTable._filter();
+      });
+
+      // ngAfterViewInit
+      if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShowAudit = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+          this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+        }
+
+        this.primengTable['filters'] = filterData['table_config'];
+      }
+    }
+
   }
 
   getAgentList(value: string) {
@@ -230,11 +230,7 @@ export class WAuditedComponent extends BaseListingComponent {
 
   refreshItemsAudited(event?: any) {
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlAudit.value, "entry_date_time", 1
-    // );
+   
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlAudit.value;
     filterReq['status'] = 'audited';
@@ -270,9 +266,11 @@ export class WAuditedComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
-  // ngOnDestroy(): void {
-  //   this._unsubscribeAll.next(null);
-  //   this._unsubscribeAll.complete();
-  // }
+  ngOnDestroy() {
+    if (this.withdrawAuitedSubscription) {
+      this.withdrawAuitedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
+  }
 
 }
