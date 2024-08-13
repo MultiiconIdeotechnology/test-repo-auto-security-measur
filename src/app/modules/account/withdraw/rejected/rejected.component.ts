@@ -136,7 +136,6 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
   }
 
   ngOnChanges() {
-    
     if (this.activeTab == 'Rejected') {
       this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
 
@@ -160,6 +159,9 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         }
 
         this.primengTable['filters'] = filterData['table_config'];
+      }
+      if(this.agentList && !this.agentList.length) {
+        this.getAgentList("");
       }
     }
 

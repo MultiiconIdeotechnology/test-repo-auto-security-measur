@@ -127,7 +127,6 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnInit(): void {
-    
   }
 
   ngAfterViewInit() {
@@ -157,6 +156,10 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
         this.isFilterShowPending = true;
         this.primengTable._filter();
       });
+
+      if(this.agentList && !this.agentList.length) {
+        this.getAgentList("");
+      }
     }
 
   }

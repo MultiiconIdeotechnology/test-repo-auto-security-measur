@@ -153,6 +153,10 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
 
         this.primengTable['filters'] = filterData['table_config'];
       }
+
+      if(this.agentList && !this.agentList.length) {
+        this.getAgentList("");
+      }
     }
 
   }

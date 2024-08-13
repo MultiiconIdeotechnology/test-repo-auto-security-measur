@@ -159,7 +159,6 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
         this.rejected.searchInputControlRejected.patchValue(value)
       });
 
-      this.getAgentList("");
   }
 
   getAgentList(value: string) {
