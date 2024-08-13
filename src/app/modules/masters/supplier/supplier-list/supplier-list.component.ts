@@ -60,102 +60,7 @@ export class SupplierListComponent extends BaseListingComponent {
     isFilterShow: boolean = false;
     cols = [];
     companyList: any[] = [];
-
-
-    columns = [
-        {
-            key: 'company_name',
-            name: 'Company',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'email_address',
-            name: 'Email',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'truncate',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'mobile_number',
-            name: 'Mobile',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: true,
-            tooltip: true 
-        },
-        {
-            key: 'billing_company',
-            name: 'Billing Company',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'city_name',
-            name: 'City',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'entry_date_time',
-            name: 'Entry',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'priority',
-            name: 'Priority',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-    ];
-  
+    companyListName:any[] = [];
 
     constructor(
         private supplierService: SupplierService,
@@ -165,7 +70,6 @@ export class SupplierListComponent extends BaseListingComponent {
         public _filterService: CommonFilterService
     ) {
         super(module_name.supplier);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'company_name';
         this.sortDirection = 'asc';
@@ -175,7 +79,7 @@ export class SupplierListComponent extends BaseListingComponent {
 
     ngOnInit(): void {
 
-        this.getCompanyList("");
+        this.getCompanyList();
 
         this.cols = [
             { field: 'currency', header: 'Currency', type: 'text' },
@@ -206,9 +110,12 @@ export class SupplierListComponent extends BaseListingComponent {
         }
       }
 
-    getCompanyList(value) {
-        this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
+    getCompanyList() {
+        this.pspsettingService.getCompanyCombo("").subscribe((data) => {
           this.companyList = data;
+          for(let el of data){
+              this.companyListName.push(el.company_name);
+          }
         })
       }
 
