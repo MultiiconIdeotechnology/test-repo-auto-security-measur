@@ -15,13 +15,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppConfig } from 'app/config/app-config';
-import { Security, module_name, techDashPermissions } from 'app/security';
+import { Security, filter_module_name, module_name, techDashPermissions } from 'app/security';
 import { takeUntil, debounceTime, Subject } from 'rxjs';
 import { TechDashboardPendingComponent } from '../pending/pending.component';
 import { TechDashboardCompletedComponent } from '../completed/completed.component';
 import { TechDashboardExpiredComponent } from '../expired/expired.component';
 import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-list',
@@ -53,12 +54,13 @@ import { AgentService } from 'app/services/agent.service';
     ],
 })
 export class CRMTechDashboardListComponent implements OnDestroy {
-    module_name = module_name.techDashboard;
     @ViewChild('pending') pending: TechDashboardPendingComponent;
     @ViewChild('completed') completed: TechDashboardCompletedComponent;
     @ViewChild('expired') expired: TechDashboardExpiredComponent;
     @ViewChild('blocked') blocked: TechDashboardBlockedComponent;
-
+    
+    module_name = module_name.techDashboard;
+    filter_table_name = filter_module_name;
     dropdownFirstCallObj:any = {};
     public apiCalls: any = {};
     tabName: any
@@ -74,12 +76,14 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     searchInputControlCompleted = new FormControl('');
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
-
     dataList = [];
     dataListArchive = [];
     total = 0;
 
-    constructor(private agentService: AgentService) { }
+    constructor(
+        private agentService: AgentService, 
+        public _filterService: CommonFilterService
+    ){ }
 
     public getTabsPermission(tab: string): boolean {
         if (tab == 'pending') {
@@ -104,33 +108,6 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         //     )
         //     .subscribe((value) => {
         //         this.pending.searchInputControlPending.patchValue(value);
-        //     });
-
-        // this.searchInputControlCompleted.valueChanges
-        //     .pipe(
-        //         takeUntil(this._unsubscribeAll),
-        //         debounceTime(AppConfig.searchDelay)
-        //     )
-        //     .subscribe((value) => {
-        //         this.completed.searchInputControlCompleted.patchValue(value);
-        //     });
-
-        // this.searchInputControlExpired.valueChanges
-        //     .pipe(
-        //         takeUntil(this._unsubscribeAll),
-        //         debounceTime(AppConfig.searchDelay)
-        //     )
-        //     .subscribe((value) => {
-        //         this.expired.searchInputControlExpired.patchValue(value);
-        //     });
-
-        // this.searchInputControlBlocked.valueChanges
-        //     .pipe(
-        //         takeUntil(this._unsubscribeAll),
-        //         debounceTime(AppConfig.searchDelay)
-        //     )
-        //     .subscribe((value) => {
-        //         this.blocked.searchInputControlBlocked.patchValue(value);
         //     });
 
             // calling agent Api for first time on dropdown
@@ -171,6 +148,18 @@ export class CRMTechDashboardListComponent implements OnDestroy {
                     this.isFourth = false;
                 // }
                 break;
+        }
+    }
+
+    openTabFiterDrawer() {
+        if (this.tabNameStr == 'Pending') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_pending, this.pending.primengTable);
+        } else if (this.tabNameStr == 'Completed') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_completed, this.completed.primengTable);
+        }else if (this.tabNameStr == 'Blocked') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_blocked, this.blocked.primengTable);
+        }else {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_expired, this.expired.primengTable);
         }
     }
 

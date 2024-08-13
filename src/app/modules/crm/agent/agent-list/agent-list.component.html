@@ -60,14 +60,20 @@
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
             <ng-container *ngIf="tabNameStr == 'Inbox'">
-            <inbox-agent #inbox [isFilterShowInbox]="isFilterShowInbox"
-                [dropdownListObj]="dropdownListObj"></inbox-agent>
+                <inbox-agent #inbox [isFilterShowInbox]="isFilterShowInbox"
+                    [dropdownListObj]="dropdownListObj"></inbox-agent>
             </ng-container>
         </mat-tab>
         <mat-tab label="Partners" [aria-label]="'Partners'" *ngIf="getTabsPermission('partners')">

@@ -23,7 +23,7 @@
         <ng-container *ngFor="let item of _filterService.filter_grid_data?.filters">
             <div class="flex flex-row w-full justify-between items-center py-2 px-4 opacity-80"
                 [ngClass]="{'isActive': item?.is_default}">
-                <label class="text-base dark:text-white font-noraml text-black truncate w-[75%] pr-1"
+                <label class="text-base cursor-pointer dark:text-white font-noraml text-black truncate w-[75%] pr-1"
                     (click)="applyFilter(item)">
                     {{item.filter_name}}
                 </label>
