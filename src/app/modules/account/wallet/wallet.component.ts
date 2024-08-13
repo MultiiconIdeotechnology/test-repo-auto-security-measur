@@ -12,20 +12,18 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Security, filter_module_name, module_name, walletRechargePermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { takeUntil, debounceTime } from 'rxjs';
 import { AuditedComponent } from './audited/audited.component';
 import { PendingComponent } from './pending/pending.component';
 import { RejectedComponent } from './rejected/rejected.component';
 import { WalletFilterComponent } from './wallet-filter/wallet-filter.component';
-import { WalletInfoComponent } from './wallet-info/wallet-info.component';
 import { AgentService } from 'app/services/agent.service';
 import { WalletEntryComponent } from './wallet-entry/wallet-entry.component';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
@@ -34,11 +32,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   selector: 'app-wallet',
   templateUrl: './wallet.component.html',
   styleUrls: ['./wallet.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 200px 190px 160px 150px 130px 190px;
-  }
-  `],
+  styles: [],
   standalone: true,
   imports: [
     NgIf,
@@ -98,7 +92,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   agentData: any[] = [];
   mopData:any[] = [];
   pspData:any[] = [];
-
 
   constructor(
     private walletService: WalletService,
@@ -201,8 +194,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   pendingRefresh(){
     this.pending.refreshItemsPending()
   }
-
-
 
   public getTabsPermission(tab: string): boolean {
     if (tab == 'pending')
