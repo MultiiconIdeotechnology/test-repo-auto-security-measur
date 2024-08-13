@@ -1,5 +1,5 @@
 import { CdkDropList, CdkDrag, CdkDragPreview, CdkDragHandle } from '@angular/cdk/drag-drop';
-import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -39,16 +39,6 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
     selector: 'purchase-product-entry-settings',
     templateUrl: './purchase-product-entry-settings.component.html',
-    styles: [
-        `
-            purchase-product-settings {
-                position: static;
-                display: block;
-                flex: none;
-                width: auto;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -81,6 +71,7 @@ import { Subject, takeUntil } from 'rxjs';
         FuseDrawerComponent,
         MatDividerModule,
         NgFor,
+        CommonModule,
         MatDatepickerModule,
         MatMenuModule,
         NgxMatSelectSearchModule,
@@ -90,6 +81,8 @@ import { Subject, takeUntil } from 'rxjs';
 export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+    @ViewChild(MatPaginator) public _paginator: MatPaginator;
+    @ViewChild(MatSort) public _sort: MatSort;
 
     readonly: boolean = false;
     record: any = {};
@@ -109,15 +102,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     selectedMaxInstallment: any;
     user: any;
     dataList = [];
-    @ViewChild(MatPaginator) public _paginator: MatPaginator;
-    @ViewChild(MatSort) public _sort: MatSort;
     searchInputControl = new FormControl('');
     productDetail: any;
     productPurchaseMasterId: any;
     productId: any;
     productList: any[] = [];
     isProductInitialChanged: boolean = false;
-    config: FuseConfig;
     fieldList: {};
     isEditFlag: any = {};
     editLeadId: any;
@@ -131,6 +121,26 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     proofAttachmentSelectedFile: any = File;
     proofAttachjFile: JsonFile;
     proofAttachmentFlag: boolean = false;
+
+    ngOnInit(): void {
+        this.formGroup = this.builder.group({
+            product: ['', Validators.required],
+            rm_remark: [''],
+            id: [''],
+            price: ['', Validators.required],
+            installments: ['', Validators.required],
+            // installmentsArray: this.formBuilder.array([])
+            installmentsArray: [[]],
+            proofAttachment: ['']
+        });
+
+
+        this._userService.user$
+            .pipe((takeUntil(this._unsubscribeAll)))
+            .subscribe((user: any) => {
+                this.user = user;
+            });
+    }
 
     constructor(
         public builder: FormBuilder,
@@ -171,8 +181,11 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.proofAttachmentSelectedFile = {};
                     this.editproofAttachmentSelectedFile = "";
 
+                    this.proofAttachment = false;
                     if (item?.editFlag) {
-                        this.proofAttachment = true;
+                        if(item?.editData?.proof_attachment){
+                            this.proofAttachment = true;
+                        }
                         this.editAgentId = item?.editData?.agentid;
                         this.editRecord = item?.editData ?? {}
 
@@ -190,12 +203,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                 }
             }
         })
-
-        this._fuseConfigService.config$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((config: FuseConfig) => {
-                this.config = config;
-            });
     }
 
     calculateDateBeforeDays(days: number): Date {
@@ -211,25 +218,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         }
     }
 
-    ngOnInit(): void {
-        this.formGroup = this.builder.group({
-            product: ['', Validators.required],
-            rm_remark: [''],
-            id: [''],
-            price: ['', Validators.required],
-            installments: ['', Validators.required],
-            // installmentsArray: this.formBuilder.array([])
-            installmentsArray: [[]],
-            proofAttachment: ['']
-        });
-
-
-        this._userService.user$
-            .pipe((takeUntil(this._unsubscribeAll)))
-            .subscribe((user: any) => {
-                this.user = user;
-            });
-    }
 
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
@@ -307,7 +295,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             this.proofAttachmentSelectedFile = file;
             this.editproofAttachmentSelectedFile = false;
             this.formGroup.get('proofAttachment').setValue(file);
-            this.proofAttachmentFlag = false;
+            this.proofAttachmentFlag = true;
             if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
                 this.formGroup.get('proofAttachment').clearValidators();
             }
@@ -344,6 +332,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     }
 
     getProducts() {
+        this.productPurchaseMasterId = ""
         this.crmService.getProductNameList().subscribe({
             next: (data) => {
                 this.productList = data;
@@ -356,6 +345,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     if (this.record && this.record.installment) {
                         this.patchInstallments(this.record.installment);
                     }
+                    this.productPurchaseMasterId = "";
                     // this.productId = this.record?.product_id;
                     // this.productId = this.record?.id;
                     // this.productPurchaseMasterId = this.record?.id1;
@@ -389,7 +379,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.productId = res?.[0]?.productid;
                     this.productPurchaseMasterId = res?.[0]?.id;
                 }
-
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -456,6 +445,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.disableBtn = false;
                     this.entityService.raiserefreshproductPurchaseCall(true);
                     this.settingsDrawer.close();
+                    this.productPurchaseMasterId = ""
+                    this.formGroup.reset();
                     if (json.id) {
                         this.alertService.showToast('success', 'Record modified', 'top-right', true);
                     } else {
