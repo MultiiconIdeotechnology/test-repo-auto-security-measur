@@ -18,10 +18,8 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { Security, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
-import { ToasterService } from 'app/services/toaster.service';
 import { WalletService } from 'app/services/wallet.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { InfoWalletComponent } from '../info-wallet/info-wallet.component';
 import { DateTime } from 'luxon';
 import { EntityService } from 'app/services/entity.service';
@@ -29,16 +27,13 @@ import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-rejected',
   templateUrl: './rejected.component.html',
   styleUrls: ['./rejected.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 200px 180px 180px 130px 160px 190px 180px 200px 150px;
-  }
-  `],
+  styles: [],
   standalone: true,
   imports: [
     NgIf,
@@ -66,6 +61,7 @@ export class RejectedComponent extends BaseListingComponent {
 
   @Input() isFilterShowReject: boolean
   @Input() filterApiData: any;
+  @Input() activeTab: any;
 
   @ViewChild('tabGroup') tabGroup;
   @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
@@ -88,20 +84,8 @@ export class RejectedComponent extends BaseListingComponent {
   mopList:any[] = [];
   selectedMop!:string;
   selectedEmployee!:string;
+  public settingsRejectSubscription: Subscription;
 
-
-  columns = [
-    { key: 'reference_number', name: 'Ref. No', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
-    { key: 'request_date_time', name: 'Request', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'recharge_for_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'recharge_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'mop', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'filename', name: 'Attachment', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view', is_sticky: false, align: '', indicator: false, isicon: true },
-    { key: 'rejected_by_name', name: 'Rejected By', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'rejected_date_time', name: 'Reject Time', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'user_remark', name: 'Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-
-  ]
   cols = [];
   protected masterService: MasterService;
 
@@ -111,9 +95,9 @@ export class RejectedComponent extends BaseListingComponent {
     private matDialog: MatDialog,
     public agentService: AgentService,
     private entityService: EntityService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.wallet)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'request_date_time';
     this.sortDirection = 'desc';
@@ -122,28 +106,43 @@ export class RejectedComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    this.searchInputControlRejected.valueChanges
-      .subscribe(() => {
-        GridUtils.resetPaginator(this._paginatorPending);
-        // this.refreshItemsRejected();
-      });
-
-      // agent combo api call
-      // this.getAgentList('');
-
-    // this.entityService.onWalletRejectedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-    //   next: (item) => {
-    //     this.refreshItemsRejected();
-    //   }
-    // })
+   
   }
 
   ngOnChanges() {
+    if (this.activeTab == 'Rejected') {
+      this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        if (resp['table_config']['request_date_time'].value && resp['table_config']['request_date_time'].value.length) {
+          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+        }
+        if (resp['table_config']['rejected_date_time'].value) {
+            resp['table_config']['rejected_date_time'].value = new Date(resp['table_config']['rejected_date_time'].value);
+        }
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShowReject = true;
+        this.primengTable._filter();
+      });
+
+      // ngAfterViewInit
+      if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShowReject = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        if (filterData['table_config']['request_date_time'].value && filterData['table_config']['request_date_time'].value.length) {
+          this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
+        }
+        if (filterData['table_config']['rejected_date_time'].value) {
+            filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
+        }
+
+        this.primengTable['filters'] = filterData['table_config'];
+      }
+    }
+
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData.mopData;
-    // if (this.isFilterShowReject) {
-    //   this.getAgentList('');
-    // }
   }
 
 
@@ -299,6 +298,13 @@ export class RejectedComponent extends BaseListingComponent {
         ],
         data.data, "Wallet Recharge Rejected", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]);
     });
+  }
+
+  ngOnDestroy() {
+    if (this.settingsRejectSubscription) {
+      this.settingsRejectSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+      }
   }
 
 

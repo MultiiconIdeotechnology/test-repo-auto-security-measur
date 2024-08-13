@@ -169,6 +169,7 @@ export class CommonFilterComponent implements OnInit {
                     let body = {
                         id: this._filterService.activeFiltData["id"],
                         panel_name: "BO",
+                        grid_name: this._filterService.filter_table_name,
                         grid_configuration: JSON.stringify({
                             sortColumn: this._filterService.fliterTableConfig['_sortField'],
                             table_config: this._filterService.fliterTableConfig['filters']
@@ -265,6 +266,7 @@ export class CommonFilterComponent implements OnInit {
                             if (data && data.status && data?.data.length) {
                                 this._filterService.setLocalFilterData(data.data);
                                 this.alertService.showToast('success', `${item.filter_name} has been deleted successfully.`, "top-right", true);
+                                this.isEditable = this.checkIsEditable();
                             }
                         }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
                     });

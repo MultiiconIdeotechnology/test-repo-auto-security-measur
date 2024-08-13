@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, ViewChild } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Table } from 'primeng/table';
 import { Observable, Subject } from 'rxjs';
@@ -19,7 +19,7 @@ export class CommonFilterService {
     filterDrawerVisible: boolean = false;
     filter_grid_data: any = {};
     filter_table_name: any;
-    fliterTableConfig: Table;
+    fliterTableConfig: any;
     activeFiltData: any = {};
 
     constructor(private http: HttpClient) { }
@@ -66,7 +66,7 @@ export class CommonFilterService {
     openDrawer(table_name: any, primengTable: Table) {
         this.filterDrawerVisible = true;
         this.filter_table_name = table_name;
-        this.fliterTableConfig = primengTable;
+        this.fliterTableConfig = primengTable || {};
         let localFilterData = this.getFilterData();
         this.showFiltSubject();
 
