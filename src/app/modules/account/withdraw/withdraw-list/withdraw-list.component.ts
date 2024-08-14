@@ -76,16 +76,16 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   module_name = module_name.withdraw
   agentData: any[] = [];
 
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
+  // @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
+  // @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlPending = new FormControl('');
 
-  @ViewChild(MatPaginator) public _paginatorAudit: MatPaginator;
-  @ViewChild(MatSort) public _sortPaid: MatSort;
+  // @ViewChild(MatPaginator) public _paginatorAudit: MatPaginator;
+  // @ViewChild(MatSort) public _sortPaid: MatSort;
   searchInputControlAudit = new FormControl('');
 
-  @ViewChild(MatPaginator) public _paginatorRejected: MatPaginator;
-  @ViewChild(MatSort) public _sortRejected: MatSort;
+  // @ViewChild(MatPaginator) public _paginatorRejected: MatPaginator;
+  // @ViewChild(MatSort) public _sortRejected: MatSort;
   searchInputControlRejected = new FormControl('');
 
   isFilterShowPending: boolean = false;
@@ -138,33 +138,33 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     //   },
     // });
 
-    this.searchInputControlPending.valueChanges
-      .pipe(
-        takeUntil(this._unsubscribeAll),
-        debounceTime(AppConfig.searchDelay)
-      )
-      .subscribe((value) => {
-        this.pending.searchInputControlPending.patchValue(value)
+    // this.searchInputControlPending.valueChanges
+    //   .pipe(
+    //     takeUntil(this._unsubscribeAll),
+    //     debounceTime(AppConfig.searchDelay)
+    //   )
+    //   .subscribe((value) => {
+    //     this.pending.searchInputControlPending.patchValue(value)
         
-      });
+    //   });
 
-    this.searchInputControlAudit.valueChanges
-      .pipe(
-        takeUntil(this._unsubscribeAll),
-        debounceTime(AppConfig.searchDelay)
-      )
-      .subscribe((value) => {
-        this.audited.searchInputControlAudit.patchValue(value)
-      });
+    // this.searchInputControlAudit.valueChanges
+    //   .pipe(
+    //     takeUntil(this._unsubscribeAll),
+    //     debounceTime(AppConfig.searchDelay)
+    //   )
+    //   .subscribe((value) => {
+    //     this.audited.searchInputControlAudit.patchValue(value)
+    //   });
 
-    this.searchInputControlRejected.valueChanges
-      .pipe(
-        takeUntil(this._unsubscribeAll),
-        debounceTime(AppConfig.searchDelay)
-      )
-      .subscribe((value) => {
-        this.rejected.searchInputControlRejected.patchValue(value)
-      });
+    // this.searchInputControlRejected.valueChanges
+    //   .pipe(
+    //     takeUntil(this._unsubscribeAll),
+    //     debounceTime(AppConfig.searchDelay)
+    //   )
+    //   .subscribe((value) => {
+    //     this.rejected.searchInputControlRejected.patchValue(value)
+    //   });
 
       this.getAgentList("");
   }
@@ -176,15 +176,18 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     })
   }
 
-  rejectedRefresh(){
+  rejectedRefresh(event:any){
+    this.rejected.searchInputControlRejected.patchValue(event)
     this.rejected.refreshItemsRejected()
   }
-
-  auditedRefresh(){
+  
+  auditedRefresh(event:any){
+    this.audited.searchInputControlAudit.patchValue(event)
     this.audited.refreshItemsAudited()
   }
   
-  pendingRefresh(){
+  pendingRefresh(event:any){
+    this.pending.searchInputControlPending.patchValue(event);
     this.pending.refreshItemsPending()
   }
 
