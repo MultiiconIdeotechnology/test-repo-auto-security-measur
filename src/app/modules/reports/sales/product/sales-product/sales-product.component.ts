@@ -76,7 +76,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         { key: 'Due_amount', name: 'Due Amount', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
         { key: 'Amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false }
     ]
-    // isFilterShow: boolean = false;
+    isFilterShow: boolean = false;
 
     constructor(
         private salesProductsService: SalesProductsService,
