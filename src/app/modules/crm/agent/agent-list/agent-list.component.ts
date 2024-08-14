@@ -103,6 +103,7 @@ export class CRMAgentListComponent implements OnDestroy {
 
             for(let i in this.dropdownListObj['agentList']){
                 this.dropdownListObj['agentList'][i]['agent_info'] = `${this.dropdownListObj['agentList'][i].code}-${this.dropdownListObj['agentList'][i].agency_name}${this.dropdownListObj['agentList'][i].email_address}`
+                this.dropdownListObj['agentList'][i].id_by_value = this.dropdownListObj['agentList'][i].agency_name; 
             }
         })
     }

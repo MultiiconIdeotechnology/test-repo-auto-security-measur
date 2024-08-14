@@ -207,7 +207,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
 
             for(let i in this.dropdownFirstCallObj['agentList']){
                 this.dropdownFirstCallObj['agentList'][i]['agent_info'] =
-                 `${this.dropdownFirstCallObj['agentList'][i].code}-${this.dropdownFirstCallObj['agentList'][i].agency_name}${this.dropdownFirstCallObj['agentList'][i].email_address}`
+                 `${this.dropdownFirstCallObj['agentList'][i].code}-${this.dropdownFirstCallObj['agentList'][i].agency_name}${this.dropdownFirstCallObj['agentList'][i].email_address}`;
+                 this.dropdownFirstCallObj['agentList'][i].id_by_value = this.dropdownFirstCallObj['agentList'][i].agency_name;
             }
         })
     }
