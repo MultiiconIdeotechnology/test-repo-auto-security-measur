@@ -139,7 +139,7 @@
                                     [(ngModel)]="selectedSupplier"
                                     [filter]="true"
                                     filterBy="company_name"
-                                    (onChange)="filter($event.value?.company_name)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select Supplier">

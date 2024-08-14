@@ -197,6 +197,10 @@ export class SupplierApiListComponent
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
+
+            if(resp['table_config']['supplier_name']){
+                this.selectedSupplier = resp['table_config'].supplier_name?.value;
+            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -208,6 +212,9 @@ export class SupplierApiListComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['supplier_name']){
+                this.selectedSupplier = filterData['table_config'].supplier_name?.value;
+            }
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
@@ -241,6 +248,9 @@ export class SupplierApiListComponent
     getSupplierList() {
         this.flighttabService.getSupplierBoCombo('').subscribe((data: any) => {
             this.supplierList = data;
+            for (let i in this.supplierList) {
+                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+            }
         })
     }
 

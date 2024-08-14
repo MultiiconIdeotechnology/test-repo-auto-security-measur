@@ -66,7 +66,7 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
     leadFilter: any;
     isFilterShow: boolean = false;
     employeeList: any[] = [];
-    selectedRM: string;
+    selectedRM: any;
 
     columns = [
         { key: 'rm', name: 'RM', is_date: true, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
@@ -97,6 +97,9 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['rm']){
+                this.selectedRM = resp['table_config'].rm?.value;
+            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -108,6 +111,9 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['rm']){
+                this.selectedRM = filterData['table_config'].rm?.value;
+            }
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
@@ -140,6 +146,10 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
+
+            for (let i in this.employeeList) {
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name
+            }
         });
     }
 

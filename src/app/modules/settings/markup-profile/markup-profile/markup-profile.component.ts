@@ -112,6 +112,7 @@ export class MarkupProfileComponent
 
     ];
     cols = [];
+    selectedCompany: any;
 
     constructor(
         private markupprofileService: MarkupprofileService,
@@ -137,6 +138,9 @@ export class MarkupProfileComponent
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['company_name']){
+                this.selectedCompany = resp['table_config'].company_name?.value;
+            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -148,6 +152,9 @@ export class MarkupProfileComponent
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['company_name']){
+                this.selectedCompany = filterData['table_config'].company_name?.value;
+            }
             this.primengTable['filters'] = filterData['table_config'];
         }
       }
@@ -155,6 +162,9 @@ export class MarkupProfileComponent
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
             this.companyList = data;
+            for (let i in this.companyList) {
+                this.companyList[i].id_by_value = this.companyList[i].company_name
+            }
         })
     }
 
