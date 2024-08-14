@@ -170,7 +170,7 @@ export class AgentListComponent extends BaseListingComponent {
         ];
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedEmployee = resp['table_config']['rm_id_filters'].value
+            this.selectedEmployee = resp['table_config']['rm_id_filters'].value || {};
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['entry_date_time'].value){
@@ -194,7 +194,8 @@ export class AgentListComponent extends BaseListingComponent {
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            if(filterData['table_config']['entry_date_time'].value){
+            this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
+            if(filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
