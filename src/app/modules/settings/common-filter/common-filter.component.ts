@@ -161,7 +161,7 @@ export class CommonFilterComponent implements OnInit {
         this._filterService.closeDrawer();
         this.conformationService.open({
             title: "Update",
-            message: `Are you sure you want to update chanegs`
+            message: `Are you sure you want to update changes`
         }).afterClosed().subscribe({
             next: (res) => {
                 if (res === 'confirmed') {
