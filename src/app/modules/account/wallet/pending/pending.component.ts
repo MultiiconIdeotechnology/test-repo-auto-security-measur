@@ -64,8 +64,6 @@ export class PendingComponent extends BaseListingComponent {
   @Input() activeTab: any;
 
   @ViewChild('tabGroup') tabGroup;
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlPending = new FormControl('');
   filter_table_name = filter_module_name.wallet_recharge_pending;
 
@@ -87,15 +85,6 @@ export class PendingComponent extends BaseListingComponent {
   selectedEmployee!:string;
   public settingsUpdatedSubscription: Subscription;
 
-  columns = [
-    { key: 'reference_number', name: 'Ref. No', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
-    { key: 'request_date_time', name: 'Request', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'recharge_for_name', name: 'Agent', tooltip: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'recharge_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'mop', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'filename', name: 'Attachment', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view', is_sticky: false, align: '', indicator: false, isicon: true },
-    { key: 'user_remark', name: 'Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-  ]
   cols = [];
 
   constructor(
@@ -107,7 +96,6 @@ export class PendingComponent extends BaseListingComponent {
     public _filterService: CommonFilterService
   ) {
     super(module_name.wallet)
-    // this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'request_date_time';
     this.sortDirection = 'desc';
@@ -265,11 +253,6 @@ export class PendingComponent extends BaseListingComponent {
 
   refreshItemsPending(event?: any) {
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlPending.value, "request_date_time", 1
-    // );
 
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlPending.value;
@@ -286,11 +269,6 @@ export class PendingComponent extends BaseListingComponent {
           this.isLoading = false;
           this.dataList = data.data;
           this.totalRecords = data.total;
-          // this.dataList.forEach(x => {
-          //   x.recharge_amount = x.currency + " " + x.recharge_amount
-          // });
-          // this._paginatorPending.length = data.total;
-          // this.total = data.total;
         }, error: err => {
           this.alertService.showToast('error', err);
 
@@ -317,13 +295,6 @@ export class PendingComponent extends BaseListingComponent {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlPending.value, "request_date_time", 1
-    // );
-
-    // const filterReq = {}
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlPending.value;
     filterReq['Status'] = 'pending';

@@ -8,9 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -22,7 +20,6 @@ import { WalletService } from 'app/services/wallet.service';
 import { Subject, Subscription } from 'rxjs';
 import { InfoWalletComponent } from '../info-wallet/info-wallet.component';
 import { DateTime } from 'luxon';
-import { EntityService } from 'app/services/entity.service';
 import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
@@ -45,8 +42,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     MatButtonModule,
     MatProgressBarModule,
     MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatFormFieldModule,
     MatMenuModule,
     MatDialogModule,
@@ -64,8 +59,6 @@ export class AuditedComponent extends BaseListingComponent {
   @Input() filterApiData:any;
   @Input() activeTab: any;
 
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlAudit = new FormControl('');
   filter_table_name = filter_module_name.wallet_recharge_audited;
 
@@ -98,7 +91,6 @@ export class AuditedComponent extends BaseListingComponent {
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     public agentService: AgentService,
-    private entityService: EntityService,
     public _filterService: CommonFilterService
   ) {
     super(module_name.wallet)
@@ -241,11 +233,7 @@ export class AuditedComponent extends BaseListingComponent {
   refreshItemsAudited(event?: any) {
     
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlAudit.value, "request_date_time", 1
-    // );
+    
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlAudit.value;
     filterReq['Status'] = 'audited';
@@ -261,11 +249,7 @@ export class AuditedComponent extends BaseListingComponent {
           this.isLoading = false;
           this.dataList = data.data;
           this.totalRecords = data.total;
-          // this.dataList.forEach(x => {
-          //   x.recharge_amount = x.currency + " " + x.recharge_amount
-          // });
-          // this._paginatorPending.length = data.total;
-          // this.total = data.total;
+          
         }, error: err => {
           this.alertService.showToast('error', err);
           this.isLoading = false;
@@ -290,12 +274,6 @@ export class AuditedComponent extends BaseListingComponent {
     if (!Security.hasExportDataPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlAudit.value, "request_date_time", 1
-    // );
 
     const filterReq = this.getNewFilterReq({});
     filterReq['Filter'] = this.searchInputControlAudit.value;

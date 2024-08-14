@@ -64,8 +64,6 @@ export class RejectedComponent extends BaseListingComponent {
   @Input() activeTab: any;
 
   @ViewChild('tabGroup') tabGroup;
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlRejected = new FormControl('');
   Mainmodule: any;
   isLoading = false;
@@ -210,11 +208,7 @@ export class RejectedComponent extends BaseListingComponent {
   refreshItemsRejected(event?: any) {
 
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlRejected.value, "request_date_time", 1
-    // );
+   
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['Status'] = 'rejected';
@@ -230,11 +224,7 @@ export class RejectedComponent extends BaseListingComponent {
           this.isLoading = false;
           this.dataList = data.data;
           this.totalRecords = data.total;
-          // this.dataList.forEach(x => {
-          //   x.recharge_amount = x.currency + " " + x.recharge_amount
-          // });
-          // this._paginatorPending.length = data.total;
-          // this.total = data.total;
+        
         }, error: err => {
           this.alertService.showToast('error', err);
 
@@ -260,11 +250,6 @@ export class RejectedComponent extends BaseListingComponent {
     if (!Security.hasExportDataPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlRejected.value, "request_date_time", 1
-    // );
 
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlRejected.value;
