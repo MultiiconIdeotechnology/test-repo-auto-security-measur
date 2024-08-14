@@ -124,6 +124,9 @@ export class InboxAgentComponent extends BaseListingComponent {
             if (resp['table_config']['createdDate'].value) {
                 resp['table_config']['createdDate'].value = new Date(resp['table_config']['createdDate'].value);
             }
+            if (resp['table_config']['lastTransaction'].value) {
+                resp['table_config']['lastTransaction'].value = new Date(resp['table_config']['lastTransaction'].value);
+            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
             this.primengTable._filter();
@@ -137,6 +140,9 @@ export class InboxAgentComponent extends BaseListingComponent {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['createdDate'].value) {
                 filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
+            }
+            if (filterData['table_config']['lastTransaction'].value) {
+                filterData['table_config']['lastTransaction'].value = new Date(filterData['table_config']['lastTransaction'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
         }
