@@ -58,12 +58,15 @@ export class HolidayListComponent extends BaseListingComponent {
     total = 0;
     isFilterShow: boolean = false;
     supplierListAll: any[] = [];
-    selectedSupplier!: string;
+    selectedSupplier: any;
 
     ngOnInit() {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['supplier_name']){
+                this.selectedSupplier = resp['table_config'].supplier_name?.value;
+            }
             if (resp['table_config']['publish_date_time'].value) {
                 resp['table_config']['publish_date_time'].value = new Date(resp['table_config']['publish_date_time'].value);
             }
@@ -208,6 +211,10 @@ export class HolidayListComponent extends BaseListingComponent {
     getSupplier(value) {
         this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
             this.supplierListAll = data;
+
+            for (let i in this.supplierListAll) {
+                this.supplierListAll[i].id_by_value = this.supplierListAll[i].company_name
+            }
         })
     }
 
@@ -252,6 +259,9 @@ export class HolidayListComponent extends BaseListingComponent {
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['supplier_name']){
+                this.selectedSupplier = filterData['table_config'].supplier_name?.value;
+            }
             if (filterData['table_config']['publish_date_time'].value) {
                 filterData['table_config']['publish_date_time'].value = new Date(filterData['table_config']['publish_date_time'].value);
             }

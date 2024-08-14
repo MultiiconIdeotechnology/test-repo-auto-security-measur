@@ -143,7 +143,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
 
     cols = [];
     _selectedColumns: Column[];
-
+    leadStatus: any;
 
     constructor(
         private leadsRegisterService: LeadsRegisterService,
@@ -183,6 +183,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['supplier_name']){
+                this.leadStatus = resp['table_config'].supplier_name?.value;
+            }
             if (resp['table_config']['lastCall'].value) {
                 resp['table_config']['lastCall'].value = new Date(resp['table_config']['lastCall'].value);
             }
@@ -208,6 +211,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['supplier_name']){
+                this.leadStatus = filterData['table_config'].supplier_name?.value;
+            }
             if (filterData['table_config']['lastCall'].value) {
                 filterData['table_config']['lastCall'].value = new Date(filterData['table_config']['lastCall'].value);
             }
@@ -267,6 +273,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i].id_by_value = this.agentList[i].employee_name
             }
         })
     }
@@ -285,6 +292,10 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         this.leadsRegisterService.leadSouceCombo(val).subscribe({
             next: data => {
                 this.leadList = data;
+
+                for (let i in this.leadList) {
+                    this.leadList[i].id_by_value = this.leadList[i].lead_source
+                }
             }
         });
     }
