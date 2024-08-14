@@ -107,7 +107,7 @@ export class AgentListComponent extends BaseListingComponent {
     kycListAll: any[] = [];
     employeeList: any[] = [];
     markupList: any[] = [];
-    selectedEmployee: string | undefined;
+    selectedEmployee: any = {};
     selectedKycProfile!: string
 
     constructor(
@@ -170,7 +170,15 @@ export class AgentListComponent extends BaseListingComponent {
         ];
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedEmployee = resp['table_config']['rm_id_filters'].value || {};
+            // console.log("resp['table_config']", resp['table_config']);
+            
+            this.selectedEmployee = JSON.parse(JSON.stringify(resp['table_config']['rm_id_filters'].value));
+            // const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
+            // if(!match) {
+            //     this.employeeList.push(this.selectedEmployee);
+            // }
+            console.log("this.selectedEmployee", this.selectedEmployee);
+            
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['entry_date_time'].value){
@@ -194,7 +202,12 @@ export class AgentListComponent extends BaseListingComponent {
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            // console.log("ngAfterViewInit");
             this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
+            // const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
+            // if(!match) {
+            //     this.employeeList.push(this.selectedEmployee);
+            // }
             if(filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
