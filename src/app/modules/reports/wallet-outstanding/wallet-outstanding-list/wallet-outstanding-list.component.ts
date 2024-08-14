@@ -144,7 +144,8 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             this.agentList = data;
 
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
             }
         })
     }
@@ -153,6 +154,11 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
+
+            // pass by value variable added to common named variable(id_by_value) for common filter
+            for (let i in this.employeeList) {
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name
+            }
         });
     }
 
