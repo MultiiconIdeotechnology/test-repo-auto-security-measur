@@ -120,7 +120,7 @@ export class TechCollectionComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-
+        
     }
 
     ngAfterViewInit() {
@@ -155,9 +155,11 @@ export class TechCollectionComponent extends BaseListingComponent {
                 this.isFilterShowTech = true;
                 this.primengTable._filter();
             });
-        }
 
-        this.agentList = this.dropdownListObj['agentList'];
+            if(this.agentList && !this.agentList.length) {
+                this.getAgent("");
+            }
+        }
     }
 
 
