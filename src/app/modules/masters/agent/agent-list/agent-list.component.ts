@@ -47,11 +47,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 @Component({
     selector: 'app-agent-list',
     templateUrl: './agent-list.component.html',
-    styles: [`
-  .tbl-grid {
-    grid-template-columns:  40px 110px 250px 100px 250px 150px 120px 120px 100px 200px 200px 120px 170px;
-  }
-  `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -88,20 +84,6 @@ export class AgentListComponent extends BaseListingComponent {
         { label: 'No', value: false }
     ];
 
-    columns = [
-        { key: 'agent_code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, is_fixed: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: false },
-        { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'pan_number', name: 'PAN Number', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'gst_number', name: 'GST Number', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'base_currency', name: 'Currency', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'relation_manager_name', name: 'Relationship Manager ', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'city_name', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'web_last_login_time', name: 'Last Login', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'entry_date_time', name: 'Signup', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
     cols = [];
 
     // statusList = ['All', 'New', 'Active','Inactive','Dormant',];
@@ -144,7 +126,6 @@ export class AgentListComponent extends BaseListingComponent {
 
     ) {
         super(module_name.agent)
-        // this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'agent_code';
         this.sortDirection = 'desc';

@@ -103,6 +103,7 @@ export class GridUtils {
         
         if(filter) {
             if (Object.keys(filter).length === 0) {
+                // Default save filter applied first time
                 if (activeFiltData && activeFiltData.grid_config) {
                     let filterData = JSON.parse(activeFiltData.grid_config);
                     filter = filterData['table_config'];
@@ -117,7 +118,15 @@ export class GridUtils {
                             matchMode : filter[key].matchMode
                         };
                     } else {
-                        validFilter[key] = filter[key];
+                        if(filter[key] && filter[key].value && typeof filter[key].value === 'object') {
+                            let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
+                            validFilter[key] = {
+                                value : id_by_value,
+                                matchMode : filter[key].matchMode
+                            };
+                        } else {
+                            validFilter[key] = filter[key];
+                        }
                     }
                 }
             });
