@@ -143,7 +143,10 @@ export class TravelCollectionComponent extends BaseListingComponent {
                 this.primengTable['filters'] = filterData['table_config'];
             }
         }
-        this.agentList = this.dropdownListObj['agentList'];
+
+        if (this.agentList && !this.agentList.length) {
+            this.getAgent("");
+        }
     }
 
     refreshItems(event?: any): void {
@@ -163,8 +166,6 @@ export class TravelCollectionComponent extends BaseListingComponent {
             },
         });
     }
-
-
 
     getAgent(value: string) {
         this.agentService.getAgentCombo(value).subscribe((data) => {
@@ -194,8 +195,7 @@ export class TravelCollectionComponent extends BaseListingComponent {
         }
     }
 
-
-    dialCall(record): void {
+    dialCall(record: any): void {
         if (!Security.hasPermission(travelCollectionPermissions.dailCallPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }

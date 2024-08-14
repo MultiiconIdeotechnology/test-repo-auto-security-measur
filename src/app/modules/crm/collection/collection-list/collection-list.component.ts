@@ -84,11 +84,7 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
         this.sortColumn = '';
         this.sortDirection = '';
         this.Mainmodule = this
-    }
 
-    ngOnDestroy(): void {
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.unsubscribe();
     }
 
     public getTabsPermission(tab: string): boolean {
@@ -119,7 +115,6 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
             });
 
         // calling Api for defatult value for first time to get Agent list.
-        this.getAgent('');
     }
 
     // Function to get the agentList  from api
@@ -191,5 +186,10 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
 
     travelRefresh() {
         this.travel?.refreshItems();
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.unsubscribe();
     }
 }
