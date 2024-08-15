@@ -406,7 +406,12 @@ export class FlightComponent extends BaseListingComponent {
         { label: 'Cancelled', value: 'Cancelled' },
         { label: 'Partially Cancelled', value: 'Partially Cancelled' },
         { label: 'Hold', value: 'Hold' }
-      ];
+    ];
+
+    bookingFromList:any = [
+        {label:'Online', value: false},
+        {label:'Import', value: true}
+    ]
     // clipboard: any;
     // toastr: any;
 

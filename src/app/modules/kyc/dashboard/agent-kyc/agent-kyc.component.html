@@ -121,7 +121,7 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="kyc_profile" placeholder="Search by KYC Profile"
                             ariaLabel="Filter KYC Profile" /> -->
-                        <p-columnFilter class="searchableDropdown"  field="kyc_profile" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown"  field="kyc_profile_id_filters" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown"
                                     [options]="kycProfileList"
