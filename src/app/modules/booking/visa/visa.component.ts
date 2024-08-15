@@ -298,11 +298,9 @@ export class VisaComponent extends BaseListingComponent {
                 this.isLoading = false;
                 this.dataList = data.data;
                 this.totalRecords = data.total;
-                if (this.dataList && this.dataList.length) {
-                    setTimeout(() => {
-                        this.isFrozenColumn('', ['booking_ref_no', 'visa_status']);
-                    }, 200);
-                }
+                setTimeout(() => {
+                    this.isFrozenColumn('', ['booking_ref_no', 'visa_status']);
+                }, 200);
             },
             error: (err) => {
                 this.toasterService.showToast('error', err)
