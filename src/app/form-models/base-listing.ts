@@ -165,7 +165,7 @@ export abstract class BaseListingComponent implements OnInit {
 
 
     // Table Frozen Column
-    isFrozenColumn(key: any, opetion?: any) {
+    isFrozenColumn(key: any, opetion?: any, noData?: any) {
         if(key) {
             if(this.frozenObj && this.frozenObj[key]) {
                 this.frozenObj[key] = !this.frozenObj[key];
@@ -174,7 +174,11 @@ export abstract class BaseListingComponent implements OnInit {
             }
         }
         if(opetion && opetion.length) {
-            opetion.every((field: any) => this.frozenObj[field] = true);
+            if(noData) {
+                opetion.filter((field: any) => this.frozenObj[field] = false);
+            } else {
+                opetion.every((field: any) => this.frozenObj[field] = true);
+            }
         }
     }
     // ###
