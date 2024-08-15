@@ -96,23 +96,23 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
     }
 
     ngOnInit(): void {
-        this.searchInputControlTech.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.tech.searchInputControlTech.patchValue(value)
-            });
+        // this.searchInputControlTech.valueChanges
+        //     .pipe(
+        //         takeUntil(this._unsubscribeAll),
+        //         debounceTime(AppConfig.searchDelay)
+        //     )
+        //     .subscribe((value) => {
+        //         this.tech.searchInputControlTech.patchValue(value)
+        //     });
 
-        this.searchInputControlTravel.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.travel.searchInputControlTravel.patchValue(value)
-            });
+        // this.searchInputControlTravel.valueChanges
+        //     .pipe(
+        //         takeUntil(this._unsubscribeAll),
+        //         debounceTime(AppConfig.searchDelay)
+        //     )
+        //     .subscribe((value) => {
+        //         this.travel.searchInputControlTravel.patchValue(value)
+        //     });
 
         // calling Api for defatult value for first time to get Agent list.
         this.getAgent('');
@@ -159,11 +159,13 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
             this.travel?.refreshItems();
     }
 
-    techRefresh() {
+    techRefresh(event:any) {
+        this.tech.searchInputControlTech.patchValue(event)
         this.tech?.refreshItems();
     }
 
-    travelRefresh() {
+    travelRefresh(event:any) {
+        this.travel.searchInputControlTravel.patchValue(event)
         this.travel?.refreshItems();
     }
 }

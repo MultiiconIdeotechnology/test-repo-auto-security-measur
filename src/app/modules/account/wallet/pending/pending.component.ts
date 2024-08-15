@@ -93,6 +93,7 @@ export class PendingComponent extends BaseListingComponent {
   columns = [
     { key: 'reference_number', name: 'Ref. No', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
     { key: 'request_date_time', name: 'Request', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
+    { key: 'agent_code', name: 'Agent Code', tooltip: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
     { key: 'recharge_for_name', name: 'Agent', tooltip: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
     { key: 'recharge_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
     { key: 'mop', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
@@ -326,9 +327,10 @@ export class PendingComponent extends BaseListingComponent {
         [
           { header: 'Ref. No', property: 'reference_number' },
           { header: 'Request.', property: 'request_date_time' },
+          { header: 'Agent Code', property: 'agent_code' },
           { header: 'Agent', property: 'recharge_for_name' },
           { header: 'Amount ', property: 'recharge_amount' },
-          { header: 'mop', property: 'mop' },
+          { header: 'MOP', property: 'mop' },
           { header: 'Remark', property: 'user_remark' },
         ],
         data.data, "Wallet Recharge Pending", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);

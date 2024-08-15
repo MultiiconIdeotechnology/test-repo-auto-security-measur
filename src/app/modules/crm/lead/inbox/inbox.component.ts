@@ -38,13 +38,6 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 @Component({
     selector: 'app-inbox',
     templateUrl: './inbox.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 40px 280px 70px 140px 130px 100px 160px 90px 100px;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -78,142 +71,25 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
     ]
 })
 export class InboxComponent extends BaseListingComponent{
+    @Input() isFilterShowInbox: boolean
+    @ViewChild('tabGroup') tabGroup;
+    @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
+    @ViewChild(MatSort) public _sortInbox: MatSort;
+    
+    module_name = module_name.lead
+    Mainmodule: any;
     statusList = [ 'New', 'Live', 'Dead'];
     typeList = [ 'B2B Partner', 'Build My Brand', 'WL','Boost My Brand','Corporate'];
-
-    @Input() isFilterShowInbox: boolean
-    columns = [
-        {
-            key: 'callCount',
-            name: 'Calls',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            callAction: true
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true,
-
-        },
-        {
-            key: 'lead_status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            toColor: true
-        },
-        {
-            key: 'lead_type',
-            name: 'Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'call_purpose',
-            name: 'Purpose',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'last_call_date_time',
-            name: 'Last Call',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'assignByName',
-            name: 'Assigned By',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: true,
-            assignFlag: true
-        },
-        {
-            key: 'lead_source',
-            name: 'Source',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'entry_date_time',
-            name: 'Lead Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-            leadDate: true
-        },
-    ];
     cols = [];
     dataList = [];
     searchInputControlInbox = new FormControl('');
-    @ViewChild('tabGroup') tabGroup;
     deadLeadId: any;
-
-    @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
-    @ViewChild(MatSort) public _sortInbox: MatSort;
-
-    Mainmodule: any;
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.lead
     total = 0;
     appConfig = AppConfig;
     data: any
@@ -226,7 +102,6 @@ export class InboxComponent extends BaseListingComponent{
         private entityService: EntityService
     ) {
         super(module_name.lead);
-        this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'priority_id';
         this.sortDirection = 'desc';
@@ -234,34 +109,16 @@ export class InboxComponent extends BaseListingComponent{
     }
 
     ngOnInit(): void {
-        // this.searchInputControlInbox.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginatorInbox);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
-
-        this.searchInputControlInbox.valueChanges
-        .subscribe(() => {
-          // GridUtils.resetPaginator(this._paginatorPending);
-        //   this.refreshItems();
-        });
     }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlInbox.value;
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginatorInbox,
-        //     this._sortInbox,
-        //     this.searchInputControlInbox.value
-        // );
         this.crmService.getInboxLeadList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                // this._paginatorInbox.length = data.total;
                 this.totalRecords = data.total;
             },
             error: (err) => {
