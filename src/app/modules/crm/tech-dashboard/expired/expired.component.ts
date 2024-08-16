@@ -271,7 +271,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
 
      // Api call to Get Agent data
      getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
             for(let i in this.agentList){

@@ -213,7 +213,7 @@ export class CRMTechDashboardListComponent implements OnDestroy {
 
     // Api call to Get Agent data
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value,true).subscribe((data) => {
             this.dropdownFirstCallObj['agentList'] = data;
 
             for(let i in this.dropdownFirstCallObj['agentList']){

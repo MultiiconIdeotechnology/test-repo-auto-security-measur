@@ -145,8 +145,8 @@ export class PendingComponent extends BaseListingComponent {
     this.mopList = this.filterApiData.mopData;
   }
 
-  getAgentList(value: string) {
-    this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgentList(value: string, bool=true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
     })
   }

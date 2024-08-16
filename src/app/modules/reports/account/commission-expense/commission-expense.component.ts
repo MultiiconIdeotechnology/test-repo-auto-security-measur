@@ -204,7 +204,7 @@ export class CommissionExpenseComponent
     }
 
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
             for(let i in this.agentList){

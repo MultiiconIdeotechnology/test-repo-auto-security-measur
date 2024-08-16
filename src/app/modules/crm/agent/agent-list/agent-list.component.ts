@@ -92,8 +92,8 @@ export class CRMAgentListComponent implements OnDestroy {
 
 
     // Function to get the agentList  from api
-    getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+    getAgent(value: string, bool=true) {
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.dropdownListObj['agentList'] = data;
 
             for(let i in this.dropdownListObj['agentList']){

@@ -167,8 +167,8 @@ export class AuditedComponent extends BaseListingComponent {
     // }
   }
 
-  getAgentList(value: string) {
-    this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgentList(value: string, bool=true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
 
       for(let i in this.agentList){

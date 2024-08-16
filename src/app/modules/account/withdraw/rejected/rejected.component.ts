@@ -169,8 +169,8 @@ export class WRejectedComponent extends BaseListingComponent {
     // }
   }
 
-  getAgentList(value: string) {
-      this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgentList(value: string, bool:boolean) {
+      this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
         this.agentList = data;
 
         for(let i in this.agentList){

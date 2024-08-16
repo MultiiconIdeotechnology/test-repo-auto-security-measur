@@ -120,7 +120,7 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
 
      // Function to get the agentList  from api
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.dropdownListObj['agentList'] = data;
 
             for(let i in this.dropdownListObj['agentList']){

@@ -295,6 +295,10 @@ export class BusComponent extends BaseListingComponent {
           setTimeout(() => {
             this.isFrozenColumn('', ['booking_ref_no', 'status']);
           }, 200);
+        } else {
+          setTimeout(() => {
+            this.isFrozenColumn('', ['booking_ref_no', 'status'], true);
+          }, 200);
         }
       },
       error: (err) => {
@@ -303,7 +307,6 @@ export class BusComponent extends BaseListingComponent {
       },
     });
   }
-
 
   getStatusColor(status: string): string {
     if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending') {

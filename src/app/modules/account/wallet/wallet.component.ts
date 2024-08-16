@@ -170,9 +170,10 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
 
   }
 
-  getAgentList(value: string) {
-    this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgentList(value: string,  bool=true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.filterApiData.agentData = data;
+      console.log("data", data)
     })
   }
 
@@ -202,8 +203,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     this.pending.searchInputControlPending.patchValue(event)
     this.pending.refreshItemsPending()
   }
-
-
 
   public getTabsPermission(tab: string): boolean {
     if (tab == 'pending')

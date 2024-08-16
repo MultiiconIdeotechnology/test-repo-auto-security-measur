@@ -210,7 +210,6 @@ export class HotelsListComponent extends BaseListingComponent {
     })
   }
 
-
   getFilter(): any {
     const filterReq = GridUtils.GetFilterReq(
       this._paginator,
@@ -258,9 +257,6 @@ export class HotelsListComponent extends BaseListingComponent {
     }
   }
 
-
-
-
   getStatusColor(status: string): string {
     if (status == 'Pending' || status == 'Cancellation Pending' || status == 'Confirmation Pending') {
       return 'text-orange-600';
@@ -300,6 +296,10 @@ export class HotelsListComponent extends BaseListingComponent {
         if (this.dataList && this.dataList.length) {
           setTimeout(() => {
             this.isFrozenColumn('', ['booking_ref_no', 'status']);
+          }, 200);
+        } else {
+          setTimeout(() => {
+            this.isFrozenColumn('', ['booking_ref_no', 'status'], true);
           }, 200);
         }
       },

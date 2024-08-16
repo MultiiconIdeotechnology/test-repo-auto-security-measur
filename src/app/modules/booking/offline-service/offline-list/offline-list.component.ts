@@ -176,8 +176,8 @@ export class OfflineListComponent extends BaseListingComponent {
   }
 
   //Function to get Agent List from api
-  getAgent(value: string) {
-    this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgent(value: string, bool=true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
         this.agentList = data;
 
         for (let i in this.agentList) {

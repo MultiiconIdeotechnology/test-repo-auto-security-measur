@@ -514,6 +514,10 @@ export class FlightComponent extends BaseListingComponent {
                     setTimeout(() => {
                         this.isFrozenColumn('', ['booking_ref_no', 'status']);
                     }, 200);
+                } else {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['booking_ref_no', 'status'], true);
+                    }, 200);
                 }
             },
             error: (err) => {
