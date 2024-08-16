@@ -111,6 +111,32 @@ export class CachingParametersEntryComponent {
                     this.title = "Caching Parameters Info"
                 }
 
+                this.formGroup
+                    .get('supplierfilter')
+                    .valueChanges.pipe(
+                        filter((search) => !!search),
+                        startWith(''),
+                        debounceTime(200),
+                        distinctUntilChanged(),
+                        switchMap((value: any) => {
+                            return this.kycDocumentService.getSupplierCombo(value);
+                        })
+                    )
+                    .subscribe({
+                        next: data => {
+                            this.SupplierList = [];
+                            this.SupplierList.push({
+                                id: '',
+                                company_name: 'Any',
+                            });
+                            this.SupplierList.push(...data);
+
+                            // if (!this.record?.data) {
+                            //     this.formGroup.get('supplier_id').patchValue(this.SupplierList[0]?.id);
+                            // }
+                        }
+                    });
+
                 if (item?.create) {
                     this.formGroup.patchValue({
                         id: "",
@@ -132,32 +158,7 @@ export class CachingParametersEntryComponent {
 
                     this.formGroup.get('travel_type').patchValue('Any');
                     this.formGroup.get('trip_type').patchValue('Any');
-
-                    this.formGroup
-                    .get('supplierfilter')
-                    .valueChanges.pipe(
-                        filter((search) => !!search),
-                        startWith(''),
-                        debounceTime(200),
-                        distinctUntilChanged(),
-                        switchMap((value: any) => {
-                            return this.kycDocumentService.getSupplierCombo(value);
-                        })
-                    )
-                    .subscribe({
-                        next: data => {
-                            this.SupplierList = [];
-                            this.SupplierList.push({
-                                id: '',
-                                company_name: 'Any',
-                            });
-                            this.SupplierList.push(...data);
-
-                            if (!this.record?.data) {
-                                this.formGroup.get('supplier_id').patchValue(this.SupplierList[0]?.id);
-                            }
-                        }
-                    });
+                    // this.formGroup.get('supplier_id').patchValue(this.SupplierList[0]?.id);
                 }
 
                 if (item?.edit) {
@@ -167,6 +168,7 @@ export class CachingParametersEntryComponent {
                     this.editCachingId = this.record?.id;
 
                     if (this.record?.id) {
+                        this.formGroup.get('supplierfilter').patchValue(this.record?.supplier_name);
                         this.formGroup.get('supplier_id').patchValue(this.record?.supplier_id);
                     }
                     this.formGroup.patchValue(this.record)
@@ -197,7 +199,6 @@ export class CachingParametersEntryComponent {
             one_month_travel: [''],
             far_travel: ['']
         });
-
 
         this.formGroup.get('sector').valueChanges.subscribe(value => {
             // if (this.formGroup.get('sector').valid) {
