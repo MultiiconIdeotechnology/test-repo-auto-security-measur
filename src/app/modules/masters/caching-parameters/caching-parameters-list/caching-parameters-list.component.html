@@ -25,16 +25,6 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <!-- Select Columns Button and Select Box Code -->
-            <!-- <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
-                [disabled]="isLoading" (click)="op.toggle($event)">
-                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
-            </button>
-            <p-overlayPanel #op>
-                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
-                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
-            </p-overlayPanel> -->
-
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -50,7 +40,6 @@
     </div>
 
     <!----------------Table----------------->
-
     <div class="table-container paginator-bottom">
         <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
             [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
@@ -173,16 +162,16 @@
                             </button>
                         </mat-menu>
                     </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.city_name">{{element.supplier_name}}</td>
-                    <td>{{element.travel_type}}</td>
-                    <td>{{element.trip_type}}</td>
-                    <td>{{element.sector}}</td>
-                    <td class="text-center">{{element.today_travel}}</td>
-                    <td class="text-center">{{element.one_week_travel}}</td>
-                    <td class="text-center">{{element.one_month_travel}}</td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.city_name">{{element?.supplier_name ? element?.supplier_name : 'Any'}}</td>
+                    <td>{{element.travel_type || '-'}}</td>
+                    <td>{{element.trip_type || '-'}}</td>
+                    <td>{{element.sector || '-'}}</td>
+                    <td class="text-center">{{element.today_travel || 0 }}</td>
+                    <td class="text-center">{{element.one_week_travel || 0}}</td>
+                    <td class="text-center">{{element.one_month_travel || 0}}</td>
                     <td class="w-full text-left">
                         <div class="pl-[25px]">
-                            {{element.far_travel}}
+                            {{element.far_travel || 0}}
                         </div>
                     </td>
                     <td *ngFor="let col of columns">
