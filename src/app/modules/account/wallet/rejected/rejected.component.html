@@ -81,7 +81,7 @@
                         ariaLabel="Filter Agent Code" />
                 </th>
                 <th>
-                    <p-columnFilter class="searchableDropdown" field="recharge_for_id" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agency_name" [filter]="true" filterBy="agency_name"
