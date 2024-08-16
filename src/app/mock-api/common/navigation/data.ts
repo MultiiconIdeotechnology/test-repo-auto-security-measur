@@ -130,14 +130,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'MASTERS_PRODUCTS_VIEW',
                 icon: 'heroicons_outline:sparkles',
                 link: Routes.masters.product_route
-            },
-            {
-                id: 'master.cachingparameters',
-                title: 'Caching Parameters',
-                type: 'basic',
-                pid: 'MASTERS_CACHINGPARAMETERS_VIEW',
-                icon: 'heroicons_outline:square-3-stack-3d',
-                link: Routes.masters.caching_parameters_route
             }
         ]
     },
@@ -758,6 +750,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:settings',
                 link: Routes.settings.pspsetting_route
             },
+            {
+                id: 'settings.cachingparameters',
+                title: 'Caching Parameters',
+                type: 'basic',
+                pid: 'MASTERS_CACHINGPARAMETERS_VIEW',
+                icon: 'heroicons_outline:square-3-stack-3d',
+                link: Routes.settings.caching_parameters_route
+            }
         ]
     }
 ];

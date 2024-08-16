@@ -93,7 +93,6 @@ export const appRoutes: Route[] = [
             {path: Routes.masters.supplier_path, loadChildren: () => import('app/modules/masters/supplier/supplier-list/supplier-list.routes')},
             {path: Routes.masters.item_path, loadChildren: () => import('app/modules/masters/item-master/item-list/item-list.routes')},
             {path: Routes.masters.product_path, loadChildren: () => import('app/modules/masters/product-master/product-list/product-list.routes')},
-            {path: Routes.masters.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes')},
 
             // Customers
             {path: Routes.customers.lead_path, loadChildren: () => import('app/modules/masters/lead/main-list/lead.routes')},
@@ -169,6 +168,7 @@ export const appRoutes: Route[] = [
             {path: Routes.settings.messagetemplates_path, loadChildren: () => import('app/modules/settings/message-templates/message-templates.routes')},
             {path: Routes.settings.supplierapi_path, loadChildren: () => import('app/modules/settings/supplier-api/supplier-api.routes')},
             {path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes')},
+            {path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes')},
         ]
     },
 ];
