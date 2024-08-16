@@ -4,7 +4,8 @@
     <div class="flex flex-col w-full overflow-auto max-h-[calc(100vh-60px)] px-2 bg-card">
 
         <!-- Header -->
-        <div class="flex flex-row items-center sticky top-0 px-3 border-b h-13 min-h-13 dark:text-white bg-white dark:bg-card">
+        <div
+            class="flex flex-row items-center sticky top-0 px-3 border-b h-13 min-h-13 dark:text-white bg-white dark:bg-card">
             <div class="text-lg font-medium tracking-tight">Updates Charge</div>
             <button class="ml-auto" mat-icon-button (click)="updateChargeDrawer.close()">
                 <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
@@ -35,7 +36,9 @@
                     <div class="flex flex-row space-x-2">
                         <span class="text-md font-semibold text-secondary">Flight No.</span>
                     </div>
-                    <span class="text-base truncate underline hover:text-primary-200 cursor-pointer" (click)="amendmentData?.air_booking_id ? viewFlightData() : null">{{amendmentData?.air_booking_number || " -- " }}</span>
+                    <span class="text-base truncate underline hover:text-primary-200 cursor-pointer"
+                        (click)="amendmentData?.air_booking_id ? viewFlightData() : null">{{amendmentData?.air_booking_number
+                        || " -- " }}</span>
                 </div>
                 <div class="flex flex-col mb-1">
                     <div class="flex flex-row space-x-2">
@@ -50,7 +53,14 @@
                     <!-- *ngIf="amendmentData && amendmentData.is_adult" -->
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            Adult Per Pax Charge
+                            <div class="flex flex-col">
+                                <span>
+                                    Adult Per Pax Charge
+                                </span>
+                                <span class="text-xs text-secondary font-normal">
+                                    Adult Per Pax Charge
+                                </span>
+                            </div>
                         </td>
                         <td class="border-l p-2">
                             <mat-form-field class="w-full" style="margin-bottom: -1.25em">
@@ -62,7 +72,14 @@
                     </tr>
                     <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_child">
                         <td class="border-l w-128">
-                            Child Per Pax Charge
+                            <div class="flex flex-col">
+                                <span>
+                                    Child Per Pax Charge
+                                </span>
+                                <span class="text-xs text-secondary font-normal">
+                                    Child Per Pax Charge
+                                </span>
+                            </div>
                         </td>
                         <td class="border-l p-2">
                             <mat-form-field class="w-full" style="margin-bottom: -1.25em">
@@ -74,7 +91,14 @@
                     </tr>
                     <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_infant">
                         <td class="border-l w-128">
-                            Infant Per Pax Charge
+                            <div class="flex flex-col">
+                                <span>
+                                    Infant Per Pax Charge
+                                </span>
+                                <span class="text-xs text-secondary font-normal">
+                                    Infant Per Pax Charge
+                                </span>
+                            </div>
                         </td>
                         <td class="border-l p-2">
                             <mat-form-field class="w-full" style="margin-bottom: -1.25em">
@@ -91,7 +115,14 @@
                 <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            Bonton Markup
+                            <div class="flex flex-col">
+                                <span>
+                                    Bonton Markup
+                                </span>
+                                <span class="text-xs text-secondary font-normal">
+                                    Bonton Markup
+                                </span>
+                            </div>
                         </td>
                         <td class="border-l p-2 pl-6">
                             {{formObj?.bonton_markup_value}}
@@ -99,7 +130,14 @@
                     </tr>
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            Addon Markup
+                            <div class="flex flex-col">
+                                <span>
+                                    Addon Markup
+                                </span>
+                                <span class="text-xs text-secondary font-normal">
+                                    Addon Markup
+                                </span>
+                            </div>
                         </td>
                         <td class="border-l p-2">
                             <mat-form-field class="w-full" style="margin-bottom: -1.25em">
@@ -117,7 +155,14 @@
                 <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            Segment Amount
+                            <div class="flex flex-col">
+                                <span>
+                                    Segment Amount
+                                </span>
+                                <span class="text-xs text-secondary font-normal">
+                                    Segment Amount
+                                </span>
+                            </div>
                         </td>
                         <td class="border-l p-2">
                             <!-- *ngIf="formGroup.get('is_segment_amount').value == true"  -->
