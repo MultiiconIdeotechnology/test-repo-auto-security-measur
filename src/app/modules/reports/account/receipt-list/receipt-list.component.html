@@ -202,7 +202,7 @@
                             ariaLabel="Filter Amount" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="roe" placeholder="Search by ROE"
+                        <p-columnFilter type="numeric"  field="roe" placeholder="Search by ROE"
                             ariaLabel="Filter ROE" />
                     </th>
                     <th>
@@ -259,8 +259,14 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th></th>
-                    <th></th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pg_name"
+                            placeholder="Search by PG" ariaLabel="Filter PG" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pg_payment_ref_no"
+                        placeholder="Search by PG Ref. No" ariaLabel="Filter PG Ref. No" />
+                    </th>
                     <!-- <th *ngFor="let col of columns">
                     </th> -->
                 </tr>

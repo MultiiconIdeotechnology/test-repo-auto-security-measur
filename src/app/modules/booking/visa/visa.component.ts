@@ -338,6 +338,10 @@ export class VisaComponent extends BaseListingComponent {
                     setTimeout(() => {
                         this.isFrozenColumn('', ['booking_ref_no', 'visa_status']);
                     }, 200);
+                } else {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['booking_ref_no', 'visa_status'], true);
+                    }, 200);
                 }
             },
             error: (err) => {

@@ -271,8 +271,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   }
 
     // function to get the Agent list from api
-  getAgent(value: string) {
-    this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgent(value: string, bool=true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
         this.agentList = data;
 
         for (let i in this.agentList) {

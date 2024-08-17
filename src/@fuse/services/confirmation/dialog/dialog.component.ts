@@ -87,6 +87,8 @@ export class FuseConfirmationDialogComponent {
         this.formGroupDate = this.formBuilder.group({
             date: ['', Validators.required]
         })
+        if(this.data && this.data?.datepickerParameter)
+        this.formGroupDate.get('date').patchValue(this.data?.datepickerParameter)
     }
 
     updateConfirmData() {

@@ -23,6 +23,9 @@
                 <th pSortableColumn="request_date_time" pResizableColumn>
                     Request <p-sortIcon field="request_date_time" />
                 </th>
+                <th pSortableColumn="agent_code" pResizableColumn>
+                    Agent Code <p-sortIcon field="agent_code" />
+                </th>
                 <th pSortableColumn="recharge_for_name" pResizableColumn>
                     Agent <p-sortIcon field="recharge_for_name" />
                 </th>
@@ -80,7 +83,11 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter class="searchableDropdown" field="recharge_for_id" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
+                        ariaLabel="Filter Agent Code" />
+                </th>
+                <th>
+                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agent_info" [filter]="true" filterBy="agent_info"
@@ -174,6 +181,9 @@
                     {{(element.request_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                 </td>
                 <td>
+                    {{element.agent_code || '-'}}
+                </td>
+                <td>
                     {{element.recharge_for_name || '-'}}
                 </td>
                 <td class="text-right">
@@ -181,7 +191,7 @@
                 </td>
                 <td class="text-right">
                     {{element.settled_amount || '-'}}
-                </td> 
+                </td>
                 <td>
                     {{element.mop || '-'}}
                 </td>
@@ -205,7 +215,7 @@
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="12" class="text-center font-semibold text-lg">
+                <td colspan="13" class="text-center font-semibold text-lg">
                     {{getNodataTextAudited()}}
                 </td>
             </tr>

@@ -330,6 +330,10 @@ export class AgentListComponent extends BaseListingComponent {
                     setTimeout(() => {
                         this.isFrozenColumn('', ['agent_code']);
                     }, 200);
+                } else {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['agent_code'], true);
+                    }, 200);
                 }
             }, error: err => {
                 this.alertService.showToast('error', err, 'top-right', true);

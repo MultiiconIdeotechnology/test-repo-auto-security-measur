@@ -1,6 +1,6 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
@@ -23,7 +23,6 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { EntityService } from 'app/services/entity.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { CachingParameterService } from 'app/services/caching-parameters.service';
-import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
     selector: 'app-caching-parameters-entry',
@@ -56,13 +55,11 @@ import { FlightTabService } from 'app/services/flight-tab.service';
 export class CachingParametersEntryComponent {
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
-
     readonly: boolean = false;
     record: any = {};
     btnTitle: string = 'Create';
     fieldList: {};
-
-    cachingParametersListRoute = Routes.masters.caching_parameters_route;
+    cachingParametersListRoute = Routes.settings.caching_parameters_route;
     disableBtn: boolean = false;
     countryList: ReplaySubject<any[]> = new ReplaySubject<any[]>();
     cityList: ReplaySubject<any[]> = new ReplaySubject<any[]>();
@@ -75,26 +72,25 @@ export class CachingParametersEntryComponent {
     btnLabel = "Submit"
     listFlag: boolean = false;
     createFlag: boolean = false;
-    SupplierList: ReplaySubject<any[]> = new ReplaySubject<any[]>();
+    SupplierList: any[] = [];
     editCachingId: any;
     fromcityList: any[] = [];
 
     travelTypeList: any[] =
-    [
-        { value: 'Any', viewValue: 'Any' },
-        { value: 'Domestic', viewValue: 'Domestic' },
-        { value: 'International', viewValue: 'International' },
-    ];
+        [
+            { value: 'Any', viewValue: 'Any' },
+            { value: 'Domestic', viewValue: 'Domestic' },
+            { value: 'International', viewValue: 'International' },
+        ];
 
     tripTypeList: any[] =
-    [
-        { value: 'Any', viewValue: 'Any' },
-        { value: 'Oneway', viewValue: 'Oneway' },
-        { value: 'Round', viewValue: 'Round' }
-    ];
+        [
+            { value: 'Any', viewValue: 'Any' },
+            { value: 'Oneway', viewValue: 'Oneway' },
+            { value: 'Round', viewValue: 'Round' }
+        ];
 
     constructor(
-        // public matDialogRef: MatDialogRef<CachingParametersEntryComponent>,
         public formBuilder: FormBuilder,
         public cachingParameterService: CachingParameterService,
         public router: Router,
@@ -103,19 +99,45 @@ export class CachingParametersEntryComponent {
         public designationService: DesignationService,
         public alertService: ToasterService,
         private entityService: EntityService,
-        // @Inject(MAT_DIALOG_DATA) public data: any = {}
     ) {
         // this.record = data?.data ?? {}
         this.entityService.oncachingParametersCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                this.settingsDrawer.toggle()
+                this.settingsDrawer.toggle();
+
                 this.record = item.data
-                if(item?.list){
+                if (item?.list) {
                     this.listFlag = true;
-                    this.title ="Caching Parameters Info"
+                    this.title = "Caching Parameters Info"
                 }
 
-                if(item?.create){
+                this.formGroup
+                    .get('supplierfilter')
+                    .valueChanges.pipe(
+                        filter((search) => !!search),
+                        startWith(''),
+                        debounceTime(200),
+                        distinctUntilChanged(),
+                        switchMap((value: any) => {
+                            return this.kycDocumentService.getSupplierCombo(value);
+                        })
+                    )
+                    .subscribe({
+                        next: data => {
+                            this.SupplierList = [];
+                            this.SupplierList.push({
+                                id: '',
+                                company_name: 'Any',
+                            });
+                            this.SupplierList.push(...data);
+
+                            // if (!this.record?.data) {
+                            //     this.formGroup.get('supplier_id').patchValue(this.SupplierList[0]?.id);
+                            // }
+                        }
+                    });
+
+                if (item?.create) {
                     this.formGroup.patchValue({
                         id: "",
                         supplier_id: "",
@@ -131,32 +153,47 @@ export class CachingParametersEntryComponent {
 
                     this.listFlag = false;
                     this.createFlag = true;
-                    this.title ="Create Caching Parameters"
+                    this.title = "Create Caching Parameters"
                     this.editCachingId = ""
+
+                    this.formGroup.get('travel_type').patchValue('Any');
+                    this.formGroup.get('trip_type').patchValue('Any');
+                    // this.formGroup.get('supplier_id').patchValue(this.SupplierList[0]?.id);
                 }
 
-                if(item?.edit){
+                if (item?.edit) {
                     this.listFlag = false;
                     this.createFlag = true;
-                    this.title ="Edit Caching Parameters"
+                    this.title = "Edit Caching Parameters"
                     this.editCachingId = this.record?.id;
 
+                    if (this.record?.id) {
+                        this.formGroup.get('supplierfilter').patchValue(this.record?.supplier_name);
+                        this.formGroup.get('supplier_id').patchValue(this.record?.supplier_id);
+                    }
                     this.formGroup.patchValue(this.record)
-                    // this.formGroup.get('cityfilter').patchValue(this.record?.city_name);
-                    // this.formGroup.get("city_id").patchValue(this.record?.city_id_enc);
                 }
             }
         })
     }
 
+    numberOnly(event: any): boolean {
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+
+    // sector: ['', Validators.pattern(/^([A-Za-z]{3})-([A-Za-z]{3})$/)],
     ngOnInit(): void {
         this.formGroup = this.formBuilder.group({
             id: [''],
-            supplier_id: ['', Validators.required],
+            supplier_id: [''],
             supplierfilter: [''],
             travel_type: ['', Validators.required],
+            sector: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(7), this.sectorValidator]],
             trip_type: ['', Validators.required],
-            sector: ['', Validators.pattern(/^([A-Za-z]{3})-([A-Za-z]{3})$/)],
             today_travel: [''],
             one_week_travel: [''],
             one_month_travel: [''],
@@ -164,25 +201,36 @@ export class CachingParametersEntryComponent {
         });
 
         this.formGroup.get('sector').valueChanges.subscribe(value => {
-            if (this.formGroup.get('sector').valid) {
-            } else {
-                this.alertService.showToast('error', 'Invalid sector format. Please enter format like: BOM-DEL', 'top-right', true);
-            }
+            // if (this.formGroup.get('sector').valid) {
+            // } else {
+            //     this.alertService.showToast('error', 'Invalid sector format. Please enter format like: BOM-DEL', 'top-right', true);
+            // }
+            this.formatSectorInput();
         });
+    }
 
+    sectorValidator(control: AbstractControl): { [key: string]: boolean } | null {
+        const value = control.value as string;
+        const formatPattern = /^[A-Z]{3}-[A-Z]{3}$/;
+        if (value && !formatPattern.test(value)) {
+            return { 'invalidFormat': true };
+        }
+        return null;
+    }
 
-        this.formGroup
-        .get('supplierfilter')
-        .valueChanges.pipe(
-            filter((search) => !!search),
-            startWith(''),
-            debounceTime(200),
-            distinctUntilChanged(),
-            switchMap((value: any) => {
-                return this.kycDocumentService.getSupplierCombo(value);
-            })
-        )
-        .subscribe((data) => this.SupplierList.next(data));
+    formatSectorInput() {
+        const control = this.formGroup.get('sector');
+        if (control) {
+            const rawValue = control.value as string;
+            const formattedValue = this.transformToUppercasePattern(rawValue);
+            control.setValue(formattedValue, { emitEvent: false });
+        }
+    }
+
+    transformToUppercasePattern(value: string): string {
+        const uppercased = value.toUpperCase();
+        const cleaned = uppercased.replace(/[^A-Z]/g, '');
+        return cleaned.length <= 3 ? cleaned : `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}`;
     }
 
     submit(): void {

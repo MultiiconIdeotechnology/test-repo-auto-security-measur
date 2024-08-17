@@ -196,9 +196,9 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         });
     }
 
-    // Api call to Get Agent data
-    getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+   // Api call to Get Agent data
+   getAgent(value: string) {
+       this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
             for (let i in this.agentList) {
@@ -305,7 +305,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                 inputBox: 'Date',
                 dateCustomShow: true,
                 customShow: false,
-                datepickerParameter: record?.activation_date_sub
+                datepickerParameter: record?.expiry_date_sub
             })
             .afterClosed()
             .subscribe((res) => {

@@ -11,9 +11,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
-import { UserService } from 'app/core/user/user.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CachingParameterService } from 'app/services/caching-parameters.service';
 import { EntityService } from 'app/services/entity.service';
@@ -166,9 +165,7 @@ export class CachingParametersListComponent
     constructor(
         private cachingParameterService: CachingParameterService,
         private conformationService: FuseConfirmationService,
-        private router: Router,
         private flighttabService: FlightTabService,
-        private matDialog: MatDialog,
         private entityService: EntityService,
         private _userService: UserService,
         public _filterService: CommonFilterService
@@ -191,11 +188,6 @@ export class CachingParametersListComponent
     }
 
     ngOnInit() {
-        // this.cols = [
-        //     { field: 'gst_state_code', header: 'GST State Code' },
-        //     { field: 'country_code', header: 'Country Code' },
-        //     { field: 'mobile_code', header: 'Mobile Code' },
-        // ];
         this.getSupplier("")
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -246,45 +238,11 @@ export class CachingParametersListComponent
     }
 
     createInternal(model: any): void {
-        // this.router.navigate([Routes.masters.city_entry_route]);
-        // this.matDialog.open(CitysEntryComponent,
-        //     { data: null, disableClose: true, })
-        //     .afterClosed()
-        //     .subscribe((res) => {
-        //         if (res) {
-        //             this.alertService.showToast(
-        //                 'success',
-        //                 'New record added',
-        //                 'top-right',
-        //                 true
-        //             );
-        //             this.refreshItems();
-        //         }
-        //     });
-
         this.entityService.raisecachingParametersCall({ data: null, title: 'Create Caching Parameters', create: true })
     }
 
     editInternal(record): void {
-        // this.matDialog
-        //     .open(CitysEntryComponent, {
-        //         data: { data: record, readonly: false },
-        //         disableClose: true,
-        //     })
-        //     .afterClosed()
-        //     .subscribe((res) => {
-        //         if (res) {
-        //             this.refreshItems();
-        //         }
-        //     });
         this.entityService.raisecachingParametersCall({ data: record, title: 'Edit Caching Parameters', edit: true })
-        // this.entityService.onrefreshcachingParametersCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-        //     next: (item) => {
-        //         if(item){
-        //             this.refreshItems();
-        //         }
-        //     }
-        // })
     }
 
     viewInternal(record): void {

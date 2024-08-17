@@ -173,8 +173,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         }
     }
 
-    getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+    getAgent(value: string, bool=true) {
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
             for (let i in this.agentList) {
@@ -302,6 +302,36 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             this.tempData, "Sales Return", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
         // });
     }
+
+  // Custom date range filter function
+  customDateRangeFilter(value: any, filter: any): boolean {
+    if (!filter || !value) {
+      return true;
+    }
+
+    const [startDate, endDate] = filter.value;
+    const dateValue = new Date(value).getTime();
+
+    return dateValue >= startDate.getTime() && dateValue <= endDate.getTime();
+  }
+
+  // onDateRangeChangeInternal function
+  onDateRangeChangeInternal(dateRange: Date[], filter: Function) {
+    if (dateRange && dateRange.length === 2 && dateRange[0] && dateRange[1]) {
+      const startDate = new Date(dateRange[0]);
+      const endDate = new Date(dateRange[1]);
+
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+
+      filter({
+        value: [startDate, endDate],
+        matchMode: 'custom'
+      });
+    } else {
+      filter(null);
+    }
+  }
 
     ngOnDestroy(): void {
 

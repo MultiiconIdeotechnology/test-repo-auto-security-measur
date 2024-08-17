@@ -7,11 +7,11 @@
                 <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
                     (click)="settingsDrawer.close()"></mat-icon>
             </div>
-            <div style="height: calc(100vh - 130px)" class="overflow-auto p-5">
+            <div style="height: calc(100vh - 130px)" class="overflow-auto px-5 py-2">
                 <div class="flex flex-wrap bg-card overflow-hidden" *ngIf="listFlag">
                     <div class="flex flex-col mb-3 truncate w-full">
                         <span class="text-md font-semibold text-secondary">Supplier</span>
-                        <span class="text-base truncate">{{record?.supplier_name || '-'}}</span>
+                        <span class="text-base truncate">{{record?.supplier_name ? record?.supplier_name : 'Any'}}</span>
                     </div>
 
                     <div class="flex flex-col mb-3 truncate w-1/2">
@@ -54,14 +54,14 @@
                     <form class="flex flex-col flex-auto px-0 pt-0" [formGroup]="formGroup">
                         <mat-form-field class="flex-grow">
                             <mat-label>Supplier</mat-label>
-                            <mat-select formControlName="supplier_id" required="">
+                            <mat-select formControlName="supplier_id">
                                 <mat-option>
                                     <ngx-mat-select-search placeholderLabel="Search"
                                         noEntriesFoundLabel="'no matching supplier found'"
                                         [formControlName]="'supplierfilter'">
                                     </ngx-mat-select-search>
                                 </mat-option>
-                                <mat-option *ngFor="let ct of SupplierList | async" [value]="ct.id">{{ ct.company_name
+                                <mat-option *ngFor="let ct of SupplierList" [value]="ct.id">{{ ct.company_name
                                     }}</mat-option>
                             </mat-select>
                             <mat-error *ngIf="formGroup.get('supplier_id').hasError('required')">
@@ -91,29 +91,40 @@
                             </mat-error>
                         </mat-form-field>
 
+                        <div class="mb-1">Sector *
+                            <span class="text-[11px] dark:text-[#7a86a0]">(Ex. BOM-DEL)</span>
+                        </div>
                         <mat-form-field class="flex-grow">
-                            <mat-label>Sector</mat-label>
                             <input matInput type="text" formControlName="sector" />
+                            <mat-error *ngIf="formGroup.get('sector').hasError('required')">
+                                Sector is required
+                            </mat-error>
+                            <mat-error *ngIf="formGroup.get('sector').hasError('minlength')">
+                                Sector must be in the above format Ex. (BOM-DEL)
+                              </mat-error>
+                              <mat-error *ngIf="formGroup.get('sector').hasError('maxlength')">
+                                Sector must be in the above format Ex. (BOM-DEL)
+                            </mat-error>
                         </mat-form-field>
 
                         <mat-form-field class="flex-grow">
-                            <mat-label>Today Travel</mat-label>
-                            <input matInput type="text" formControlName="today_travel" />
+                            <mat-label>Today Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
+                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="today_travel" />
                         </mat-form-field>
 
                         <mat-form-field class="flex-grow">
-                            <mat-label>One Week Travel</mat-label>
-                            <input matInput type="text" formControlName="one_week_travel" />
+                            <mat-label>One Week Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
+                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="one_week_travel" />
                         </mat-form-field>
 
                         <mat-form-field class="flex-grow">
-                            <mat-label>One Month Travel</mat-label>
-                            <input matInput type="text" formControlName="one_month_travel" />
+                            <mat-label>One Month Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
+                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="one_month_travel" />
                         </mat-form-field>
 
                         <mat-form-field class="flex-grow">
-                            <mat-label>Far Travel</mat-label>
-                            <input matInput type="text" formControlName="far_travel" />
+                            <mat-label>Far Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
+                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="far_travel" />
                         </mat-form-field>
                     </form>
                 </div>

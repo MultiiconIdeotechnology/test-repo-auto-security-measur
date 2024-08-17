@@ -19,20 +19,14 @@
             </mat-form-field> -->
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Tech'">
-                <input matInput [formControl]="searchInputControlTech" [autocomplete]="'off'" [placeholder]="'Search'"
-                    (keyup.enter)="techRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
-                    (click)="techRefresh()"></mat-icon>
+                <input #techRef matInput [formControl]="searchInputControlTech" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="techRefresh(techRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="techRefresh(techRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Travel'">
-                <input matInput [formControl]="searchInputControlTravel" [autocomplete]="'off'" [placeholder]="'Search'"
-                    (keyup.enter)="travelRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
-                    (click)="travelRefresh()"></mat-icon>
+                <input #travelRef matInput [formControl]="searchInputControlTravel" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="travelRefresh(travelRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="travelRefresh(travelRef.value)"></mat-icon>
             </div>
-
-
 
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Tech'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"

@@ -85,6 +85,7 @@ export class InboxComponent extends BaseListingComponent {
     private settingsUpdatedSubscription: Subscription;
     statusList = ['New', 'Live', 'Dead'];
     typeList = ['B2B Partner', 'Build My Brand', 'WL', 'Boost My Brand', 'Corporate'];
+
     cols = [];
     dataList = [];
     searchInputControlInbox = new FormControl('');

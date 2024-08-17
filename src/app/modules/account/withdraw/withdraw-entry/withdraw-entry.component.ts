@@ -66,6 +66,11 @@ export class WithdrawEntryComponent {
     title = "Create Withdraw"
     btnLabel = "Create"
 
+    withdrawType: any[] = [
+        { value: 'Deduction', viewValue: 'Deduction' },
+        { value: 'Bank Withdraw', viewValue: 'Bank Withdraw' },
+    ];
+
 
     constructor(
         public matDialogRef: MatDialogRef<WithdrawEntryComponent>,
@@ -87,6 +92,7 @@ export class WithdrawEntryComponent {
             agentfilter: [''],
             withdraw_amount: [''],
             agent_remark: [''],
+            withdraw_type: [''],
         });
 
         this.formGroup

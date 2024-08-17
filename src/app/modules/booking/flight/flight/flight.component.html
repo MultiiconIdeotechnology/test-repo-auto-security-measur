@@ -328,19 +328,6 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <!-- <p-columnFilter class="searchableDropdown" field="travelDate" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar 
-                                        selectionMode="range" 
-                                        [ngModel]="value"
-                                        (ngModelChange)="onDateRangeChange($event, filter)"
-                                        [readonlyInput]="true" 
-                                        dateFormat="dd-mm-yy" 
-                                        appendTo="body"
-                                        placeholder="Search by Date Range">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter> -->
                         <p-columnFilter field="travelDate" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
@@ -368,7 +355,17 @@
                         <p-columnFilter type="text" matchMode="contains" field="travelType" placeholder="Search by Travel Type" ariaLabel="Filter Travel Type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="is_manual_entry" placeholder="Search by Booking From" ariaLabel="Filter Booking From" />
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="is_manual_entry" placeholder="Search by Booking From" ariaLabel="Filter Booking From" /> -->
+                        <p-columnFilter field="is_manual_entry" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="bookingFromList"
+                                    (onChange)="filter($event.value)" placeholder="Select Booking Entry Type" [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div>{{ option.label }}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="ipAddress" placeholder="Search by IP Address" ariaLabel="Filter IP Address" />

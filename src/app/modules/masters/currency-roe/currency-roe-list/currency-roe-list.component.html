@@ -18,31 +18,31 @@
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
             </div>
 
-            
+
             <!------Global filter------>
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
-            
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
-            
+
             <!------Sync------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="sync()">
                 <mat-icon svgIcon="heroicons_outline:arrow-path-rounded-square"></mat-icon>
                 <span class="ml-2 mr-1">Sync</span>
             </button>
-            
+
             <!------Update------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="bulkUpdate()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Update</span>
             </button>
-            
+
             <!------Create------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
@@ -67,7 +67,6 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['from_currency_code', 'to_currency_code', 'actual_roe', 'actual_markup', 'forex_actual_markup', 'sync_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
-            
             <ng-template pTemplate="header">
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
@@ -88,14 +87,20 @@
                     <th class="text-right" pSortableColumn="actual_markup" pResizableColumn>
                         Actual Markup <p-sortIcon field="actual_markup" />
                     </th>
+                    <th class="text-right" pSortableColumn="actual_markup_roe" pResizableColumn>
+                        Total Markup ROE<p-sortIcon field="actual_markup_roe" />
+                    </th>
                     <th class="text-right" pSortableColumn="forex_actual_markup" pResizableColumn>
                         Forex Actual Markup <p-sortIcon field="forex_actual_markup" />
+                    </th>
+                    <th class="text-right" pSortableColumn="forex_actual_markup_roe" pResizableColumn>
+                        Total Forex Markup ROE<p-sortIcon field="forex_actual_markup_roe" />
                     </th>
                     <th class="w-full" pSortableColumn="sync_date_time" pResizableColumn>
                         Last Sync Date <p-sortIcon field="sync_date_time" />
                     </th>
                 </tr>
-    
+
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.from_currency_code">
@@ -115,8 +120,16 @@
                             ariaLabel="Filter Actual Markup" />
                     </th>
                     <th>
+                        <p-columnFilter type="numeric" field="actual_markup_roe" placeholder="Search by Actual Markup ROE"
+                            ariaLabel="Filter Actual Markup ROE" />
+                    </th>
+                    <th>
                         <p-columnFilter type="numeric" field="forex_actual_markup" placeholder="Search by Forex Actual Markup"
                             ariaLabel="Filter Forex Actual Markup" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="forex_actual_markup_roe" placeholder="Search by Forex Actual Markup ROE"
+                            ariaLabel="Filter Forex Actual Markup ROE" />
                     </th>
                     <th>
                         <p-columnFilter field="sync_date_time" type="date">
@@ -129,14 +142,14 @@
                     </th>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="body" let-element>
                 <tr>
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
-    
+
                         <mat-menu #optionMenu>
                             <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
@@ -159,23 +172,29 @@
                         {{element.to_currency_code || "-"}}
                     </td>
                     <td class="text-right">
-                        {{element.actual_roe ? element.actual_roe.toFixed(2) : 0}}
+                        {{element.actual_roe ? element.actual_roe : 0}}
                     </td>
                     <td class="text-right">
                         {{element.actual_markup ? element.actual_markup : 0}}
                     </td>
                     <td class="text-right">
+                        {{element.actual_roe ? element.actual_markup_roe : 0}}
+                    </td>
+                    <td class="text-right">
                         {{element.forex_actual_markup ? element.forex_actual_markup : 0}}
+                    </td>
+                    <td class="text-right">
+                        {{element.actual_roe ? element.forex_actual_markup_roe : 0}}
                     </td>
                     <td>
                         {{(element.sync_date_time  | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="7" class="text-center font-semibold text-lg">
+                    <td colspan="9" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

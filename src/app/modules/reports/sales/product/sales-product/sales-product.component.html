@@ -31,11 +31,11 @@
             </div>
 
             <!------Global filter------>
-            <!-- <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
-            </button> -->
+            </button>
 
             <!------Refresh------>
             <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
@@ -99,7 +99,7 @@
                     </ng-container>
                 </tr>
 
-                <!-- <tr *ngIf="isFilterShow">
+               <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
                         <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
                             ariaLabel="Filter Agent Code" />
@@ -159,7 +159,7 @@
                         <th [pSortableColumn]="item.key">
                         </th>
                     </ng-container>
-                </tr> -->
+                </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element>

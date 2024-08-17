@@ -158,8 +158,8 @@ export class AuditedComponent extends BaseListingComponent {
     // }
   }
 
-  getAgentList(value: string) {
-    this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgentList(value: string, bool=true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
 
       for(let i in this.agentList){
@@ -297,6 +297,7 @@ export class AuditedComponent extends BaseListingComponent {
         [
           { header: 'Ref. No', property: 'reference_number' },
           { header: 'Request', property: 'request_date_time' },
+          { header: 'Agent Code', property: 'agent_code' },
           { header: 'Agent', property: 'recharge_for_name' },
           { header: 'Amount', property: 'recharge_amount' },
           { header: 'Settled Amount', property: 'settled_amount' },

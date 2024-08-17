@@ -150,7 +150,7 @@
                     <td>{{element.state_name || "_"}}</td>
                     <td>{{element.country || "_"}}</td>
                     <td *ngFor="let col of columns">
-                            {{element[col.field]}}
+                            {{element[col.field] || "-"}}
                     </td>
                 </tr>
             </ng-template>

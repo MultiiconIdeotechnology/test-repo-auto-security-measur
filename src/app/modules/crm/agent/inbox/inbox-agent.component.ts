@@ -153,8 +153,8 @@ export class InboxAgentComponent extends BaseListingComponent {
     }
 
     // Api function to get the agent List
-    getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+    getAgent(value: string, bool=true) {
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
             for (let i in this.agentList) {

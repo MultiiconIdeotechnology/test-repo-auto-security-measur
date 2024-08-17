@@ -151,8 +151,8 @@ export class PendingComponent extends BaseListingComponent {
     this.mopList = this.filterApiData.mopData;
   }
 
-  getAgentList(value: string) {
-    this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgentList(value: string, bool=true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
     })
   }
@@ -316,9 +316,10 @@ export class PendingComponent extends BaseListingComponent {
         [
           { header: 'Ref. No', property: 'reference_number' },
           { header: 'Request.', property: 'request_date_time' },
+          { header: 'Agent Code', property: 'agent_code' },
           { header: 'Agent', property: 'recharge_for_name' },
           { header: 'Amount ', property: 'recharge_amount' },
-          { header: 'mop', property: 'mop' },
+          { header: 'MOP', property: 'mop' },
           { header: 'Remark', property: 'user_remark' },
         ],
         data.data, "Wallet Recharge Pending", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);

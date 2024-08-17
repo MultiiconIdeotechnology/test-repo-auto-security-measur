@@ -96,7 +96,7 @@ export abstract class BaseListingComponent implements OnInit {
 
     @HostListener('window:resize', ['$event'])
     onResize(event: any) {
-      this.updateScrollHeight();
+        this.updateScrollHeight();
     }
 
     updateScrollHeight() {
@@ -105,7 +105,7 @@ export abstract class BaseListingComponent implements OnInit {
         const headerTabHeight = 58;
         const availableHeight = window.innerHeight - headerHeight - paginatorHeight - 80; // Adjust the 100px padding as necessary
         this.scrollHeight = availableHeight + 'px';
-        this.scrollHeightWTab = (availableHeight - headerTabHeight)  + 'px';
+        this.scrollHeightWTab = (availableHeight - headerTabHeight) + 'px';
     }
 
     ngAfterViewInit(): void {
@@ -113,7 +113,7 @@ export abstract class BaseListingComponent implements OnInit {
 
             const qw = this.masterService.getData(this.key, this.Mainmodule);
             if (!qw) {
-                if(this._sort) {
+                if (this._sort) {
                     this._sort.sort({
                         id: this.sortColumn,
                         start: this.sortDirection,
@@ -169,16 +169,20 @@ export abstract class BaseListingComponent implements OnInit {
 
 
     // Table Frozen Column
-    isFrozenColumn(key: any, opetion?: any) {
-        if(key) {
-            if(this.frozenObj && this.frozenObj[key]) {
+    isFrozenColumn(key: any, opetion?: any, noData?: any) {
+        if (key) {
+            if (this.frozenObj && this.frozenObj[key]) {
                 this.frozenObj[key] = !this.frozenObj[key];
             } else {
                 this.frozenObj[key] = true;
             }
         }
-        if(opetion && opetion.length) {
-            opetion.every((field: any) => this.frozenObj[field] = true);
+        if (opetion && opetion.length) {
+            if (noData) {
+                opetion.filter((field: any) => this.frozenObj[field] = false);
+            } else {
+                opetion.every((field: any) => this.frozenObj[field] = true);
+            }
         }
     }
     // ###
@@ -374,16 +378,21 @@ export abstract class BaseListingComponent implements OnInit {
     // Primeng Date Range Change
     onDateRangeChange(dates: Date[], filter: Function) {
         if (dates && dates.length === 2 && dates[0] && dates[1]) {
-          const [startDate, endDate] = dates;
+            const [startDate, endDate] = dates;
 
-          // Adjust end date to include the entire day
-          const adjustedEndDate = new Date(endDate);
-          adjustedEndDate.setHours(23, 59, 59, 999);
-          filter([startDate, adjustedEndDate]);
+            const adjustedStartDate = new Date(startDate);
+            adjustedStartDate.setHours(0, 0, 0, 0);
+            console.log("adjustedStartDate", adjustedStartDate);
+
+            const adjustedEndDate = new Date(endDate);
+            adjustedEndDate.setHours(23, 59, 59, 999);
+            console.log("adjustedEndDate", adjustedEndDate);
+
+            filter([adjustedStartDate, adjustedEndDate]);
+        } else {
+            filter(null);
         }
     }
-    // #endregion
-
 }
 
 export interface IDataColumn {

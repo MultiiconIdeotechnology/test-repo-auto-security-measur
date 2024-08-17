@@ -97,6 +97,11 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
   filter: any = {};
   agentList: any[] = [];
 
+  withdrawList = [
+    { label: 'Deduction', value: 'Deduction' },
+    { label: 'Bank Withdraw', value: 'Bank Withdraw' },
+  ];
+
   cols = [];
   protected masterService: MasterService;
 
@@ -167,8 +172,8 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
 
   }
 
-  getAgentList(value: string) {
-      this.agentService.getAgentCombo(value).subscribe((data) => {
+  getAgentList(value: string, bool:boolean) {
+      this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
         this.agentList = data;
 
         for(let i in this.agentList){

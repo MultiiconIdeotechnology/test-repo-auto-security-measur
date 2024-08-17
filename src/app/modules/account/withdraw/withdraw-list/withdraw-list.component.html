@@ -20,18 +20,18 @@
             </mat-form-field> -->
 
             <div class="flex ctm_search" [class.hidden]="this.tab == 'Audited' || this.tab == 'Rejected'">
-                <input matInput [formControl]="searchInputControlPending" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="pendingRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="pendingRefresh()"></mat-icon>
+                <input #pendingRef matInput [formControl]="searchInputControlPending" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="pendingRefresh(pendingRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="pendingRefresh(pendingRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" [class.hidden]="this.tab == 'Pending' || this.tab == 'Rejected'">
-                <input matInput [formControl]="searchInputControlAudit" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="auditedRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="auditedRefresh()"></mat-icon>
+                <input #auditRef matInput [formControl]="searchInputControlAudit" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="auditedRefresh(auditRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="auditedRefresh(auditRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" [class.hidden]="this.tab == 'Audited' || this.tab == 'Pending'">
-                <input matInput [formControl]="searchInputControlRejected" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="rejectedRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="rejectedRefresh()"></mat-icon>
+                <input #rejectRef matInput [formControl]="searchInputControlRejected" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="rejectedRefresh(rejectRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="rejectedRefresh(rejectRef.value)"></mat-icon>
             </div>
 
             <!------global filter------>

@@ -30,6 +30,15 @@
             </mat-form-field>
 
             <mat-form-field class="flex-grow">
+                <mat-label>Withdraw  Type</mat-label>
+                <mat-select required formControlName="withdraw_type">
+                    <mat-option *ngFor="let s of withdrawType" [value]="s.value">
+                        {{ s.viewValue }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
                 <mat-label>Amount</mat-label>
                 <input matInput  type="number" [formControlName]="'withdraw_amount'" required/>
             </mat-form-field>

@@ -5,7 +5,7 @@
         [lazy]="true" (onLazyLoad)="refreshItemsAudited($event)" [lazyLoadOnInit]="false" [scrollable]="true"
         [scrollHeight]="scrollHeightWTab" [showCurrentPageReport]="true" [showPageLinks]="false"
         [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-        [globalFilterFields]="['entry_date_time', 'withdraw_amount', 'agent_Code', 'agent_name','account_number']"
+        [globalFilterFields]="['entry_date_time', 'withdraw_amount', 'agent_Code', 'agent_name','account_number','withdraw_type']"
         styleClass="p-datatable-gridlines p-datatable-sm">
 
         <ng-template pTemplate="header">
@@ -21,7 +21,7 @@
                     </span>
                 </th>
 
-                <th pSortableColumn="entry_date_time">
+                <th pSortableColumn="entry_date_time" pResizableColumn>
                     Date <p-sortIcon field="entry_date_time" />
                 </th>
                 <th class="text-right" pSortableColumn="withdraw_amount" pResizableColumn>
@@ -33,8 +33,11 @@
                 <th pSortableColumn="agent_name" pResizableColumn>
                     Agency Name <p-sortIcon field="agent_name" />
                 </th>
-                <th class="w-full min-w-[200px]" pSortableColumn="account_number" pResizableColumn>
+                <th pSortableColumn="account_number" pResizableColumn>
                     Bank <p-sortIcon field="account_number" />
+                </th>
+                <th class="w-full" pSortableColumn="withdraw_type" pResizableColumn>
+                    Withdraw Type <p-sortIcon field="withdraw_type" />
                 </th>
             </tr>
 
@@ -90,6 +93,19 @@
                     <p-columnFilter type="text" matchMode="contains" field="account_number" placeholder="Search by Bnak"
                         ariaLabel="Filter Bank" />
                 </th>
+                <th>
+                    <p-columnFilter field="withdraw_type" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="withdrawList"
+                                (onChange)="filter($event.value)" placeholder="Select Type" appendTo="body"
+                                [showClear]="true">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option.value}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
             </tr>
         </ng-template>
 
@@ -133,15 +149,17 @@
                         [ngClass]="element.bank_audit ? 'bg-green-500' : 'bg-red-500'"></div>
 
                     <span class="truncate cursor-pointer border-b border-gray-500 "
-                        (click)="element.account_number && element.account_number.trim() != '-' ? bankDetails(element) : null">{{element.account_number
-                        || '-'}}</span>
+                        (click)="element.account_number && element.account_number.trim() != '-' ? bankDetails(element) : null">{{element.account_number || '-'}} - {{element.bank_name}}</span>
+                </td>
+                <td>
+                    {{element.withdraw_type || '-'}}
                 </td>
             </tr>
         </ng-template>
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="7" class="text-center font-semibold text-lg">
+                <td colspan="8" class="text-center font-semibold text-lg">
                     {{getNodataTextAudited()}}
                 </td>
             </tr>

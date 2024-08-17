@@ -1,5 +1,5 @@
 import { CdkDropList, CdkDrag, CdkDragPreview, CdkDragHandle } from '@angular/cdk/drag-drop';
-import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -21,7 +21,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
-import { FuseConfig, FuseConfigService, Themes } from '@fuse/services/config';
+import { FuseConfig, FuseConfigService } from '@fuse/services/config';
 import { Routes } from 'app/common/const';
 import { JsonFile } from 'app/common/jsonFile';
 import { UserService } from 'app/core/user/user.service';
@@ -39,16 +39,6 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
     selector: 'purchase-product-entry-settings',
     templateUrl: './purchase-product-entry-settings.component.html',
-    styles: [
-        `
-            purchase-product-settings {
-                position: static;
-                display: block;
-                flex: none;
-                width: auto;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -81,6 +71,7 @@ import { Subject, takeUntil } from 'rxjs';
         FuseDrawerComponent,
         MatDividerModule,
         NgFor,
+        CommonModule,
         MatDatepickerModule,
         MatMenuModule,
         NgxMatSelectSearchModule,
@@ -90,6 +81,8 @@ import { Subject, takeUntil } from 'rxjs';
 export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+    @ViewChild(MatPaginator) public _paginator: MatPaginator;
+    @ViewChild(MatSort) public _sort: MatSort;
 
     readonly: boolean = false;
     record: any = {};
@@ -104,19 +97,17 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     selectedProductList: any;
     installmentsArray = [];
     todayDateTime = new Date();
+    dateBeforeAllow: Date;
     installmentList: number[] = [];
     selectedMaxInstallment: any;
     user: any;
     dataList = [];
-    @ViewChild(MatPaginator) public _paginator: MatPaginator;
-    @ViewChild(MatSort) public _sort: MatSort;
     searchInputControl = new FormControl('');
     productDetail: any;
     productPurchaseMasterId: any;
     productId: any;
     productList: any[] = [];
     isProductInitialChanged: boolean = false;
-    config: FuseConfig;
     fieldList: {};
     isEditFlag: any = {};
     editLeadId: any;
@@ -130,6 +121,26 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     proofAttachmentSelectedFile: any = File;
     proofAttachjFile: JsonFile;
     proofAttachmentFlag: boolean = false;
+
+    ngOnInit(): void {
+        this.formGroup = this.builder.group({
+            product: ['', Validators.required],
+            rm_remark: [''],
+            id: [''],
+            price: ['', Validators.required],
+            installments: ['', Validators.required],
+            // installmentsArray: this.formBuilder.array([])
+            installmentsArray: [[]],
+            proofAttachment: ['']
+        });
+
+
+        this._userService.user$
+            .pipe((takeUntil(this._unsubscribeAll)))
+            .subscribe((user: any) => {
+                this.user = user;
+            });
+    }
 
     constructor(
         public builder: FormBuilder,
@@ -145,6 +156,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // @Inject(MAT_DIALOG_DATA) public data: any = {},
         // @Inject(MAT_DIALOG_DATA) public editFlag: any = {}
     ) {
+        this.dateBeforeAllow = this.calculateDateBeforeDays(10);
         // this.isEditFlag = this.isEditFlag?.editFlag;
         // this.record = data?.data ?? {}
         this.entityService.onproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
@@ -169,8 +181,11 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.proofAttachmentSelectedFile = {};
                     this.editproofAttachmentSelectedFile = "";
 
+                    this.proofAttachment = false;
                     if (item?.editFlag) {
-                        this.proofAttachment = true;
+                        if(item?.editData?.proof_attachment){
+                            this.proofAttachment = true;
+                        }
                         this.editAgentId = item?.editData?.agentid;
                         this.editRecord = item?.editData ?? {}
 
@@ -188,12 +203,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                 }
             }
         })
+    }
 
-        this._fuseConfigService.config$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((config: FuseConfig) => {
-                this.config = config;
-            });
+    calculateDateBeforeDays(days: number): Date {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        return date;
     }
 
     onDateChange(index: number): void {
@@ -203,25 +218,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         }
     }
 
-    ngOnInit(): void {
-        this.formGroup = this.builder.group({
-            product: ['', Validators.required],
-            rm_remark: [''],
-            id: [''],
-            price: ['', Validators.required],
-            installments: ['', Validators.required],
-            // installmentsArray: this.formBuilder.array([])
-            installmentsArray: [[]],
-            proofAttachment: ['']
-        });
-
-
-        this._userService.user$
-            .pipe((takeUntil(this._unsubscribeAll)))
-            .subscribe((user: any) => {
-                this.user = user;
-            });
-    }
 
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
@@ -299,7 +295,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             this.proofAttachmentSelectedFile = file;
             this.editproofAttachmentSelectedFile = false;
             this.formGroup.get('proofAttachment').setValue(file);
-            this.proofAttachmentFlag = false;
+            this.proofAttachmentFlag = true;
             if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
                 this.formGroup.get('proofAttachment').clearValidators();
             }
@@ -336,6 +332,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     }
 
     getProducts() {
+        this.productPurchaseMasterId = ""
         this.crmService.getProductNameList().subscribe({
             next: (data) => {
                 this.productList = data;
@@ -348,6 +345,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     if (this.record && this.record.installment) {
                         this.patchInstallments(this.record.installment);
                     }
+                    this.productPurchaseMasterId = "";
                     // this.productId = this.record?.product_id;
                     // this.productId = this.record?.id;
                     // this.productPurchaseMasterId = this.record?.id1;
@@ -379,10 +377,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.selectedMaxInstallment = res?.[0]?.max_installment;
                     this.installmentsArray = res?.[0]?.installment?.map(x => ({ installment_amount: x.installment_amount, installment_date: x.installment_date }));
                     this.productId = res?.[0]?.productid;
-                    // console.log("383", res?.[0]);
                     this.productPurchaseMasterId = res?.[0]?.id;
                 }
-
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -409,9 +405,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         this.installmentsArray.forEach(installment => {
             totalAmount += installment.installment_amount;
         });
-
-        // console.log("totalAmount ::", totalAmount);
-        // console.log("price ::", this.formGroup.get("price").value);
 
         const price = parseFloat(this.formGroup.get("price").value);
         // if (price != 0 && totalAmount != 0 ) {
@@ -445,16 +438,15 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             proof_attachment: json.proof_attachment
         };
 
-        // console.log("430 ::", this.formGroup.get("price").value);
         if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {
-            // console.log("451 :::", this.productPurchaseMasterId);
-            // console.log("452 :::", newJson);
             this.crmService.createPurchaseProduct(newJson).subscribe({
                 next: () => {
                     this.router.navigate([this.leadListRoute]);
                     this.disableBtn = false;
                     this.entityService.raiserefreshproductPurchaseCall(true);
                     this.settingsDrawer.close();
+                    this.productPurchaseMasterId = ""
+                    this.formGroup.reset();
                     if (json.id) {
                         this.alertService.showToast('success', 'Record modified', 'top-right', true);
                     } else {
@@ -484,7 +476,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getMinDate(index: number): Date | null {
         if (index === 0) {
-            return this.todayDateTime;
+            return this.dateBeforeAllow;
+            // return this.todayDateTime;
         }
         const previousInstallmentDate = this.installmentsArray[index - 1]?.installment_date;
         if (!previousInstallmentDate) {
@@ -505,7 +498,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getMaxDate(index: number) {
         if (index == 0)
-            return this.todayDateTime
+            return this.dateBeforeAllow;
+            // return this.todayDateTime
         else {
             let maxDate = new Date(this.installmentsArray[index - 1].installment_date.toString())
             maxDate.setDate(maxDate.getDate() + 1)

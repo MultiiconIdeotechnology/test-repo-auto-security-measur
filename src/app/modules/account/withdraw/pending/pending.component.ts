@@ -90,6 +90,11 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
   filter: any = {}
   agentList: any[] = [];
 
+  withdrawList = [
+    { label: 'Deduction', value: 'Deduction' },
+    { label: 'Bank Withdraw', value: 'Bank Withdraw' },
+  ];
+
   cols = [];
 
   protected masterService: MasterService;
@@ -164,10 +169,10 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
 
   }
 
-  getAgentList(value: string) {
-      this.agentService.getAgentCombo(value).subscribe((data) => {
-        this.agentList = data;
-      })
+  getAgentList(value: string, bool:boolean) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.agentList = data;
+    })
   }
 
   view(record) {

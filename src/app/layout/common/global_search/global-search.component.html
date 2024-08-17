@@ -1,7 +1,7 @@
 <div class="search-container p-4">
     <form [formGroup]="formGroup" class="flex items-end">
         <div class="w-full min-w-160 max-w-160">
-            <input class="w-full border-b text-white p-2 border-gray-400" formControlName="searchfilter" placeholder="Search - Agent, Flight, Bus, PNR, Receipt, Payment Etc...." (keyup.enter)="search()">
+            <input class="w-full border-b text-white p-2 border-gray-400" formControlName="searchfilter" placeholder="Search by booking reference number, PNR, agent code, agent email etc" (keyup.enter)="search()">
         </div>
 
         <div class="cursor-pointer ml-4" (click)="search()">

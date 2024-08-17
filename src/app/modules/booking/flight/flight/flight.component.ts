@@ -410,7 +410,12 @@ export class FlightComponent extends BaseListingComponent {
         { label: 'Cancelled', value: 'Cancelled' },
         { label: 'Partially Cancelled', value: 'Partially Cancelled' },
         { label: 'Hold', value: 'Hold' }
-      ];
+    ];
+
+    bookingFromList:any = [
+        {label:'Online', value: false},
+        {label:'Import', value: true}
+    ]
     // clipboard: any;
     // toastr: any;
 
@@ -534,6 +539,10 @@ export class FlightComponent extends BaseListingComponent {
                 if( this.dataList && this.dataList.length) {
                     setTimeout(() => {
                         this.isFrozenColumn('', ['booking_ref_no', 'status']);
+                    }, 200);
+                } else {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['booking_ref_no', 'status'], true);
                     }, 200);
                 }
             },

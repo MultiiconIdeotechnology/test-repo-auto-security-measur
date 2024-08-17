@@ -23,6 +23,9 @@
                 <th class="min-w-[200px]" pSortableColumn="request_date_time" pResizableColumn>
                     Request <p-sortIcon field="request_date_time" />
                 </th>
+                <th pSortableColumn="agent_code" pResizableColumn>
+                    Agent Code <p-sortIcon field="agent_code" />
+                </th>
                 <th pSortableColumn="recharge_for_name" pResizableColumn>
                     Agent <p-sortIcon field="recharge_for_name" />
                 </th>
@@ -62,7 +65,11 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter class="searchableDropdown" field="recharge_for_id" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
+                        ariaLabel="Filter Agent Code" />
+                </th>
+                <th>
+                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agency_name" [filter]="true" filterBy="agency_name"
@@ -136,6 +143,9 @@
                     {{(element.request_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                 </td>
                 <td>
+                    {{element.agent_code || '-'}}
+                </td>
+                <td>
                     {{element.recharge_for_name || '-'}}
                 </td>
                 <td class="text-right">
@@ -162,7 +172,7 @@
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="8" class="text-center font-semibold text-lg">
+                <td colspan="9" class="text-center font-semibold text-lg">
                     {{getNodataTextPending()}}
                 </td>
             </tr>
