@@ -119,11 +119,18 @@ export class GridUtils {
                         };
                     } else {
                         if(filter[key] && filter[key].value && typeof filter[key].value === 'object') {
-                            let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
-                            validFilter[key] = {
-                                value : id_by_value,
-                                matchMode : filter[key].matchMode
-                            };
+                            if(filter[key].value?.id || filter[key].value?.id_by_value) {
+                                let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
+                                validFilter[key] = {
+                                    value : id_by_value,
+                                    matchMode : filter[key].matchMode
+                                };
+                            } else {
+                                validFilter[key] = {
+                                    value : this.convertArrayToString(filter[key].value),
+                                    matchMode : filter[key].matchMode
+                                };
+                            }
                         } else {
                             validFilter[key] = filter[key];
                         }
