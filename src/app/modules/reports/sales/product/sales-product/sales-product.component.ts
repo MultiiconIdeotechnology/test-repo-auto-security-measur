@@ -66,8 +66,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     private settingsUpdatedSubscription: Subscription;
     agentList: any[] = [];
     employeeList: any[] = [];
-    selectedAgent: string;
-    selectedEmployee: string;
+    selectedAgent: any;
+    selectedEmployee: any;
     user: any = {};
     selectedToolTip: string = "";
     toolTipArray: any[] = [];

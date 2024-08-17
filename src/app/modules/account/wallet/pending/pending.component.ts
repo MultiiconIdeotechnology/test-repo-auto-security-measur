@@ -81,8 +81,8 @@ export class PendingComponent extends BaseListingComponent {
   public _unsubscribeAll: Subject<any> = new Subject<any>();
   agentList: any[] = [];
   mopList:any[] = [];
-  selectedMop!:string;
-  selectedEmployee!:string;
+  selectedMop: any;
+  selectedEmployee:any;
   public settingsUpdatedSubscription: Subscription;
 
   cols = [];
@@ -113,11 +113,11 @@ export class PendingComponent extends BaseListingComponent {
     this.pendingFilter.FromDate.setDate(1);
     this.pendingFilter.FromDate.setMonth(this.pendingFilter.FromDate.getMonth());
     this._filterService.applyDefaultFilter(this.filter_table_name);
-    
+
   }
 
   ngOnInit(): void {
-    
+
   }
 
   ngAfterViewInit() {
@@ -146,7 +146,7 @@ export class PendingComponent extends BaseListingComponent {
         this.primengTable._filter();
       });
     }
-    
+
     this.agentList = this.filterApiData.agentData;
     this.mopList = this.filterApiData.mopData;
   }

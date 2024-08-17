@@ -68,7 +68,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     module_name = module_name.SalesReturn;
     filter_table_name = filter_module_name.sales_return;
     private settingsUpdatedSubscription: Subscription;
-    
+
     columns = [
         'agent',
         'supplier',
@@ -119,7 +119,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     dataList = [];
     sortColumn: any = 'complete_date_time';
     selectedAgent!: string;
-    selectedEmployee!: string;
+    selectedEmployee: any;
 
     constructor(
         private salesReturnService: SalesReturnService,

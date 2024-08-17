@@ -64,7 +64,7 @@ export class ReceiptRegisterComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    selectedAgent!:string;
+    selectedAgent:any;
 
     columns = [
         {

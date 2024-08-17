@@ -87,10 +87,10 @@ export class BusComponent extends BaseListingComponent {
   statusList = ['Payment Failed', 'Waiting for Payment', 'Booking Failed', 'Confirmation Pending', 'Transaction Failed', 'Pending', 'Failed', 'Confirmed', 'Cancelled'];
   isFilterShow: boolean = false;
   agentList: any[] = [];
-  selectedAgent!:string;
-  selectedFromCity!:string;
-  selectedToCity!:string;
-  selectedSupplier!:string;
+  selectedAgent:any;
+  selectedFromCity:any;
+  selectedToCity:any;
+  selectedSupplier:any;
   fromcityList: any[] = [];
   tocityList: any[] = [];
   supplierListAll: any[] = [];

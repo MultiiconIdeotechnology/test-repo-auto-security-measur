@@ -86,7 +86,7 @@ export class VisaComponent extends BaseListingComponent {
     agentList: any[] = [];
     isFilterShow: boolean = false;
     _selectedColumns: Column[];
-    selectedAgent!:string;
+    selectedAgent:any;
     statusList = [ 'Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
 
     columns = [
@@ -217,7 +217,7 @@ export class VisaComponent extends BaseListingComponent {
     get selectedColumns(): Column[] {
         return this._selectedColumns;
       }
-    
+
     set selectedColumns(val: Column[]) {
         this._selectedColumns = this.cols.filter((col) => val.includes(col));
     }

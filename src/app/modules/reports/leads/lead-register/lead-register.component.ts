@@ -109,7 +109,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     selectedLeadType: string;
     selectedLeadSource: string;
     selectedKyc: string;
-    selectedAgent: string;
+    selectedAgent: any;
     leadList: any[] = [];
     employeeList: any[] = [];
     agentList: any[] = [];

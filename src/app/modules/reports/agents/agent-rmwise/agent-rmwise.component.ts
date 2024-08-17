@@ -73,7 +73,7 @@ export class AgentRMWiseComponent extends BaseListingComponent implements OnDest
     leadFilter: any;
     isFilterShow: boolean = false;
     employeeList: any[] = [];
-    selectedEmployee: string;
+    selectedEmployee: any;
     selectedRM: any;
 
     columns = [

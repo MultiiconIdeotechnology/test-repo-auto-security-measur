@@ -255,8 +255,8 @@ export class AmendmentRequestsListComponent
         },
     ];
     cols = [];
-    selectedAgent!:string
-    selectedSupplier!:string;
+    selectedAgent:any
+    selectedSupplier:any;
     agentList: any[] = [];
     supplierList: any[] = [];
     isMenuOpen: boolean = false;
