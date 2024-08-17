@@ -73,7 +73,6 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'document_group';
-    this.sortDirection = 'asc';
     this.Mainmodule = this
   }
 

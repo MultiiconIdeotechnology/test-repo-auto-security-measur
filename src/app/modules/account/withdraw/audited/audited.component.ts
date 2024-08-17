@@ -128,7 +128,7 @@ export class WAuditedComponent extends BaseListingComponent {
     super(module_name.withdraw)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'agent_name';
+    this.sortColumn = 'entry_date_time';
     this.sortDirection = 'asc';
     this.Mainmodule = this
 

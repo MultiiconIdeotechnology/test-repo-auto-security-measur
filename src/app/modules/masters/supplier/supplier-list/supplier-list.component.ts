@@ -162,8 +162,7 @@ export class SupplierListComponent extends BaseListingComponent {
         super(module_name.supplier);
         this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'company_name';
-        this.sortDirection = 'asc';
+        this.sortColumn = 'entry_date_time';
         this.Mainmodule = this;
     }
 

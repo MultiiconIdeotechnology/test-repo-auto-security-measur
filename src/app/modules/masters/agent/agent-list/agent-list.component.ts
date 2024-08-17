@@ -141,8 +141,7 @@ export class AgentListComponent extends BaseListingComponent {
         super(module_name.agent)
         // this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'agent_code';
-        this.sortDirection = 'desc';
+        this.sortColumn = 'entry_date_time';
         this.Mainmodule = this
 
         this.agentFilter = {

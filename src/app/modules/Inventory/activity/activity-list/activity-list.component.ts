@@ -176,8 +176,7 @@ export class ActivityListComponent extends BaseListingComponent {
         super(module_name.activity);
         // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
-        this.sortColumn = 'activity_name';
-        this.sortDirection = 'asc';
+        this.sortColumn = 'entry_date_time';
         this.Mainmodule = this;
     }
 
