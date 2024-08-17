@@ -6,7 +6,7 @@
         </div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            
+
             <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <ng-container *ngIf="tabNameStr == 'Inbox'">
@@ -19,16 +19,20 @@
                 </ng-container>
             </mat-form-field> -->
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Inbox'">
-                <input #inboxRef matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="inboxRefresh(inboxRef.value)" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="inboxRefresh(inboxRef.value)"></mat-icon>
+                <input #inboxRef matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="inboxRefresh(inboxRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="inboxRefresh(inboxRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Archive'">
-                <input #archiveRef matInput [formControl]="searchInputControlArchive" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="archiveRefresh(archiveRef.value)" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="archiveRefresh(archiveRef.value)"></mat-icon>
+                <input #archiveRef matInput [formControl]="searchInputControlArchive" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="archiveRefresh(archiveRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="archiveRefresh(archiveRef.value)"></mat-icon>
             </div>
 
-          
+
 
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
@@ -63,6 +67,13 @@
                 *ngIf="tabNameStr == 'Inbox'">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="openTabFiterDrawer()">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
             </button>
         </div>
     </div>

@@ -1,4 +1,4 @@
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +21,8 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { Excel } from 'app/utils/export/excel';
 import { AgentService } from 'app/services/agent.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-receipt-register',
@@ -49,6 +51,8 @@ export class ReceiptRegisterComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.receiptRegister;
+    filter_table_name = filter_module_name.receipt_register;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -60,7 +64,7 @@ export class ReceiptRegisterComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    selectedAgent!:string;
+    selectedAgent:any;
 
     columns = [
         {
@@ -123,7 +127,8 @@ export class ReceiptRegisterComponent
         private accountService: AccountService,
         private matDialog: MatDialog,
         private pspsettingService: PspSettingService,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.city);
         // this.cols = this.columns.map((x) => x.key);
@@ -131,7 +136,7 @@ export class ReceiptRegisterComponent
         this.sortColumn = 'receipt_request_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
-
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.currentFilter = {
             status: '',
@@ -176,6 +181,30 @@ export class ReceiptRegisterComponent
 
         this.getAgent('');
         this.getCompanyList("");
+
+         // common filter
+         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getCompanyList(value) {

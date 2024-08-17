@@ -15,7 +15,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, amendmentRequestsPermissions, messages, module_name } from 'app/security';
+import { Security, amendmentRequestsPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { AmendmentRequestsService } from 'app/services/amendment-requests.service';
 import { UpdateChargeComponent } from './update-charge/update-charge.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -31,6 +31,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -62,6 +64,8 @@ export class AmendmentRequestsListComponent
     implements OnDestroy {
     isFilterShow: boolean = false;
     module_name = module_name.amendmentRequests;
+    filter_table_name = filter_module_name.amendment_requests_booking;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
 
@@ -251,8 +255,8 @@ export class AmendmentRequestsListComponent
         },
     ];
     cols = [];
-    selectedAgent!:string
-    selectedSupplier!:string;
+    selectedAgent:any
+    selectedSupplier:any;
     agentList: any[] = [];
     supplierList: any[] = [];
     isMenuOpen: boolean = false;
@@ -266,7 +270,8 @@ export class AmendmentRequestsListComponent
         private toasterService: ToasterService,
         private agentService: AgentService,
         private kycDocumentService: KycDocumentService,
-        private confirmationService: FuseConfirmationService
+        private confirmationService: FuseConfirmationService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.amendmentRequests);
         this.cols = this.columns.map((x) => x.key);
@@ -274,6 +279,7 @@ export class AmendmentRequestsListComponent
         this.sortColumn = 'amendment_request_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.AmendmentFilter = {
             agent_id: '',
@@ -291,7 +297,37 @@ export class AmendmentRequestsListComponent
     ngOnInit() {
         this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
         this.getAgent("", true);
-        this.getSupplier("", true)
+        this.getSupplier("", true);
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['amendment_request_time'].value && resp['table_config']['amendment_request_time'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
+            }
+            if (resp['table_config']['travel_date'].value) {
+                resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['amendment_request_time'].value && filterData['table_config']['amendment_request_time'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
+            }
+            if (filterData['table_config']['travel_date'].value) {
+                filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getFilter(): any {
@@ -616,10 +652,6 @@ export class AmendmentRequestsListComponent
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
-    }
-
     exportExcel(): void {
         if (!Security.hasExportDataPermission(this.module_name)) {
             return this.alertService.showToast('error', messages.permissionDenied);
@@ -663,5 +695,14 @@ export class AmendmentRequestsListComponent
                 ],
                 data.data, "Amendment Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

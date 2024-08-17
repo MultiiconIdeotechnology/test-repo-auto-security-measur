@@ -72,24 +72,30 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
+
+             <!------Common Filter------->
+           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="openTabFiterDrawer()">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
     <mat-tab-group class="custom-tab wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
 
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
-            <app-wpending #pending [isFilterShowPending]="isFilterShowPending" [agentData]="agentData"></app-wpending>
+            <app-wpending #pending [isFilterShowPending]="isFilterShowPending" [activeTab]="tab"></app-wpending>
         </mat-tab>
 
         <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')">
-            <app-waudited #audited [isFilterShowAudit]="isFilterShowAudit" [agentData]="agentData"></app-waudited>
+            <app-waudited #audited [isFilterShowAudit]="isFilterShowAudit" [activeTab]="tab"></app-waudited>
         </mat-tab>
 
         <mat-tab label="Rejected" [aria-label]="'Rejected'" *ngIf="getTabsPermission('rejected')">
-            <app-wrejected #rejected [isFilterShowReject]="isFilterShowReject" [agentData]="agentData"></app-wrejected>
+            <app-wrejected #rejected [isFilterShowReject]="isFilterShowReject" [activeTab]="tab"></app-wrejected>
         </mat-tab>
 
     </mat-tab-group>
 </div>
-<app-bank-details-right></app-bank-details-right>
-<app-info-withdraw></app-info-withdraw>
+<!-- <app-bank-details-right></app-bank-details-right>
+<app-info-withdraw></app-info-withdraw> -->

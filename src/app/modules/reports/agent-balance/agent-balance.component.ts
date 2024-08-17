@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { Excel } from 'app/utils/export/excel';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
@@ -28,6 +28,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { AgentBalanceService } from 'app/services/agent-balance.service';
 import { RefferralService } from 'app/services/referral.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
@@ -72,6 +74,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
     dataList = [];
     total = 0;
     module_name = module_name.agentBalance;
+    filter_table_name = filter_module_name.agent_balance_register;
+    private settingsUpdatedSubscription: Subscription;
     isFilterShow: boolean = false;
     agentList: any[] = [];
     employeeList: any[] = [];
@@ -81,6 +85,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         private agentBalanceService: AgentBalanceService,
         private agentService: AgentService,
         private refferralService: RefferralService,
+        public _filterService: CommonFilterService
         // private clipboard: Clipboard
     ) {
         super(module_name.agentBalance)
@@ -89,11 +94,36 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         this.sortColumn = 'last_top_up';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
         this.getAgent('');
-        this.getEmployeeList("")
+        this.getEmployeeList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['last_top_up'].value) {
+                resp['table_config']['last_top_up'].value = new Date(resp['table_config']['last_top_up'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['last_top_up'].value) {
+                filterData['table_config']['last_top_up'].value = new Date(filterData['table_config']['last_top_up'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     // Api to get the Employee list data
@@ -184,6 +214,14 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
                 ],
                 data.data, "Agent Balance Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 
 }

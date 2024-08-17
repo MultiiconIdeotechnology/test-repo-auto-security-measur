@@ -1,4 +1,4 @@
-import { Security, leadsPermissions, messages, module_name } from './../../../../security';
+import { Security, filter_module_name, leadsPermissions, messages, module_name } from './../../../../security';
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -35,6 +35,8 @@ import { MarkupProfileDialogeComponent } from '../../agent/markup-profile-dialog
 import { SetKycProfileComponent } from '../../agent/set-kyc-profile/set-kyc-profile.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { EmployeeService } from 'app/services/employee.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-main-list',
@@ -72,14 +74,16 @@ import { EmployeeService } from 'app/services/employee.service';
 })
 export class MainListComponent extends BaseListingComponent {
 
-  module_name = module_name.newSignup
+  module_name = module_name.newSignup;
+  filter_table_name = filter_module_name.newsignup_customer;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   user: any = {};
   total = 0;
   Mainmodule: any;
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
-  selectedRm:string;
+  selectedRm:string | undefined;
   employeeList:any[] = [];
   // user: any = {};
 
@@ -105,13 +109,15 @@ export class MainListComponent extends BaseListingComponent {
     private employeeService: EmployeeService,
     private matDialog: MatDialog,
     private router: Router,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.newSignup)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.userService.user$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -126,6 +132,29 @@ export class MainListComponent extends BaseListingComponent {
     ];
 
     this.getRelationManagerList("");
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        if(resp['table_config']['entry_date_time'].value){
+            resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+        }
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShow = true;
+        this.primengTable._filter();
+   });
+  }
+
+  ngAfterViewInit(){
+    // Defult Active filter show
+    if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShow = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        if(filterData['table_config']['entry_date_time'].value){
+          filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+        }
+        this.primengTable['filters'] = filterData['table_config'];
+    }
   }
 
   get selectedColumns(): Column[] {
@@ -423,6 +452,12 @@ export class MainListComponent extends BaseListingComponent {
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  ngOnDestroy(): void {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+    }
   }
 
 }

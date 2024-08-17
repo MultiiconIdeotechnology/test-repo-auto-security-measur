@@ -43,6 +43,13 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -130,7 +137,8 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="agency_name"
                             placeholder="Search by Agency Name" ariaLabel="Filter Agency Name" /> -->
-                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
+                            [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
@@ -172,8 +180,9 @@
                         <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="supplierList" [(ngModel)]="selectedSupplier" optionLabel="company_name"
-                                    [filter]="true" filterBy="company_name" (onFilter)="getSupplier($event?.filter)"
+                                <p-dropdown class="filter-dropdown" [options]="supplierList"
+                                    [(ngModel)]="selectedSupplier" optionLabel="company_name" [filter]="true"
+                                    filterBy="company_name" (onFilter)="getSupplier($event?.filter)"
                                     (onChange)="filter($event.value?.company_name)" [showClear]="true" appendTo="body"
                                     placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">

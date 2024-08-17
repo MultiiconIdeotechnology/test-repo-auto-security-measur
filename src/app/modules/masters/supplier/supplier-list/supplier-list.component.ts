@@ -1,4 +1,4 @@
-import { Security, messages, module_name, supplierPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, supplierPermissions } from 'app/security';
 import { DatePipe, NgIf, NgFor, CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,8 @@ import { AssignKycDialogComponent } from '../assign-kyc-dialog/assign-kyc-dialog
 import { KycInfoComponent } from '../../agent/kyc-info/kyc-info.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { PspSettingService } from 'app/services/psp-setting.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-supplier-list',
@@ -50,136 +52,69 @@ import { PspSettingService } from 'app/services/psp-setting.service';
 
 export class SupplierListComponent extends BaseListingComponent {
     module_name = module_name.supplier;
+    filter_table_name = filter_module_name.supplier_master;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     cols = [];
     companyList: any[] = [];
-
-
-    columns = [
-        {
-            key: 'company_name',
-            name: 'Company',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'email_address',
-            name: 'Email',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'truncate',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'mobile_number',
-            name: 'Mobile',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: true,
-            tooltip: true 
-        },
-        {
-            key: 'billing_company',
-            name: 'Billing Company',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'city_name',
-            name: 'City',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'entry_date_time',
-            name: 'Entry',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-        {
-            key: 'priority',
-            name: 'Priority',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_code: false,
-            tooltip: true 
-        },
-    ];
-  
+    companyListName:any[] = [];
 
     constructor(
         private supplierService: SupplierService,
         private conformationService: FuseConfirmationService,
         private pspsettingService: PspSettingService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.supplier);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
 
-        this.getCompanyList("");
+        this.getCompanyList();
 
-        
         this.cols = [
             { field: 'currency', header: 'Currency', type: 'text' },
             { field: 'priority', header: 'Priority', type:'numeric'}
         ];
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if( resp['table_config']['entry_date_time'] && resp['table_config']['entry_date_time'].value ){
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
 
-    getCompanyList(value) {
-        this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['entry_date_time'].value ){
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
+
+    getCompanyList() {
+        this.pspsettingService.getCompanyCombo("").subscribe((data) => {
           this.companyList = data;
+          for(let el of data){
+              this.companyListName.push(el.company_name);
+          }
         })
       }
 
@@ -429,5 +364,10 @@ export class SupplierListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+          }
     }
 }

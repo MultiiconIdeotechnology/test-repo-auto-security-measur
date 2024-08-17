@@ -24,6 +24,7 @@ import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import {
     Security,
+    filter_module_name,
     messages,
     module_name,
     receiptPermissions,
@@ -46,6 +47,8 @@ import { CommonUtils } from 'app/utils/commonutils';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-receipt-list',
@@ -85,10 +88,13 @@ import { AgentService } from 'app/services/agent.service';
         PrimeNgImportsModule
     ],
 })
+
 export class ReceiptListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.receipts;
+    filter_table_name = filter_module_name.account_receipts;
+    private settingsUpdatedSubscription: Subscription;
     isLoading = false;
     flashMessage: 'success' | 'error' | null = null;
     dataList = [];
@@ -110,7 +116,8 @@ export class ReceiptListComponent
         private matDialog: MatDialog,
         private conformationService: FuseConfirmationService,
         private toasterService: ToasterService,
-        private kycdocService: KycDocumentService
+        private kycdocService: KycDocumentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.receipts);
 
@@ -118,6 +125,7 @@ export class ReceiptListComponent
         this.sortColumn = 'receipt_request_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.currentFilter = {
             status: 'All',
@@ -131,7 +139,7 @@ export class ReceiptListComponent
         );
     }
 
-    selectedAgent:string;
+    selectedAgent: any;
     agentList: any[] = [];
     columns = [
         {
@@ -335,6 +343,36 @@ export class ReceiptListComponent
 
     ngOnInit(): void {
         this.getAgent('');
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
+            }
+            if (resp['table_config']['audit_date_time'].value) {
+                resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
+            }
+            if (filterData['table_config']['audit_date_time'].value) {
+                filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     // function to get the Agent list from api
@@ -586,7 +624,7 @@ export class ReceiptListComponent
                 this.isLoading = false;
                 if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
-                        this.isFrozenColumn('', ['index', 'payment_attachment','receipt_ref_no']);
+                        this.isFrozenColumn('', ['index', 'payment_attachment', 'receipt_ref_no']);
                     }, 200);
                 }
             },
@@ -715,5 +753,13 @@ export class ReceiptListComponent
                 this.alertService.showToast('error', err);
             }
         })
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

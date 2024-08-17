@@ -1,6 +1,6 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
-import { Security, emailSetupPermissions, messages, module_name } from 'app/security';
+import { Security, emailSetupPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SendTestMailComponent } from '../send-test-mail/send-test-mail.component';
 import { BaseListingComponent } from 'app/form-models/base-listing';
@@ -21,6 +21,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-email-setup-list',
@@ -59,6 +61,8 @@ export class EmailSetupListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.emailsetup;
+    filter_table_name = filter_module_name.email_setup;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     isFilterShow: boolean = false;
 
@@ -144,6 +148,7 @@ export class EmailSetupListComponent
             tooltip: true
         },
     ];
+
     cols = [];
     actionList: any[] = [
         { label: 'Yes', value: true },
@@ -154,6 +159,7 @@ export class EmailSetupListComponent
         private emailSetupService: EmailSetupService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
+        public _filterService: CommonFilterService,
         private toasterService: ToasterService
     ) {
         super(module_name.emailsetup);
@@ -162,7 +168,27 @@ export class EmailSetupListComponent
         this.sortColumn = 'display_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
+
+    ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -322,5 +348,12 @@ export class EmailSetupListComponent
             disableClose: true,
             panelClass: 'full-dialog',
         });
+    }
+
+    ngOnDestroy() {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+          }
     }
 }

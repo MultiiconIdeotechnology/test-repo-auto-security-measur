@@ -16,19 +16,18 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, module_name, withdrawPermissions } from 'app/security';
-import { WithdrawService } from 'app/services/withdraw.service';
+import { Security, filter_module_name, module_name, withdrawPermissions } from 'app/security';
 import { WithdrawEntryComponent } from '../withdraw-entry/withdraw-entry.component';
 import { WPendingComponent } from '../pending/pending.component';
 import { WAuditedComponent } from '../audited/audited.component';
 import { WRejectedComponent } from '../rejected/rejected.component';
 import { AppConfig } from 'app/config/app-config';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { takeUntil, debounceTime, filter } from 'rxjs';
 import { FilterComponent } from '../filter/filter.component';
 import { AgentService } from 'app/services/agent.service';
 import { BankDetailsRightComponent } from '../bank-details-right/bank-details-right.component';
 import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-withdraw-list',
@@ -62,10 +61,12 @@ import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component'
   ],
 })
 export class WithdrawListComponent extends BaseListingComponent implements OnDestroy {
-
+  
   @ViewChild('pending') pending: WPendingComponent;
   @ViewChild('audited') audited: WAuditedComponent;
   @ViewChild('rejected') rejected: WRejectedComponent;
+  
+  filter_table_name = filter_module_name;
   public apiCalls: any = {};
   tabName: any
   tabNameStr: any = 'Pending'
@@ -96,6 +97,7 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     private agentService: AgentService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.withdraw)
     // this.cols = this.columns.map(x => x.key);
@@ -112,15 +114,6 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
 
     this.filterData.FromDate.setDate(1);
     this.filterData.FromDate.setMonth(this.filterData.FromDate.getMonth());
-  }
-
-  public getTabsPermission(tab: string): boolean {
-    if (tab == 'pending')
-      return Security.hasPermission(withdrawPermissions.pendingTabPermissions)
-    if (tab == 'audited')
-      return Security.hasPermission(withdrawPermissions.auditedTabPermissions)
-    if (tab == 'rejected')
-      return Security.hasPermission(withdrawPermissions.rejectedTabPermissions)
   }
 
   ngOnInit(): void {
@@ -172,7 +165,6 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   getAgentList(value: string, bool:boolean) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentData = data;
-      
     })
   }
 
@@ -191,7 +183,17 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     this.pending.refreshItemsPending()
   }
 
+  public getTabsPermission(tab: string): boolean {
+    if (tab == 'pending')
+      return Security.hasPermission(withdrawPermissions.pendingTabPermissions)
+    if (tab == 'audited')
+      return Security.hasPermission(withdrawPermissions.auditedTabPermissions)
+    if (tab == 'rejected')
+      return Security.hasPermission(withdrawPermissions.rejectedTabPermissions)
+  }
+
   public tabChanged(event: any): void {
+    this.isDestroy();
 
     const tabName = event?.tab?.ariaLabel;
     this.tabNameStr = tabName
@@ -199,23 +201,50 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
 
     switch (tabName) {
       case 'Pending':
+        this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_pending);
         this.tab = 'Pending';
         break;
       case 'Audited':
+        this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_audited);
         this.tab = 'Audited';
         if (this.isSecound) {
           this.isSecound = false
           this.audited.refreshItemsAudited()
         }
         break;
-
       case 'Rejected':
+        this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_rejected);
         this.tab = 'Rejected';
         if (this.isThird) {
           this.isThird = false
           this.rejected.refreshItemsRejected()
         }
         break;
+    }
+  }
+
+  isDestroy() {
+    this._filterService.activeFiltData = {};
+    if (this.pending.withdrawUpdatedSubscription) {
+      this.pending.withdrawUpdatedSubscription.unsubscribe();
+    }
+
+    if (this.audited.withdrawAuitedSubscription) {
+      this.audited.withdrawAuitedSubscription.unsubscribe();
+    }
+ 
+    if (this.rejected.withdrawRejectSubscription) {
+      this.rejected.withdrawRejectSubscription.unsubscribe();
+    }    
+  }
+
+  openTabFiterDrawer() {
+    if (this.tab == 'Audited') {
+      this._filterService.openDrawer(this.filter_table_name.withdraw_audited, this.audited.primengTable);
+    } else if (this.tab == 'Rejected') {
+      this._filterService.openDrawer(this.filter_table_name.withdraw_rejected, this.rejected.primengTable);
+    } else {
+      this._filterService.openDrawer(this.filter_table_name.withdraw_pending, this.pending.primengTable);
     }
   }
 

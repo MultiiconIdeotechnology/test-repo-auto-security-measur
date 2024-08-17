@@ -1,4 +1,4 @@
-import { module_name } from 'app/security';
+import { filter_module_name, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -19,11 +19,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 interface Column {
     field: string;
     header: string;
-}   
+}
 
 @Component({
     selector: 'app-department-list',
@@ -55,6 +57,8 @@ export class DepartmentListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.department;
+    filter_table_name = filter_module_name.department;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
 
@@ -108,13 +112,14 @@ export class DepartmentListComponent
             tooltip: true,
         },
     ];
-   
+
     isFilterShow: boolean = false;
 
     constructor(
         private departmentService: DepartmentService,
         private conformationService: FuseConfirmationService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.department);
         // this.cols = this.columns.map((x) => x.key);
@@ -122,11 +127,27 @@ export class DepartmentListComponent
         this.sortColumn = 'department_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
-       
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -235,5 +256,9 @@ export class DepartmentListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }
