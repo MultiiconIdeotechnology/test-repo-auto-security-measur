@@ -117,7 +117,10 @@ export class PendingComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-
+    setTimeout(() => {
+      this.agentList = this.filterApiData.agentData;
+      this.mopList = this.filterApiData.mopData;
+    }, 1000);
   }
 
   ngAfterViewInit() {

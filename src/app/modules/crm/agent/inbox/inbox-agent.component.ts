@@ -117,6 +117,10 @@ export class InboxAgentComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
+        setTimeout(() => {
+            this.agentList = this.dropdownListObj['agentList'];
+        }, 1000);
+
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
