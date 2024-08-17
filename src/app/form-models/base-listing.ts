@@ -377,11 +377,9 @@ export abstract class BaseListingComponent implements OnInit {
 
             const adjustedStartDate = new Date(startDate);
             adjustedStartDate.setHours(0, 0, 0, 0);
-            console.log("adjustedStartDate", adjustedStartDate);
 
             const adjustedEndDate = new Date(endDate);
             adjustedEndDate.setHours(23, 59, 59, 999);
-            console.log("adjustedEndDate", adjustedEndDate);
 
             filter([adjustedStartDate, adjustedEndDate]);
         } else {

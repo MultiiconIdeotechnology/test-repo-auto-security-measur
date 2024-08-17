@@ -166,12 +166,12 @@
                     <td>{{element.travel_type || '-'}}</td>
                     <td>{{element.trip_type || '-'}}</td>
                     <td>{{element.sector || '-'}}</td>
-                    <td class="text-center">{{element.today_travel || 0 }}</td>
-                    <td class="text-center">{{element.one_week_travel || 0}}</td>
-                    <td class="text-center">{{element.one_month_travel || 0}}</td>
+                    <td class="text-center">{{element.today_travel || '-' }}</td>
+                    <td class="text-center">{{element.one_week_travel || '-'}}</td>
+                    <td class="text-center">{{element.one_month_travel || '-'}}</td>
                     <td class="w-full text-left">
                         <div class="pl-[25px]">
-                            {{element.far_travel || 0}}
+                            {{element.far_travel || '-'}}
                         </div>
                     </td>
                     <td *ngFor="let col of columns">
