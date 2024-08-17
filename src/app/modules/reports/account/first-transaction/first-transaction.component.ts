@@ -200,7 +200,7 @@ export class FirstTransactionComponent
         this._filterService.applyDefaultFilter(this.filter_table_name)
     }
 
-    selectedAgent!:string
+    selectedAgent:any
     ngOnInit() {
         this.getAgent('');
 

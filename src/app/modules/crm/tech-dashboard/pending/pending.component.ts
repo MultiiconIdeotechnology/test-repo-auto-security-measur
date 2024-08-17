@@ -81,7 +81,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
-    
+
     Mainmodule: any;
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_pending;
@@ -100,7 +100,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     total = 0;
     appConfig = AppConfig;
     data: any
-    selectedAgent: string;
+    selectedAgent: any;
     agentList: any[] = [];
     filter: any = {}
 
@@ -144,7 +144,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPending = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            
+
             if (filterData['table_config']['integration_start_date_time'].value) {
                 filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);
             }

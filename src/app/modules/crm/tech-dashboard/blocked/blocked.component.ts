@@ -95,7 +95,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     public sortColumn: any;
     public sortDirection: any;
     data: any;
-    selectedAgent: string;
+    selectedAgent: any;
     agentList: any[] = [];
     filter: any = {}
 

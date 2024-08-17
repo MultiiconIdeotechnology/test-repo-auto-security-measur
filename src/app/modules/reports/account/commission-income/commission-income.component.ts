@@ -61,7 +61,7 @@ export class CommissionIncomeComponent
     appConfig = AppConfig;
     settings: any;
     supplierList: any[] = [];
-    selectedSupplier!:string;
+    selectedSupplier:any;
 
     columns = [
         {

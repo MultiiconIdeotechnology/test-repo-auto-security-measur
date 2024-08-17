@@ -61,8 +61,8 @@ export class GroupInquiryListComponent
     private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
-    selectedAgent!:string;
-    selectedSupplier!:string;
+    selectedAgent:any;
+    selectedSupplier:any;
     agentList:any[] = [];
     supplierList:any[]= [];
 

@@ -75,9 +75,9 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   filter_table_name = filter_module_name.kyc_agent;
   private settingsUpdatedSubscription: Subscription;
   kycProfileList: any[] = [];
-  selectedKycProfile: string;
+  selectedKycProfile: any;
   employeeList: any[] = [];
-  selectedEmployee: string;
+  selectedEmployee: any;
 
   columns = [
     { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },

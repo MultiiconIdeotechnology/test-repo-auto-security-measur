@@ -139,7 +139,7 @@ export class ReceiptListComponent
         );
     }
 
-    selectedAgent: string;
+    selectedAgent: any;
     agentList: any[] = [];
     columns = [
         {

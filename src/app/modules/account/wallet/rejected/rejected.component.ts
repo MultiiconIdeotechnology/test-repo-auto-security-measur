@@ -80,8 +80,8 @@ export class RejectedComponent extends BaseListingComponent {
   rejectFilter: any = {};
   agentList: any[] = [];
   mopList:any[] = [];
-  selectedMop!:string;
-  selectedEmployee!:string;
+  selectedMop:any;
+  selectedEmployee:any;
   public settingsRejectSubscription: Subscription;
 
   cols = [];
@@ -104,7 +104,7 @@ export class RejectedComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-   
+
   }
 
   ngOnChanges() {
@@ -208,7 +208,7 @@ export class RejectedComponent extends BaseListingComponent {
   refreshItemsRejected(event?: any) {
 
     this.isLoading = true;
-   
+
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['Status'] = 'rejected';
@@ -224,7 +224,7 @@ export class RejectedComponent extends BaseListingComponent {
           this.isLoading = false;
           this.dataList = data.data;
           this.totalRecords = data.total;
-        
+
         }, error: err => {
           this.alertService.showToast('error', err);
 

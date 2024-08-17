@@ -72,7 +72,7 @@ export class TravelCollectionComponent extends BaseListingComponent {
 
     public settingsTravelSubscription: Subscription;
     agentList: any[] = [];
-    selectedAgent: string;
+    selectedAgent: any;
 
     cols = [];
     dataList = [];

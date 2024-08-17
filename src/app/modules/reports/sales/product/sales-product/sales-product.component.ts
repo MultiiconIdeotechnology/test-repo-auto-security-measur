@@ -63,8 +63,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     module_name = module_name.products;
     agentList: any[] = [];
     employeeList: any[] = [];
-    selectedAgent: string;
-    selectedEmployee: string;
+    selectedAgent: any;
+    selectedEmployee: any;
     user: any = {};
     selectedToolTip: string = "";
     toolTipArray: any[] = [];

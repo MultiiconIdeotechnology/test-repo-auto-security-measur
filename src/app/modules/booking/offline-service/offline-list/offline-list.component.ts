@@ -85,7 +85,7 @@ export class OfflineListComponent extends BaseListingComponent {
   total = 0;
   visaFilter: any;
   user: any = {};
-  selectedEmployee:string;
+  selectedEmployee:any;
 
   columns = [
     {

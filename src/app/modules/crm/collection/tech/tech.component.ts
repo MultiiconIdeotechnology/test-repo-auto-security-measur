@@ -74,7 +74,7 @@ export class TechCollectionComponent extends BaseListingComponent {
     @Input() activeTab: any;
 
     agentList: any[] = [];
-    selectedAgent: string;
+    selectedAgent: any;
     public settingsTechSubscription: Subscription;
 
     cols = [];
@@ -120,7 +120,7 @@ export class TechCollectionComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-        
+
     }
 
     ngAfterViewInit() {

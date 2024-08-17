@@ -229,8 +229,8 @@ export class PurchaseRegisterComponent
     supplierList: any[] = [];
     selectedCompany!: string;
     agentList: any[] = [];
-    selectedSupplier!:string;
-    selectedAgent!:string;
+    selectedSupplier:any;
+    selectedAgent:any;
 
     constructor(
         private accountService: AccountService,

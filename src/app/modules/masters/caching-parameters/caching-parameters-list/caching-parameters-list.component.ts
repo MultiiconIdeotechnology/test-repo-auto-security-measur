@@ -160,7 +160,7 @@ export class CachingParametersListComponent
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     supplierListAll : any[] = [];
-    selectedSupplier!:string;
+    selectedSupplier:any;
 
     constructor(
         private cachingParameterService: CachingParameterService,

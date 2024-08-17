@@ -77,9 +77,9 @@ export class AuditedComponent extends BaseListingComponent {
   agentList: any[] = [];
   pspList:any[] = [];
   mopList:any[] = [];
-  selectedMop!:string;
-  selectedPsp!:string;
-  selectedEmployee!:string;
+  selectedMop:any;
+  selectedPsp:any;
+  selectedEmployee:any;
 
   cols = [];
 
@@ -110,17 +110,17 @@ export class AuditedComponent extends BaseListingComponent {
 
     this.auditListFilter.FromDate.setDate(1);
     this.auditListFilter.FromDate.setMonth(this.auditListFilter.FromDate.getMonth());
-   
+
   }
 
   ngOnInit(): void {
-    
+
   }
 
   ngOnChanges() {
     if (this.activeTab == 'Audited') {
       this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        
+
         this.sortColumn = resp['sortColumn'];
         this.primengTable['_sortField'] = resp['sortColumn'];
         if (resp['table_config']['request_date_time'].value && resp['table_config']['request_date_time'].value.length) {
@@ -231,9 +231,9 @@ export class AuditedComponent extends BaseListingComponent {
 
 
   refreshItemsAudited(event?: any) {
-    
+
     this.isLoading = true;
-    
+
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlAudit.value;
     filterReq['Status'] = 'audited';
@@ -249,7 +249,7 @@ export class AuditedComponent extends BaseListingComponent {
           this.isLoading = false;
           this.dataList = data.data;
           this.totalRecords = data.total;
-          
+
         }, error: err => {
           this.alertService.showToast('error', err);
           this.isLoading = false;
