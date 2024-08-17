@@ -82,7 +82,6 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
     
-    
     Mainmodule: any;
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_pending;
@@ -98,7 +97,6 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
-
     total = 0;
     appConfig = AppConfig;
     data: any
@@ -111,7 +109,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
         private agentService: AgentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
@@ -122,7 +120,10 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-        // common filter
+        setTimeout(() => {
+            this.agentList = this.dropdownFirstCallObj['agentList'];
+        }, 1000);
+
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
@@ -143,6 +144,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPending = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            
             if (filterData['table_config']['integration_start_date_time'].value) {
                 filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);
             }
@@ -150,6 +152,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+             this.agentList = this.dropdownFirstCallObj['agentList'];
         }
     }
 

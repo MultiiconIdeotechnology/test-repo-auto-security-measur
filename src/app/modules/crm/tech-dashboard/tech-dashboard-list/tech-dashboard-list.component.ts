@@ -58,10 +58,10 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     @ViewChild('completed') completed: TechDashboardCompletedComponent;
     @ViewChild('expired') expired: TechDashboardExpiredComponent;
     @ViewChild('blocked') blocked: TechDashboardBlockedComponent;
-    
+
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name;
-    dropdownFirstCallObj:any = {};
+    dropdownFirstCallObj: any = {};
     public apiCalls: any = {};
     tabName: any
     tabNameStr: any = 'Pending'
@@ -81,9 +81,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     total = 0;
 
     constructor(
-        private agentService: AgentService, 
+        private agentService: AgentService,
         public _filterService: CommonFilterService
-    ){ }
+    ) { }
 
     public getTabsPermission(tab: string): boolean {
         if (tab == 'pending') {
@@ -110,8 +110,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         //         this.pending.searchInputControlPending.patchValue(value);
         //     });
 
-            // calling agent Api for first time on dropdown
-            this.getAgent("");
+        // calling agent Api for first time on dropdown
+        this.getAgent("");
     }
 
     public tabChanged(event: any): void {
@@ -128,24 +128,24 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             case 'Completed':
                 this.tab = 'completed';
                 // if (this.isSecond) {
-                    this.completed?.refreshItems();
-                    this.isSecond = false;
+                this.completed?.refreshItems();
+                this.isSecond = false;
                 // }
                 break;
 
             case 'Blocked':
                 this.tab = 'blocked';
                 // if (this.isThird) {
-                    this.blocked?.refreshItems();
-                    this.isThird = false;
+                this.blocked?.refreshItems();
+                this.isThird = false;
                 // }
                 break;
 
             case 'Expired':
                 this.tab = 'expired';
                 // if (this.isFourth) {
-                    this.expired?.refreshItems();
-                    this.isFourth = false;
+                this.expired?.refreshItems();
+                this.isFourth = false;
                 // }
                 break;
         }
@@ -156,9 +156,9 @@ export class CRMTechDashboardListComponent implements OnDestroy {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_pending, this.pending.primengTable);
         } else if (this.tabNameStr == 'Completed') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_completed, this.completed.primengTable);
-        }else if (this.tabNameStr == 'Blocked') {
+        } else if (this.tabNameStr == 'Blocked') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_blocked, this.blocked.primengTable);
-        }else {
+        } else {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_expired, this.expired.primengTable);
         }
     }
@@ -202,13 +202,13 @@ export class CRMTechDashboardListComponent implements OnDestroy {
 
     // Api call to Get Agent data
     getAgent(value: string) {
-        this.agentService.getAgentComboMaster(value,true).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.dropdownFirstCallObj['agentList'] = data;
 
-            for(let i in this.dropdownFirstCallObj['agentList']){
+            for (let i in this.dropdownFirstCallObj['agentList']) {
                 this.dropdownFirstCallObj['agentList'][i]['agent_info'] =
-                 `${this.dropdownFirstCallObj['agentList'][i].code}-${this.dropdownFirstCallObj['agentList'][i].agency_name}${this.dropdownFirstCallObj['agentList'][i].email_address}`;
-                 this.dropdownFirstCallObj['agentList'][i].id_by_value = this.dropdownFirstCallObj['agentList'][i].agency_name;
+                    `${this.dropdownFirstCallObj['agentList'][i].code}-${this.dropdownFirstCallObj['agentList'][i].agency_name}${this.dropdownFirstCallObj['agentList'][i].email_address}`;
+                this.dropdownFirstCallObj['agentList'][i].id_by_value = this.dropdownFirstCallObj['agentList'][i].agency_name;
             }
         })
     }
