@@ -68,8 +68,9 @@
   </form>
 
   <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pt-4 pb-5 space-x-3">
-    <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
-      Submit
+    <button mat-flat-button [color]="'primary'" (click)="isInvoiceGenerated ? matDialogRef.close() : submit()"
+      [disabled]="disableBtn">
+      {{isInvoiceGenerated ? 'Close' : 'Submit'}}
     </button>
   </div>
 </div>
