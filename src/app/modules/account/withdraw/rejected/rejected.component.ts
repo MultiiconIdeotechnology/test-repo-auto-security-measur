@@ -172,7 +172,7 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
 
   }
 
-  getAgentList(value: string, bool:boolean) {
+  getAgentList(value: string) {
       this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
         this.agentList = data;
 

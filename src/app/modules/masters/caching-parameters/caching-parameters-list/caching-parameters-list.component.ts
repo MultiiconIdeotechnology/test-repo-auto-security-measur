@@ -167,7 +167,6 @@ export class CachingParametersListComponent
         private conformationService: FuseConfirmationService,
         private flighttabService: FlightTabService,
         private entityService: EntityService,
-        private _userService: UserService,
         public _filterService: CommonFilterService
     ) {
         super(module_name.city);

@@ -169,7 +169,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
 
   }
 
-  getAgentList(value: string, bool:boolean) {
+  getAgentList(value: string) {
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
     })
