@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { messages, module_name, Security, saleProductPermissions } from 'app/security';
+import { messages, module_name, Security, saleProductPermissions, filter_module_name } from 'app/security';
 import { MatDialog } from '@angular/material/dialog';
 import { SalesProductsService } from 'app/services/slaes-products.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
@@ -24,9 +24,10 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
-import { takeUntil } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-sales-product',
@@ -61,6 +62,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     dataList = [];
     total = 0;
     module_name = module_name.products;
+    filter_table_name = filter_module_name.report_sales_products;
+    private settingsUpdatedSubscription: Subscription;
     agentList: any[] = [];
     employeeList: any[] = [];
     selectedAgent: string;
@@ -68,14 +71,6 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     user: any = {};
     selectedToolTip: string = "";
     toolTipArray: any[] = [];
-
-    columns = [
-        { key: 'agent_code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, campName: false },
-        { key: 'agency_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'rm', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'Due_amount', name: 'Due Amount', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'Amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false }
-    ]
     isFilterShow: boolean = false;
 
     constructor(
@@ -83,14 +78,15 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         private matDialog: MatDialog,
         private _userService: UserService,
         private agentService: AgentService,
-        private refferralService: RefferralService
-        // private clipboard: Clipboard
+        private refferralService: RefferralService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.products)
         this.key = 'campaign_name';
         this.sortColumn = 'agent_code';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         //user login
         this._userService.user$
@@ -104,6 +100,24 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     ngOnInit(): void {
         this.getAgent("");
         this.getEmployeeList("");
+
+         // common filter
+         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getFilter(): any {

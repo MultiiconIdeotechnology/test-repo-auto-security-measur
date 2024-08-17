@@ -34,11 +34,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     selector: 'app-wallet-outstanding-list',
     templateUrl: './wallet-outstanding-list.component.html',
     styleUrls: ['./wallet-outstanding-list.component.scss'],
-    styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 240px 200px 110px 210px 120px 140px 150px 180px 130px 150px;
-  }
-  `],
     standalone: true,
     imports: [
         NgIf,
@@ -70,7 +65,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 export class WalletOutstandingListComponent extends BaseListingComponent implements OnDestroy {
 
     module_name = module_name.walletOutstanding;
-    filter_table_name = filter_module_name.account_receipts;
+    filter_table_name = filter_module_name.wallet_outstanding;
     private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
@@ -80,29 +75,13 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
     employeeList: any[] = [];
     selectedRM!: string;
 
-    columns = [
-        { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'employee_name', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'credit_balance', name: 'Credit', is_date: false, date_formate: '', is_sortable: true, class: 'text-right', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'payment_cycle_policy', name: 'Payment Cycle', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-        { key: 'payment_cycle_policy_type', name: 'Payment Policy', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'due_date', name: 'Due Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'outstanding_on_due_date', name: 'Outstanding', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'over_due_count', name: 'Over Due Count', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
-    // cols = [];
-
     constructor(
         private agentService: AgentService,
         private refferralService: RefferralService,
         private walletOutstandingService: WalletOutstandingService,
         public _filterService: CommonFilterService
-        // private clipboard: Clipboard
     ) {
         super(module_name.walletOutstanding)
-        // this.cols = this.columns.map(x => x.key);
         this.key = 'payment_request_date';
         this.sortColumn = 'due_date';
         this.sortDirection = 'asc';

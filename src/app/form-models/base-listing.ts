@@ -156,7 +156,6 @@ export abstract class BaseListingComponent implements OnInit {
     }
 
     //#region Protected Methods
-
     protected handleDialogRef<T>(dialogRef: MatDialogRef<T>): void {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {

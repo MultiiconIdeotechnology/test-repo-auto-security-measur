@@ -119,7 +119,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
-            // let index = this.agentList.findIndex((item:any) => item.agency_name == resp['table_config']['agency_name'].value.id_by_value);
+            // let index = this.agentList.findIndex((item:any) => item.agency_name == resp['table_config']?.['agency_name'].value?.id_by_value);
             // if(index == -1){
             //     this.agentList.push(resp['table_config']['agency_name'].value);
             // }
@@ -143,10 +143,10 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowCompleted = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            let index = this.agentList.findIndex((item:any) => item.agency_name == filterData['table_config']['agency_name'].value.id_by_value);
-            if(index == -1){
-                this.agentList.push(filterData['table_config']['agency_name'].value);
-            }
+            // let index = this.agentList.findIndex((item:any) => item.agency_name == filterData['table_config']['agency_name'].value?.id_by_value);
+            // if(index == -1){
+            //     this.agentList.push(filterData['table_config']['agency_name'].value);
+            // }
             this.selectedAgent = filterData['table_config']['agency_name'].value;
             if (filterData['table_config']['activation_date_sub'].value) {
                 filterData['table_config']['activation_date_sub'].value = new Date(filterData['table_config']['activation_date_sub'].value);
