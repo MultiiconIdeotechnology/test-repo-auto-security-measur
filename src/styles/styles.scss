@@ -711,12 +711,26 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
         background: transparent;
         border: 1px solid #ffffffde
     }
+
+    .primeng-alert {
+        .p-message-wrapper, .p-message.p-message-info {
+            background: #364459;
+            color: #ffffff;
+        }
+    }
 }
 
 .light {
     .swal2-cancel {
         border: 1px solid #e2e8f0;
         color: black;
+    }
+
+    .primeng-alert {
+        .p-message-wrapper, .p-message.p-message-info {
+            background: #e2e8f0;
+            color: #404040;
+        }
     }
 }
 .custom-sidebar {
@@ -728,6 +742,22 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     .p-sidebar-content {
         padding: 0;
         position: static !important;
+    }
+}
+
+.primeng-alert {
+    .p-message {
+        margin: 0;
+    }
+    .p-message-wrapper {
+        justify-content: space-between;
+        padding: 8px;
+        border-radius: 0 10px 10px 0;
+    }
+    .p-message.p-message-info {
+        border: solid #0d9488;
+        border-width: 0 0 0 6px;
+        color: #0d9488;
     }
 }
 
