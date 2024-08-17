@@ -1,6 +1,6 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
@@ -194,10 +194,10 @@ export class CachingParametersEntryComponent {
             travel_type: ['', Validators.required],
             sector: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(7), this.sectorValidator]],
             trip_type: ['', Validators.required],
-            today_travel: [''],
-            one_week_travel: [''],
-            one_month_travel: [''],
-            far_travel: ['']
+            today_travel: ['', [Validators.required, this.greaterThanZeroValidator()]],
+            one_week_travel: ['', [Validators.required, this.greaterThanZeroValidator()]],
+            one_month_travel: ['', [Validators.required, this.greaterThanZeroValidator()]],
+            far_travel: ['', [Validators.required, this.greaterThanZeroValidator()]]
         });
 
         this.formGroup.get('sector').valueChanges.subscribe(value => {
@@ -207,6 +207,13 @@ export class CachingParametersEntryComponent {
             // }
             this.formatSectorInput();
         });
+    }
+
+    greaterThanZeroValidator(): ValidatorFn {
+        return (control: AbstractControl): { [key: string]: any } | null => {
+            const value = control.value;
+            return value > 0 ? null : { 'greaterThanZero': true };
+        };
     }
 
     sectorValidator(control: AbstractControl): { [key: string]: boolean } | null {

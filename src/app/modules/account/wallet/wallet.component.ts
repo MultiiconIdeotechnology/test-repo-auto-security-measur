@@ -173,7 +173,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   getAgentList(value: string,  bool=true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.filterApiData.agentData = data;
-      console.log("data", data)
     })
   }
 
@@ -193,12 +192,12 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     this.rejected.searchInputControlRejected.patchValue(event)
     this.rejected.refreshItemsRejected()
   }
-  
+
   auditedRefresh(event:any){
     this.audited.searchInputControlAudit.patchValue(event)
     this.audited.refreshItemsAudited()
   }
-  
+
   pendingRefresh(event:any){
     this.pending.searchInputControlPending.patchValue(event)
     this.pending.refreshItemsPending()

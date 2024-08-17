@@ -11,7 +11,8 @@
                 <div class="flex flex-wrap bg-card overflow-hidden" *ngIf="listFlag">
                     <div class="flex flex-col mb-3 truncate w-full">
                         <span class="text-md font-semibold text-secondary">Supplier</span>
-                        <span class="text-base truncate">{{record?.supplier_name ? record?.supplier_name : 'Any'}}</span>
+                        <span class="text-base truncate">{{record?.supplier_name ? record?.supplier_name :
+                            'Any'}}</span>
                     </div>
 
                     <div class="flex flex-col mb-3 truncate w-1/2">
@@ -101,30 +102,78 @@
                             </mat-error>
                             <mat-error *ngIf="formGroup.get('sector').hasError('minlength')">
                                 Sector must be in the above format Ex. (BOM-DEL)
-                              </mat-error>
-                              <mat-error *ngIf="formGroup.get('sector').hasError('maxlength')">
+                            </mat-error>
+                            <mat-error *ngIf="formGroup.get('sector').hasError('maxlength')">
                                 Sector must be in the above format Ex. (BOM-DEL)
                             </mat-error>
                         </mat-form-field>
 
+                        <div class="mb-1">Today Travel *
+                            <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span>
+                        </div>
                         <mat-form-field class="flex-grow">
-                            <mat-label>Today Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
-                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="today_travel" />
+                            <input matInput type="number" (keypress)="numberOnly($event)"
+                                formControlName="today_travel" />
+                            <mat-error *ngIf="formGroup.get('today_travel').errors">
+                                <ng-container *ngIf="formGroup.get('today_travel').hasError('required')">
+                                    Today Travel is required
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="formGroup.get('today_travel').hasError('greaterThanZero') && !formGroup.get('today_travel').hasError('required')">
+                                    Today Travel must be greater than zero
+                                </ng-container>
+                            </mat-error>
                         </mat-form-field>
 
+                        <div class="mb-1">One Week Travel *
+                            <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span>
+                        </div>
                         <mat-form-field class="flex-grow">
-                            <mat-label>One Week Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
-                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="one_week_travel" />
+                            <input matInput type="number" (keypress)="numberOnly($event)"
+                                formControlName="one_week_travel" />
+                            <mat-error *ngIf="formGroup.get('one_week_travel').errors">
+                                <ng-container *ngIf="formGroup.get('one_week_travel').hasError('required')">
+                                    One Week Travel is required
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="formGroup.get('one_week_travel').hasError('greaterThanZero') && !formGroup.get('one_week_travel').hasError('required')">
+                                    One Week Travel must be greater than zero
+                                </ng-container>
+                            </mat-error>
                         </mat-form-field>
 
+                        <div class="mb-1">One Month Travel *
+                            <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span>
+                        </div>
                         <mat-form-field class="flex-grow">
-                            <mat-label>One Month Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
-                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="one_month_travel" />
+                            <input matInput type="number" (keypress)="numberOnly($event)"
+                                formControlName="one_month_travel" />
+                            <mat-error *ngIf="formGroup.get('one_month_travel').errors">
+                                <ng-container *ngIf="formGroup.get('one_month_travel').hasError('required')">
+                                    One Month Travel is required
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="formGroup.get('one_month_travel').hasError('greaterThanZero') && !formGroup.get('one_month_travel').hasError('required')">
+                                    One Month Travel must be greater than zero
+                                </ng-container>
+                            </mat-error>
                         </mat-form-field>
 
+                        <div class="mb-1">Far Travel *
+                            <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span>
+                        </div>
                         <mat-form-field class="flex-grow">
-                            <mat-label>Far Travel <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span></mat-label>
-                            <input matInput type="number" (keypress)="numberOnly($event)" formControlName="far_travel" />
+                            <input matInput type="number" (keypress)="numberOnly($event)"
+                                formControlName="far_travel" />
+                            <mat-error *ngIf="formGroup.get('far_travel').errors">
+                                <ng-container *ngIf="formGroup.get('far_travel').hasError('required')">
+                                    Far Travel is required
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="formGroup.get('far_travel').hasError('greaterThanZero') && !formGroup.get('far_travel').hasError('required')">
+                                    Far Travel must be greater than zero
+                                </ng-container>
+                            </mat-error>
                         </mat-form-field>
                     </form>
                 </div>
