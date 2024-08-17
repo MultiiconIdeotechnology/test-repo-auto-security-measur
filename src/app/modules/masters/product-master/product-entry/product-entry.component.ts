@@ -58,6 +58,7 @@ export class ProductEntryComponent {
     { value: 'Quarterly', viewValue: 'Quarterly' },
     { value: 'Six Months', viewValue: 'Six Months' },
     { value: 'Yearly', viewValue: 'Yearly' },
+    { value: 'One Time', viewValue: 'One Time' },
   ];
 
   constructor(
