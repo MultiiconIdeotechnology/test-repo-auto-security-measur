@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Component } from '@angular/core';
-import { Security, messages, module_name, whiteLablePermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, whiteLablePermissions } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -25,7 +25,8 @@ import { UserService } from 'app/core/user/user.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { isBoolean } from 'lodash';
 import { AgentService } from 'app/services/agent.service';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-whitelabel-list',
@@ -59,6 +60,8 @@ import { AgentService } from 'app/services/agent.service';
 })
 export class WhitelabelListComponent extends BaseListingComponent {
     module_name = module_name.whitelabel;
+    filter_table_name = filter_module_name.whitelabel_customer;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     user: any = {};
     total = 0;
@@ -233,7 +236,8 @@ export class WhitelabelListComponent extends BaseListingComponent {
         private matDialog: MatDialog,
         private userService: UserService,
         private router: Router,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.whitelabel);
         this.cols = this.columns.map((x) => x.key);
@@ -241,6 +245,7 @@ export class WhitelabelListComponent extends BaseListingComponent {
         this.sortColumn = 'wl_activation_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name)
 
         this.userService.user$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -260,9 +265,38 @@ export class WhitelabelListComponent extends BaseListingComponent {
             // { field: 'is_enabled', header: 'Enabled', isBoolean: true },
         ];
 
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['wl_expiry_date'].value){
+                resp['table_config']['wl_expiry_date'].value = new Date(resp['table_config']['wl_expiry_date'].value);
+            }
+            if(resp['table_config']['wl_activation_date'].value){
+                resp['table_config']['wl_activation_date'].value = new Date(resp['table_config']['wl_activation_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+
          // To call Agent lis api on default data
          this.getAgent("");
     }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['wl_expiry_date'].value){
+                filterData['table_config']['wl_expiry_date'].value = new Date(filterData['table_config']['wl_expiry_date'].value);
+            }
+            if(filterData['table_config']['wl_activation_date'].value){
+                filterData['table_config']['wl_activation_date'].value = new Date(filterData['table_config']['wl_activation_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
 
     get selectedColumns(): Column[] {
         return this._selectedColumns;
@@ -462,5 +496,9 @@ export class WhitelabelListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+        }
     }
 }

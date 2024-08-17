@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Security, messageTemplatesPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messageTemplatesPermissions, messages, module_name } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ViewForTemplateComponent } from '../view-for-template/view-for-template.component';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -19,7 +19,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-message-templates-list',
@@ -55,6 +56,9 @@ export class MessageTemplatesListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.messagetemplates;
+    filter_table_name = filter_module_name.message_templates;
+    private settingsUpdatedSubscription: Subscription;
+
     dataList = [];
     total = 0;
 
@@ -186,7 +190,8 @@ export class MessageTemplatesListComponent
         private conformationService: FuseConfirmationService,
         private router: Router,
         private toasterService: ToasterService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.messagetemplates);
         this.cols = this.columns.map((x) => x.key);
@@ -194,13 +199,38 @@ export class MessageTemplatesListComponent
         this.sortColumn = 'event_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
         this.cols = [
-            { field: 'template_for_name', header: 'Template For Name', type:'text' },
-            { field: 'modify_date_time', header: 'Modify Date Time', type:'date' },
+            { field: 'template_for_name', header: 'Template For Name', type: 'text' },
+            { field: 'modify_date_time', header: 'Modify Date Time', type: 'date' },
         ];
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+
+            // if (resp['table_config']['modify_date_time'] && resp['table_config']['modify_date_time']?.value) {
+            //     resp['table_config']['modify_date_time'].value = new Date(resp['table_config']['modify_date_time']?.value);
+            // }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            // if (filterData['table_config']['modify_date_time'] && filterData['table_config']['modify_date_time']?.value) {
+            //     filterData['table_config']['modify_date_time'].value = new Date(filterData['table_config']['modify_date_time']?.value);
+            // }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     get selectedColumns(): Column[] {
@@ -211,7 +241,7 @@ export class MessageTemplatesListComponent
         this._selectedColumns = this.cols.filter((col) => val.includes(col));
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.messageTemplatesService
             .getMessageList(this.getNewFilterReq(event))
@@ -227,6 +257,7 @@ export class MessageTemplatesListComponent
                 },
             });
     }
+
     createInternal(model): void {
         this.router.navigate([Routes.settings.messagetemplates_entry_route]);
     }
@@ -357,5 +388,9 @@ export class MessageTemplatesListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

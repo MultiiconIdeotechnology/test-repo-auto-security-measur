@@ -1,4 +1,4 @@
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,8 @@ import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { Linq } from 'app/utils/linq';
 import { KycDocumentService } from 'app/services/kyc-document.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-commission-income',
@@ -46,6 +48,8 @@ export class CommissionIncomeComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.commissionIncome;
+    filter_table_name = filter_module_name.commission_income;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -174,7 +178,8 @@ export class CommissionIncomeComponent
 
     constructor(
         private accountService: AccountService,
-        private kycDocumentService: KycDocumentService
+        private kycDocumentService: KycDocumentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.commissionIncome);
         // this.cols = this.columns.map((x) => x.key);
@@ -182,10 +187,35 @@ export class CommissionIncomeComponent
         this.sortColumn = 'booking_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
-        this.getSupplier("", true)
+        this.getSupplier("", true);
+
+         // common filter
+         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['booking_date'].value && resp['table_config']['booking_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['booking_date']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['booking_date'].value && filterData['table_config']['booking_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     refreshItems(event?:any): void {
@@ -245,10 +275,6 @@ export class CommissionIncomeComponent
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
-    }
-
     exportExcel(): void {
         if (!Security.hasExportDataPermission(this.module_name)) {
             return this.alertService.showToast(
@@ -282,5 +308,14 @@ export class CommissionIncomeComponent
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]
             );
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

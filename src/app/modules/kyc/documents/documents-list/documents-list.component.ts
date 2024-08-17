@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { Security, documentPermissions, messages, module_name } from 'app/security';
+import { Security, documentPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,7 +22,8 @@ import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/r
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-documents-list',
@@ -59,6 +60,8 @@ export class DocumentsListComponent
     documentList: any[] = [];
     documentFilter: any;
     module_name = module_name.kycdocument;
+    filter_table_name = filter_module_name.kyc_documents;
+    private settingsUpdatedSubscription: Subscription;
     _selectedColumns: Column[];
 
     columns = [
@@ -190,6 +193,7 @@ export class DocumentsListComponent
         private toastrService: ToasterService,
         private kycDocService: KycDocumentService,
         private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.kycdocument);
         // this.cols = this.columns.map((x) => x.key);
@@ -197,6 +201,7 @@ export class DocumentsListComponent
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.documentFilter = {
             MasterFor: '',
@@ -213,7 +218,32 @@ export class DocumentsListComponent
             { field: 'rejection_note', header: 'Rejection Note', type:'text' },
             { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
         ];
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+
+            if (resp['table_config']['entry_date_time'].value) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
         
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     get selectedColumns(): Column[] {

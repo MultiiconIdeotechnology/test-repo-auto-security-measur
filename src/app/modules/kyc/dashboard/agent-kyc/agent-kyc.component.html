@@ -58,6 +58,11 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button> -->
+             <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -130,7 +135,7 @@
                                     [filter]="true"
                                     filterBy="profile_name"
                                     (onFilter)="getKycCombo($event?.filter)"
-                                    (onChange)="filter($event.value?.id)"
+                                    (onChange)="filter($event.value?.profile_name)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select Kyc Profile">

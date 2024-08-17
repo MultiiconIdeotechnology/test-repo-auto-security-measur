@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Routes } from 'app/common/const';
-import { Security, kycprofilePermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, kycprofilePermissions, messages, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -19,6 +19,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
 import { KycFilterComponent } from '../kyc-filter/kyc-filter.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-kyc-profile-list',
@@ -53,7 +55,9 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
   dataList = [];
   profile_for: string = "All";
 
-  module_name = module_name.kycprofile
+  module_name = module_name.kycprofile;
+  filter_table_name = filter_module_name.kyc_profile;
+  private settingsUpdatedSubscription: Subscription;
   columns = [
     { key: 'profile_name', name: 'Profile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
     { key: 'company_name', name: 'Company', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
@@ -63,14 +67,14 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
   ]
   cols = [];
   isFilterShow: boolean = false;
-  selectedMasterStatus:string;
+  selectedMasterStatus: string;
   selectMasterList = [
     { label: 'Agent', value: 'Agent' },
     { label: 'Sub Agent', value: 'Sub Agent' },
     { label: 'Customer', value: 'Customer' },
     { label: 'Supplier', value: 'Supplier' },
     { label: 'Employee', value: 'Employee' },
-]
+  ]
 
   constructor(
     private kycService: KycService,
@@ -78,16 +82,43 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
     private router: Router,
     private toasterService: ToasterService,
     private matDialog: MatDialog,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.kycprofile)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'profile_name';
     this.sortDirection = 'asc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
-  refreshItems(event?:any): void {
+  ngOnInit(): void {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['entry_date_time'].value) {
+        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      if (filterData['table_config']['entry_date_time'].value) {
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+    }
+  }
+
+  refreshItems(event?: any): void {
     this.isLoading = true;
     var FData = this.getNewFilterReq(event);
     FData.profileFor = this.profile_for;
@@ -142,23 +173,23 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
     if (!Security.hasPermission(kycprofilePermissions.copyPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    
+
     this.conformationService.open({
-        title: 'Copy KYC Profile',
-        message: 'Are you sure to generate copy of ' + record.profile_name + ' ?',
+      title: 'Copy KYC Profile',
+      message: 'Are you sure to generate copy of ' + record.profile_name + ' ?',
     }).afterClosed().subscribe((res) => {
-        if (res === 'confirmed') {
-            this.kycService.kycProfileCopy(record.id).subscribe({
-                next: () => {
-                    this.alertService.showToast('success', 'KYC Profile Copied');
-                    this.refreshItems();
-                }, error: (err) => {
-                    this.alertService.showToast('error', err);
-                }
-            })
-        }
+      if (res === 'confirmed') {
+        this.kycService.kycProfileCopy(record.id).subscribe({
+          next: () => {
+            this.alertService.showToast('success', 'KYC Profile Copied');
+            this.refreshItems();
+          }, error: (err) => {
+            this.alertService.showToast('error', err);
+          }
+        })
+      }
     });
-}
+  }
 
   SetDefault(record): void {
     const label: string = 'Set Default KYC Profile';
@@ -185,7 +216,7 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
                   'KYC Profile as Default!'
                 );
               },
-               error: err => {
+              error: err => {
                 this.toasterService.showToast('error', err)
                 this.isLoading = false;
               }
@@ -215,7 +246,11 @@ export class KycProfileListComponent extends BaseListingComponent implements OnD
   }
 
   ngOnDestroy(): void {
-    // this.masterService.setData(this.key, this)
+    // this.masterService.setData(this.key, this);
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 }
 

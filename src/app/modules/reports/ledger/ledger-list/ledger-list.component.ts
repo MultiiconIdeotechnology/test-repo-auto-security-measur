@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { LedgerService } from 'app/services/ledger.service';
 import { Excel } from 'app/utils/export/excel';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -28,7 +28,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { LedgerFilterComponent } from '../ledger-filter/ledger-filter.component';
 import { PerticularInfoComponent } from '../perticular-info/perticular-info.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-ledger-list',
@@ -66,23 +67,24 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
   ],
 })
 export class LedgerListComponent extends BaseListingComponent {
-  @ViewChild(MatPaginator) public _paginator: MatPaginator;
+  // @ViewChild(MatPaginator) public _paginator: MatPaginator;
 
+  module_name = module_name.ledger;
+  filter_table_name = filter_module_name.account_ledger;
+  private settingsUpdatedSubscription: Subscription;
   legerFilter: any;
   total: any;
-  isFilterShow:boolean = false;
+  isFilterShow: boolean = false;
   public Filter: any;
 
-
-  module_name = module_name.ledger
   columns = [
-    { key: 'datetime', name: 'Date',isShow:true, is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: false, class: '', is_sticky: false, indicator: false, },
+    { key: 'datetime', name: 'Date', isShow: true, is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: false, class: '', is_sticky: false, indicator: false, },
     { key: 'reference_number', name: 'Reference Number', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
-    { key: 'particular', name: 'Particular',isview:true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
+    { key: 'particular', name: 'Particular', isview: true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
     // { key: 'remark', name: 'Remark',isRemark:false, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, tooltip: true },
-    { key: 'debit', name: 'Debit',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-red-500' },
-    { key: 'credit', name: 'Credit',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-green-500' },
-    { key: 'balance', name: 'Balance',isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false },
+    { key: 'debit', name: 'Debit', isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-red-500' },
+    { key: 'credit', name: 'Credit', isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, row_class: 'text-green-500' },
+    { key: 'balance', name: 'Balance', isFix: true, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false },
     // { key: ' ', name: 'Total Balance', isFix: false, is_date: false, date_formate: '', is_sortable: false, class: 'header-right-view', is_sticky: true, indicator: false, totalblc: true },
   ]
   cols = [];
@@ -97,14 +99,16 @@ export class LedgerListComponent extends BaseListingComponent {
 
   constructor(
     private matDialog: MatDialog,
-    private ledgerService: LedgerService
+    private ledgerService: LedgerService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.ledger)
     this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'datetime';
     this.sortDirection = 'asc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.legerFilter = {
       agent_for: '',
@@ -133,8 +137,32 @@ export class LedgerListComponent extends BaseListingComponent {
       );
       // this.paginator.pageIndex = 0;
       // this.setPaginator(filterdData);
-    })
+    });
 
+    // common filter
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['datetime'].value) {
+        resp['table_config']['datetime'].value = new Date(resp['table_config']['datetime'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
+
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      if (filterData['table_config']['datetime'].value) {
+        filterData['table_config']['datetime'].value = new Date(filterData['table_config']['datetime'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+    }
   }
 
   totalCount(dataList) {
@@ -155,7 +183,7 @@ export class LedgerListComponent extends BaseListingComponent {
     })
   }
 
-  view(record: any){
+  view(record: any) {
     this.matDialog.open(PerticularInfoComponent, {
       data: record,
       disableClose: true
@@ -178,11 +206,11 @@ export class LedgerListComponent extends BaseListingComponent {
   }
 
 
-  refreshItems(event?:any): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
     let newModel = this.getNewFilterReq(event)
     let extraModel = this.getFilter();
-    let model = {...newModel, ...extraModel}
+    let model = { ...newModel, ...extraModel }
     this.ledgerService.getLedger(model).subscribe({
       next: (res) => {
         this.isLoading = false;
@@ -202,7 +230,7 @@ export class LedgerListComponent extends BaseListingComponent {
           // parseFloat(countCredit). toFixed(2);
           this.dataList[i].countCredit = parseFloat(countCredit).toFixed(2);
           this.dataList[i].countDebit = countDebit.toFixed(2);
-          this.dataList[i].datetime = new Date(this.dataList[i].datetime);  
+          this.dataList[i].datetime = new Date(this.dataList[i].datetime);
         }
 
         this.Alldata = res.data;
@@ -221,14 +249,14 @@ export class LedgerListComponent extends BaseListingComponent {
     const pnrMatch = info.match(/PNR:([\w/]+)/);
     const bookingRefMatch = info.match(/Booking Ref:([\w]+)/);
     const paymentRefMatch = info.match(/Payment Ref:([\w]+)/);
-  
+
     const pnr = pnrMatch ? pnrMatch[1] : '';
     const bookingRef = bookingRefMatch ? bookingRefMatch[1] : '';
     const paymentRef = paymentRefMatch ? paymentRefMatch[1] : '';
-  
+
     // Get the main description (everything before PNR, Booking Ref, or Payment Ref, whichever comes first)
     const mainDescription = info.split(/(PNR:|Booking Ref:|Payment Ref:)/)[0].trim();
-  
+
     return { mainDescription, pnr, bookingRef, paymentRef };
 
   }
@@ -248,10 +276,6 @@ export class LedgerListComponent extends BaseListingComponent {
   //   this.dataList = data.slice(index * size, (index * size) + size);
   // }
 
-  ngOnDestroy(): void {
-    // this.masterService.setData(this.key, this)
-  }
-
   exportExcel(): void {
     if (!Security.hasExportDataPermission('Ledger')) {
       return this.alertService.showToast('error', messages.permissionDenied);
@@ -259,24 +283,33 @@ export class LedgerListComponent extends BaseListingComponent {
 
     // this.ledgerService.getLedger(this.getFilter()).subscribe(data => {
     this.tempData = cloneDeep(this.dataList)
-      for (var dt of this.tempData) {
-        // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
-        dt.datetime = new DatePipe('en-US').transform(dt.datetime, 'dd-MM-yyyy HH:mm');
-        
-      }
-      Excel.export(
-        'Ledger',
-        [
-          { header: 'Date', property: 'datetime' },
-          { header: 'Reference Number', property: 'reference_number' },
-          { header: 'Particular', property: 'particular' },
-          { header: 'Remark', property: 'remark' },
-          { header: 'Credit', property: 'credit' },
-          { header: 'Debit', property: 'debit' },
-          { header: 'Balance', property: 'balance' },
-        ],
-        this.tempData, "Ledger", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }]);
+    for (var dt of this.tempData) {
+      // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
+      dt.datetime = new DatePipe('en-US').transform(dt.datetime, 'dd-MM-yyyy HH:mm');
+
+    }
+    Excel.export(
+      'Ledger',
+      [
+        { header: 'Date', property: 'datetime' },
+        { header: 'Reference Number', property: 'reference_number' },
+        { header: 'Particular', property: 'particular' },
+        { header: 'Remark', property: 'remark' },
+        { header: 'Credit', property: 'credit' },
+        { header: 'Debit', property: 'debit' },
+        { header: 'Balance', property: 'balance' },
+      ],
+      this.tempData, "Ledger", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }]);
     // });
+  }
+
+  ngOnDestroy(): void {
+    // this.masterService.setData(this.key, this);
+
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 }
 

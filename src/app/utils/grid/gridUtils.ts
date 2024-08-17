@@ -61,6 +61,7 @@ export class GridUtils {
     public static GetPrimeNGFilterReq(
         event: LazyLoadEvent = { first: 0, rows: AppConfig.pageSize, sortField: null, sortOrder: null },
         primengTable: Table,
+        activeFiltData: any = {},
         filter: string = '',
         defaultSortCol: string = null,
         defaultSortOrder: number = 0,
@@ -70,7 +71,7 @@ export class GridUtils {
         let sort = defaultSortCol;
         let sortOrder = defaultSortOrder;
         let filtersColumn = (primengTable ? primengTable?.filters : (event.filters || {}));
-        const validatedFilter = this.validateFilter(filtersColumn);
+        const validatedFilter = this.validateFilter(filtersColumn, activeFiltData);
 
         if (event.sortField && event.sortOrder !== undefined) {
             sort = event.sortField;
@@ -97,10 +98,18 @@ export class GridUtils {
     
 
     // Column Filter Data
-    private static validateFilter(filter: any): any {
+    private static validateFilter(filter: any, activeFiltData: any): any {
         const validFilter: any = {};
         
         if(filter) {
+            if (Object.keys(filter).length === 0) {
+                // Default save filter applied first time
+                if (activeFiltData && activeFiltData.grid_config) {
+                    let filterData = JSON.parse(activeFiltData.grid_config);
+                    filter = filterData['table_config'];
+                }
+            }
+
             Object.keys(filter).forEach(key => {
                 if (filter[key].value !== null && filter[key].value !== undefined && filter[key].value !== '') {
                     if(filter[key].value && filter[key].value.length && Array.isArray(filter[key].value)) {
@@ -109,7 +118,15 @@ export class GridUtils {
                             matchMode : filter[key].matchMode
                         };
                     } else {
-                        validFilter[key] = filter[key];
+                        if(filter[key] && filter[key].value && typeof filter[key].value === 'object') {
+                            let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
+                            validFilter[key] = {
+                                value : id_by_value,
+                                matchMode : filter[key].matchMode
+                            };
+                        } else {
+                            validFilter[key] = filter[key];
+                        }
                     }
                 }
             });

@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet, Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { WalletOutstandingService } from 'app/services/wallet-outstanding.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
@@ -27,7 +27,8 @@ import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-wallet-outstanding-list',
@@ -68,9 +69,11 @@ import { RefferralService } from 'app/services/referral.service';
 })
 export class WalletOutstandingListComponent extends BaseListingComponent implements OnDestroy {
 
+    module_name = module_name.walletOutstanding;
+    filter_table_name = filter_module_name.account_receipts;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
-    module_name = module_name.walletOutstanding
     isFilterShow: boolean = false;
     agentList: any[] = [];
     selectedAgent!: string;
@@ -95,6 +98,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
         private agentService: AgentService,
         private refferralService: RefferralService,
         private walletOutstandingService: WalletOutstandingService,
+        public _filterService: CommonFilterService
         // private clipboard: Clipboard
     ) {
         super(module_name.walletOutstanding)
@@ -103,11 +107,36 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
         this.sortColumn = 'due_date';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
         this.getAgent('');
-        this.getEmployeeList("")
+        this.getEmployeeList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['due_date'].value && resp['table_config']['due_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['due_date']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['due_date'].value && filterData['table_config']['due_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getAgent(value: string) {
@@ -115,7 +144,8 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             this.agentList = data;
 
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
             }
         })
     }
@@ -124,6 +154,11 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
+
+            // pass by value variable added to common named variable(id_by_value) for common filter
+            for (let i in this.employeeList) {
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name
+            }
         });
     }
 
@@ -176,6 +211,14 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
                 ],
                 data.data, "Wallet Outstanding", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 
 }

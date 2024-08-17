@@ -17,7 +17,7 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
             </div>
-            
+
             <!------Global filter------>
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
@@ -42,9 +42,15 @@
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
+            </button>
+
+            <!------Common Filter------->
+           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
             </button>
         </div>
     </div>
@@ -63,7 +69,7 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="w-[30px] text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="dark:bg-[#1e293b]" pSortableColumn="agency_name" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name" 
+                    <th class="dark:bg-[#1e293b]" pSortableColumn="agency_name" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name"
                         [ngClass]="{'left-0': !frozenObj?.agency_name}">
                         Agent Name <p-sortIcon field="agency_name" />
                         <span class="float-right" (click)="isFrozenColumn('agency_name');$event.stopPropagation()">
@@ -134,7 +140,7 @@
                     <th>
                         <p-columnFilter field="wl_activation_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body" 
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
                                     placeholder="Search by Activation Date">
                                 </p-calendar>
                             </ng-template>
@@ -143,7 +149,7 @@
                     <th>
                         <p-columnFilter field="wl_expiry_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body" 
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
                                     placeholder="Search by Expiry Date">
                                 </p-calendar>
                             </ng-template>
@@ -226,7 +232,7 @@
                         <mat-icon class="text-green-600" *ngIf="element.is_ios_wl">done</mat-icon>
                         <mat-icon class="text-red-600" *ngIf="!element.is_ios_wl">clear</mat-icon>
                     </td>
-                    
+
                     <td *ngFor="let col of columns" [ngClass]="{'text-center': col.isBoolean}">
                         <ng-container *ngIf="!col.isBoolean">
                             {{element[col.field] || "-"}}

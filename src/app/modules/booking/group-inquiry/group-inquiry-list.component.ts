@@ -13,7 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, groupInquiryPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, groupInquiryPermissions, messages, module_name } from 'app/security';
 import { MatDialog } from '@angular/material/dialog';
 import { GroupInquiryService } from 'app/services/group-inquiry.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -25,6 +25,8 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-group-inquiry-list',
@@ -55,6 +57,8 @@ export class GroupInquiryListComponent
     implements OnDestroy {
     isFilterShow: boolean = false;
     module_name = module_name.groupInquiry;
+    filter_table_name = filter_module_name.group_inquiry_booking;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     selectedAgent!:string;
@@ -210,7 +214,8 @@ export class GroupInquiryListComponent
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
         private agentService: AgentService,
-        private kycDocumentService: KycDocumentService
+        private kycDocumentService: KycDocumentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.groupInquiry);
         this.cols = this.columns.map((x) => x.key);
@@ -218,11 +223,42 @@ export class GroupInquiryListComponent
         this.sortColumn = 'departure_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
         this.getSupplier("");
         this.getAgent("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['departure_date'].value) {
+                resp['table_config']['departure_date'].value = new Date(resp['table_config']['departure_date'].value);
+            }
+            if (resp['table_config']['arrival_date'].value) {
+                resp['table_config']['arrival_date'].value = new Date(resp['table_config']['arrival_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['departure_date'].value) {
+                filterData['table_config']['departure_date'].value = new Date(filterData['table_config']['departure_date'].value);
+            }
+            if (filterData['table_config']['arrival_date'].value) {
+                filterData['table_config']['arrival_date'].value = new Date(filterData['table_config']['arrival_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -349,10 +385,6 @@ export class GroupInquiryListComponent
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
-    }
-
     setBookingStatus(data: any) {
         if (!Security.hasPermission(groupInquiryPermissions.groupInquirySubPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
@@ -395,5 +427,14 @@ export class GroupInquiryListComponent
                 }
             }
         })
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

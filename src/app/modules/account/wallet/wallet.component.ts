@@ -12,32 +12,27 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name, walletCreditPermissions, walletRechargePermissions } from 'app/security';
+import { Security, filter_module_name, module_name, walletRechargePermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { takeUntil, debounceTime } from 'rxjs';
 import { AuditedComponent } from './audited/audited.component';
 import { PendingComponent } from './pending/pending.component';
 import { RejectedComponent } from './rejected/rejected.component';
 import { WalletFilterComponent } from './wallet-filter/wallet-filter.component';
-import { WalletInfoComponent } from './wallet-info/wallet-info.component';
 import { AgentService } from 'app/services/agent.service';
 import { WalletEntryComponent } from './wallet-entry/wallet-entry.component';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-wallet',
   templateUrl: './wallet.component.html',
   styleUrls: ['./wallet.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 200px 190px 160px 150px 130px 190px;
-  }
-  `],
+  styles: [],
   standalone: true,
   imports: [
     NgIf,
@@ -66,7 +61,7 @@ import { WalletEntryComponent } from './wallet-entry/wallet-entry.component';
 })
 export class WalletComponent extends BaseListingComponent implements OnDestroy {
   module_name = module_name.wallet;
-
+  filter_table_name = filter_module_name;
   @ViewChild('pending') pending: PendingComponent;
   @ViewChild('audited') audited: AuditedComponent;
   @ViewChild('rejected') rejected: RejectedComponent;
@@ -98,12 +93,12 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   mopData:any[] = [];
   pspData:any[] = [];
 
-
   constructor(
     private walletService: WalletService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private agentService: AgentService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.wallet)
     this.key = this.module_name;
@@ -214,18 +209,20 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   public tabChanged(event: any): void {
-
+    this.isDestroy();
     const tabName = event?.tab?.ariaLabel;
     this.tabNameStr = tabName
     this.tabName = tabName
 
     switch (tabName) {
       case 'Pending':
+        this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_pending);
         this.tab = 'Pending';
         break;
 
       case 'Audited':
         this.tab = 'Audited';
+        this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_audited);
         if (this.isSecound) {
           this.audited.refreshItemsAudited()
           this.isSecound = false
@@ -234,12 +231,28 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
 
       case 'Rejected':
         this.tab = 'Rejected';
+        this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_rejected);
         if (this.isThird) {
           this.rejected.refreshItemsRejected()
           this.isThird = false
         }
         break;
     }
+  }
+
+  isDestroy() {
+    this._filterService.activeFiltData = {};
+    if (this.pending.settingsUpdatedSubscription) {
+      this.pending.settingsUpdatedSubscription.unsubscribe();
+    }
+
+    if (this.audited.settingsAuitedSubscription) {
+      this.audited.settingsAuitedSubscription.unsubscribe();
+    }
+ 
+    if (this.rejected.settingsRejectSubscription) {
+      this.rejected.settingsRejectSubscription.unsubscribe();
+    }    
   }
 
   private ifNotThenCall(call: string, callback: () => void): void {
@@ -306,6 +319,16 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       this.rejected.refreshItemsRejected()
     else
       this.pending.refreshItemsPending()
+  }
+
+  openTabFiterDrawer() {
+    if (this.tab == 'Audited') {
+      this._filterService.openDrawer(this.filter_table_name.wallet_recharge_audited, this.audited.primengTable);
+    } else if (this.tab == 'Rejected') {
+      this._filterService.openDrawer(this.filter_table_name.wallet_recharge_rejected, this.rejected.primengTable);
+    } else {
+      this._filterService.openDrawer(this.filter_table_name.wallet_recharge_pending, this.pending.primengTable);
+    }
   }
 
   exportExcel(): void {

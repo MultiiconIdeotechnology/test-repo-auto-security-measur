@@ -21,7 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name, techDashPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, techDashPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -35,17 +35,13 @@ import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
     templateUrl: './pending.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 100px 150px 150px 230px 110px 200px 140px 250px;
-            }
-        `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -81,175 +77,83 @@ import { AgentService } from 'app/services/agent.service';
 })
 export class TechDashboardPendingComponent extends BaseListingComponent {
     @Input() isFilterShowPending: boolean;
-    @Input() dropdownFirstCallObj:any;
-    columns = [
-        {
-            key: 'item_code',
-            name: 'Item Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'item_name',
-            name: 'Item',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'product_name',
-            name: 'Product',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'product_status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            toColor: true
-        },
-        {
-            key: 'agentCode',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true
-        },
-        {
-            key: 'integration_start_date_time',
-            name: 'Start Int. Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-        {
-            key: 'entry_date_time',
-            name: 'Entry Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-        // {
-        //     key: 'special_status_remark',
-        //     name: 'RM Remark',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: 'center',
-        //     indicator: false,
-        //     tooltip: true
-        // }
-    ];
+    @Input() dropdownFirstCallObj: any;
+    @ViewChild('tabGroup') tabGroup;
+    @ViewChild(MatPaginator) public _paginator: MatPaginator;
+    @ViewChild(MatSort) public _sortInbox: MatSort;
+    
+    
+    Mainmodule: any;
+    module_name = module_name.techDashboard;
+    filter_table_name = filter_module_name.tech_dashboard_pending;
+    private settingsUpdatedSubscription: Subscription;
     cols = [];
     dataList = [];
     getWLSettingList: any = [];
     searchInputControlPending = new FormControl('');
-    @ViewChild('tabGroup') tabGroup;
     deadLeadId: any;
-    statusList = [ 'Pending', 'Inprocess', 'Delivered','Waiting for Customer Update','Waiting for Account Activation','Rejected from Store'];
-
-    @ViewChild(MatPaginator) public _paginator: MatPaginator;
-    @ViewChild(MatSort) public _sortInbox: MatSort;
-
-    Mainmodule: any;
+    statusList = ['Pending', 'Inprocess', 'Delivered', 'Waiting for Customer Update', 'Waiting for Account Activation', 'Rejected from Store'];
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.techDashboard
     total = 0;
     appConfig = AppConfig;
     data: any
-    selectedAgent:string;
-    agentList:any[] = [];
+    selectedAgent: string;
+    agentList: any[] = [];
     filter: any = {}
 
     constructor(
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.techDashboard);
-        this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
-        this.Mainmodule = this
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
-        // this.searchInputControlPending.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginator);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
-
-        // this.searchInputControlPending.valueChanges
-        //     .subscribe(() => {
-        //         // GridUtils.resetPaginator(this._paginatorPending);
-        //         // this.refreshItems();
-        //     });
-
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['integration_start_date_time'].value) {
+                resp['table_config']['integration_start_date_time'].value = new Date(resp['table_config']['integration_start_date_time'].value);
+            }
+            if (resp['table_config']['entry_date_time'].value) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowPending = true;
+            this.primengTable._filter();
+        });
     }
 
-    ngOnChanges(){
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowPending = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['integration_start_date_time'].value) {
+                filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);
+            }
+            if (filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+    }
+
+    ngOnChanges() {
         this.agentList = this.dropdownFirstCallObj['agentList'];
     }
 
@@ -257,13 +161,12 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlPending.value;
-     
+
         this.crmService.getTechProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
                 this.totalRecords = data.total;
-                // this._paginator.length = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -272,13 +175,14 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         });
     }
 
-      // Api call to Get Agent data
+    // Api call to Get Agent data
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -486,5 +390,13 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 this.isLoading = false;
             },
         });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

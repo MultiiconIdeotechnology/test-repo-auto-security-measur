@@ -12,11 +12,13 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { PSPPermissions, Security, messages, module_name } from 'app/security';
+import { PSPPermissions, Security, filter_module_name, messages, module_name } from 'app/security';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { PspEntryComponent } from '../psp-entry/psp-entry.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-psp-list',
@@ -51,6 +53,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 export class PspListComponent extends BaseListingComponent {
 
   module_name = module_name.pspsetting;
+  filter_table_name = filter_module_name.psp;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
 
@@ -118,7 +122,8 @@ export class PspListComponent extends BaseListingComponent {
     private pspsettingService: PspSettingService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.pspsetting);
     this.cols = this.columns.map((x) => x.key);
@@ -126,12 +131,29 @@ export class PspListComponent extends BaseListingComponent {
     this.sortColumn = 'provider';
     this.sortDirection = 'asc';
     this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit() {
     this.cols = [
       { field: 'api_for', header: 'Api For' },
     ];
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShow = true;
+        this.primengTable._filter();
+    });
+  }
+
+  ngAfterViewInit(){
+    // Defult Active filter show
+    if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShow = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        this.primengTable['filters'] = filterData['table_config'];
+    }
   }
 
   get selectedColumns(): Column[] {
@@ -371,4 +393,10 @@ export class PspListComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
+  ngOnDestroy() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
+  }
 }
