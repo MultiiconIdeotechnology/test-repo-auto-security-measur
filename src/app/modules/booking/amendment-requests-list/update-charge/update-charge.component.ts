@@ -45,7 +45,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
         MatDividerModule,
         MatSidenavModule,
         FuseDrawerComponent,
-        NumberDirective
+        NumberDirective,
     ]
 })
 export class UpdateChargeComponent implements OnInit {
@@ -187,6 +187,20 @@ export class UpdateChargeComponent implements OnInit {
                 }
             }
         })
+    }
+
+    getTooltip(str: string): string {
+        var value = "";
+        if (str == 'Bonton Markup')
+            value = `Fix pre defined markup based on markup policy`;
+        else if (str == 'Addon Markup')
+            value = `Apply additional markup or discount based on amendment type.\n
+Note: to apply discount kindly enter value in negative ex. -50`;
+        else if (str == 'Segment Amount')
+            value = `Use this price when return segment on international flight.\n
+Ex. If ticket is for BOM-DXB and DXB-BOM, now if amendment raised for DXB-BOM at that time required DXB-BOM segment price to calculate cancellation/refund amount.`;
+
+        return value;
     }
 
 }

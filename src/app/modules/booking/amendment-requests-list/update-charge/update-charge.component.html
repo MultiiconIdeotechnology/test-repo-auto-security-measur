@@ -53,14 +53,7 @@
                     <!-- *ngIf="amendmentData && amendmentData.is_adult" -->
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            <div class="flex flex-col">
-                                <span>
-                                    Adult Per Pax Charge
-                                </span>
-                                <span class="text-xs text-secondary font-normal">
-                                    Adult Per Pax Charge
-                                </span>
-                            </div>
+                            Adult Per Pax Charge
                         </td>
                         <td class="border-l p-2">
                             <mat-form-field class="w-full" style="margin-bottom: -1.25em">
@@ -72,14 +65,7 @@
                     </tr>
                     <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_child">
                         <td class="border-l w-128">
-                            <div class="flex flex-col">
-                                <span>
-                                    Child Per Pax Charge
-                                </span>
-                                <span class="text-xs text-secondary font-normal">
-                                    Child Per Pax Charge
-                                </span>
-                            </div>
+                            Child Per Pax Charge
                         </td>
                         <td class="border-l p-2">
                             <mat-form-field class="w-full" style="margin-bottom: -1.25em">
@@ -91,14 +77,7 @@
                     </tr>
                     <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_infant">
                         <td class="border-l w-128">
-                            <div class="flex flex-col">
-                                <span>
-                                    Infant Per Pax Charge
-                                </span>
-                                <span class="text-xs text-secondary font-normal">
-                                    Infant Per Pax Charge
-                                </span>
-                            </div>
+                            Infant Per Pax Charge
                         </td>
                         <td class="border-l p-2">
                             <mat-form-field class="w-full" style="margin-bottom: -1.25em">
@@ -115,13 +94,12 @@
                 <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            <div class="flex flex-col">
+                            <div class="flex flex-row gap-2 items-end">
                                 <span>
                                     Bonton Markup
                                 </span>
-                                <span class="text-xs text-secondary font-normal">
-                                    Bonton Markup
-                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Bonton Markup')" [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
                             </div>
                         </td>
                         <td class="border-l p-2 pl-6">
@@ -130,13 +108,12 @@
                     </tr>
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            <div class="flex flex-col">
+                            <div class="flex flex-row gap-2 items-end">
                                 <span>
                                     Addon Markup
                                 </span>
-                                <span class="text-xs text-secondary font-normal">
-                                    Addon Markup
-                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Addon Markup')" [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
                             </div>
                         </td>
                         <td class="border-l p-2">
@@ -155,13 +132,12 @@
                 <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
                     <tr class="border border-blue-border">
                         <td class="border-l w-128">
-                            <div class="flex flex-col">
+                            <div class="flex flex-row gap-2 items-end">
                                 <span>
                                     Segment Amount
                                 </span>
-                                <span class="text-xs text-secondary font-normal">
-                                    Segment Amount
-                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Segment Amount')" [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
                             </div>
                         </td>
                         <td class="border-l p-2">
