@@ -63,6 +63,7 @@ export class CommonFilterComponent implements OnInit {
                 autocapitalize: "off"
             },
             showCancelButton: true,
+            showCloseButton: true,
             confirmButtonText: "Save",
             cancelButtonText: "Close",
             showLoaderOnConfirm: true,

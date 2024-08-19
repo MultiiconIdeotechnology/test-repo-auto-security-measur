@@ -7,13 +7,13 @@
                 [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
     </div>
-    <div class="flex flex-0 justify-between">
+    <!-- <div class="flex flex-0 justify-between">
         <div class="text-base font-bold dark:text-white pt-[2px] truncate w-[68%] pr-1">
             {{_filterService.activeFiltData?.filter_name}}</div>
         <a class="mat-flat-button cursor-pointer" color="primary" *ngIf="isEditable" (click)="saveChanges()">
             <span class="text-base font-medium text-[#117DFF] underline pr-[0px]">Save Changes </span>
         </a>
-    </div>
+    </div> -->
 </div>
 <mat-divider></mat-divider>
 
@@ -21,30 +21,36 @@
 <div class="w-full pb-0 filter-popup-body mt-2">
     <div *ngIf="!isLoading else other_content">
         <ng-container *ngFor="let item of _filterService.filter_grid_data?.filters">
-            <div class="flex flex-row w-full justify-between items-center py-2 px-4 opacity-80"
-                [ngClass]="{'isActive': item?.is_default}">
-                <label class="text-base cursor-pointer dark:text-white font-noraml text-black truncate w-[75%] pr-1"
-                    (click)="applyFilter(item)">
-                    {{item.filter_name}}
-                </label>
+            <div class="py-2 px-4 opacity-80"  [ngClass]="{'isActive': item?.is_default}">
+                <div class="flex flex-row w-full justify-between items-center">
+                    <label class="text-base cursor-pointer dark:text-white font-noraml text-black truncate w-[75%] pr-1"
+                        (click)="applyFilter(item)">
+                        {{item.filter_name}}
+                    </label>
+                    <div>
+                        <span class="text-left justify-left dark:flex hidden">
+                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit"
+                                (click)="updateFilterName(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy"
+                                (click)="cloneFilter(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg" alt="delete"
+                                (click)="deleteFilter(item)">
+                        </span>
+    
+                        <span class="text-left justify-left dark:hidden flex">
+                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit-dark.svg" alt="edit"
+                                (click)="updateFilterName(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy-dark.svg" alt="copy"
+                                (click)="cloneFilter(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete-dark.svg"
+                                alt="delete" (click)="deleteFilter(item)">
+                        </span>
+                    </div>
+                </div>
                 <div>
-                    <span class="text-left justify-left dark:flex hidden">
-                        <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit"
-                            (click)="updateFilterName(item)">
-                        <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy"
-                            (click)="cloneFilter(item)">
-                        <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg" alt="delete"
-                            (click)="deleteFilter(item)">
-                    </span>
-
-                    <span class="text-left justify-left dark:hidden flex">
-                        <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit-dark.svg" alt="edit"
-                            (click)="updateFilterName(item)">
-                        <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy-dark.svg" alt="copy"
-                            (click)="cloneFilter(item)">
-                        <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete-dark.svg"
-                            alt="delete" (click)="deleteFilter(item)">
-                    </span>
+                    <a class="mat-flat-button cursor-pointer" color="primary" *ngIf="isEditable && item.is_default" (click)="saveChanges()">
+                        <span class="text-base font-small text-[#117DFF] underline pr-[0px]">Save Changes </span>
+                    </a>
                 </div>
             </div>
             <div *ngIf="!item?.is_default" class="border border-dashed"></div>
@@ -53,7 +59,7 @@
         <!-- No Data Label -->
         <ng-container *ngIf="_filterService.filter_grid_data && !_filterService.filter_grid_data?.grid_name">
             <div class="flex w-full justify-center items-center py-2">
-                No Data!
+                There is no filter saved!
             </div>
         </ng-container>
     </div>

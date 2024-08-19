@@ -629,11 +629,13 @@ p-columnfilterformelement {
     justify-content: flex-start !important;
     font-size: 1rem;
     font-weight: 500 !important;
-    padding: 1rem 1.3rem 0.3rem 1.3rem !important;
+    padding: 1rem 1.3rem 1rem 1.3rem !important;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 div:where(.swal2-container) div:where(.swal2-popup) {
     border-radius: 15px !important;
+    padding-bottom: 10px !important;
 }
 
 div:where(.swal2-container) input:where(.swal2-input):focus {
@@ -642,8 +644,9 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
 }
 
 .swal2-input {
-    margin: 1rem 1.3rem 0.3rem 1.3rem !important;
+    margin: 1rem 1.3rem 1rem 1.3rem !important;
     font-size: 14px;
+    border-radius: 6px;
 }
 
 .swal2-actions {
@@ -651,7 +654,24 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     width: 100%;
     padding-right: 1.3rem;
     gap: 10px;
+    // border-top: 1px solid #e2e8f0;
+    margin-top:0 !important;
+    padding-top: 10px;
 }
+
+// .swal2-close {
+
+// }
+
+// div:where(.swal2-container) button:where(.swal2-close):hover {
+//     transform: none;
+//     background: gray !important;
+//     opacity: 0.2;
+//     width: 2rem;
+//     height: 2rem;
+//     color:gray !important;
+//     border-radius: 50%;
+// }
 
 .swal2-confirm {
     background-color: #0d9488;
@@ -686,6 +706,10 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     vertical-align: middle;
     font-size: 14px;
     margin-right: 0;
+}
+
+div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover {
+    background-image: linear-gradient(rgba(134, 133, 133, 0.1), rgba(160, 160, 160, 0.1)) !important;
 }
 
 .dark {
