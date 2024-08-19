@@ -156,7 +156,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList"
                                     [(ngModel)]="selectedEmployee" optionLabel="employee_name" [filter]="true"
-                                    filterBy="employee_name" (onFilter)="getRelationManagerList($event?.filter)"
+                                    filterBy="employee_name" 
                                     (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select a RM">
                                     <ng-template let-employee pTemplate="item">
