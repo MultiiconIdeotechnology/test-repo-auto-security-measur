@@ -647,6 +647,8 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     margin: 1rem 1.3rem 1rem 1.3rem !important;
     font-size: 14px;
     border-radius: 6px;
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
 }
 
 .swal2-actions {
@@ -658,20 +660,6 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     margin-top:0 !important;
     padding-top: 10px;
 }
-
-// .swal2-close {
-
-// }
-
-// div:where(.swal2-container) button:where(.swal2-close):hover {
-//     transform: none;
-//     background: gray !important;
-//     opacity: 0.2;
-//     width: 2rem;
-//     height: 2rem;
-//     color:gray !important;
-//     border-radius: 50%;
-// }
 
 .swal2-confirm {
     background-color: #0d9488;
@@ -715,6 +703,8 @@ div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2
 .dark {
     .swal2-html-container {
         color: white;
+        border-bottom: 1px solid #e2e8f030;
+
     }
 
     .swal2-popup {
@@ -723,6 +713,7 @@ div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2
 
     .swal2-input {
         color: #ffffffde;
+        border: 1px solid rgb(226 232 240 / 38%);
     }
 
     .swal2-confirm {
@@ -733,7 +724,7 @@ div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2
     .swal2-cancel {
         color: white;
         background: transparent;
-        border: 1px solid #ffffffde
+        border: 1px solid rgb(226 232 240 / 38%)
     }
 
     .primeng-alert {
