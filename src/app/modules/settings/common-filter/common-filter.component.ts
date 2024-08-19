@@ -64,6 +64,7 @@ export class CommonFilterComponent implements OnInit {
             },
             showCancelButton: true,
             showCloseButton: true,
+            // closeButtonHtml:'<mat-icon class="text-current  text-white" svgIcon="heroicons_outline:x-mark"></mat-icon>',
             confirmButtonText: "Save",
             cancelButtonText: "Close",
             showLoaderOnConfirm: true,

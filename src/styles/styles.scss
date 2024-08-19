@@ -630,7 +630,7 @@ p-columnfilterformelement {
     font-size: 1rem;
     font-weight: 500 !important;
     padding: 1rem 1.3rem 1rem 1.3rem !important;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #999999;
 }
 
 div:where(.swal2-container) div:where(.swal2-popup) {
@@ -698,6 +698,22 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
 
 div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover {
     background-image: linear-gradient(rgba(134, 133, 133, 0.1), rgba(160, 160, 160, 0.1)) !important;
+}
+
+.swal2-close {
+    position: relative;
+}
+
+.swal2-close:hover::before {
+    position: absolute;
+    content: "";
+    width:2.4rem;
+    height: 2.4rem;
+    background: #8080802b;
+    border-radius: 50%;
+    left:50%;
+    top: 27px;
+    transform: translate(-50%,-50%);
 }
 
 .dark {
@@ -784,4 +800,28 @@ div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2
 .ctm-bg .mat-mdc-dialog-container .mdc-dialog__container .mat-mdc-dialog-surface{
     background-color: transparent !important;
     box-shadow: none !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-close) {
+    font-family: 'primeicons' !important;
+}
+
+.light div:where(.swal2-container) button:where(.swal2-close),
+.light div:where(.swal2-container) button:where(.swal2-close):hover{
+    color: gray !important;
+}
+
+.dark div:where(.swal2-container) button:where(.swal2-close),
+.dark div:where(.swal2-container) button:where(.swal2-close):hover{
+    color: white !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-close){
+    font-size: 35px !important;
+}
+
+.swal2-close{
+    height: 40px !important;
+    width: 45px;
+    height: 49px;
 }
