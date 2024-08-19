@@ -712,7 +712,7 @@ div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2
     background: #8080802b;
     border-radius: 50%;
     left:50%;
-    top: 27px;
+    top: 29px;
     transform: translate(-50%,-50%);
 }
 
@@ -804,6 +804,11 @@ div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2
 
 div:where(.swal2-container) button:where(.swal2-close) {
     font-family: 'primeicons' !important;
+    margin-bottom: -1.5em !important;
+    margin-left: -1em !important;
+    width: 1.5em !important;
+    height: 1.5em !important;
+    margin-right: .2em !important;
 }
 
 .light div:where(.swal2-container) button:where(.swal2-close),
@@ -818,10 +823,4 @@ div:where(.swal2-container) button:where(.swal2-close) {
 
 div:where(.swal2-container) button:where(.swal2-close){
     font-size: 35px !important;
-}
-
-.swal2-close{
-    height: 40px !important;
-    width: 45px;
-    height: 49px;
 }
