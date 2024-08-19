@@ -29,6 +29,9 @@
                 <th pSortableColumn="recharge_for_name" pResizableColumn>
                     Agent <p-sortIcon field="recharge_for_name" />
                 </th>
+                <th pSortableColumn="currency" pResizableColumn>
+                    Currency <p-sortIcon field="currency" />
+                </th>
                 <th class="text-right" pSortableColumn="recharge_amount" pResizableColumn>
                     Amount <p-sortIcon field="recharge_amount" />
                 </th>
@@ -83,10 +86,13 @@
                     </p-columnFilter>
                 </th>
                 <th>
+                    <p-columnFilter type="text" field="currency" placeholder="Search by Currency"
+                        ariaLabel="Filter Currency" />
+                </th>
+                <th>
                     <p-columnFilter type="numeric" field="recharge_amount" placeholder="Search by Recharge Amount"
                         ariaLabel="Filter Recharge Amount" />
                 </th>
-
                 <th>
                     <!-- <p-columnFilter type="text" field="mop" placeholder="Search by MOP" ariaLabel="Filter MOP" /> -->
                     <p-columnFilter class="searchableDropdown" field="mop" matchMode="equals" [showMenu]="false">
@@ -148,6 +154,9 @@
                 <td>
                     {{element.recharge_for_name || '-'}}
                 </td>
+                <td>
+                    {{element.currency || '-'}}
+                </td>
                 <td class="text-right">
                     {{element.recharge_amount || '-'}}
                 </td>
@@ -172,7 +181,7 @@
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="9" class="text-center font-semibold text-lg">
+                <td colspan="10" class="text-center font-semibold text-lg">
                     {{getNodataTextPending()}}
                 </td>
             </tr>
