@@ -53,70 +53,6 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     total = 0;
     user: any;
     is_first: any;
-
-    columns = [
-        {
-            key: 'city_name',
-            name: 'City',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'state_name',
-            name: 'State',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'country',
-            name: 'Country',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'display_name',
-            name: 'Display Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'gst_state_code',
-            name: 'GST State Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-    ];
-
     cols: Column[];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
@@ -131,10 +67,8 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
         public _filterService: CommonFilterService
     ) {
         super(module_name.city);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'country';
-        this.sortDirection = 'asc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
     }
@@ -153,7 +87,6 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             this.isFilterShow = true;
             this.primengTable._filter();
         });
-      
     }
 
     ngAfterViewInit(){
