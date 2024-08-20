@@ -60,11 +60,25 @@
                 <ng-container *ngIf="data && data.dateCustomShow">
                     <form [formGroup]="formGroupDate" *ngIf="formGroupDate" class="flex flex-col w-full">
 
-                        <div class="flex flex-row pt-2">
+                        <div class="flex flex-row pt-2" *ngIf = "userFlag == false">
                             <mat-form-field class="flex-grow">
                                 <mat-label
                                     class="text-base text-secondary font-medium dark:text-[#687798]">Date</mat-label>
                                 <input matInput [matDatepicker]="date1" placeholder="Choose a date" [min]="minDate"
+                                    formControlName="date" />
+                                <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
+                                <mat-datepicker #date1></mat-datepicker>
+                                <mat-error *ngIf="formGroupDate.get('date').hasError('required')">
+                                    Date is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="flex flex-row pt-2" *ngIf ="userFlag == true">
+                            <mat-form-field class="flex-grow">
+                                <mat-label
+                                    class="text-base text-secondary font-medium dark:text-[#687798]">Date</mat-label>
+                                <input matInput [matDatepicker]="date1" placeholder="Choose a date"
                                     formControlName="date" />
                                 <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
                                 <mat-datepicker #date1></mat-datepicker>
