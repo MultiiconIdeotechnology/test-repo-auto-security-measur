@@ -1,5 +1,5 @@
 <!-- Header -->
-<div class="header max-h-20 sticky top-0 dark:bg-[#0F172A] bg-white py-2 px-4">
+<div class="header max-h-24 sticky top-0 dark:bg-[#0F172A] bg-white py-2 px-4">
     <div class="flex justify-between">
         <div class="text-xl font-bold text-[#0D9488] pt-[7px]">Filters</div>
         <button mat-icon-button [tabIndex]="-1" (click)="_filterService.closeDrawer()">
@@ -7,13 +7,13 @@
                 [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
     </div>
-    <!-- <div class="flex flex-0 justify-between">
+    <div>
         <div class="text-base font-bold dark:text-white pt-[2px] truncate w-[68%] pr-1">
             {{_filterService.activeFiltData?.filter_name}}</div>
-        <a class="mat-flat-button cursor-pointer" color="primary" *ngIf="isEditable" (click)="saveChanges()">
+        <a class="mat-flat-button cursor-pointer block" color="primary" *ngIf="isEditable" (click)="saveChanges()">
             <span class="text-base font-medium text-[#117DFF] underline pr-[0px]">Save Changes </span>
         </a>
-    </div> -->
+    </div>
 </div>
 <mat-divider></mat-divider>
 
@@ -29,38 +29,39 @@
                     </label>
                     <div>
                         <span class="text-left justify-left dark:flex hidden">
-                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit"
+                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit" matTooltip="Edit"
                                 (click)="updateFilterName(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy"
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy" matTooltip="Clone"
                                 (click)="cloneFilter(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg" alt="delete"
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg" alt="delete" matTooltip="Delete"
                                 (click)="deleteFilter(item)">
                         </span>
     
                         <span class="text-left justify-left dark:hidden flex">
-                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit-dark.svg" alt="edit"
+                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit-dark.svg" alt="edit" matTooltip="Edit"
                                 (click)="updateFilterName(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy-dark.svg" alt="copy"
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy-dark.svg" alt="copy" matTooltip="Clone"
                                 (click)="cloneFilter(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete-dark.svg"
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete-dark.svg" matTooltip="Delete"
                                 alt="delete" (click)="deleteFilter(item)">
                         </span>
                     </div>
                 </div>
-                <div>
+                <!-- <div>
                     <a class="mat-flat-button cursor-pointer" color="primary" *ngIf="isEditable && item.is_default" (click)="saveChanges()">
                         <span class="text-base font-small text-[#117DFF] underline pr-[0px]">Save Changes </span>
                     </a>
-                </div>
+                </div> -->
             </div>
             <div *ngIf="!item?.is_default" class="border border-dashed"></div>
         </ng-container>
 
         <!-- No Data Label -->
         <ng-container *ngIf="_filterService.filter_grid_data && !_filterService.filter_grid_data?.grid_name">
-            <div class="flex w-full justify-center items-center py-2">
+            <div class="text-center py-2">
                 There is no filter saved!
             </div>
+            <div class="text-center block">Create New Filter</div>
         </ng-container>
     </div>
     <ng-template #other_content>

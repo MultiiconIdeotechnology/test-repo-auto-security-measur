@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-common-filter',
@@ -19,6 +20,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
         MatIconModule,
         MatButtonModule,
         MatDividerModule,
+        MatTooltipModule,
         NgClass
     ],
     templateUrl: './common-filter.component.html',
