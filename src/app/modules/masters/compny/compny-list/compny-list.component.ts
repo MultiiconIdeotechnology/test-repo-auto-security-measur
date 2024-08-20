@@ -56,7 +56,9 @@ export class CompnyListComponent extends BaseListingComponent {
   private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
-  cols = [];
+  cols: Column[] = [
+    { field: 'base_currency', header: 'Currency' }
+  ];
   isFilterShow: boolean = false;
   _selectedColumns: Column[];
 
@@ -77,7 +79,6 @@ export class CompnyListComponent extends BaseListingComponent {
     public _filterService: CommonFilterService
   ) {
     super(module_name.compny)
-    // this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'company_name';
     this.sortDirection = 'desc';
@@ -86,15 +87,12 @@ export class CompnyListComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-
-    this.cols = [
-      { field: 'base_currency', header: 'Currency' }
-    ];
-
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.sortColumn = resp['sortColumn'];
       this.primengTable['_sortField'] = resp['sortColumn'];
       this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
+      
       this.isFilterShow = true;
       this.primengTable._filter();
     });
@@ -106,6 +104,7 @@ export class CompnyListComponent extends BaseListingComponent {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
     }
   }
 
@@ -114,7 +113,13 @@ export class CompnyListComponent extends BaseListingComponent {
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   create() {

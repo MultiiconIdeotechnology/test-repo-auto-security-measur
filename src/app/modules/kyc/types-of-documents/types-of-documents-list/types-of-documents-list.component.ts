@@ -56,14 +56,9 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
   filter_table_name = filter_module_name.type_of_documents;
   private settingsUpdatedSubscription: Subscription;
 
-  columns = [
-    { key: 'document_group', name: 'Group', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'document_name', name: 'Document', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'maximum_size', name: 'Max File Size [KB]', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: false },
-    { key: 'file_extentions', name: 'File Extention', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: false },
-    { key: 'entry_date_time', name: 'Entry Date Time', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-  ]
-  cols = [];
+  cols: any = [
+    { field: 'remark_caption', header: 'Remark' },
+  ];
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
 
@@ -75,7 +70,6 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
     public _filterService: CommonFilterService
   ) {
     super(module_name.document)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'document_group';
 
@@ -85,10 +79,6 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
   }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'remark_caption', header: 'Remark' },
-    ];
-
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.sortColumn = resp['sortColumn'];
       this.primengTable['_sortField'] = resp['sortColumn'];
@@ -96,6 +86,7 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
         resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
       this.primengTable._filter();
     });
@@ -104,12 +95,13 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-      this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       if (filterData['table_config']['entry_date_time'].value) {
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
     }
   }
 
@@ -118,7 +110,13 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   refreshItems(event?: any): void {

@@ -86,19 +86,10 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   appConfig = AppConfig;
   settings: any;
   currentFilter: any;
-
-  columns = [
-    { key: 'transaction_ref_no', name: 'Transaction ID', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, isview: true },
-    { key: 'payment_ref_no', name: 'Ref no.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'payment_status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, iscolor: true },
-    { key: 'payment_to', name: 'To', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'service_for', name: 'For', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'payment_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-    { key: 'mode_of_payment', name: 'Mode of Payment', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'payment_request_date', name: 'Requested', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'audit_date_time', name: 'Audited', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-  ]
-  cols = [];
+  cols: any = [
+    { field: 'payment_reject_reason', header: 'Payment Reject Reason' },
+    { field: 'payment_type', header: 'Payment Type' },
+  ];
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
   selectedStatus: string;
@@ -110,14 +101,11 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
 
   constructor(
     private accountService: AccountService,
-    private confirmService: FuseConfirmationService,
-    private router: Router,
     private matDialog: MatDialog,
     private clipboard: Clipboard,
     public _filterService: CommonFilterService
   ) {
     super(module_name.payment)
-    this.cols = this.columns.map(x => x.key);
     this.key = 'payment_request_date';
     this.sortColumn = 'payment_request_date';
     this.sortDirection = 'desc';
@@ -135,13 +123,6 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   }
 
   ngOnInit() {
-
-    this.cols = [
-      // { field: 'payment_date', header: 'Payment Date' },
-      { field: 'payment_reject_reason', header: 'Payment Reject Reason' },
-      { field: 'payment_type', header: 'Payment Type' },
-    ];
-
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       // console.log("resp['table_config']['payment_request_date']", resp['table_config']['payment_request_date'] );
       this.sortColumn = resp['sortColumn'];
@@ -153,6 +134,7 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
         resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
       this.primengTable._filter();
     });
@@ -161,7 +143,6 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-      this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       if (filterData['table_config']['payment_request_date'].value && filterData['table_config']['payment_request_date'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['payment_request_date']);
@@ -170,6 +151,8 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
         filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
       }
       this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
     }
   }
 
@@ -178,7 +161,13 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   getFilter(): any {

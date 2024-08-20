@@ -149,7 +149,9 @@ export class EmployeeListComponent
             tooltip: true,
         },
     ];
-    cols: Column[];
+    cols: Column[] = [
+        { field: 'company_name', header: 'Company' },
+    ];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
@@ -162,7 +164,6 @@ export class EmployeeListComponent
         public _filterService: CommonFilterService
     ) {
         super(module_name.employee);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'employee_name';
         this.sortDirection = 'asc';
@@ -181,19 +182,16 @@ export class EmployeeListComponent
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+
             this.isFilterShow = true;
             this.primengTable._filter();
         });
-
-        this.cols = [
-            { field: 'company_name', header: 'Company' },
-        ];
     }
 
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['last_login_time'].value) {
                 filterData['table_config']['last_login_time'].value = new Date(filterData['table_config']['last_login_time'].value);
@@ -202,6 +200,8 @@ export class EmployeeListComponent
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
@@ -210,7 +210,13 @@ export class EmployeeListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {

@@ -85,18 +85,10 @@ export class MainListComponent extends BaseListingComponent {
   isFilterShow: boolean = false;
   selectedRm:string | undefined;
   employeeList:any[] = [];
-  // user: any = {};
 
-  columns = [
-    { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-    { key: 'lead_status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false },
-    { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false },
-    { key: 'relation_manager', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-    { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-    { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false },
-    { key: 'city_name', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-  ]
-  cols = [];
+  cols: any = [
+    { field: 'contact_person', header: 'Contact Person', type: 'text' },
+  ];
 
   statusList =  [ 'New', 'Converted', 'Live', 'Kyc Pending']
 
@@ -112,7 +104,6 @@ export class MainListComponent extends BaseListingComponent {
     public _filterService: CommonFilterService
   ) {
     super(module_name.newSignup)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
@@ -127,9 +118,6 @@ export class MainListComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'contact_person', header: 'Contact Person', type: 'text' },
-    ];
 
     this.getRelationManagerList("");
 
@@ -140,6 +128,7 @@ export class MainListComponent extends BaseListingComponent {
             resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
         }
         this.primengTable['filters'] = resp['table_config'];
+        this._selectedColumns = resp['selectedColumns'] || [];
         this.isFilterShow = true;
         this.primengTable._filter();
    });
@@ -148,12 +137,14 @@ export class MainListComponent extends BaseListingComponent {
   ngAfterViewInit(){
     // Defult Active filter show
     if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShow = true;
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        if(filterData['table_config']['entry_date_time'].value){
-          filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
-        }
-        this.primengTable['filters'] = filterData['table_config'];
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      if (filterData['table_config']['entry_date_time'].value) {
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
+        
     }
   }
 
@@ -162,7 +153,13 @@ export class MainListComponent extends BaseListingComponent {
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   refreshItems(event?: any): void {

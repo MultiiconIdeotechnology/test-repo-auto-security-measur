@@ -94,7 +94,9 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     { label: 'Rejected', value: true },
     { label: 'Pending', value: false }
   ];
-  cols = [];
+  cols: Column[] = [
+    { field: 'contact_person', header: 'Contact Person' },
+  ];
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
 
@@ -116,10 +118,6 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'contact_person', header: 'Contact Person' },
-    ];
-
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.sortColumn = resp['sortColumn'];
       this.primengTable['_sortField'] = resp['sortColumn'];
@@ -131,6 +129,8 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
         resp['table_config']['update_date_time'].value = new Date(resp['table_config']['update_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
+
       this.isFilterShow = true;
       this.primengTable._filter();
     });
@@ -142,25 +142,33 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShow = true;
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-
-        if (filterData['table_config']['entry_date_time'].value) {
-            filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
-        }
-        if (filterData['table_config']['update_date_time'].value) {
-          filterData['table_config']['update_date_time'].value = new Date(filterData['table_config']['update_date_time'].value);
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      
+      if (filterData['table_config']['entry_date_time'].value) {
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
-        this.primengTable['filters'] = filterData['table_config'];
+      if (filterData['table_config']['update_date_time'].value) {
+        filterData['table_config']['update_date_time'].value = new Date(filterData['table_config']['update_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      
+      this.isFilterShow = true;
     }
-}
+  }
 
   get selectedColumns(): Column[] {
     return this._selectedColumns;
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
 

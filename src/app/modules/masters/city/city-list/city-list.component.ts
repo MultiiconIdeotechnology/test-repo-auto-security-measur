@@ -53,7 +53,11 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     total = 0;
     user: any;
     is_first: any;
-    cols: Column[];
+    cols: Column[] = [
+        { field: 'gst_state_code', header: 'GST State Code' },
+        { field: 'country_code', header: 'Country Code' },
+        { field: 'mobile_code', header: 'Mobile Code' },
+    ];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     private settingsUpdatedSubscription: Subscription;
@@ -74,27 +78,23 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'gst_state_code', header: 'GST State Code'},
-            { field: 'country_code', header: 'Country Code' },
-            { field: 'mobile_code', header: 'Mobile Code' },
-        ];
-
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
     }
 
-    ngAfterViewInit(){
+    ngAfterViewInit() {
         // Defult Active filter show
-        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
         }
     }
 
@@ -103,7 +103,13 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -267,8 +273,8 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
 
     ngOnDestroy() {
         if (this.settingsUpdatedSubscription) {
-          this.settingsUpdatedSubscription.unsubscribe();
-          this._filterService.activeFiltData = {};
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
         }
     }
 }

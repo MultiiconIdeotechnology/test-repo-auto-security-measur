@@ -193,6 +193,7 @@ export class CachingParametersListComponent
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -201,9 +202,10 @@ export class CachingParametersListComponent
     ngAfterViewInit(){
         // Defult Active filter show
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
       }
 
@@ -218,7 +220,13 @@ export class CachingParametersListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {

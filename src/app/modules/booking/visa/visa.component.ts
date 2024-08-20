@@ -82,54 +82,20 @@ export class VisaComponent extends BaseListingComponent {
     total = 0;
     visaFilter: any;
     user: any = {};
-    cols = [];
+    cols: any = [
+        { field: 'visa_type', header: 'Visa Type', isDate: false, type: 'text' },
+        { field: 'length_of_stay', header: 'Length of Stay', isDate: false, type: 'numeric' },
+        { field: 'customer_name', header: 'Customer Name', isDate: false, type: 'text' },
+        { field: 'payment_request_time', header: 'Payment Request Time', isDate: true, type: 'date' },
+        { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true, type: 'date' },
+        { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false, type: 'text' },
+        { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false, type: 'text' },
+    ];
     agentList: any[] = [];
     isFilterShow: boolean = false;
     _selectedColumns: Column[];
     selectedAgent:any;
     statusList = [ 'Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
-
-    columns = [
-        {
-            key: 'booking_ref_no', name: 'Reference No.', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toBooking: true
-        },
-        {
-            key: 'visa_status', name: 'Status', is_fixed2: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toColor: true
-        },
-        {
-            key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'operation_person', name: 'Operation Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'agent', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'purchase_price', name: 'Purchase Price', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'user_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'payment_mode', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'destination_caption', name: 'Destination', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'travel_date', name: 'Travel Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'pax', name: 'Pax', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'payment_gateway', name: 'PG', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'ip_address', name: 'IP Address', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-    ]
 
     constructor(
         private matDialog: MatDialog,
@@ -171,15 +137,7 @@ export class VisaComponent extends BaseListingComponent {
 
     ngOnInit() {
 
-        this.cols = [
-          { field: 'visa_type', header: 'Visa Type', isDate:false, type:'text' },
-          { field: 'length_of_stay', header: 'Length of Stay', isDate:false, type:'numeric' },
-          { field: 'customer_name', header: 'Customer Name', isDate:false, type:'text' },
-          { field: 'payment_request_time', header: 'Payment Request Time', isDate:true, type:'date' },
-          { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate:true, type:'date' },
-          { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate:false, type:'text' },
-          { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate:false, type:'text' },
-        ];
+        
 
         this.getAgent("", true);
 
@@ -194,6 +152,7 @@ export class VisaComponent extends BaseListingComponent {
                 resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -202,7 +161,6 @@ export class VisaComponent extends BaseListingComponent {
       ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
@@ -211,6 +169,8 @@ export class VisaComponent extends BaseListingComponent {
                 filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
@@ -219,7 +179,13 @@ export class VisaComponent extends BaseListingComponent {
       }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     getFilter(): any {
