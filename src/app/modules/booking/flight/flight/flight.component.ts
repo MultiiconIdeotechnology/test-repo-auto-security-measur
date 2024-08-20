@@ -513,8 +513,10 @@ export class FlightComponent extends BaseListingComponent {
         //     this.searchInputControl.value
         // );
 
-        filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = ''; 
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['agent_for'] = this.flightFilter?.agent_for;
         filterReq['agent_id'] = this.flightFilter?.agent_id?.id || '';
         filterReq['from'] = this.flightFilter?.fromCity?.id == 'All' ? '' : this.flightFilter?.fromCity?.id ;
