@@ -109,10 +109,12 @@ export class WhitelabelListComponent extends BaseListingComponent {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             console.log("resp", resp)
             this.selectedAgent = resp['table_config']['agency_name']?.value;
-            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-            if(!match) {
-               this.agentList.push(this.selectedAgent);
-            }
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['wl_expiry_date'].value){
@@ -136,10 +138,6 @@ export class WhitelabelListComponent extends BaseListingComponent {
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
-            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-            if(!match) {
-               this.agentList.push(this.selectedAgent);
-            }
             if(filterData['table_config']['wl_expiry_date'].value){
                 filterData['table_config']['wl_expiry_date'].value = new Date(filterData['table_config']['wl_expiry_date'].value);
             }
@@ -196,9 +194,15 @@ export class WhitelabelListComponent extends BaseListingComponent {
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value,true).subscribe((data) => {
             this.agentList = data;
-
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }

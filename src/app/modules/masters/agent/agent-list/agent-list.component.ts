@@ -112,7 +112,7 @@ export class AgentListComponent extends BaseListingComponent {
     //     { label: 'Unblocked', value: 'Unblocked' },
     // ]
     cityList: any[] = [];
-    selectedCurrency: string;
+    selectedCurrency: any;
     selectedCity: string;
     currencyListAll: any[] = [];
     kycListAll: any[] = [];
@@ -170,13 +170,10 @@ export class AgentListComponent extends BaseListingComponent {
     ngOnInit() {
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            // console.log("resp['table_config']", resp['table_config']);
+            console.log("resp>>>", resp);
             
-            this.selectedEmployee = resp['table_config']['rm_id_filters'].value;
-            // const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
-            // if(!match) {
-            //     this.employeeList.push(this.selectedEmployee);
-            // }
+            this.selectedEmployee = resp['table_config']['rm_id_filters']?.value;
+            this.selectedCurrency = resp['table_config']['currency']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['entry_date_time'].value){
@@ -200,12 +197,12 @@ export class AgentListComponent extends BaseListingComponent {
         // Defult Active filter show
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            // console.log("ngAfterViewInit");
             this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
-            // const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
-            // if(!match) {
-            //     this.employeeList.push(this.selectedEmployee);
-            // }
+            this.selectedCurrency = filterData['table_config']['currency'].value || {};
+            const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
+            if(!match) {
+                this.employeeList.push(this.selectedEmployee);
+            }
             if(filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
@@ -226,6 +223,10 @@ export class AgentListComponent extends BaseListingComponent {
     getCurrencyList() {
         this.currencyService.getcurrencyCombo().subscribe((data) => {
             this.currencyListAll = data;
+
+            for(let i in this.currencyListAll){
+                this.currencyListAll[i].id_by_value = this.currencyListAll[i].currency_short_code;
+            }
         })
     }
 

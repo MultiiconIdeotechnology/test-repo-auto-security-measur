@@ -70,116 +70,6 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   agentList: any[] = [];
   selectedAgent: any = {};
 
-  columns = [
-    {
-      key: 'master_agent_code',
-      name: 'Agent Code',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'master_agent_name',
-      name: 'Agent',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'credit_balance',
-      name: 'Balance',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'expiry_date',
-      name: 'Expiry',
-      is_date: true,
-      date_formate: 'dd-MM-yyyy HH:mm:ss',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'payment_cycle_policy_type',
-      name: 'Policy Type',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'payment_cycle_policy',
-      name: 'Policy',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'outstanding_on_due_date',
-      name: 'Outstanding',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'over_due_count',
-      name: 'Over Due',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'entry_date_time',
-      name: 'Entry',
-      is_date: true,
-      date_formate: 'dd-MM-yyyy HH:mm:ss',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
-  ];
   cols: Column[] = [
     { field: 'entry_by', header: 'Entry By' },
     { field: 'sub_agent_name', header: 'Sub Agent Name' },
@@ -294,7 +184,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         if (!match) {
           this.agentList.push(this.selectedAgent);
         }
-      }
+      } 
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
         this.agentList[i].id_by_value = this.agentList[i].agency_name; 

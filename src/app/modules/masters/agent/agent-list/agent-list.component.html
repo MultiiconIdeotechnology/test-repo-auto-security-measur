@@ -189,7 +189,7 @@
                                 <p-dropdown class="filter-dropdown" [options]="currencyListAll"
                                     [(ngModel)]="selectedCurrency" optionLabel="currency_short_code" [filter]="true"
                                     filterBy="currency_short_code"
-                                    (onChange)="filter($event.value?.currency_short_code)" [showClear]="true"
+                                    (onChange)="filter($event.value)" [showClear]="true"
                                     appendTo="body" placeholder="Select a Currency">
                                     <ng-template let-currency pTemplate="item">
                                         <div class="flex align-items-center gap-2">
