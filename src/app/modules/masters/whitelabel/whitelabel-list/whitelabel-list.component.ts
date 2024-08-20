@@ -107,7 +107,6 @@ export class WhitelabelListComponent extends BaseListingComponent {
 
     ngOnInit() {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            console.log("resp", resp)
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
