@@ -118,7 +118,6 @@
                                     [(ngModel)]="selectedRM"
                                     [filter]="true"
                                     filterBy="employee_name"
-                                    (onFilter)="getEmployeeList($event?.filter)"
                                     (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"

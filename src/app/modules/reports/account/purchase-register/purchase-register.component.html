@@ -182,9 +182,8 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList"
                                     [(ngModel)]="selectedSupplier" optionLabel="company_name" [filter]="true"
-                                    filterBy="company_name" (onFilter)="getSupplier($event?.filter)"
-                                    (onChange)="filter($event.value?.company_name)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Supplier">
+                                    filterBy="company_name" (onChange)="filter($event.value?.company_name)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
                                             <div [value]="agent.company_name">

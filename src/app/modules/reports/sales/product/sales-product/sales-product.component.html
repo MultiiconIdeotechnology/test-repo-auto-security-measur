@@ -140,7 +140,6 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
                                     [(ngModel)]="selectedRM" [filter]="true" filterBy="employee_name"
-                                    (onFilter)="getEmployeeList($event?.filter)"
                                     (onChange)="filter($event.value?.employee_name)" [showClear]="true" appendTo="body"
                                     placeholder="Select RM">
                                     <ng-template let-employee pTemplate="item">

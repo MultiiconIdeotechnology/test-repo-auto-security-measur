@@ -180,8 +180,10 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     // );
     // const filter = this.currentFilter;
     filterReq['status'] = this.currentFilter.status;
-    filterReq['fromDate'] = DateTime.fromJSDate(this.currentFilter.fromDate).toFormat('yyyy-MM-dd');
-    filterReq['toDate'] = DateTime.fromJSDate(this.currentFilter.toDate).toFormat('yyyy-MM-dd')
+    filterReq['fromDate'] = "";
+    filterReq['toDate'] = "";
+    // filterReq['fromDate'] = DateTime.fromJSDate(this.currentFilter.fromDate).toFormat('yyyy-MM-dd');
+    // filterReq['toDate'] = DateTime.fromJSDate(this.currentFilter.toDate).toFormat('yyyy-MM-dd')
     return filterReq;
   }
 
