@@ -215,9 +215,11 @@ export class RejectedComponent extends BaseListingComponent {
     filterReq['particularId'] = this.rejectFilter?.particularId == "all" ? '' : this.rejectFilter?.particularId;
     filterReq['mop'] = this.rejectFilter?.mop || '';
     filterReq['psp'] = this.rejectFilter?.psp || '';
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.FromDate)).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.ToDate)).toFormat('yyyy-MM-dd');
-
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.FromDate)).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.ToDate)).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = "";
+    filterReq['ToDate'] = "";
+    
     this.walletService.getWalletRechargeFilterList(filterReq).subscribe(
       {
         next: data => {

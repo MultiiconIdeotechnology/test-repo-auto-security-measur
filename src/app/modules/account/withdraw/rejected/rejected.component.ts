@@ -261,8 +261,10 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['status'] = 'rejected';
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd')
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd')
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd')
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd')
+    filterReq['FromDate'] = "";
+    filterReq['ToDate'] = "";
     filterReq['agent_id'] = this.filter?.agent_id == 'all' ? '' : this.filter?.agent_id;
     this.withdrawService.getWalletWithdrawList(filterReq).subscribe(
       {
