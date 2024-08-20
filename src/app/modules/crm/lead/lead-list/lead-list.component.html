@@ -32,11 +32,9 @@
                     (click)="archiveRefresh(archiveRef.value)"></mat-icon>
             </div>
 
-
-
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowInbox = !isFilterShowInbox">
+                matTooltip="Advanced Filter11" [disabled]="isLoading" (click)="isFilterShowInbox = !isFilterShowInbox">
                 <img *ngIf="!isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
                 <img *ngIf="isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
@@ -52,6 +50,12 @@
                     alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <!-- Refreshitems -->
             <ng-container *ngIf="tabNameStr == 'Inbox'">
                 <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Inbox')">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
@@ -63,17 +67,11 @@
                 </button>
             </ng-container>
 
+            <!-- Add -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createInternal()"
                 *ngIf="tabNameStr == 'Inbox'">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
-            </button>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="openTabFiterDrawer()">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
             </button>
         </div>
     </div>

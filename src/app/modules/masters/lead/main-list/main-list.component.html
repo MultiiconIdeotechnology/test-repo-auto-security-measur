@@ -165,7 +165,6 @@
                                     [(ngModel)]="selectedRm"
                                     [filter]="true"
                                     filterBy="employee_name"
-                                    (onFilter)="getRelationManagerList($event?.filter)"
                                     (onChange)="filter($event.value?.employee_name)"
                                     [showClear]="true"
                                     appendTo="body"

@@ -148,9 +148,8 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList"
                                     [(ngModel)]="selectedEmployee" optionLabel="employee_name" [filter]="true"
-                                    filterBy="employee_name" (onFilter)="getRelationManagerList($event?.filter)"
-                                    (onChange)="filter($event.value?.employee_name)" [showClear]="true" appendTo="body"
-                                    placeholder="Select a RM">
+                                    filterBy="employee_name" (onChange)="filter($event.value?.employee_name)" [showClear]="true" 
+                                    appendTo="body" placeholder="Select a RM">
                                     <ng-template let-employee pTemplate="item">
                                         <div class="flex align-items-center gap-2">
                                             <div [value]="employee.id">{{ employee.employee_name }}</div>

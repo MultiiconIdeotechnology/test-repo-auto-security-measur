@@ -173,13 +173,11 @@ export class AgentListComponent extends BaseListingComponent {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // console.log("resp['table_config']", resp['table_config']);
             
-            this.selectedEmployee = JSON.parse(JSON.stringify(resp['table_config']['rm_id_filters'].value));
+            this.selectedEmployee = resp['table_config']['rm_id_filters'].value;
             // const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
             // if(!match) {
             //     this.employeeList.push(this.selectedEmployee);
             // }
-            console.log("this.selectedEmployee", this.selectedEmployee);
-            
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['entry_date_time'].value){
