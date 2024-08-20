@@ -74,7 +74,7 @@ export class TechCollectionComponent extends BaseListingComponent {
     @Input() activeTab: any;
 
     agentList: any[] = [];
-    selectedAgent: any;
+    selectedAgent: any = {};
     public settingsTechSubscription: Subscription;
 
     cols = [];
@@ -116,7 +116,6 @@ export class TechCollectionComponent extends BaseListingComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this
         this._filterService.applyDefaultFilter(this.filter_table_name);
-
     }
 
     ngOnInit(): void {
@@ -128,7 +127,11 @@ export class TechCollectionComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowTech = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-
+            this.selectedAgent = filterData['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
             if (filterData['table_config']['lastCallDate'].value) {
                 filterData['table_config']['lastCallDate'].value = new Date(filterData['table_config']['lastCallDate'].value);
             }
@@ -143,6 +146,11 @@ export class TechCollectionComponent extends BaseListingComponent {
     ngOnChanges() {
         if (this.activeTab == 'Tech') {
             this.settingsTechSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+                this.selectedAgent = resp['table_config']['agencyName']?.value;
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
                 this.sortColumn = resp['sortColumn'];
                 this.primengTable['_sortField'] = resp['sortColumn'];
                 if (resp['table_config']['lastCallDate'].value) {
@@ -156,7 +164,7 @@ export class TechCollectionComponent extends BaseListingComponent {
                 this.primengTable._filter();
             });
 
-            if(this.agentList && !this.agentList.length) {
+            if (this.agentList && !this.agentList.length) {
                 this.getAgent("");
             }
         }
@@ -315,8 +323,8 @@ export class TechCollectionComponent extends BaseListingComponent {
 
     ngOnDestroy() {
         if (this.settingsTechSubscription) {
-          this.settingsTechSubscription.unsubscribe();
-          this._filterService.activeFiltData = {};
+            this.settingsTechSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
         }
     }
 }

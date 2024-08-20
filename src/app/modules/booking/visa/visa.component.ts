@@ -41,11 +41,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     selector: 'app-visa',
     templateUrl: './visa.component.html',
     styleUrls: ['./visa.component.scss'],
-    styles: [`
-    .tbl-grid {
-      grid-template-columns:  40px 250px 170px 170px 200px 190px 130px 80px 100px 150px 120px 70px 120px 140px ;
-    }
-  `],
     standalone: true,
     imports: [
         NgIf,
@@ -89,48 +84,6 @@ export class VisaComponent extends BaseListingComponent {
     selectedAgent:any;
     statusList = [ 'Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
 
-    columns = [
-        {
-            key: 'booking_ref_no', name: 'Reference No.', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toBooking: true
-        },
-        {
-            key: 'visa_status', name: 'Status', is_fixed2: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toColor: true
-        },
-        {
-            key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'operation_person', name: 'Operation Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'agent', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'purchase_price', name: 'Purchase Price', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'user_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'payment_mode', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'destination_caption', name: 'Destination', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'travel_date', name: 'Travel Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'pax', name: 'Pax', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'payment_gateway', name: 'PG', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'ip_address', name: 'IP Address', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-    ]
-
     constructor(
         private matDialog: MatDialog,
         private toasterService: ToasterService,
@@ -141,7 +94,6 @@ export class VisaComponent extends BaseListingComponent {
         public _filterService: CommonFilterService
     ) {
         super(module_name.visa);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
@@ -224,16 +176,9 @@ export class VisaComponent extends BaseListingComponent {
 
     getFilter(): any {
         const filterReq = {};
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sort,
-        //     this.searchInputControl.value
-        // );
         filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
         filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
-        // filterReq['FromDate'] = "2024-01-01";
-        // filterReq['ToDate'] = "2024-07-19";
         filterReq['agent_id'] = this.visaFilter?.agent_id?.id || '';
         filterReq['Status'] = this.visaFilter?.Status == 'All' ? '' : this.visaFilter?.Status;
         return filterReq;

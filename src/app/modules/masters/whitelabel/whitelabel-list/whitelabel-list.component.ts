@@ -66,160 +66,7 @@ export class WhitelabelListComponent extends BaseListingComponent {
     user: any = {};
     total = 0;
     agentList:any[] = [];
-    selectedAgent:string;
-
-    columns = [
-        {
-            key: 'agency_name',
-            name: 'Agent Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'email_address',
-            name: 'Email',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'mobile_number',
-            name: 'Mobile',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'wl_activation_date',
-            name: 'Activation Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'wl_expiry_date',
-            name: 'Expiry Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'is_b2b_wl',
-            name: 'B2B WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: 'is_b2c_wl',
-            name: 'B2C WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: 'is_android_wl',
-            name: 'Android WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: 'is_ios_wl',
-            name: 'IOS WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: '.',
-            name: '',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: false
-        },
-    ];
+    selectedAgent:any = {};
 
     checkList = [
         { label: 'Yes', value: true },
@@ -240,7 +87,6 @@ export class WhitelabelListComponent extends BaseListingComponent {
         public _filterService: CommonFilterService
     ) {
         super(module_name.whitelabel);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'wl_activation_date';
         this.sortDirection = 'desc';
@@ -266,6 +112,12 @@ export class WhitelabelListComponent extends BaseListingComponent {
         ];
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            console.log("resp", resp)
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['wl_expiry_date'].value){
@@ -288,6 +140,11 @@ export class WhitelabelListComponent extends BaseListingComponent {
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
             if(filterData['table_config']['wl_expiry_date'].value){
                 filterData['table_config']['wl_expiry_date'].value = new Date(filterData['table_config']['wl_expiry_date'].value);
             }

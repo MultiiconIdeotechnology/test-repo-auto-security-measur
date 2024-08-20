@@ -97,7 +97,7 @@ export class InboxAgentComponent extends BaseListingComponent {
     filter: any = {}
     formattedDate: string = '';
     agentList: any[] = [];
-    selectedAgent!: string
+    selectedAgent!: any
 
     constructor(
         private crmService: CrmService,
@@ -123,6 +123,11 @@ export class InboxAgentComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['createdDate'].value) {
@@ -142,6 +147,11 @@ export class InboxAgentComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
             if (filterData['table_config']['createdDate'].value) {
                 filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
             }

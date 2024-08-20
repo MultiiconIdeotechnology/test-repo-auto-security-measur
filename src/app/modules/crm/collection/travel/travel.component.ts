@@ -114,6 +114,11 @@ export class TravelCollectionComponent extends BaseListingComponent {
     ngOnChanges() {
         if (this.activeTab == 'Travel') {
             this.settingsTravelSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+                this.selectedAgent = resp['table_config']['agencyName']?.value;
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
                 this.sortColumn = resp['sortColumn'];
                 this.primengTable['_sortField'] = resp['sortColumn'];
 
@@ -133,6 +138,11 @@ export class TravelCollectionComponent extends BaseListingComponent {
                 this.isFilterShowTravel = true;
 
                 let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
                 if (filterData['table_config']['dueDate'].value) {
                     filterData['table_config']['dueDate'].value = new Date(filterData['table_config']['dueDate'].value);
                 }

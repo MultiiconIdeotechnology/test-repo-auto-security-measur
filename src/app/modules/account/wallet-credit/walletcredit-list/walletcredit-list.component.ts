@@ -67,8 +67,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
-  agentList:any[] = [];
-  selectedAgent:string;
+  agentList: any[] = [];
+  selectedAgent: any = {};
 
   columns = [
     {
@@ -215,18 +215,23 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     ];
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedAgent = resp['table_config']['master_agent_name']?.value;
+      const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+      if (!match) {
+        this.agentList.push(this.selectedAgent);
+      }
       this.sortColumn = resp['sortColumn'];
       this.primengTable['_sortField'] = resp['sortColumn'];
-      if(resp['table_config']['expiry_date'].value){
-          resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+      if (resp['table_config']['expiry_date'].value) {
+        resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
       }
-      if(resp['table_config']['entry_date_time'].value){
+      if (resp['table_config']['entry_date_time'].value) {
         resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.primengTable._filter();
-  });
+    });
 
     // To call Agent lis api on default data
     this.getAgent("");
@@ -237,10 +242,15 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      if(filterData['table_config']['expiry_date'].value){
+      this.selectedAgent = filterData['table_config']['master_agent_name']?.value;
+      const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+      if (!match) {
+        this.agentList.push(this.selectedAgent);
+      }
+      if (filterData['table_config']['expiry_date'].value) {
         filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
       }
-      if(filterData['table_config']['entry_date_time'].value){
+      if (filterData['table_config']['entry_date_time'].value) {
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = filterData['table_config'];
@@ -270,14 +280,14 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     });
   }
 
-    // function to get the Agent list from api
-  getAgent(value: string, bool=true) {
+  // function to get the Agent list from api
+  getAgent(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
-        this.agentList = data;
+      this.agentList = data;
 
-        for (let i in this.agentList) {
-            this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
-        }
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      }
     })
   }
 
@@ -426,7 +436,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         dt.expiry_date = DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy hh:mm a')
         dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a')
         // dt.entry_by = DateTime.fromISO(dt.entry_by).toFormat('dd-MM-yyyy hh:mm a')
-        
+
       }
       Excel.export(
         'Wallet Credit',
