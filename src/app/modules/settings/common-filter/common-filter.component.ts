@@ -292,7 +292,7 @@ export class CommonFilterComponent implements OnInit {
             const activeData = JSON.parse(this._filterService.activeFiltData?.grid_config || '{}')
             const activeKeys = Object.keys(activeData?.table_config);
             let currentFiltData: any = this._filterService.fliterTableConfig['filters'];
-
+            
             for (const key of activeKeys) {
                 const activeValue = activeData.table_config[key]?.value || '';
                 const currentValue = currentFiltData[key]?.value || '';
@@ -300,8 +300,14 @@ export class CommonFilterComponent implements OnInit {
                 const currentMatchMode = currentFiltData[key]?.matchMode;
 
                 // If any value or matchMode is different
-                if (activeValue !== currentValue || activeMatchMode !== currentMatchMode) {
-                    return true;
+                if(currentFiltData[key].value && currentFiltData[key].value?.id) {
+                    if (activeValue.id !== currentValue.id) {
+                        return true;
+                    }
+                } else {
+                    if (activeValue !== currentValue || activeMatchMode !== currentMatchMode) {
+                        return true;
+                    }
                 }
             }
             
