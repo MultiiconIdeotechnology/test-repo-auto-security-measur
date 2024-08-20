@@ -64,106 +64,9 @@ export class SupplierApiListComponent
     supplierList: any[] = [];
     selectedSupplier: string;
 
-    columns = [
-        {
-            key: 'supplier_api_id',
-            name: 'ID',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true
-        },
-        {
-            key: 'is_live',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-            isLive: true
-        },
-        {
-            key: 'supplier_name',
-            name: 'Supplier Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true
-        },
-        // {
-        //     key: 'api_for',
-        //     name: 'API For',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: false,
-        //     tooltip: true
-        // },
-        // {
-        //     key: 'user_id',
-        //     name: 'User ID',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: false,
-        //     tooltip: true
-        // },
-        // {
-        //     key: 'api_key',
-        //     name: 'API Key',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: false,
-        //     tooltip: true
-        // },
-        {
-            key: 'enable_for',
-            name: 'Enable For',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true
-        },
-        {
-            key: 'inventory_for',
-            name: 'Inventory Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true
-        }
+    cols: Column[] = [
+        { field: 'api_for', header: 'Api For' },
     ];
-    cols = [];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     liveStatusList = [
@@ -180,7 +83,6 @@ export class SupplierApiListComponent
         private toasterService: ToasterService
     ) {
         super(module_name.supplierapi);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'supplier_name';
         this.sortDirection = 'asc';
@@ -189,9 +91,6 @@ export class SupplierApiListComponent
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'api_for', header: 'Api For' },
-        ];
 
         this.getSupplierList();
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -202,6 +101,7 @@ export class SupplierApiListComponent
                 this.selectedSupplier = resp['table_config'].supplier_name?.value;
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -210,12 +110,13 @@ export class SupplierApiListComponent
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if(filterData['table_config']['supplier_name']){
                 this.selectedSupplier = filterData['table_config'].supplier_name?.value;
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
@@ -224,7 +125,13 @@ export class SupplierApiListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {

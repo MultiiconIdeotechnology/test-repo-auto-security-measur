@@ -84,7 +84,18 @@ export class AgentListComponent extends BaseListingComponent {
         { label: 'No', value: false }
     ];
 
-    cols = [];
+    cols: Column[] = [
+        { field: 'is_blocked', header: 'Blocked' },
+        { field: 'pan_number', header: 'PAN Number' },
+        { field: 'gst_number', header: 'GST Number' },
+        { field: 'markup_profile_name', header: 'Markup Profile' },
+        { field: 'kyc_profile_name', header: 'KYC Profile' },
+        { field: 'balance', header: 'Balance' },
+        { field: 'web_last_login_time', header: 'Last Login' },
+        { field: 'is_wl', header: 'WL' },
+        { field: 'is_test', header: 'Read Only' },
+        { field: 'subagent_count', header: 'Sub Agent Count' },
+    ];
 
     // statusList = ['All', 'New', 'Active','Inactive','Dormant',];
 
@@ -157,18 +168,6 @@ export class AgentListComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'is_blocked', header: 'Blocked' },
-            { field: 'pan_number', header: 'PAN Number' },
-            { field: 'gst_number', header: 'GST Number' },
-            { field: 'markup_profile_name', header: 'Markup Profile' },
-            { field: 'kyc_profile_name', header: 'KYC Profile' },
-            { field: 'balance', header: 'Balance' },
-            { field: 'web_last_login_time', header: 'Last Login' },
-            { field: 'is_wl', header: 'WL' },
-            { field: 'is_test', header: 'Read Only' },
-            { field: 'subagent_count', header: 'Sub Agent Count' },
-        ];
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // console.log("resp['table_config']", resp['table_config']);
@@ -184,6 +183,7 @@ export class AgentListComponent extends BaseListingComponent {
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -199,7 +199,6 @@ export class AgentListComponent extends BaseListingComponent {
     ngAfterViewInit(){
         // Defult Active filter show
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             // console.log("ngAfterViewInit");
             this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
@@ -211,6 +210,8 @@ export class AgentListComponent extends BaseListingComponent {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
@@ -283,7 +284,13 @@ export class AgentListComponent extends BaseListingComponent {
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     getFilter(): any {

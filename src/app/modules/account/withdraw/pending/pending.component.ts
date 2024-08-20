@@ -286,8 +286,10 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
     const filterReq = this.getNewFilterReq(event);
     filterReq['status'] = 'pending';
     filterReq['Filter'] = this.searchInputControlPending.value;
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd');
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = "";
+    filterReq['ToDate'] = "";
     filterReq['agent_id'] = this.filter?.agent_id == 'all' ? '' : this.filter?.agent_id;
     this.withdrawService.getWalletWithdrawList(filterReq).subscribe(
       {

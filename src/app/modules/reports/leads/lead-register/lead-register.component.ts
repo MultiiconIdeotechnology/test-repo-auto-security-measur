@@ -43,11 +43,7 @@ import { Subscription } from 'rxjs';
     selector: 'app-lead-register',
     templateUrl: './lead-register.component.html',
     styleUrls: ['./lead-register.component.scss'],
-    styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 50px 110px 80px 190px 160px 130px 110px 180px 210px 120px 130px 120px 130px 120px 120px;
-  }
-  `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -86,24 +82,6 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     deadLeadId: any;
     isFilterShow: boolean = false;
 
-    columns = [
-        { key: 'calls', name: 'Calls', callAction: true, tocalls: true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'status', name: 'Status', toColor: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'priority_text', name: 'Priority', toColorP: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'agency_name', name: 'Agency', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'rmName', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'lead_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-        { key: 'lead_source', name: 'Source', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'contact_person_name', name: 'Contact Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'contact_person_email', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'contact_person_mobile', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'cityName', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'kycStarted', name: 'KYC Started', isLive: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'lastCallFeedback', name: 'Last Feedback', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'lastCall', name: 'Last Call', isDate: true, is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'leadDate', name: 'Lead Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
-
     selectedStatus: string;
     selectedPriority: string;
     selectedLeadType: string;
@@ -141,7 +119,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         { label: 'No', value: 'No' },
     ]
 
-    cols = [];
+    cols: Column[] = [
+        { field: 'contact_person_mobile_code', header: 'Contact Person Mobile Code' }
+    ];
     _selectedColumns: Column[];
     leadStatus: any;
 
@@ -175,10 +155,6 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'contact_person_mobile_code', header: 'Contact Person Mobile Code' }
-        ];
-
         this.getAgent("");
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
@@ -193,6 +169,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 resp['table_config']['leadDate'].value = new Date(resp['table_config']['leadDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -203,13 +180,18 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if(filterData['table_config']['supplier_name']){
                 this.leadStatus = filterData['table_config'].supplier_name?.value;
@@ -221,6 +203,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 filterData['table_config']['leadDate'].value = new Date(filterData['table_config']['leadDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 

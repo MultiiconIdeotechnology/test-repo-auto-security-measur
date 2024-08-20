@@ -58,63 +58,9 @@ export class PspListComponent extends BaseListingComponent {
   dataList = [];
   total = 0;
 
-  columns = [
-    {
-      key: 'provider',
-      name: 'Provider',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: true,
-      is_boolean: false,
-      tooltip: true,
-      isicon: true,
-    },
-    {
-      key: 'is_live',
-      name: 'Status',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-      isLive: true
-    },
-    {
-      key: 'psp_for',
-      name: 'PSP For',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-      isLive: false
-    },
-    {
-      key: 'psp_for_name',
-      name: 'PSP For Name',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-      isLive: false
-    },
-
+  cols: Column[] = [
+    { field: 'api_for', header: 'Api For' },
   ];
-  cols = [];
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
 
@@ -126,7 +72,6 @@ export class PspListComponent extends BaseListingComponent {
     public _filterService: CommonFilterService
   ) {
     super(module_name.pspsetting);
-    this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
     this.sortColumn = 'provider';
     this.sortDirection = 'asc';
@@ -135,13 +80,11 @@ export class PspListComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'api_for', header: 'Api For' },
-    ];
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
         this.sortColumn = resp['sortColumn'];
         this.primengTable['_sortField'] = resp['sortColumn'];
         this.primengTable['filters'] = resp['table_config'];
+        this._selectedColumns = resp['selectedColumns'] || [];
         this.isFilterShow = true;
         this.primengTable._filter();
     });
@@ -150,9 +93,10 @@ export class PspListComponent extends BaseListingComponent {
   ngAfterViewInit(){
     // Defult Active filter show
     if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShow = true;
         let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
         this.primengTable['filters'] = filterData['table_config'];
+        this._selectedColumns = filterData['selectedColumns'] || [];
+        this.isFilterShow = true;
     }
   }
 
@@ -161,7 +105,13 @@ export class PspListComponent extends BaseListingComponent {
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
 

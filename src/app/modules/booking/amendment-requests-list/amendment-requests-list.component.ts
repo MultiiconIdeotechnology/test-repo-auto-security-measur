@@ -337,8 +337,10 @@ export class AmendmentRequestsListComponent
             this.searchInputControl.value
         );
 
-        filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = ''; 
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['agent_id'] = this.AmendmentFilter?.agent_id?.id || '';
         filterReq['supplier_id'] = this.AmendmentFilter?.supplier_id?.id || '';
         filterReq['status'] = this.AmendmentFilter?.status == 'All' ? '' : this.AmendmentFilter?.status;

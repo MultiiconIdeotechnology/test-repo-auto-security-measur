@@ -250,8 +250,10 @@ export class BusComponent extends BaseListingComponent {
 
   getFilter(): any {
     const filterReq = {};
-    filterReq['FromDate'] = DateTime.fromJSDate(this.busFilter.FromDate).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(this.busFilter.ToDate).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = '';
+    filterReq['ToDate'] = ''; 
+    // filterReq['FromDate'] = DateTime.fromJSDate(this.busFilter.FromDate).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(this.busFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['agent_id'] = this.busFilter?.agent_id?.id || '';
     filterReq['From'] = this.busFilter?.From?.id || '';
     filterReq['To'] = this.busFilter?.To?.id || '';

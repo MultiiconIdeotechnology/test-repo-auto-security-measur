@@ -66,58 +66,22 @@ export class ReceiptRegisterComponent
     agentList: any[] = [];
     selectedAgent:any;
 
-    columns = [
-        {
-            key: 'receipt_ref_no',
-            name: 'Receipt No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'receipt_request_date',
-            name: 'Date',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agent_Code',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agent_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
+    cols: Column[] = [
+        { field: 'receipt_ref_no', header: 'Receipt No.' },
+        { field: 'receipt_request_date', header: 'Date' },
+        { field: 'agent_Code', header: 'Agent Code' },
+        { field: 'agent_name', header: 'Agency Name' },
+        { field: 'service', header: 'Service' },
+        { field: 'booking_ref_no', header: 'Booking Ref. No.' },
+        { field: 'pnr', header: 'PNR' },
+        { field: 'mode_of_payment', header: 'MOP' },
+        { field: 'currency', header: 'Currency' },
+        { field: 'wallet_amount', header: 'Wallet Amount' },
+        { field: 'pg_amount', header: 'PG Amount' },
+        { field: 'pg_name', header: 'PSP' },
+        { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
+        { field: 'company', header: 'Company' }
     ];
-
-    cols: Column[];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     companyList: any[] = [];
@@ -131,7 +95,6 @@ export class ReceiptRegisterComponent
         public _filterService: CommonFilterService
     ) {
         super(module_name.city);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'receipt_request_date';
         this.sortDirection = 'desc';
@@ -151,23 +114,6 @@ export class ReceiptRegisterComponent
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'receipt_ref_no', header: 'Receipt No.' },
-            { field: 'receipt_request_date', header: 'Date' },
-            { field: 'agent_Code', header: 'Agent Code' },
-            { field: 'agent_name', header: 'Agency Name' },
-            { field: 'service', header: 'Service' },
-            { field: 'booking_ref_no', header: 'Booking Ref. No.' },
-            { field: 'pnr', header: 'PNR' },
-            { field: 'mode_of_payment', header: 'MOP' },
-            { field: 'currency', header: 'Currency' },
-            { field: 'wallet_amount', header: 'Wallet Amount' },
-            { field: 'pg_amount', header: 'PG Amount' },
-            { field: 'pg_name', header: 'PSP' },
-            { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
-            { field: 'company', header: 'Company' }
-        ];
-
         this.currentFilter = {
             status: '',
             payment_gateway: 'All',
@@ -190,6 +136,7 @@ export class ReceiptRegisterComponent
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -198,12 +145,13 @@ export class ReceiptRegisterComponent
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
@@ -351,7 +299,13 @@ export class ReceiptRegisterComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {

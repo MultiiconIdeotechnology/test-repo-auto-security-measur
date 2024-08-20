@@ -77,7 +77,15 @@ export class VisaComponent extends BaseListingComponent {
     total = 0;
     visaFilter: any;
     user: any = {};
-    cols = [];
+    cols: any = [
+        { field: 'visa_type', header: 'Visa Type', isDate: false, type: 'text' },
+        { field: 'length_of_stay', header: 'Length of Stay', isDate: false, type: 'numeric' },
+        { field: 'customer_name', header: 'Customer Name', isDate: false, type: 'text' },
+        { field: 'payment_request_time', header: 'Payment Request Time', isDate: true, type: 'date' },
+        { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true, type: 'date' },
+        { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false, type: 'text' },
+        { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false, type: 'text' },
+    ];
     agentList: any[] = [];
     isFilterShow: boolean = false;
     _selectedColumns: Column[];
@@ -123,20 +131,10 @@ export class VisaComponent extends BaseListingComponent {
 
     ngOnInit() {
 
-        this.cols = [
-          { field: 'visa_type', header: 'Visa Type', isDate:false, type:'text' },
-          { field: 'length_of_stay', header: 'Length of Stay', isDate:false, type:'numeric' },
-          { field: 'customer_name', header: 'Customer Name', isDate:false, type:'text' },
-          { field: 'payment_request_time', header: 'Payment Request Time', isDate:true, type:'date' },
-          { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate:true, type:'date' },
-          { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate:false, type:'text' },
-          { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate:false, type:'text' },
-        ];
-
         this.getAgent("", true);
 
-         // common filter
-         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
@@ -146,15 +144,15 @@ export class VisaComponent extends BaseListingComponent {
                 resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
-      }
+    }
 
-      ngAfterViewInit() {
+    ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
@@ -163,15 +161,23 @@ export class VisaComponent extends BaseListingComponent {
                 filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
     get selectedColumns(): Column[] {
         return this._selectedColumns;
-      }
+    }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     getFilter(): any {
@@ -179,16 +185,26 @@ export class VisaComponent extends BaseListingComponent {
         filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
         filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
         filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
+        // const filterReq = GridUtils.GetFilterReq(
+        //     this._paginator,
+        //     this._sort,
+        //     this.searchInputControl.value
+        // );
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = ''; 
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
+        filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
         filterReq['agent_id'] = this.visaFilter?.agent_id?.id || '';
         filterReq['Status'] = this.visaFilter?.Status == 'All' ? '' : this.visaFilter?.Status;
         return filterReq;
     }
 
-    getAgent(value:string, bool:boolean = true){
+    getAgent(value: string, bool: boolean = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
             }
         });
@@ -345,13 +361,13 @@ export class VisaComponent extends BaseListingComponent {
                     { header: 'Pax', property: 'pax' },
                     { header: 'PG', property: 'payment_gateway' },
                     { header: 'IP Address', property: 'ip_address' },
-                    { property: 'visa_type', header: 'Visa Type'},
-                    { property: 'length_of_stay', header: 'Length of Stay'},
-                    { property: 'customer_name', header: 'Customer Name'},
-                    { property: 'payment_request_time', header: 'Payment Request Time'},
-                    { property: 'payment_confirmation_time', header: 'Payment Confirmation Time'},
-                    { property: 'psp_ref_number', header: 'PSP Refrence No.'},
-                    { property: 'payment_fail_reason', header: 'Payment Fail Reason'},
+                    { property: 'visa_type', header: 'Visa Type' },
+                    { property: 'length_of_stay', header: 'Length of Stay' },
+                    { property: 'customer_name', header: 'Customer Name' },
+                    { property: 'payment_request_time', header: 'Payment Request Time' },
+                    { property: 'payment_confirmation_time', header: 'Payment Confirmation Time' },
+                    { property: 'psp_ref_number', header: 'PSP Refrence No.' },
+                    { property: 'payment_fail_reason', header: 'Payment Fail Reason' },
                 ],
                 data.data, "Visa Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });

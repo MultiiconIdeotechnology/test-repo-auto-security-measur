@@ -73,7 +73,12 @@ export class WhitelabelListComponent extends BaseListingComponent {
         { label: 'No', value: false }
     ];
     
-    cols: any[];
+    cols: any = [
+        { field: 'is_payment_due', header: 'Payment Due', isBoolean: true },
+        { field: 'is_wl_expired', header: 'Wl Expired', isBoolean: true },
+        { field: 'address_1', header: 'Address 1', isBoolean: false },
+        { field: 'address_2', header: 'Address 2', isBoolean: false }
+    ];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
@@ -101,16 +106,6 @@ export class WhitelabelListComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'is_payment_due', header: 'Payment Due', isBoolean: true },
-            { field: 'is_wl_expired', header: 'Wl Expired', isBoolean: true },
-            { field: 'address_1', header: 'Address 1', isBoolean: false },
-            { field: 'address_2', header: 'Address 2', isBoolean: false },
-            // { field: 'is_b2b_partner_wl', header: 'B2B Partner WL', isBoolean: true },
-            // { field: 'is_b2c_mobile_wl', header: 'B2C Mobile WL', isBoolean: true },
-            // { field: 'is_enabled', header: 'Enabled', isBoolean: true },
-        ];
-
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             console.log("resp", resp)
             this.selectedAgent = resp['table_config']['agency_name']?.value;
@@ -127,6 +122,7 @@ export class WhitelabelListComponent extends BaseListingComponent {
                 resp['table_config']['wl_activation_date'].value = new Date(resp['table_config']['wl_activation_date'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -138,7 +134,6 @@ export class WhitelabelListComponent extends BaseListingComponent {
     ngAfterViewInit(){
         // Defult Active filter show
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -152,6 +147,8 @@ export class WhitelabelListComponent extends BaseListingComponent {
                 filterData['table_config']['wl_activation_date'].value = new Date(filterData['table_config']['wl_activation_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
       }
 
@@ -160,7 +157,13 @@ export class WhitelabelListComponent extends BaseListingComponent {
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?:any): void {

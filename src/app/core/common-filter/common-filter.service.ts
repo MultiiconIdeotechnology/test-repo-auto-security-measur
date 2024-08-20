@@ -21,6 +21,7 @@ export class CommonFilterService {
     filter_table_name: any;
     fliterTableConfig: any;
     activeFiltData: any = {};
+    selectedColumns: any = [];
 
     constructor(private http: HttpClient) { }
 
@@ -64,10 +65,11 @@ export class CommonFilterService {
     }
 
     // Common Filter Drawer
-    openDrawer(table_name: any, primengTable: Table) {
+    openDrawer(table_name: any, primengTable: Table, _selectedColumns?: any) {
         this.filterDrawerVisible = true;
         this.filter_table_name = table_name;
         this.fliterTableConfig = primengTable || {};
+        this.selectedColumns = _selectedColumns || [];
         let localFilterData = this.getFilterData();
         this.showFiltSubject();
 

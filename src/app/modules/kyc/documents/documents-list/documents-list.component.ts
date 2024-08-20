@@ -168,11 +168,14 @@ export class DocumentsListComponent
         },
     ];
 
-    cols = [];
+    cols: any = [
+        { field: 'rejection_note', header: 'Rejection Note', type:'text' },
+        { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
+    ];
     isFilterShow: boolean = false;
-    selectedStatus:string;
-    selectedDocument:string;
-    selectedMasterStatus:string;
+    selectedStatus: string;
+    selectedDocument: string;
+    selectedMasterStatus: string;
     statusList = [
         { label: 'Audited', value: 'Audited' },
         { label: 'Rejected', value: 'Rejected' },
@@ -196,7 +199,6 @@ export class DocumentsListComponent
         public _filterService: CommonFilterService
     ) {
         super(module_name.kycdocument);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
@@ -214,11 +216,6 @@ export class DocumentsListComponent
     ngOnInit(): void {
         this.getDocList();
 
-        this.cols = [
-            { field: 'rejection_note', header: 'Rejection Note', type:'text' },
-            { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
-        ];
-
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
@@ -228,6 +225,7 @@ export class DocumentsListComponent
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -237,12 +235,13 @@ export class DocumentsListComponent
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
@@ -251,7 +250,13 @@ export class DocumentsListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
 

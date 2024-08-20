@@ -10,11 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
@@ -24,14 +21,13 @@ import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, bookingsFlightPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Excel } from 'app/utils/export/excel';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { Linq } from 'app/utils/linq';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { FlightFilterComponent } from './flight-filter/flight-filter.component';
 import { MarkuppriceInfoComponent } from './markupprice-info/markupprice-info.component';
 import { ImportPnrComponent } from './import-pnr/import-pnr.component';
-import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { ToasterService } from 'app/services/toaster.service';
 import { StatusUpdateComponent } from './status-update/status-update.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
@@ -44,11 +40,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     selector: 'app-flight',
     templateUrl: './flight.component.html',
     styleUrls: ['./flight.component.scss'],
-    styles: [`
-    .tbl-grid {
-      grid-template-columns:  40px 240px 170px 170px 130px 130px 150px 140px 140px 120px 100px 300px 90px 90px 180px 120px 140px 120px 170px 150px 140px 140px 141px;
-    }
-    `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -60,9 +52,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatFormFieldModule,
         MatIconModule,
         MatMenuModule,
-        MatTableModule,
-        MatSortModule,
-        MatPaginatorModule,
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
@@ -394,10 +383,10 @@ export class FlightComponent extends BaseListingComponent {
 
     ];
     cols = [];
-    selectedToAirport:string;
-    selectedFromAirport:string;
-    selectedSupplier:string;
-    selectedAgent:string;
+    selectedToAirport: string;
+    selectedFromAirport: string;
+    selectedSupplier: string;
+    selectedAgent: string;
     statusList = [
         { label: 'Pending', value: 'Pending' },
         { label: 'Rejected', value: 'Rejected' },
@@ -430,7 +419,6 @@ export class FlightComponent extends BaseListingComponent {
         public _filterService: CommonFilterService
     ) {
         super(module_name.flight);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'bookingDate';
         this.sortDirection = 'desc';
@@ -497,8 +485,14 @@ export class FlightComponent extends BaseListingComponent {
     // }
 
     // set selectedColumns(val: Column[]) {
-    //     this._selectedColumns = this.cols.filter((col) => val.includes(col));
-    // }
+    //     if (Array.isArray(val)) {
+    //       this._selectedColumns = this.cols.filter(col =>
+    //         val.some(selectedCol => selectedCol.field === col.field)
+    //       );
+    //     } else {
+    //       this._selectedColumns = [];
+    //     }
+    //   }
 
     copy(link) {
         this.clipboard.copy(link);

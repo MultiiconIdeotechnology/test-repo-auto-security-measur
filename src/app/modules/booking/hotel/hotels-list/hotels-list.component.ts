@@ -255,8 +255,10 @@ export class HotelsListComponent extends BaseListingComponent {
       this._sort,
       this.searchInputControl.value
     );
-    filterReq['FromDate'] = DateTime.fromJSDate(this.hotelFilter.FromDate).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(this.hotelFilter.ToDate).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = '';
+    filterReq['ToDate'] = ''; 
+    // filterReq['FromDate'] = DateTime.fromJSDate(this.hotelFilter.FromDate).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(this.hotelFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['agent_id'] = this.hotelFilter?.agent_id?.id || '';
     filterReq['From'] = '';
     filterReq['supplierId'] = this.hotelFilter?.supplierId?.map(x => x.id).join(',') == 'all' ? '' : this.hotelFilter?.supplierId?.map(x => x.id).join(',');

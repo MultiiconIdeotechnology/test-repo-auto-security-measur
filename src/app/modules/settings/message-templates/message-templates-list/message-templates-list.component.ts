@@ -62,126 +62,10 @@ export class MessageTemplatesListComponent
     dataList = [];
     total = 0;
 
-    columns = [
-        {
-            key: 'template_for',
-            name: 'Template For',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'event_name',
-            name: 'Event',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'message_type',
-            name: 'Message Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'message_title',
-            name: 'Title',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'email_subject',
-            name: 'Subject',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'message_template',
-            name: 'Template',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            inicon: true,
-            tooltip: true
-        },
-        {
-            key: 'send_to',
-            name: 'Send To',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        // {
-        //     key: 'send_from_name',
-        //     name: 'Send From',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: false,
-        //     inicon: false,
-        //     tooltip: true
-        // },
-        {
-            key: 'individual_address',
-            name: 'Individual Address',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
+    cols: any = [
+        { field: 'template_for_name', header: 'Template For Name', type: 'text' },
+        { field: 'modify_date_time', header: 'Modify Date Time', type: 'date' },
     ];
-    cols = [];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
@@ -194,7 +78,6 @@ export class MessageTemplatesListComponent
         public _filterService: CommonFilterService
     ) {
         super(module_name.messagetemplates);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'event_name';
         this.sortDirection = 'asc';
@@ -203,11 +86,6 @@ export class MessageTemplatesListComponent
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'template_for_name', header: 'Template For Name', type: 'text' },
-            { field: 'modify_date_time', header: 'Modify Date Time', type: 'date' },
-        ];
-
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
@@ -216,6 +94,7 @@ export class MessageTemplatesListComponent
             //     resp['table_config']['modify_date_time'].value = new Date(resp['table_config']['modify_date_time']?.value);
             // }
             this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -224,12 +103,13 @@ export class MessageTemplatesListComponent
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             // if (filterData['table_config']['modify_date_time'] && filterData['table_config']['modify_date_time']?.value) {
             //     filterData['table_config']['modify_date_time'].value = new Date(filterData['table_config']['modify_date_time']?.value);
             // }
             this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
         }
     }
 
@@ -238,7 +118,13 @@ export class MessageTemplatesListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {

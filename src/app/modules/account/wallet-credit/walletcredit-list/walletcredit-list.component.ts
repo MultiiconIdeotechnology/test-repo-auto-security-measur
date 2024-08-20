@@ -180,7 +180,11 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       tooltip: false,
     },
   ];
-  cols = [];
+  cols: Column[] = [
+    { field: 'entry_by', header: 'Entry By' },
+    { field: 'sub_agent_name', header: 'Sub Agent Name' },
+    { field: 'sub_agent_code', header: 'Sub Agent Code' },
+  ];
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
   selectedAction: string;
@@ -198,7 +202,6 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     public _filterService: CommonFilterService
   ) {
     super(module_name.walletCredit);
-    this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
     this.sortColumn = 'is_enable';
     this.sortDirection = 'desc';
@@ -207,12 +210,6 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   }
 
   ngOnInit() {
-
-    this.cols = [
-      { field: 'entry_by', header: 'Entry By' },
-      { field: 'sub_agent_name', header: 'Sub Agent Name' },
-      { field: 'sub_agent_code', header: 'Sub Agent Code' },
-    ];
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.selectedAgent = resp['table_config']['master_agent_name']?.value;
@@ -229,6 +226,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
+
       this.isFilterShow = true;
       this.primengTable._filter();
     });
@@ -254,6 +253,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
     }
   }
 
@@ -262,7 +262,13 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   refreshItems(event?: any): void {

@@ -85,7 +85,8 @@ export class CommonFilterComponent implements OnInit {
                     panel_name: "BO",
                     grid_configuration: JSON.stringify({
                         sortColumn: this._filterService.fliterTableConfig['_sortField'],
-                        table_config: this._filterService.fliterTableConfig['filters']
+                        table_config: this._filterService.fliterTableConfig['filters'],
+                        selectedColumns: this._filterService.selectedColumns || [],
                     })
                 }
 
@@ -176,10 +177,11 @@ export class CommonFilterComponent implements OnInit {
                         grid_name: this._filterService.filter_table_name,
                         grid_configuration: JSON.stringify({
                             sortColumn: this._filterService.fliterTableConfig['_sortField'],
-                            table_config: this._filterService.fliterTableConfig['filters']
+                            table_config: this._filterService.fliterTableConfig['filters'],
+                            selectedColumns: this._filterService.selectedColumns || []
                         })
                     }
-
+                    
                     this._filterService.createNewFilter(body).subscribe({
                         next: (data: any) => {
                             if (data && data.status && data?.data.length) {
@@ -299,6 +301,16 @@ export class CommonFilterComponent implements OnInit {
 
                 // If any value or matchMode is different
                 if (activeValue !== currentValue || activeMatchMode !== currentMatchMode) {
+                    return true;
+                }
+            }
+            
+            if (activeData?.selectedColumns && activeData.selectedColumns.length !== this._filterService.selectedColumns.length) {
+                return true;
+            }
+
+            for (let i = 0; i < activeData?.selectedColumns.length; i++) {
+                if (activeData?.selectedColumns[i].field !== this._filterService.selectedColumns[i].field) {
                     return true;
                 }
             }

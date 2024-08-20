@@ -56,7 +56,7 @@ export class AuditedComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowAudit: boolean;
-  @Input() filterApiData:any;
+  @Input() filterApiData: any;
   @Input() activeTab: any;
 
   searchInputControlAudit = new FormControl('');
@@ -75,11 +75,11 @@ export class AuditedComponent extends BaseListingComponent {
   appConfig = AppConfig;
   auditListFilter: any = {};
   agentList: any[] = [];
-  pspList:any[] = [];
-  mopList:any[] = [];
-  selectedMop:any;
-  selectedPsp:any;
-  selectedEmployee:any;
+  pspList: any[] = [];
+  mopList: any[] = [];
+  selectedMop: any;
+  selectedPsp: any;
+  selectedEmployee: any;
 
   cols = [];
 
@@ -103,7 +103,7 @@ export class AuditedComponent extends BaseListingComponent {
       particularId: '',
       mop: '',
       psp: '',
-      agency_name : '',
+      agency_name: '',
       FromDate: new Date(),
       ToDate: new Date(),
     };
@@ -127,7 +127,7 @@ export class AuditedComponent extends BaseListingComponent {
           this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
         }
         if (resp['table_config']['audited_date_time'].value) {
-            resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
+          resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
         }
         this.primengTable['filters'] = resp['table_config'];
         this.isFilterShowAudit = true;
@@ -142,7 +142,7 @@ export class AuditedComponent extends BaseListingComponent {
           this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
         }
         if (filterData['table_config']['audited_date_time'].value) {
-            filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
+          filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
         }
 
         this.primengTable['filters'] = filterData['table_config'];
@@ -158,23 +158,23 @@ export class AuditedComponent extends BaseListingComponent {
     // }
   }
 
-  getAgentList(value: string, bool=true) {
+  getAgentList(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
 
-      for(let i in this.agentList){
+      for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
       }
     })
-}
+  }
 
-  getMopList(value:string){
+  getMopList(value: string) {
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
       this.filterApiData.mopData = data;
     })
   }
 
-  getPspList(value:string){
+  getPspList(value: string) {
     this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
       this.filterApiData.pspData = data;
     })
@@ -186,8 +186,8 @@ export class AuditedComponent extends BaseListingComponent {
     }
 
     this.matDialog.open(InfoWalletComponent, {
-        data: { data: record.id, readonly: true },
-        disableClose: true
+      data: { data: record.id, readonly: true },
+      disableClose: true
     })
   }
 
@@ -240,8 +240,10 @@ export class AuditedComponent extends BaseListingComponent {
     filterReq['particularId'] = this.auditListFilter?.particularId == "all" ? '' : this.auditListFilter?.particularId;
     filterReq['mop'] = this.auditListFilter?.mop || '';
     filterReq['psp'] = this.auditListFilter?.psp || '';
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.FromDate)).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.ToDate)).toFormat('yyyy-MM-dd');
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.FromDate)).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.ToDate)).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = "";
+    filterReq['ToDate'] = "";
 
     this.walletService.getWalletRechargeFilterList(filterReq).subscribe(
       {
@@ -316,7 +318,7 @@ export class AuditedComponent extends BaseListingComponent {
     if (this.settingsAuitedSubscription) {
       this.settingsAuitedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
-      }
+    }
   }
 
 }
