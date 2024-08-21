@@ -70,190 +70,6 @@ export class AmendmentRequestsListComponent
     total = 0;
 
     AmendmentFilter: any
-
-    columns = [
-        // {
-        //     key: 'is_request_sent_to_supplier',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     width: '10',
-        //     align: 'center',
-        //     indicator: false,
-        //     is_required: false,
-        //     is_boolean: false,
-        //     inicon: true,
-        // },
-        {
-            key: 'reference_no',
-            name: 'Ref. No',
-            is_date: false,
-            is_fixed: true,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'amendment_type',
-            name: 'Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'amendment_status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-            toColor: true,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agent',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'company_name',
-            name: 'Supplier',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'booking_ref_no',
-            name: 'Flight No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'pnr',
-            name: 'PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'gds_pnr',
-            name: 'GDS PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'amendment_request_time',
-            name: 'Requested On',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: false,
-        },
-        {
-            key: 'travel_date',
-            name: 'Travel Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: false,
-        },
-        {
-            key: 'amendment_confirmation_time',
-            name: 'Confirmed',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-    ];
     cols = [];
     selectedAgent:any
     selectedSupplier:any;
@@ -274,7 +90,6 @@ export class AmendmentRequestsListComponent
         public _filterService: CommonFilterService
     ) {
         super(module_name.amendmentRequests);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'amendment_request_time';
         this.sortDirection = 'desc';
@@ -301,6 +116,15 @@ export class AmendmentRequestsListComponent
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedSupplier = resp['table_config']['company_name']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['amendment_request_time'].value && resp['table_config']['amendment_request_time'].value.length) {
@@ -320,6 +144,8 @@ export class AmendmentRequestsListComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            this.selectedSupplier = filterData['table_config']['company_name']?.value;
             if (filterData['table_config']['amendment_request_time'].value && filterData['table_config']['amendment_request_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }
@@ -352,6 +178,13 @@ export class AmendmentRequestsListComponent
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
+
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
             }
@@ -361,6 +194,10 @@ export class AmendmentRequestsListComponent
     getSupplier(value: string, bool: boolean = true) {
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
+
+            for(let i in this.supplierList){
+               this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+            }
         });
     }
 

@@ -65,147 +65,6 @@ export class GroupInquiryListComponent
     selectedSupplier:any;
     agentList:any[] = [];
     supplierList:any[]= [];
-
-    columns = [
-        {
-            key: 'booking_ref_no',
-            name: 'Ref No.',
-            is_date: false,
-            is_fixed: true,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'agent_name',
-            name: 'Agent',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'supplier_name',
-            name: 'Supplier',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'booking_status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'pnr',
-            name: 'PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: false,
-        },
-        {
-            key: 'departure_date',
-            name: 'Departure Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: false,
-        },
-        {
-            key: 'arrival_date',
-            name: 'Arrival Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: false,
-        },
-        {
-            key: 'trip_type',
-            name: 'Trip Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-        {
-            key: 'pax',
-            name: 'Pax',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            is_required: false,
-            is_boolean: false,
-            inicon: false,
-            tooltip: true,
-        },
-
-    ];
-
     statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Expired'];
     cols = [];
 
@@ -218,7 +77,6 @@ export class GroupInquiryListComponent
         public _filterService: CommonFilterService
     ) {
         super(module_name.groupInquiry);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'departure_date';
         this.sortDirection = 'desc';
@@ -232,6 +90,16 @@ export class GroupInquiryListComponent
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            console.log("resp>>>", resp)
+            this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['departure_date'].value) {
@@ -251,6 +119,8 @@ export class GroupInquiryListComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            this.selectedSupplier = filterData['table_config']['supplier_name']?.value;
             if (filterData['table_config']['departure_date'].value) {
                 filterData['table_config']['departure_date'].value = new Date(filterData['table_config']['departure_date'].value);
             }
@@ -284,6 +154,14 @@ export class GroupInquiryListComponent
     getAgent(value: string, bool: boolean = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
+            
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
             }
@@ -293,6 +171,10 @@ export class GroupInquiryListComponent
     getSupplier(value: string, bool: boolean = true) {
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
+            
+            for(let i in this.supplierList){
+                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+             }
         });
     }
 

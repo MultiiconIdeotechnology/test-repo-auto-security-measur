@@ -220,7 +220,7 @@
                                     [(ngModel)]="selectedSupplier"
                                     [filter]="true"
                                     filterBy="company_name"
-                                    (onChange)="filter($event.value?.company_name)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select Supplier">
@@ -255,17 +255,15 @@
                                     [filter]="true"
                                     filterBy="agent_info"
                                     (onFilter)="getAgentList($event?.filter)"
-                                    (onChange)="filter($event.value?.id)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -283,7 +281,7 @@
                                     [filter]="true"
                                     filterBy="display_name"
                                     (onFilter)="getAirportFromList($event?.filter)"
-                                    (onChange)="filter($event.value?.id)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select From">
@@ -310,7 +308,7 @@
                                     [filter]="true"
                                     filterBy="display_name"
                                     (onFilter)="getAirportToList($event?.filter)"
-                                    (onChange)="filter($event.value?.id)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select To">

@@ -64,117 +64,13 @@ export class DocumentsListComponent
     private settingsUpdatedSubscription: Subscription;
     _selectedColumns: Column[];
 
-    columns = [
-        {
-            key: 'file_url',
-            name: 'Document',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: true,
-        },
-        {
-            key: 'document_of',
-            name: 'Document Of',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'is_audited',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            isicon: false,
-        },
-        {
-            key: 'document_user_name',
-            name: 'Particular',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'kyc_profile_name',
-            name: 'Profile',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'kyc_profile_doc_name',
-            name: 'Profile Doc',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'audit_by_name',
-            name: 'Audited By',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'entry_date_time',
-            name: 'Upload',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-        },
-    ];
-
     cols: any = [
         { field: 'rejection_note', header: 'Rejection Note', type:'text' },
         { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
     ];
     isFilterShow: boolean = false;
     selectedStatus: string;
-    selectedDocument: string;
+    selectedDocument: any;
     selectedMasterStatus: string;
     statusList = [
         { label: 'Audited', value: 'Audited' },
@@ -218,6 +114,7 @@ export class DocumentsListComponent
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedDocument = resp['table_config']['kyc_profile_doc_name']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
 
@@ -236,6 +133,7 @@ export class DocumentsListComponent
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedDocument = filterData['table_config']['kyc_profile_doc_name']?.value;
             if (filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
@@ -307,7 +205,13 @@ export class DocumentsListComponent
 
        // Currency List api
     getDocList(){
-        this.kycDocService.getDocumentTypeCombo("").subscribe((data) => this.documentList = data);
+        this.kycDocService.getDocumentTypeCombo("").subscribe((data) => {
+            this.documentList = data;
+
+            for(let i in this.documentList){
+                this.documentList[i].id_by_value = this.documentList[i].document_name;
+             }
+        } );
     }
 
     createInternal(model): void {

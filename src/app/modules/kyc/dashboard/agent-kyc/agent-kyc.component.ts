@@ -77,7 +77,7 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   kycProfileList: any[] = [];
   selectedKycProfile: any;
   employeeList: any[] = [];
-  selectedEmployee: any;
+  selectedRm: any;
 
   columns = [
     { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
@@ -119,6 +119,9 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
 
   ngOnInit() {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      console.log("resp", resp);
+      this.selectedKycProfile = resp['table_config']['kyc_profile_id_filters']?.value;
+      this.selectedRm = resp['table_config']['relation_manager']?.value;
       this.sortColumn = resp['sortColumn'];
       this.primengTable['_sortField'] = resp['sortColumn'];
 
@@ -143,7 +146,9 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      
+      this.selectedKycProfile = filterData['table_config']['kyc_profile_id_filters']?.value;
+      this.selectedRm = filterData['table_config']['relation_manager']?.value;
+
       if (filterData['table_config']['entry_date_time'].value) {
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
@@ -201,6 +206,10 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   getKycCombo() {
     this.kycService.getkycprofileCombo('agent').subscribe((data) => {
       this.kycProfileList = data;
+
+      for (let i in this.kycProfileList) {
+        this.kycProfileList[i].id_by_value = this.kycProfileList[i].profile_name; 
+      }
     })
   }
 
@@ -208,6 +217,10 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   getRelationManagerList(value: any) {
     this.employeeService.getemployeeCombo(value).subscribe((data) => {
       this.employeeList = data;
+
+      for (let i in this.employeeList) {
+        this.employeeList[i].id_by_value = this.employeeList[i].employee_name; 
+      }
     })
   }
 

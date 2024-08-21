@@ -134,7 +134,7 @@
                                     [(ngModel)]="selectedKycProfile"
                                     [filter]="true"
                                     filterBy="profile_name"
-                                    (onChange)="filter($event.value?.profile_name)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select Kyc Profile">
@@ -156,7 +156,7 @@
                                     [(ngModel)]="selectedRm"
                                     [filter]="true"
                                     filterBy="employee_name"
-                                    (onChange)="filter($event.value?.employee_name)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select RM">
