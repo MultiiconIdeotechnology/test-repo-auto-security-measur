@@ -124,7 +124,6 @@ export class AuditedComponent extends BaseListingComponent {
   
 
   ngOnChanges() {
-    console.log("entered audited ngOnChnages")
     // if (this.activeTab == 'Audited') {
     //   this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
 

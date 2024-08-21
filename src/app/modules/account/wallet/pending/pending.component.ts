@@ -142,7 +142,6 @@ export class PendingComponent extends BaseListingComponent {
   }
 
   ngOnChanges() {
-    console.log("pending ngOnChanges")
     if(this.activeTab == 'Pending') {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
         this.sortColumn = resp['sortColumn'];

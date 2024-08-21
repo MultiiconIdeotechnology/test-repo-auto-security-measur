@@ -114,7 +114,6 @@ export class RejectedComponent extends BaseListingComponent {
   }
 
   ngOnChanges() {
-    console.log("rejected ngOnChanges")
     // if (this.activeTab == 'Rejected') {
     //   this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
 
