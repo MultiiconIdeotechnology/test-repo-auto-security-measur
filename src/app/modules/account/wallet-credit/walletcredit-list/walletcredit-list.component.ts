@@ -16,13 +16,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, messages, module_name, walletCreditPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, walletCreditPermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet-credit.service';
 import { WalletCreditEntryComponent } from '../wallet-credit-entry/wallet-credit-entry.component';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
@@ -61,122 +63,18 @@ import { AgentService } from 'app/services/agent.service';
 export class WalletcreditListComponent extends BaseListingComponent implements OnDestroy {
 
   module_name = module_name.walletCredit;
+  filter_table_name = filter_module_name.wallet_credited;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
-  agentList:any[] = [];
-  selectedAgent:string;
+  agentList: any[] = [];
+  selectedAgent: any = {};
 
-  columns = [
-    {
-      key: 'master_agent_code',
-      name: 'Agent Code',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'master_agent_name',
-      name: 'Agent',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'credit_balance',
-      name: 'Balance',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'expiry_date',
-      name: 'Expiry',
-      is_date: true,
-      date_formate: 'dd-MM-yyyy HH:mm:ss',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'payment_cycle_policy_type',
-      name: 'Policy Type',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: '',
-      indicator: false,
-      tooltip: true,
-    },
-    {
-      key: 'payment_cycle_policy',
-      name: 'Policy',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'outstanding_on_due_date',
-      name: 'Outstanding',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'over_due_count',
-      name: 'Over Due',
-      is_date: false,
-      date_formate: '',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
-    {
-      key: 'entry_date_time',
-      name: 'Entry',
-      is_date: true,
-      date_formate: 'dd-MM-yyyy HH:mm:ss',
-      is_sortable: true,
-      class: '',
-      is_sticky: false,
-      align: 'center',
-      indicator: false,
-      tooltip: false,
-    },
+  cols: Column[] = [
+    { field: 'entry_by', header: 'Entry By' },
+    { field: 'sub_agent_name', header: 'Sub Agent Name' },
+    { field: 'sub_agent_code', header: 'Sub Agent Code' },
   ];
-  cols = [];
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
   selectedAction: string;
@@ -190,26 +88,62 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     private conformationService: FuseConfirmationService,
     private router: Router,
     private matDialog: MatDialog,
-    private agentService: AgentService
+    private agentService: AgentService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.walletCredit);
-    this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
     this.sortColumn = 'is_enable';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit() {
 
-    this.cols = [
-      { field: 'entry_by', header: 'Entry By' },
-      { field: 'sub_agent_name', header: 'Sub Agent Name' },
-      { field: 'sub_agent_code', header: 'Sub Agent Code' },
-    ];
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedAgent = resp['table_config']['master_agent_name']?.value;
+      if(this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['expiry_date'].value) {
+        resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+      }
+      if (resp['table_config']['entry_date_time'].value) {
+        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
+
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
 
     // To call Agent lis api on default data
     this.getAgent("");
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedAgent = filterData['table_config']['master_agent_name']?.value;
+      
+      if (filterData['table_config']['expiry_date'].value) {
+        filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+      }
+      if (filterData['table_config']['entry_date_time'].value) {
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+    }
   }
 
   get selectedColumns(): Column[] {
@@ -217,7 +151,13 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   refreshItems(event?: any): void {
@@ -235,14 +175,20 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     });
   }
 
-    // function to get the Agent list from api
-  getAgent(value: string, bool=true) {
+  // function to get the Agent list from api
+  getAgent(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
-        this.agentList = data;
-
-        for (let i in this.agentList) {
-            this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      this.agentList = data;
+      if(this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
         }
+      } 
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+        this.agentList[i].id_by_value = this.agentList[i].agency_name; 
+      }
     })
   }
 
@@ -378,10 +324,6 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     else return 'No data to display';
   }
 
-  ngOnDestroy(): void {
-    // this.masterService.setData(this.key, this);
-  }
-
   exportExcel(): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
@@ -395,7 +337,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         dt.expiry_date = DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy hh:mm a')
         dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a')
         // dt.entry_by = DateTime.fromISO(dt.entry_by).toFormat('dd-MM-yyyy hh:mm a')
-        
+
       }
       Excel.export(
         'Wallet Credit',
@@ -415,6 +357,14 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         ],
         data.data, "Wallet Credit", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }]);
     });
+  }
+
+  ngOnDestroy(): void {
+    // this.masterService.setData(this.key, this);
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 
 }

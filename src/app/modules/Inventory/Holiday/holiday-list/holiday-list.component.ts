@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { Routes } from 'app/common/const';
-import { Security, inventoryHolidayPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, inventoryHolidayPermissions, messages, module_name } from 'app/security';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +22,8 @@ import { DateTime } from 'luxon';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { FlightTabService } from 'app/services/flight-tab.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-holiday-list',
@@ -48,13 +50,33 @@ import { FlightTabService } from 'app/services/flight-tab.service';
 })
 export class HolidayListComponent extends BaseListingComponent {
     module_name = module_name.holiday;
+    // Variable
+    filter_table_name = filter_module_name.holiday_products;
+    private settingsUpdatedSubscription: Subscription;
+
     dataList = [];
     total = 0;
     isFilterShow: boolean = false;
     supplierListAll: any[] = [];
-    selectedSupplier!: string;
+    selectedSupplier: any;
 
     ngOnInit() {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['supplier_name']){
+                this.selectedSupplier = resp['table_config'].supplier_name?.value;
+            }
+            if (resp['table_config']['publish_date_time'].value) {
+                resp['table_config']['publish_date_time'].value = new Date(resp['table_config']['publish_date_time'].value);
+            }
+            if (resp['table_config']['entry_date_time'].value) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
         this.getSupplier("")
     }
 
@@ -189,6 +211,10 @@ export class HolidayListComponent extends BaseListingComponent {
     getSupplier(value) {
         this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
             this.supplierListAll = data;
+
+            for (let i in this.supplierListAll) {
+                this.supplierListAll[i].id_by_value = this.supplierListAll[i].company_name
+            }
         })
     }
 
@@ -198,7 +224,8 @@ export class HolidayListComponent extends BaseListingComponent {
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
         private flighttabService: FlightTabService,
-        private router: Router
+        private router: Router,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.holiday);
         // this.cols = this.columns.map((x) => x.key);
@@ -206,6 +233,7 @@ export class HolidayListComponent extends BaseListingComponent {
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     refreshItems(event?: any): void {
@@ -225,6 +253,24 @@ export class HolidayListComponent extends BaseListingComponent {
                 },
             });
     }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['supplier_name']){
+                this.selectedSupplier = filterData['table_config'].supplier_name?.value;
+            }
+            if (filterData['table_config']['publish_date_time'].value) {
+                filterData['table_config']['publish_date_time'].value = new Date(filterData['table_config']['publish_date_time'].value);
+            }
+            if (filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
 
     createData(): void {
         if (!Security.hasNewEntryPermission(module_name.inventoryHoliday)) {
@@ -428,5 +474,9 @@ export class HolidayListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+          }
     }
 }

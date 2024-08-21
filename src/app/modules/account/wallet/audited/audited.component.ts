@@ -8,37 +8,29 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
-import { ToasterService } from 'app/services/toaster.service';
 import { WalletService } from 'app/services/wallet.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { InfoWalletComponent } from '../info-wallet/info-wallet.component';
 import { DateTime } from 'luxon';
-import { EntityService } from 'app/services/entity.service';
 import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-audited',
   templateUrl: './audited.component.html',
   styleUrls: ['./audited.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 200px 180px 180px 130px 160px 200px 180px 250px 190px 180px 150px;
-  }
-  `],
+  styles: [],
   standalone: true,
   imports: [
     NgIf,
@@ -50,8 +42,6 @@ import { AgentService } from 'app/services/agent.service';
     MatButtonModule,
     MatProgressBarModule,
     MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatFormFieldModule,
     MatMenuModule,
     MatDialogModule,
@@ -66,11 +56,11 @@ export class AuditedComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowAudit: boolean;
-  @Input() filterApiData:any;
+  @Input() filterApiData: any;
+  @Input() activeTab: any;
 
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlAudit = new FormControl('');
+  filter_table_name = filter_module_name.wallet_recharge_audited;
 
   public key: any;
   public sortColumn: any;
@@ -85,42 +75,26 @@ export class AuditedComponent extends BaseListingComponent {
   appConfig = AppConfig;
   auditListFilter: any = {};
   agentList: any[] = [];
-  pspList:any[] = [];
-  mopList:any[] = [];
-  selectedMop!:string;
-  selectedPsp!:string;
-  selectedEmployee!:string;
 
-  columns = [
-    { key: 'reference_number', name: 'Ref. No', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
-    { key: 'request_date_time', name: 'Request', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_code', name: 'Agent Code', tooltip: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'recharge_for_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'currency', name: 'Currency', tooltip: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'recharge_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'settled_amount', name: 'Settled Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'mop', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'psp_name', name: 'PSP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'psp_ref_number', name: 'PSP Ref No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'audited_by_name', name: 'Audit By', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'audited_date_time', name: 'Audit Time', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'user_remark', name: 'Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: true },
+  pspList: any[] = [];
+  mopList: any[] = [];
+  selectedMop: any;
+  selectedPsp: any;
+  selectedEmployee: any;
 
-  ]
   cols = [];
 
   protected masterService: MasterService;
-
+  public settingsAuitedSubscription: Subscription;
 
   constructor(
     private walletService: WalletService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     public agentService: AgentService,
-    private entityService: EntityService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.wallet)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'request_date_time';
     this.sortDirection = 'desc';
@@ -130,7 +104,7 @@ export class AuditedComponent extends BaseListingComponent {
       particularId: '',
       mop: '',
       psp: '',
-      agency_name : '',
+      agency_name: '',
       FromDate: new Date(),
       ToDate: new Date(),
     };
@@ -141,24 +115,41 @@ export class AuditedComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    this.searchInputControlAudit.valueChanges
-      .subscribe(() => {
-        // GridUtils.resetPaginator(this._paginatorPending);
-        // this.refreshItemsAudited();
-      });
 
-      // agent combo api call
-      // this.getAgentList('');
-
-
-      // this.entityService.onWalletAuditedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-      //   next: (item) => {
-      //     this.refreshItemsAudited();
-      //   }
-      // })
   }
 
   ngOnChanges() {
+    if (this.activeTab == 'Audited') {
+      this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        if (resp['table_config']['request_date_time'].value && resp['table_config']['request_date_time'].value.length) {
+          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+        }
+        if (resp['table_config']['audited_date_time'].value) {
+          resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
+        }
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShowAudit = true;
+        this.primengTable._filter();
+      });
+
+      // ngAfterViewInit
+      if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShowAudit = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        if (filterData['table_config']['request_date_time'].value && filterData['table_config']['request_date_time'].value.length) {
+          this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
+        }
+        if (filterData['table_config']['audited_date_time'].value) {
+          filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
+        }
+
+        this.primengTable['filters'] = filterData['table_config'];
+      }
+    }
+
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData?.mopData;
     this.pspList = this.filterApiData?.pspData;
@@ -168,23 +159,23 @@ export class AuditedComponent extends BaseListingComponent {
     // }
   }
 
-  getAgentList(value: string, bool=true) {
+  getAgentList(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
 
-      for(let i in this.agentList){
+      for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
       }
     })
-}
+  }
 
-  getMopList(value:string){
+  getMopList(value: string) {
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
       this.filterApiData.mopData = data;
     })
   }
 
-  getPspList(value:string){
+  getPspList(value: string) {
     this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
       this.filterApiData.pspData = data;
     })
@@ -196,8 +187,8 @@ export class AuditedComponent extends BaseListingComponent {
     }
 
     this.matDialog.open(InfoWalletComponent, {
-        data: { data: record.id, readonly: true },
-        disableClose: true
+      data: { data: record.id, readonly: true },
+      disableClose: true
     })
   }
 
@@ -243,19 +234,17 @@ export class AuditedComponent extends BaseListingComponent {
   refreshItemsAudited(event?: any) {
 
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlAudit.value, "request_date_time", 1
-    // );
+
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlAudit.value;
     filterReq['Status'] = 'audited';
     filterReq['particularId'] = this.auditListFilter?.particularId == "all" ? '' : this.auditListFilter?.particularId;
     filterReq['mop'] = this.auditListFilter?.mop || '';
     filterReq['psp'] = this.auditListFilter?.psp || '';
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.FromDate)).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.ToDate)).toFormat('yyyy-MM-dd');
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.FromDate)).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.ToDate)).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = "";
+    filterReq['ToDate'] = "";
 
     this.walletService.getWalletRechargeFilterList(filterReq).subscribe(
       {
@@ -263,11 +252,7 @@ export class AuditedComponent extends BaseListingComponent {
           this.isLoading = false;
           this.dataList = data.data;
           this.totalRecords = data.total;
-          // this.dataList.forEach(x => {
-          //   x.recharge_amount = x.currency + " " + x.recharge_amount
-          // });
-          // this._paginatorPending.length = data.total;
-          // this.total = data.total;
+
         }, error: err => {
           this.alertService.showToast('error', err);
           this.isLoading = false;
@@ -292,12 +277,6 @@ export class AuditedComponent extends BaseListingComponent {
     if (!Security.hasExportDataPermission(this.module_name)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlAudit.value, "request_date_time", 1
-    // );
 
     const filterReq = this.getNewFilterReq({});
     filterReq['Filter'] = this.searchInputControlAudit.value;
@@ -335,6 +314,13 @@ export class AuditedComponent extends BaseListingComponent {
         ],
         data.data, "Wallet Recharge Audited", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }]);
     });
+  }
+
+  ngOnDestroy() {
+    if (this.settingsAuitedSubscription) {
+      this.settingsAuitedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 
 }

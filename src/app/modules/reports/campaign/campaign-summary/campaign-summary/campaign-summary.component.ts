@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { CampaignSummaryService } from 'app/services/campaign-summary.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -25,6 +25,8 @@ import { CommonUtils } from 'app/utils/commonutils';
 import { Excel } from 'app/utils/export/excel';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-campaign-summary',
@@ -67,7 +69,8 @@ export class CampaignSummaryComponent extends BaseListingComponent implements On
   dataListTotals = [];
   total = 0;
   module_name = module_name.campaign_summary
-
+  filter_table_name = filter_module_name.campaign_summary;
+  private settingsUpdatedSubscription: Subscription;
   public dateRanges = [];
   public date = new FormControl();
   public startDate = new FormControl();
@@ -78,12 +81,12 @@ export class CampaignSummaryComponent extends BaseListingComponent implements On
   DR = dateRange;
   @ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
 
-
   constructor(
     private confirmService: FuseConfirmationService,
     private router: Router,
     private campaignSummaryService: CampaignSummaryService,
     private matDialog: MatDialog,
+    public _filterService: CommonFilterService
     // private clipboard: Clipboard
   ) {
     super(module_name.campaign_summary)
@@ -95,7 +98,7 @@ export class CampaignSummaryComponent extends BaseListingComponent implements On
     this.dateRanges = CommonUtils.valuesArray(dateRange);
     this.date.patchValue(dateRange.lastWeek);
     this.updateDate(dateRange.lastWeek,false)
-
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   columns = [
@@ -113,10 +116,23 @@ export class CampaignSummaryComponent extends BaseListingComponent implements On
   isFilterShow: boolean = false;
 
   ngOnInit() {
-
+	this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+		this.sortColumn = resp['sortColumn'];
+		this.primengTable['_sortField'] = resp['sortColumn'];
+		this.primengTable['filters'] = resp['table_config'];
+		this.isFilterShow = true;
+		this.primengTable._filter();
+	});
   }
 
-
+  ngAfterViewInit(){
+    // Defult Active filter show
+    if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShow = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        this.primengTable['filters'] = filterData['table_config'];
+    }
+  }
 
   refreshItems(event?:any): void {
     this.isLoading = true;
@@ -264,5 +280,12 @@ export class CampaignSummaryComponent extends BaseListingComponent implements On
         ],
         data.data, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
     });
+  }
+
+  ngOnDestroy() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 }

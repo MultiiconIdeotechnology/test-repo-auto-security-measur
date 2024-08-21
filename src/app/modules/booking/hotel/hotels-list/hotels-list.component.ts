@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, bookingsHotelPermissions, messages, module_name } from 'app/security';
+import { Security, bookingsHotelPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { HotelBookingService } from 'app/services/hotel-booking.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -33,6 +33,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { BusService } from 'app/services/bus.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-hotels-list',
@@ -73,7 +75,9 @@ import { FlightTabService } from 'app/services/flight-tab.service';
 })
 export class HotelsListComponent extends BaseListingComponent {
 
-  module_name = module_name.hotel
+  module_name = module_name.hotel;
+  filter_table_name = filter_module_name.hotel_booking;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
   hotelFilter: any;
@@ -82,8 +86,6 @@ export class HotelsListComponent extends BaseListingComponent {
   agentList: any[] = [];
   supplierListAll: any[] = [];
   statusList = ['Confirmation Pending', 'Pending', 'Failed', 'Confirmed', 'Cancellation Pending', 'Payment Failed', 'Rejected', 'Cancelled'];
-
-
 
   columns = [
     { key: 'booking_ref_no', name: 'Reference No.', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toBooking: true },
@@ -145,7 +147,6 @@ export class HotelsListComponent extends BaseListingComponent {
   cols = [];
   isFilterShow: boolean = false;
 
-
   constructor(
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
@@ -154,7 +155,8 @@ export class HotelsListComponent extends BaseListingComponent {
     private flighttabService: FlightTabService,
     private toasterService: ToasterService,
     private router: Router,
-    private hotelBookingService: HotelBookingService
+    private hotelBookingService: HotelBookingService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.bus);
     this.cols = this.columns.map((x) => x.key);
@@ -162,6 +164,7 @@ export class HotelsListComponent extends BaseListingComponent {
     this.sortColumn = 'bookingDate';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.hotelFilter = {
       supplierId: [{
@@ -183,7 +186,43 @@ export class HotelsListComponent extends BaseListingComponent {
     this.getAgent("", true);
     this.getSupplier();
     // this.getFromCity('');
+
+      // common filter
+      this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.sortColumn = resp['sortColumn'];
+        this.primengTable['_sortField'] = resp['sortColumn'];
+        if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+            this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+        }
+        if (resp['table_config']['check_in_date'].value) {
+            resp['table_config']['check_in_date'].value = new Date(resp['table_config']['check_in_date'].value);
+        }
+        if (resp['table_config']['check_out_date'].value) {
+          resp['table_config']['check_out_date'].value = new Date(resp['table_config']['check_out_date'].value);
+        }
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShow = true;
+        this.primengTable._filter();
+    });
   }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        this.isFilterShow = true;
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+            this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+        }
+        if (filterData['table_config']['check_in_date'].value) {
+            filterData['table_config']['check_in_date'].value = new Date(filterData['table_config']['check_in_date'].value);
+        }
+        if (filterData['table_config']['check_out_date'].value) {
+          filterData['table_config']['check_out_date'].value = new Date(filterData['table_config']['check_out_date'].value);
+      }
+        this.primengTable['filters'] = filterData['table_config'];
+    }
+}
 
   getAgent(value: string, bool: boolean = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
@@ -216,8 +255,10 @@ export class HotelsListComponent extends BaseListingComponent {
       this._sort,
       this.searchInputControl.value
     );
-    filterReq['FromDate'] = DateTime.fromJSDate(this.hotelFilter.FromDate).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(this.hotelFilter.ToDate).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = '';
+    filterReq['ToDate'] = ''; 
+    // filterReq['FromDate'] = DateTime.fromJSDate(this.hotelFilter.FromDate).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(this.hotelFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['agent_id'] = this.hotelFilter?.agent_id?.id || '';
     filterReq['From'] = '';
     filterReq['supplierId'] = this.hotelFilter?.supplierId?.map(x => x.id).join(',') == 'all' ? '' : this.hotelFilter?.supplierId?.map(x => x.id).join(',');
@@ -365,5 +406,13 @@ export class HotelsListComponent extends BaseListingComponent {
         data.data, "Hotel Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
     });
   }
+
+  ngOnDestroy(): void {
+
+    if (this.settingsUpdatedSubscription) {
+        this.settingsUpdatedSubscription.unsubscribe();
+        this._filterService.activeFiltData = {};
+    }
+}
 
 }

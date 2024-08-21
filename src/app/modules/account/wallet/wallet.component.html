@@ -74,6 +74,12 @@
                 <span class="ml-2 mr-1">Add</span>
             </button>
 
+            <!------Common Filter------->
+           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="openTabFiterDrawer()">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
+             
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
             </button>
@@ -89,15 +95,15 @@
     <mat-tab-group class="custom-tab wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
 
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
-            <app-pending #pending [isFilterShowPending]="isFilterShowPending" [filterApiData]="filterApiData"></app-pending>
+            <app-pending #pending [isFilterShowPending]="isFilterShowPending" [filterApiData]="filterApiData" [activeTab]="tab"></app-pending>
         </mat-tab>
 
-        <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')">
-            <app-audited #audited [isFilterShowAudit]="isFilterShowAudit" [filterApiData]="filterApiData"></app-audited>
+        <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')" >
+            <app-audited #audited [isFilterShowAudit]="isFilterShowAudit" [filterApiData]="filterApiData" [activeTab]="tab"></app-audited>
         </mat-tab>
 
         <mat-tab label="Rejected" [aria-label]="'Rejected'" *ngIf="getTabsPermission('rejected')">
-            <app-rejected #rejected [isFilterShowReject]="isFilterShowReject" [filterApiData]="filterApiData"></app-rejected>
+            <app-rejected #rejected [isFilterShowReject]="isFilterShowReject" [filterApiData]="filterApiData" [activeTab]="tab"></app-rejected>
         </mat-tab>
 
     </mat-tab-group>

@@ -43,6 +43,12 @@
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
+
             <!---Excel--->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
@@ -110,8 +116,7 @@
                                     [(ngModel)]="selectedRM"
                                     [filter]="true"
                                     filterBy="employee_name"
-                                    (onFilter)="getEmployeeList($event?.filter)"
-                                    (onChange)="filter($event.value?.employee_name)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select RM">

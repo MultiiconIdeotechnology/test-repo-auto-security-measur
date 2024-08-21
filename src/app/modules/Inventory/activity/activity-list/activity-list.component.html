@@ -33,6 +33,12 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -93,11 +99,11 @@
                     <th>
                         <p-columnFilter field="is_ticket_required" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Ticket" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Ticket"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
@@ -111,11 +117,11 @@
                     <th>
                         <p-columnFilter field="is_sightseeing_combo" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Combo" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Combo"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
@@ -133,11 +139,11 @@
                     <th>
                         <p-columnFilter field="is_meal_included" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Meal" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Meal"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
@@ -150,7 +156,7 @@
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body" 
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
                                     placeholder="Search by Entry">
                                 </p-calendar>
                             </ng-template>

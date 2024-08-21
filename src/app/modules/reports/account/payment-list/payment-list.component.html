@@ -18,7 +18,7 @@
                 </button> -->
             </span>
         </div>
-        
+
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4 max-sm:mt-2 max-sm:justify-between">
 
@@ -62,7 +62,7 @@
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
@@ -77,6 +77,12 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
+
+             <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -212,7 +218,7 @@
                                 </ng-template>
                             </p-columnFilter>
                         </ng-container> -->
-                        
+
                         <!-- <ng-container *ngIf="col.field !== 'payment_date'"> -->
                             <p-columnFilter  type="text" matchMode="contains" [field]="col.field" [placeholder]="'Search by '+ col.header"
                             [ariaLabel]="'Filter '+ col.header" />
@@ -262,7 +268,7 @@
                         <ng-container *ngIf="col.field != 'payment_date'">
                             {{element[col.field] || "-"}}
                         </ng-container>
-                        
+
                     </td>
                 </tr>
             </ng-template>
@@ -282,7 +288,7 @@
 
 
 <!--------Info--------->
-<!-- 
+<!--
 <div class="w-400"  *ngIf="ListItem.show">
     <div class="grid grid-cols-5   mb-8 p-8  bg-card rounded-2xl overflow-hidden mx-10">
     <div class="contents mb-3" >
@@ -353,7 +359,7 @@
             <div class="text-base truncate">
                 {{ListItem.payment_currency || '-'}}
             </div>
-        </div> 
+        </div>
         <div class="  ">
             <span class="text-md font-semibold text-secondary">Payment Amount</span>
             <div class="text-base truncate">

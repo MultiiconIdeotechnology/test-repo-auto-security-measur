@@ -42,11 +42,16 @@
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
 
+            <!------Common Filter------->
+           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -107,21 +112,18 @@
                             ariaLabel="Filter Mobile Number" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="billing_company" placeholder="Search by Billing Company"
-                            ariaLabel="Filter Display Name" /> -->
-                            <p-columnFilter class="searchableDropdown" field="billing_company" matchMode="equals" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
-                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
-                                        (onChange)="filter($event.value?.company_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Company">
-                                        <ng-template let-company pTemplate="item">
-                                                <div> {{company.company_name}}</div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
-
+                        <p-columnFilter field="billing_company" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="companyListName"
+                                    filterBy="company_name" [ngModel]="value"
+                                    (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Company">
+                                    <ng-template let-company pTemplate="item">
+                                            <div> {{company}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="city_name" placeholder="Search by City"

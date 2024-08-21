@@ -13,7 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, employeePermissions, messages, module_name } from 'app/security';
+import { Security, employeePermissions, filter_module_name, messages, module_name } from 'app/security';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Routes } from 'app/common/const';
@@ -25,6 +25,8 @@ import { EmployeeKycInfoComponent } from '../employee-kyc-info/employee-kyc-info
 import { KycProfileDialogComponent } from '../kyc-profile-dialog/kyc-profile-dialog.component';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-employee-list',
@@ -56,6 +58,8 @@ export class EmployeeListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.employee;
+    filter_table_name = filter_module_name.employee;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
 
@@ -145,7 +149,9 @@ export class EmployeeListComponent
             tooltip: true,
         },
     ];
-    cols: Column[];
+    cols: Column[] = [
+        { field: 'company_name', header: 'Company' },
+    ];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
@@ -154,21 +160,49 @@ export class EmployeeListComponent
         private conformationService: FuseConfirmationService,
         private ToasterService: ToasterService,
         private matDialog: MatDialog,
-        private router: Router
+        private router: Router,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.employee);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'employee_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['last_login_time'].value) {
+                resp['table_config']['last_login_time'].value = new Date(resp['table_config']['last_login_time'].value);
+            }
+            if (resp['table_config']['entry_date_time'].value) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
 
-        this.cols = [
-            { field: 'company_name', header: 'Company' },
-        ];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['last_login_time'].value) {
+                filterData['table_config']['last_login_time'].value = new Date(filterData['table_config']['last_login_time'].value);
+            }
+            if (filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
     }
 
     get selectedColumns(): Column[] {
@@ -176,7 +210,13 @@ export class EmployeeListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -480,5 +520,9 @@ export class EmployeeListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

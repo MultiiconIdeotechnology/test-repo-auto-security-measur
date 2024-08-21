@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { dateRange } from 'app/common/const';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { SaleBookService } from 'app/services/sale-book.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
@@ -32,6 +32,8 @@ import { FlightTabService } from 'app/services/flight-tab.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { cloneDeep } from 'lodash';
 import { Table } from 'primeng/table';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-sale-book',
@@ -66,6 +68,10 @@ import { Table } from 'primeng/table';
 })
 export class SaleBookComponent extends BaseListingComponent implements OnDestroy {
   @ViewChild('datatable') public primengTable: Table;
+
+  module_name = module_name.SaleBook;
+  filter_table_name = filter_module_name.sale_book;
+  private settingsUpdatedSubscription: Subscription;
 
   columns = ['agent_code',
     'master_agent',
@@ -137,7 +143,6 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   public StartDate: any;
   public EndDate: any;
   public dateRanges = [];
-  module_name = module_name.SaleBook
   tempData: any[] = [];
   dataList = [];
   sortColumn: any = 'inquiry_date';
@@ -153,9 +158,11 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     public agentService: AgentService,
     private _matdialog: MatDialog,
     private flighttabService: FlightTabService,
-    private pspsettingService: PspSettingService
+    private pspsettingService: PspSettingService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.SaleBook);
+    this._filterService.applyDefaultFilter(this.filter_table_name);
     this.saleFilter = {
       filter_date_by: '',
       service: '',
@@ -178,13 +185,55 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     this.getSupplier("")
     this.getAgent('');
     this.getCompanyList("");
+
+    // common filter
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['booking_date'].value) {
+        resp['table_config']['booking_date'].value = new Date(resp['table_config']['booking_date'].value);
+      }
+      if (resp['table_config']['travel_date'].value) {
+        resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
+      }
+      if (resp['table_config']['inquiry_date'].value) {
+        resp['table_config']['inquiry_date'].value = new Date(resp['table_config']['inquiry_date'].value);
+      }
+      if (resp['table_config']['invoice_date'].value) {
+        resp['table_config']['invoice_date'].value = new Date(resp['table_config']['invoice_date'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      if (filterData['table_config']['booking_date'].value) {
+        filterData['table_config']['booking_date'].value = new Date(filterData['table_config']['booking_date'].value);
+      }
+      if (filterData['table_config']['travel_date'].value) {
+        filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+      }
+      if (filterData['table_config']['inquiry_date'].value) {
+        filterData['table_config']['inquiry_date'].value = new Date(filterData['table_config']['inquiry_date'].value);
+      }
+      if (filterData['table_config']['invoice_date'].value) {
+        filterData['table_config']['invoice_date'].value = new Date(filterData['table_config']['invoice_date'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+    }
   }
 
   getAgent(value: string) {
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
 
-      for(let i in this.agentList){
+      for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
       }
     })
@@ -252,14 +301,14 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     this.SalebookService.getSalesBookReport(model).subscribe({
       next: (res) => {
         this.dataList = res?.data;
-        for(let i in this.dataList){
-           this.dataList[i]['inquiry_date'] = new Date(this.dataList[i]['inquiry_date']);
-           this.dataList[i]['invoice_date'] = new Date(this.dataList[i]['invoice_date']);
-           if(this.dataList[i]['travel_date']) {
-             this.dataList[i]['travel_date'] = new Date(this.dataList[i]['travel_date']);
-           }
-           
-           this.dataList[i]['booking_date'] = new Date(this.dataList[i]['booking_date']);
+        for (let i in this.dataList) {
+          this.dataList[i]['inquiry_date'] = new Date(this.dataList[i]['inquiry_date']);
+          this.dataList[i]['invoice_date'] = new Date(this.dataList[i]['invoice_date']);
+          if (this.dataList[i]['travel_date']) {
+            this.dataList[i]['travel_date'] = new Date(this.dataList[i]['travel_date']);
+          }
+
+          this.dataList[i]['booking_date'] = new Date(this.dataList[i]['booking_date']);
         }
         this.totalRecords = res?.total;
         this.loading = false;
@@ -318,9 +367,9 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
       // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm');
       dt.inquiry_date = new DatePipe('en-US').transform(dt.inquiry_date, 'dd-MM-yyyy HH:mm');
       dt.invoice_date = new DatePipe('en-US').transform(dt.invoice_date, 'dd-MM-yyyy HH:mm');
-      if(dt.travel_date) {
+      if (dt.travel_date) {
         dt.travel_date = new DatePipe('en-US').transform(dt.travel_date, 'dd-MM-yyyy HH:mm');
-      } 
+      }
       dt.booking_date = new DatePipe('en-US').transform(dt.booking_date, 'dd-MM-yyyy HH:mm');
     }
 
@@ -380,10 +429,18 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
       return 'text-orange-600';
     } else if (status == 'Confirmed') {
       return 'text-green-600';
-    } else if (status == 'Partially Cancelled' || status =='Cancelled') {
+    } else if (status == 'Partially Cancelled' || status == 'Cancelled') {
       return 'text-red-600';
     } else {
       return '';
     }
   }
+
+  ngOnDestroy(): void {
+
+    if (this.settingsUpdatedSubscription) {
+        this.settingsUpdatedSubscription.unsubscribe();
+        this._filterService.activeFiltData = {};
+    }
+}
 }

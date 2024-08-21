@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Security, messageTemplatesPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messageTemplatesPermissions, messages, module_name } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ViewForTemplateComponent } from '../view-for-template/view-for-template.component';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -19,7 +19,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-message-templates-list',
@@ -55,129 +56,16 @@ export class MessageTemplatesListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.messagetemplates;
+    filter_table_name = filter_module_name.message_templates;
+    private settingsUpdatedSubscription: Subscription;
+
     dataList = [];
     total = 0;
 
-    columns = [
-        {
-            key: 'template_for',
-            name: 'Template For',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'event_name',
-            name: 'Event',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'message_type',
-            name: 'Message Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'message_title',
-            name: 'Title',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'email_subject',
-            name: 'Subject',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        {
-            key: 'message_template',
-            name: 'Template',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            inicon: true,
-            tooltip: true
-        },
-        {
-            key: 'send_to',
-            name: 'Send To',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
-        // {
-        //     key: 'send_from_name',
-        //     name: 'Send From',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: false,
-        //     inicon: false,
-        //     tooltip: true
-        // },
-        {
-            key: 'individual_address',
-            name: 'Individual Address',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            inicon: false,
-            tooltip: true
-        },
+    cols: any = [
+        { field: 'template_for_name', header: 'Template For Name', type: 'text' },
+        { field: 'modify_date_time', header: 'Modify Date Time', type: 'date' },
     ];
-    cols = [];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
@@ -186,21 +74,43 @@ export class MessageTemplatesListComponent
         private conformationService: FuseConfirmationService,
         private router: Router,
         private toasterService: ToasterService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.messagetemplates);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'event_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'template_for_name', header: 'Template For Name', type:'text' },
-            { field: 'modify_date_time', header: 'Modify Date Time', type:'date' },
-        ];
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+
+            // if (resp['table_config']['modify_date_time'] && resp['table_config']['modify_date_time']?.value) {
+            //     resp['table_config']['modify_date_time'].value = new Date(resp['table_config']['modify_date_time']?.value);
+            // }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            // if (filterData['table_config']['modify_date_time'] && filterData['table_config']['modify_date_time']?.value) {
+            //     filterData['table_config']['modify_date_time'].value = new Date(filterData['table_config']['modify_date_time']?.value);
+            // }
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
     }
 
     get selectedColumns(): Column[] {
@@ -208,10 +118,16 @@ export class MessageTemplatesListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.messageTemplatesService
             .getMessageList(this.getNewFilterReq(event))
@@ -227,6 +143,7 @@ export class MessageTemplatesListComponent
                 },
             });
     }
+
     createInternal(model): void {
         this.router.navigate([Routes.settings.messagetemplates_entry_route]);
     }
@@ -357,5 +274,9 @@ export class MessageTemplatesListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

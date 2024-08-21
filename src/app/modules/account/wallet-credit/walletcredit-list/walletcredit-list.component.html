@@ -43,7 +43,7 @@
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+            <button class="ml-4" mat-flat-button [color]="'primary'"  (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
@@ -58,6 +58,12 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
+
+            <!------Common Filter------->
+           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -132,7 +138,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">

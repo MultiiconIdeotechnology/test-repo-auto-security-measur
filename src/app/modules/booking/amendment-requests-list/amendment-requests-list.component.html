@@ -45,6 +45,12 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
+
+             <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -169,15 +175,13 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList"
                                     optionLabel="agent_info" [filter]="true" filterBy="agent_info"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.id)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -192,8 +196,8 @@
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList" [(ngModel)]="selectedSupplier" optionLabel="company_name"
-                                    [filter]="true" filterBy="company_name" (onFilter)="getSupplier($event?.filter)"
-                                    (onChange)="filter($event.value?.company_name)" [showClear]="true" appendTo="body"
+                                    [filter]="true" filterBy="company_name" 
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">

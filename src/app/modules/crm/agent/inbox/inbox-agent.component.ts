@@ -20,7 +20,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, agentPermissions, messages, module_name } from 'app/security';
+import { Security, agentPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
@@ -32,6 +32,8 @@ import { Linq } from 'app/utils/linq';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'inbox-agent',
@@ -70,119 +72,17 @@ import { AgentService } from 'app/services/agent.service';
 })
 export class InboxAgentComponent extends BaseListingComponent {
     @Input() isFilterShowInbox: boolean
-    @Input() dropdownListObj:{};
-
-    columns = [
-        {
-            key: 'callCount',
-            name: 'Calls',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            callAction: true
-        },
-        {
-            key: 'status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-            toColor: true
-        },
-        {
-            key: 'acCode',
-            name: 'AC Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agencyName',
-            name: 'Agency',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true,
-        },
-        {
-            key: 'callPurpose',
-            name: 'Purpose',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'createdDate',
-            name: 'Created Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'latestDate',
-            name: 'Last Login',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-            lastLogin: true,
-            assignFlag: true
-        },
-        {
-            key: 'lastTransaction',
-            name: 'Last Transaction',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-    ];
-
-    cols = [];
-    dataList = [];
-    searchInputControlInbox = new FormControl('');
+    @Input() dropdownListObj: {};
     @ViewChild('tabGroup') tabGroup;
-
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
 
+    module_name = module_name.crmagent;
+    filter_table_name = filter_module_name.agents_inbox;
+    private settingsUpdatedSubscription: Subscription;
+    cols = [];
+    dataList = [];
+    searchInputControlInbox = new FormControl('');
     statusList = ['New', 'Active', 'Inactive', 'Dormant'];
     Mainmodule: any;
     isLoading = false;
@@ -191,35 +91,78 @@ export class InboxAgentComponent extends BaseListingComponent {
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.crmagent
     total = 0;
     appConfig = AppConfig;
     data: any
     filter: any = {}
     formattedDate: string = '';
     agentList: any[] = [];
-    selectedAgent!: string
+    selectedAgent!: any
 
     constructor(
         private crmService: CrmService,
         private matDialog: MatDialog,
         private agentService: AgentService,
         private conformationService: FuseConfirmationService,
-        private router: Router
+        private router: Router,
+        public _filterService: CommonFilterService
 
     ) {
         super(module_name.crmagent);
-        this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'priorityid';
         this.sortDirection = 'desc';
-        this.Mainmodule = this
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
+        setTimeout(() => {
+            this.agentList = this.dropdownListObj['agentList'];
+        }, 1000);
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['createdDate'].value) {
+                resp['table_config']['createdDate'].value = new Date(resp['table_config']['createdDate'].value);
+            }
+            if (resp['table_config']['lastTransaction'].value) {
+                resp['table_config']['lastTransaction'].value = new Date(resp['table_config']['lastTransaction'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowInbox = true;
+            this.primengTable._filter();
+        });
     }
 
-    ngOnChanges(){
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowInbox = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
+            if (filterData['table_config']['createdDate'].value) {
+                filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
+            }
+            if (filterData['table_config']['lastTransaction'].value) {
+                filterData['table_config']['lastTransaction'].value = new Date(filterData['table_config']['lastTransaction'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+    }
+
+    ngOnChanges() {
         this.agentList = this.dropdownListObj['agentList'];
     }
 
@@ -228,8 +171,9 @@ export class InboxAgentComponent extends BaseListingComponent {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
             }
         })
     }
@@ -403,6 +347,14 @@ export class InboxAgentComponent extends BaseListingComponent {
                     });
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 
     // reActive(record): void {

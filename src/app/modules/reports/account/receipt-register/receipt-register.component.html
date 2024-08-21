@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -36,8 +38,8 @@
                 <span class="">Filter</span>
             </button> -->
 
-             <!------ Export Excel ------->
-             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+            <!------ Export Excel ------->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
             </button>
             <mat-menu #menu>
@@ -47,6 +49,12 @@
                 </button>
             </mat-menu>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
         </div>
     </div>
 
@@ -54,19 +62,20 @@
 
     <!--refreshItems($event) -->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true" columnResizeMode="expand"
-            [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize"
-            [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['receipt_ref_no', 'receipt_request_date', 'agent_Code', 'agent_name', 'service','booking_ref_no','pnr','mode_of_payment','currency','service','service','pg_name','pg_payment_ref_no','company']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="receipt_ref_no" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.receipt_ref_no" [ngClass]="{'left-0': !frozenObj?.receipt_ref_no}">
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="receipt_ref_no" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no"
+                        [ngClass]="{'left-0': !frozenObj?.receipt_ref_no}">
                         Receipt No. <p-sortIcon field="receipt_ref_no" />
                         <span class="float-right" (click)="isFrozenColumn('receipt_ref_no');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.receipt_ref_no" class="pi pi-lock-open icon-size-3"></i>
@@ -119,20 +128,15 @@
 
                 <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
-                        <p-columnFilter type="text" matchMode="contains" field="receipt_ref_no" placeholder="Search by Receipt No."
-                            ariaLabel="Filter Receipt No." />
+                        <p-columnFilter type="text" matchMode="contains" field="receipt_ref_no"
+                            placeholder="Search by Receipt No." ariaLabel="Filter Receipt No." />
                     </th>
                     <th>
                         <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar
-                                        selectionMode="range"
-                                        [ngModel]="value"
-                                        (ngModelChange)="onDateRangeChange($event, filter)"
-                                        [readonlyInput]="true"
-                                        dateFormat="dd-mm-yy"
-                                        appendTo="body"
-                                        placeholder="Search by Date Range">
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -144,25 +148,25 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agency Name"
                             ariaLabel="Filter Agency Name" /> -->
-                            <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
                             [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                        (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                        <ng-template let-agent pTemplate="item">
-                                            <div class="flex align-items-center gap-1">
-                                                <div [value]="agent.id">
-                                                    <div class="m-0">
-                                                        {{agent.code}} - {{agent.agency_name}}
-                                                        <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                    </div>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                                 </div>
                                             </div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
                         </p-columnFilter>
                     </th>
                     <th>
@@ -170,20 +174,20 @@
                             ariaLabel="Filter Service" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no" placeholder="Search by Booking Ref. No"
-                            ariaLabel="Filter Booking Ref. No" />
+                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
+                            placeholder="Search by Booking Ref. No" ariaLabel="Filter Booking Ref. No" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
                             ariaLabel="Filter PNR" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment" placeholder="Search by MOP"
-                            ariaLabel="Filter MOP" />
+                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment"
+                            placeholder="Search by MOP" ariaLabel="Filter MOP" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="currency" placeholder="Search by Currency"
-                            ariaLabel="Filter Currency" />
+                        <p-columnFilter type="text" matchMode="contains" field="currency"
+                            placeholder="Search by Currency" ariaLabel="Filter Currency" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="wallet_amount" placeholder="Search by Wallet Amount"
@@ -225,7 +229,8 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">{{element.receipt_ref_no ? element.receipt_ref_no : '-'}}</td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">{{element.receipt_ref_no ?
+                        element.receipt_ref_no : '-'}}</td>
                     <td>{{element.receipt_request_date | date:'dd-MM-yyyy'}}</td>
                     <td>{{element.agent_Code ? element.agent_Code : 0}}</td>
                     <td>{{element.agent_name ? element.agent_name : '-'}}</td>
@@ -239,8 +244,10 @@
                     <td>{{element.mode_of_payment ? element.mode_of_payment : '-'}}</td>
                     <td>{{element.currency ? element.currency : '-'}}</td>
                     <!-- <td>{{element.wallet_amount ? element.wallet_amount : 0}}</td> -->
-                    <td class="text-right">{{ (element.wallet_amount || 0) | currency: element.currency: 'symbol':'1.2-2' }}</td>
-                    <td class="text-right">{{ (element.pg_amount || 0) | currency:element.currency:'symbol':'1.2-2' }}</td>
+                    <td class="text-right">{{ (element.wallet_amount || 0) | currency: element.currency:
+                        'symbol':'1.2-2' }}</td>
+                    <td class="text-right">{{ (element.pg_amount || 0) | currency:element.currency:'symbol':'1.2-2' }}
+                    </td>
                     <!-- <td>{{element.pg_amount ? element.pg_amount : 0}}</td> -->
                     <td>{{element.pg_name ? element.pg_name : '-'}}</td>
                     <td>{{element.pg_payment_ref_no ? element.pg_payment_ref_no : '-'}}</td>

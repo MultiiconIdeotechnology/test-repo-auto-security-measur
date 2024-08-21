@@ -46,6 +46,13 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
+
         </div>
     </div>
 
@@ -79,7 +86,7 @@
                         Supplier Name <p-sortIcon field="supplier_name" />
                     </th>
                     <th  pResizableColumn>
-                        Enable For 
+                        Enable For
                     </th>
                     <!-- <th class="w-full min-w-[200px]" pSortableColumn="inventory_for" pResizableColumn>
                         Inventory Type <p-sortIcon field="inventory_for" />
@@ -91,7 +98,7 @@
 
                     <th class="min-w-[200px]" pResizableColumn
                         [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
-                        Inventory Type 
+                        Inventory Type
                     </th>
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
                         [ngClass]="{'w-full': isLast }">
@@ -132,7 +139,7 @@
                                     [(ngModel)]="selectedSupplier"
                                     [filter]="true"
                                     filterBy="company_name"
-                                    (onChange)="filter($event.value?.company_name)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select Supplier">
