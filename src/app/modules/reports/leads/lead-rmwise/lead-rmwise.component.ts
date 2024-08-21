@@ -95,11 +95,9 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
     ngOnInit(): void {
         this.getEmployeeList("");
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedRM = resp['table_config']['rm']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
-            if(resp['table_config']['rm']){
-                this.selectedRM = resp['table_config'].rm?.value;
-            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -111,6 +109,7 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedRM = filterData['table_config']['rm']?.value;
             if(filterData['table_config']['rm']){
                 this.selectedRM = filterData['table_config'].rm?.value;
             }

@@ -436,12 +436,11 @@
                         </th>
 
                         <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="billing_company" placeholder="Search by Billing Company" ariaLabel="Filter Billing Company" /> -->
                             <p-columnFilter class="searchableDropdown" field="billing_company" matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
                                         [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
-                                        (onChange)="filter($event.value?.company_name)"
+                                        (onChange)="filter($event.value)"
                                         [showClear]="true" appendTo="body" placeholder="Select Company">
                                         <ng-template let-company pTemplate="item">
                                                 <div> {{company.company_name}}</div>
@@ -452,11 +451,10 @@
                         </th>
 
                         <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="supplier" placeholder="Search by Supplier" ariaLabel="Filter Supplier" /> -->
                             <p-columnFilter class="searchableDropdown" field="supplier" matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
-                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedSupplier" (onChange)="filter($event.value?.company_name)"
+                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedSupplier" (onChange)="filter($event.value)"
                                         [showClear]="true" appendTo="body" placeholder="Select Supplier">
                                         <ng-template let-supplier pTemplate="item">
                                                 <div>

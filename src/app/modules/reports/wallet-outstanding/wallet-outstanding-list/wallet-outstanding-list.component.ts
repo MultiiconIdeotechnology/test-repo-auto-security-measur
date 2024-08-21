@@ -71,9 +71,9 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
     total = 0;
     isFilterShow: boolean = false;
     agentList: any[] = [];
-    selectedAgent!: string;
     employeeList: any[] = [];
-    selectedRM!: string;
+    selectedAgent: any;
+    selectedRM: any;
 
     constructor(
         private agentService: AgentService,
@@ -95,6 +95,15 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedRM = resp['table_config']['employee_name']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['due_date'].value && resp['table_config']['due_date'].value.length) {
@@ -111,6 +120,8 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            this.selectedRM = filterData['table_config']['employee_name']?.value;
             if (filterData['table_config']['due_date'].value && filterData['table_config']['due_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
             }
@@ -123,6 +134,13 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
+
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
 
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
