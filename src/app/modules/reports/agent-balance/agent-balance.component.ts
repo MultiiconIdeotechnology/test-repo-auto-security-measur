@@ -79,7 +79,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
     isFilterShow: boolean = false;
     agentList: any[] = [];
     employeeList: any[] = [];
-    selectedRM!: string;
+    selectedRM!: any;
+    selectedAgent: any;
 
     constructor(
         private agentBalanceService: AgentBalanceService,
@@ -89,7 +90,6 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         // private clipboard: Clipboard
     ) {
         super(module_name.agentBalance)
-        // this.cols = this.columns.map(x => x.key);
         this.key = 'payment_request_date';
         this.sortColumn = 'last_top_up';
         this.sortDirection = 'desc';
@@ -103,6 +103,15 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedRM = resp['table_config']['rm']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['last_top_up'].value) {
@@ -119,6 +128,9 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            this.selectedRM = filterData['table_config']['rm']?.value;
+
             if (filterData['table_config']['last_top_up'].value) {
                 filterData['table_config']['last_top_up'].value = new Date(filterData['table_config']['last_top_up'].value);
             }
@@ -130,31 +142,9 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
-        });
-    }
 
-    columns = [
-        { key: 'agent_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, isview: true },
-        { key: 'balance', name: 'Balance', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, iscolor: false, isFix: true },
-        { key: 'credit', name: 'Credit', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, isFix: true },
-        { key: 'rm', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'mobile', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-        { key: 'email', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'last_top_up', name: 'Last Top-up', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
-    // cols = [];
-
-    refreshItems(event?: any): void {
-        this.isLoading = true;
-        this.agentBalanceService.getWalletReportList(this.getNewFilterReq(event)).subscribe({
-            next: (data) => {
-                this.dataList = data.data;
-                // this.total = data.total;
-                this.totalRecords = data.total;
-                this.isLoading = false;
-            }, error: (err) => {
-                this.alertService.showToast('error', err)
-                this.isLoading = false
+            for (let i in this.employeeList) {
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
             }
         });
     }
@@ -163,10 +153,32 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-          for(let i in this.agentList){
-            this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
-          }
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
+            }
         })
+    }
+
+    refreshItems(event?: any): void {
+        this.isLoading = true;
+        this.agentBalanceService.getWalletReportList(this.getNewFilterReq(event)).subscribe({
+            next: (data) => {
+                this.dataList = data.data;
+                this.totalRecords = data.total;
+                this.isLoading = false;
+            }, error: (err) => {
+                this.alertService.showToast('error', err)
+                this.isLoading = false
+            }
+        });
     }
 
     getNodataText(): string {

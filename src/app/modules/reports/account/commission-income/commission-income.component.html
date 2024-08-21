@@ -27,6 +27,13 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -43,13 +50,6 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
         </div>
     </div>
 
@@ -144,14 +144,12 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList"
                                     [(ngModel)]="selectedSupplier" optionLabel="company_name" [filter]="true"
-                                    filterBy="company_name" (onChange)="filter($event.value?.company_name)" 
-                                    [showClear]="true" appendTo="body" placeholder="Select Supplier">
+                                    filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.company_name">
-                                                <div class="m-0">
-                                                    {{agent.company_name}}
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.company_name}}
                                             </div>
                                         </div>
                                     </ng-template>

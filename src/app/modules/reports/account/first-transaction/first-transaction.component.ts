@@ -60,131 +60,9 @@ export class FirstTransactionComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    columns = [
-        {
-            key: 'first_transaction_date_time',
-            name: 'Transaction Date',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agent_code',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agent_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'gst_number',
-            name: 'GST/VAT No',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'pan_number',
-            name: 'PAN',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'country',
-            name: 'Country',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'state_name',
-            name: 'State',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'address_line1',
-            name: 'Address',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'pincode',
-            name: 'Pincode',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-    ];
-
     cols: Column[];
     isFilterShow: boolean = false;
+    selectedAgent:any
 
     constructor(
         private accountService: AccountService,
@@ -200,12 +78,18 @@ export class FirstTransactionComponent
         this._filterService.applyDefaultFilter(this.filter_table_name)
     }
 
-    selectedAgent:any
     ngOnInit() {
         this.getAgent('');
 
           // common filter
           this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['first_transaction_date_time'].value && resp['table_config']['first_transaction_date_time'].value.length) {
@@ -222,6 +106,7 @@ export class FirstTransactionComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
             if (filterData['table_config']['first_transaction_date_time'].value && filterData['table_config']['first_transaction_date_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['first_transaction_date_time']);
             }
@@ -233,8 +118,16 @@ export class FirstTransactionComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
+
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }

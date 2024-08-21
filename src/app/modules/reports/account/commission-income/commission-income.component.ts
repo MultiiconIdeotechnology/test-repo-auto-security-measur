@@ -62,117 +62,6 @@ export class CommissionIncomeComponent
     settings: any;
     supplierList: any[] = [];
     selectedSupplier:any;
-
-    columns = [
-        {
-            key: 'booking_date',
-            name: 'Booking Date',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'booking_ref_no',
-            name: 'Booking Ref. No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'pnr',
-            name: 'PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'gds_pnr',
-            name: 'GSD PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'commission',
-            name: 'Commission',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'tds',
-            name: 'TDS',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'net_commission',
-            name: 'Net Commission',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'supplier',
-            name: 'Supplier',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },{
-            key: 'supplier_invoice_no',
-            name: 'Supplier Invoice No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-    ];
-
     cols: Column[];
     isFilterShow: boolean = false;
 
@@ -182,7 +71,6 @@ export class CommissionIncomeComponent
         public _filterService: CommonFilterService
     ) {
         super(module_name.commissionIncome);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'booking_date';
         this.sortDirection = 'desc';
@@ -195,6 +83,8 @@ export class CommissionIncomeComponent
 
          // common filter
          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedSupplier = resp['table_config']['supplier']?.value;
+
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['booking_date'].value && resp['table_config']['booking_date'].value.length) {
@@ -211,6 +101,7 @@ export class CommissionIncomeComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedSupplier = filterData['table_config']['supplier']?.value;
             if (filterData['table_config']['booking_date'].value && filterData['table_config']['booking_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
             }
@@ -265,6 +156,10 @@ export class CommissionIncomeComponent
     getSupplier(value: string, bool: boolean = true) {
         this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
             this.supplierList = data;
+
+            for(let i in this.supplierList){
+                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+             }
         });
     }
 

@@ -40,11 +40,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   selector: 'app-hotels-list',
   templateUrl: './hotels-list.component.html',
   styleUrls: ['./hotels-list.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns:  40px 250px 170px 175px 190px 130px 100px 170px 130px 200px 220px 240px 120px 120px 100px 100px 100px 180px 150px 150px;
-  }
-`],
   standalone: true,
   imports: [
     NgIf,
@@ -81,69 +76,11 @@ export class HotelsListComponent extends BaseListingComponent {
   dataList = [];
   total = 0;
   hotelFilter: any;
-  selectedAgent!: string;
-  selectedSupplier!: string;
+  selectedAgent!: any;
+  selectedSupplier!: any;
   agentList: any[] = [];
   supplierListAll: any[] = [];
   statusList = ['Confirmation Pending', 'Pending', 'Failed', 'Confirmed', 'Cancellation Pending', 'Payment Failed', 'Rejected', 'Cancelled'];
-
-  columns = [
-    { key: 'booking_ref_no', name: 'Reference No.', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toBooking: true },
-    {
-      key: 'status', name: 'Status', is_date: false, is_fixed2: true, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toColor: true
-    },
-    {
-      key: 'bookingDate', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'agent_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'user_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'mop', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'supplier_name', name: 'Supplier', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'purchase_price', name: 'Purchase Price', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'from_city', name: 'Destination', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'pax', name: 'Pax', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'hotel_name', name: 'Hotel', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'check_in_date', name: 'Check In', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'check_out_date', name: 'Check Out', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'no_of_rooms', name: 'Rooms', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false,
-    },
-    {
-      key: 'no_of_nights', name: 'Nights', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false,
-    },
-    {
-      key: 'device', name: 'Device', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toview: false
-    },
-    {
-      key: 'supplier_ref_no', name: 'Supplier Ref. No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toview: false
-    },
-    {
-      key: 'payment_gateway_name', name: 'PG', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toview: false
-    },
-    {
-      key: 'ip_address', name: 'IP Address', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toview: false
-    },
-  ]
   cols = [];
   isFilterShow: boolean = false;
 
@@ -159,7 +96,6 @@ export class HotelsListComponent extends BaseListingComponent {
     public _filterService: CommonFilterService
   ) {
     super(module_name.bus);
-    this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
     this.sortColumn = 'bookingDate';
     this.sortDirection = 'desc';
@@ -187,50 +123,69 @@ export class HotelsListComponent extends BaseListingComponent {
     this.getSupplier();
     // this.getFromCity('');
 
-      // common filter
-      this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        this.sortColumn = resp['sortColumn'];
-        this.primengTable['_sortField'] = resp['sortColumn'];
-        if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
-            this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+    // common filter
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
         }
-        if (resp['table_config']['check_in_date'].value) {
-            resp['table_config']['check_in_date'].value = new Date(resp['table_config']['check_in_date'].value);
-        }
-        if (resp['table_config']['check_out_date'].value) {
-          resp['table_config']['check_out_date'].value = new Date(resp['table_config']['check_out_date'].value);
-        }
-        this.primengTable['filters'] = resp['table_config'];
-        this.isFilterShow = true;
-        this.primengTable._filter();
+      }
+
+      this.selectedSupplier = resp['table_config']['supplier_name']?.value;
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+      }
+      if (resp['table_config']['check_in_date'].value) {
+        resp['table_config']['check_in_date'].value = new Date(resp['table_config']['check_in_date'].value);
+      }
+      if (resp['table_config']['check_out_date'].value) {
+        resp['table_config']['check_out_date'].value = new Date(resp['table_config']['check_out_date'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
     });
   }
 
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShow = true;
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
-            this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
-        }
-        if (filterData['table_config']['check_in_date'].value) {
-            filterData['table_config']['check_in_date'].value = new Date(filterData['table_config']['check_in_date'].value);
-        }
-        if (filterData['table_config']['check_out_date'].value) {
-          filterData['table_config']['check_out_date'].value = new Date(filterData['table_config']['check_out_date'].value);
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+      this.selectedSupplier = filterData['table_config']['supplier_name']?.value;
+
+      if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+        this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
-        this.primengTable['filters'] = filterData['table_config'];
+      if (filterData['table_config']['check_in_date'].value) {
+        filterData['table_config']['check_in_date'].value = new Date(filterData['table_config']['check_in_date'].value);
+      }
+      if (filterData['table_config']['check_out_date'].value) {
+        filterData['table_config']['check_out_date'].value = new Date(filterData['table_config']['check_out_date'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
     }
-}
+  }
 
   getAgent(value: string, bool: boolean = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
 
-    for(let i in this.agentList){
-      this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
-    }
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      }
     });
   }
 
@@ -246,17 +201,17 @@ export class HotelsListComponent extends BaseListingComponent {
   getSupplier() {
     this.flighttabService.getSupplierBoCombo('Hotel').subscribe((data) => {
       this.supplierListAll = data;
+
+      for (let i in this.supplierListAll) {
+        this.supplierListAll[i].id_by_value = this.supplierListAll[i].company_name;
+      }
     })
   }
 
   getFilter(): any {
-    const filterReq = GridUtils.GetFilterReq(
-      this._paginator,
-      this._sort,
-      this.searchInputControl.value
-    );
+    let filterReq = {};
     filterReq['FromDate'] = '';
-    filterReq['ToDate'] = ''; 
+    filterReq['ToDate'] = '';
     // filterReq['FromDate'] = DateTime.fromJSDate(this.hotelFilter.FromDate).toFormat('yyyy-MM-dd');
     // filterReq['ToDate'] = DateTime.fromJSDate(this.hotelFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['agent_id'] = this.hotelFilter?.agent_id?.id || '';
@@ -319,7 +274,7 @@ export class HotelsListComponent extends BaseListingComponent {
     //   return this.alertService.showToast('error', messages.permissionDenied);
     // }
     if (!Security.hasViewDetailPermission(module_name.bookingsHotel)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
     Linq.recirect('/booking/hotel/details/' + record.id);
   }
@@ -410,9 +365,9 @@ export class HotelsListComponent extends BaseListingComponent {
   ngOnDestroy(): void {
 
     if (this.settingsUpdatedSubscription) {
-        this.settingsUpdatedSubscription.unsubscribe();
-        this._filterService.activeFiltData = {};
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
     }
-}
+  }
 
 }
