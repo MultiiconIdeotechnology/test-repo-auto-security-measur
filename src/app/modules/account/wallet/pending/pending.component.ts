@@ -80,9 +80,12 @@ export class PendingComponent extends BaseListingComponent {
   isLoading = false;
   public _unsubscribeAll: Subject<any> = new Subject<any>();
   agentList: any[] = [];
+  pspList: any[] = [];
   mopList:any[] = [];
+
   selectedMop: any;
   selectedEmployee:any;
+  selectedPSP:any;
   public settingsUpdatedSubscription: Subscription;
 
   cols = [];
@@ -118,8 +121,10 @@ export class PendingComponent extends BaseListingComponent {
 
   ngOnInit(): void {
     setTimeout(() => {
+      console.log("object",this.filterApiData);
       this.agentList = this.filterApiData.agentData;
       this.mopList = this.filterApiData.mopData;
+      this.pspList = this.filterApiData.pspData;
     }, 1000);
   }
 
@@ -152,6 +157,7 @@ export class PendingComponent extends BaseListingComponent {
 
     this.agentList = this.filterApiData.agentData;
     this.mopList = this.filterApiData.mopData;
+    this.pspList = this.filterApiData.pspList;
   }
 
   getAgentList(value: string, bool=true) {
@@ -163,6 +169,13 @@ export class PendingComponent extends BaseListingComponent {
   getMopList(value:string){
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
        this.filterApiData.mopData = data;
+    })
+  } 
+  
+  getPSPList(value:string){
+    this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
+       this.pspList = data;
+       console.log("177",this.pspList);
     })
   }
 
@@ -323,6 +336,7 @@ export class PendingComponent extends BaseListingComponent {
           { header: 'Request.', property: 'request_date_time' },
           { header: 'Agent Code', property: 'agent_code' },
           { header: 'Agent', property: 'recharge_for_name' },
+          { header: 'Currency', property: 'currency' },
           { header: 'Amount ', property: 'recharge_amount' },
           { header: 'MOP', property: 'mop' },
           { header: 'Remark', property: 'user_remark' },

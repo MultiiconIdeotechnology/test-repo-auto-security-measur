@@ -94,6 +94,8 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this._selectedColumns = filterData['selectedColumns'] || [];
         }
     }
