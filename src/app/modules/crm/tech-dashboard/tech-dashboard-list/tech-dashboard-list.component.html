@@ -94,6 +94,12 @@
                     alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <ng-container *ngIf="tabNameStr == 'Pending'">
                 <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
@@ -115,13 +121,6 @@
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="openTabFiterDrawer()">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
         </div>
     </div>
 

@@ -49,11 +49,11 @@
                 <img *ngIf="isFilterShowPartners " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
-            
-             <!------Common Filter------->
-             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <ng-container *ngIf="tabNameStr == 'Inbox'">
