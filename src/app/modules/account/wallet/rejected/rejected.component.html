@@ -38,6 +38,9 @@
                 <th pSortableColumn="mop" pResizableColumn>
                     MOP <p-sortIcon field="mop" />
                 </th>
+                <th pSortableColumn="psp_name" pResizableColumn>
+                    PSP <p-sortIcon field="psp_name" />
+                </th>
                 <th pSortableColumn="filename" pResizableColumn>
                     Attachment <p-sortIcon field="filename" />
                 </th>
@@ -122,6 +125,21 @@
                     </p-columnFilter>
                 </th>
                 <th>
+                    <!-- <p-columnFilter type="text" field="psp_name" placeholder="Search by PSP Name" ariaLabel="Filter PSP Name" /> -->
+                    <p-columnFilter class="searchableDropdown" field="psp_name" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="pspList" [(ngModel)]="selectedPsp"
+                                optionLabel="provider" [filter]="true" filterBy="provider"
+                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value?.provider)"
+                                [showClear]="true" appendTo="body" placeholder="Select a PSP">
+                                <ng-template let-option pTemplate="item">
+                                        <div >{{ option.provider }}</div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
 
                 </th>
                 <th>
@@ -175,6 +193,9 @@
                 </td>
                 <td>
                     {{element.mop || '-'}}
+                </td>
+                <td>
+                    {{element.psp_name || '-'}}
                 </td>
                 <td class="text-center">
                     <span class="text-center justify-center">

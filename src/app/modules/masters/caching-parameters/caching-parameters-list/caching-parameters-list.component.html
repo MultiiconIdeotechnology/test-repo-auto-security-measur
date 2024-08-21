@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -38,7 +40,8 @@
             </button>
 
             <!------Common Filter------->
-           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
                 <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
                 <span class="ml-2 mr-1">Filter</span>
             </button>
@@ -58,8 +61,9 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="supplier_name" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.supplier_name" [ngClass]="{'left-0': !frozenObj?.supplier_name}">
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="supplier_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name"
+                        [ngClass]="{'left-0': !frozenObj?.supplier_name}">
                         Supplier <p-sortIcon field="supplier_name" />
                         <span class="float-right" (click)="isFrozenColumn('supplier_name');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.supplier_name" class="pi pi-lock-open icon-size-3"></i>
@@ -99,15 +103,20 @@
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name">
                         <!-- <p-columnFilter type="text" matchMode="contains" field="supplier_name" placeholder="Search by Supplier"
                             ariaLabel="Filter Supplier" /> -->
-                        <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals"
+                            [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierListAll"
-                                    optionLabel="company_name" [(ngModel)]="selectedSupplier" [filter]="true" filterBy="company_name"
-                                    (onChange)="filter($event.value?.company_name)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Supplier">
-                                    <ng-template let-currency pTemplate="item">
-                                        <div class="flex align-items-center gap-2">
-                                            <div>{{ currency.company_name }}</div>
+                                    [(ngModel)]="selectedSupplier" optionLabel="company_name" [filter]="true"
+                                    filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Supplier">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.company_name">
+                                                <div class="m-0">
+                                                    {{agent.company_name}}
+                                                </div>
+                                            </div>
                                         </div>
                                     </ng-template>
                                 </p-dropdown>
@@ -115,12 +124,12 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="travel_type" placeholder="Search by Travel Type"
-                            ariaLabel="Filter Travel Type" />
+                        <p-columnFilter type="text" matchMode="contains" field="travel_type"
+                            placeholder="Search by Travel Type" ariaLabel="Filter Travel Type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="trip_type" placeholder="Search by Trip Type"
-                            ariaLabel="Filter Trip Type" />
+                        <p-columnFilter type="text" matchMode="contains" field="trip_type"
+                            placeholder="Search by Trip Type" ariaLabel="Filter Trip Type" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="sector" placeholder="Search by Sector"
@@ -168,7 +177,8 @@
                             </button>
                         </mat-menu>
                     </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.city_name">{{element?.supplier_name ? element?.supplier_name : 'Any'}}</td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.city_name">{{element?.supplier_name ?
+                        element?.supplier_name : 'Any'}}</td>
                     <td>{{element.travel_type || '-'}}</td>
                     <td>{{element.trip_type || '-'}}</td>
                     <td>{{element.sector || '-'}}</td>

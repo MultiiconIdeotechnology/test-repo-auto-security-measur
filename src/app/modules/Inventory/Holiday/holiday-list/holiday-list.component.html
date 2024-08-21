@@ -103,7 +103,7 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="supplier_name" placeholder="Search by Supplier"
                             ariaLabel="Filter Supplier" /> -->
-                        <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals" [showMenu]="false">
+                        <!-- <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierListAll"
                                     optionLabel="company_name" [(ngModel)]="selectedSupplier" [filter]="true" filterBy="company_name"
@@ -116,7 +116,26 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
+
+                        <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="supplierListAll" [(ngModel)]="selectedSupplier" optionLabel="company_name"
+                                [filter]="true" filterBy="company_name"
+                                (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                placeholder="Select Supplier">
+                                <ng-template let-agent pTemplate="item">
+                                    <div class="flex align-items-center gap-1">
+                                        <div [value]="agent.company_name">
+                                            <div class="m-0">
+                                                {{agent.company_name}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
                     </th>
 
                     <th>

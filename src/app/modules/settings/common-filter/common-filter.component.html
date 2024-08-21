@@ -8,8 +8,9 @@
         </button>
     </div>
     <div>
-        <div class="text-base font-bold dark:text-white pt-[2px] truncate w-[68%] pr-1">
-            {{_filterService.activeFiltData?.filter_name}}</div>
+        <div class="text-base font-bold dark:text-white truncate w-[68%] pr-1">
+            {{_filterService.activeFiltData?.filter_name}}
+        </div>
         <a class="mat-flat-button cursor-pointer block" color="primary" *ngIf="isEditable" (click)="saveChanges()">
             <span class="text-base font-medium text-[#117DFF] underline pr-[0px]">Save Changes </span>
         </a>
@@ -21,30 +22,39 @@
 <div class="w-full pb-0 filter-popup-body mt-2">
     <div *ngIf="!isLoading else other_content">
         <ng-container *ngFor="let item of _filterService.filter_grid_data?.filters">
-            <div class="py-2 px-4 opacity-80"  [ngClass]="{'isActive': item?.is_default}">
+            <div class="py-2 px-4 opacity-80" [ngClass]="{'isActive': item?.is_default}">
                 <div class="flex flex-row w-full justify-between items-center">
                     <label class="text-base cursor-pointer dark:text-white font-noraml text-black truncate w-[75%] pr-1"
                         (click)="applyFilter(item)">
                         {{item.filter_name}}
                     </label>
-                    <div>
-                        <span class="text-left justify-left dark:flex hidden">
-                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit" matTooltip="Edit" 
-                                (click)="updateFilterName(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy" matTooltip="Clone"
-                                (click)="cloneFilter(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg" alt="delete" matTooltip="Delete"
-                                (click)="deleteFilter(item)">
-                        </span>
-    
-                        <span class="text-left justify-left dark:hidden flex">
-                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit-dark.svg" alt="edit" matTooltip="Edit"  style="z-index: 10000"
-                                (click)="updateFilterName(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy-dark.svg" alt="copy" matTooltip="Clone"
-                                (click)="cloneFilter(item)">
-                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete-dark.svg" matTooltip="Delete"
-                                alt="delete" (click)="deleteFilter(item)">
-                        </span>
+                    <!-- Dark Mode Action -->
+                    <div class="text-left justify-left dark:flex hidden">
+                        <a title="Edit" (click)="updateFilterName(item)">
+                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit">
+                        </a>
+                        <a title="Clone" (click)="cloneFilter(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy">
+                        </a>
+                        <a title="Delete" (click)="deleteFilter(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg"
+                                alt="delete">
+                        </a>
+                    </div>
+                    <!-- Light Mode Action -->
+                    <div class="text-left justify-left dark:hidden flex">
+                        <a title="Edit" (click)="updateFilterName(item)">
+                            <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit-dark.svg" alt="edit"
+                                style="z-index: 10000">
+                        </a>
+                        <a title="Clone" (click)="cloneFilter(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy-dark.svg"
+                                alt="copy">
+                        </a>
+                        <a title="Delete" (click)="deleteFilter(item)">
+                            <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete-dark.svg"
+                                alt="delete">
+                        </a>
                     </div>
                 </div>
                 <!-- <div>
@@ -78,4 +88,3 @@
         Create New Filter
     </button>
 </div>
-
