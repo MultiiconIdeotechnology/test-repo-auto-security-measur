@@ -122,6 +122,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['last_top_up'].value) {
                 filterData['table_config']['last_top_up'].value = new Date(filterData['table_config']['last_top_up'].value);
             }
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

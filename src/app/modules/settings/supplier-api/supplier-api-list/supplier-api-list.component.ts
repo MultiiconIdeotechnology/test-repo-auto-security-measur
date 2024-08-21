@@ -114,8 +114,10 @@ export class SupplierApiListComponent
             if(filterData['table_config']['supplier_name']){
                 this.selectedSupplier = filterData['table_config'].supplier_name?.value;
             }
-            this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this._selectedColumns = filterData['selectedColumns'] || [];
+            this.primengTable['filters'] = filterData['table_config'];
             this.isFilterShow = true;
         }
     }

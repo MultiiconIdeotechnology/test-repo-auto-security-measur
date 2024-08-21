@@ -184,6 +184,8 @@ export class BusComponent extends BaseListingComponent {
       if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

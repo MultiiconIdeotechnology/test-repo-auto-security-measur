@@ -143,6 +143,8 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
 
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

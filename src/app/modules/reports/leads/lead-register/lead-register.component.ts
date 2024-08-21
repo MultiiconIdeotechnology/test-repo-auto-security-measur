@@ -202,6 +202,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['leadDate'].value) {
                 filterData['table_config']['leadDate'].value = new Date(filterData['table_config']['leadDate'].value);
             }
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;

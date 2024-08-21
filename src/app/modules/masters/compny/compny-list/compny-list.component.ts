@@ -105,6 +105,8 @@ export class CompnyListComponent extends BaseListingComponent {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.primengTable['filters'] = filterData['table_config'];
       this._selectedColumns = filterData['selectedColumns'] || [];
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
     }
   }
 

@@ -161,6 +161,8 @@ export class LedgerListComponent extends BaseListingComponent {
       if (filterData['table_config']['datetime'].value) {
         filterData['table_config']['datetime'].value = new Date(filterData['table_config']['datetime'].value);
       }
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

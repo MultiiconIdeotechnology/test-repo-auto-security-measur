@@ -146,6 +146,8 @@ export class AmendmentRequestsListComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             if (filterData['table_config']['amendment_request_time'].value && filterData['table_config']['amendment_request_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }

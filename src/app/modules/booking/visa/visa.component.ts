@@ -161,6 +161,8 @@ export class VisaComponent extends BaseListingComponent {
                 filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
         }

@@ -218,6 +218,8 @@ export class VehicleListComponent extends BaseListingComponent {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 

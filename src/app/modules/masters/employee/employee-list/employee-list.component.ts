@@ -201,6 +201,8 @@ export class EmployeeListComponent
             }
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this.isFilterShow = true;
         }
     }

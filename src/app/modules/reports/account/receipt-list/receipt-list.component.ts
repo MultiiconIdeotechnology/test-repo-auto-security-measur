@@ -188,6 +188,8 @@ export class ReceiptListComponent
             if (filterData['table_config']['audit_date_time'].value) {
                 filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
             }
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

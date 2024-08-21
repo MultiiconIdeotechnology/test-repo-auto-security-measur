@@ -101,6 +101,8 @@ export class TypesOfDocumentsListComponent extends BaseListingComponent implemen
       }
       this.primengTable['filters'] = filterData['table_config'];
       this._selectedColumns = filterData['selectedColumns'] || [];
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
       this.isFilterShow = true;
     }
   }

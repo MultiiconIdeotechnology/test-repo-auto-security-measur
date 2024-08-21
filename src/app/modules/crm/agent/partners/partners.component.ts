@@ -155,6 +155,8 @@ export class PartnersComponent extends BaseListingComponent{
                 filterData['table_config']['lastTransaction'].value = new Date(filterData['table_config']['lastTransaction'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 

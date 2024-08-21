@@ -209,6 +209,8 @@ export class ActivityListComponent extends BaseListingComponent {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 

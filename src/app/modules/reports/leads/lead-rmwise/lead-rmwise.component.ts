@@ -114,6 +114,8 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
             if(filterData['table_config']['rm']){
                 this.selectedRM = filterData['table_config'].rm?.value;
             }
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

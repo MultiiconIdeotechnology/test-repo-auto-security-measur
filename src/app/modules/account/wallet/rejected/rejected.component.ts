@@ -135,7 +135,8 @@ export class RejectedComponent extends BaseListingComponent {
         if (filterData['table_config']['rejected_date_time'].value) {
             filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
         }
-
+        this.primengTable['_sortField'] = filterData['sortColumn'];
+        this.sortColumn = filterData['sortColumn'];
         this.primengTable['filters'] = filterData['table_config'];
       }
     }

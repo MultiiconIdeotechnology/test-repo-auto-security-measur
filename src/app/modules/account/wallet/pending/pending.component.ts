@@ -136,7 +136,8 @@ export class PendingComponent extends BaseListingComponent {
       if (filterData['table_config']['request_date_time'].value && filterData['table_config']['request_date_time'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
       }
-
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

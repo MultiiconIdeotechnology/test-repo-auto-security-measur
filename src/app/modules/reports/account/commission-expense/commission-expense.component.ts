@@ -230,6 +230,8 @@ export class CommissionExpenseComponent
                 this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 

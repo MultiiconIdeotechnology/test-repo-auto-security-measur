@@ -96,12 +96,14 @@ export class CurrencyRoeListComponent extends BaseListingComponent {
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-          this.isFilterShow = true;
-          let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-          if(filterData['table_config']['sync_date_time'].value){
-            filterData['table_config']['sync_date_time'].value = new Date(filterData['table_config']['sync_date_time'].value);
-        }
-          this.primengTable['filters'] = filterData['table_config'];
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['sync_date_time'].value) {
+                filterData['table_config']['sync_date_time'].value = new Date(filterData['table_config']['sync_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 
