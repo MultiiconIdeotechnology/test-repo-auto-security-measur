@@ -65,6 +65,7 @@ export class ReceiptRegisterComponent
     settings: any;
     agentList: any[] = [];
     selectedAgent:any;
+    selectedCompany:any;
 
     cols: Column[] = [
         { field: 'receipt_ref_no', header: 'Receipt No.' },
@@ -82,10 +83,10 @@ export class ReceiptRegisterComponent
         { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
         { field: 'company', header: 'Company' }
     ];
+
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     companyList: any[] = [];
-    selectedCompany!: string;
 
     constructor(
         private accountService: AccountService,
