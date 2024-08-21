@@ -81,6 +81,7 @@ export class PendingComponent extends BaseListingComponent {
   public _unsubscribeAll: Subject<any> = new Subject<any>();
   agentList: any[] = [];
   mopList:any[] = [];
+
   selectedMop: any;
   selectedEmployee:any;
   public settingsUpdatedSubscription: Subscription;
@@ -323,6 +324,7 @@ export class PendingComponent extends BaseListingComponent {
           { header: 'Request.', property: 'request_date_time' },
           { header: 'Agent Code', property: 'agent_code' },
           { header: 'Agent', property: 'recharge_for_name' },
+          { header: 'Currency', property: 'currency' },
           { header: 'Amount ', property: 'recharge_amount' },
           { header: 'MOP', property: 'mop' },
           { header: 'Remark', property: 'user_remark' },

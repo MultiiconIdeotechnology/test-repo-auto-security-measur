@@ -80,6 +80,7 @@ export class RejectedComponent extends BaseListingComponent {
   rejectFilter: any = {};
   agentList: any[] = [];
   mopList:any[] = [];
+
   selectedMop:any;
   selectedEmployee:any;
   public settingsRejectSubscription: Subscription;
@@ -278,6 +279,7 @@ export class RejectedComponent extends BaseListingComponent {
           { header: 'Request', property: 'request_date_time' },
           { header: 'Agent Code', property: 'agent_code' },
           { header: 'Agent', property: 'recharge_for_name' },
+          { header: 'Currency', property: 'currency' },
           { header: 'Amount', property: 'recharge_amount' },
           { header: 'MOP', property: 'mop' },
           { header: 'Rejected By', property: 'rejected_by_name' },

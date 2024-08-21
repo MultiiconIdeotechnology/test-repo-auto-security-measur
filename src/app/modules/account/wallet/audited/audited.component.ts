@@ -75,6 +75,7 @@ export class AuditedComponent extends BaseListingComponent {
   appConfig = AppConfig;
   auditListFilter: any = {};
   agentList: any[] = [];
+
   pspList: any[] = [];
   mopList: any[] = [];
   selectedMop: any;
@@ -301,6 +302,7 @@ export class AuditedComponent extends BaseListingComponent {
           { header: 'Request', property: 'request_date_time' },
           { header: 'Agent Code', property: 'agent_code' },
           { header: 'Agent', property: 'recharge_for_name' },
+          { header: 'Currency', property: 'currency' },
           { header: 'Amount', property: 'recharge_amount' },
           { header: 'Settled Amount', property: 'settled_amount' },
           { header: 'MOP', property: 'mop' },
