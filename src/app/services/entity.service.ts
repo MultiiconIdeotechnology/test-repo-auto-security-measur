@@ -31,6 +31,9 @@ export class EntityService {
     private refreshInstallmentCall = new ReplaySubject<any>();
     private installmentCall = new ReplaySubject<any>();
 
+    private paymentLinkEntityCall = new ReplaySubject<any>();
+    private refreshPaymentLinkEntityCall = new ReplaySubject<any>();
+
     constructor() { }
 
     /********Receipt***********/
@@ -108,6 +111,23 @@ export class EntityService {
 
     public onrefreshreferralEntityCall(): Observable<any> {
         return this.refreshreferralEntityCall.asObservable();
+    }
+
+    // Payment Link
+    public raisePaymentLinkEntityCall(item): void {
+        this.paymentLinkEntityCall.next(item);
+    }
+
+    public onPaymentLinkEntityCall(): Observable<any> {
+        return this.paymentLinkEntityCall.asObservable();
+    }
+
+    public raiseRefreshPaymentLinkEntityCall(item): void {
+        this.refreshPaymentLinkEntityCall.next(item);
+    }
+
+    public onRefreshPaymentLinkEntityCall(): Observable<any> {
+        return this.refreshPaymentLinkEntityCall.asObservable();
     }
 
     public raiseleadEntityCall(item): void {

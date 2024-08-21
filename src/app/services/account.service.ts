@@ -16,6 +16,26 @@ export class AccountService {
     return this.http.post<any>(environment.apiUrl + "Payment/getPaymentList", model);
   }
 
+  getPaymentLinkList(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "paymentlink/getpaymentlinkList", model);
+  }
+
+  getPaymentLinkRecord(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "paymentlink/getpaymentlinkRecord", model);
+  }
+
+  createPaymentLink(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'paymentlink/create', model);
+  }
+
+  deletePaymentLink(id: string): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "paymentlink/delete", { id });
+  }
+
+  getPaymentLinkService(): Observable<any> {
+    return this.http.get<any>(environment.apiUrl + "paymentlink/getservices");
+  }
+
   getReceiptList(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptList", model);
   }

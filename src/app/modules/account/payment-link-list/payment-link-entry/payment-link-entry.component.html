@@ -1,0 +1,215 @@
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="flex flex-col w-full overflow-auto bg-card">
+
+        <div class="flex flex-row items-center px-6 h-13 min-h-13 dark:text-white">
+            <div class="text-lg font-medium tracking-tight">{{title}}</div>
+            <button class="ml-auto" mat-icon-button (click)="settingsDrawer.close()">
+                <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+        <div style="height: calc(100vh - 130px)" class="overflow-auto px-5 py-2">
+            <div class="flex flex-wrap bg-card overflow-hidden" *ngIf="listFlag">
+                <div class="flex flex-col mb-3 w-full">
+                    <span class="text-md font-semibold text-secondary">Agency Name</span>
+                    <span class="text-base">{{record?.agent ? record?.agent :'-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Service For</span>
+                    <span class="text-base truncate">{{record?.service_for || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Service Reference No.</span>
+                    <span class="text-base truncate" [matTooltip]="record?.service_ref_no">{{record?.service_ref_no ||
+                        '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Payment Status</span>
+                    <span class="text-base truncate" [ngClass]="{
+                        'text-green-600': record?.payment_status === 'Success' || record?.payment_status === 'Confirmed',
+                        'text-red-600': record?.payment_status === 'Failed',
+                        'text-blue-600': record?.payment_status === 'Pending',
+                        'text-white-600': record?.payment_status !== 'Success' && record?.payment_status !== 'Confirmed' && record?.payment_status !== 'Failed' && record?.payment_status !== 'Pending'
+                    }"> {{ record?.payment_status ? record?.payment_status : " -" }}
+                    </span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Amount</span>
+                    <span class="text-base truncate">{{record?.amount || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Client IP</span>
+                    <span class="text-base truncate">{{record?.client_IP || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">MOP</span>
+                    <span class="text-base truncate">{{record?.mop || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Created By</span>
+                    <span class="text-base truncate">{{record?.entry_by_name || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 w-1/2">
+                    <span class="text-md font-semibold text-secondary">Created Date</span>
+                    <span class="text-base">{{record?.entry_date_time ? (record?.entry_date_time |
+                        date:'dd-MM-yyyy') : " -"}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 w-1/2">
+                    <span class="text-md font-semibold text-secondary">Payment Date</span>
+                    <span class="text-base">{{record?.payment_date_time ? (record?.payment_date_time |
+                        date:'dd-MM-yyyy') : " -"}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 w-1/2">
+                    <span class="text-md font-semibold text-secondary">Expiry Date</span>
+                    <span class="text-base">{{record?.expiry_date ? (record?.expiry_date |
+                        date:'dd-MM-yyyy') : " -"}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 w-1/2">
+                    <span class="text-md font-semibold text-secondary">MOP</span>
+                    <span class="text-base">{{record?.mop ? record?.mop : " -"}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 w-1/2">
+                    <span class="text-md font-semibold text-secondary">PG Reference No.</span>
+                    <span class="text-base">{{record?.payment_date_time ? (record?.payment_date_time |
+                        date:'dd-MM-yyyy') : " -"}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 w-full">
+                    <span class="text-md font-semibold text-secondary truncate">Reference Table Id</span>
+                    <span class="text-base truncate"
+                        [matTooltip]="record?.reference_table_id">{{record?.reference_table_id ?
+                        record?.reference_table_id : " -"}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 w-[98%]">
+                    <span class="text-md font-semibold text-secondary">Remark</span>
+                    <span class="text-base" [matTooltip]="record?.remark">{{record?.remark ? record?.remark :'-'}}</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap bg-card overflow-hidden" *ngIf="!listFlag && (create || edit)">
+                <form class="flex flex-col flex-auto pt-3 overflow-y-auto" [formGroup]="formGroup"
+                    *ngIf="(create || edit)">
+                    <mat-form-field class="w-full">
+                        <mat-label>Agent</mat-label>
+                        <mat-select formControlName="agent_id" required>
+                            <mat-option>
+                                <ngx-mat-select-search placeholderLabel="Search"
+                                    noEntriesFoundLabel="'no matching agent found'" [formControlName]="'agentfilter'">
+                                </ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option *ngFor="let ct of agentList" [value]="ct.id">
+                                <span><span *ngIf="ct.code">{{ ct.code }} - </span>{{ ct.agency_name }}<span
+                                        *ngIf="ct.master_agent_name"> ({{ ct.master_agent_name }})</span></span>
+                                <div class="-mt-2">
+                                    <span class="text-secondary text-sm">{{ ct.email_address }}</span>
+                                </div>
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="formGroup.get('agent_id').hasError('required')">
+                            Agency Name is required
+                        </mat-error>
+                    </mat-form-field>
+
+                    <!-- Service for combo pending-->
+                    <mat-form-field class="w-full">
+                        <mat-label>Service For</mat-label>
+                        <mat-select formControlName="service_for">
+                            <!-- <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching rm found'"
+                                        [formControlName]="'rmfilter'">
+                                    </ngx-mat-select-search>
+                                </mat-option> -->
+                            <mat-option *ngFor="let ct of paymentLinkServiceList" [value]="ct">{{ct}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="formGroup.get('service_for').hasError('required')">
+                            Service For is required
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
+                        <mat-label>Service Reference No.</mat-label>
+                        <input matInput required formControlName="service_ref_no" />
+                        <mat-error *ngIf="formGroup.get('service_ref_no').hasError('required')">
+                            Service Reference No. is required
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
+                        <mat-label>Amount</mat-label>
+                        <input matInput required formControlName="amount" type="number"
+                            (keypress)="numberOnly($event)" />
+                        <mat-error *ngIf="formGroup.get('amount').hasError('required')">
+                            Amount is required
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full ">
+                        <mat-label>Remark</mat-label>
+                        <textarea matInput formControlName="remark" rows="1"></textarea>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
+                        <mat-label>Expiry Date</mat-label>
+                        <input matInput [matDatepicker]="picker1" formControlName="expiry_date" [min]="todayDateTime"/>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>
+                </form>
+            </div>
+        </div>
+
+        <!-- <form class="flex flex-col flex-auto px-6 pt-4 overflow-y-auto" style="max-height: calc(100vh - 116px);"
+            [formGroup]="formGroup" *ngIf="edit">
+            <mat-form-field class="w-full">
+                <mat-label>Campaign Name</mat-label>
+                <input matInput required formControlName="campaign_name" />
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Relationship Manager</mat-label>
+                <mat-select formControlName="relationship_manager_id">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching rm found'"
+                            [formControlName]="'rmfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of rmList" [value]="ct.id">{{ct.employee_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full ">
+                <mat-label>Remark</mat-label>
+                <textarea matInput [formControlName]="'remark'" class="min-h-10"></textarea>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Start Date</mat-label>
+                <input matInput [matDatepicker]="picker1" formControlName="start_date" />
+                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+        </form> -->
+        <div *ngIf="!listFlag"
+            class="h-16 flex items-center justify-end pt-4 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-5 dark:bg-[#1e293b] bg-white border-t m-auto">
+            <button mat-stroked-button (click)="settingsDrawer.close()">Close</button>
+            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+                {{ btnLabel }}
+            </button>
+        </div>
+    </div>
+</fuse-drawer>

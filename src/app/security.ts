@@ -238,6 +238,7 @@ export const module_name = {
     groupInquiry: 'Group Inquiry',
     ledger: 'Agent Ledger',
     payment: 'Payments',
+    paymentLink: 'Payment Link',
     receipt: 'Receipt',
     flight: 'Flight',
     bus: 'Bus',
