@@ -121,7 +121,6 @@ export class PendingComponent extends BaseListingComponent {
 
   ngOnInit(): void {
     setTimeout(() => {
-      console.log("object",this.filterApiData);
       this.agentList = this.filterApiData.agentData;
       this.mopList = this.filterApiData.mopData;
       this.pspList = this.filterApiData.pspData;
@@ -155,10 +154,11 @@ export class PendingComponent extends BaseListingComponent {
         this.primengTable._filter();
       });
     }
+    console.log("filterApiData", this.filterApiData)
 
     this.agentList = this.filterApiData.agentData;
     this.mopList = this.filterApiData.mopData;
-    this.pspList = this.filterApiData.pspList;
+    this.pspList = this.filterApiData.pspData;
   }
 
   getAgentList(value: string, bool=true) {

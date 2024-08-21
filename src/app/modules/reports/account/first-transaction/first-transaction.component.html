@@ -27,11 +27,13 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c" />
             </button>
-
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'">
-                <mat-icon class="w-10 h-10">filter_alt</mat-icon>
-                <span class="">Filter</span>
-            </button> -->
+            
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
+                <span class="ml-2 mr-1">Filter</span>
+            </button>
 
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
@@ -49,13 +51,6 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
         </div>
     </div>
 
@@ -126,14 +121,12 @@
                             ariaLabel="Filter Agent Code" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency Name"
-                            ariaLabel="Filter Agency Name" /> -->
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">

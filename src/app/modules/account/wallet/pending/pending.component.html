@@ -113,9 +113,9 @@
                         [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="pspList" [(ngModel)]="selectedPSP"
-                                optionLabel="psp_name" [filter]="true" filterBy="provider"
-                                (onFilter)="getPSPList($event?.filter)" (keydown)="filter($event.value?.id)"
-                                (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                optionLabel="provider" [filter]="true" filterBy="provider"
+                                (onFilter)="getPSPList($event?.filter)" (keydown)="filter($event.value?.provider)"
+                                (onChange)="filter($event.value?.provider)" [showClear]="true" appendTo="body"
                                 placeholder="Select a PSP">
                                 <ng-template let-psp pTemplate="item">
                                     <div [value]="psp.id">{{ psp.provider }}</div>

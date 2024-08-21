@@ -42,11 +42,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   selector: 'app-offline-list',
   templateUrl: './offline-list.component.html',
   styleUrls: ['./offline-list.component.scss'],
-  styles: [`
-    .tbl-grid {
-      grid-template-columns:  40px 200px 130px 120px 200px 200px 200px 200px;
-    }
-  `],
   standalone: true,
   imports: [
     NgIf,
@@ -85,36 +80,13 @@ export class OfflineListComponent extends BaseListingComponent {
   total = 0;
   visaFilter: any;
   user: any = {};
-  selectedEmployee:any;
-
-  columns = [
-    {
-      key: 'booking_ref_number', name: 'Booking Ref', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, tooltip: true, toBooking: false,
-    },
-    {
-      key: 'status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'dec_agent_id', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'agent_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, toBooking: false, tooltip: true,
-    },
-    {
-      key: 'operation_person', name: 'Operation Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'sales_person', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, applied: false, tooltip: true, toColor: false
-    },
-    {
-      key: 'entry_date_time', name: 'Entry Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-  ]
+  selectedEmployee: any;
+  selectedAgent: any;
   cols = [];
-  statusList = [ 'New', 'Completed', 'Pending'];
+  statusList = ['New', 'Completed', 'Pending'];
   isFilterShow: boolean = false;
-  employeeList:any[] = [];
-  agentList:any[] = [];
+  employeeList: any[] = [];
+  agentList: any[] = [];
 
   constructor(
     private matDialog: MatDialog,
@@ -128,7 +100,6 @@ export class OfflineListComponent extends BaseListingComponent {
     public _filterService: CommonFilterService
   ) {
     super(module_name.offlineService);
-    this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
@@ -146,32 +117,43 @@ export class OfflineListComponent extends BaseListingComponent {
     this.getRelationManagerList("");
     this.getAgent("");
 
-     // common filter
-     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    // common filter
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedAgent = resp['table_config']['dec_agent_id']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+      this.selectedEmployee = resp['table_config']['sales_person_flitres']?.value;
+
       this.sortColumn = resp['sortColumn'];
       this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['entry_date_time'].value) {
-          resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.primengTable._filter();
-  });
+    });
   }
 
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShow = true;
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        if (filterData['table_config']['entry_date_time'].value) {
-            filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
-        }
-        this.primengTable['filters'] = filterData['table_config'];
-        this.primengTable['_sortField'] = filterData['sortColumn'];
-        this.sortColumn = filterData['sortColumn'];
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedAgent = filterData['table_config']['dec_agent_id']?.value;
+      this.selectedEmployee = filterData['table_config']['sales_person_flitres']?.value;
+      if (filterData['table_config']['entry_date_time'].value) {
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
+      this.primengTable['filters'] = filterData['table_config'];
     }
-}
+  }
 
   getFilter(): any {
     const filterReq = GridUtils.GetFilterReq(
@@ -208,22 +190,33 @@ export class OfflineListComponent extends BaseListingComponent {
   }
 
   //Function to get Agent List from api
-  getAgent(value: string, bool=true) {
+  getAgent(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
-        this.agentList = data;
+      this.agentList = data;
 
-        for (let i in this.agentList) {
-            this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
         }
+      }
+
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      }
     })
-}
+  }
 
   // To get Relationship Manager data from employeelist api
   getRelationManagerList(value: any) {
     this.employeeService.getemployeeCombo(value).subscribe((data) => {
-        this.employeeList = data;
+      this.employeeList = data;
+
+      for (let i in this.employeeList) {
+        this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+      }
     })
-}
+  }
 
   viewInternal(record): void {
     this.router.navigate([
@@ -285,7 +278,7 @@ export class OfflineListComponent extends BaseListingComponent {
       return 'text-orange-600';
     } else if (status == 'Completed') {
       return 'text-green-600';
-    } else if ( status == 'Rejected' || status == 'Cancelled') {
+    } else if (status == 'Rejected' || status == 'Cancelled') {
       return 'text-red-600';
     } else if (status == 'New') {
       return 'text-blue-600';
@@ -320,9 +313,9 @@ export class OfflineListComponent extends BaseListingComponent {
   ngOnDestroy(): void {
 
     if (this.settingsUpdatedSubscription) {
-        this.settingsUpdatedSubscription.unsubscribe();
-        this._filterService.activeFiltData = {};
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
     }
-}
+  }
 
 }
