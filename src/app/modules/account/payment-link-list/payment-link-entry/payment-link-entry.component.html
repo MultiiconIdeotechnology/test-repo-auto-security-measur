@@ -45,18 +45,8 @@
                 </div>
 
                 <div class="flex flex-col mb-3 truncate w-1/2">
-                    <span class="text-md font-semibold text-secondary">Client IP</span>
-                    <span class="text-base truncate">{{record?.client_IP || '-'}}</span>
-                </div>
-
-                <div class="flex flex-col mb-3 truncate w-1/2">
-                    <span class="text-md font-semibold text-secondary">MOP</span>
-                    <span class="text-base truncate">{{record?.mop || '-'}}</span>
-                </div>
-
-                <div class="flex flex-col mb-3 truncate w-1/2">
                     <span class="text-md font-semibold text-secondary">Created By</span>
-                    <span class="text-base truncate">{{record?.entry_by_name || '-'}}</span>
+                    <span class="text-base truncate" [matTooltip]="record?.entry_by_name">{{record?.entry_by_name || '-'}}</span>
                 </div>
 
                 <div class="flex flex-col mb-3 w-1/2">
@@ -77,9 +67,14 @@
                         date:'dd-MM-yyyy') : " -"}}</span>
                 </div>
 
-                <div class="flex flex-col mb-3 w-1/2">
+                <div class="flex flex-col mb-3 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Client IP</span>
+                    <span class="text-base truncate">{{record?.client_IP || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-3 truncate w-1/2">
                     <span class="text-md font-semibold text-secondary">MOP</span>
-                    <span class="text-base">{{record?.mop ? record?.mop : " -"}}</span>
+                    <span class="text-base truncate">{{record?.mop || '-'}}</span>
                 </div>
 
                 <div class="flex flex-col mb-3 w-1/2">

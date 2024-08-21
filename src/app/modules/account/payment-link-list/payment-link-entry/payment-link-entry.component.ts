@@ -74,7 +74,7 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
     ) {
         this.entityService.onPaymentLinkEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                this.settingsDrawer.toggle()
+                this.settingsDrawer?.toggle()
                 if (item?.list) {
                     this.listFlag = true;
                     let json = {
