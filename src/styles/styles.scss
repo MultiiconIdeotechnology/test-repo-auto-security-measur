@@ -824,3 +824,37 @@ div:where(.swal2-container) button:where(.swal2-close) {
 div:where(.swal2-container) button:where(.swal2-close){
     font-size: 35px !important;
 }
+
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Tooltip text */
+.tooltip::before {
+    content: attr(tooltip);
+    position: absolute;
+    top: 220%; /* Position above the link */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #adaaaa;
+    color: #343131;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 999;
+}
+
+/* Show the tooltip text when hovering over the tooltip container */
+.tooltip:hover::before {
+    opacity: 1;
+    z-index: 999;
+
+}
