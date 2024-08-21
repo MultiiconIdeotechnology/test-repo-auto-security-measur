@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
 
@@ -32,16 +34,16 @@
             </button>
 
             <!------Sync------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="sync()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="sync()">
                 <mat-icon svgIcon="heroicons_outline:arrow-path-rounded-square"></mat-icon>
                 <span class="ml-2 mr-1">Sync</span>
-            </button>
+            </button> -->
 
             <!------Update------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="bulkUpdate()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="bulkUpdate()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Update</span>
-            </button>
+            </button> -->
 
             <!------Create------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
@@ -49,15 +51,29 @@
                 <span class="ml-2 mr-1">Add</span>
             </button>
 
+            <!------- Export Excel -->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="sync()">
+                    <mat-icon svgIcon="heroicons_outline:arrow-path-rounded-square"></mat-icon>
+                    <span>Sync</span>
+                </button>
+                <button mat-menu-item (click)="bulkUpdate()">
+                    <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
+                    <span>Update</span>
+                </button>
+            </mat-menu>
         </div>
     </div>
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true" columnResizeMode="expand"
-            [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize"
-            [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true"
-            (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['from_currency_code', 'to_currency_code', 'actual_roe', 'actual_markup', 'forex_actual_markup', 'sync_date_time']"
@@ -65,10 +81,12 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[185px] dark:bg-[#1e293b]" pSortableColumn="from_currency_code" pResizableColumn alignFrozen="left"
-                    pFrozenColumn [frozen]="frozenObj?.from_currency_code" [ngClass]="{'left-0': !frozenObj?.from_currency_code}">
+                    <th class="min-w-[185px] dark:bg-[#1e293b]" pSortableColumn="from_currency_code" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.from_currency_code"
+                        [ngClass]="{'left-0': !frozenObj?.from_currency_code}">
                         From Currency <p-sortIcon field="from_currency_code" />
-                        <span class="float-right" (click)="isFrozenColumn('from_currency_code');$event.stopPropagation()">
+                        <span class="float-right"
+                            (click)="isFrozenColumn('from_currency_code');$event.stopPropagation()">
                             <i *ngIf="frozenObj?.from_currency_code" class="pi pi-lock icon-size-3"></i>
                             <i *ngIf="!frozenObj?.from_currency_code" class="pi pi-lock-open icon-size-3"></i>
                         </span>
@@ -99,12 +117,12 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.from_currency_code">
-                        <p-columnFilter type="text" matchMode="contains" field="from_currency_code" placeholder="Search by From Currency"
-                            ariaLabel="Filter From Currency" />
+                        <p-columnFilter type="text" matchMode="contains" field="from_currency_code"
+                            placeholder="Search by From Currency" ariaLabel="Filter From Currency" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="to_currency_code" placeholder="Search by To Currency"
-                            ariaLabel="Filter To Currency" />
+                        <p-columnFilter type="text" matchMode="contains" field="to_currency_code"
+                            placeholder="Search by To Currency" ariaLabel="Filter To Currency" />
                     </th>
                     <th class="text-right">
                         <p-columnFilter type="numeric" field="actual_roe" placeholder="Search by ROE"
@@ -115,22 +133,23 @@
                             ariaLabel="Filter Actual Markup" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" field="actual_markup_roe" placeholder="Search by Actual Markup ROE"
-                            ariaLabel="Filter Actual Markup ROE" />
+                        <p-columnFilter type="numeric" field="actual_markup_roe"
+                            placeholder="Search by Actual Markup ROE" ariaLabel="Filter Actual Markup ROE" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" field="forex_actual_markup" placeholder="Search by Forex Actual Markup"
-                            ariaLabel="Filter Forex Actual Markup" />
+                        <p-columnFilter type="numeric" field="forex_actual_markup"
+                            placeholder="Search by Forex Actual Markup" ariaLabel="Filter Forex Actual Markup" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" field="forex_actual_markup_roe" placeholder="Search by Forex Actual Markup ROE"
+                        <p-columnFilter type="numeric" field="forex_actual_markup_roe"
+                            placeholder="Search by Forex Actual Markup ROE"
                             ariaLabel="Filter Forex Actual Markup ROE" />
                     </th>
                     <th>
                         <p-columnFilter field="sync_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Sync Date">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Sync Date">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -182,7 +201,7 @@
                         {{element.actual_roe ? element.forex_actual_markup_roe : 0}}
                     </td>
                     <td>
-                        {{(element.sync_date_time  | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
+                        {{(element.sync_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
                 </tr>
             </ng-template>

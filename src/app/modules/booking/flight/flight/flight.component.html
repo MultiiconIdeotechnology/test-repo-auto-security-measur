@@ -18,7 +18,7 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
             </div>
-            
+
             <!------Global filter------>
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="onTableFilter()">
@@ -43,14 +43,12 @@
             </button>
 
              <!-- PNR Search -->
-             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="importPnr()">
-                <!-- <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon> -->
+             <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="importPnr()">
                 <span class="ml-2 mr-1">Import PNR</span>
             </button>
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="offlinePnr()">
-                <!-- <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon> -->
                 <span class="ml-2 mr-1">Offline PNR</span>
-            </button>
+            </button> -->
 
             <!--- Modal filter -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
@@ -66,6 +64,14 @@
                 <button mat-menu-item (click)="exportExcel()">
                     <mat-icon>arrow_downward</mat-icon>
                     <span>Export Excel</span>
+                </button>
+                <button mat-menu-item (click)="importPnr()">
+                    <mat-icon>import_export</mat-icon>
+                    <span>Import PNR</span>
+                </button>
+                <button mat-menu-item (click)="offlinePnr()">
+                    <mat-icon svgIcon="heroicons_outline:bolt"></mat-icon>
+                    <span>Offline PNR</span>
                 </button>
             </mat-menu>
         </div>
@@ -87,7 +93,7 @@
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
                     <th class="min-w-[175px] dark:bg-[#1e293b]" pSortableColumn="booking_ref_no"  pResizableColumn alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.booking_ref_no" [ngClass]="{'left-0': !frozenObj?.booking_ref_no}">
-                        Reference No.<p-sortIcon field="booking_ref_no" /> 
+                        Reference No.<p-sortIcon field="booking_ref_no" />
                         <span class="float-right" (click)="isFrozenColumn('booking_ref_no');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.booking_ref_no" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.booking_ref_no" class="pi pi-lock icon-size-3"></i>
@@ -187,12 +193,12 @@
                         <!-- <p-columnFilter type="text" matchMode="contains" field="bookingDate" placeholder="Search by Date" ariaLabel="Filter Date" /> -->
                         <p-columnFilter field="bookingDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar 
-                                        selectionMode="range" 
+                                <p-calendar
+                                        selectionMode="range"
                                         [ngModel]="value"
                                         (ngModelChange)="onDateRangeChange($event, filter)"
-                                        [readonlyInput]="true" 
-                                        dateFormat="dd-mm-yy" 
+                                        [readonlyInput]="true"
+                                        dateFormat="dd-mm-yy"
                                         appendTo="body"
                                         placeholder="Search by Date Range">
                                 </p-calendar>
@@ -364,7 +370,7 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="ipAddress" placeholder="Search by IP Address" ariaLabel="Filter IP Address" />
                     </th>
-                    
+
                     <!-- <th *ngFor="let col of columns">
                     </th> -->
                 </tr>
@@ -463,7 +469,7 @@
                     <td>
                         {{element.ipAddress || "-"}}
                     </td>
-                    
+
                     <!-- <td *ngFor="let col of columns">
                         <ng-container *ngIf="!col['isDate']">
                             {{element[col.field] || "-"}}
