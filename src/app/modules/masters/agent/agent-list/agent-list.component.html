@@ -28,7 +28,7 @@
             </button>
 
              <!------Common Filter------->
-             <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
+             <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)" matTooltip="Saved Filter">
                 <img class="w-5 cursor-pointer pt-[2px]" src="assets/icons/common-filter.svg" alt="">
             </button>
 
@@ -67,12 +67,6 @@
                     <span style="font-weight: 600">Reshuffle</span>
                 </button>
             </mat-menu>
-
-             <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
         </div>
     </div>
 
@@ -162,7 +156,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList"
                                     [(ngModel)]="selectedEmployee" optionLabel="employee_name" [filter]="true"
-                                    filterBy="employee_name" 
+                                    filterBy="employee_name"
                                     (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select a RM">
                                     <ng-template let-employee pTemplate="item">

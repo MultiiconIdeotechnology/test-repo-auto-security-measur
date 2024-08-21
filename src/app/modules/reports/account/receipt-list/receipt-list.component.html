@@ -41,6 +41,12 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!-- Select Columns Button and Select Box Code -->
             <!-- <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
@@ -73,13 +79,6 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
         </div>
     </div>
 
@@ -202,8 +201,7 @@
                             ariaLabel="Filter Amount" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric"  field="roe" placeholder="Search by ROE"
-                            ariaLabel="Filter ROE" />
+                        <p-columnFilter type="numeric" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="mode_of_payment"
@@ -258,12 +256,12 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pg_name"
-                            placeholder="Search by PG" ariaLabel="Filter PG" />
+                        <p-columnFilter type="text" matchMode="contains" field="pg_name" placeholder="Search by PG"
+                            ariaLabel="Filter PG" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="pg_payment_ref_no"
-                        placeholder="Search by PG Ref. No" ariaLabel="Filter PG Ref. No" />
+                            placeholder="Search by PG Ref. No" ariaLabel="Filter PG Ref. No" />
                     </th>
                     <!-- <th *ngFor="let col of columns">
                     </th> -->
@@ -317,7 +315,7 @@
                             </button>
 
                             <button mat-menu-item
-                                [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 
+                                [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'],
                                                             'cursor-not-allowed text-blue-400 opacity-20': !element['proof_attachment']}"
                                 (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])">
                                 <mat-icon [svgIcon]="'attach_file'" class=" mat-18 min-h-[20px] h-[20px] rounded-full"
@@ -328,7 +326,7 @@
                             </button>
 
                             <button mat-menu-item
-                                [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'], 
+                                [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'],
                                                             'cursor-not-allowed text-yellow-400 opacity-20': !element['payment_attachment']}"
                                 (click)="!element['payment_attachment'] ? null : downloadProoffile(element['payment_attachment'])">
                                 <mat-icon [svgIcon]="'attach_file'" class="mat-18 min-h-[20px] h-[20px] rounded-full"

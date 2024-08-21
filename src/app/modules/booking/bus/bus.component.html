@@ -27,10 +27,9 @@
             </button>
 
             <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -224,8 +223,8 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierListAll"
                                     optionLabel="company_name" [(ngModel)]="selectedSupplier" [filter]="true"
-                                    filterBy="company_name" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Supplier">
+                                    filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Supplier">
                                     <ng-template let-currency pTemplate="item">
                                         <div class="flex align-items-center gap-2">
                                             <div>{{ currency.company_name }}</div>
@@ -245,8 +244,8 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="fromcityList" optionLabel="display_name"
                                     [filter]="true" filterBy="display_name" (onFilter)="getFromCity($event?.filter)"
-                                    (onChange)="filter($event.value)" [(ngModel)]="selectedFromCity"
-                                    [showClear]="true" appendTo="body" placeholder="Select From">
+                                    (onChange)="filter($event.value)" [(ngModel)]="selectedFromCity" [showClear]="true"
+                                    appendTo="body" placeholder="Select From">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
                                             <div class="m-0">
