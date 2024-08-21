@@ -221,14 +221,15 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:document',
                 link: Routes.account.receipt_path
             },
-            {
-                id: 'reports.payment_link',
-                title: 'Payment Link',
-                type: 'basic',
-                pid: 'ACCOUNT_PAYMENTLINK_VIEW',
-                icon: 'heroicons_outline:link',
-                link: Routes.account.payment_link_path
-            }
+            // Hide Payment link functionality
+            // {
+            //     id: 'reports.payment_link',
+            //     title: 'Payment Link',
+            //     type: 'basic',
+            //     pid: 'ACCOUNT_PAYMENTLINK_VIEW',
+            //     icon: 'heroicons_outline:link',
+            //     link: Routes.account.payment_link_path
+            // }
         ]
     },
     {
