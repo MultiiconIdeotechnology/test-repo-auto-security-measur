@@ -5,14 +5,14 @@
         [lazy]="true" (onLazyLoad)="refreshItemsPending($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
         [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-        [globalFilterFields]="['reference_number', 'request_date_time', 'recharge_for_name', 'recharge_amount','mop','filename','user_remark']"
+        [globalFilterFields]="['reference_number', 'request_date_time', 'recharge_for_name', 'recharge_amount','mop','psp_name','filename','user_remark']"
         styleClass="p-datatable-gridlines p-datatable-sm">
 
         <ng-template pTemplate="header">
             <tr>
                 <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn pResizableColumn alignFrozen="left"
-                    pFrozenColumn [frozen]="frozenObj?.reference_number"
+                <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn
+                    pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number"
                     [ngClass]="{'left-0': !frozenObj?.reference_number}">
                     Ref. No <p-sortIcon field="reference_number" />
                     <span class="float-right" (click)="isFrozenColumn('reference_number');$event.stopPropagation()">
@@ -38,7 +38,10 @@
                 <th pSortableColumn="mop" pResizableColumn>
                     MOP <p-sortIcon field="mop" />
                 </th>
-                <th  pResizableColumn class="text-center">
+                <th pSortableColumn="psp_name" pResizableColumn>
+                    PSP <p-sortIcon field="psp_name" />
+                </th>
+                <th pResizableColumn class="text-center">
                     Attachment
                 </th>
                 <th class="w-full" pSortableColumn="user_remark" pResizableColumn>
@@ -49,20 +52,15 @@
             <tr *ngIf="isFilterShowPending">
                 <th class=" left-[-1px]" pFrozenColumn></th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">
-                    <p-columnFilter type="text" matchMode="contains" field="reference_number" placeholder="Search by Reference Number"
-                        ariaLabel="Filter Reference Number" />
+                    <p-columnFilter type="text" matchMode="contains" field="reference_number"
+                        placeholder="Search by Reference Number" ariaLabel="Filter Reference Number" />
                 </th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.request_date_time">
                     <p-columnFilter field="request_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar
-                                    selectionMode="range"
-                                    [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)"
-                                    [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy"
-                                    appendTo="body"
-                                    placeholder="Search by Date Range">
+                            <p-calendar selectionMode="range" [ngModel]="value"
+                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                             </p-calendar>
                         </ng-template>
                     </p-columnFilter>
@@ -72,14 +70,16 @@
                         ariaLabel="Filter Agent Code" />
                 </th>
                 <th>
-                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals"
+                        [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agency_name" [filter]="true" filterBy="agency_name"
-                                (onFilter)="getAgentList($event?.filter)" (keydown)="filter($event.value?.id)"  (onChange)="filter($event.value?.id)"
-                                [showClear]="true" appendTo="body" placeholder="Select a Agent">
+                                (onFilter)="getAgentList($event?.filter)" (keydown)="filter($event.value?.id)"
+                                (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
-                                        <div [value]="employee.id">{{ employee.agency_name }}</div>
+                                    <div [value]="employee.id">{{ employee.agency_name }}</div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
@@ -98,11 +98,27 @@
                     <p-columnFilter class="searchableDropdown" field="mop" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="mopList" [(ngModel)]="selectedMop"
-                                optionLabel="mop" [filter]="true" filterBy="mop"
-                                (onFilter)="getMopList($event?.filter)" (onChange)="filter($event.value?.mop)"
-                                [showClear]="true" appendTo="body" placeholder="Select a MOP">
+                                optionLabel="mop" [filter]="true" filterBy="mop" (onFilter)="getMopList($event?.filter)"
+                                (onChange)="filter($event.value?.mop)" [showClear]="true" appendTo="body"
+                                placeholder="Select a MOP">
                                 <ng-template let-option pTemplate="item">
-                                        <div >{{ option.mop }}</div>
+                                    <div>{{ option.mop }}</div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter class="searchableDropdown" field="psp_name" matchMode="equals"
+                        [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [options]="pspList" [(ngModel)]="selectedPSP"
+                                optionLabel="psp_name" [filter]="true" filterBy="provider"
+                                (onFilter)="getPSPList($event?.filter)" (keydown)="filter($event.value?.id)"
+                                (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                placeholder="Select a PSP">
+                                <ng-template let-psp pTemplate="item">
+                                    <div [value]="psp.id">{{ psp.provider }}</div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
@@ -162,6 +178,9 @@
                 </td>
                 <td>
                     {{element.mop || '-'}}
+                </td>
+                <td>
+                    {{element.psp_name || '-'}}
                 </td>
                 <td class="text-center">
                     <!-- <span *ngIf="!element.filename"> - </span> -->
