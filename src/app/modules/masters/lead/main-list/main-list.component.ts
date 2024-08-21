@@ -37,6 +37,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { EmployeeService } from 'app/services/employee.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-main-list',
@@ -69,7 +70,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     WRejectedComponent,
     LeadListComponent,
     ConvertedListComponent,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    MatTooltipModule
   ],
 })
 export class MainListComponent extends BaseListingComponent {
@@ -147,7 +149,7 @@ export class MainListComponent extends BaseListingComponent {
       this.primengTable['filters'] = filterData['table_config'];
       this._selectedColumns = filterData['selectedColumns'] || [];
       this.isFilterShow = true;
-        
+
     }
   }
 
