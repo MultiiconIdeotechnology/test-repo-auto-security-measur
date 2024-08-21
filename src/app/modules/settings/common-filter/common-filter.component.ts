@@ -311,13 +311,15 @@ export class CommonFilterComponent implements OnInit {
                 }
             }
             
-            if (activeData?.selectedColumns && activeData.selectedColumns.length !== this._filterService.selectedColumns.length) {
-                return true;
-            }
-
-            for (let i = 0; i < activeData?.selectedColumns.length; i++) {
-                if (activeData?.selectedColumns[i].field !== this._filterService.selectedColumns[i].field) {
+            if(activeData && activeData.selectedColumns) {
+                if (activeData.selectedColumns.length !== this._filterService.selectedColumns.length) {
                     return true;
+                }
+    
+                for (let i = 0; i < activeData?.selectedColumns.length; i++) {
+                    if (activeData?.selectedColumns[i].field !== this._filterService.selectedColumns[i].field) {
+                        return true;
+                    }
                 }
             }
         }
