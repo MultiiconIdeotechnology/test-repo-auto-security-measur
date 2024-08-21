@@ -225,6 +225,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
       if (filterData['table_config']['invoice_date'].value) {
         filterData['table_config']['invoice_date'].value = new Date(filterData['table_config']['invoice_date'].value);
       }
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

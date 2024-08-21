@@ -151,6 +151,8 @@ export class TravelCollectionComponent extends BaseListingComponent {
                 }
 
                 this.primengTable['filters'] = filterData['table_config'];
+                this.primengTable['_sortField'] = filterData['sortColumn'];
+                this.sortColumn = filterData['sortColumn'];
             }
         }
 

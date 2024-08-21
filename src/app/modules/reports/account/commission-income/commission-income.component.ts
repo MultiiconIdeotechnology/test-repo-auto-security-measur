@@ -105,6 +105,8 @@ export class CommissionIncomeComponent
             if (filterData['table_config']['booking_date'].value && filterData['table_config']['booking_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
             }
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

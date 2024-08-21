@@ -114,6 +114,8 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             if (filterData['table_config']['due_date'].value && filterData['table_config']['due_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
             }
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

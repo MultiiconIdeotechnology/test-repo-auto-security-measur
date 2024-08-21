@@ -164,6 +164,8 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         }
 
         this.primengTable['filters'] = filterData['table_config'];
+        this.primengTable['_sortField'] = filterData['sortColumn'];
+        this.sortColumn = filterData['sortColumn'];
       }
       if(this.agentList && !this.agentList.length) {
         this.getAgentList("");

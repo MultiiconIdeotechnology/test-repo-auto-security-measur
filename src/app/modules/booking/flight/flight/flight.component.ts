@@ -212,6 +212,8 @@ export class FlightComponent extends BaseListingComponent {
                 filterData['table_config']['travelDate'].value = new Date(filterData['table_config']['travelDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 

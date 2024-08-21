@@ -128,6 +128,8 @@ export class GroupInquiryListComponent
                 filterData['table_config']['arrival_date'].value = new Date(filterData['table_config']['arrival_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 

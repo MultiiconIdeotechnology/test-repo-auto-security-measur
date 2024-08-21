@@ -107,8 +107,10 @@ export class MessageTemplatesListComponent
             // if (filterData['table_config']['modify_date_time'] && filterData['table_config']['modify_date_time']?.value) {
             //     filterData['table_config']['modify_date_time'].value = new Date(filterData['table_config']['modify_date_time']?.value);
             // }
-            this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
             this._selectedColumns = filterData['selectedColumns'] || [];
+            this.primengTable['filters'] = filterData['table_config'];
             this.isFilterShow = true;
         }
     }

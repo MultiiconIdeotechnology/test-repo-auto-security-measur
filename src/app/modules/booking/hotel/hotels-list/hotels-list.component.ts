@@ -168,6 +168,8 @@ export class HotelsListComponent extends BaseListingComponent {
       if (filterData['table_config']['check_out_date'].value) {
         filterData['table_config']['check_out_date'].value = new Date(filterData['table_config']['check_out_date'].value);
       }
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
