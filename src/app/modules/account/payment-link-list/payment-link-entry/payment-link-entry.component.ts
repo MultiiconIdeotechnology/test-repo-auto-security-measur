@@ -28,6 +28,7 @@ import { Subject, takeUntil, distinctUntilChanged, debounceTime, startWith, filt
     selector: 'payment-link-entry',
     templateUrl: './payment-link-entry.component.html',
     standalone: true,
+    styleUrls: ['./payment-link-entry.component.scss'],
     imports: [
         FuseDrawerComponent,
         MatDividerModule,
@@ -75,6 +76,18 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
         this.entityService.onPaymentLinkEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 this.settingsDrawer?.toggle()
+
+                this.formGroup.patchValue({
+                    id: "",
+                    agent_id: "",
+                    agentfilter: "",
+                    service_for: "",
+                    service_ref_no: "",
+                    amount: "",
+                    remark: "",
+                    expiry_date: ""
+                })
+
                 if (item?.list) {
                     this.listFlag = true;
                     let json = {
@@ -91,20 +104,8 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
                     });
                 }
 
-
                 this.create = item?.create;
                 this.edit = item?.edit;
-
-                this.formGroup.patchValue({
-                    id: "",
-                    agent_id: "",
-                    agentfilter: "",
-                    service_for: "",
-                    service_ref_no: "",
-                    amount: "",
-                    remark: "",
-                    expiry_date: ""
-                })
 
                 this.formGroup
                     .get('agentfilter')
@@ -172,6 +173,11 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
             expiry_date: ['']
         });
         this.serviceCombo();
+
+        this.formGroup.get('service_ref_no').valueChanges.subscribe(value => {
+            const uppercaseValue = value.toUpperCase();
+            this.formGroup.get('service_ref_no').setValue(uppercaseValue, { emitEvent: false });
+        });
     }
 
     serviceCombo() {
@@ -202,31 +208,53 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
         this.disableBtn = true;
         const json = this.formGroup.getRawValue();
 
-        const newJson = {
-            id: this.record?.id ? this.record?.id : "",
-            agent_id: json.agent_id ? json.agent_id : "",
-            service_for: json.service_for ? json.service_for : "",
-            service_ref_no: json.service_ref_no ? json.service_ref_no : "",
-            amount: json.amount ? json.amount : "",
-            remark: json.remark ? json.remark : "",
-            expiry_date: json.expiry_date ? DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd') : ""
-        }
-        this.accountService.createPaymentLink(newJson).subscribe({
-            next: () => {
-                this.disableBtn = false;
-                this.settingsDrawer.close();
-                this.entityService.raiseRefreshPaymentLinkEntityCall(true);
-                if(this.record?.id){
-                    this.alertService.showToast('success', 'Record modified', 'top-right', true);
-                } else {
-                    this.alertService.showToast('success', 'New record added', 'top-right', true);
-                }
-            },
-            error: (err) => {
-                this.disableBtn = false;
-                this.alertService.showToast('error', err, 'top-right', true);
+        if (this.create && !this.edit) {
+            const newJson = {
+                id: "",
+                agent_id: json.agent_id ? json.agent_id : "",
+                service_for: json.service_for ? json.service_for : "",
+                service_ref_no: json.service_ref_no ? json.service_ref_no : "",
+                amount: json.amount ? json.amount : "",
+                remark: json.remark ? json.remark : "",
+                expiry_date: json.expiry_date ? DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd') : ""
             }
-        });
+            this.accountService.createPaymentLink(newJson).subscribe({
+                next: () => {
+                    this.disableBtn = false;
+                    this.settingsDrawer.close();
+                    this.entityService.raiseRefreshPaymentLinkEntityCall(true);
+                    this.alertService.showToast('success', 'New record added', 'top-right', true);
+                },
+                error: (err) => {
+                    this.disableBtn = false;
+                    this.alertService.showToast('error', err, 'top-right', true);
+                }
+            });
+        }
+
+        if (this.edit && !this.create) {
+            const newJson = {
+                id: this.record?.id ? this.record?.id : "",
+                agent_id: json.agent_id ? json.agent_id : "",
+                service_for: json.service_for ? json.service_for : "",
+                service_ref_no: json.service_ref_no ? json.service_ref_no : "",
+                amount: json.amount ? json.amount : "",
+                remark: json.remark ? json.remark : "",
+                expiry_date: json.expiry_date ? DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd') : ""
+            }
+            this.accountService.createPaymentLink(newJson).subscribe({
+                next: () => {
+                    this.disableBtn = false;
+                    this.settingsDrawer.close();
+                    this.entityService.raiseRefreshPaymentLinkEntityCall(true);
+                    this.alertService.showToast('success', 'Modified record', 'top-right', true);
+                },
+                error: (err) => {
+                    this.disableBtn = false;
+                    this.alertService.showToast('error', err, 'top-right', true);
+                }
+            });
+        }
     }
 
     numberOnly(event: any): boolean {

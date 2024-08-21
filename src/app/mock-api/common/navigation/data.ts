@@ -226,7 +226,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Payment Link',
                 type: 'basic',
                 pid: 'ACCOUNT_PAYMENTLINK_VIEW',
-                icon: 'heroicons_outline:currency-dollar',
+                icon: 'heroicons_outline:link',
                 link: Routes.account.payment_link_path
             }
         ]

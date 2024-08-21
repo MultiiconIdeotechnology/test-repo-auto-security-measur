@@ -138,7 +138,7 @@
 
                     <mat-form-field class="w-full">
                         <mat-label>Service Reference No.</mat-label>
-                        <input matInput required formControlName="service_ref_no" />
+                        <input matInput required formControlName="service_ref_no" class="uppercase-input"/>
                         <mat-error *ngIf="formGroup.get('service_ref_no').hasError('required')">
                             Service Reference No. is required
                         </mat-error>
