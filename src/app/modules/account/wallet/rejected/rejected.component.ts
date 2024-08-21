@@ -80,6 +80,7 @@ export class RejectedComponent extends BaseListingComponent {
   rejectFilter: any = {};
   agentList: any[] = [];
   mopList:any[] = [];
+  pspList: any[] = [];
 
   selectedMop:any;
   selectedEmployee:any;
@@ -143,6 +144,8 @@ export class RejectedComponent extends BaseListingComponent {
 
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData.mopData;
+    this.pspList = this.filterApiData?.pspData;
+
   }
 
 
@@ -155,6 +158,12 @@ export class RejectedComponent extends BaseListingComponent {
   getMopList(value:string){
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
       this.filterApiData.mopData = data;
+    })
+  }
+
+  getPspList(value: string) {
+    this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
+      this.filterApiData.pspData = data;
     })
   }
 

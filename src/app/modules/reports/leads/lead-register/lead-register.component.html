@@ -47,10 +47,10 @@
             </button>
 
             <!--- Modal filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
-            </button>
+            </button> -->
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
@@ -310,10 +310,23 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter field="leadDate" type="date">
+                        <!-- <p-columnFilter field="leadDate" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
                                     placeholder="Search by Lead Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter> -->
+                        <p-columnFilter field="leadDate" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar 
+                                        selectionMode="range" 
+                                        [ngModel]="value"
+                                        (ngModelChange)="onDateRangeChange($event, filter)"
+                                        [readonlyInput]="true" 
+                                        dateFormat="dd-mm-yy" 
+                                        appendTo="body"
+                                        placeholder="Search by Date Range">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
