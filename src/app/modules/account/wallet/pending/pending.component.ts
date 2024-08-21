@@ -142,7 +142,7 @@ export class PendingComponent extends BaseListingComponent {
   }
 
   ngOnChanges() {
-    if(this.activeTab == 'Pending') {
+    // if(this.activeTab == 'Pending') {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
         this.sortColumn = resp['sortColumn'];
         this.primengTable['_sortField'] = resp['sortColumn'];
@@ -153,8 +153,7 @@ export class PendingComponent extends BaseListingComponent {
         this.isFilterShowPending = true;
         this.primengTable._filter();
       });
-    }
-    console.log("filterApiData", this.filterApiData)
+    // }
 
     this.agentList = this.filterApiData.agentData;
     this.mopList = this.filterApiData.mopData;

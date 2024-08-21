@@ -125,6 +125,14 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         }, 1000);
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['integration_start_date_time'].value) {
@@ -144,6 +152,16 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPending = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
 
             if (filterData['table_config']['integration_start_date_time'].value) {
                 filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);

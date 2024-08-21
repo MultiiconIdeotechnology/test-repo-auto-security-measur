@@ -121,8 +121,8 @@
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
-                                    [(ngModel)]="selectedAgent" [filter]="true" filterBy="employee_name"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body" placeholder="Select RM">
+                                    [(ngModel)]="selectedRm" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body" placeholder="Select RM">
                                     <ng-template let-employee pTemplate="item">
                                         <div>{{employee.employee_name}}</div>
                                     </ng-template>
