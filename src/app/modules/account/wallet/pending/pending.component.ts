@@ -130,11 +130,11 @@ export class PendingComponent extends BaseListingComponent {
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-      this.isFilterShowPending = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      if (filterData['table_config']['request_date_time'].value && filterData['table_config']['request_date_time'].value.length) {
-        this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
+      if (filterData?.table_config?.request_date_time?.value != null && filterData.table_config.request_date_time.value.length) {
+        this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
       }
+      this.isFilterShowPending = true;
       this.primengTable['_sortField'] = filterData['sortColumn'];
       this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
@@ -143,18 +143,18 @@ export class PendingComponent extends BaseListingComponent {
 
   ngOnChanges() {
     if(this.activeTab == 'Pending') {
-      this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+        if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
+          this._filterService.rangeDateConvert(resp.table_config.request_date_time);
+        }
+        this.isFilterShowPending = true;
+        
         this.sortColumn = resp['sortColumn'];
         this.primengTable['_sortField'] = resp['sortColumn'];
-        if (resp['table_config']['request_date_time'].value && resp['table_config']['request_date_time'].value.length) {
-          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
-        }
         this.primengTable['filters'] = resp['table_config'];
-        this.isFilterShowPending = true;
         this.primengTable._filter();
       });
     }
-    console.log("filterApiData", this.filterApiData)
 
     this.agentList = this.filterApiData.agentData;
     this.mopList = this.filterApiData.mopData;
