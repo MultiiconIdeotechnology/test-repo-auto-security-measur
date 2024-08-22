@@ -57,11 +57,6 @@ import { Subscription } from 'rxjs';
   ],
   templateUrl: './campaign-summary.component.html',
   styleUrls: ['./campaign-summary.component.scss'],
-  styles: [`
-    .tbl-grid {
-      grid-template-columns: 40px 200px 150px 150px 200px 80px 120px 120px 140px 130px 150px;
-    }
-    `],
 })
 export class CampaignSummaryComponent extends BaseListingComponent implements OnDestroy {
 

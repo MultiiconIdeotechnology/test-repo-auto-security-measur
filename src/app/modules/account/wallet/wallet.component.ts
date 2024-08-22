@@ -120,53 +120,13 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-
-    // this.searchInputControlPending.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.pending.searchInputControlPending.patchValue(value)
-    //   });
-
-    // this.searchInputControlAudit.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.audited.searchInputControlAudit.patchValue(value)
-    //   });
-
-    // this.searchInputControlRejected.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.rejected.searchInputControlRejected.patchValue(value)
-    //   });
-
     this.getAgentList("");
     this.getMopList("");
     this.getPspList("");
-
-    // this.agentService.getAgentCombo("").subscribe({
-    //   next: (value: any) => {
-
-    // this.audited.auditListFilter = this.filterData;
-    // this.rejected.rejectFilter = this.filterData;
-    // this.pending.pendingFilter = this.filterData;
-
-    // this.pending.refreshItemsPending()
-    //   },
-    // });
-
   }
 
-  getAgentList(value: string,  bool=true) {
-    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+  getAgentList(value: string) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.filterApiData.agentData = data;
     })
   }

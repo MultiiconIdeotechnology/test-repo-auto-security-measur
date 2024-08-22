@@ -60,7 +60,7 @@ export class ReferralListComponent extends BaseListingComponent {
     dataList = [];
     isFilterShow: boolean = false;
     employeeList: any[] = [];
-    selectedAgent: any = null;
+    selectedRm: any;
 
     linkList: any[] = [
         { value: 'B2B Partner', label: 'B2B Partner' },
@@ -102,6 +102,7 @@ export class ReferralListComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedRm = resp['table_config']['rm_id_filtres']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['entry_date_time'].value) {
@@ -121,6 +122,7 @@ export class ReferralListComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedRm = filterData['table_config']['rm_id_filtres']?.value;
             if (filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }

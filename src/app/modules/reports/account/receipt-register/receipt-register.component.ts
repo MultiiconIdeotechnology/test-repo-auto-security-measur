@@ -23,6 +23,7 @@ import { AgentService } from 'app/services/agent.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-receipt-register',
@@ -44,7 +45,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class ReceiptRegisterComponent
@@ -64,8 +66,8 @@ export class ReceiptRegisterComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    selectedAgent:any;
-    selectedCompany:any;
+    selectedAgent: any;
+    selectedCompany: any;
 
     cols: Column[] = [
         { field: 'receipt_ref_no', header: 'Receipt No.' },
@@ -129,8 +131,17 @@ export class ReceiptRegisterComponent
         this.getAgent('');
         this.getCompanyList("");
 
-         // common filter
-         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedCompany = resp['table_config']['company']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
@@ -147,6 +158,8 @@ export class ReceiptRegisterComponent
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            this.selectedCompany = filterData['table_config']['company']?.value;
             if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
@@ -161,6 +174,10 @@ export class ReceiptRegisterComponent
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
             this.companyList = data;
+
+            for (let i in this.companyList) {
+                this.companyList[i].id_by_value = this.companyList[i].company_name;
+            }
         })
     }
 
@@ -168,8 +185,16 @@ export class ReceiptRegisterComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }

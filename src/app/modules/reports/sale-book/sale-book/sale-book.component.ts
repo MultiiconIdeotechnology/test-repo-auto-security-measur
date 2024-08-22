@@ -73,55 +73,12 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   filter_table_name = filter_module_name.sale_book;
   private settingsUpdatedSubscription: Subscription;
 
-  columns = ['agent_code',
-    'master_agent',
-    'service_type',
-    'sales_type',
-    'agent_pan_no',
-    'agent_gst_no',
-    'agent_pincode',
-    'agent_state',
-    'booking_date',
-    'travel_date',
-    'inquiry_date',
-    'invoice_date',
-    'invoice_no',
-    'destination',
-    'pax',
-    'booking_ref_no',
-    'pnr',
-    'gds_pnr',
-    'purchase_amount',
-    'commission_income',
-    'tds_on_commission_income',
-    'net_purchase',
-    'service_charge',
-    'service_charge_tax',
-    'sgst',
-    'cgst',
-    'igst',
-    'commission_passedon',
-    'tds_on_commission_passedon',
-    'sale_price',
-    'commission_given',
-    'tds_on_commission_given',
-    'booking_currency',
-    'roe',
-    'billing_company',
-    'supplier',
-    'gst_number_passed_to_supplier',
-    'travel_type',
-    'ticket_status',
-    'booking_type',
-    'supplier_invoice_number',
-    'payment_mode'
-  ];
-
   loading: boolean = true;
   supplierList: any[] = [];
   companyList: any[] = [];
-  selectedCompany!: string;
-  selectedSupplier!: string;
+  selectedCompany: any;
+  selectedSupplier: any;
+  selectedAgent: any;
   agentList: any[] = [];
   isFilterShow: boolean = false;
   data: any[] = []
@@ -188,6 +145,16 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedAgent = resp['table_config']['master_agent']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
+      this.selectedSupplier = resp['table_config']['supplier']?.value;
+      this.selectedCompany = resp['table_config']['billing_company']?.value;
       this.sortColumn = resp['sortColumn'];
       this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['booking_date'].value) {
@@ -213,6 +180,10 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedAgent = filterData['table_config']['master_agent']?.value;
+      this.selectedSupplier = filterData['table_config']['supplier']?.value;
+      this.selectedCompany = filterData['table_config']['billing_company']?.value;
+
       if (filterData['table_config']['booking_date'].value) {
         filterData['table_config']['booking_date'].value = new Date(filterData['table_config']['booking_date'].value);
       }
@@ -235,8 +206,16 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
 
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
       for (let i in this.agentList) {
-        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+        this.agentList[i].id_by_value = this.agentList[i].agency_name;
       }
     })
   }
@@ -244,6 +223,10 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   getCompanyList(value) {
     this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
       this.companyList = data;
+
+      for (let i in this.companyList) {
+        this.companyList[i].id_by_value = this.companyList[i].company_name;
+      }
     })
   }
 
@@ -252,6 +235,10 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   getSupplier(value) {
     this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
       this.supplierList = data;
+
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      }
     })
   }
 
@@ -441,8 +428,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
   ngOnDestroy(): void {
 
     if (this.settingsUpdatedSubscription) {
-        this.settingsUpdatedSubscription.unsubscribe();
-        this._filterService.activeFiltData = {};
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
     }
-}
+  }
 }

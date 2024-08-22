@@ -22,7 +22,7 @@
 <div class="w-full pb-0 filter-popup-body mt-2">
     <div *ngIf="!isLoading else other_content">
         <ng-container *ngFor="let item of _filterService.filter_grid_data?.filters">
-            <div class="py-2 px-4 opacity-80" [ngClass]="{'isActive': item?.is_default}">
+            <div class="py-2 px-4 " [ngClass]="{'isActive': item?.is_default}">
                 <div class="flex flex-row w-full justify-between items-center">
                     <label class="text-base cursor-pointer dark:text-white font-noraml text-black truncate w-[75%] pr-1"
                         (click)="applyFilter(item)">
@@ -30,31 +30,31 @@
                     </label>
                     <!-- Dark Mode Action -->
                     <div class="text-left justify-left dark:flex hidden">
-                        <a title="Edit" (click)="updateFilterName(item)">
+                        <span  class="tooltip" tooltip="Edit" (click)="updateFilterName(item)">
                             <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit.svg" alt="edit">
-                        </a>
-                        <a title="Clone" (click)="cloneFilter(item)">
+                        </span>
+                        <span tooltip="Clone" class="tooltip" (click)="cloneFilter(item)">
                             <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy.svg" alt="copy">
-                        </a>
-                        <a title="Delete" (click)="deleteFilter(item)">
+                        </span>
+                        <span tooltip="Delete" class="tooltip" (click)="deleteFilter(item)">
                             <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete.svg"
                                 alt="delete">
-                        </a>
+                        </span>
                     </div>
                     <!-- Light Mode Action -->
                     <div class="text-left justify-left dark:hidden flex">
-                        <a title="Edit" (click)="updateFilterName(item)">
+                        <span tooltip="Edit" class="tooltip" (click)="updateFilterName(item)">
                             <img class="w-4 cursor-pointer" src="assets/icons/common-filter-edit-dark.svg" alt="edit"
                                 style="z-index: 10000">
-                        </a>
-                        <a title="Clone" (click)="cloneFilter(item)">
+                        </span>
+                        <span tooltip="Clone" class="tooltip" (click)="cloneFilter(item)">
                             <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-copy-dark.svg"
                                 alt="copy">
-                        </a>
-                        <a title="Delete" (click)="deleteFilter(item)">
+                        </span>
+                        <span tooltip="Delete" class="tooltip" (click)="deleteFilter(item)">
                             <img class="w-4 cursor-pointer ml-4" src="assets/icons/common-filter-delete-dark.svg"
                                 alt="delete">
-                        </a>
+                        </span>
                     </div>
                 </div>
                 <!-- <div>

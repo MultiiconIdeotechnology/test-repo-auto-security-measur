@@ -67,7 +67,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     agentList: any[] = [];
     employeeList: any[] = [];
     selectedAgent: any;
-    selectedEmployee: any;
+    selectedRM: any;
     user: any = {};
     selectedToolTip: string = "";
     toolTipArray: any[] = [];
@@ -103,6 +103,15 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
 
          // common filter
          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedRM = resp['table_config']['rm']?.value;
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             this.primengTable['filters'] = resp['table_config'];
@@ -116,6 +125,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            this.selectedRM = filterData['table_config']['rm']?.value;
             this.primengTable['_sortField'] = filterData['sortColumn'];
             this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
@@ -155,8 +166,16 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
+
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -170,6 +189,10 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
+
+            for(let i in this.employeeList){
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+             }
         });
     }
 

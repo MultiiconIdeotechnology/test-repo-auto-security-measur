@@ -21,6 +21,7 @@ import { takeUntil } from 'rxjs';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-caching-parameters-list',
@@ -43,7 +44,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDividerModule,
         FormsModule,
         PrimeNgImportsModule,
-        CachingParametersEntryComponent
+        CachingParametersEntryComponent,
+        MatTooltipModule
     ],
 })
 export class CachingParametersListComponent
@@ -192,6 +194,9 @@ export class CachingParametersListComponent
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['supplier_name']){
+                this.selectedSupplier = resp['table_config'].supplier_name?.value;
+            }
             this.primengTable['filters'] = resp['table_config'];
             this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
@@ -203,6 +208,9 @@ export class CachingParametersListComponent
         // Defult Active filter show
         if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['supplier_name']){
+                this.selectedSupplier = filterData['table_config'].supplier_name?.value;
+            }
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
@@ -212,6 +220,10 @@ export class CachingParametersListComponent
     getSupplier(value) {
         this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
           this.supplierListAll = data;
+
+          for (let i in this.supplierListAll) {
+            this.supplierListAll[i].id_by_value = this.supplierListAll[i].company_name
+        }
         })
       }
 

@@ -124,9 +124,11 @@ export class InboxAgentComponent extends BaseListingComponent {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
-            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-            if(!match) {
-               this.agentList.push(this.selectedAgent);
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
             }
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
@@ -147,11 +149,17 @@ export class InboxAgentComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            this.selectedAgent = filterData['table_config']['agencyName']?.value;
-            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-            if(!match) {
-               this.agentList.push(this.selectedAgent);
-            }
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
+         
             if (filterData['table_config']['createdDate'].value) {
                 filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
             }
@@ -169,13 +177,15 @@ export class InboxAgentComponent extends BaseListingComponent {
     }
 
     // Api function to get the agent List
-    getAgent(value: string, bool=true) {
+    getAgent(value: string, bool = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
+            console.log("this.selectedAgent", this.selectedAgent)
+              
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
-                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }

@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { Security, cityPermissions, messages, module_name, filter_module_name } from 'app/security';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
@@ -42,6 +43,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDialogModule,
         MatDividerModule,
         FormsModule,
+        MatTooltipModule,
         PrimeNgImportsModule,
         CommonFilterComponent
     ],

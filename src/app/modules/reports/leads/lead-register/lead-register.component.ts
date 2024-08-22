@@ -82,15 +82,16 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     deadLeadId: any;
     isFilterShow: boolean = false;
 
-    selectedStatus: string;
-    selectedPriority: string;
-    selectedLeadType: string;
-    selectedLeadSource: string;
-    selectedKyc: string;
-    selectedAgent: any;
+    selectedStatus: any;
+    selectedPriority: any;
+    selectedLeadType: any;
+    selectedLeadSource: any;
+    selectedKyc: any;
     leadList: any[] = [];
     employeeList: any[] = [];
     agentList: any[] = [];
+    selectedRm:any;
+    selectedLeadStatus:any;
 
     statusList: any[] = [
         { label: 'New', value: 'New', },
@@ -155,8 +156,13 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     }
 
     ngOnInit() {
-        this.getAgent("");
+        this.getLeadStatus("");
+        this.getEmployee("");
+
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedRm = resp['table_config']['rm_Id']?.value;
+            this.selectedLeadStatus = resp['table_config']['lead_source']?.value;
+
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['supplier_name']){
@@ -193,6 +199,10 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+
+            this.selectedRm = filterData['table_config']['rm_Id']?.value;
+            this.selectedLeadStatus = filterData['table_config']['lead_source']?.value;
+
             if(filterData['table_config']['supplier_name']){
                 this.leadStatus = filterData['table_config'].supplier_name?.value;
             }
@@ -212,12 +222,6 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
 
     getFilter(): any {
         const filterReq = {};
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sort,
-        //     this.searchInputControl.value
-        // );
-
 
         filterReq['lead_type'] = this.leadFilter?.lead_type == 'All' ? '' : this.leadFilter?.lead_type;
         filterReq['priority_text'] = this.leadFilter?.priority_text == 'All' ? '' : this.leadFilter?.priority_text;
@@ -250,27 +254,6 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 this.isLoading = false
             }
         });
-    }
-
-    // function to get the Agent list from api
-    getAgent(value: string) {
-        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
-            this.agentList = data;
-
-            for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
-                this.agentList[i].id_by_value = this.agentList[i].employee_name
-            }
-        })
-    }
-
-    // on clicking on filter for table column
-    onFilter() {
-        this.isFilterShow = !this.isFilterShow;
-
-        // first time api called to get the lead status data
-        this.getLeadStatus("");
-        this.getEmployee("");
     }
 
     // lead status data api to get data bind to dropdown on filter

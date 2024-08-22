@@ -63,7 +63,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     MatNativeDateModule,
     MatSelectModule,
     NgxMatSelectSearchModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    MatTooltipModule
   ],
 })
 export class LedgerListComponent extends BaseListingComponent {

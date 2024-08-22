@@ -81,92 +81,6 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     cols = [];
     total = 0;
 
-    columns = [
-        {
-            key: 'item_code',
-            name: 'Item Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'item_name',
-            name: 'Item',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'product_name',
-            name: 'Product',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'agentCode',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true
-        },
-        {
-            key: 'activation_date',
-            name: 'Activation Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-        {
-            key: 'expiry_date',
-            name: 'Expiry Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-    ];
     dataList: any;
     appConfig = AppConfig;
     isLoading: any;
@@ -185,7 +99,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     filter_table_name = filter_module_name.tech_dashboard_expired;
     private settingsUpdatedSubscription: Subscription;
     data: any;
-    selectedAgent:string;
+    selectedAgent:any;
     agentList:any[] = [];
     filter: any = {}
 
@@ -197,7 +111,6 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         public _filterService: CommonFilterService
     ) {
         super(module_name.techDashboard)
-        this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'expiry_date';
         this.sortDirection = 'desc';
@@ -208,6 +121,14 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     ngOnInit(): void {
          // common filter
          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['activation_date'].value) {
@@ -227,6 +148,16 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowExpired = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
             if (filterData['table_config']['activation_date'].value) {
                 filterData['table_config']['activation_date'].value = new Date(filterData['table_config']['activation_date'].value);
             }

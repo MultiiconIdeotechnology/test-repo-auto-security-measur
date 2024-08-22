@@ -20,6 +20,7 @@ import { Linq } from 'app/utils/linq';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-commission-expense',
@@ -41,7 +42,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class CommissionExpenseComponent
@@ -127,7 +129,7 @@ export class CommissionExpenseComponent
                 if (!match) {
                   this.agentList.push(this.selectedAgent);
                 }
-            } 
+            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;

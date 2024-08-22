@@ -117,6 +117,14 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     ngOnInit(): void {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['block_date_time'].value) {
@@ -136,6 +144,16 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowBlocked = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
             if (filterData['table_config']['block_date_time'].value) {
                 filterData['table_config']['block_date_time'].value = new Date(filterData['table_config']['block_date_time'].value);
             }

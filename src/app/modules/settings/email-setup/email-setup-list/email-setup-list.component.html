@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -25,8 +27,15 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()"
+                matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -35,13 +44,6 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
-
         </div>
     </div>
 
@@ -53,13 +55,15 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['email_for', 'email_address', 'display_name', ]" styleClass="p-datatable-gridlines p-datatable-sm">
+            [globalFilterFields]="['email_for', 'email_address', 'display_name', ]"
+            styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="email_for" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.email_for" [ngClass]="{'left-0': !frozenObj?.email_for}">
+                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="email_for" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.email_for"
+                        [ngClass]="{'left-0': !frozenObj?.email_for}">
                         Email For <p-sortIcon field="email_for" />
                         <span class="float-right" (click)="isFrozenColumn('email_for');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.email_for" class="pi pi-lock-open icon-size-3"></i>
@@ -75,7 +79,7 @@
                     <th class="text-center" pSortableColumn="enable_ssl" pResizableColumn>
                         SSL <p-sortIcon field="enable_ssl" />
                     </th>
-                    <th  class="w-full pl-[10px] text-left"  pSortableColumn="test_mail_success" pResizableColumn>
+                    <th class="w-full pl-[10px] text-left" pSortableColumn="test_mail_success" pResizableColumn>
                         Test Mail Success <p-sortIcon field="test_mail_success" />
                     </th>
                 </tr>
@@ -83,27 +87,23 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.email_for">
-                        <p-columnFilter type="text" matchMode="contains" field="email_for" placeholder="Search by Email For"
-                            ariaLabel="Filter Email For" />
+                        <p-columnFilter type="text" matchMode="contains" field="email_for"
+                            placeholder="Search by Email For" ariaLabel="Filter Email For" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="email_address" placeholder="Search by Email Address"
-                            ariaLabel="Filter Email Address" />
+                        <p-columnFilter type="text" matchMode="contains" field="email_address"
+                            placeholder="Search by Email Address" ariaLabel="Filter Email Address" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="display_name" placeholder="Search by Display Name"
-                            ariaLabel="Filter Display Name" />
+                        <p-columnFilter type="text" matchMode="contains" field="display_name"
+                            placeholder="Search by Display Name" ariaLabel="Filter Display Name" />
                     </th>
                     <th>
                         <p-columnFilter field="enable_ssl" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                            [ngModel]="value"
-                                            [options]="actionList"
-                                            (onChange)="filter($event.value)"
-                                            placeholder="Select SSL"
-                                            [showClear]="true"
-                                            appendTo="body">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                    (onChange)="filter($event.value)" placeholder="Select SSL" [showClear]="true"
+                                    appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
                                     </ng-template>
@@ -114,13 +114,9 @@
                     <th>
                         <p-columnFilter field="test_mail_success" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                            [ngModel]="value"
-                                            [options]="actionList"
-                                            (onChange)="filter($event.value)"
-                                            placeholder="Select Test Mail Success"
-                                            [showClear]="true"
-                                            appendTo="body">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                    (onChange)="filter($event.value)" placeholder="Select Test Mail Success"
+                                    [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
                                     </ng-template>

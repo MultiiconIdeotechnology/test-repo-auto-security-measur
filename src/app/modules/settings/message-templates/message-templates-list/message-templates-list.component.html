@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,13 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -46,12 +55,6 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
         </div>
     </div>
 
@@ -69,8 +72,9 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="template_for" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.template_for" [ngClass]="{'left-0': !frozenObj?.template_for}">
+                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="template_for" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.template_for"
+                        [ngClass]="{'left-0': !frozenObj?.template_for}">
                         Template For <p-sortIcon field="template_for" />
                         <span class="float-right" (click)="isFrozenColumn('template_for');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.template_for" class="pi pi-lock-open icon-size-3"></i>
@@ -99,7 +103,7 @@
                         Individual Address <p-sortIcon field="individual_address" />
                     </th>
                     <ng-container *ngFor="let col of columns; let last=isLast">
-                        <th [ngClass]="{'w-full min-w-[200px]': last}" [pSortableColumn]="col.field" pResizableColumn >
+                        <th [ngClass]="{'w-full min-w-[200px]': last}" [pSortableColumn]="col.field" pResizableColumn>
                             {{col.header}} <p-sortIcon [field]="col.field" />
                         </th>
                     </ng-container>
@@ -108,24 +112,24 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.template_for">
-                        <p-columnFilter type="text" matchMode="contains" field="template_for" placeholder="Search by Template For"
-                            ariaLabel="Filter Template For" />
+                        <p-columnFilter type="text" matchMode="contains" field="template_for"
+                            placeholder="Search by Template For" ariaLabel="Filter Template For" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="event_name" placeholder="Search by Event"
-                            ariaLabel="Filter Event" />
+                        <p-columnFilter type="text" matchMode="contains" field="event_name"
+                            placeholder="Search by Event" ariaLabel="Filter Event" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="message_type" placeholder="Search by Message Type"
-                            ariaLabel="Filter Message Type" />
+                        <p-columnFilter type="text" matchMode="contains" field="message_type"
+                            placeholder="Search by Message Type" ariaLabel="Filter Message Type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="message_title" placeholder="Search by Title"
-                            ariaLabel="Filter Title" />
+                        <p-columnFilter type="text" matchMode="contains" field="message_title"
+                            placeholder="Search by Title" ariaLabel="Filter Title" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="email_subject" placeholder="Search by Subject"
-                            ariaLabel="Filter Subject" />
+                        <p-columnFilter type="text" matchMode="contains" field="email_subject"
+                            placeholder="Search by Subject" ariaLabel="Filter Subject" />
                     </th>
                     <th></th>
                     <th>
@@ -138,8 +142,9 @@
                     </th>
 
                     <th *ngFor="let col of columns; let last=isLast">
-                        <p-columnFilter  *ngIf="col.type != 'date'" [type]="col.type" [matchMode]="col.type == 'text'? 'contains': ''"  [field]="col.field" [placeholder]="'Search by '+ col.header"
-                            [ariaLabel]="'Filter '+col.header" />
+                        <p-columnFilter *ngIf="col.type != 'date'" [type]="col.type"
+                            [matchMode]="col.type == 'text'? 'contains': ''" [field]="col.field"
+                            [placeholder]="'Search by '+ col.header" [ariaLabel]="'Filter '+col.header" />
                         <p-columnFilter *ngIf="col.type == 'date'" [field]="col.field" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
@@ -186,8 +191,8 @@
                         </mat-menu>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.template_for">
-                        <span
-                            [matTooltip]="element['is_enable'] ? 'Enable' : 'Disable' " class="w-2 h-2 inline-block me-1 rounded-full"
+                        <span [matTooltip]="element['is_enable'] ? 'Enable' : 'Disable' "
+                            class="w-2 h-2 inline-block me-1 rounded-full"
                             [ngClass]="element['is_enable'] ? 'bg-green-500' : 'bg-red-600'">
                         </span>
                         {{element.template_for || "-"}}
@@ -198,8 +203,7 @@
                     <td>{{element.email_subject || "-"}}</td>
                     <td class="text-center">
                         <span (click)="OpenWindow(element)">
-                            <mat-icon
-                                class="mat-18 text-blue-800 mt-1 icon-size-5 cursor-pointer">visibility
+                            <mat-icon class="mat-18 text-blue-800 mt-1 icon-size-5 cursor-pointer">visibility
                             </mat-icon>
                         </span>
                     </td>

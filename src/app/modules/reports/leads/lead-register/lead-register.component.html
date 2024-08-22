@@ -19,15 +19,24 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
-                [disabled]="isLoading" (click)="onFilter()">
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -52,12 +61,6 @@
                 <span class="">Filter</span>
             </button> -->
 
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button>
-
             <!--- Export Excel  -->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
@@ -81,20 +84,21 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['calls', 'status', 'priority_text', 'agency_name', 'rmName', 'lead_type', 'lead_source', 'contact_person_name', 'contact_person_email', 'contact_person_mobile', 'cityName', 'kycStarted', 'lastCallFeedback', 'lastCall', 'leadDate']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[110px] text-center dark:bg-[#1e293b]" pSortableColumn="calls" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.calls" [ngClass]="{'left-0': !frozenObj?.calls}">
+                    <th class="min-w-[110px] text-center dark:bg-[#1e293b]" pSortableColumn="calls" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.calls"
+                        [ngClass]="{'left-0': !frozenObj?.calls}">
                         Calls <p-sortIcon field="calls" />
                         <span class="float-right" (click)="isFrozenColumn('calls');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.calls" class="pi pi-lock-open icon-size-3"></i>
@@ -155,7 +159,8 @@
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true" appendTo="body">
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                    appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -166,13 +171,9 @@
                     <th>
                         <p-columnFilter field="priority_text" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                            [ngModel]="value"
-                                            [options]="priorityText"
-                                            (onChange)="filter($event.value)"
-                                            placeholder="Select Priority"
-                                            [showClear]="true"
-                                            appendTo="body">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="priorityText"
+                                    (onChange)="filter($event.value)" placeholder="Select Priority" [showClear]="true"
+                                    appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -181,39 +182,15 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
+                        <p-columnFilter type="text" matchMode="contains" field="agency_name"
+                            placeholder="Search by Lead Name" ariaLabel="Filter Lead Name" />
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown"  field="rm_Id" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="rm_Id" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                    [options]="employeeList"
-                                    [(ngModel)]="selectedEmployee"
-                                    optionLabel="employee_name"
-                                    [filter]="true"
-                                    filterBy="employee_name"
-                                    (onFilter)="getEmployee($event?.filter)"
-                                    (onChange)="filter($event.value?.id)"
-                                    [showClear]="true"
-                                    appendTo="body"
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" [(ngModel)]="selectedRm"
+                                    optionLabel="employee_name" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select a RM">
                                     <ng-template let-emp pTemplate="item">
                                         <div class="flex align-items-center gap-2">
@@ -227,13 +204,9 @@
                     <th>
                         <p-columnFilter field="lead_type" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                            [ngModel]="value"
-                                            [options]="leadType"
-                                            (onChange)="filter($event.value)"
-                                            placeholder="Select Lead Type"
-                                            [showClear]="true"
-                                            appendTo="body">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="leadType"
+                                    (onChange)="filter($event.value)" placeholder="Select Lead Type" [showClear]="true"
+                                    appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -242,18 +215,13 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown"  field="lead_source" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="lead_source" matchMode="equals"
+                            [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                    [options]="leadList"
-                                    [(ngModel)]="leadStatus"
-                                    optionLabel="lead_source"
-                                    [filter]="true"
-                                    filterBy="lead_source"
-                                    (onChange)="filter($event.value)"
-                                    [showClear]="true"
-                                    appendTo="body"
-                                    placeholder="Select Lead Status">
+                                <p-dropdown class="filter-dropdown" [options]="leadList"
+                                    [(ngModel)]="selectedLeadStatus" optionLabel="lead_source" [filter]="true"
+                                    filterBy="lead_source" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Lead Status">
                                     <ng-template let-leadStat pTemplate="item">
                                         <div class="flex align-items-center gap-2">
                                             <div [value]="leadStat.lead_source">{{ leadStat.lead_source }}</div>
@@ -264,16 +232,16 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="contact_person_name" placeholder="Search by Contact Person"
-                            ariaLabel="Filter Contact Person" />
+                        <p-columnFilter type="text" matchMode="contains" field="contact_person_name"
+                            placeholder="Search by Contact Person" ariaLabel="Filter Contact Person" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="contact_person_email" placeholder="Search by Email"
-                            ariaLabel="Filter Email" />
+                        <p-columnFilter type="text" matchMode="contains" field="contact_person_email"
+                            placeholder="Search by Email" ariaLabel="Filter Email" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="contact_person_mobile" placeholder="Search by Mobile"
-                            ariaLabel="Filter Mobile" />
+                        <p-columnFilter type="text" matchMode="contains" field="contact_person_mobile"
+                            placeholder="Search by Mobile" ariaLabel="Filter Mobile" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="cityName" placeholder="Search by City"
@@ -282,13 +250,9 @@
                     <th>
                         <p-columnFilter field="KYCStarted_filter" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                            [ngModel]="value"
-                                            [options]="kycList"
-                                            (onChange)="filter($event.value)"
-                                            placeholder="Select KYC Started"
-                                            [showClear]="true"
-                                            appendTo="body">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="kycList"
+                                    (onChange)="filter($event.value)" placeholder="Select KYC Started"
+                                    [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -297,14 +261,14 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="lastCallFeedback" placeholder="Search by Last Feedback"
-                            ariaLabel="Filter Last Feedback" />
+                        <p-columnFilter type="text" matchMode="contains" field="lastCallFeedback"
+                            placeholder="Search by Last Feedback" ariaLabel="Filter Last Feedback" />
                     </th>
                     <th>
                         <p-columnFilter field="lastCall" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                placeholder="Search by Last Call">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Last Call">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -312,21 +276,16 @@
                     <th>
                         <!-- <p-columnFilter field="leadDate" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Lead Date">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Lead Date">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter> -->
                         <p-columnFilter field="leadDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar 
-                                        selectionMode="range" 
-                                        [ngModel]="value"
-                                        (ngModelChange)="onDateRangeChange($event, filter)"
-                                        [readonlyInput]="true" 
-                                        dateFormat="dd-mm-yy" 
-                                        appendTo="body"
-                                        placeholder="Search by Date Range">
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -369,15 +328,16 @@
                     </td>
                     <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.calls">
                         <span class="inline-block cursor-pointer border-b border-gray-500"
-                             (click)="callHistory(element)">
-                             {{element['calls']}}
+                            (click)="callHistory(element)">
+                            {{element['calls']}}
                         </span>
                     </td>
                     <td>
-                        <span  [ngClass]="getStatusColor(element.status)">{{element.status || "-"}}</span>
+                        <span [ngClass]="getStatusColor(element.status)">{{element.status || "-"}}</span>
                     </td>
                     <td>
-                        <span [ngClass]="getStatusColorP(element.priority_text)">{{ element.priority_text || "-"}}</span>
+                        <span [ngClass]="getStatusColorP(element.priority_text)">{{ element.priority_text ||
+                            "-"}}</span>
                     </td>
                     <td>
                         {{element.agency_name || "-"}}

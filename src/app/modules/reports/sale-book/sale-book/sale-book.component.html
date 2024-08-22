@@ -14,8 +14,9 @@
                     (input)="datatable.filterGlobal($event.target.value, 'contains')">
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'" (input)="datatable.filterGlobal($event.target.value, 'contains')" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" ></mat-icon>
+                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (input)="datatable.filterGlobal($event.target.value, 'contains')" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
             </div>
 
             <!------Global Filter------>
@@ -25,8 +26,15 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()"
+                matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -45,12 +53,6 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
-             <!------Common Filter------->
-           <button class="ml-4" mat-flat-button [color]="'primary'"  [disabled]="isLoading" (click)="_filterService.openDrawer(filter_table_name, primengTable)">
-            <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-            <span class="ml-2 mr-1">Filter</span>
-        </button>
         </div>
     </div>
 
@@ -61,11 +63,13 @@
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_code','master_agent','service_type','sales_type','agent_pan_no','agent_gst_no','agent_pincode','agent_state','booking_date','travel_date','inquiry_date','invoice_date','invoice_no','destination','pax','booking_ref_no','pnr','gds_pnr','purchase_amount','commission_income','tds_on_commission_income','net_purchase','service_charge','service_charge_tax','sgst','cgst','igst','commission_passedon','tds_on_commission_passedon','sale_price','commission_given','tds_on_commission_given','booking_currency','roe','billing_company','supplier','gst_number_passed_to_supplier','travel_type','ticket_status','booking_type','supplier_invoice_number','payment_mode']" styleClass="p-datatable-gridlines p-datatable-sm">
+            [globalFilterFields]="['agent_code','master_agent','service_type','sales_type','agent_pan_no','agent_gst_no','agent_pincode','agent_state','booking_date','travel_date','inquiry_date','invoice_date','invoice_no','destination','pax','booking_ref_no','pnr','gds_pnr','purchase_amount','commission_income','tds_on_commission_income','net_purchase','service_charge','service_charge_tax','sgst','cgst','igst','commission_passedon','tds_on_commission_passedon','sale_price','commission_given','tds_on_commission_given','booking_currency','roe','billing_company','supplier','gst_number_passed_to_supplier','travel_type','ticket_status','booking_type','supplier_invoice_number','payment_mode']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[150px] max-w-[175px]" pSortableColumn="agent_code" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.agent_code" [ngClass]="{'left-0': !frozenObj?.agent_code}">
+                    <th class="min-w-[150px] max-w-[175px]" pSortableColumn="agent_code" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code"
+                        [ngClass]="{'left-0': !frozenObj?.agent_code}">
                         Agent Code <p-sortIcon field="agent_code" />
                         <span class="float-right" (click)="isFrozenColumn('agent_code');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.agent_code" class="pi pi-lock-open icon-size-3"></i>
@@ -240,257 +244,296 @@
 
                 <tr *ngIf="isFilterShow">
 
-                        <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
-                            <p-columnFilter type="text" matchMode="contains" field="agent_code" placeholder="Search by Agent Code" ariaLabel="Filter Agent Code" />
-                        </th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
+                        <p-columnFilter type="text" matchMode="contains" field="agent_code"
+                            placeholder="Search by Agent Code" ariaLabel="Filter Agent Code" />
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="master_agent" placeholder="Search by Agent" ariaLabel="Filter Agent" /> -->
-                            <p-columnFilter class="searchableDropdown" field="master_agent" matchMode="equals" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                        (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                        <ng-template let-agent pTemplate="item">
-                                            <div class="flex align-items-center gap-1">
-                                                <div [value]="agent.id">
-                                                    <div class="m-0">
-                                                        {{agent.code}} - {{agent.agency_name}}
-                                                        <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                    </div>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="master_agent" placeholder="Search by Agent" ariaLabel="Filter Agent" /> -->
+                        <p-columnFilter class="searchableDropdown" field="master_agent" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                                 </div>
                                             </div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
-                        </th>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="service_type" placeholder="Search by Service Type" ariaLabel="Filter Service Type" /> -->
-                            <p-columnFilter field="service_type" matchMode="equals" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="ServicesBy"
-                                        (onChange)="filter($event.value)" placeholder="Select Service" appendTo="body"
-                                        [showClear]="true">
-                                        <ng-template let-option pTemplate="item">
-                                            <p>{{option.value}}</p>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="service_type" placeholder="Search by Service Type" ariaLabel="Filter Service Type" /> -->
+                        <p-columnFilter field="service_type" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="ServicesBy"
+                                    (onChange)="filter($event.value)" placeholder="Select Service" appendTo="body"
+                                    [showClear]="true">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.value}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
 
-                        </th>
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="sales_type" placeholder="Search by Sales Type" ariaLabel="Filter Sales Type" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="sales_type"
+                            placeholder="Search by Sales Type" ariaLabel="Filter Sales Type" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="agent_pan_no" placeholder="Search by Agent PAN No." ariaLabel="Filter Agent PAN No." />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="agent_pan_no"
+                            placeholder="Search by Agent PAN No." ariaLabel="Filter Agent PAN No." />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="agent_gst_no" placeholder="Search by Agent GST No." ariaLabel="Filter Agent GST No." />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="agent_gst_no"
+                            placeholder="Search by Agent GST No." ariaLabel="Filter Agent GST No." />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="agent_pincode" placeholder="Search by Agent Pincode" ariaLabel="Filter Agent Pincode" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="agent_pincode"
+                            placeholder="Search by Agent Pincode" ariaLabel="Filter Agent Pincode" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="agent_state" placeholder="Search by Agent State" ariaLabel="Filter Agent State" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="agent_state"
+                            placeholder="Search by Agent State" ariaLabel="Filter Agent State" />
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="booking_date" placeholder="Search by Booking Date" ariaLabel="Filter Booking Date" /> -->
-                            <p-columnFilter field="booking_date" type="date">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                        [ngModel]="value" placeholder="Search by Return Date Time">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
-                        </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="booking_date" placeholder="Search by Booking Date" ariaLabel="Filter Booking Date" /> -->
+                        <p-columnFilter field="booking_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Return Date Time">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="travel_date" placeholder="Search by Travel Date" ariaLabel="Filter Travel Date" /> -->
-                            <p-columnFilter field="travel_date" type="date">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                        [ngModel]="value" placeholder="Search by Return Date Time">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
-                        </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="travel_date" placeholder="Search by Travel Date" ariaLabel="Filter Travel Date" /> -->
+                        <p-columnFilter field="travel_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Return Date Time">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="inquiry_date" placeholder="Search by Inquiry Date" ariaLabel="Filter Inquiry Date" /> -->
-                            <p-columnFilter field="inquiry_date" type="date">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                        [ngModel]="value" placeholder="Search by Return Date Time">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
-                        </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="inquiry_date" placeholder="Search by Inquiry Date" ariaLabel="Filter Inquiry Date" /> -->
+                        <p-columnFilter field="inquiry_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Return Date Time">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="invoice_date" placeholder="Search by Invoice Date" ariaLabel="Filter Invoice Date" /> -->
-                            <p-columnFilter field="invoice_date" type="date">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                        [ngModel]="value" placeholder="Search by Return Date Time">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
-                        </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="invoice_date" placeholder="Search by Invoice Date" ariaLabel="Filter Invoice Date" /> -->
+                        <p-columnFilter field="invoice_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Return Date Time">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="invoice_no" placeholder="Search by Invoice No." ariaLabel="Filter Invoice No." />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="invoice_no"
+                            placeholder="Search by Invoice No." ariaLabel="Filter Invoice No." />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="destination" placeholder="Search by Destination" ariaLabel="Filter Destination" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="destination"
+                            placeholder="Search by Destination" ariaLabel="Filter Destination" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax"
+                            ariaLabel="Filter Pax" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="booking_ref_no" placeholder="Search by Booking Reference No." ariaLabel="Filter Booking Reference No." />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
+                            placeholder="Search by Booking Reference No." ariaLabel="Filter Booking Reference No." />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR" ariaLabel="Filter PNR" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
+                            ariaLabel="Filter PNR" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR" ariaLabel="Filter GDS PNR" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR"
+                            ariaLabel="Filter GDS PNR" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="purchase_amount" placeholder="Search by Purchase Amount" ariaLabel="Filter Purchase Amount" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="purchase_amount" placeholder="Search by Purchase Amount"
+                            ariaLabel="Filter Purchase Amount" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="commission_income" placeholder="Search by Commission Income" ariaLabel="Filter Commission Income" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="commission_income"
+                            placeholder="Search by Commission Income" ariaLabel="Filter Commission Income" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="tds_on_commission_income" placeholder="Search by TDS On Commission Income" ariaLabel="Filter TDS On Commission Income" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="tds_on_commission_income"
+                            placeholder="Search by TDS On Commission Income"
+                            ariaLabel="Filter TDS On Commission Income" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="net_purchase" placeholder="Search by Net Purchase" ariaLabel="Filter Net Purchase" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="net_purchase" placeholder="Search by Net Purchase"
+                            ariaLabel="Filter Net Purchase" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="service_charge" placeholder="Search by Service Charge" ariaLabel="Filter Service Charge" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="service_charge" placeholder="Search by Service Charge"
+                            ariaLabel="Filter Service Charge" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="service_charge_tax" placeholder="Search by Service Charge Tax" ariaLabel="Filter Service Charge Tax" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="service_charge_tax"
+                            placeholder="Search by Service Charge Tax" ariaLabel="Filter Service Charge Tax" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="sgst" placeholder="Search by SGST" ariaLabel="Filter SGST" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="sgst" placeholder="Search by SGST"
+                            ariaLabel="Filter SGST" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="cgst" placeholder="Search by CGST" ariaLabel="Filter CGST" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="cgst" placeholder="Search by CGST"
+                            ariaLabel="Filter CGST" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="igst" placeholder="Search by IGST" ariaLabel="Filter IGST" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="igst" placeholder="Search by IGST"
+                            ariaLabel="Filter IGST" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="commission_passedon" placeholder="Search by Commission Passed On" ariaLabel="Filter Commission Passed On" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="commission_passedon"
+                            placeholder="Search by Commission Passed On" ariaLabel="Filter Commission Passed On" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="tds_on_commission_passedon" placeholder="Search by TDS On Commission Passed On" ariaLabel="Filter TDS On Commission Passed On" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="tds_on_commission_passedon"
+                            placeholder="Search by TDS On Commission Passed On"
+                            ariaLabel="Filter TDS On Commission Passed On" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="sale_price" placeholder="Search by Sale Price" ariaLabel="Filter Sale Price" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="sale_price" placeholder="Search by Sale Price"
+                            ariaLabel="Filter Sale Price" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="commission_given" placeholder="Search by Commission Given" ariaLabel="Filter Commission Given" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="commission_given" placeholder="Search by Commission Given"
+                            ariaLabel="Filter Commission Given" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="tds_on_commission_given" placeholder="Search by Tds On Commission Given" ariaLabel="Filter Tds On Commission Given" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="tds_on_commission_given"
+                            placeholder="Search by Tds On Commission Given"
+                            ariaLabel="Filter Tds On Commission Given" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="booking_currency" placeholder="Search by Booking Currency" ariaLabel="Filter Booking Currency" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="booking_currency"
+                            placeholder="Search by Booking Currency" ariaLabel="Filter Booking Currency" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="numeric" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="billing_company" placeholder="Search by Billing Company" ariaLabel="Filter Billing Company" /> -->
-                            <p-columnFilter class="searchableDropdown" field="billing_company" matchMode="equals" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
-                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
-                                        (onChange)="filter($event.value?.company_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Company">
-                                        <ng-template let-company pTemplate="item">
-                                                <div> {{company.company_name}}</div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
-                        </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="billing_company" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
+                                    [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Company">
+                                    <ng-template let-company pTemplate="item">
+                                        <div> {{company.company_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                        <th>
-                            <!-- <p-columnFilter type="text" matchMode="contains" field="supplier" placeholder="Search by Supplier" ariaLabel="Filter Supplier" /> -->
-                            <p-columnFilter class="searchableDropdown" field="supplier" matchMode="equals" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
-                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedSupplier" (onChange)="filter($event.value?.company_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Supplier">
-                                        <ng-template let-supplier pTemplate="item">
-                                                <div>
-                                                {{supplier.company_name}}
-                                                </div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
-                        </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="supplier" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
+                                    [filter]="true" filterBy="company_name" [(ngModel)]="selectedSupplier"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select Supplier">
+                                    <ng-template let-supplier pTemplate="item">
+                                        <div>
+                                            {{supplier.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="gst_number_passed_to_supplier" placeholder="Search by GST Number Passed To Supplier" ariaLabel="Filter GST Number Passed To Supplier" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="gst_number_passed_to_supplier"
+                            placeholder="Search by GST Number Passed To Supplier"
+                            ariaLabel="Filter GST Number Passed To Supplier" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="travel_type" placeholder="Search by Travel Type" ariaLabel="Filter Travel Type" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="travel_type"
+                            placeholder="Search by Travel Type" ariaLabel="Filter Travel Type" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="ticket_status" placeholder="Search by Ticket Status" ariaLabel="Filter Ticket Status" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="ticket_status"
+                            placeholder="Search by Ticket Status" ariaLabel="Filter Ticket Status" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="booking_type" placeholder="Search by Booking Type" ariaLabel="Filter Booking Type" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="booking_type"
+                            placeholder="Search by Booking Type" ariaLabel="Filter Booking Type" />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="supplier_invoice_number" placeholder="Search by Supplier Invoice No." ariaLabel="Filter Supplier Invoice No." />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="supplier_invoice_number"
+                            placeholder="Search by Supplier Invoice No." ariaLabel="Filter Supplier Invoice No." />
+                    </th>
 
-                        <th>
-                            <p-columnFilter type="text" matchMode="contains" field="payment_mode" placeholder="Search by Payment Mode" ariaLabel="Filter Payment Mode" />
-                        </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="payment_mode"
+                            placeholder="Search by Payment Mode" ariaLabel="Filter Payment Mode" />
+                    </th>
                 </tr>
             </ng-template>
 
@@ -545,15 +588,18 @@
 
                     <td class="text-right">{{element.purchase_amount ? element.purchase_amount.toFixed(2) : 0}}</td>
 
-                    <td class="text-right">{{element.commission_income ? element.commission_income.toFixed(2) : 0 }}</td>
+                    <td class="text-right">{{element.commission_income ? element.commission_income.toFixed(2) : 0 }}
+                    </td>
 
-                    <td class="text-right">{{element.tds_on_commission_income ? element.tds_on_commission_income.toFixed(2) : 0 }}</td>
+                    <td class="text-right">{{element.tds_on_commission_income ?
+                        element.tds_on_commission_income.toFixed(2) : 0 }}</td>
 
                     <td class="text-right">{{element.net_purchase ? element.net_purchase.toFixed(2) : 0 }}</td>
 
                     <td class="text-right">{{element.service_charge ? element.service_charge.toFixed(2) : 0 }}</td>
 
-                    <td class="text-right">{{element.service_charge_tax ? element.service_charge_tax.toFixed(2) : 0 }}</td>
+                    <td class="text-right">{{element.service_charge_tax ? element.service_charge_tax.toFixed(2) : 0 }}
+                    </td>
 
                     <td class="text-right">{{element.sgst ? element.sgst.toFixed(2): 0 }}</td>
 
@@ -561,15 +607,18 @@
 
                     <td class="text-right">{{element.igst ? element.igst.toFixed(2): 0 }}</td>
 
-                    <td class="text-right">{{element.commission_passedon ? element.commission_passedon.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.commission_passedon ? element.commission_passedon.toFixed(2): 0 }}
+                    </td>
 
-                    <td class="text-right">{{element.tds_on_commission_passedon ? element.tds_on_commission_passedon.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.tds_on_commission_passedon ?
+                        element.tds_on_commission_passedon.toFixed(2): 0 }}</td>
 
                     <td class="text-right">{{element.sale_price ? element.sale_price.toFixed(2): 0 }}</td>
 
                     <td class="text-right">{{element.commission_given ? element.commission_given.toFixed(2): 0 }}</td>
 
-                    <td class="text-right">{{element.tds_on_commission_given ? element.tds_on_commission_given.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.tds_on_commission_given ?
+                        element.tds_on_commission_given.toFixed(2): 0 }}</td>
 
                     <td>{{element.booking_currency || '-'}}</td>
 

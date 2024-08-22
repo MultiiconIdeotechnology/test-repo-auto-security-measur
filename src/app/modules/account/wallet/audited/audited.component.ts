@@ -115,12 +115,17 @@ export class AuditedComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-
+    setTimeout(() => {
+      this.agentList = this.filterApiData.agentData;
+      this.mopList = this.filterApiData.mopData;
+      this.pspList = this.filterApiData.pspData;
+    }, 1000);
   }
+  
 
   ngOnChanges() {
     if (this.activeTab == 'Audited') {
-      this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
         
         if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
           this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
