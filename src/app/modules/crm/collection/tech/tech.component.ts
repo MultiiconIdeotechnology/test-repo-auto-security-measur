@@ -76,11 +76,11 @@ export class TechCollectionComponent extends BaseListingComponent {
     @ViewChild(MatPaginator) public _paginatorTech: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
 
-    module_name = module_name.crmagent
-    filter_table_name = filter_module_name.collections_tech;
-    public settingsTechSubscription: Subscription;
     agentList: any[] = [];
     selectedAgent: any = {};
+    public settingsTechSubscription: Subscription;
+    module_name = module_name.crmagent
+    filter_table_name = filter_module_name.collections_tech;
     cols = [];
     dataList = [];
     searchInputControlTech = new FormControl('');
