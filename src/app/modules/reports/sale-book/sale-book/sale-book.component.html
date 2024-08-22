@@ -39,7 +39,7 @@
             </button>
 
             <!-- Filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filterModal()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
             </button>
@@ -256,7 +256,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="onAgentChange($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">

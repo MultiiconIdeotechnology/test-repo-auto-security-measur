@@ -161,8 +161,8 @@ export class TechCollectionComponent extends BaseListingComponent {
                 }
 
                 // setTimeout(() => {
-                //     this.primengTable['filters'] = filterData['table_config'];
-                //     this.primengTable['_sortField'] = filterData['sortColumn'];
+                    this.primengTable['filters'] = filterData['table_config'];
+                    // this.primengTable['_sortField'] = filterData['sortColumn'];
                 // }, 1000);
                 this.sortColumn = filterData['sortColumn'];
             }

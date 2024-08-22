@@ -118,7 +118,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     isFilterShow: boolean = false;
     dataList = [];
     sortColumn: any = 'complete_date_time';
-    selectedAgent!: string;
+    selectedAgent: any;
     selectedEmployee: any;
 
     constructor(
@@ -150,11 +150,21 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+				if (!match) {
+					this.agentList.push(this.selectedAgent);
+				}
+			}
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['complete_date_time'].value) {
                 resp['table_config']['complete_date_time'].value = new Date(resp['table_config']['complete_date_time'].value);
             }
+            if (typeof (resp['table_config']['agent'].value) == 'object') {
+				resp['table_config']['agent'].value = resp['table_config']['agent'].value?.agency_name;
+			}
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -166,9 +176,13 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent']?.value;
             if (filterData['table_config']['complete_date_time'].value) {
                 filterData['table_config']['complete_date_time'].value = new Date(filterData['table_config']['complete_date_time'].value);
             }
+            if (typeof (filterData['table_config']['agent'].value) == 'object') {
+				filterData['table_config']['agent'].value = filterData['table_config']['agent'].value?.agency_name;
+			}
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
@@ -179,11 +193,31 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
+            if (this.selectedAgent && this.selectedAgent.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+				if (!match) {
+					this.agentList.push(this.selectedAgent);
+				}
+			}
+
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
+
+    onAgentChange(agent: any) {
+		if (agent) {
+			this.primengTable.filter(agent?.agency_name, 'agent', 'equals');
+			setTimeout(() => {
+				this.primengTable.filters['agent']['value'] = agent;
+			}, 1000);
+		} else {
+			this.primengTable.filter(null, 'agent', 'equals');
+			this.primengTable.filters['agent'] = { value: null, matchMode: 'equals' };
+		}
+	}
 
     filter() {
         this._matdialog
