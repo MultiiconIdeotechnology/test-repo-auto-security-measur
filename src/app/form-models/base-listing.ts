@@ -155,6 +155,10 @@ export abstract class BaseListingComponent implements OnInit {
 
     }
 
+    resetPrimengTable(){
+        this.primengTable?.reset();
+    }
+
     //#region Protected Methods
     protected handleDialogRef<T>(dialogRef: MatDialogRef<T>): void {
         dialogRef.afterClosed().subscribe(result => {

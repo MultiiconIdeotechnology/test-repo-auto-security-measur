@@ -153,9 +153,9 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
         }
     }
 
-
     isDestroy() {
         this._filterService.activeFiltData = {};
+        this.resetPrimengTable();
         if (this.tech.settingsTechSubscription) {
             this.tech.settingsTechSubscription.unsubscribe();
         }
@@ -163,7 +163,6 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
         if (this.travel.settingsTravelSubscription) {
             this.travel.settingsTravelSubscription.unsubscribe();
         }
-
     }
 
     openTabFiterDrawer() {
