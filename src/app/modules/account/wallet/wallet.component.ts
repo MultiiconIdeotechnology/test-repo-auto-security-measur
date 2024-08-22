@@ -201,7 +201,12 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   isDestroy() {
+    // console.log("isDestroy");
     this._filterService.activeFiltData = {};
+    this.cd.detectChanges();
+    this.isFilterShowPending = false
+    this.isFilterShowAudit = false
+    this.isFilterShowReject = false
     this.resetPrimengTable();
     if (this.pending.settingsUpdatedSubscription) {
       this.pending.settingsUpdatedSubscription.unsubscribe();
@@ -213,7 +218,8 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
  
     if (this.rejected.settingsRejectSubscription) {
       this.rejected.settingsRejectSubscription.unsubscribe();
-    }    
+    }
+    this.cd.detectChanges();
   }
 
   private ifNotThenCall(call: string, callback: () => void): void {

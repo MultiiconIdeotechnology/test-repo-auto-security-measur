@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -123,23 +123,28 @@ export class AuditedComponent extends BaseListingComponent {
   }
   
   
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log("changes", changes);
+    
     if (this.activeTab == 'Audited') {
+      
       this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-        
-        if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
-          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+        if(this.activeTab == 'Audited') {
+          // console.log("resp Audited", resp);
+          if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
+            this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+          }
+          if (resp?.['table_config']?.['audited_date_time']?.value != null) {
+            resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
+          }
+          
+          this.isFilterShowAudit = true;
+          // this.sortColumn = resp['sortColumn'];
+          // this.primengTable['_sortField'] = resp['sortColumn'];
+          this.primengTable['filters'] = resp['table_config'];
+  
+          this.primengTable._filter();
         }
-        if (resp?.['table_config']?.['audited_date_time']?.value != null) {
-          resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
-        }
-        
-        this.isFilterShowAudit = true;
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        this.primengTable['filters'] = resp['table_config'];
-
-        this.primengTable._filter();
       });
 
       // ngAfterViewInit
