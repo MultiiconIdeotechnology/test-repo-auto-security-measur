@@ -136,8 +136,8 @@ export class MarkupProfileComponent
     ngOnInit() {
         this.getCompanyList("");
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['company_name']){
                 this.selectedCompany = resp['table_config'].company_name?.value;
             }

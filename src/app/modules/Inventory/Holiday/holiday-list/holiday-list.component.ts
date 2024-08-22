@@ -62,8 +62,8 @@ export class HolidayListComponent extends BaseListingComponent {
 
     ngOnInit() {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['supplier_name']){
                 this.selectedSupplier = resp['table_config'].supplier_name?.value;
             }

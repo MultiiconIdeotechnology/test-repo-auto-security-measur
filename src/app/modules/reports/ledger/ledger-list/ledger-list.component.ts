@@ -142,8 +142,8 @@ export class LedgerListComponent extends BaseListingComponent {
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['datetime'].value) {
         resp['table_config']['datetime'].value = new Date(resp['table_config']['datetime'].value);
       }
@@ -162,8 +162,8 @@ export class LedgerListComponent extends BaseListingComponent {
       if (filterData['table_config']['datetime'].value) {
         filterData['table_config']['datetime'].value = new Date(filterData['table_config']['datetime'].value);
       }
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

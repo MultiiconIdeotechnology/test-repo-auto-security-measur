@@ -142,8 +142,8 @@ export class ReceiptRegisterComponent
             }
 
             this.selectedCompany = resp['table_config']['company']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
@@ -163,8 +163,8 @@ export class ReceiptRegisterComponent
             if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;

@@ -125,8 +125,8 @@ export class RejectedComponent extends BaseListingComponent {
         }
         
         this.isFilterShowReject = true;
-        this.sortColumn = resp['sortColumn'];
-        this.primengTable['_sortField'] = resp['sortColumn'];
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
         this.primengTable['filters'] = resp['table_config'];
         this.primengTable._filter();
       });
@@ -142,8 +142,8 @@ export class RejectedComponent extends BaseListingComponent {
           filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
         }
         this.isFilterShowReject = true;
-        this.primengTable['_sortField'] = filterData['sortColumn'];
-        this.sortColumn = filterData['sortColumn'];
+        // this.primengTable['_sortField'] = filterData['sortColumn'];
+        // this.sortColumn = filterData['sortColumn'];
         this.primengTable['filters'] = filterData['table_config'];
       }
 

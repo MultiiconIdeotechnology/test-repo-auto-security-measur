@@ -118,7 +118,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     ngOnInit(): void {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
                 this.selectedAgent = resp['table_config']['agency_name']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
     
@@ -128,7 +128,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                     }
                 }
             this.selectedAgent = resp['table_config']['agency_name'].value;
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['activation_date_sub'].value) {
                 resp['table_config']['activation_date_sub'].value = new Date(resp['table_config']['activation_date_sub'].value);
             }
@@ -163,8 +163,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                 filterData['table_config']['expiry_date_sub'].value = new Date(filterData['table_config']['expiry_date_sub'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 

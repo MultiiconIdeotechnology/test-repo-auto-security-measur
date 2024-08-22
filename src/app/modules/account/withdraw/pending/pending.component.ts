@@ -143,8 +143,8 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
 
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
@@ -154,8 +154,8 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
     if(this.activeTab == 'Pending') {
       this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
         
-        this.sortColumn = resp['sortColumn'];
-        this.primengTable['_sortField'] = resp['sortColumn'];
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
         if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
           this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
         }

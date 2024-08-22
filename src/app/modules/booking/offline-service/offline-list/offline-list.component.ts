@@ -128,8 +128,8 @@ export class OfflineListComponent extends BaseListingComponent {
       }
       this.selectedEmployee = resp['table_config']['sales_person_flitres']?.value;
 
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['entry_date_time'].value) {
         resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
       }
@@ -149,8 +149,8 @@ export class OfflineListComponent extends BaseListingComponent {
       if (filterData['table_config']['entry_date_time'].value) {
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

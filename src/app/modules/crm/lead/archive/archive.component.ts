@@ -99,8 +99,8 @@ export class ArchiveComponent extends BaseListingComponent{
     ngOnInit(): void {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['last_call_date_time'].value) {
                 resp['table_config']['last_call_date_time'].value = new Date(resp['table_config']['last_call_date_time'].value);
             }
@@ -120,8 +120,8 @@ export class ArchiveComponent extends BaseListingComponent{
                 filterData['table_config']['last_call_date_time'].value = new Date(filterData['table_config']['last_call_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 

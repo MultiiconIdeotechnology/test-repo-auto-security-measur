@@ -119,8 +119,8 @@ export class TravelCollectionComponent extends BaseListingComponent {
                 if (!match) {
                     this.agentList.push(this.selectedAgent);
                 }
-                this.sortColumn = resp['sortColumn'];
-                this.primengTable['_sortField'] = resp['sortColumn'];
+                // this.sortColumn = resp['sortColumn'];
+                // this.primengTable['_sortField'] = resp['sortColumn'];
 
                 if (resp['table_config']['dueDate'].value) {
                     resp['table_config']['dueDate'].value = new Date(resp['table_config']['dueDate'].value);
@@ -154,8 +154,8 @@ export class TravelCollectionComponent extends BaseListingComponent {
                 }
 
                 this.primengTable['filters'] = filterData['table_config'];
-                this.primengTable['_sortField'] = filterData['sortColumn'];
-                this.sortColumn = filterData['sortColumn'];
+                // this.primengTable['_sortField'] = filterData['sortColumn'];
+                // this.sortColumn = filterData['sortColumn'];
             }
         }
 

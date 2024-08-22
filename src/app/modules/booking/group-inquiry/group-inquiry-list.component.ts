@@ -100,8 +100,8 @@ export class GroupInquiryListComponent
             }
 
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['departure_date'].value) {
                 resp['table_config']['departure_date'].value = new Date(resp['table_config']['departure_date'].value);
             }
@@ -128,8 +128,8 @@ export class GroupInquiryListComponent
                 filterData['table_config']['arrival_date'].value = new Date(filterData['table_config']['arrival_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 

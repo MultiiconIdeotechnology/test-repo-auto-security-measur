@@ -135,8 +135,8 @@ export class AuditedComponent extends BaseListingComponent {
         }
         
         this.isFilterShowAudit = true;
-        this.sortColumn = resp['sortColumn'];
-        this.primengTable['_sortField'] = resp['sortColumn'];
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
         this.primengTable['filters'] = resp['table_config'];
 
         this.primengTable._filter();
@@ -154,8 +154,8 @@ export class AuditedComponent extends BaseListingComponent {
         }
         
         this.isFilterShowAudit = true;
-        this.primengTable['_sortField'] = filterData['sortColumn'];
-        this.sortColumn = filterData['sortColumn'];
+        // this.primengTable['_sortField'] = filterData['sortColumn'];
+        // this.sortColumn = filterData['sortColumn'];
         this.primengTable['filters'] = filterData['table_config'];
       }
     }

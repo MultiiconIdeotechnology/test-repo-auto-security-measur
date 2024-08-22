@@ -122,8 +122,8 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
       console.log("resp", resp);
       this.selectedKycProfile = resp['table_config']['kyc_profile_id_filters']?.value;
       this.selectedRm = resp['table_config']['relation_manager']?.value;
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
 
       if (resp['table_config']['entry_date_time'].value) {
         resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
@@ -157,8 +157,8 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
       }
       this.primengTable['filters'] = filterData['table_config'];
       this._selectedColumns = filterData['selectedColumns'] || [];
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       
       this.isFilterShow = true;
     }

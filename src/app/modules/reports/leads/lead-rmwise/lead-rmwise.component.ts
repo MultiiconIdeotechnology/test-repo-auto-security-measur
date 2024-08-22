@@ -96,8 +96,8 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
         this.getEmployeeList("");
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedRM = resp['table_config']['rm']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -113,8 +113,8 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
             if(filterData['table_config']['rm']){
                 this.selectedRM = filterData['table_config'].rm?.value;
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

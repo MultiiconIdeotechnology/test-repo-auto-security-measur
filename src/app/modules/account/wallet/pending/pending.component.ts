@@ -135,8 +135,8 @@ export class PendingComponent extends BaseListingComponent {
         this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
       }
       this.isFilterShowPending = true;
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
@@ -149,8 +149,8 @@ export class PendingComponent extends BaseListingComponent {
         }
         this.isFilterShowPending = true;
         
-        this.sortColumn = resp['sortColumn'];
-        this.primengTable['_sortField'] = resp['sortColumn'];
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
         this.primengTable['filters'] = resp['table_config'];
         this.primengTable._filter();
       });

@@ -94,8 +94,8 @@ export class CommissionExpenseComponent
                   this.agentList.push(this.selectedAgent);
                 }
             }
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['booking_date'].value && resp['table_config']['booking_date'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['booking_date']);
             }
@@ -115,8 +115,8 @@ export class CommissionExpenseComponent
                 this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 

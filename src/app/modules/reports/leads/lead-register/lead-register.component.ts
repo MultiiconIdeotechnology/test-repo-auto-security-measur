@@ -163,8 +163,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             this.selectedRm = resp['table_config']['rm_Id']?.value;
             this.selectedLeadStatus = resp['table_config']['lead_source']?.value;
 
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['supplier_name']){
                 this.leadStatus = resp['table_config'].supplier_name?.value;
             }
@@ -212,8 +212,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['leadDate'].value) {
                 filterData['table_config']['leadDate'].value = new Date(filterData['table_config']['leadDate'].value);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;

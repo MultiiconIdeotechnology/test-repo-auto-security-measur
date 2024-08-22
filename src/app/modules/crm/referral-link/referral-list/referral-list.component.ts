@@ -103,8 +103,8 @@ export class ReferralListComponent extends BaseListingComponent {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedRm = resp['table_config']['rm_id_filtres']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['entry_date_time'].value) {
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }
@@ -130,8 +130,8 @@ export class ReferralListComponent extends BaseListingComponent {
                 filterData['table_config']['start_date'].value = new Date(filterData['table_config']['start_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 

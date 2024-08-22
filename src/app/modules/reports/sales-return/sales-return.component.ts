@@ -150,8 +150,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['complete_date_time'].value) {
                 resp['table_config']['complete_date_time'].value = new Date(resp['table_config']['complete_date_time'].value);
             }
@@ -169,8 +169,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             if (filterData['table_config']['complete_date_time'].value) {
                 filterData['table_config']['complete_date_time'].value = new Date(filterData['table_config']['complete_date_time'].value);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

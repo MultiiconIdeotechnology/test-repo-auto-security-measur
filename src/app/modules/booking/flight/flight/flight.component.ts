@@ -180,8 +180,8 @@ export class FlightComponent extends BaseListingComponent {
                 }
             }
 
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
             }
@@ -212,8 +212,8 @@ export class FlightComponent extends BaseListingComponent {
                 filterData['table_config']['travelDate'].value = new Date(filterData['table_config']['travelDate'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 

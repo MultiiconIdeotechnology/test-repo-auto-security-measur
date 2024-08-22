@@ -162,8 +162,8 @@ export class ReceiptListComponent
                 this.agentList.push(this.selectedAgent);
               }
           }
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
@@ -188,8 +188,8 @@ export class ReceiptListComponent
             if (filterData['table_config']['audit_date_time'].value) {
                 filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

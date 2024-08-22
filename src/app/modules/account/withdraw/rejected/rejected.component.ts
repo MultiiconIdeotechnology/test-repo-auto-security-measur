@@ -144,8 +144,8 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
     if (this.activeTab == 'Rejected') {
       this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
 
-        this.sortColumn = resp['sortColumn'];
-        this.primengTable['_sortField'] = resp['sortColumn'];
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
         if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
           this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
         }
@@ -164,8 +164,8 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         }
 
         this.primengTable['filters'] = filterData['table_config'];
-        this.primengTable['_sortField'] = filterData['sortColumn'];
-        this.sortColumn = filterData['sortColumn'];
+        // this.primengTable['_sortField'] = filterData['sortColumn'];
+        // this.sortColumn = filterData['sortColumn'];
       }
       if(this.agentList && !this.agentList.length) {
         this.getAgentList("");

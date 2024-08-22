@@ -137,8 +137,8 @@ export class TechCollectionComponent extends BaseListingComponent {
             }
 
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 
@@ -150,8 +150,8 @@ export class TechCollectionComponent extends BaseListingComponent {
                 if (!match) {
                     this.agentList.push(this.selectedAgent);
                 }
-                this.sortColumn = resp['sortColumn'];
-                this.primengTable['_sortField'] = resp['sortColumn'];
+                // this.sortColumn = resp['sortColumn'];
+                // this.primengTable['_sortField'] = resp['sortColumn'];
                 if (resp['table_config']['lastCallDate'].value) {
                     resp['table_config']['lastCallDate'].value = new Date(resp['table_config']['lastCallDate'].value);
                 }

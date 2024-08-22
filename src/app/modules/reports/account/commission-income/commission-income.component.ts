@@ -87,8 +87,8 @@ export class CommissionIncomeComponent
          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedSupplier = resp['table_config']['supplier']?.value;
 
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['booking_date'].value && resp['table_config']['booking_date'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['booking_date']);
             }
@@ -107,8 +107,8 @@ export class CommissionIncomeComponent
             if (filterData['table_config']['booking_date'].value && filterData['table_config']['booking_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

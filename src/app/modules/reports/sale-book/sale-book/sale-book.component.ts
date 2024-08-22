@@ -155,8 +155,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 
       this.selectedSupplier = resp['table_config']['supplier']?.value;
       this.selectedCompany = resp['table_config']['billing_company']?.value;
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['booking_date'].value) {
         resp['table_config']['booking_date'].value = new Date(resp['table_config']['booking_date'].value);
       }
@@ -196,8 +196,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
       if (filterData['table_config']['invoice_date'].value) {
         filterData['table_config']['invoice_date'].value = new Date(filterData['table_config']['invoice_date'].value);
       }
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
