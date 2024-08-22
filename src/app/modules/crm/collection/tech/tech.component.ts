@@ -72,30 +72,24 @@ export class TechCollectionComponent extends BaseListingComponent {
     @Input() isFilterShowTech: boolean;
     @Input() dropdownListObj: {};
     @Input() activeTab: any;
-
-    agentList: any[] = [];
-    selectedAgent: any = {};
-    public settingsTechSubscription: Subscription;
-
-    cols = [];
-    dataList = [];
-    searchInputControlTech = new FormControl('');
-
     @ViewChild('tabGroup') tabGroup;
-
     @ViewChild(MatPaginator) public _paginatorTech: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
 
+    module_name = module_name.crmagent
+    filter_table_name = filter_module_name.collections_tech;
+    public settingsTechSubscription: Subscription;
+    agentList: any[] = [];
+    selectedAgent: any = {};
+    cols = [];
+    dataList = [];
+    searchInputControlTech = new FormControl('');
     Mainmodule: any;
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
-
-    module_name = module_name.crmagent
-    filter_table_name = filter_module_name.collections_tech;
-
     total = 0;
     appConfig = AppConfig;
     data: any
@@ -108,7 +102,6 @@ export class TechCollectionComponent extends BaseListingComponent {
         private matDialog: MatDialog,
         private agentService: AgentService,
         public _filterService: CommonFilterService
-
     ) {
         super(module_name.techDashboard)
         this.key = this.module_name;
@@ -123,23 +116,7 @@ export class TechCollectionComponent extends BaseListingComponent {
     }
 
     ngAfterViewInit() {
-        // Defult Active filter show
-        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShowTech = true;
-            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            this.selectedAgent = filterData['table_config']['agencyName']?.value;
-            
-            if (filterData['table_config']['lastCallDate'].value) {
-                filterData['table_config']['lastCallDate'].value = new Date(filterData['table_config']['lastCallDate'].value);
-            }
-            if (filterData['table_config']['installmentDate'].value) {
-                filterData['table_config']['installmentDate'].value = new Date(filterData['table_config']['installmentDate'].value);
-            }
 
-            this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
-        }
     }
 
     ngOnChanges() {
@@ -163,9 +140,35 @@ export class TechCollectionComponent extends BaseListingComponent {
                 this.primengTable._filter();
             });
 
-            if (this.agentList && !this.agentList.length) {
-                this.getAgent("");
+            // ngAfterviewinit
+            // Defult Active filter show
+            if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+                this.isFilterShowTech = true;
+                let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
+
+                if (this.selectedAgent && this.selectedAgent?.id) {
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+                if (filterData['table_config']['lastCallDate'].value) {
+                    filterData['table_config']['lastCallDate'].value = new Date(filterData['table_config']['lastCallDate'].value);
+                }
+                if (filterData['table_config']['installmentDate'].value) {
+                    filterData['table_config']['installmentDate'].value = new Date(filterData['table_config']['installmentDate'].value);
+                }
+
+                // setTimeout(() => {
+                //     this.primengTable['filters'] = filterData['table_config'];
+                //     this.primengTable['_sortField'] = filterData['sortColumn'];
+                // }, 1000);
+                this.sortColumn = filterData['sortColumn'];
             }
+        }
+        if (this.agentList && !this.agentList.length) {
+            this.getAgent("");
         }
     }
 
@@ -193,12 +196,12 @@ export class TechCollectionComponent extends BaseListingComponent {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            if(this.selectedAgent && this.selectedAgent?.id){
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if(!match) {
-                   this.agentList.push(this.selectedAgent);
-                }
-            }
+            // if (this.selectedAgent && this.selectedAgent?.id) {
+            //     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            //     if (!match) {
+            //         this.agentList.push(this.selectedAgent);
+            //     }
+            // }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
