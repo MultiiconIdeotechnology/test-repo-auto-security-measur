@@ -144,7 +144,7 @@ export class TechCollectionComponent extends BaseListingComponent {
 
     ngOnChanges() {
         if (this.activeTab == 'Tech') {
-            this.settingsTechSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.settingsTechSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
                 this.selectedAgent = resp['table_config']['agencyName']?.value;
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -152,10 +152,10 @@ export class TechCollectionComponent extends BaseListingComponent {
                 }
                 // this.sortColumn = resp['sortColumn'];
                 // this.primengTable['_sortField'] = resp['sortColumn'];
-                if (resp['table_config']['lastCallDate'].value) {
+                if (resp.table_config?.lastCallDate?.value != null) {
                     resp['table_config']['lastCallDate'].value = new Date(resp['table_config']['lastCallDate'].value);
                 }
-                if (resp['table_config']['installmentDate'].value) {
+                if (resp.table_config?.installmentDate?.value != null) {
                     resp['table_config']['installmentDate'].value = new Date(resp['table_config']['installmentDate'].value);
                 }
                 this.primengTable['filters'] = resp['table_config'];
