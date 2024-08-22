@@ -1,6 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://api.bontontech.com/api/',
+    apiUrl: 'https://boapi.bontontech.com/api/',
     stagingUrl: '',
     isEnvironment: 'production'
 };
