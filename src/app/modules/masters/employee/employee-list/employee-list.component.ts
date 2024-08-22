@@ -173,8 +173,8 @@ export class EmployeeListComponent
 
     ngOnInit() {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['last_login_time'].value) {
                 resp['table_config']['last_login_time'].value = new Date(resp['table_config']['last_login_time'].value);
             }
@@ -201,8 +201,8 @@ export class EmployeeListComponent
             }
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.isFilterShow = true;
         }
     }

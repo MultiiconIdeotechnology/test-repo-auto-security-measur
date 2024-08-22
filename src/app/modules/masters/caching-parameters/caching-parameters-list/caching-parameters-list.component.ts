@@ -21,6 +21,7 @@ import { takeUntil } from 'rxjs';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-caching-parameters-list',
@@ -43,7 +44,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDividerModule,
         FormsModule,
         PrimeNgImportsModule,
-        CachingParametersEntryComponent
+        CachingParametersEntryComponent,
+        MatTooltipModule
     ],
 })
 export class CachingParametersListComponent
@@ -190,8 +192,8 @@ export class CachingParametersListComponent
         this.getSupplier("")
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['supplier_name']){
                 this.selectedSupplier = resp['table_config'].supplier_name?.value;
             }

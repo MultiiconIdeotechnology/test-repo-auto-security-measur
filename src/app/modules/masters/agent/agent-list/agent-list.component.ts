@@ -174,8 +174,8 @@ export class AgentListComponent extends BaseListingComponent {
             
             this.selectedEmployee = resp['table_config']['rm_id_filters']?.value;
             this.selectedCurrency = resp['table_config']['currency']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['entry_date_time'].value){
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }

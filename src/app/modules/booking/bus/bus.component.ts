@@ -161,8 +161,8 @@ export class BusComponent extends BaseListingComponent {
         }
       }
 
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
         this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
@@ -184,8 +184,8 @@ export class BusComponent extends BaseListingComponent {
       if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }

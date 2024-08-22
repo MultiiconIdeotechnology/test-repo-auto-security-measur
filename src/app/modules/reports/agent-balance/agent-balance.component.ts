@@ -112,8 +112,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
             }
 
             this.selectedRM = resp['table_config']['rm']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['last_top_up'].value) {
                 resp['table_config']['last_top_up'].value = new Date(resp['table_config']['last_top_up'].value);
             }
@@ -134,8 +134,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['last_top_up'].value) {
                 filterData['table_config']['last_top_up'].value = new Date(filterData['table_config']['last_top_up'].value);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

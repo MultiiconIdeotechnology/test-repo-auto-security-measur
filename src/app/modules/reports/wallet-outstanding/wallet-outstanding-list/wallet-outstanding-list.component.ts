@@ -104,8 +104,8 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             }
 
             this.selectedRM = resp['table_config']['employee_name']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['due_date'].value && resp['table_config']['due_date'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['due_date']);
             }
@@ -125,8 +125,8 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             if (filterData['table_config']['due_date'].value && filterData['table_config']['due_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }

@@ -76,8 +76,8 @@ export class CurrencyListComponent extends BaseListingComponent {
 
   ngOnInit() {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        this.sortColumn = resp['sortColumn'];
-        this.primengTable['_sortField'] = resp['sortColumn'];
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
         Object.assign(this.primengTable['filters'], resp['table_config']);
         this.isFilterShow = true;
         this.primengTable._filter();

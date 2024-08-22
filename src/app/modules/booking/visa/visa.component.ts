@@ -143,8 +143,8 @@ export class VisaComponent extends BaseListingComponent {
                 }
             }
 
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
@@ -170,8 +170,8 @@ export class VisaComponent extends BaseListingComponent {
                 filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
         }

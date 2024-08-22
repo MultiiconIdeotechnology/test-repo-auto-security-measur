@@ -124,38 +124,41 @@ export class AuditedComponent extends BaseListingComponent {
   
 
   ngOnChanges() {
-    // if (this.activeTab == 'Audited') {
-    //   this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    if (this.activeTab == 'Audited') {
+      this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+        
+        if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
+          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+        }
+        if (resp?.['table_config']?.['audited_date_time']?.value != null) {
+          resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
+        }
+        
+        this.isFilterShowAudit = true;
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
+        this.primengTable['filters'] = resp['table_config'];
 
-    //     this.sortColumn = resp['sortColumn'];
-    //     this.primengTable['_sortField'] = resp['sortColumn'];
-    //     if (resp['table_config']['request_date_time'].value && resp['table_config']['request_date_time'].value.length) {
-    //       this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
-    //     }
-    //     if (resp['table_config']['audited_date_time'].value) {
-    //       resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
-    //     }
-    //     this.primengTable['filters'] = resp['table_config'];
-    //     this.isFilterShowAudit = true;
-    //     this.primengTable._filter();
-    //   });
+        this.primengTable._filter();
+      });
 
-    //   // ngAfterViewInit
-    //   if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-    //     this.isFilterShowAudit = true;
-    //     let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-    //     if (filterData['table_config']['request_date_time'].value && filterData['table_config']['request_date_time'].value.length) {
-    //       this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
-    //     }
-    //     if (filterData['table_config']['audited_date_time'].value) {
-    //       filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
-    //     }
-    //     this.primengTable['_sortField'] = filterData['sortColumn'];
-    //     this.sortColumn = filterData['sortColumn'];
-
-    //     this.primengTable['filters'] = filterData['table_config'];
-    //   }
-    // }
+      // ngAfterViewInit
+      if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        
+        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
+          this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
+        }
+        if (filterData['table_config']['audited_date_time']?.value != null) {
+          filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
+        }
+        
+        this.isFilterShowAudit = true;
+        // this.primengTable['_sortField'] = filterData['sortColumn'];
+        // this.sortColumn = filterData['sortColumn'];
+        this.primengTable['filters'] = filterData['table_config'];
+      }
+    }
 
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData?.mopData;

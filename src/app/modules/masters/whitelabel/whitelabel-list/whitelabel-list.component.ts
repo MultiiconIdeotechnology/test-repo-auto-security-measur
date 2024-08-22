@@ -114,8 +114,8 @@ export class WhitelabelListComponent extends BaseListingComponent {
                   this.agentList.push(this.selectedAgent);
                 }
             } 
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['wl_expiry_date'].value){
                 resp['table_config']['wl_expiry_date'].value = new Date(resp['table_config']['wl_expiry_date'].value);
             }

@@ -125,8 +125,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
                     this.agentList.push(this.selectedAgent);
                 }
             }
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['block_date_time'].value) {
                 resp['table_config']['block_date_time'].value = new Date(resp['table_config']['block_date_time'].value);
             }
@@ -161,8 +161,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
                 filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 

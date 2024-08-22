@@ -22,6 +22,7 @@ import { PspSettingService } from 'app/services/psp-setting.service';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-purchase-register',
@@ -43,7 +44,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class PurchaseRegisterComponent
@@ -105,8 +107,8 @@ export class PurchaseRegisterComponent
 
             this.selectedSupplier = resp['table_config']['company_name']?.value;
             this.selectedCompany = resp['table_config']['company']?.value;
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
@@ -127,8 +129,8 @@ export class PurchaseRegisterComponent
             if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
@@ -152,7 +154,7 @@ export class PurchaseRegisterComponent
                 if (!match) {
                   this.agentList.push(this.selectedAgent);
                 }
-            } 
+            }
 
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;

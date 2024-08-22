@@ -20,6 +20,7 @@ import { Linq } from 'app/utils/linq';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-commission-expense',
@@ -41,7 +42,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class CommissionExpenseComponent
@@ -92,8 +94,8 @@ export class CommissionExpenseComponent
                   this.agentList.push(this.selectedAgent);
                 }
             }
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['booking_date'].value && resp['table_config']['booking_date'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['booking_date']);
             }
@@ -113,8 +115,8 @@ export class CommissionExpenseComponent
                 this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
         }
     }
 
@@ -127,7 +129,7 @@ export class CommissionExpenseComponent
                 if (!match) {
                   this.agentList.push(this.selectedAgent);
                 }
-            } 
+            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;

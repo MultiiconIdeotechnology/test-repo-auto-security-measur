@@ -125,8 +125,8 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   ngOnInit() {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       // console.log("resp['table_config']['payment_request_date']", resp['table_config']['payment_request_date'] );
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['payment_request_date'].value && resp['table_config']['payment_request_date'].value.length) {
         this._filterService.rangeDateConvert(resp['table_config']['payment_request_date']);
       }
@@ -150,8 +150,8 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
       if (filterData['table_config']['audit_date_time'].value) {
         filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
       }
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
       this._selectedColumns = filterData['selectedColumns'] || [];
       this.isFilterShow = true;

@@ -101,23 +101,23 @@
             </button>
 
             <ng-container *ngIf="tabNameStr == 'Pending'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Completed'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Completed')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Completed')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Expired'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Expired')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Expired')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
 
             <ng-container *ngIf="tabNameStr == 'Blocked'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Blocked')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Blocked')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
