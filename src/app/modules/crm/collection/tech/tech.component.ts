@@ -72,30 +72,24 @@ export class TechCollectionComponent extends BaseListingComponent {
     @Input() isFilterShowTech: boolean;
     @Input() dropdownListObj: {};
     @Input() activeTab: any;
-
-    agentList: any[] = [];
-    selectedAgent: any = {};
-    public settingsTechSubscription: Subscription;
-
-    cols = [];
-    dataList = [];
-    searchInputControlTech = new FormControl('');
-
     @ViewChild('tabGroup') tabGroup;
-
     @ViewChild(MatPaginator) public _paginatorTech: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
 
+    module_name = module_name.crmagent
+    filter_table_name = filter_module_name.collections_tech;
+    public settingsTechSubscription: Subscription;
+    agentList: any[] = [];
+    selectedAgent: any = {};
+    cols = [];
+    dataList = [];
+    searchInputControlTech = new FormControl('');
     Mainmodule: any;
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
-
-    module_name = module_name.crmagent
-    filter_table_name = filter_module_name.collections_tech;
-
     total = 0;
     appConfig = AppConfig;
     data: any
