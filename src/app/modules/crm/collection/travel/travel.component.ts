@@ -113,7 +113,7 @@ export class TravelCollectionComponent extends BaseListingComponent {
 
     ngOnChanges() {
         if (this.activeTab == 'Travel') {
-            this.settingsTravelSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.settingsTravelSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
                 this.selectedAgent = resp['table_config']['agencyName']?.value;
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -122,10 +122,10 @@ export class TravelCollectionComponent extends BaseListingComponent {
                 // this.sortColumn = resp['sortColumn'];
                 // this.primengTable['_sortField'] = resp['sortColumn'];
 
-                if (resp['table_config']['dueDate'].value) {
+                if (resp.table_config?.dueDate?.value != null) {
                     resp['table_config']['dueDate'].value = new Date(resp['table_config']['dueDate'].value);
                 }
-                if (resp['table_config']['expiryDate'].value) {
+                if (resp.table_config?.expiryDate?.value != null) {
                     resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
                 }
                 this.primengTable['filters'] = resp['table_config'];
@@ -148,10 +148,10 @@ export class TravelCollectionComponent extends BaseListingComponent {
                     }
                 }, 1000);
               
-                if (filterData['table_config']['dueDate'].value) {
+                if (filterData.table_config?.dueDate?.value != null) {
                     filterData['table_config']['dueDate'].value = new Date(filterData['table_config']['dueDate'].value);
                 }
-                if (filterData['table_config']['expiryDate'].value) {
+                if (filterData.table_config?.expiryDate?.value != null) {
                     filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
                 }
 
