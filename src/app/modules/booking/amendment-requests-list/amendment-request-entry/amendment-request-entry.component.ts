@@ -24,6 +24,9 @@ import { Subject, takeUntil } from 'rxjs';
 import { Routes } from 'app/common/const';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { amendmentRequestsPermissions, messages, Security } from 'app/security';
+import { MatDialog } from '@angular/material/dialog';
+import { RefundInitiateComponent } from '../refund-initiate/refund-initiate.component';
+import { CommonUtils } from 'app/utils/commonutils';
 
 @Component({
     selector: 'app-amendment-request-entry',
@@ -65,9 +68,9 @@ export class AmendmentRequestEntryComponent {
     record: any = {};
     agentInfoList: any[] = [];
     paymentInfoList: any[] = [];
+    PGRefundList: any[] = [];
     amendmentInfoList: any[] = [];
     paxInfoList: any;
-    b2bchargesList: any[] = [];
     chargesList: any[] = [];
     booking_id: any
     recordList: any;
@@ -79,6 +82,7 @@ export class AmendmentRequestEntryComponent {
         public alertService: ToasterService,
         public amendmentRequestsService: AmendmentRequestsService,
         private entityService: EntityService,
+        private matDialog: MatDialog,
         private conformationService: FuseConfirmationService,
     ) {
         this.entityService.onAmendmentInfoCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
@@ -126,8 +130,8 @@ export class AmendmentRequestEntryComponent {
                             { name: 'Type', value: data.amendment_info.type, classes: '' },
                             { name: 'Supplier', value: data.amendment_info.supplier, classes: '' },
                             {
-                                name: 'Status', value: data.amendment_info?.status_for_agent,
-                                classes: this.getStatusColorForAgent(data.amendment_info?.status_for_agent)
+                                name: 'Status', value: data.amendment_info?.status,
+                                classes: this.getStatusColor(data.amendment_info?.status)
                             },
                             { name: 'Request Date', value: data.amendment_info.req_date ? DateTime.fromISO(data.amendment_info.req_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '', classes: '' },
                             { name: 'PNR', value: data.amendment_info.pnr, classes: '' },
@@ -155,25 +159,34 @@ export class AmendmentRequestEntryComponent {
                                 { name: 'Segment Detail', value: pax.traveller_detail, toCorrection: false },
                             ]);
                         }
-                        let name1;
-                        let name2;
-                        if (this.recordList.is_refundable) {
-                            name1 = 'Per Person Refund'
-                            name2 = 'Total Refund'
-                            this.titleCharge = 'Refund'
-                        } else {
-                            name1 = 'Per Person Charge'
-                            name2 = 'Charge'
-                            this.titleCharge = 'Charge'
 
-                        }
-                        this.b2bchargesList = [
-                            { name: name1, value: data.b2bcharges.per_person_charge },
-                            { name: name2, value: data.b2bcharges.charge },
+                        this.PGRefundList = [
+                            { name: 'Refund Mode', value: data.pgRefund.refund_mode },
+                            { name: 'Refund Amount', value: data.pgRefund?.refund_amount || '0' },
+                            { name: 'Refund Date', value: data.pgRefund?.refund_date || ' - ' },
+                            { name: 'PSP Ref. No.', value: data.pgRefund?.psp_ref_no || ' - ' },
+                            { name: 'Credit Invoice', value: data.pgRefund.credit_invoice },
+                            { name: 'Debit Invoice', value: data.pgRefund.debit_invoice },
                         ];
+                        // let name1;
+                        // let name2;
+                        // if (this.recordList.is_refundable) {
+                        //     name1 = 'Per Person Refund'
+                        //     name2 = 'Total Refund'
+                        //     this.titleCharge = 'Quotation'
+                        // } else {
+                        //     name1 = 'Per Person Charge'
+                        //     name2 = 'Charge'
+                        //     this.titleCharge = 'Quotation'
+
+                        // }
+
+                        this.titleCharge = 'Quotation'
                         this.chargesList = [
-                            { name: name1, value: data.charges.per_person_charge },
-                            { name: name2, value: data.charges.charge },
+                            // { name: "Supplier Charges", value: "Pending" },
+                            { name: "Bonton Markup", value: data.b2bcharges.bonton_markup },
+                            { name: "Per Pax Refund", value: data.charges.per_person_charge },
+                            { name: "Total Refund", value: data.charges.charge },
                         ];
                         if (this.recordList.is_refundable) {
                             this.chargesList.unshift({ name: 'Cancellation Charge', value: data.charges.cancellation_charge })
@@ -187,6 +200,25 @@ export class AmendmentRequestEntryComponent {
 
             });
         }
+    }
+
+    cancelReq() {
+        this.conformationService.open({
+            title: 'Cancel Amendment',
+            message: 'Are you sure want to cancel amendment?',
+        }).afterClosed().subscribe(res => {
+            if (res == 'confirmed') {
+                this.amendmentRequestsService.amendmentCancel({ id: this.record.id }).subscribe({
+                    next: (r) => {
+                        this.alertService.showToast('success', "Amendment canceled successfully!", "top-right", true);
+                        this.amendmentInfoDrawer.close();
+                        this.entityService.raiserefreshUpdateChargeCall(true);
+                    }, error: (err) => {
+                        this.alertService.showToast('error', err);
+                    },
+                })
+            }
+        })
     }
 
     flightDetails() {
@@ -219,7 +251,7 @@ export class AmendmentRequestEntryComponent {
     sendMail() {
         this.conformationService.open({
             title: 'Send Mail',
-            message: 'Are you sure want to Send Mail To Supplier ?'
+            message: 'Send again quotation mail to supplier?'
         }).afterClosed().subscribe({
             next: (res) => {
                 if (res === 'confirmed') {
@@ -234,17 +266,16 @@ export class AmendmentRequestEntryComponent {
             }
         })
     }
-
-    getStatusColorForAgent(status: string): string {
-        if (status == 'Request Sent' || status == 'Inprocess') {
+    getStatusColor(status: string): string {
+        if (status == 'Refund Process' || status == 'Inprocess' || status == 'Account Audit') {
             return 'text-orange-600';
-        } else if (status == 'Partial Payment Completed') {
+        } else if (status == 'Quotation Sent' || status == "Partial Payment Completed") {
             return 'text-yellow-600';
-        } else if (status == 'Quotation Confirmed' || status == 'Completed') {
+        } else if (status == 'Quotation Confirmed By TA' || status == 'Completed' || status == 'Confirm' || status == 'Quotation Confirmed') {
             return 'text-green-600';
-        } else if (status == 'Quotation Rejected' || status == 'Rejected' || status == 'Cancelled') {
+        } else if (status == 'Request to Supplier Failed' || status == "Quotation Rejected By TA" || status == "Rejected" || status == "Cancelled" || status == "Account Rejected") {
             return 'text-red-600';
-        } else if (status == 'Quotation Received' || status == 'Payment Completed' || status == 'Refund Initiated') {
+        } else if (status == 'Request Sent to Supplier' || status == "Confirmation Sent To Supplier" || status == "Payment Completed" || status == "Refund Completed") {
             return 'text-blue-600';
         } else {
             return '';
@@ -258,7 +289,7 @@ export class AmendmentRequestEntryComponent {
 
         this.conformationService.open({
             title: 'Amendment Inprocess',
-            message: 'Are you sure to inprocess this amendment process?',
+            message: `Kindly send confirmation mail to supplier before you set amendment to inprocess. Do you want to mark as inprocess?`,
             icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
@@ -280,22 +311,113 @@ export class AmendmentRequestEntryComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.conformationService.open({
-            title: 'Amendment Refund Initiate',
-            message: 'Are you sure to refund initiate this amendment process?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        this.matDialog.open(RefundInitiateComponent, {
+            autoFocus: false,
+            disableClose: false,
+            data: {
+                title: "Amendment Refund Initiate",
+                desc: "Do you want to process refund for this amendment? By giving confirmation Travel agent will receive refund amount to back to source.",
+                document: this.recordList.confirmation_proof,
+                document_title: 'Confirmation Proof',
+                icon: 'heroicons_outline:check-circle',
+                color: 'primary',
+                remark: 'Please attach the supplier\'s mail screenshot.'
+            },
+            panelClass: 'app-refund-initiate',
         }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentRequestsService.amendmentRefundInitiate({ id: this.record.id }).subscribe({
-                    next: (data) => {
-                        this.alertService.showToast('success', "Amendment refund initiated!", "top-right", true);
-                        this.amendmentInfoDrawer.close();
-                        this.entityService.raiserefreshUpdateChargeCall(true);
-                    }, error: (err) => {
-                        this.alertService.showToast("error", err);
-                    },
-                })
-            }
+            if (!res.status)
+                return;
+
+            this.amendmentRequestsService.amendmentRefundInitiate({ id: this.record.id, file: res.document }).subscribe({
+                next: (data) => {
+                    this.alertService.showToast('success', "Amendment refund initiated!", "top-right", true);
+                    this.amendmentInfoDrawer.close();
+                    this.entityService.raiserefreshUpdateChargeCall(true);
+                }, error: (err) => {
+                    this.alertService.showToast("error", err);
+                },
+            })
+        })
+    }
+
+
+    AccountReject(): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(RefundInitiateComponent, {
+            autoFocus: false,
+            disableClose: false,
+            data: {
+                title: "Amendment Reject",
+                desc: "Do you want to reject this amendment?",
+                // document: this.recordList.rejection_proof,
+                // document_title: 'Rejection Proof',
+                icon: 'heroicons_outline:exclamation-triangle',
+                color: 'warn',
+                // remark: 'Please attach the supplier\'s mail screenshot.',
+                value1: {
+                    required: true,
+                    type: 'textarea',
+                    label: 'Reason',
+                },
+                isForm: true
+            },
+            panelClass: 'app-refund-initiate',
+        }).afterClosed().subscribe(res => {
+            if (!res.status)
+                return;
+
+            this.amendmentRequestsService.accountRejectAmendmentReq({ id: this.record.id, note: res.value1 }).subscribe({
+                next: (data) => {
+                    this.alertService.showToast('success', "Amendment rejected successfully!", "top-right", true);
+                    this.amendmentInfoDrawer.close();
+                    this.entityService.raiserefreshUpdateChargeCall(true);
+                }, error: (err) => {
+                    this.alertService.showToast("error", err);
+                },
+            })
+        })
+    }
+
+    Reject(): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(RefundInitiateComponent, {
+            autoFocus: false,
+            disableClose: false,
+            data: {
+                title: "Amendment Reject",
+                desc: "Do you want to reject this amendment?",
+                document: this.recordList.rejection_proof,
+                document_title: 'Rejection Proof',
+                icon: 'heroicons_outline:exclamation-triangle',
+                color: 'warn',
+                remark: 'Please attach the supplier\'s mail screenshot.',
+                value1: {
+                    required: true,
+                    type: 'textarea',
+                    label: 'Reason',
+                },
+                isForm: true
+            },
+            panelClass: 'app-refund-initiate',
+        }).afterClosed().subscribe(res => {
+            if (!res.status)
+                return;
+
+            this.amendmentRequestsService.rejectAmendment({ id: this.record.id, file: res.document, reject_reason: res.value1 }).subscribe({
+                next: (data) => {
+                    this.alertService.showToast('success', "Amendment rejected successfully!", "top-right", true);
+                    this.amendmentInfoDrawer.close();
+                    this.entityService.raiserefreshUpdateChargeCall(true);
+                }, error: (err) => {
+                    this.alertService.showToast("error", err);
+                },
+            })
         })
     }
 
@@ -304,22 +426,36 @@ export class AmendmentRequestEntryComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.conformationService.open({
-            title: 'Amendment Complete',
-            message: 'Are you sure to complete this amendment process?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
+        this.matDialog.open(RefundInitiateComponent, {
+            autoFocus: false,
+            disableClose: false,
+            data: {
+                title: "Amendment Complete",
+                desc: "Are you sure to complete this amendment process?",
+                icon: 'heroicons_outline:check-circle',
+                color: 'primary',
+                isForm: true,
+                value1: {
+                    required: true,
+                    type: 'number',
+                    label: 'Supplier Refund Amount',
+                },
+                isDateRequired: true,
+            },
+            panelClass: 'app-refund-initiate',
         }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentRequestsService.completeAmendment(this.record.id).subscribe({
-                    next: () => {
-                        this.alertService.showToast('success', "Amendment completed!", "top-right", true);
-                        this.amendmentInfoDrawer.close();
-                        this.entityService.raiserefreshUpdateChargeCall(true);
-                    }, error: (err) => {
-                        this.alertService.showToast("error", err);
-                    },
-                })
-            }
+            if (!res.status)
+                return;
+
+            this.amendmentRequestsService.completeAmendment({ id: this.record.id, date: res.date, amount: Number(res.value1.toString()) }).subscribe({
+                next: () => {
+                    this.alertService.showToast('success', "Amendment completed!", "top-right", true);
+                    this.amendmentInfoDrawer.close();
+                    this.entityService.raiserefreshUpdateChargeCall(true);
+                }, error: (err) => {
+                    this.alertService.showToast("error", err);
+                },
+            })
         })
     }
 
@@ -330,7 +466,7 @@ export class AmendmentRequestEntryComponent {
 
         this.conformationService.open({
             title: "Confirm Amendment",
-            message: 'Are you sure want to confirm amendment by TA?'
+            message: 'Do you want to confirm amendment quotation on be half of Travel Agent?'
         }).afterClosed().subscribe(ress => {
             if (ress === 'confirmed') {
                 this.amendmentRequestsService.confirmAmendment({ id: this.record.id }).subscribe({
@@ -342,6 +478,17 @@ export class AmendmentRequestEntryComponent {
                         this.alertService.showToast('error', err)
                     }
                 })
+            }
+        })
+    }
+
+
+    invoice(id: string, name: string): void {
+        this.amendmentRequestsService.printInvoice(id).subscribe({
+            next: (res) => {
+                CommonUtils.downloadPdf(res?.data, name + '.pdf');
+            }, error: (err) => {
+                this.alertService.showToast('error', err);
             }
         })
     }

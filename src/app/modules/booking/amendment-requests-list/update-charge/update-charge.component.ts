@@ -20,6 +20,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
 import { Linq } from 'app/utils/linq';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { CommonUtils, DocValidationDTO } from 'app/utils/commonutils';
+import { imgExtantions } from 'app/common/const';
 
 @Component({
     selector: 'app-update-charge',
@@ -84,7 +86,8 @@ export class UpdateChargeComponent implements OnInit {
                     bonton_markup_value: 0,
                     addon_markup_value: 0,
                     segment_amount: 0,
-                    company_remark: ''
+                    company_remark: '',
+                    quotation_proof: ''
                 }
                 this.updateChargeDrawer.toggle();
                 this.getAmendment();
@@ -113,6 +116,7 @@ export class UpdateChargeComponent implements OnInit {
                     this.formObj.company_remark = (this.amendmentData?.company_remark || '');
                     this.formObj.addon_markup_value = (this.amendmentData?.addon_markup || 0);
                     this.formObj.segment_amount = (this.amendmentData?.segment_amount || 0);
+                    // this.formObj.quotation_proof = (this.amendmentData?.quotation_proof || 0);
                     this.calculation();
                 }
             }, error: (err) => {
@@ -147,9 +151,15 @@ export class UpdateChargeComponent implements OnInit {
 
     // Update Data
     submit(form: any): void {
+
         if (!form.valid) {
             this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
             form.markAllAsTouched();
+            return;
+        }
+
+        if (!this.formObj.quotation_proof) {
+            this.alertService.showToast('error', 'Quotation proof is required.', 'top-right', true);
             return;
         }
 
@@ -171,7 +181,12 @@ export class UpdateChargeComponent implements OnInit {
                         infant: this.formObj.Infant_charge || 0,
                         child: this.formObj.child_charge || 0,
                         adult: this.formObj.adult_charge || 0,
-                        segmentAmount: this.formObj.segment_amount || 0
+                        segmentAmount: this.formObj.segment_amount || 0,
+                        quotation_proof: this.formObj.quotation_proof?.base64 ? this.formObj.quotation_proof : {
+                            base64: '',
+                            fileName: '',
+                            fileType: ''
+                        },
                     }
                     this.amendmentRequestsService.amendmentCharges(json).subscribe({
                         next: () => {
@@ -199,8 +214,66 @@ Note: to apply discount kindly enter value in negative ex. -50`;
         else if (str == 'Segment Amount')
             value = `Use this price when return segment on international flight.\n
 Ex. If ticket is for BOM-DXB and DXB-BOM, now if amendment raised for DXB-BOM at that time required DXB-BOM segment price to calculate cancellation/refund amount.`;
+        else if (str == 'Adult Per Pax Charge')
+            value = 'Enter supplier side charge for per adult.'
+        else if (str == 'Child Per Pax Charge')
+            value = 'Enter supplier side charge for per child.'
+        else if (str == 'Infant Per Pax Charge')
+            value = 'Enter supplier side charge for per infant.'
 
         return value;
     }
 
+    uploadDocument(event: any): void {
+        const file = (event.target as HTMLInputElement).files[0];
+
+        const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
+        var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 3036, null);
+        if (!validator.valid) {
+            this.alertService.showToast('error', validator.alertMessage);
+            (event.target as HTMLInputElement).value = '';
+            return;
+        }
+
+        CommonUtils.getJsonFile(file, (reader, jFile) => {
+            jFile["result"] = reader.result;
+            this.formObj.quotation_proof = jFile;
+
+            this.alertService.showToast('success', "Document Uploaded", "top-right", true);
+            (event.target as HTMLInputElement).value = '';
+        });
+    }
+
+    download(data: any): void {
+        if (data?.base64) {
+
+            const newTab = window.open('', '_blank');
+            if (newTab) {
+                newTab.document.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <title>Document Viewer</title>
+                    </head>
+                    <style>
+                        html, body, iframe {
+                            margin: 0;
+                            padding: 0;
+                            width: 100%;
+                            height: 100%;
+                            border: none;
+                        }
+                    </style>
+                    <body>
+                        <iframe src="${data?.result}"></iframe>
+                    </body>
+                </html>
+            `);
+                newTab.document.close();
+            } else {
+                alert('Please allow popups for this website');
+            }
+        } else
+            window.open(data, '_blank');
+    }
 }

@@ -91,7 +91,9 @@ export class AmendmentRequestsListComponent
         "Completed",
         "Rejected",
         "Cancelled",
-        "Partial Payment Completed"
+        "Partial Payment Completed",
+        "Account Rejected",
+        "Account Audit"
     ];
     statusListForAgent = [
         "Request Sent",
@@ -144,16 +146,18 @@ export class AmendmentRequestsListComponent
         this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
 
         this.cols = [
-            { field: 'gds_pnr', header: 'GDS PNR'},
+            { field: 'gds_pnr', header: 'GDS PNR' },
             { field: 'travel_date', header: 'Travel Date' },
             { field: 'status_for_agent', header: 'Agent Status' },
             { field: 'reject_reason', header: 'Reject Reason' },
             { field: 'amendment_confirmation_time', header: 'Confirmed' },
+            { field: 'sup_refund_amount', header: 'Supplier Refund Amount' },
+            { field: 'sup_refund_date', header: 'Supplier Refund Date' },
         ];
-        
+
         this.getAgent("", true);
         this.getSupplier("", true);
-        
+
     }
 
     get selectedColumns(): Column[] {
@@ -290,13 +294,13 @@ export class AmendmentRequestsListComponent
 
     // Status wise color
     getStatusColor(status: string): string {
-        if (status == 'Refund Process' || status == 'Inprocess') {
+        if (status == 'Refund Process' || status == 'Inprocess' || status == 'Account Audit') {
             return 'text-orange-600';
         } else if (status == 'Quotation Sent' || status == "Partial Payment Completed") {
             return 'text-yellow-600';
         } else if (status == 'Quotation Confirmed By TA' || status == 'Completed' || status == 'Confirm' || status == 'Quotation Confirmed') {
             return 'text-green-600';
-        } else if (status == 'Request to Supplier Failed' || status == "Quotation Rejected By TA" || status == "Rejected" || status == "Cancelled") {
+        } else if (status == 'Request to Supplier Failed' || status == "Quotation Rejected By TA" || status == "Rejected" || status == "Cancelled" || status == "Account Rejected") {
             return 'text-red-600';
         } else if (status == 'Request Sent to Supplier' || status == "Confirmation Sent To Supplier" || status == "Payment Completed" || status == "Refund Completed") {
             return 'text-blue-600';
@@ -348,7 +352,7 @@ export class AmendmentRequestsListComponent
 
     // Show update charge
     showUpdateCharge(data: any): boolean {
-        return (data.amendment_status != 'Rejected' && data.amendment_status != 'Completed' && data.amendment_status != 'Cancelled');
+        return (data.amendment_status?.toLowerCase() == 'request sent to supplier' || data.amendment_status?.toLowerCase() == 'quotation sent' || data.amendment_status?.toLowerCase() == 'quotation confirmed by ta');
     }
 
     // Update Charge Drawer Action
