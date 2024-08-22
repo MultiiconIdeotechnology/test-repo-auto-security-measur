@@ -21,6 +21,7 @@ import { takeUntil } from 'rxjs';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-caching-parameters-list',
@@ -43,7 +44,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDividerModule,
         FormsModule,
         PrimeNgImportsModule,
-        CachingParametersEntryComponent
+        CachingParametersEntryComponent,
+        MatTooltipModule
     ],
 })
 export class CachingParametersListComponent

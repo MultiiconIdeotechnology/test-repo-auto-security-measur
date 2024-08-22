@@ -23,6 +23,7 @@ import { AgentService } from 'app/services/agent.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-receipt-register',
@@ -44,7 +45,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class ReceiptRegisterComponent
