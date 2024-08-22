@@ -114,7 +114,7 @@ export class RejectedComponent extends BaseListingComponent {
   }
 
   ngOnChanges() {
-    // if (this.activeTab == 'Rejected') {
+    if (this.activeTab == 'Rejected') {
       this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
 
         if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
@@ -146,7 +146,7 @@ export class RejectedComponent extends BaseListingComponent {
         // this.sortColumn = filterData['sortColumn'];
         this.primengTable['filters'] = filterData['table_config'];
       }
-
+    }
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData.mopData;
     this.pspList = this.filterApiData?.pspData;
