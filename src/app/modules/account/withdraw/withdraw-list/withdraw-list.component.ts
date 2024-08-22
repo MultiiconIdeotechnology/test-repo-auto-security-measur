@@ -225,6 +225,7 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
 
   isDestroy() {
     this._filterService.activeFiltData = {};
+    this.resetPrimengTable();
     if (this.pending.withdrawUpdatedSubscription) {
       this.pending.withdrawUpdatedSubscription.unsubscribe();
     }

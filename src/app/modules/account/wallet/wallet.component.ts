@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -98,7 +98,8 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private agentService: AgentService,
-    public _filterService: CommonFilterService
+    public _filterService: CommonFilterService,
+    private cd: ChangeDetectorRef
   ) {
     super(module_name.wallet)
     this.key = this.module_name;
@@ -200,7 +201,13 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   isDestroy() {
+    // console.log("isDestroy");
     this._filterService.activeFiltData = {};
+    this.cd.detectChanges();
+    this.isFilterShowPending = false
+    this.isFilterShowAudit = false
+    this.isFilterShowReject = false
+    this.resetPrimengTable();
     if (this.pending.settingsUpdatedSubscription) {
       this.pending.settingsUpdatedSubscription.unsubscribe();
     }
@@ -211,7 +218,8 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
  
     if (this.rejected.settingsRejectSubscription) {
       this.rejected.settingsRejectSubscription.unsubscribe();
-    }    
+    }
+    this.cd.detectChanges();
   }
 
   private ifNotThenCall(call: string, callback: () => void): void {

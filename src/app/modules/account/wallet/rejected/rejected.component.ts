@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -113,22 +113,26 @@ export class RejectedComponent extends BaseListingComponent {
     }, 1000);
   }
 
-  ngOnChanges() {
-    // if (this.activeTab == 'Rejected') {
-      this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+  ngOnChanges(changes: SimpleChanges) {
+    console.log("rejected changes", changes);
 
-        if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
-          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+    if (this.activeTab == 'Rejected') {
+      this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+        if (this.activeTab == 'Rejected') { // <= This if condition is required
+          console.log("resp Rej", resp);
+          if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
+            this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+          }
+          if (resp?.['table_config']?.['rejected_date_time']?.value != null) {
+            resp['table_config']['rejected_date_time'].value = new Date(resp['table_config']['rejected_date_time'].value);
+          }
+
+          this.isFilterShowReject = true;
+          // this.sortColumn = resp['sortColumn'];
+          // this.primengTable['_sortField'] = resp['sortColumn'];
+          this.primengTable['filters'] = resp['table_config'];
+          this.primengTable._filter();
         }
-        if (resp?.['table_config']?.['rejected_date_time']?.value != null) {
-          resp['table_config']['rejected_date_time'].value = new Date(resp['table_config']['rejected_date_time'].value);
-        }
-        
-        this.isFilterShowReject = true;
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        this.primengTable['filters'] = resp['table_config'];
-        this.primengTable._filter();
       });
 
       // ngAfterViewInit
@@ -146,7 +150,7 @@ export class RejectedComponent extends BaseListingComponent {
         // this.sortColumn = filterData['sortColumn'];
         this.primengTable['filters'] = filterData['table_config'];
       }
-
+    }
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData.mopData;
     this.pspList = this.filterApiData?.pspData;
