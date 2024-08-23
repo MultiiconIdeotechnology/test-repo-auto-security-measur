@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -74,7 +74,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     ]
 })
 export class PartnersComponent extends BaseListingComponent{
-    @Input() isFilterShowPartners: boolean
+    @Input() isFilterShowPartners: boolean;
+    @Output() isFilterShowPartnersChange = new EventEmitter<boolean>();
     @Input() dropdownListObj:{};
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
@@ -134,6 +135,7 @@ export class PartnersComponent extends BaseListingComponent{
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPartners = true;
+            this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
             this.primengTable._filter();
         });
     }
@@ -142,6 +144,7 @@ export class PartnersComponent extends BaseListingComponent{
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPartners = true;
+            this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agencyName']?.value;

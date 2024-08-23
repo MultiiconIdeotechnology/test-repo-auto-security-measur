@@ -134,7 +134,7 @@ export class VisaComponent extends BaseListingComponent {
         this.getAgent("", true);
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -151,6 +151,12 @@ export class VisaComponent extends BaseListingComponent {
             if (resp['table_config']['travel_date'].value) {
                 resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
             }
+            if (resp['table_config']?.['payment_request_time']?.value != null) {
+                resp['table_config']['payment_request_time'].value = new Date(resp['table_config']['payment_request_time'].value);
+            }
+            if (resp['table_config']?.['payment_confirmation_time']?.value != null) {
+                resp['table_config']['payment_confirmation_time'].value = new Date(resp['table_config']['payment_confirmation_time'].value);
+            }
             this.primengTable['filters'] = resp['table_config'];
             this._selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
@@ -162,12 +168,19 @@ export class VisaComponent extends BaseListingComponent {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            console.log("filterData", filterData)
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
             if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
             if (filterData['table_config']['travel_date'].value) {
                 filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+            }
+            if (filterData['table_config']?.['payment_request_time']?.value != null) {
+                filterData['table_config']['payment_request_time'].value = new Date(filterData['table_config']['payment_request_time'].value);
+            }
+            if (filterData['table_config']?.['payment_confirmation_time']?.value != null) {
+                filterData['table_config']['payment_confirmation_time'].value = new Date(filterData['table_config']['payment_confirmation_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];

@@ -72,13 +72,13 @@
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
             <ng-container *ngIf="tabNameStr == 'Inbox'">
-                <inbox-agent #inbox [isFilterShowInbox]="isFilterShowInbox"
+                <inbox-agent #inbox [(isFilterShowInbox)]="isFilterShowInbox"
                     [dropdownListObj]="dropdownListObj"></inbox-agent>
             </ng-container>
         </mat-tab>
         <mat-tab label="Partners" [aria-label]="'Partners'" *ngIf="getTabsPermission('partners')">
             <ng-container *ngIf="tabNameStr == 'Partners'">
-                <app-partners #partners [isFilterShowPartners]="isFilterShowPartners"
+                <app-partners #partners [(isFilterShowPartners)]="isFilterShowPartners"
                     [dropdownListObj]="dropdownListObj"></app-partners>
             </ng-container>
         </mat-tab>

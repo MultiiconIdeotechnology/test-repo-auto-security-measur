@@ -113,13 +113,16 @@ export class DocumentsListComponent
         this.getDocList();
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
             this.selectedDocument = resp['table_config']['kyc_profile_doc_name']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
 
-            if (resp['table_config']['entry_date_time'].value) {
+            if (resp['table_config']?.['entry_date_time']?.value != null) {
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            if (resp['table_config']?.['reject_date_time']?.value != null) {
+                resp['table_config']['reject_date_time'].value = new Date(resp['table_config']['reject_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this._selectedColumns = resp['selectedColumns'] || [];
@@ -134,8 +137,11 @@ export class DocumentsListComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedDocument = filterData['table_config']['kyc_profile_doc_name']?.value;
-            if (filterData['table_config']['entry_date_time'].value) {
+            if (filterData['table_config']?.['entry_date_time']?.value != null) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            if (filterData['table_config']?.['reject_date_time']?.value != null) {
+                filterData['table_config']['reject_date_time'].value = new Date(filterData['table_config']['reject_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];

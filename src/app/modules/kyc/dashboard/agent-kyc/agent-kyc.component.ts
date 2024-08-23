@@ -208,10 +208,6 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   getKycCombo() {
     this.kycService.getkycprofileCombo('agent').subscribe((data) => {
       this.kycProfileList = data;
-
-      for (let i in this.kycProfileList) {
-        this.kycProfileList[i].id_by_value = this.kycProfileList[i].profile_name; 
-      }
     })
   }
 

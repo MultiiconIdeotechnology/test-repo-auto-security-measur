@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -76,6 +76,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 
 export class InboxComponent extends BaseListingComponent {
     @Input() isFilterShowInbox: boolean;
+    @Output() isFilterShowInboxChange = new EventEmitter<boolean>();
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
@@ -129,6 +130,7 @@ export class InboxComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
+            this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
             this.primengTable._filter();
         });
     }
@@ -137,6 +139,7 @@ export class InboxComponent extends BaseListingComponent {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
+            this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['last_call_date_time'].value) {
                 filterData['table_config']['last_call_date_time'].value = new Date(filterData['table_config']['last_call_date_time'].value);

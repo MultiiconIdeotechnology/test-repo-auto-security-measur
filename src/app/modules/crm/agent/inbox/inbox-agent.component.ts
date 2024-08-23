@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -71,7 +71,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     ]
 })
 export class InboxAgentComponent extends BaseListingComponent {
-    @Input() isFilterShowInbox: boolean
+    @Input() isFilterShowInbox: boolean;
+    @Output() isFilterShowInboxChange = new EventEmitter<boolean>();
     @Input() dropdownListObj: {};
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
@@ -140,6 +141,7 @@ export class InboxAgentComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
+            this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
             this.primengTable._filter();
         });
     }
@@ -148,6 +150,7 @@ export class InboxAgentComponent extends BaseListingComponent {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
+            this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agencyName']?.value;
@@ -180,9 +183,7 @@ export class InboxAgentComponent extends BaseListingComponent {
     getAgent(value: string, bool = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
-            console.log("this.selectedAgent", this.selectedAgent)
-              
-
+            
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;

@@ -80,13 +80,13 @@
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
             <ng-container *ngIf="tabNameStr == 'Inbox'">
-                <app-inbox #inbox [isFilterShowInbox]="isFilterShowInbox"></app-inbox>
+                <app-inbox #inbox [(isFilterShowInbox)]="isFilterShowInbox"></app-inbox>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Archive" [aria-label]="'Archive'" *ngIf="getTabsPermission('archive')">
             <ng-container *ngIf="tabNameStr == 'Archive'">
-                <app-archive #archive [isFilterShowArchive]="isFilterShowArchive"></app-archive>
+                <app-archive #archive [(isFilterShowArchive)]="isFilterShowArchive"></app-archive>
             </ng-container>
         </mat-tab>
     </mat-tab-group>

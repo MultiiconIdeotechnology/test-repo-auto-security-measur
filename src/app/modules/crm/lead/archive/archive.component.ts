@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -70,7 +70,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     ]
 })
 export class ArchiveComponent extends BaseListingComponent{
-    @Input() isFilterShowArchive: boolean
+    @Input() isFilterShowArchive: boolean;
+    @Output() isFilterShowArchiveChange = new EventEmitter<boolean>()
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
@@ -106,6 +107,7 @@ export class ArchiveComponent extends BaseListingComponent{
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowArchive = true;
+            this.isFilterShowArchiveChange.emit(this.isFilterShowArchive);
             this.primengTable._filter();
         });
 
@@ -115,6 +117,7 @@ export class ArchiveComponent extends BaseListingComponent{
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowArchive = true;
+            this.isFilterShowArchiveChange.emit(this.isFilterShowArchive);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             if (filterData['table_config']['last_call_date_time'].value) {
                 filterData['table_config']['last_call_date_time'].value = new Date(filterData['table_config']['last_call_date_time'].value);

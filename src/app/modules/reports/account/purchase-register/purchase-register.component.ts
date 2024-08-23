@@ -126,7 +126,7 @@ export class PurchaseRegisterComponent
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
             this.selectedCompany = filterData['table_config']['company']?.value;
-            if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+            if ( filterData['table_config']['entry_date_time']?.value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
