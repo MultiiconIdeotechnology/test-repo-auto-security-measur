@@ -36,6 +36,10 @@ export class FlightTabService {
     return this.http.post<any>(environment.apiUrl + "AirAmendment/getAirAmendmentRecord", { id: id });
   }
 
+  printInvoice(id: string): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + 'AirAmendment/printInvoice', { invoiceId: id });
+  }
+
   setPnr(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "AirBooking/setPnr", model);
   }

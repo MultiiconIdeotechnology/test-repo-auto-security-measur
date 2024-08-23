@@ -403,6 +403,22 @@ export class BookingDetailsComponent {
     }
   }
 
+  getStatusColorForAgent(status: string): string {
+    if (status == 'Request Sent' || status == 'Inprocess') {
+        return 'bg-orange-600';
+    } else if (status == 'Partial Payment Completed') {
+        return 'bg-yellow-600';
+    } else if (status == 'Quotation Confirmed' || status == 'Completed') {
+        return 'bg-green-600';
+    } else if (status == 'Quotation Rejected' || status == 'Rejected' || status == 'Cancelled') {
+        return 'bg-red-600';
+    } else if (status == 'Quotation Received' || status == 'Payment Completed' || status == 'Refund Initiated') {
+        return 'bg-blue-600';
+    } else {
+        return '';
+    }
+}
+
 }
 
 

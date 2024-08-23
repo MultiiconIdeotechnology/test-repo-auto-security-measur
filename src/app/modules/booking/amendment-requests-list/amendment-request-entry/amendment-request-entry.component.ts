@@ -93,6 +93,23 @@ export class AmendmentRequestEntryComponent {
                 this.amendmentInfoDrawer.toggle();
             }
         });
+
+        this.entityService.onraiserefreshUpdateChargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                this.cliarData();
+            }
+        });
+    }
+
+    cliarData() {
+        this.recordList = null;
+        this.agentInfoList = [];
+        this.paymentInfoList = [];
+        this.amendmentInfoList = [];
+        this.paxInfoList = [];
+        this.PGRefundList = [];
+        this.SupplierRefundDetailsList = [];
+        this.chargesList = [];
     }
 
     ngOnInit(): void {
@@ -174,8 +191,8 @@ export class AmendmentRequestEntryComponent {
                         this.SupplierRefundDetailsList = [
                             { name: 'Refund Amount', value: `${data.currency_symbol} ${(data.supplier_refund_details?.refund_amount?.toFixed(2) || '0.00')}` },
                             { name: 'Refund Date', value: data.supplier_refund_details?.refund_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.refund_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
-                            { name: 'Audit By', value: data.supplier_refund_details?.audit_by || '-'},
-                            { name: 'Audit Date', value: data.supplier_refund_details?.audit_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.audit_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-'  },
+                            { name: 'Audit By', value: data.supplier_refund_details?.audit_by || '-' },
+                            { name: 'Audit Date', value: data.supplier_refund_details?.audit_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.audit_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
                         ]
                         // let name1;
                         // let name2;

@@ -189,8 +189,8 @@
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate" [matTooltip]="mainDataAll?.pnr">{{mainDataAll?.pnr
                                         || ' - '}}</span>
-                                    <img  class="w-4 cursor-pointer"
-                                        (click)="pnr(mainDataAll,'PNR')" src="assets/icons/edit.svg" alt="">
+                                    <img class="w-4 cursor-pointer" (click)="pnr(mainDataAll,'PNR')"
+                                        src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -198,8 +198,8 @@
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate"
                                         [matTooltip]="mainDataAll?.gds_pnr">{{mainDataAll?.gds_pnr || ' - '}}</span>
-                                    <img  (click)="pnr(mainDataAll,'GDS PNR')"
-                                        class="w-4 cursor-pointer" src="assets/icons/edit.svg" alt="">
+                                    <img (click)="pnr(mainDataAll,'GDS PNR')" class="w-4 cursor-pointer"
+                                        src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -222,17 +222,17 @@
                                 <span class="text-md font-semibold text-secondary">Supplier</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.supplier_name">{{mainDataAll?.supplier_name || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.supplier_name">{{mainDataAll?.supplier_name
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Supplier Ref. No.</span>
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.supplier_ref_no">{{mainDataAll?.supplier_ref_no || '
-                                        - '}}</span>
-                                    <img 
-                                        (click)="pnr(mainDataAll,'Supplier Ref. No.')" class="w-4 cursor-pointer"
+                                        [matTooltip]="mainDataAll?.supplier_ref_no">{{mainDataAll?.supplier_ref_no
+                                        || ' - '}}</span>
+                                    <img (click)="pnr(mainDataAll,'Supplier Ref. No.')" class="w-4 cursor-pointer"
                                         src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
@@ -266,14 +266,16 @@
                                 <span class="text-md font-semibold text-secondary">Travel Type</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.travel_type">{{mainDataAll?.travel_type || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.travel_type">{{mainDataAll?.travel_type
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Cabin</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.cabin_class">{{mainDataAll?.cabin_class || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.cabin_class">{{mainDataAll?.cabin_class
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -296,7 +298,8 @@
                                 <span class="text-md font-semibold text-secondary">IP Address</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.ip_address">{{mainDataAll?.ip_address || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.ip_address">{{mainDataAll?.ip_address
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -406,9 +409,8 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Status</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate"
-                                        [matTooltip]="paymentBy?.refund_status">{{paymentBy?.refund_status || ' -
-                                        '}}</span>
+                                    <span class="text-base truncate" [matTooltip]="paymentBy?.refund_status">
+                                        {{paymentBy?.refund_status || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -420,16 +422,16 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Date Time</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime | date:'dd-MM-yyyy
-                                        HH:mm:ss') || ' - '}}</span>
+                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime
+                                        | date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Reason</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="paymentBy?.refund_reason">{{paymentBy?.refund_reason || ' -
-                                        '}}</span>
+                                        [matTooltip]="paymentBy?.refund_reason">{{paymentBy?.refund_reason
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                         </div>
@@ -707,19 +709,18 @@
                     <div
                         class="flex flex-row border-b-2 max-h-10 min-h-10 items-center bg-card sticky top-0 text-lg px-4">
                         Amendment Details</div>
-                    <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0">
-                        <div class="tbl-grid gridwidth grid items-center gap-4 cursor-pointer px-4">#</div>
-                        <div class="w-15 px-4"></div>
-                        <div class="w-1/4 px-4">Ref No.</div>
-                        <div class="w-1/4 px-4">Type</div>
-                        <div class="w-1/4 px-4">Status</div>
-                        <div class="w-1/4 px-4">Request Time</div>
-                        <div class="w-1/4 px-4">Confirmation Time</div>
-                        <div class="w-1/4 px-4">Agent Remark</div>
+                    <div
+                        class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0 pl-4">
+                        <div class="w-[20%] pr-4">Ref No.</div>
+                        <div class="w-[17%] pr-4">Type</div>
+                        <div class="w-[12%] pr-4">Status</div>
+                        <div class="w-[17%] pr-4">Request Time</div>
+                        <div class="w-[17%] pr-4">Confirmation Time</div>
+                        <div class="w-[17%] pr-4">Agent Remark</div>
                     </div>
-                    <div class="flex flex-row border-b-2 max-h-30 min-h-10 items-center overflow-hidden"
+                    <div class="flex flex-row border-b-2 max-h-30 min-h-10 items-center overflow-hidden pl-4"
                         *ngFor="let data of amendmentsDataList">
-                        <div class="tbl-grid gridwidth grid items-center gap-4 cursor-pointer">
+                        <!-- <div class="tbl-grid gridwidth grid items-center gap-4 cursor-pointer">
                             <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
                                 class="sticky left-0 bg-gray-50 dark:bg-gray-900"
                                 style="border-radius: 0%; width: 100%">
@@ -732,22 +733,28 @@
                                 </button>
                             </mat-menu>
                         </div>
-                        <div class=" px-4 flex flex-row gap-3">
+                        <div class=" pr-4 flex flex-row gap-3">
                             <div class="w-5 cursor-pointer" [matTooltip]="data.invoice_type">
                                 <img *ngIf="data.invoice_id && data.amendment_status == 'Completed'"
                                     src="assets/icons/voucher.svg" alt="" (click)="invoice(data.invoice_id)">
                             </div>
+                        </div> -->
+                        <div class="w-[20%] pr-4 truncate gap-3 underline hover:text-primary-200 cursor-pointer" (click)="view(data)">{{
+                            data.ref_no || ' - ' }}</div>
+                        <div class="w-[17%] pr-4">{{ data.amendment_type || ' - '}}</div>
+                        <div class="w-[12%] pr-4">
+                            <div class="rounded-lg text-white px-2 max-w-fit text-md font-medium"
+                                [ngClass]="getStatusColorForAgent(data.status_for_agent)">
+                                {{data.status_for_agent}}
+                            </div>
                         </div>
-                        <div class="w-1/4 px-4 flex flex-row gap-3">{{ data.ref_no || ' - ' }}</div>
-                        <div class="w-1/4 px-4">{{ data.amendment_type || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ data.amendment_status || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ (data.amendment_request_time | date: 'dd-MM-yyyy HH:mm:ss') || ' -
-                            '}}
+                        <div class="w-[17%] pr-4">{{ (data.amendment_request_time | date: 'dd-MM-yyyy HH:mm:ss')
+                            || ' - '}}
                         </div>
-                        <div class="w-1/4 px-4">{{ (data.amendment_confirmation_time | date: 'dd-MM-yyyy HH:mm:ss') || '
-                            - '}}
+                        <div class="w-[17%] pr-4">{{ (data.amendment_confirmation_time | date: 'dd-MM-yyyy HH:mm:ss')
+                            || ' - '}}
                         </div>
-                        <div class="w-1/4 px-4">{{ data.agent_remark || ' - '}}</div>
+                        <div class="w-[17%] pr-4">{{ data.agent_remark || ' - '}}</div>
 
                     </div>
                 </div>

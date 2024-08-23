@@ -5,7 +5,7 @@
         <mat-icon svgIcon="close" class="cursor-pointer text-white" (click)="matDialogRef.close()"></mat-icon>
     </div>
 
-    <div class="py-5 px-5 flex flex-col">
+    <div class="py-5 px-5 flex flex-col" *ngIf="allData; else noData">
         <div class="rounded-md overflow-hidden mb-3" *ngIf="allData?.pax_info.length > 0">
             <div class="text-lg font-normal pb-1 ">Passenger Detail</div>
             <div class="mb-1">
@@ -84,7 +84,7 @@
         </div>
 
         <div class="rounded-md overflow-hidden" *ngIf="allData?.charges.charge">
-            <div class="text-lg font-normal pb-1 ">Amendment Charge</div>
+            <div class="text-lg font-normal pb-1">Amendment Charge</div>
             <div class="mb-1">
                 <table cellPadding="10px" class="w-full mt-1 border-collapse border border-gray-border">
                     <tr class="font-semibold field-blue-bg text-left border border-gray-border text-secondary dark:bg-card bg-gray-200">
@@ -106,6 +106,63 @@
                 </table>
             </div>
         </div>
+
+        <div class="rounded-md overflow-hidden pt-2" *ngIf="allData.status_for_agent == 'Completed'">
+            <div class="text-lg font-normal pb-1">Refund Details</div>
+            <div class="mb-1">
+                <table cellPadding="10px" class="w-full mt-1 border-collapse border border-gray-border">
+                    <tr class="font-semibold field-blue-bg text-left border border-gray-border text-secondary dark:bg-card bg-gray-200">
+                        <th class="border-l w-[19%] font-normal">
+                            Refund Mode
+                        </th>
+                        <th class="border-l w-[19%] font-normal">
+                            Refund Amount
+                        </th>
+                        <th class="border-l w-[20%] font-normal">
+                            Refund Date
+                        </th>
+                        <th class="border-l w-[12.5%] text-center font-normal">
+                            Credit Invoice
+                        </th>
+                        <th class="border-l w-[12.5%] text-center font-normal">
+                            Debit Invoice
+                        </th>
+                    </tr>
+                    <tr class="border border-gray-border">
+                        <td class="border-l w-[19%]">
+                            {{allData?.pgRefund?.refund_mode || ' - '}}
+                        </td>
+                        <td class="border-l w-[19%]">
+                            {{allData.currency_symbol}} {{allData?.pgRefund?.refund_amount?.toFixed(2) || '0.00'}}
+                        </td>
+                        <td class="border-l w-[20%]">
+                            {{allData?.pgRefund?.refund_date ? (allData?.pgRefund?.refund_date
+                            | date:'dd-MM-yyyy HH:mm:ss') : '-'}}
+                        </td>
+                        <td class="border-l w-[13.5%] text-center">
+                            <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
+                                (click)="allData?.pgRefund?.credit_invoice ? invoice(allData?.pgRefund?.credit_invoice,'Credit Invoice') : null"
+                                class="icon-size-5 cursor-pointer"
+                                [ngClass]="allData?.pgRefund?.credit_invoice ? 'text-blue-500' : 'text-gray-500' "
+                                [matTooltip]="'Download'"></mat-icon>
+                        </td>
+                        <td class="border-l w-[13.5%] text-center">
+                            <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
+                                (click)="allData?.pgRefund?.debit_invoice ? invoice(allData?.pgRefund?.debit_invoice,'Debit Invoice') : null"
+                                class="icon-size-5 cursor-pointer"
+                                [ngClass]="allData?.pgRefund?.debit_invoice ? 'text-blue-500' : 'text-gray-500' "
+                                [matTooltip]="'Download'"></mat-icon>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
+
+    <ng-template #noData>
+        <div class="flex h-30 text-lg items-center justify-center w-full">
+            Loading...
+        </div>
+    </ng-template>
     
 </div>

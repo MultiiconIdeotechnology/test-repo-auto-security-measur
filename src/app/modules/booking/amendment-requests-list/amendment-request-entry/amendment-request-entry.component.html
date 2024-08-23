@@ -104,8 +104,7 @@
                                 [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="'Download'"></mat-icon>
                             <span class="text-base truncate"
-                                *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'"
-                                [matTooltip]="af.value && af.value != '-'? af.value : ''">{{(af.value || af.value == 0)
+                                *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value || af.value == 0)
                                 ? af.value : '--'}}</span>
                         </div>
                     </div>
@@ -120,8 +119,7 @@
                             <div class="flex flex-row space-x-2">
                                 <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
                             </div>
-                            <span class="text-base truncate"
-                                [matTooltip]="af.value && af.value != '-'? af.value : ''">{{(af.value || af.value == 0)
+                            <span class="text-base truncate">{{(af.value || af.value == 0)
                                 ? af.value : '--'}}</span>
                         </div>
                     </div>
