@@ -21,7 +21,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
-import { FuseConfig, FuseConfigService } from '@fuse/services/config';
 import { Routes } from 'app/common/const';
 import { JsonFile } from 'app/common/jsonFile';
 import { UserService } from 'app/core/user/user.service';
@@ -152,7 +151,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         public entityService: EntityService,
         public alertService: ToasterService,
         private _userService: UserService,
-        private _fuseConfigService: FuseConfigService,
         // @Inject(MAT_DIALOG_DATA) public data: any = {},
         // @Inject(MAT_DIALOG_DATA) public editFlag: any = {}
     ) {
@@ -183,7 +181,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
                     this.proofAttachment = false;
                     if (item?.editFlag) {
-                        if(item?.editData?.proof_attachment){
+                        if (item?.editData?.proof_attachment) {
                             this.proofAttachment = true;
                         }
                         this.editAgentId = item?.editData?.agentid;
@@ -268,7 +266,10 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         const newValue = inputElement.value;
         if (this.productPrice > newValue) {
             this.proofAttachment = true;
+            // this.formGroup.get('proofAttachment').setValidators(Validators.required);
+            // this.formGroup.get('proofAttachment').updateValueAndValidity();
         } else {
+            // this.formGroup.get('proofAttachment').clearValidators();
             this.proofAttachment = false;
         }
     }
@@ -415,7 +416,14 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // }
 
         const json = this.formGroup.getRawValue();
+
         // agent_id: this.record?.agentid ? this.record?.agentid : this.record?.editData?.agentid,
+
+        // if (!json.proofAttachment) {
+        //     this.disableBtn = false;
+        //     this.alertService.showToast('error', 'Proof Attachment is required.')
+        //     return;
+        // }
 
         if (!this.proofAttachjFile) {
             json.proof_attachment = {
@@ -426,6 +434,15 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         } else {
             json.proof_attachment = this.proofAttachjFile
         }
+
+        // if (!this.record) {
+        //     console.log("452", json.proof_attachment);
+        //     if (json.proof_attachment == null || !json.proof_attachment.fileName) {
+        //         this.disableBtn = false;
+        //         this.alertService.showToast('error', 'Proof Attachment is required.')
+        //         return;
+        //     }
+        // }
 
         const newJson = {
             agent_id: this.addFlag ? this.addAgentId : this.editAgentId,
@@ -438,7 +455,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             proof_attachment: json.proof_attachment
         };
 
-        if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {
+        // if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {
+        if (this.validateDates() == true) {
             this.crmService.createPurchaseProduct(newJson).subscribe({
                 next: () => {
                     this.router.navigate([this.leadListRoute]);
@@ -499,7 +517,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     getMaxDate(index: number) {
         if (index == 0)
             return this.dateBeforeAllow;
-            // return this.todayDateTime
+        // return this.todayDateTime
         else {
             let maxDate = new Date(this.installmentsArray[index - 1].installment_date.toString())
             maxDate.setDate(maxDate.getDate() + 1)

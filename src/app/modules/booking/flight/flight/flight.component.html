@@ -55,10 +55,10 @@
                 <!-- <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon> -->
                 <span class="ml-2 mr-1">Import PNR</span>
             </button>
+          
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="offlinePnr()">
-                <!-- <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon> -->
                 <span class="ml-2 mr-1">Offline PNR</span>
-            </button>
+            </button> -->
 
             <!--- Modal filter -->
             <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
@@ -74,6 +74,14 @@
                 <button mat-menu-item (click)="exportExcel()">
                     <mat-icon>arrow_downward</mat-icon>
                     <span>Export Excel</span>
+                </button>
+                <button mat-menu-item (click)="importPnr()">
+                    <mat-icon>import_export</mat-icon>
+                    <span>Import PNR</span>
+                </button>
+                <button mat-menu-item (click)="offlinePnr()">
+                    <mat-icon svgIcon="heroicons_outline:bolt"></mat-icon>
+                    <span>Offline PNR</span>
                 </button>
             </mat-menu>
         </div>
@@ -93,6 +101,7 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+
                     <th class="min-w-[175px] dark:bg-[#1e293b]" pSortableColumn="booking_ref_no" pResizableColumn
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no"
                         [ngClass]="{'left-0': !frozenObj?.booking_ref_no}">

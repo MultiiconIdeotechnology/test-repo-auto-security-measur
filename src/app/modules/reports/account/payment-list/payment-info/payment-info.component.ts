@@ -46,7 +46,7 @@ export class PaymentInfoComponent {
                             {
                                 name: 'Status', value: this.data.payment.payment_status, class: this.data.payment.payment_status === 'Confirmed' ? 'text-green-600 font-semibold' :
                                     this.data.payment.payment_status === 'Pending' ? 'text-blue-600 font-semibold' :
-                                        this.data.payment.payment_status === 'Reject' ? 'text-red-600 font-semibold' : ''
+                                        this.data.payment.payment_status === 'Rejected' ? 'text-red-600 font-semibold' : ''
                             },
                             { name: 'Audit Date', value: this.data.payment.audit_date_time ? DateTime.fromISO(this.data.payment.audit_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
                             { name: 'Ref. No.', value: this.data.payment.payment_ref_no },
@@ -76,7 +76,7 @@ export class PaymentInfoComponent {
                             {
                                 name: 'Status', value: this.data.receipt.receipt_status, class: this.data.receipt.receipt_status === 'Confirmed' ? 'text-green-600 font-semibold' :
                                     this.data.receipt.receipt_status === 'Pending' ? 'text-blue-600 font-semibold' :
-                                        this.data.receipt.receipt_status === 'Reject' ? 'text-red-600 font-semibold' : ''
+                                    this.data.receipt.receipt_status === 'Rejected' ? 'text-red-600 font-semibold' : ''
                             },
                             { name: 'Receipt For', value: this.data.receipt.service_for },
                             { name: 'Booking Ref. No.', value: this.data.receipt.transaction_ref_no },
@@ -90,6 +90,11 @@ export class PaymentInfoComponent {
                             { name: 'PG Ref. No.', value: this.data.receipt.pg_payment_ref_no },
                             { name: 'Agent', value: this.data.receipt.agent_name }
                         ]
+
+                        if (this.data.receipt.receipt_status == 'Rejected') {
+                            this.fieldList.push({ name: 'Reject Reason', value: this.data.receipt.receipt_reject_reason });
+                        }
+
                         //   { name: 'Receipt Date', value: this.data.receipt.receipt_request_date? DateTime.fromISO(this.data.receipt.receipt_request_date).toFormat('dd-MM-yyyy HH:mm:ss').toString():''},
                         //   { name: 'Status', value: this.data.receipt.receipt_status, class: this.data.receipt.receipt_status === 'Confirmed' ? 'text-green-600 font-semibold' :
                         //   this.data.receipt.receipt_status === 'Pending' ? 'text-blue-600 font-semibold' :

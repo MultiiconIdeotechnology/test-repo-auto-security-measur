@@ -168,6 +168,7 @@ export class GlobalSearchComponent {
                         }
                         this.formGroup.get('searchfilter').patchValue("");
                         this.entityService.raiseInfoWithdraw({ data: this.bookingRefValue, global_withdraw: true })
+                        this.matDialog.closeAll();
                     }
 
                     else if (this.bookingRefKey == 'air_group_inqury') {
