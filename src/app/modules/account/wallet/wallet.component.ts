@@ -73,16 +73,8 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   isThird: boolean = true
   filterData: any = {};
 
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlPending = new FormControl('');
-
-  @ViewChild(MatPaginator) public _paginatorAudit: MatPaginator;
-  @ViewChild(MatSort) public _sortPaid: MatSort;
   searchInputControlAudit = new FormControl('');
-
-  @ViewChild(MatPaginator) public _paginatorRejected: MatPaginator;
-  @ViewChild(MatSort) public _sortRejected: MatSort;
   searchInputControlRejected = new FormControl('');
 
   isFilterShowPending: boolean = false;
@@ -95,7 +87,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
 
   constructor(
     private walletService: WalletService,
-    private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private agentService: AgentService,
     public _filterService: CommonFilterService,
@@ -135,12 +126,20 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   getMopList(value:string){
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
        this.filterApiData.mopData = data;
+
+       for(let i in this.filterApiData.mopData){
+        this.filterApiData.mopData[i].id_by_value = this.filterApiData.mopData[i].mop;
+     }
     })
   }
 
   getPspList(value:string){
     this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
       this.filterApiData.pspData = data;
+
+      for(let i in this.filterApiData.pspData){
+        this.filterApiData.pspData[i].id_by_value = this.filterApiData.pspData[i].provider;
+     }
     })
   }
 
@@ -201,7 +200,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   isDestroy() {
-    // console.log("isDestroy");
     this._filterService.activeFiltData = {};
     this.cd.detectChanges();
     this.isFilterShowPending = false

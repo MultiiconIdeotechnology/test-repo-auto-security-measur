@@ -91,7 +91,7 @@
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agency_name" [filter]="true" filterBy="agency_name"
-                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
                                     <div class="flex align-items-center gap-2">
@@ -115,7 +115,7 @@
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="mopList" [(ngModel)]="selectedMop"
                                 optionLabel="mop" [filter]="true" filterBy="mop"
-                                (onFilter)="getMopList($event?.filter)" (onChange)="filter($event.value?.mop)"
+                                (onFilter)="getMopList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a MOP">
                                 <ng-template let-option pTemplate="item">
                                         <div >{{ option.mop }}</div>
@@ -125,12 +125,11 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" field="psp_name" placeholder="Search by PSP Name" ariaLabel="Filter PSP Name" /> -->
                     <p-columnFilter class="searchableDropdown" field="psp_name" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="pspList" [(ngModel)]="selectedPsp"
                                 optionLabel="provider" [filter]="true" filterBy="provider"
-                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value?.provider)"
+                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a PSP">
                                 <ng-template let-option pTemplate="item">
                                         <div >{{ option.provider }}</div>
