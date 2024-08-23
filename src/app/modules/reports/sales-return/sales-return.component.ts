@@ -212,7 +212,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
 			this.primengTable.filter(agent?.agency_name, 'agent', 'equals');
 			setTimeout(() => {
 				this.primengTable.filters['agent']['value'] = agent;
-			}, 1000);
+			},  this.primengTable.filterDelay);
 		} else {
 			this.primengTable.filter(null, 'agent', 'equals');
 			this.primengTable.filters['agent'] = { value: null, matchMode: 'equals' };

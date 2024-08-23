@@ -26,7 +26,6 @@ import { DateTime } from 'luxon';
 import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { AgentService } from 'app/services/agent.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
@@ -85,11 +84,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 	total: any;
 	currentFilter: any;
 	downloading: boolean = false;
-	@ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
 	searchInternalFilter = new FormControl();
 	saleFilter: any;
-	@ViewChild(MatPaginator) public _paginator: MatPaginator;
-	@ViewChild(MatSort) public _sort: MatSort;
 	searchInputControl = new FormControl('');
 	public _unsubscribeAll: Subject<any> = new Subject<any>();
 	status = new FormControl('');
@@ -117,7 +113,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 		private _matdialog: MatDialog,
 		private flighttabService: FlightTabService,
 		private pspsettingService: PspSettingService,
-		public _filterService: CommonFilterService
+		public _filterService: CommonFilterService,
 	) {
 		super(module_name.SaleBook);
 		this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -253,11 +249,13 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 	}
 
 	onAgentChange(agent: any) {
+		console.log("this.primengTable", this.primengTable.filter);
+		
 		if (agent) {
 			this.primengTable.filter(agent?.agency_name, 'master_agent', 'equals');
 			setTimeout(() => {
 				this.primengTable.filters['master_agent']['value'] = agent;
-			}, 1000);
+			}, this.primengTable.filterDelay);
 		} else {
 			this.primengTable.filter(null, 'master_agent', 'equals');
 			this.primengTable.filters['master_agent'] = { value: null, matchMode: 'equals' };
