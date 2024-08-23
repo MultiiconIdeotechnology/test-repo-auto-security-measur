@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -77,6 +77,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 })
 export class TechDashboardPendingComponent extends BaseListingComponent {
     @Input() isFilterShowPending: boolean;
+    @Output() isFilterShowPendingChange = new EventEmitter<boolean>();
     @Input() dropdownFirstCallObj: any;
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
@@ -143,6 +144,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPending = true;
+            this.isFilterShowPendingChange.emit(this.isFilterShowPending);
             this.primengTable._filter();
         });
     }
@@ -151,11 +153,11 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPending = true;
+            this.isFilterShowPendingChange.emit(this.isFilterShowPending);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agency_name']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
-    
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
                         this.agentList.push(this.selectedAgent);
@@ -204,7 +206,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             this.agentList = data;
 
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })

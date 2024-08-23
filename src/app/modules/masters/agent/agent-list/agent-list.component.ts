@@ -119,7 +119,8 @@ export class AgentListComponent extends BaseListingComponent {
     employeeList: any[] = [];
     markupList: any[] = [];
     selectedEmployee: any = {};
-    selectedKycProfile!: string
+    selectedKycProfile:any = {};
+    selectedMarkup: any = {};
 
     constructor(
         private agentService: AgentService,
@@ -170,10 +171,10 @@ export class AgentListComponent extends BaseListingComponent {
     ngOnInit() {
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            console.log("resp>>>", resp);
-            
             this.selectedEmployee = resp['table_config']['rm_id_filters']?.value;
             this.selectedCurrency = resp['table_config']['currency']?.value;
+            this.selectedKycProfile = resp['table_config']['kyc_id_fliters']?.value;
+            this.selectedMarkup = resp['table_config']['markup_id_filter']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if(resp['table_config']['entry_date_time'].value){
@@ -199,6 +200,8 @@ export class AgentListComponent extends BaseListingComponent {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
             this.selectedCurrency = filterData['table_config']['currency'].value || {};
+            this.selectedKycProfile = filterData['table_config']['kyc_id_fliters']?.value || {};
+            this.selectedMarkup = filterData['table_config']['markup_id_filter']?.value || {};
             const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
             if(!match) {
                 this.employeeList.push(this.selectedEmployee);

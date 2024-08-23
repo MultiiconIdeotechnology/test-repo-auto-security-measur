@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -77,7 +77,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 export class TechDashboardExpiredComponent extends BaseListingComponent{
     @Input() isFilterShowExpired: boolean;
     @Input() dropdownFirstCallObj:any;
-
+    @Output() isFilterShowExpiredChange = new EventEmitter<boolean>();
     cols = [];
     total = 0;
 
@@ -139,6 +139,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowExpired = true;
+            this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
             this.primengTable._filter();
         });
     }
@@ -147,6 +148,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowExpired = true;
+            this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agency_name']?.value;
@@ -231,7 +233,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
             this.agentList = data;
 
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })

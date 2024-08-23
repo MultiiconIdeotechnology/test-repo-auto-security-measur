@@ -188,7 +188,7 @@ export class TravelCollectionComponent extends BaseListingComponent {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })

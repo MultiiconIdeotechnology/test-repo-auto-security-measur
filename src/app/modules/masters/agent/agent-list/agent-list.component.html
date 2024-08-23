@@ -241,7 +241,7 @@
                     </th> -->
 
 
-                        <p-columnFilter *ngIf="col.field == 'is_blocked'" field="is_blocked" matchMode="equals"
+                        <p-columnFilter *ngIf="col.field == 'is_blocked'" field="is_blocked" matchMode="contains"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="blockList"
@@ -254,19 +254,19 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <p-columnFilter *ngIf="col.field == 'pan_number'" type="text" field="pan_number"
+                        <p-columnFilter *ngIf="col.field == 'pan_number'" matchMode="contains" type="text" field="pan_number"
                             placeholder="Search by PAN Number" ariaLabel="Filter PAN Number" />
 
-                        <p-columnFilter *ngIf="col.field == 'gst_number'" type="text" field="gst_number"
+                        <p-columnFilter *ngIf="col.field == 'gst_number'" type="text" matchMode="contains" field="gst_number"
                             placeholder="Search by GST Number" ariaLabel="Filter GST Number" />
 
                         <p-columnFilter class="searchableDropdown" *ngIf="col.field == 'markup_profile_name'"
                             field="markup_id_filter" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="markupList"
-                                    [(ngModel)]="selectedEmployee" optionLabel="profile_name" [filter]="true"
+                                    [(ngModel)]="selectedMarkup" optionLabel="profile_name" [filter]="true"
                                     filterBy="profile_name" (onFilter)="getMarkupProfileList($event?.filter)"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Markup Profile">
                                     <ng-template let-employee pTemplate="item">
                                         <div class="flex align-items-center gap-2">
@@ -282,7 +282,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="kycListAll" optionLabel="profile_name"
                                     [filter]="true" filterBy="profile_name" [(ngModel)]="selectedKycProfile"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Kyc Profile">
                                     <ng-template let-currency pTemplate="item">
                                         <div class="flex align-items-center gap-2">
