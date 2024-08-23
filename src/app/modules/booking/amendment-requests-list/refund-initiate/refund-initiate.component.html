@@ -53,7 +53,7 @@
               [svgIcon]="'heroicons_outline:download'"></mat-icon>
           </button>
           <div [hidden]="true">
-            <input type="file" accept="image/*" name="documentUpload" #document2 (change)="uploadDocument($event)">
+            <input type="file" name="documentUpload" #document2 (change)="uploadDocument($event)">
           </div>
           <button (click)="document2.click()" [matTooltip]="'Upload'" mat-icon-button>
             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
@@ -73,7 +73,7 @@
 
         <mat-form-field class="flex-grow bottom_none" *ngIf="data.isDateRequired">
           <mat-label class="text-base text-secondary font-medium dark:text-[#687798]">Date</mat-label>
-          <input readonly matInput [matDatepicker]="date1" placeholder="Choose a date" formControlName="date" />
+          <input readonly matInput [matDatepicker]="date1" [max]="maxDateValid" placeholder="Choose a date" formControlName="date" />
           <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
           <mat-datepicker #date1></mat-datepicker>
         </mat-form-field>

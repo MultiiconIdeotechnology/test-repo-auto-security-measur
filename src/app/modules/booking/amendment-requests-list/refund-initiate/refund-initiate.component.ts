@@ -59,6 +59,7 @@ export class RefundInitiateComponent implements OnInit {
 
   document: any;
   formGroup: FormGroup;
+  maxDateValid = new Date();
 
   constructor(
     public matDialogRef: MatDialogRef<RefundInitiateComponent>,
@@ -78,7 +79,7 @@ export class RefundInitiateComponent implements OnInit {
   uploadDocument(event: any): void {
     const file = (event.target as HTMLInputElement).files[0];
 
-    const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
+    const extantion: string[] = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'pdf'];
     var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 3036, null);
     if (!validator.valid) {
       this.alertService.showToast('error', validator.alertMessage);

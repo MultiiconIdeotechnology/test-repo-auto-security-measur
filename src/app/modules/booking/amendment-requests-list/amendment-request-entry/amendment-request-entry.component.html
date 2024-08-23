@@ -89,9 +89,10 @@
                     </div>
                 </div>
 
-                <div *ngIf="recordList && recordList?.amendment_info?.status == 'Account Audit' || recordList?.amendment_info?.status == 'Account Rejected' || recordList?.amendment_info?.status == 'Completed'">
+                <div
+                    *ngIf="recordList && recordList?.amendment_info?.status == 'Account Audit' || recordList?.amendment_info?.status == 'Account Rejected' || recordList?.amendment_info?.status == 'Completed'">
                     <div class="border border-dashed"></div>
-                    <div class="text-lg font-semibold pt-4 text-primary">PG Refund</div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Refund Details</div>
                     <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
                         <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of PGRefundList">
                             <div class="flex flex-row space-x-2">
@@ -104,11 +105,27 @@
                                 [matTooltip]="'Download'"></mat-icon>
                             <span class="text-base truncate"
                                 *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'"
-                                [matTooltip]="af.value">{{(af.value || af.value == 0) ? af.value : '--'}}</span>
+                                [matTooltip]="af.value && af.value != '-'? af.value : ''">{{(af.value || af.value == 0)
+                                ? af.value : '--'}}</span>
                         </div>
                     </div>
                 </div>
 
+                <div
+                    *ngIf="recordList && recordList?.amendment_info?.status == 'Completed'">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Supplier Refund Details</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of SupplierRefundDetailsList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <span class="text-base truncate"
+                                [matTooltip]="af.value && af.value != '-'? af.value : ''">{{(af.value || af.value == 0)
+                                ? af.value : '--'}}</span>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -122,7 +139,7 @@
                 *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' ||
                         recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta'">
                 <button mat-stroked-button (click)="cancelReq()">
-                    Cancel
+                    Cancel Amendment
                 </button>
             </ng-container>
 
@@ -154,7 +171,7 @@
             <ng-container
                 *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'account audit' || recordList?.amendment_info?.status?.toLowerCase() == 'account rejected'">
                 <button mat-stroked-button (click)="complete()">
-                    Complete
+                    Account Complete
                 </button>
             </ng-container>
 

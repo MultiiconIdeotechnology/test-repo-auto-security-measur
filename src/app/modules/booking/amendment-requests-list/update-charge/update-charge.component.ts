@@ -215,11 +215,11 @@ Note: to apply discount kindly enter value in negative ex. -50`;
             value = `Use this price when return segment on international flight.\n
 Ex. If ticket is for BOM-DXB and DXB-BOM, now if amendment raised for DXB-BOM at that time required DXB-BOM segment price to calculate cancellation/refund amount.`;
         else if (str == 'Adult Per Pax Charge')
-            value = 'Enter supplier side charge for per adult.'
+            value = 'Enter per adult supplier charges.'
         else if (str == 'Child Per Pax Charge')
-            value = 'Enter supplier side charge for per child.'
+            value = 'Enter per child supplier charges.'
         else if (str == 'Infant Per Pax Charge')
-            value = 'Enter supplier side charge for per infant.'
+            value = 'Enter per infant supplier charges.'
 
         return value;
     }
@@ -227,7 +227,7 @@ Ex. If ticket is for BOM-DXB and DXB-BOM, now if amendment raised for DXB-BOM at
     uploadDocument(event: any): void {
         const file = (event.target as HTMLInputElement).files[0];
 
-        const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
+        const extantion: string[] = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'pdf'];
         var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 3036, null);
         if (!validator.valid) {
             this.alertService.showToast('error', validator.alertMessage);

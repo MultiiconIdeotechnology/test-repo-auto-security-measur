@@ -69,6 +69,7 @@ export class AmendmentRequestEntryComponent {
     agentInfoList: any[] = [];
     paymentInfoList: any[] = [];
     PGRefundList: any[] = [];
+    SupplierRefundDetailsList: any[] = [];
     amendmentInfoList: any[] = [];
     paxInfoList: any;
     chargesList: any[] = [];
@@ -162,12 +163,20 @@ export class AmendmentRequestEntryComponent {
 
                         this.PGRefundList = [
                             { name: 'Refund Mode', value: data.pgRefund.refund_mode },
-                            { name: 'Refund Amount', value: data.pgRefund?.refund_amount || '0' },
-                            { name: 'Refund Date', value: data.pgRefund?.refund_date || ' - ' },
-                            { name: 'PSP Ref. No.', value: data.pgRefund?.psp_ref_no || ' - ' },
+                            { name: 'Refund Amount', value: `${data.currency_symbol} ${(data.pgRefund?.refund_amount?.toFixed(2) || '0.00')}` },
+                            { name: 'Refund Date', value: data.pgRefund?.refund_date ? DateTime.fromJSDate(new Date(data.pgRefund?.refund_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
+                            { name: 'PSP Name', value: data.pgRefund?.psp_name || '-' },
+                            { name: 'PSP Ref. No.', value: data.pgRefund?.psp_ref_no || '-' },
                             { name: 'Credit Invoice', value: data.pgRefund.credit_invoice },
                             { name: 'Debit Invoice', value: data.pgRefund.debit_invoice },
                         ];
+
+                        this.SupplierRefundDetailsList = [
+                            { name: 'Refund Amount', value: `${data.currency_symbol} ${(data.supplier_refund_details?.refund_amount?.toFixed(2) || '0.00')}` },
+                            { name: 'Refund Date', value: data.supplier_refund_details?.refund_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.refund_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
+                            { name: 'Audit By', value: data.supplier_refund_details?.audit_by || '-'},
+                            { name: 'Audit Date', value: data.supplier_refund_details?.audit_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.audit_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-'  },
+                        ]
                         // let name1;
                         // let name2;
                         // if (this.recordList.is_refundable) {
@@ -184,12 +193,13 @@ export class AmendmentRequestEntryComponent {
                         this.titleCharge = 'Quotation'
                         this.chargesList = [
                             // { name: "Supplier Charges", value: "Pending" },
-                            { name: "Bonton Markup", value: data.b2bcharges.bonton_markup },
-                            { name: "Per Pax Refund", value: data.charges.per_person_charge },
-                            { name: "Total Refund", value: data.charges.charge },
+                            { name: "Bonton Markup", value: `${data.currency_symbol} ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
+                            { name: "Per Pax Refund", value: `${data.currency_symbol} ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
+                            { name: "Total Refund", value: `${data.currency_symbol} ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
+                            { name: "No. of Pax", value: data.pax_info.length },
                         ];
                         if (this.recordList.is_refundable) {
-                            this.chargesList.unshift({ name: 'Cancellation Charge', value: data.charges.cancellation_charge })
+                            this.chargesList.unshift({ name: 'Cancellation Charge', value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` })
                         }
 
                     }
@@ -251,7 +261,7 @@ export class AmendmentRequestEntryComponent {
     sendMail() {
         this.conformationService.open({
             title: 'Send Mail',
-            message: 'Send again quotation mail to supplier?'
+            message: 'Do you want to resend the quotation request mail to a supplier?'
         }).afterClosed().subscribe({
             next: (res) => {
                 if (res === 'confirmed') {
