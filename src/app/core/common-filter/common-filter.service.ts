@@ -37,12 +37,12 @@ export class CommonFilterService {
 
     // Get Filter Data
     getFilterData() {
-        return JSON.parse(localStorage.getItem('filterData'));
+        return JSON.parse(localStorage.getItem('filterData') || '[]');
     }
 
     // Update LocalStorage Data setFilterData
     setLocalFilterData(data: any) {
-        localStorage.setItem('filterData', JSON.stringify(data || '[]'));
+        localStorage.setItem('filterData', JSON.stringify(data || []));
         if (data && data.length) {
             let filter = data.find((item: any) => item.grid_name == this.filter_table_name);
             this.filter_grid_data = (filter || {});
@@ -89,8 +89,7 @@ export class CommonFilterService {
     applyDefaultFilter(table_name: any) {
         this.filter_table_name = table_name;
         // this.fliterTableConfig = primengTable;
-        let localFilterData = JSON.parse(localStorage.getItem('filterData'));
-
+        let localFilterData = JSON.parse(localStorage.getItem('filterData') || '[]');
         if (localFilterData && localFilterData.length) {
             let filter = localFilterData.find((item: any) => item.grid_name == table_name);
             this.filter_grid_data = (filter || {});
