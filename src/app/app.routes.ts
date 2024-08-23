@@ -118,6 +118,7 @@ export const appRoutes: Route[] = [
              {path: Routes.account.wallet_credit_path, loadChildren: () => import('app/modules/account/wallet-credit/walletcredit-list/wallet-credit.routes')},
              {path: Routes.account.withdraw_path, loadChildren: () => import('app/modules/account/withdraw/withdraw.routes')},
              {path: Routes.account.payment_path, loadChildren: () => import('app/modules/reports/account/payment-list/payment.routes')},
+             {path: Routes.account.payment_link_path, loadChildren: () => import('app/modules/account/payment-link-list/payment-link.routes')},
              {path: Routes.account.receipt_path, loadChildren: () => import('app/modules/reports/account/receipt-list/receipt.routes')},
              {path: Routes.account.agent_balance_path, loadChildren: () => import('app/modules/reports/agent-balance/agent-balance.routes')},
              {path: Routes.account.sale_path, loadChildren: () => import('app/modules/reports/sale-book/sale-book/sale.routes')},

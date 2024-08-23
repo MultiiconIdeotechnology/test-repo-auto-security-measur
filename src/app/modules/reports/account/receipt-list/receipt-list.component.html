@@ -281,7 +281,7 @@
                                 <span style="font-weight: 600">Info</span>
                             </button>
                             <button mat-menu-item (click)="AuditUnaudit(element)"
-                                *ngIf="element['receipt_status'] !== 'Confirmed'">
+                                *ngIf="element['receipt_status'] !== 'Confirmed' && element['receipt_status'] !== 'Rejected'">
                                 <mat-icon class="mat-18">{{
                                     element.is_audited
                                     ? "highlight_off"
@@ -294,7 +294,7 @@
                                     }}</span> -->
                             </button>
                             <button mat-menu-item (click)="Reject(element)"
-                                *ngIf="element['receipt_status'] !== 'Rejected'">
+                                *ngIf="element['receipt_status'] !== 'Confirmed' && element['receipt_status'] !== 'Rejected'">
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600">Reject</span>
                             </button>
@@ -314,9 +314,8 @@
                                 <span style="font-weight: 600">Invoice</span>
                             </button>
 
-                            <button mat-menu-item
-                                [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'],
-                                                            'cursor-not-allowed text-blue-400 opacity-20': !element['proof_attachment']}"
+                            <button mat-menu-item  [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 
+                                'cursor-not-allowed text-blue-400 opacity-20': !element['proof_attachment']}"
                                 (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])">
                                 <mat-icon [svgIcon]="'attach_file'" class=" mat-18 min-h-[20px] h-[20px] rounded-full"
                                     [matTooltip]="'Proof Attachment'"
@@ -327,7 +326,7 @@
 
                             <button mat-menu-item
                                 [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'],
-                                                            'cursor-not-allowed text-yellow-400 opacity-20': !element['payment_attachment']}"
+                                 'cursor-not-allowed text-yellow-400 opacity-20': !element['payment_attachment']}"
                                 (click)="!element['payment_attachment'] ? null : downloadProoffile(element['payment_attachment'])">
                                 <mat-icon [svgIcon]="'attach_file'" class="mat-18 min-h-[20px] h-[20px] rounded-full"
                                     [matTooltip]="'Receipt Attachment'"

@@ -19,7 +19,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
 import { Security, module_name, partnerPurchaseProductPermissions } from 'app/security';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -33,6 +33,7 @@ import { Subject } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
 import { ReceiptRightComponent } from "../receipt-right/receipt-right.component";
 import { PaymentInfoWLSetttingLinkComponent } from '../wl-settings-link/payment-info-wl-settings-link.component';
+import { Linq } from 'app/utils/linq';
 
 @Component({
     selector: 'app-product-info',
@@ -120,6 +121,7 @@ export class AgentProductInfoComponent {
         @Inject(MAT_DIALOG_DATA) public purchase_reg: any,
         @Inject(MAT_DIALOG_DATA) public sales_product_reg: any,
         @Inject(MAT_DIALOG_DATA) public agent_info_reg: any,
+        private router: Router,
         private alertService: ToasterService
     ) {
         // super(module_name.crmagent)
@@ -276,6 +278,11 @@ export class AgentProductInfoComponent {
         // });
 
         this.entityService.raisereceiptCall({data: this.record});
+    }
+
+    agentDetail(listingId: any){
+        Linq.recirect('/customers/agent/entry/' + listingId + '/readonly');
+       // this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
     }
 
     refreshItemsNew() {

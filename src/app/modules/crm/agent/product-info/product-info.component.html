@@ -1,10 +1,10 @@
 <div class="flex flex-col flex-auto overflow-hidden -m-6">
     <div class="flex flex-0 justify-between h-13 pr-0 sm:pr-0 pl-0 sm:pl-0">
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="sales_product_reg?.sales_product">{{title}} - {{dataList?.product_name}}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="purchase_reg?.purchase_product">{{title}} - {{record?.product_name}}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="receipt_reg?.receipt_register">{{title}} - {{dataList?.product_name }}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="account_reg?.account_receipt">{{title}} - {{dataList?.product_name }}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="agent_info_reg?.agentInfo">{{title}} - {{dataList?.product_name }}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="sales_product_reg?.sales_product" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name}}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="purchase_reg?.purchase_product" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name}}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="receipt_reg?.receipt_register" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="account_reg?.account_receipt" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }} </div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="agent_info_reg?.agentInfo" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }}</div>
 
         <div class="mt-2 mr-5">
             <!-- <div class="flex text-right justify-end items-end m-auto mt-[-14px]" *ngIf="tabName == 'Receipts'">

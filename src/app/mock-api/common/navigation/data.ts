@@ -220,7 +220,16 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'ACCOUNT_RECEIPTS_VIEW',
                 icon: 'heroicons_outline:document',
                 link: Routes.account.receipt_path
-            }
+            },
+            // Hide Payment link functionality
+            // {
+            //     id: 'reports.payment_link',
+            //     title: 'Payment Link',
+            //     type: 'basic',
+            //     pid: 'ACCOUNT_PAYMENTLINK_VIEW',
+            //     icon: 'heroicons_outline:link',
+            //     link: Routes.account.payment_link_path
+            // }
         ]
     },
     {
