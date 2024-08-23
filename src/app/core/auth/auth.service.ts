@@ -190,6 +190,7 @@ export class AuthService {
         sessionStorage.removeItem('user');
         localStorage.removeItem('permissions');
         sessionStorage.removeItem('permissions');
+        localStorage.removeItem('filterData');
 
         this._userService.user = null;
         this.user = null;

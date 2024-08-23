@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, OnDestroy, ViewChild} from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -13,7 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Security, crmLeadPermissions, module_name } from 'app/security';
+import { Security, crmLeadPermissions, filter_module_name, module_name } from 'app/security';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { AppConfig } from 'app/config/app-config';
@@ -21,6 +21,7 @@ import { TechCollectionComponent } from '../tech/tech.component';
 import { TravelCollectionComponent } from '../travel/travel.component';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-crm-collection-list',
@@ -49,10 +50,12 @@ import { AgentService } from 'app/services/agent.service';
         TravelCollectionComponent
     ],
 })
-export class CRMCollectionListComponent extends BaseListingComponent implements OnDestroy{
+export class CRMCollectionListComponent extends BaseListingComponent implements OnDestroy {
     module_name = module_name.collections;
     @ViewChild('tech') tech: TechCollectionComponent;
     @ViewChild('travel') travel: TravelCollectionComponent;
+    filter_table_name = filter_module_name;
+
     dataList = [];
     total = 0;
     public apiCalls: any = {};
@@ -66,28 +69,25 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
     _unsubscribeAll: Subject<any> = new Subject<any>();
     searchInputControlTravel = new FormControl('');
     dataListpartners = [];
-    dropdownListObj:any = {};
+    dropdownListObj: any = {};
 
     isFilterShowTech: boolean = false;
     isFilterShowTravel: boolean = false;
 
     constructor(
         private matDialog: MatDialog,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.collections)
         this.key = this.module_name;
         this.sortColumn = '';
         this.sortDirection = '';
         this.Mainmodule = this
+
     }
 
-    ngOnDestroy(): void {
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.unsubscribe();
-    }
-
-     public getTabsPermission(tab: string): boolean {
+    public getTabsPermission(tab: string): boolean {
         if (tab == 'tech') {
             return Security.hasPermission(crmLeadPermissions.techCollectionTabPermissions)
         }
@@ -115,40 +115,61 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
         //     });
 
         // calling Api for defatult value for first time to get Agent list.
-        this.getAgent('');
     }
 
-     // Function to get the agentList  from api
+    // Function to get the agentList  from api
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.dropdownListObj['agentList'] = data;
 
-            for(let i in this.dropdownListObj['agentList']){
-                this.dropdownListObj['agentList'][i]['agent_info'] = 
-                `${this.dropdownListObj['agentList'][i].code}-${this.dropdownListObj['agentList'][i].agency_name}${this.dropdownListObj['agentList'][i].email_address}`
+            for (let i in this.dropdownListObj['agentList']) {
+                this.dropdownListObj['agentList'][i]['agent_info'] =
+                    `${this.dropdownListObj['agentList'][i].code}-${this.dropdownListObj['agentList'][i].agency_name}${this.dropdownListObj['agentList'][i].email_address}`;
+                    this.dropdownListObj['agentList'][i].id_by_value = this.dropdownListObj['agentList'][i].agency_name;
             }
         })
     }
-
 
     public tabChanged(event: any): void {
         const tabName = event?.tab?.ariaLabel;
         this.tabNameStr = tabName;
         this.tabName = tabName;
+        this.isDestroy();
 
         switch (tabName) {
             case 'Tech':
+                this._filterService.applyDefaultFilter(this.filter_table_name.collections_tech);
                 this.tab = 'tech';
-                // this.tech?.refreshItems();
                 break;
 
             case 'Travel':
+                this._filterService.applyDefaultFilter(this.filter_table_name.collections_travel);
                 this.tab = 'travel';
                 if (this.isSecound) {
                     this.travel?.refreshItems()
                     this.isSecound = false;
                 }
-                break;
+            break;
+        }
+    }
+
+    isDestroy() {
+        this._filterService.activeFiltData = {};
+        this.resetPrimengTable();
+        if (this.tech.settingsTechSubscription) {
+            this.tech.settingsTechSubscription.unsubscribe();
+        }
+
+        if (this.travel.settingsTravelSubscription) {
+            this.travel.settingsTravelSubscription.unsubscribe();
+        }
+    }
+
+    openTabFiterDrawer() {
+        if (this.tabNameStr == 'Tech') {
+          this._filterService.openDrawer(this.filter_table_name.collections_tech, this.tech.primengTable);
+        } else {
+          this._filterService.openDrawer(this.filter_table_name.collections_travel, this.travel.primengTable);
         }
     }
 
@@ -167,5 +188,10 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
     travelRefresh(event:any) {
         this.travel.searchInputControlTravel.patchValue(event)
         this.travel?.refreshItems();
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.unsubscribe();
     }
 }

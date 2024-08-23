@@ -20,18 +20,20 @@
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
 
-             <!------Global Search------>
-             <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!-- Date Combo -->
-            <div class="justify-center items-center w-60">
+            <div class="justify-center items-center w-[245px]">
                 <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
                     <mat-form-field class="w-full bottom_none">
                         <mat-select name="date" [formControl]="date" #dateRange
@@ -69,13 +71,18 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
 
             <!------Refresh------>
             <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
+
 
             <!---Excel--->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="">
@@ -92,30 +99,31 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable  [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
-            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
-            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
-            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
-            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
-            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="campaign_name" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.campaign_name" [ngClass]="{'left-0': !frozenObj?.campaign_name}">
+                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="campaign_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaign_name"
+                        [ngClass]="{'left-0': !frozenObj?.campaign_name}">
                         Name <p-sortIcon field="campaign_name" />
                         <span class="float-right" (click)="isFrozenColumn('campaign_name');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.campaign_name" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.campaign_name" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th  pSortableColumn="campaign_type" pResizableColumn>
-                         Type <p-sortIcon field="campaign_type" />
+                    <th pSortableColumn="campaign_type" pResizableColumn>
+                        Type <p-sortIcon field="campaign_type" />
                     </th>
                     <th class="min-w-[120px]" pSortableColumn="campaign_code" pResizableColumn>
-                         Code <p-sortIcon field="campaign_code" />
+                        Code <p-sortIcon field="campaign_code" />
                     </th>
                     <th class="min-w-[150px]" pSortableColumn="relationship_manager_name" pResizableColumn>
                         RM <p-sortIcon field="relationship_manager_name" />
@@ -142,20 +150,20 @@
 
                 <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaign_name">
-                        <p-columnFilter type="text" matchMode="contains" field="campaign_name" placeholder="Search by Campaign Name"
-                            ariaLabel="Filter Campaign Name" />
+                        <p-columnFilter type="text" matchMode="contains" field="campaign_name"
+                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="campaign_type" placeholder="Search by Campaign Type"
-                            ariaLabel="Filter Campaign Type" />
+                        <p-columnFilter type="text" matchMode="contains" field="campaign_type"
+                            placeholder="Search by Campaign Type" ariaLabel="Filter Campaign Type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="campaign_code" placeholder="Search by Campaign Code"
-                            ariaLabel="Filter Campaign Code" />
+                        <p-columnFilter type="text" matchMode="contains" field="campaign_code"
+                            placeholder="Search by Campaign Code" ariaLabel="Filter Campaign Code" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="relationship_manager_name" placeholder="Search by RM"
-                            ariaLabel="Filter RM" />
+                        <p-columnFilter type="text" matchMode="contains" field="relationship_manager_name"
+                            placeholder="Search by RM" ariaLabel="Filter RM" />
                     </th>
 
                     <th>
@@ -164,7 +172,7 @@
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="no_of_signup" placeholder="Search by Signup"
-                        ariaLabel="Filter Signup" />
+                            ariaLabel="Filter Signup" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="turnover" placeholder="Search by Turnover"
@@ -172,7 +180,7 @@
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="tech_GP" placeholder="Search by Tech GP"
-                        ariaLabel="Filter Tech GP" />
+                            ariaLabel="Filter Tech GP" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="travel_GP" placeholder="Search by Travel GP"
@@ -192,7 +200,7 @@
                     </td>
                     <td>{{element.campaign_type || "-"}}</td>
                     <td>{{element.campaign_code || "-"}}</td>
-                    <td>{{element.relationship_manager_name == '' ?  'Any' : 'Self' }}</td>
+                    <td>{{element.relationship_manager_name == '' ? 'Any' : 'Self' }}</td>
                     <td class="text-center">{{element.leads}}</td>
                     <td class="text-center">{{element.no_of_signup}}</td>
                     <td class="text-right">
@@ -215,11 +223,16 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td class="text-center">{{dataListTotals?.total_Leads ? dataListTotals?.total_Leads.toFixed(2) : 0}}</td>
-                    <td class="text-center">{{dataListTotals?.total_Signup ? dataListTotals?.total_Signup.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_Turnover ? dataListTotals?.total_Turnover.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_TechGP ? dataListTotals?.total_TechGP.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_TravelGP ? dataListTotals?.total_TravelGP.toFixed(2) : 0}}</td>
+                    <td class="text-center">{{dataListTotals?.total_Leads ? dataListTotals?.total_Leads.toFixed(2) : 0}}
+                    </td>
+                    <td class="text-center">{{dataListTotals?.total_Signup ? dataListTotals?.total_Signup.toFixed(2) :
+                        0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_Turnover ? dataListTotals?.total_Turnover.toFixed(2)
+                        : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_TechGP ? dataListTotals?.total_TechGP.toFixed(2) :
+                        0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_TravelGP ? dataListTotals?.total_TravelGP.toFixed(2)
+                        : 0}}</td>
                     <td class="text-right">{{dataListTotals?.total_GP ? dataListTotals?.total_GP.toFixed(2) : 0}}</td>
                 </tr>
             </ng-template>

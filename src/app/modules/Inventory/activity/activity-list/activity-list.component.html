@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -25,7 +27,13 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()" matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -50,8 +58,9 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[165px] dark:bg-[#1e293b]" pSortableColumn="activity_name" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.activity_name" [ngClass]="{'left-0': !frozenObj?.activity_name}">
+                    <th class="min-w-[165px] dark:bg-[#1e293b]" pSortableColumn="activity_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity_name"
+                        [ngClass]="{'left-0': !frozenObj?.activity_name}">
                         Activity <p-sortIcon field="activity_name" />
                         <span class="float-right" (click)="isFrozenColumn('activity_name');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.activity_name" class="pi pi-lock-open icon-size-3"></i>
@@ -82,8 +91,8 @@
                 <tr *ngIf="isFilterShow">
                     <th class=" left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity_name">
-                        <p-columnFilter type="text" matchMode="contains" field="activity_name" placeholder="Search by City"
-                            ariaLabel="Filter City" />
+                        <p-columnFilter type="text" matchMode="contains" field="activity_name"
+                            placeholder="Search by City" ariaLabel="Filter City" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="city_name" placeholder="Search by State"
@@ -93,13 +102,9 @@
                     <th>
                         <p-columnFilter field="is_ticket_required" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
-                                            [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Ticket" 
-                                             appendTo="body"
-                                            [showClear]="true">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                    (onChange)="filter($event.value)" placeholder="Select Ticket" appendTo="body"
+                                    [showClear]="true">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
                                     </ng-template>
@@ -111,13 +116,9 @@
                     <th>
                         <p-columnFilter field="is_sightseeing_combo" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
-                                            [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Combo" 
-                                             appendTo="body"
-                                            [showClear]="true">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                    (onChange)="filter($event.value)" placeholder="Select Combo" appendTo="body"
+                                    [showClear]="true">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
                                     </ng-template>
@@ -127,19 +128,15 @@
                     </th>
 
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="preferred_time" placeholder="Search by Preferred Time"
-                            ariaLabel="Filter Preferred Time" />
+                        <p-columnFilter type="text" matchMode="contains" field="preferred_time"
+                            placeholder="Search by Preferred Time" ariaLabel="Filter Preferred Time" />
                     </th>
                     <th>
                         <p-columnFilter field="is_meal_included" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
-                                            [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Meal" 
-                                             appendTo="body"
-                                            [showClear]="true">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                    (onChange)="filter($event.value)" placeholder="Select Meal" appendTo="body"
+                                    [showClear]="true">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
                                     </ng-template>
@@ -150,8 +147,8 @@
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body" 
-                                    placeholder="Search by Entry">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -194,29 +191,30 @@
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity_name">
                         <div class="gap-2 flex flex-ListItem items-center">
-                        <div class="cursor-pointer" *ngIf="element.activity_name" [matTooltip]="element.is_audited ? 'Audited' : 'Unaudited'"
-                            class="w-2 h-2 rounded-full" [ngClass]="element.is_audited ? 'bg-green-500' : 'bg-red-500'">
+                            <div class="cursor-pointer" *ngIf="element.activity_name"
+                                [matTooltip]="element.is_audited ? 'Audited' : 'Unaudited'" class="w-2 h-2 rounded-full"
+                                [ngClass]="element.is_audited ? 'bg-green-500' : 'bg-red-500'">
+                            </div>
+                            <div>
+                                {{element.activity_name}}
+                            </div>
                         </div>
-                        <div>
-                            {{element.activity_name}}
-                        </div>
-                    </div>
                     </td>
                     <td>{{element.city_name}}</td>
                     <td class="text-center">
-                            <mat-icon class="text-green-600" *ngIf="element.is_ticket_required">done</mat-icon>
-                            <mat-icon class="text-red-600" *ngIf="!element.is_ticket_required">clear</mat-icon>
+                        <mat-icon class="text-green-600" *ngIf="element.is_ticket_required">done</mat-icon>
+                        <mat-icon class="text-red-600" *ngIf="!element.is_ticket_required">clear</mat-icon>
                     </td>
                     <td class="text-center">
-                            <mat-icon class="text-green-600" *ngIf="element.is_sightseeing_combo">done</mat-icon>
-                            <mat-icon class="text-red-600" *ngIf="!element.is_sightseeing_combo">clear</mat-icon>
+                        <mat-icon class="text-green-600" *ngIf="element.is_sightseeing_combo">done</mat-icon>
+                        <mat-icon class="text-red-600" *ngIf="!element.is_sightseeing_combo">clear</mat-icon>
                     </td>
                     <td>
                         {{element.preferred_time}}
                     </td>
                     <td class="text-center">
-                            <mat-icon class="text-green-600" *ngIf="element.is_meal_included">done</mat-icon>
-                            <mat-icon class="text-red-600" *ngIf="!element.is_meal_included">clear</mat-icon>
+                        <mat-icon class="text-green-600" *ngIf="element.is_meal_included">done</mat-icon>
+                        <mat-icon class="text-red-600" *ngIf="!element.is_meal_included">clear</mat-icon>
                     </td>
                     <td>
                         {{element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss'}}

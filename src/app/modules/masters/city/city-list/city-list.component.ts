@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { Security, cityPermissions, messages, module_name, filter_module_name } from 'app/security';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
@@ -42,6 +43,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatDialogModule,
         MatDividerModule,
         FormsModule,
+        MatTooltipModule,
         PrimeNgImportsModule,
         CommonFilterComponent
     ],
@@ -53,71 +55,11 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     total = 0;
     user: any;
     is_first: any;
-
-    columns = [
-        {
-            key: 'city_name',
-            name: 'City',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'state_name',
-            name: 'State',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'country',
-            name: 'Country',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'display_name',
-            name: 'Display Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'gst_state_code',
-            name: 'GST State Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
+    cols: Column[] = [
+        { field: 'gst_state_code', header: 'GST State Code' },
+        { field: 'country_code', header: 'Country Code' },
+        { field: 'mobile_code', header: 'Mobile Code' },
     ];
-
-    cols: Column[];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     private settingsUpdatedSubscription: Subscription;
@@ -131,23 +73,33 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
         public _filterService: CommonFilterService
     ) {
         super(module_name.city);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'country';
-        this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'gst_state_code', header: 'GST State Code'},
-            { field: 'country_code', header: 'Country Code' },
-            { field: 'mobile_code', header: 'Mobile Code' },
-        ];
-
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            console.log("resp city", resp);
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.primengTable._filter();
         });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+        }
     }
 
     get selectedColumns(): Column[] {
@@ -155,7 +107,13 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -319,7 +277,8 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
 
     ngOnDestroy() {
         if (this.settingsUpdatedSubscription) {
-          this.settingsUpdatedSubscription.unsubscribe();
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
         }
     }
 }

@@ -16,8 +16,10 @@
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!-- Column Filter -->
@@ -25,6 +27,13 @@
                 [disabled]="isLoading" (click)="this.isFilterShow = !this.isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -37,15 +46,17 @@
                     [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
             </p-overlayPanel>
 
-            <button class="ml-4" mat-flat-button [disabled]="isLoading" (click)="refreshItems()" [color]="'primary'">
+            <!-- Refresh items -->
+            <button class="ml-4" mat-flat-button [disabled]="isLoading" (click)="refreshItems()" [color]="'primary'"
+                matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
             <!-- Modal Filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
-            </button>
+            </button> -->
 
             <!-- Excel -->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
@@ -150,9 +161,8 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList"
                                     [(ngModel)]="selectedEmployee" optionLabel="employee_name" [filter]="true"
-                                    filterBy="employee_name" (onFilter)="getRelationManagerList($event?.filter)"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
-                                    placeholder="Select a RM">
+                                    filterBy="employee_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select a RM">
                                     <ng-template let-employee pTemplate="item">
                                         <div class="flex align-items-center gap-2">
                                             <div [value]="employee.id">{{ employee.employee_name }}</div>
@@ -176,8 +186,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="currencyListAll"
                                     [(ngModel)]="selectedCurrency" optionLabel="currency_short_code" [filter]="true"
-                                    filterBy="currency_short_code"
-                                    (onChange)="filter($event.value?.currency_short_code)" [showClear]="true"
+                                    filterBy="currency_short_code" (onChange)="filter($event.value)" [showClear]="true"
                                     appendTo="body" placeholder="Select a Currency">
                                     <ng-template let-currency pTemplate="item">
                                         <div class="flex align-items-center gap-2">
@@ -232,7 +241,7 @@
                     </th> -->
 
 
-                        <p-columnFilter *ngIf="col.field == 'is_blocked'" field="is_blocked" matchMode="equals"
+                        <p-columnFilter *ngIf="col.field == 'is_blocked'" field="is_blocked" matchMode="contains"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="blockList"
@@ -245,19 +254,19 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <p-columnFilter *ngIf="col.field == 'pan_number'" type="text" field="pan_number"
+                        <p-columnFilter *ngIf="col.field == 'pan_number'" matchMode="contains" type="text" field="pan_number"
                             placeholder="Search by PAN Number" ariaLabel="Filter PAN Number" />
 
-                        <p-columnFilter *ngIf="col.field == 'gst_number'" type="text" field="gst_number"
+                        <p-columnFilter *ngIf="col.field == 'gst_number'" type="text" matchMode="contains" field="gst_number"
                             placeholder="Search by GST Number" ariaLabel="Filter GST Number" />
 
                         <p-columnFilter class="searchableDropdown" *ngIf="col.field == 'markup_profile_name'"
                             field="markup_id_filter" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="markupList"
-                                    [(ngModel)]="selectedEmployee" optionLabel="profile_name" [filter]="true"
+                                    [(ngModel)]="selectedMarkup" optionLabel="profile_name" [filter]="true"
                                     filterBy="profile_name" (onFilter)="getMarkupProfileList($event?.filter)"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Markup Profile">
                                     <ng-template let-employee pTemplate="item">
                                         <div class="flex align-items-center gap-2">
@@ -273,7 +282,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="kycListAll" optionLabel="profile_name"
                                     [filter]="true" filterBy="profile_name" [(ngModel)]="selectedKycProfile"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Kyc Profile">
                                     <ng-template let-currency pTemplate="item">
                                         <div class="flex align-items-center gap-2">

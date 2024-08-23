@@ -1,6 +1,6 @@
 import { Routes } from 'app/common/const';
 import { Router } from '@angular/router';
-import { Security, agentsPermissions, messages, module_name } from 'app/security';
+import { Security, agentsPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { Component } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -41,16 +41,13 @@ import { MarkupprofileService } from 'app/services/markupprofile.service';
 import { KycService } from 'app/services/kyc.service';
 import { EntityService } from 'app/services/entity.service';
 import { ChangeEmailNumberComponent } from '../sub-agent/change-email-number/change-email-number.component';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-agent-list',
     templateUrl: './agent-list.component.html',
-    styles: [`
-  .tbl-grid {
-    grid-template-columns:  40px 110px 250px 100px 250px 150px 120px 120px 100px 200px 200px 120px 170px;
-  }
-  `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -73,7 +70,9 @@ import { ChangeEmailNumberComponent } from '../sub-agent/change-email-number/cha
     ]
 })
 export class AgentListComponent extends BaseListingComponent {
-    module_name = module_name.agent
+    module_name = module_name.agent;
+    filter_table_name = filter_module_name.agent_customer;
+    private settingsUpdatedSubscription: Subscription;
     agentFilter: any;
     user: any = {};
     dataList = [];
@@ -85,21 +84,18 @@ export class AgentListComponent extends BaseListingComponent {
         { label: 'No', value: false }
     ];
 
-    columns = [
-        { key: 'agent_code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, is_fixed: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: false },
-        { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'pan_number', name: 'PAN Number', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'gst_number', name: 'GST Number', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'base_currency', name: 'Currency', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'relation_manager_name', name: 'Relationship Manager ', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'city_name', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'web_last_login_time', name: 'Last Login', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'entry_date_time', name: 'Signup', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
-    cols = [];
+    cols: Column[] = [
+        { field: 'is_blocked', header: 'Blocked' },
+        { field: 'pan_number', header: 'PAN Number' },
+        { field: 'gst_number', header: 'GST Number' },
+        { field: 'markup_profile_name', header: 'Markup Profile' },
+        { field: 'kyc_profile_name', header: 'KYC Profile' },
+        { field: 'balance', header: 'Balance' },
+        { field: 'web_last_login_time', header: 'Last Login' },
+        { field: 'is_wl', header: 'WL' },
+        { field: 'is_test', header: 'Read Only' },
+        { field: 'subagent_count', header: 'Sub Agent Count' },
+    ];
 
     // statusList = ['All', 'New', 'Active','Inactive','Dormant',];
 
@@ -116,14 +112,15 @@ export class AgentListComponent extends BaseListingComponent {
     //     { label: 'Unblocked', value: 'Unblocked' },
     // ]
     cityList: any[] = [];
-    selectedCurrency: string;
+    selectedCurrency: any;
     selectedCity: string;
     currencyListAll: any[] = [];
     kycListAll: any[] = [];
     employeeList: any[] = [];
     markupList: any[] = [];
-    selectedEmployee: string | undefined;
-    selectedKycProfile!: string
+    selectedEmployee: any = {};
+    selectedKycProfile:any = {};
+    selectedMarkup: any = {};
 
     constructor(
         private agentService: AgentService,
@@ -137,12 +134,16 @@ export class AgentListComponent extends BaseListingComponent {
         private markupprofileService: MarkupprofileService,
         private employeeService: EmployeeService,
         private router: Router,
+        public _filterService: CommonFilterService
+
     ) {
         super(module_name.agent)
-        // this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
+
         this.sortColumn = 'entry_date_time';
-        this.Mainmodule = this
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.agentFilter = {
             relationmanagerId: '',
@@ -168,18 +169,22 @@ export class AgentListComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'is_blocked', header: 'Blocked' },
-            { field: 'pan_number', header: 'PAN Number' },
-            { field: 'gst_number', header: 'GST Number' },
-            { field: 'markup_profile_name', header: 'Markup Profile' },
-            { field: 'kyc_profile_name', header: 'KYC Profile' },
-            { field: 'balance', header: 'Balance' },
-            { field: 'web_last_login_time', header: 'Last Login' },
-            { field: 'is_wl', header: 'WL' },
-            { field: 'is_test', header: 'Read Only' },
-            { field: 'subagent_count', header: 'Sub Agent Count' },
-        ];
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedEmployee = resp['table_config']['rm_id_filters']?.value;
+            this.selectedCurrency = resp['table_config']['currency']?.value;
+            this.selectedKycProfile = resp['table_config']['kyc_id_fliters']?.value;
+            this.selectedMarkup = resp['table_config']['markup_id_filter']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['entry_date_time'].value){
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
 
         //filter api
         this.getCityList("");
@@ -187,6 +192,27 @@ export class AgentListComponent extends BaseListingComponent {
         this.getKycList();
         this.getRelationManagerList("");
         this.getMarkupProfileList("");
+    }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
+            this.selectedCurrency = filterData['table_config']['currency'].value || {};
+            this.selectedKycProfile = filterData['table_config']['kyc_id_fliters']?.value || {};
+            this.selectedMarkup = filterData['table_config']['markup_id_filter']?.value || {};
+            const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
+            if(!match) {
+                this.employeeList.push(this.selectedEmployee);
+            }
+            if(filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
     }
 
     //  cityList Api
@@ -200,6 +226,10 @@ export class AgentListComponent extends BaseListingComponent {
     getCurrencyList() {
         this.currencyService.getcurrencyCombo().subscribe((data) => {
             this.currencyListAll = data;
+
+            for(let i in this.currencyListAll){
+                this.currencyListAll[i].id_by_value = this.currencyListAll[i].currency_short_code;
+            }
         })
     }
 
@@ -258,7 +288,13 @@ export class AgentListComponent extends BaseListingComponent {
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     getFilter(): any {
@@ -772,10 +808,6 @@ export class AgentListComponent extends BaseListingComponent {
         else return 'No data to display';
     }
 
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this)
-    }
-
     delete(record): void {
 
         if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
@@ -818,5 +850,14 @@ export class AgentListComponent extends BaseListingComponent {
                     });
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

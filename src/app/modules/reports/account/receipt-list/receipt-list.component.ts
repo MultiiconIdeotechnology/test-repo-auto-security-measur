@@ -24,6 +24,7 @@ import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import {
     Security,
+    filter_module_name,
     messages,
     module_name,
     receiptPermissions,
@@ -46,6 +47,8 @@ import { CommonUtils } from 'app/utils/commonutils';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-receipt-list',
@@ -85,10 +88,13 @@ import { AgentService } from 'app/services/agent.service';
         PrimeNgImportsModule
     ],
 })
+
 export class ReceiptListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.receipts;
+    filter_table_name = filter_module_name.account_receipts;
+    private settingsUpdatedSubscription: Subscription;
     isLoading = false;
     flashMessage: 'success' | 'error' | null = null;
     dataList = [];
@@ -110,7 +116,8 @@ export class ReceiptListComponent
         private matDialog: MatDialog,
         private conformationService: FuseConfirmationService,
         private toasterService: ToasterService,
-        private kycdocService: KycDocumentService
+        private kycdocService: KycDocumentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.receipts);
 
@@ -118,6 +125,7 @@ export class ReceiptListComponent
         this.sortColumn = 'receipt_request_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.currentFilter = {
             status: 'All',
@@ -131,199 +139,8 @@ export class ReceiptListComponent
         );
     }
 
-    selectedAgent:string;
+    selectedAgent: any;
     agentList: any[] = [];
-    columns = [
-        {
-            key: 'index',
-            name: 'Invoice',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: 'header-right-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            isicon: true,
-            is_fixed: true
-        },
-        { key: 'payment_attachment', name: 'Attachments', is_date: false, date_formate: '', is_sortable: false, class: 'justify-center', is_sticky: true, indicator: false, is_boolean: false, tooltip: true, isicon: false, is_fixed2: true, indicator1: true },
-        { key: 'receipt_ref_no', name: 'Reference No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: true, indicator: true, is_boolean: false, tooltip: true, isicon: false, is_fixed3: true },
-        { key: 'receipt_status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, iscolor: true, isicon: false },
-        // {
-        //     key: 'receipt_ref_no',
-        //     name: 'Reference No.',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: true,
-        //     indicator: true,
-        //     is_boolean: false,
-        //     tooltip: false,
-        //     isicon: false,
-        // },
-        // {
-        //     key: 'receipt_status',
-        //     name: 'Status',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     indicator: false,
-        //     is_boolean: false,
-        //     tooltip: false,
-        //     iscolor: true,
-        //     isicon: false,
-        // },
-        {
-            key: 'service_for',
-            name: 'Receipt For',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'transaction_ref_no',
-            name: 'Booking Ref. No',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: true,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-            toBooking: true,
-        },
-        {
-            key: 'payment_currency',
-            name: 'Currency',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: true,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'payment_amount',
-            name: 'Amount',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'roe',
-            name: 'ROE',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'mode_of_payment',
-            name: 'MOP',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'receipt_request_date',
-            name: 'Request',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'audit_date_time',
-            name: 'Audit',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'agent_name',
-            name: 'Agent',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: true,
-            isicon: false,
-            toAgent: true,
-        },
-        {
-            key: 'pg_name',
-            name: 'PG',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-        {
-            key: 'pg_payment_ref_no',
-            name: 'PG Ref.No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            indicator: false,
-            is_boolean: false,
-            tooltip: false,
-            isicon: false,
-        },
-    ];
     cols = [];
     selectedStatus: string;
 
@@ -335,6 +152,46 @@ export class ReceiptListComponent
 
     ngOnInit(): void {
         this.getAgent('');
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+              const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+              if (!match) {
+                this.agentList.push(this.selectedAgent);
+              }
+          }
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
+            }
+            if (resp['table_config']['audit_date_time'].value) {
+                resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
+            }
+            if (filterData['table_config']['audit_date_time'].value) {
+                filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     // function to get the Agent list from api
@@ -342,8 +199,16 @@ export class ReceiptListComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
+
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -586,7 +451,7 @@ export class ReceiptListComponent
                 this.isLoading = false;
                 if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
-                        this.isFrozenColumn('', ['index', 'payment_attachment','receipt_ref_no']);
+                        this.isFrozenColumn('', ['index', 'payment_attachment', 'receipt_ref_no']);
                     }, 200);
                 }
             },
@@ -715,5 +580,13 @@ export class ReceiptListComponent
                 this.alertService.showToast('error', err);
             }
         })
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

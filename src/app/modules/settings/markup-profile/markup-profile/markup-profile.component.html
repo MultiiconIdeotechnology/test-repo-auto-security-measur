@@ -25,8 +25,15 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                 (click)="_filterService.openDrawer(filter_table_name, primengTable)"
+                 matTooltip="Saved Filter">
+                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()" matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -48,7 +55,7 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['profile_name', 'company_name']"
             styleClass="p-datatable-gridlines p-datatable-sm">
-    
+
             <ng-template pTemplate="header">
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
@@ -67,7 +74,7 @@
                         Applied On
                     </th>
                 </tr>
-    
+
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.profile_name">
@@ -81,7 +88,7 @@
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
                                         [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
-                                        (onChange)="filter($event.value?.company_name)"
+                                        (onChange)="filter($event.value)"
                                         [showClear]="true" appendTo="body" placeholder="Select Company">
                                         <ng-template let-company pTemplate="item">
                                                 <div> {{company.company_name}}</div>
@@ -93,14 +100,14 @@
                     <th></th>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="body" let-element>
                 <tr>
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
-    
+
                         <mat-menu #optionMenu>
                             <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
@@ -136,7 +143,7 @@
                     </td>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
                     <td colspan="4" class="text-center font-semibold text-lg">

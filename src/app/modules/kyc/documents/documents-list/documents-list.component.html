@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,13 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -42,10 +51,10 @@
             </button>
 
             <!---- Modal Filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filterDialog()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filterDialog()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
-            </button>
+            </button> -->
 
             <!--- Add  -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
@@ -69,9 +78,9 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th  class="min-w-[145px] text-center dark:bg-[#1e293b]" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.file_url" [ngClass]="{'left-0': !frozenObj?.file_url}">
-                        Document 
+                    <th class="min-w-[145px] text-center dark:bg-[#1e293b]" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.file_url" [ngClass]="{'left-0': !frozenObj?.file_url}">
+                        Document
                         <span class="float-right" (click)="isFrozenColumn('file_url');$event.stopPropagation()">
                             <i *ngIf="frozenObj?.file_url" class="pi pi-lock icon-size-3"></i>
                             <i *ngIf="!frozenObj?.file_url" class="pi pi-lock-open icon-size-3"></i>
@@ -113,7 +122,8 @@
                         <p-columnFilter field="document_of" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="selectMasterList"
-                                    (onChange)="filter($event.value)" placeholder="Select Document Of" [showClear]="true" appendTo="body">
+                                    (onChange)="filter($event.value)" placeholder="Select Document Of"
+                                    [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -125,7 +135,8 @@
                         <p-columnFilter field="status_filter" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true" appendTo="body">
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                    appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -134,27 +145,22 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="document_user_name" placeholder="Search by Particular"
-                            ariaLabel="Filter Particular" />
-                            
+                        <p-columnFilter type="text" matchMode="contains" field="document_user_name"
+                            placeholder="Search by Particular" ariaLabel="Filter Particular" />
+
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="kyc_profile_name" placeholder="Search by Profile"
-                            ariaLabel="Filter Profile" />
+                        <p-columnFilter type="text" matchMode="contains" field="kyc_profile_name"
+                            placeholder="Search by Profile" ariaLabel="Filter Profile" />
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown"  field="kyc_profile_doc_name" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="kyc_profile_doc_name" matchMode="equals"
+                            [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                    [options]="documentList"
-                                    [(ngModel)]="selectedDocument"
-                                    optionLabel="document_name"
-                                    [filter]="true"
-                                    filterBy="document_name"
-                                    (onChange)="filter($event.value?.document_name)"
-                                    [showClear]="true"
-                                    appendTo="body"
-                                    placeholder="Select a Document">
+                                <p-dropdown class="filter-dropdown" [options]="documentList"
+                                    [(ngModel)]="selectedDocument" optionLabel="document_name" [filter]="true"
+                                    filterBy="document_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select a Document">
                                     <ng-template let-doc pTemplate="item">
                                         <div class="flex align-items-center gap-2">
                                             <div [value]="doc.document_name">{{ doc.document_name }}</div>
@@ -165,27 +171,28 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="audit_by_name" placeholder="Search by Audited By"
-                            ariaLabel="Filter Audited By" />
+                        <p-columnFilter type="text" matchMode="contains" field="audit_by_name"
+                            placeholder="Search by Audited By" ariaLabel="Filter Audited By" />
                     </th>
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Upload">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Upload">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
                     </th>
 
                     <th *ngFor="let col of columns">
-                        <p-columnFilter *ngIf="col.type != 'date'" [matchMode]="col.type == 'text' ? 'contains': ''" [type]="col.type" [field]="col.field" [placeholder]="'Search by '+ col.header"
-                        [ariaLabel]="'Filter '+ col.header" />
+                        <p-columnFilter *ngIf="col.type != 'date'" [matchMode]="col.type == 'text' ? 'contains': ''"
+                            [type]="col.type" [field]="col.field" [placeholder]="'Search by '+ col.header"
+                            [ariaLabel]="'Filter '+ col.header" />
 
                         <p-columnFilter *ngIf="col.type == 'date'" [field]="col.field" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    [placeholder]="'Search by '+ col.header">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" [placeholder]="'Search by '+ col.header">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -217,26 +224,24 @@
                     </td>
                     <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.file_url">
                         <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                        class="rounded-full cursor-pointer text-blue-600 p-0.5"
-                        (click)="downloadfile(element['file_url'])"
-                        [matTooltip]="'Download'"></mat-icon>
+                            class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                            (click)="downloadfile(element['file_url'])" [matTooltip]="'Download'"></mat-icon>
                     </td>
                     <td>
                         {{element.document_of || "-"}}
                     </td>
                     <td>
                         <div *ngIf="element['is_audited']" class="flex items-center cursor-pointer"
-                        [matTooltip]="'Audit'">
-                        <div class="text-green-600">Audited</div>
+                            [matTooltip]="'Audit'">
+                            <div class="text-green-600">Audited</div>
                         </div>
 
-                        <div *ngIf="!element['is_audited'] && !element['is_rejected']" 
-                                class="flex items-center cursor-pointer" [matTooltip]="'Pending'">
+                        <div *ngIf="!element['is_audited'] && !element['is_rejected']"
+                            class="flex items-center cursor-pointer" [matTooltip]="'Pending'">
                             <div class="text-orange-500">Audit Pending</div>
                         </div>
 
-                        <div *ngIf="element['is_rejected']"
-                            class="flex items-center cursor-pointer">
+                        <div *ngIf="element['is_rejected']" class="flex items-center cursor-pointer">
                             <div class="flex items-center space-x-1">
                                 <mat-icon class="icon-size-4" svgIcon="mat_outline:info"
                                     [matTooltip]="element['rejection_note']"></mat-icon>
@@ -249,7 +254,7 @@
                     <td>{{element.kyc_profile_doc_name || "-"}}</td>
                     <td>{{element.audit_by_name || "-"}}</td>
                     <td>{{(element.entry_date_time | date: "dd-MM-yyyy HH:mm:ss") || "-"}}</td>
-                    
+
                     <td *ngFor="let col of columns">
                         <ng-container *ngIf="col.field == 'reject_date_time'; else noDate">
                             {{(element.reject_date_time | date: "dd-MM-yyyy HH:mm:ss") || "-"}}

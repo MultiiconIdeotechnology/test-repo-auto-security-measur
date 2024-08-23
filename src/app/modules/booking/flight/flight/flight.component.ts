@@ -10,43 +10,37 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, bookingsFlightPermissions, messages, module_name } from 'app/security';
+import { Security, bookingsFlightPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Excel } from 'app/utils/export/excel';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { Linq } from 'app/utils/linq';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { FlightFilterComponent } from './flight-filter/flight-filter.component';
 import { MarkuppriceInfoComponent } from './markupprice-info/markupprice-info.component';
 import { ImportPnrComponent } from './import-pnr/import-pnr.component';
-import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { ToasterService } from 'app/services/toaster.service';
 import { StatusUpdateComponent } from './status-update/status-update.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
     selector: 'app-flight',
     templateUrl: './flight.component.html',
     styleUrls: ['./flight.component.scss'],
-    styles: [`
-    .tbl-grid {
-      grid-template-columns:  40px 240px 170px 170px 130px 130px 150px 140px 140px 120px 100px 300px 90px 90px 180px 120px 140px 120px 170px 150px 140px 140px 141px;
-    }
-    `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -58,9 +52,6 @@ import { AgentService } from 'app/services/agent.service';
         MatFormFieldModule,
         MatIconModule,
         MatMenuModule,
-        MatTableModule,
-        MatSortModule,
-        MatPaginatorModule,
         MatInputModule,
         MatButtonModule,
         MatTooltipModule,
@@ -78,11 +69,13 @@ import { AgentService } from 'app/services/agent.service';
 export class FlightComponent extends BaseListingComponent {
     flightFilter: any;
     module_name = module_name.flight;
+    filter_table_name = filter_module_name.flight_booking;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
-    agentList:any[] = [];
-    airportFromList:any[] = [];
-    airportToList:any[] = [];
-    supplierList:any[] = [];
+    agentList: any[] = [];
+    airportFromList: any[] = [];
+    airportToList: any[] = [];
+    supplierList: any[] = [];
     total = 0;
     isFilterShow: boolean = false;
     _selectedColumns: Column[];
@@ -91,309 +84,11 @@ export class FlightComponent extends BaseListingComponent {
     public endDate = new FormControl();
     public StartDate: any;
     public EndDate: any;
-
-    columns = [
-        {
-            key: 'booking_ref_no',
-            name: 'Reference No.',
-            is_date: false,
-            is_fixed: true,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            applied: false,
-            toBooking: true,
-            tooltip: false
-        },
-        {
-            key: 'status',
-            name: 'Status',
-            is_date: false,
-            is_fixed2: true,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            applied: false,
-            toColor: true,
-            tooltip: true
-        },
-        {
-            key: 'bookingDate',
-            name: 'Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'pnr',
-            name: 'PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: true,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'gds_pnr',
-            name: 'GDS PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: true,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'supplier_name',
-            name: 'Supplier',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: true,
-            applied: false,
-            tooltip: true
-        },
-         {
-            key: 'operating_carrier',
-            name: 'Carrier',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: true,
-            applied: false,
-            tooltip: true
-        },
-        {
-            key: 'purchase_price',
-            name: 'Purchase Price',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-view-center',
-            is_sticky: false,
-            align: 'center',
-            indicator: true,
-            applied: false,
-            tooltip: true
-        },
-
-        {
-            key: 'user_type',
-            name: 'Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'mop',
-            name: 'MOP',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'agent_name',
-            name: 'Agent',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: true,
-            applied: false,
-            tooltip: true
-        },
-        {
-            key: 'from_airport_code',
-            name: 'From',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'to_airport_code',
-            name: 'To',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'travelDate',
-            name: 'Travel Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'tripType',
-            name: 'Trip Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            toFlight: false,
-            tooltip: false
-        },
-        {
-            key: 'cabin',
-            name: 'Cabin',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'device',
-            name: 'Device',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'supplier_ref_no',
-            name: 'Supplier Ref. No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: true,
-            copyClick: true
-        },
-        {
-            key: 'payment_gateway_name',
-            name: 'PG',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'travelType',
-            name: 'Travel Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-        {
-            key: 'is_manual_entry',
-            name: 'Booking From',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false,
-            is_from: true,
-        },
-        {
-            key: 'ipAddress',
-            name: 'IP Address',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            applied: false,
-            tooltip: false
-        },
-
-    ];
     cols = [];
-    selectedToAirport:string;
-    selectedFromAirport:string;
-    selectedSupplier:string;
-    selectedAgent:string;
+    selectedToAirport: any;
+    selectedFromAirport: any;
+    selectedSupplier: any;
+    selectedAgent: any;
     statusList = [
         { label: 'Pending', value: 'Pending' },
         { label: 'Rejected', value: 'Rejected' },
@@ -408,9 +103,9 @@ export class FlightComponent extends BaseListingComponent {
         { label: 'Hold', value: 'Hold' }
     ];
 
-    bookingFromList:any = [
-        {label:'Online', value: false},
-        {label:'Import', value: true}
+    bookingFromList: any = [
+        { label: 'Online', value: false },
+        { label: 'Import', value: true }
     ]
     // clipboard: any;
     // toastr: any;
@@ -422,14 +117,15 @@ export class FlightComponent extends BaseListingComponent {
         private toastr: ToasterService,
         private agentService: AgentService,
         private clipboard: Clipboard,
-        private router: Router
+        private router: Router,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.flight);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'bookingDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.flightFilter = {
             fromCity: '',
@@ -440,30 +136,85 @@ export class FlightComponent extends BaseListingComponent {
             supplier_id: [{
                 "id": "all",
                 "company_name": "All"
-              }],
+            }],
             FromDate: new Date(),
             ToDate: new Date(),
         };
         this.flightFilter.FromDate.setDate(1);
-        this.flightFilter.FromDate.setMonth(this.flightFilter.FromDate.getMonth()-3);
+        this.flightFilter.FromDate.setMonth(this.flightFilter.FromDate.getMonth() - 3);
     }
 
     ngOnInit() {
 
         this.getAgentList("", true);
         this.getAirportFromList("");
+        this.getAirportToList("");
         this.getSupplierList();
 
-        this.cols = [
-            // { field: 'visa_type', header: 'Visa Type', isDate: false },
-            // { field: 'length_of_stay', header: 'Length of Stay', isDate: false },
-            // { field: 'customer_name', header: 'Customer Name', isDate: false },
-            // { field: 'payment_request_time', header: 'Payment Request Time', isDate: true },
-            // { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true },
-            // { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false },
-            // { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false },
-        ];
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+            this.selectedSupplier = resp['table_config']['supplier_name']?.value;
+            this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
+            this.selectedToAirport = resp['table_config']['to_id_filtres']?.value;
 
+
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            if (this.selectedFromAirport && this.selectedFromAirport.id) {
+                const match = this.airportFromList.find((item: any) => item.id == this.selectedFromAirport?.id);
+                if (!match) {
+                    this.airportFromList.push(this.selectedFromAirport);
+                }
+            }
+
+            if (this.selectedToAirport && this.selectedToAirport.id) {
+                const match = this.airportToList.find((item: any) => item.id == this.selectedToAirport?.id);
+                if (!match) {
+                    this.airportToList.push(this.selectedToAirport);
+                }
+            }
+
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+            }
+            if (resp['table_config']['travelDate'].value) {
+                resp['table_config']['travelDate'].value = new Date(resp['table_config']['travelDate'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            this.selectedSupplier = filterData['table_config']['supplier_name']?.value;
+            this.selectedFromAirport = filterData['table_config']['from_id_filtres']?.value;
+            this.selectedToAirport = filterData['table_config']['to_id_filtres']?.value;
+
+            if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+            }
+            if (filterData['table_config']['travelDate'].value) {
+                filterData['table_config']['travelDate'].value = new Date(filterData['table_config']['travelDate'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     // get selectedColumns(): Column[] {
@@ -471,8 +222,14 @@ export class FlightComponent extends BaseListingComponent {
     // }
 
     // set selectedColumns(val: Column[]) {
-    //     this._selectedColumns = this.cols.filter((col) => val.includes(col));
-    // }
+    //     if (Array.isArray(val)) {
+    //       this._selectedColumns = this.cols.filter(col =>
+    //         val.some(selectedCol => selectedCol.field === col.field)
+    //       );
+    //     } else {
+    //       this._selectedColumns = [];
+    //     }
+    //   }
 
     copy(link) {
         this.clipboard.copy(link);
@@ -481,17 +238,13 @@ export class FlightComponent extends BaseListingComponent {
 
     getFilter(): any {
         const filterReq = {};
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sort,
-        //     this.searchInputControl.value
-        // );
-
-        filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = '';
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['agent_for'] = this.flightFilter?.agent_for;
         filterReq['agent_id'] = this.flightFilter?.agent_id?.id || '';
-        filterReq['from'] = this.flightFilter?.fromCity?.id == 'All' ? '' : this.flightFilter?.fromCity?.id ;
+        filterReq['from'] = this.flightFilter?.fromCity?.id == 'All' ? '' : this.flightFilter?.fromCity?.id;
         filterReq['to'] = this.flightFilter?.toCity?.id == 'All' ? '' : this.flightFilter?.toCity?.id;
         filterReq['supplier_id'] = this.flightFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? '' : this.flightFilter?.supplier_id?.map(x => x.id).join(',');
         // filterReq['status'] = this.flightFilter?.status == 'All' ? '' : this.flightFilter?.status;
@@ -500,17 +253,17 @@ export class FlightComponent extends BaseListingComponent {
         return filterReq;
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         let extraModel = this.getFilter();
         let regularModel = this.getNewFilterReq(event);
-        let model = {...extraModel, ...regularModel};
+        let model = { ...extraModel, ...regularModel };
         this.flighttabService.getAirBookingList(model).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
                 this.totalRecords = data.total;
-                if( this.dataList && this.dataList.length) {
+                if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
                         this.isFrozenColumn('', ['booking_ref_no', 'status']);
                     }, 200);
@@ -531,38 +284,63 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     // Api to get the Agent list data
-    getAgentList(value:string, bool=true){
-        this.agentService.getAgentComboMaster(value, bool).subscribe((data:any) => {
-             this.agentList = data;
+    getAgentList(value: string, bool = true) {
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data: any) => {
+            this.agentList = data;
 
-             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
             }
         });
     }
 
     // Api to get the Airportlist Data (from)
-    getAirportFromList(value:any){
-        this.flighttabService.getAirportMstCombo(value).subscribe((data:any) => {
+    getAirportFromList(value: any) {
+        this.flighttabService.getAirportMstCombo(value).subscribe((data: any) => {
             this.airportFromList = data;
 
-            if(!value){
-                this.airportToList = data;
+            if (this.selectedFromAirport && this.selectedFromAirport.id) {
+                const match = this.airportFromList.find((item: any) => item.id == this.selectedFromAirport?.id);
+                if (!match) {
+                    this.airportFromList.push(this.selectedFromAirport);
+                }
+            }
+
+            // if (!value) {
+            //     this.airportToList = data;
+            // }
+        })
+    }
+
+    // Api to get the Airportlist Data (To)
+    getAirportToList(value: any) {
+        this.flighttabService.getAirportMstCombo(value).subscribe((data: any) => {
+            this.airportToList = data;
+
+            if (this.selectedToAirport && this.selectedToAirport.id) {
+                const match = this.airportToList.find((item: any) => item.id == this.selectedToAirport?.id);
+                if (!match) {
+                    this.airportToList.push(this.selectedToAirport);
+                }
             }
         })
     }
 
-     // Api to get the Airportlist Data (To)
-    getAirportToList(value:any){
-        this.flighttabService.getAirportMstCombo(value).subscribe((data:any) => {
-            this.airportToList = data;
-        })
-    }
-
     // Api to get the Supplier List
-    getSupplierList(){
-        this.flighttabService.getSupplierBoCombo('Airline').subscribe((data:any) => {
+    getSupplierList() {
+        this.flighttabService.getSupplierBoCombo('Airline').subscribe((data: any) => {
             this.supplierList = data;
+
+            for (let i in this.supplierList) {
+                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+            }
         })
     }
 
@@ -622,7 +400,7 @@ export class FlightComponent extends BaseListingComponent {
             });
     }
 
-    statusUpdate(data){
+    statusUpdate(data) {
         this.matDialog
             .open(StatusUpdateComponent, {
                 data: data,
@@ -658,10 +436,6 @@ export class FlightComponent extends BaseListingComponent {
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
-    }
-
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
     }
 
     offlinePnr() {
@@ -733,5 +507,14 @@ export class FlightComponent extends BaseListingComponent {
                 ],
                 data.data, "Flight Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 7 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

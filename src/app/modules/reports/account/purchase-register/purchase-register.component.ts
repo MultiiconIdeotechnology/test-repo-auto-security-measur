@@ -1,4 +1,4 @@
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,9 @@ import { Linq } from 'app/utils/linq';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-purchase-register',
@@ -41,13 +44,16 @@ import { AgentService } from 'app/services/agent.service';
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class PurchaseRegisterComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.purchaseRegister;
+    filter_table_name = filter_module_name.purchase_register;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -60,179 +66,20 @@ export class PurchaseRegisterComponent
     settings: any;
     typeList = ['Normal', 'Corporate'];
     companyList: any[] = [];
-
-    columns = [
-        {
-            key: 'payment_ref_no',
-            name: 'Payment Ref. No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'entry_date_time',
-            name: 'Date',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agent_code',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'service_for',
-            name: 'Service',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'booking_ref_no',
-            name: 'Booking Ref. No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'pnr',
-            name: 'PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'gds_pnr',
-            name: 'GDS PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'company_name',
-            name: 'Supplier',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'currency_short_code',
-            name: 'Currency',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'payment_amount',
-            name: 'Amount',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'booking_Type',
-            name: 'Booking Type',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        , {
-            key: 'company',
-            name: 'Company',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-    ];
-
     cols: Column[];
     isFilterShow: boolean = false;
     supplierList: any[] = [];
-    selectedCompany!: string;
     agentList: any[] = [];
-    selectedSupplier!:string;
-    selectedAgent!:string;
+    selectedSupplier:any;
+    selectedAgent:any;
+    selectedCompany!: any;
 
     constructor(
         private accountService: AccountService,
         private kycDocumentService: KycDocumentService,
         private pspsettingService: PspSettingService,
-        public agentService: AgentService
+        public agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.purchaseRegister);
         // this.cols = this.columns.map((x) => x.key);
@@ -240,17 +87,61 @@ export class PurchaseRegisterComponent
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
         this.getAgent('');
         this.getSupplier("", true);
         this.getCompanyList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedSupplier = resp['table_config']['company_name']?.value;
+            this.selectedCompany = resp['table_config']['company']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            this.selectedSupplier = filterData['table_config']['company_name']?.value;
+            this.selectedCompany = filterData['table_config']['company']?.value;
+            if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
             this.companyList = data;
+
+            for(let i in this.companyList){
+                this.companyList[i].id_by_value = this.companyList[i].company_name;
+            }
         })
     }
 
@@ -258,10 +149,28 @@ export class PurchaseRegisterComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
+    }
+
+    getSupplier(value: string, bool: boolean = true) {
+        this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
+            this.supplierList = data;
+
+            for(let i in this.supplierList){
+                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+            }
+        });
     }
 
     viewData(record): void {
@@ -292,12 +201,6 @@ export class PurchaseRegisterComponent
         }
     }
 
-    getSupplier(value: string, bool: boolean = true) {
-        this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
-            this.supplierList = data;
-        });
-    }
-
     refreshItems(event?: any): void {
         this.accountService.getpurchaseRegister(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
@@ -318,10 +221,6 @@ export class PurchaseRegisterComponent
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
-    }
-
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
     }
 
     exportExcel(): void {
@@ -360,5 +259,14 @@ export class PurchaseRegisterComponent
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]
             );
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

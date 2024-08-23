@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { Security, documentPermissions, messages, module_name } from 'app/security';
+import { Security, documentPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,7 +22,8 @@ import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/r
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-documents-list',
@@ -59,117 +60,18 @@ export class DocumentsListComponent
     documentList: any[] = [];
     documentFilter: any;
     module_name = module_name.kycdocument;
+    filter_table_name = filter_module_name.kyc_documents;
+    private settingsUpdatedSubscription: Subscription;
     _selectedColumns: Column[];
 
-    columns = [
-        {
-            key: 'file_url',
-            name: 'Document',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: true,
-        },
-        {
-            key: 'document_of',
-            name: 'Document Of',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'is_audited',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            isicon: false,
-        },
-        {
-            key: 'document_user_name',
-            name: 'Particular',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'kyc_profile_name',
-            name: 'Profile',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'kyc_profile_doc_name',
-            name: 'Profile Doc',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'audit_by_name',
-            name: 'Audited By',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-            tooltip: true
-        },
-        {
-            key: 'entry_date_time',
-            name: 'Upload',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            isicon: false,
-        },
+    cols: any = [
+        { field: 'rejection_note', header: 'Rejection Note', type:'text' },
+        { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
     ];
-
-    cols = [];
     isFilterShow: boolean = false;
-    selectedStatus:string;
-    selectedDocument:string;
-    selectedMasterStatus:string;
+    selectedStatus: string;
+    selectedDocument: any;
+    selectedMasterStatus: string;
     statusList = [
         { label: 'Audited', value: 'Audited' },
         { label: 'Rejected', value: 'Rejected' },
@@ -190,13 +92,14 @@ export class DocumentsListComponent
         private toastrService: ToasterService,
         private kycDocService: KycDocumentService,
         private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.kycdocument);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.documentFilter = {
             MasterFor: '',
@@ -209,11 +112,37 @@ export class DocumentsListComponent
     ngOnInit(): void {
         this.getDocList();
 
-        this.cols = [
-            { field: 'rejection_note', header: 'Rejection Note', type:'text' },
-            { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
-        ];
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedDocument = resp['table_config']['kyc_profile_doc_name']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+
+            if (resp['table_config']['entry_date_time'].value) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
         
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedDocument = filterData['table_config']['kyc_profile_doc_name']?.value;
+            if (filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.isFilterShow = true;
+        }
     }
 
     get selectedColumns(): Column[] {
@@ -221,7 +150,13 @@ export class DocumentsListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
 
@@ -272,7 +207,13 @@ export class DocumentsListComponent
 
        // Currency List api
     getDocList(){
-        this.kycDocService.getDocumentTypeCombo("").subscribe((data) => this.documentList = data);
+        this.kycDocService.getDocumentTypeCombo("").subscribe((data) => {
+            this.documentList = data;
+
+            for(let i in this.documentList){
+                this.documentList[i].id_by_value = this.documentList[i].document_name;
+             }
+        } );
     }
 
     createInternal(model): void {

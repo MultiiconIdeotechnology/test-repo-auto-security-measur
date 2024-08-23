@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name, techDashPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, techDashPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -34,6 +34,8 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-expired',
@@ -75,96 +77,10 @@ import { AgentService } from 'app/services/agent.service';
 export class TechDashboardExpiredComponent extends BaseListingComponent{
     @Input() isFilterShowExpired: boolean;
     @Input() dropdownFirstCallObj:any;
-
+    @Output() isFilterShowExpiredChange = new EventEmitter<boolean>();
     cols = [];
     total = 0;
 
-    columns = [
-        {
-            key: 'item_code',
-            name: 'Item Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'item_name',
-            name: 'Item',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'product_name',
-            name: 'Product',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'agentCode',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true
-        },
-        {
-            key: 'activation_date',
-            name: 'Activation Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-        {
-            key: 'expiry_date',
-            name: 'Expiry Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-    ];
     dataList: any;
     appConfig = AppConfig;
     isLoading: any;
@@ -179,25 +95,81 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.lead
+    module_name = module_name.lead;
+    filter_table_name = filter_module_name.tech_dashboard_expired;
+    private settingsUpdatedSubscription: Subscription;
     data: any;
-    selectedAgent:string;
+    selectedAgent:any;
     agentList:any[] = [];
     filter: any = {}
 
-    ngOnInit(): void {
-        // this.searchInputControlExpired.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginator);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
+    constructor(
+        private crmService: CrmService,
+        private matDialog: MatDialog,
+        private conformationService: FuseConfirmationService,
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
+    ) {
+        super(module_name.techDashboard)
+        this.key = this.module_name;
+        this.sortColumn = 'expiry_date';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
+    }
 
-        // this.searchInputControlExpired.valueChanges
-        // .subscribe(() => {
-        //   // GridUtils.resetPaginator(this._paginatorPending);
-        // //   this.refreshItems();
-        // });
+    ngOnInit(): void {
+         // common filter
+         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['activation_date'].value) {
+                resp['table_config']['activation_date'].value = new Date(resp['table_config']['activation_date'].value);
+            }
+            if (resp['table_config']['expiry_date'].value) {
+                resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowExpired = true;
+            this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowExpired = true;
+            this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
+            if (filterData['table_config']['activation_date'].value) {
+                filterData['table_config']['activation_date'].value = new Date(filterData['table_config']['activation_date'].value);
+            }
+            if (filterData['table_config']['expiry_date'].value) {
+                filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     getStatusColor(status: string): string {
@@ -217,20 +189,6 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         else {
             return '';
         }
-    }
-
-    constructor(
-        private crmService: CrmService,
-        private matDialog: MatDialog,
-        private conformationService: FuseConfirmationService,
-        private agentService: AgentService
-    ) {
-        super(module_name.techDashboard)
-        this.cols = this.columns.map(x => x.key);
-        this.key = this.module_name;
-        this.sortColumn = 'expiry_date';
-        this.sortDirection = 'desc';
-        this.Mainmodule = this
     }
 
     ngOnChanges(){
@@ -275,7 +233,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
             this.agentList = data;
 
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -410,5 +369,13 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
                     });
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

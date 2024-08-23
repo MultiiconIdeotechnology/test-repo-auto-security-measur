@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { messages, module_name, Security, saleProductPermissions } from 'app/security';
+import { messages, module_name, Security, saleProductPermissions, filter_module_name } from 'app/security';
 import { MatDialog } from '@angular/material/dialog';
 import { SalesProductsService } from 'app/services/slaes-products.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
@@ -24,9 +24,10 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
-import { takeUntil } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-sales-product',
@@ -61,21 +62,15 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     dataList = [];
     total = 0;
     module_name = module_name.products;
+    filter_table_name = filter_module_name.report_sales_products;
+    private settingsUpdatedSubscription: Subscription;
     agentList: any[] = [];
     employeeList: any[] = [];
-    selectedAgent: string;
-    selectedEmployee: string;
+    selectedAgent: any;
+    selectedRM: any;
     user: any = {};
     selectedToolTip: string = "";
     toolTipArray: any[] = [];
-
-    columns = [
-        { key: 'agent_code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, campName: false },
-        { key: 'agency_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'rm', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'Due_amount', name: 'Due Amount', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'Amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false }
-    ]
     isFilterShow: boolean = false;
 
     constructor(
@@ -83,14 +78,15 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         private matDialog: MatDialog,
         private _userService: UserService,
         private agentService: AgentService,
-        private refferralService: RefferralService
-        // private clipboard: Clipboard
+        private refferralService: RefferralService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.products)
         this.key = 'campaign_name';
         this.sortColumn = 'agent_code';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         //user login
         this._userService.user$
@@ -104,6 +100,37 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     ngOnInit(): void {
         this.getAgent("");
         this.getEmployeeList("");
+
+         // common filter
+         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedRM = resp['table_config']['rm']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            this.selectedRM = filterData['table_config']['rm']?.value;
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getFilter(): any {
@@ -139,8 +166,16 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
+
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -154,6 +189,10 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
+
+            for(let i in this.employeeList){
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+             }
         });
     }
 

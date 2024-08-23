@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -25,6 +27,12 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -32,7 +40,7 @@
             </button>
 
             <!-- Modal Fiter button -->
-             <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="Filter()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="Filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
             </button> -->
@@ -47,20 +55,21 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
-            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
-            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
-            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
-            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
-            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['profile_name', 'company_name', 'profile_for', 'documents', 'entry_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="profile_name" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.profile_name" [ngClass]="{'left-0': !frozenObj?.profile_name}">
+                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="profile_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.profile_name"
+                        [ngClass]="{'left-0': !frozenObj?.profile_name}">
                         Profile <p-sortIcon field="profile_name" />
                         <span class="float-right" (click)="isFrozenColumn('profile_name'); $event.stopPropagation()">
                             <i *ngIf="frozenObj?.profile_name" class="pi pi-lock icon-size-3"></i>
@@ -84,18 +93,19 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.profile_name">
-                        <p-columnFilter type="text" matchMode="contains" field="profile_name" placeholder="Search by Profile"
-                            ariaLabel="Filter Profile" />
+                        <p-columnFilter type="text" matchMode="contains" field="profile_name"
+                            placeholder="Search by Profile" ariaLabel="Filter Profile" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="company_name" placeholder="Search by Company"
-                            ariaLabel="Filter Company" />
+                        <p-columnFilter type="text" matchMode="contains" field="company_name"
+                            placeholder="Search by Company" ariaLabel="Filter Company" />
                     </th>
                     <th>
                         <p-columnFilter field="profile_for" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="selectMasterList"
-                                    (onChange)="filter($event.value)" placeholder="Select Profile For" [showClear]="true" appendTo="body">
+                                    (onChange)="filter($event.value)" placeholder="Select Profile For"
+                                    [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -110,8 +120,8 @@
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Entry">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -153,8 +163,9 @@
                         </mat-menu>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.profile_name">
-                        <span [matTooltip]="element['is_default'] ? 'Default' : ''" class="w-2 h-2 rounded-full inline-block"
-                              [ngClass]="element['is_default'] ? 'bg-green-500' : '-mr-3'">
+                        <span [matTooltip]="element['is_default'] ? 'Default' : ''"
+                            class="w-2 h-2 rounded-full inline-block"
+                            [ngClass]="element['is_default'] ? 'bg-green-500' : '-mr-3'">
                         </span>
                         {{element.profile_name || "-"}}
                     </td>

@@ -629,11 +629,13 @@ p-columnfilterformelement {
     justify-content: flex-start !important;
     font-size: 1rem;
     font-weight: 500 !important;
-    padding: 1rem 1.3rem 0.3rem 1.3rem !important;
+    padding: 1rem 1.3rem 1rem 1.3rem !important;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 div:where(.swal2-container) div:where(.swal2-popup) {
     border-radius: 15px !important;
+    padding-bottom: 10px !important;
 }
 
 div:where(.swal2-container) input:where(.swal2-input):focus {
@@ -642,8 +644,11 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
 }
 
 .swal2-input {
-    margin: 1rem 1.3rem 0.3rem 1.3rem !important;
+    margin: 1rem 1.3rem 1rem 1.3rem !important;
     font-size: 14px;
+    border-radius: 6px;
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
 }
 
 .swal2-actions {
@@ -651,6 +656,9 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     width: 100%;
     padding-right: 1.3rem;
     gap: 10px;
+    // border-top: 1px solid #e2e8f0;
+    margin-top:0 !important;
+    padding-top: 10px;
 }
 
 .swal2-confirm {
@@ -688,9 +696,31 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     margin-right: 0;
 }
 
+div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2-styled:hover {
+    background-image: linear-gradient(rgba(134, 133, 133, 0.1), rgba(160, 160, 160, 0.1)) !important;
+}
+
+.swal2-close {
+    position: relative;
+}
+
+.swal2-close:hover::before {
+    position: absolute;
+    content: "";
+    width:2.4rem;
+    height: 2.4rem;
+    background: #8080802b;
+    border-radius: 50%;
+    left:50%;
+    top: 1.79rem;
+    transform: translate(-50%,-50%);
+}
+
 .dark {
     .swal2-html-container {
         color: white;
+        border-bottom: 1px solid #e2e8f030;
+
     }
 
     .swal2-popup {
@@ -699,6 +729,7 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
 
     .swal2-input {
         color: #ffffffde;
+        border: 1px solid rgb(226 232 240 / 38%);
     }
 
     .swal2-confirm {
@@ -709,7 +740,7 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     .swal2-cancel {
         color: white;
         background: transparent;
-        border: 1px solid #ffffffde
+        border: 1px solid rgb(226 232 240 / 38%)
     }
 
     .primeng-alert {
@@ -769,4 +800,61 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
 .ctm-bg .mat-mdc-dialog-container .mdc-dialog__container .mat-mdc-dialog-surface{
     background-color: transparent !important;
     box-shadow: none !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-close) {
+    font-family: 'primeicons' !important;
+    margin-bottom: -1.5em !important;
+    margin-left: -1em !important;
+    width: 1.5em !important;
+    height: 1.5em !important;
+    margin-right: .25em !important;
+}
+
+.light div:where(.swal2-container) button:where(.swal2-close),
+.light div:where(.swal2-container) button:where(.swal2-close):hover{
+    color: gray !important;
+}
+
+.dark div:where(.swal2-container) button:where(.swal2-close),
+.dark div:where(.swal2-container) button:where(.swal2-close):hover{
+    color: white !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-close){
+    font-size: 35px !important;
+}
+
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Tooltip text */
+.tooltip::before {
+    content: attr(tooltip);
+    position: absolute;
+    top: 220%; /* Position above the link */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #adaaaa;
+    color: #343131;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 999;
+}
+
+/* Show the tooltip text when hovering over the tooltip container */
+.tooltip:hover::before {
+    opacity: 1;
+    z-index: 999;
+
 }

@@ -70,7 +70,7 @@
                     <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent Name"
                         ariaLabel="Filter Agent Name" /> -->
 
-                    <p-columnFilter class="searchableDropdown" field="agent_id" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agent_info" [filter]="true" filterBy="agent_info"

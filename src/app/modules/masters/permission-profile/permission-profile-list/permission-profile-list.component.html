@@ -26,8 +26,15 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()" matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -47,7 +54,7 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['profile_name', 'login_area', 'applied_on']"
+            [globalFilterFields]="['profile_name', 'login_area']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
@@ -66,7 +73,7 @@
                         Login Area <p-sortIcon field="login_area" />
                     </th>
                     <th class="w-full" pResizableColumn pSortableColumn="applied_on">
-                        Applied On  <p-sortIcon field="applied_on" />
+                        Applied On
                     </th>
                 </tr>
 

@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,12 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!------Refresh------>
@@ -41,20 +49,21 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
-            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
-            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
-            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
-            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
-            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['event_name', 'event_description']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="event_name" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.event_name" [ngClass]="{'left-0': !frozenObj?.event_name}">
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="event_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.event_name"
+                        [ngClass]="{'left-0': !frozenObj?.event_name}">
                         Event Name <p-sortIcon field="event_name" />
                         <span class="float-right" (click)="isFrozenColumn('event_name');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.event_name" class="pi pi-lock-open icon-size-3"></i>
@@ -69,12 +78,12 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.event_name">
-                        <p-columnFilter type="text" matchMode="contains" field="event_name" placeholder="Search by Event Name"
-                            ariaLabel="Filter Event Name" />
+                        <p-columnFilter type="text" matchMode="contains" field="event_name"
+                            placeholder="Search by Event Name" ariaLabel="Filter Event Name" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="event_description" placeholder="Search by Event Descp."
-                            ariaLabel="Filter Event Descp." />
+                        <p-columnFilter type="text" matchMode="contains" field="event_description"
+                            placeholder="Search by Event Descp." ariaLabel="Filter Event Descp." />
                     </th>
                 </tr>
             </ng-template>

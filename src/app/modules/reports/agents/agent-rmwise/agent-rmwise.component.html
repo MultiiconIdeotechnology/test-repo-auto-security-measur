@@ -26,8 +26,10 @@
             <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -35,6 +37,12 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!------Refresh------>
@@ -62,19 +70,19 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
-            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
-            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
-            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
-            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
-            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['rm', 'totalAgent', 'total_New_Agent', 'total_Active_Agent', 'total_Inactive_Agent', 'total_Block_Agent']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="rm" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.rm" [ngClass]="{'left-0': !frozenObj?.rm}">
+                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="rm" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.rm" [ngClass]="{'left-0': !frozenObj?.rm}">
                         RM <p-sortIcon field="rm" />
                         <span class="float-right" (click)="isFrozenColumn('rm');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.rm" class="pi pi-lock-open icon-size-3"></i>
@@ -104,16 +112,9 @@
                             ariaLabel="Filter RM" /> -->
                         <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                    [options]="employeeList"
-                                    optionLabel="employee_name"
-                                    [(ngModel)]="selectedRM"
-                                    [filter]="true"
-                                    filterBy="employee_name"
-                                    (onFilter)="getEmployeeList($event?.filter)"
-                                    (onChange)="filter($event.value?.employee_name)"
-                                    [showClear]="true"
-                                    appendTo="body"
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="selectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select RM">
                                     <ng-template let-employee pTemplate="item">
                                         <div>{{employee.employee_name}}</div>
@@ -141,7 +142,7 @@
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="total_Block_Agent" placeholder="Search by Blocked"
-                        ariaLabel="Filter Blocked" />
+                            ariaLabel="Filter Blocked" />
                     </th>
                 </tr>
             </ng-template>
@@ -158,7 +159,8 @@
                     <td>
                         <div class="pl-[25px]">
                             {{element.total_Block_Agent ? element.total_Block_Agent : 0}}
-                        </div></td>
+                        </div>
+                    </td>
                 </tr>
             </ng-template>
 

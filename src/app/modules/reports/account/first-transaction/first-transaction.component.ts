@@ -1,4 +1,4 @@
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +17,9 @@ import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-first-transaction',
@@ -38,13 +41,16 @@ import { AgentService } from 'app/services/agent.service';
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class FirstTransactionComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.firstTransaction;
+    filter_table_name = filter_module_name.first_transaction;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -56,135 +62,14 @@ export class FirstTransactionComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    columns = [
-        {
-            key: 'first_transaction_date_time',
-            name: 'Transaction Date',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agent_code',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agent_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'gst_number',
-            name: 'GST/VAT No',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'pan_number',
-            name: 'PAN',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'country',
-            name: 'Country',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'state_name',
-            name: 'State',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'address_line1',
-            name: 'Address',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'pincode',
-            name: 'Pincode',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-    ];
-
     cols: Column[];
     isFilterShow: boolean = false;
+    selectedAgent:any
 
     constructor(
         private accountService: AccountService,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.firstTransaction);
         // this.cols = this.columns.map((x) => x.key);
@@ -192,19 +77,61 @@ export class FirstTransactionComponent
         this.sortColumn = 'first_transaction_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name)
     }
 
-    selectedAgent!:string
     ngOnInit() {
         this.getAgent('');
+
+          // common filter
+          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['first_transaction_date_time'].value && resp['table_config']['first_transaction_date_time'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            if (filterData['table_config']['first_transaction_date_time'].value && filterData['table_config']['first_transaction_date_time'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['first_transaction_date_time']);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -229,10 +156,6 @@ export class FirstTransactionComponent
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
-    }
-
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
     }
 
     exportExcel(): void {
@@ -272,4 +195,14 @@ export class FirstTransactionComponent
             );
         });
     }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
+    }
+
 }

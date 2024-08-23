@@ -19,12 +19,14 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { KycInfoComponent } from 'app/modules/masters/agent/kyc-info/kyc-info.component';
 import { LeadEntryComponent } from 'app/modules/masters/lead/lead-entry/lead-entry.component';
-import { Security, kycDashboardPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, kycDashboardPermissions, messages, module_name } from 'app/security';
 import { KycDashboardService } from 'app/services/kyc-dashboard.service';
 import { LeadsService } from 'app/services/leads.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { KycService } from 'app/services/kyc.service';
 import { EmployeeService } from 'app/services/employee.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
@@ -62,17 +64,20 @@ import { EmployeeService } from 'app/services/employee.service';
   ]
 
 })
+
 export class AgentKycComponent extends BaseListingComponent implements OnDestroy {
 
   total = 0;
   dataList = [];
   serviceForList = ['All', 'Rejected'];
   public Status = new FormControl(this.serviceForList[0]);
-  module_name = module_name.agentkyc
-  kycProfileList:any[] = [];
-  selectedKycProfile:string;
-  employeeList:any[] = [];
-  selectedEmployee:string;
+  module_name = module_name.agentkyc;
+  filter_table_name = filter_module_name.kyc_agent;
+  private settingsUpdatedSubscription: Subscription;
+  kycProfileList: any[] = [];
+  selectedKycProfile: any;
+  employeeList: any[] = [];
+  selectedRm: any;
 
   columns = [
     { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, tooltip: true },
@@ -87,9 +92,11 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
 
   statusList = [
     { label: 'Rejected', value: true },
-    { label: 'Pending', value: false}
+    { label: 'Pending', value: false }
   ];
-  cols = [];
+  cols: Column[] = [
+    { field: 'contact_person', header: 'Contact Person' },
+  ];
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
 
@@ -99,22 +106,62 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     private conformationService: FuseConfirmationService,
     private employeeService: EmployeeService,
     private matDialog: MatDialog,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.agentkyc)
     // this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'update_date_time';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'contact_person', header: 'Contact Person' },
-    ];
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      console.log("resp", resp);
+      this.selectedKycProfile = resp['table_config']['kyc_profile_id_filters']?.value;
+      this.selectedRm = resp['table_config']['relation_manager']?.value;
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+
+      if (resp['table_config']['entry_date_time'].value) {
+        resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+      }
+      if (resp['table_config']['update_date_time'].value) {
+        resp['table_config']['update_date_time'].value = new Date(resp['table_config']['update_date_time'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
+
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
 
     this.getKycCombo();
     this.getRelationManagerList("");
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedKycProfile = filterData['table_config']['kyc_profile_id_filters']?.value;
+      this.selectedRm = filterData['table_config']['relation_manager']?.value;
+
+      if (filterData['table_config']['entry_date_time'].value) {
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      }
+      if (filterData['table_config']['update_date_time'].value) {
+        filterData['table_config']['update_date_time'].value = new Date(filterData['table_config']['update_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      
+      this.isFilterShow = true;
+    }
   }
 
   get selectedColumns(): Column[] {
@@ -122,7 +169,13 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
 
@@ -152,18 +205,26 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
     })
   }
 
-  getKycCombo(){
+  getKycCombo() {
     this.kycService.getkycprofileCombo('agent').subscribe((data) => {
-        this.kycProfileList = data;
+      this.kycProfileList = data;
+
+      for (let i in this.kycProfileList) {
+        this.kycProfileList[i].id_by_value = this.kycProfileList[i].profile_name; 
+      }
     })
   }
 
   // To get Relationship Manager data from employeelist api
   getRelationManagerList(value: any) {
     this.employeeService.getemployeeCombo(value).subscribe((data) => {
-        this.employeeList = data;
+      this.employeeList = data;
+
+      for (let i in this.employeeList) {
+        this.employeeList[i].id_by_value = this.employeeList[i].employee_name; 
+      }
     })
-}
+  }
 
   setKYCVerify(record): void {
     if (!Security.hasPermission(kycDashboardPermissions.agentViewKYCPermissions)) {
@@ -222,6 +283,10 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
 
   ngOnDestroy(): void {
     // this.masterService.setData(this.key, this)
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 
 }

@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { dateRange } from 'app/common/const';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
 import { DateTime } from 'luxon';
@@ -30,6 +30,8 @@ import { GridUtils } from 'app/utils/grid/gridUtils';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { AgentService } from 'app/services/agent.service';
 import { cloneDeep } from 'lodash';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-sales-return',
@@ -62,6 +64,11 @@ import { cloneDeep } from 'lodash';
     templateUrl: './sales-return.component.html'
 })
 export class SalesReturnComponent extends BaseListingComponent implements OnDestroy {
+
+    module_name = module_name.SalesReturn;
+    filter_table_name = filter_module_name.sales_return;
+    private settingsUpdatedSubscription: Subscription;
+
     columns = [
         'agent',
         'supplier',
@@ -107,22 +114,22 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     public dateRanges = [];
     supplierList: any[] = [];
     agentList: any[] = [];
-
-    module_name = module_name.SalesReturn
     tempData: any[] = [];
     isFilterShow: boolean = false;
     dataList = [];
     sortColumn: any = 'complete_date_time';
-    selectedAgent!: string;
-    selectedEmployee!: string;
+    selectedAgent: any;
+    selectedEmployee: any;
 
     constructor(
         private salesReturnService: SalesReturnService,
         private kycDocumentService: KycDocumentService,
         public agentService: AgentService,
         private _matdialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.SalesReturn);
+        this._filterService.applyDefaultFilter(this.filter_table_name);
         this.saleFilter = {
             service: '',
             agent_id: '',
@@ -140,17 +147,77 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         this.refreshItems();
         this.getSupplier("", true)
         this.getAgent('');
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+				if (!match) {
+					this.agentList.push(this.selectedAgent);
+				}
+			}
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['complete_date_time'].value) {
+                resp['table_config']['complete_date_time'].value = new Date(resp['table_config']['complete_date_time'].value);
+            }
+            if (typeof (resp['table_config']['agent'].value) == 'object') {
+				resp['table_config']['agent'].value = resp['table_config']['agent'].value?.agency_name;
+			}
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent']?.value;
+            if (filterData['table_config']['complete_date_time'].value) {
+                filterData['table_config']['complete_date_time'].value = new Date(filterData['table_config']['complete_date_time'].value);
+            }
+            if (typeof (filterData['table_config']['agent'].value) == 'object') {
+				filterData['table_config']['agent'].value = filterData['table_config']['agent'].value?.agency_name;
+			}
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getAgent(value: string, bool=true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
+            if (this.selectedAgent && this.selectedAgent.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+				if (!match) {
+					this.agentList.push(this.selectedAgent);
+				}
+			}
+
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
+
+    onAgentChange(agent: any) {
+		if (agent) {
+			this.primengTable.filter(agent?.agency_name, 'agent', 'equals');
+			setTimeout(() => {
+				this.primengTable.filters['agent']['value'] = agent;
+			},  this.primengTable.filterDelay);
+		} else {
+			this.primengTable.filter(null, 'agent', 'equals');
+			this.primengTable.filters['agent'] = { value: null, matchMode: 'equals' };
+		}
+	}
 
     filter() {
         this._matdialog
@@ -236,8 +303,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         // filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
 
         // this.salesReturnService.getSalesReturnReport(filterReq).subscribe(data => {
-            let salesData = this.primengTable['_value'] || [];
-            this.tempData = cloneDeep(salesData);
+        let salesData = this.primengTable['_value'] || [];
+        this.tempData = cloneDeep(salesData);
 
         for (var dt of this.tempData) {
             //   dt.complete_date_time = DateTime.fromISO(dt.complete_date_time).toFormat('dd-MM-yyyy HH:mm');
@@ -272,7 +339,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         // });
     }
 
-     // Custom date range filter function
+  // Custom date range filter function
   customDateRangeFilter(value: any, filter: any): boolean {
     if (!filter || !value) {
       return true;
@@ -301,5 +368,12 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
       filter(null);
     }
   }
-    
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
+    }
 }

@@ -21,7 +21,8 @@
                     (input)="datatable.filterGlobal($event.target.value, 'contains')">
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'" (input)="datatable.filterGlobal($event.target.value, 'contains')" />
+                <input matInput [formControl]="searchInternalFilter" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (input)="datatable.filterGlobal($event.target.value, 'contains')" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
             </div>
 
@@ -32,8 +33,15 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!-- Refresh -->
-            <button class="ml-4" mat-flat-button [disabled]="isLoading" (click)="refreshItems()" [color]="'primary'">
+            <button class="ml-4" mat-flat-button [disabled]="isLoading" (click)="refreshItems()" [color]="'primary'"
+                matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -53,6 +61,8 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
+
+
         </div>
     </div>
 
@@ -60,40 +70,39 @@
         <p-table #datatable [value]="Alldata" [sortField]="sortColumn" [sortOrder]="1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-             [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['datetime', 'reference_number', 'particular', 'debit', 'credit', 'balance']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="min-w-[120px] dark:bg-[#1e293b]"  pResizableColumn alignFrozen="left" pFrozenColumn
+                    <th class="min-w-[120px] dark:bg-[#1e293b]" pResizableColumn alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.datetime" [ngClass]="{'left-0': !frozenObj?.datetime}">
-                        Date 
+                        Date
                         <span class="float-right" (click)="isFrozenColumn('datetime');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.datetime" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.datetime" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    
-                    <th   pResizableColumn>
+
+                    <th pResizableColumn>
                         Reference Number
                     </th>
-                    
-                    <th class="w-full"  pResizableColumn>
+
+                    <th class="w-full" pResizableColumn>
                         Particular
                     </th>
-                    
-                    <th class="text-right"  pResizableColumn>
+
+                    <th class="text-right" pResizableColumn>
                         Debit
                     </th>
-                    
-                    <th class="text-right"  pResizableColumn>
+
+                    <th class="text-right" pResizableColumn>
                         Credit
                     </th>
-                    
-                    <th class="text-right w-full min-w-[200px]"  pResizableColumn>
+
+                    <th class="text-right w-full min-w-[200px]" pResizableColumn>
                         Balance
                     </th>
                 </tr>
@@ -108,25 +117,30 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    
+
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="reference_number" placeholder="Search by Reference Number" ariaLabel="Filter Reference Number" />
+                        <p-columnFilter type="text" matchMode="contains" field="reference_number"
+                            placeholder="Search by Reference Number" ariaLabel="Filter Reference Number" />
                     </th>
-                    
+
                     <th class="w-full">
-                        <p-columnFilter type="text" matchMode="contains" field="particular" placeholder="Search by Particular" ariaLabel="Filter Particular" />
+                        <p-columnFilter type="text" matchMode="contains" field="particular"
+                            placeholder="Search by Particular" ariaLabel="Filter Particular" />
                     </th>
-                    
+
                     <th>
-                        <p-columnFilter type="numeric" field="debit" placeholder="Search by Debit" ariaLabel="Filter Debit" />
+                        <p-columnFilter type="numeric" field="debit" placeholder="Search by Debit"
+                            ariaLabel="Filter Debit" />
                     </th>
-                    
+
                     <th>
-                        <p-columnFilter type="numeric" field="credit" placeholder="Search by Credit" ariaLabel="Filter Credit" />
+                        <p-columnFilter type="numeric" field="credit" placeholder="Search by Credit"
+                            ariaLabel="Filter Credit" />
                     </th>
-                    
+
                     <th>
-                        <p-columnFilter type="numeric" field="balance" placeholder="Search by Balance" ariaLabel="Filter Balance" />
+                        <p-columnFilter type="numeric" field="balance" placeholder="Search by Balance"
+                            ariaLabel="Filter Balance" />
                     </th>
                 </tr>
             </ng-template>
@@ -141,22 +155,28 @@
                     </td>
 
                     <td>{{element.reference_number || "-"}}</td>
-                    
+
                     <td class="w-full">
                         <div class="booking-info" *ngIf="element.particular">
                             <p class="main-description">{{parseBookingInfo(element.particular).mainDescription}}</p>
-                            <p *ngIf="parseBookingInfo(element.particular).pnr" class="ref-info">PNR: <span>{{parseBookingInfo(element.particular).pnr}}</span></p>
-                            <p *ngIf="parseBookingInfo(element.particular).bookingRef" class="ref-info">Booking Ref: <span>{{parseBookingInfo(element.particular).bookingRef}}</span></p>
-                            <p *ngIf="parseBookingInfo(element.particular).paymentRef" class="ref-info">Payment Ref: <span>{{parseBookingInfo(element.particular).paymentRef}}</span></p>
+                            <p *ngIf="parseBookingInfo(element.particular).pnr" class="ref-info">PNR:
+                                <span>{{parseBookingInfo(element.particular).pnr}}</span>
+                            </p>
+                            <p *ngIf="parseBookingInfo(element.particular).bookingRef" class="ref-info">Booking Ref:
+                                <span>{{parseBookingInfo(element.particular).bookingRef}}</span>
+                            </p>
+                            <p *ngIf="parseBookingInfo(element.particular).paymentRef" class="ref-info">Payment Ref:
+                                <span>{{parseBookingInfo(element.particular).paymentRef}}</span>
+                            </p>
                         </div>
                         <span class="text-primary text-sm">{{element.remark}}</span>
                         <div *ngIf="!element.particular && !element.remark">-</div>
                     </td>
-                    
+
                     <td class="text-right text-red-500">{{element.debit ? element.debit.toFixed(2) : "0"}}</td>
-                    
+
                     <td class="text-right text-green-500">{{element.credit ? element.credit.toFixed(2) : "0"}}</td>
-                    
+
                     <td class="text-right">{{element.balance ? element.balance.toFixed(2) : "0"}}</td>
                 </tr>
             </ng-template>

@@ -44,30 +44,33 @@
                     alt="c">
             </button>
 
-            <button *ngIf="this.tab == 'Audited'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
-                [disabled]="isLoading" (click)="isFilterShowAudit  = !isFilterShowAudit ">
-                <img *ngIf="!isFilterShowAudit " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
-                    alt="c">
-                <img *ngIf="isFilterShowAudit " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
-                    alt="c">
+            <button *ngIf="this.tab == 'Audited'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowAudit  = !isFilterShowAudit ">
+                <img *ngIf="!isFilterShowAudit " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShowAudit " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+            
+            <button *ngIf="this.tab == 'Rejected'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowReject  = !isFilterShowReject ">
+                <img *ngIf="!isFilterShowReject " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShowReject " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <button *ngIf="this.tab == 'Rejected'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
-                [disabled]="isLoading" (click)="isFilterShowReject  = !isFilterShowReject ">
-                <img *ngIf="!isFilterShowReject " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
-                    alt="c">
-                <img *ngIf="isFilterShowReject " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
-                    alt="c">
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                 (click)="openTabFiterDrawer()"
+                 matTooltip="Saved Filter">
+                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItemsTab()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItemsTab()"  matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
-            </button>
+            </button> -->
 
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
@@ -89,15 +92,15 @@
     <mat-tab-group class="custom-tab wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
 
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
-            <app-pending #pending [isFilterShowPending]="isFilterShowPending" [filterApiData]="filterApiData"></app-pending>
+            <app-pending #pending [isFilterShowPending]="isFilterShowPending" [filterApiData]="filterApiData" [activeTab]="tab"></app-pending>
         </mat-tab>
 
-        <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')">
-            <app-audited #audited [isFilterShowAudit]="isFilterShowAudit" [filterApiData]="filterApiData"></app-audited>
+        <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')" >
+            <app-audited #audited [isFilterShowAudit]="isFilterShowAudit" [filterApiData]="filterApiData" [activeTab]="tab"></app-audited>
         </mat-tab>
 
         <mat-tab label="Rejected" [aria-label]="'Rejected'" *ngIf="getTabsPermission('rejected')">
-            <app-rejected #rejected [isFilterShowReject]="isFilterShowReject" [filterApiData]="filterApiData"></app-rejected>
+            <app-rejected #rejected [isFilterShowReject]="isFilterShowReject" [filterApiData]="filterApiData" [activeTab]="tab"></app-rejected>
         </mat-tab>
 
     </mat-tab-group>

@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,12 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)" matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box -->
@@ -42,30 +50,30 @@
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
-
         </div>
     </div>
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true" columnResizeMode="expand"
-            [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize"
-            [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['company_name', 'email_address', 'mobile_number', 'billing_company', 'city_name', 'entry_date_time', 'priority']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="company_name" pResizableColumn alignFrozen="left"
-                    pFrozenColumn [frozen]="frozenObj?.company_name" [ngClass]="{'left-0': !frozenObj?.company_name}">
+                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="company_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name"
+                        [ngClass]="{'left-0': !frozenObj?.company_name}">
                         Company <p-sortIcon field="company_name" />
                         <span class="float-right" (click)="isFrozenColumn('company_name');$event.stopPropagation()">
                             <i *ngIf="frozenObj?.company_name" class="pi pi-lock icon-size-3"></i>
@@ -95,33 +103,29 @@
                 <tr *ngIf="isFilterShow">
                     <th class=" left-[-1px]"></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name">
-                        <p-columnFilter type="text" matchMode="contains" field="company_name" placeholder="Search by Company"
-                            ariaLabel="Filter Company" />
+                        <p-columnFilter type="text" matchMode="contains" field="company_name"
+                            placeholder="Search by Company" ariaLabel="Filter Company" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="email_address" placeholder="Search by Email"
-                            ariaLabel="Filter Email Address" />
+                        <p-columnFilter type="text" matchMode="contains" field="email_address"
+                            placeholder="Search by Email" ariaLabel="Filter Email Address" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mobile_no" placeholder="Search by Mobile"
-                            ariaLabel="Filter Mobile Number" />
+                        <p-columnFilter type="text" matchMode="contains" field="mobile_no"
+                            placeholder="Search by Mobile" ariaLabel="Filter Mobile Number" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="billing_company" placeholder="Search by Billing Company"
-                            ariaLabel="Filter Display Name" /> -->
-                            <p-columnFilter class="searchableDropdown" field="billing_company" matchMode="equals" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
-                                        [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
-                                        (onChange)="filter($event.value?.company_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Company">
-                                        <ng-template let-company pTemplate="item">
-                                                <div> {{company.company_name}}</div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
-
+                        <p-columnFilter field="billing_company" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="companyListName" filterBy="company_name"
+                                    [ngModel]="value" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Company">
+                                    <ng-template let-company pTemplate="item">
+                                        <div> {{company}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="city_name" placeholder="Search by City"
@@ -130,15 +134,15 @@
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Entry">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
                     </th>
                     <th *ngFor="let col of columns">
                         <p-columnFilter [type]="col.type" [field]="col.field" [placeholder]="'Search by '+ col.header"
-                        [ariaLabel]="'Filter ' + col.header" />
+                            [ariaLabel]="'Filter ' + col.header" />
                     </th>
                 </tr>
             </ng-template>
@@ -187,9 +191,9 @@
                         </mat-menu>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name">
-                        <span
-                        [matTooltip]="element['is_kyc_completed'] ? 'KYC Audit': 'KYC Pending'" class="w-2 h-2 inline-block me-1 rounded-full"
-                        [ngClass]="element['is_kyc_completed']? 'bg-green-500': 'bg-orange-500'">
+                        <span [matTooltip]="element['is_kyc_completed'] ? 'KYC Audit': 'KYC Pending'"
+                            class="w-2 h-2 inline-block me-1 rounded-full"
+                            [ngClass]="element['is_kyc_completed']? 'bg-green-500': 'bg-orange-500'">
                         </span>
                         {{element.company_name}}
                     </td>

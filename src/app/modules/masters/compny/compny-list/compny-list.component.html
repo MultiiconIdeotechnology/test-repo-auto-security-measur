@@ -12,8 +12,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'">
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -21,6 +23,13 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -34,7 +43,7 @@
             </p-overlayPanel>
 
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()" matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -43,7 +52,6 @@
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
-
         </div>
     </div>
 
@@ -61,8 +69,9 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[180px] dark:bg-[#1e293b]" pSortableColumn="company_name" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.company_name" [ngClass]="{'left-0': !frozenObj?.company_name}">
+                    <th class="min-w-[180px] dark:bg-[#1e293b]" pSortableColumn="company_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name"
+                        [ngClass]="{'left-0': !frozenObj?.company_name}">
                         Company Name <p-sortIcon field="company_name" />
                         <span class="float-right" (click)="isFrozenColumn('company_name');$event.stopPropagation()">
                             <i *ngIf="frozenObj?.company_name" class="pi pi-lock icon-size-3"></i>
@@ -91,28 +100,28 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name">
-                        <p-columnFilter type="text" matchMode="contains" field="company_name" placeholder="Search by Company Name"
-                            ariaLabel="Filter Company Name" />
+                        <p-columnFilter type="text" matchMode="contains" field="company_name"
+                            placeholder="Search by Company Name" ariaLabel="Filter Company Name" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="contact_no" placeholder="Search by Contact No"
-                            ariaLabel="Filter Contact No" />
+                        <p-columnFilter type="text" matchMode="contains" field="contact_no"
+                            placeholder="Search by Contact No" ariaLabel="Filter Contact No" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="contact_email" placeholder="Search by Contact Email"
-                            ariaLabel="Filter Contact Email" />
+                        <p-columnFilter type="text" matchMode="contains" field="contact_email"
+                            placeholder="Search by Contact Email" ariaLabel="Filter Contact Email" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="website_url" placeholder="Search by Website URL"
-                            ariaLabel="Filter Website URL" />
+                        <p-columnFilter type="text" matchMode="contains" field="website_url"
+                            placeholder="Search by Website URL" ariaLabel="Filter Website URL" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="gst_vat_no" placeholder="Search by GST vat No"
-                            ariaLabel="Filter GST vat No" />
+                        <p-columnFilter type="text" matchMode="contains" field="gst_vat_no"
+                            placeholder="Search by GST vat No" ariaLabel="Filter GST vat No" />
                     </th>
                     <th *ngFor="let col of columns">
-                        <p-columnFilter type="text" matchMode="contains" [field]="col.field" [placeholder]="'Search by '+ col.header"
-                            [ariaLabel]="'Filter ' + col.header" />
+                        <p-columnFilter type="text" matchMode="contains" [field]="col.field"
+                            [placeholder]="'Search by '+ col.header" [ariaLabel]="'Filter ' + col.header" />
                     </th>
                 </tr>
             </ng-template>

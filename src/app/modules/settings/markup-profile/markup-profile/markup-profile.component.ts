@@ -1,6 +1,6 @@
 import { Routes } from 'app/common/const';
 import { Router } from '@angular/router';
-import { Security, markupProfilePermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, markupProfilePermissions, messages, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -22,6 +22,8 @@ import { MarkupprofileService } from 'app/services/markupprofile.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { EntityService } from 'app/services/entity.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-markup-profile',
@@ -61,6 +63,8 @@ export class MarkupProfileComponent
 
     companyList: any[] = [];
     module_name = module_name.markupprofile;
+    filter_table_name = filter_module_name.markup_profile;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     isFilterShow: boolean = false;
@@ -108,6 +112,7 @@ export class MarkupProfileComponent
 
     ];
     cols = [];
+    selectedCompany: any;
 
     constructor(
         private markupprofileService: MarkupprofileService,
@@ -116,7 +121,8 @@ export class MarkupProfileComponent
         public toasterService: ToasterService,
         public entityService: EntityService,
         private pspsettingService: PspSettingService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.markupprofile);
         this.cols = this.columns.map((x) => x.key);
@@ -124,15 +130,41 @@ export class MarkupProfileComponent
         this.sortColumn = 'profile_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
         this.getCompanyList("");
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['company_name']){
+                this.selectedCompany = resp['table_config'].company_name?.value;
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['company_name']){
+                this.selectedCompany = filterData['table_config'].company_name?.value;
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+      }
 
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
             this.companyList = data;
+            for (let i in this.companyList) {
+                this.companyList[i].id_by_value = this.companyList[i].company_name
+            }
         })
     }
 
@@ -262,4 +294,11 @@ export class MarkupProfileComponent
                 }
             });
     }
+
+    ngOnDestroy() {
+        if (this.settingsUpdatedSubscription) {
+          this.settingsUpdatedSubscription.unsubscribe();
+          this._filterService.activeFiltData = {};
+        }
+      }
 }

@@ -1,4 +1,5 @@
-import { module_name } from 'app/security';
+import { Router } from '@angular/router';
+import { filter_module_name, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +19,9 @@ import { EntityService } from 'app/services/entity.service';
 import { CachingParametersEntryComponent } from '../caching-parameters-entry/caching-parameters-entry.component';
 import { takeUntil } from 'rxjs';
 import { FlightTabService } from 'app/services/flight-tab.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-caching-parameters-list',
@@ -40,13 +44,16 @@ import { FlightTabService } from 'app/services/flight-tab.service';
         MatDividerModule,
         FormsModule,
         PrimeNgImportsModule,
-        CachingParametersEntryComponent
+        CachingParametersEntryComponent,
+        MatTooltipModule
     ],
 })
 export class CachingParametersListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.cachingparameters;
+    filter_table_name = filter_module_name.caching_parameters_master;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -155,13 +162,14 @@ export class CachingParametersListComponent
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     supplierListAll : any[] = [];
-    selectedSupplier!:string;
+    selectedSupplier:any;
 
     constructor(
         private cachingParameterService: CachingParameterService,
         private conformationService: FuseConfirmationService,
         private flighttabService: FlightTabService,
         private entityService: EntityService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.city);
         // this.cols = this.columns.map((x) => x.key);
@@ -169,6 +177,7 @@ export class CachingParametersListComponent
         this.sortColumn = 'supplier_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.entityService.onrefreshcachingParametersCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -181,11 +190,40 @@ export class CachingParametersListComponent
 
     ngOnInit() {
         this.getSupplier("")
+
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['supplier_name']){
+                this.selectedSupplier = resp['table_config'].supplier_name?.value;
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if(filterData['table_config']['supplier_name']){
+                this.selectedSupplier = filterData['table_config'].supplier_name?.value;
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
+      }
 
     getSupplier(value) {
         this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
           this.supplierListAll = data;
+
+          for (let i in this.supplierListAll) {
+            this.supplierListAll[i].id_by_value = this.supplierListAll[i].company_name
+        }
         })
       }
 
@@ -194,7 +232,13 @@ export class CachingParametersListComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -266,5 +310,9 @@ export class CachingParametersListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+          }
     }
 }

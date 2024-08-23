@@ -21,7 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { Security, leadPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, leadPermissions, messages, module_name } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -34,10 +34,13 @@ import { EntityService } from 'app/services/entity.service';
 import { LeadStatusChangedLogComponent } from '../lead-status-changed-log/lead-status-changed-log.component';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-inbox',
     templateUrl: './inbox.component.html',
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -70,16 +73,19 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
         PrimeNgImportsModule
     ]
 })
-export class InboxComponent extends BaseListingComponent{
-    @Input() isFilterShowInbox: boolean
+
+export class InboxComponent extends BaseListingComponent {
+    @Input() isFilterShowInbox: boolean;
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
-    
-    module_name = module_name.lead
+
     Mainmodule: any;
-    statusList = [ 'New', 'Live', 'Dead'];
-    typeList = [ 'B2B Partner', 'Build My Brand', 'WL','Boost My Brand','Corporate'];
+    filter_table_name = filter_module_name.leads_inbox;
+    private settingsUpdatedSubscription: Subscription;
+    statusList = ['New', 'Live', 'Dead'];
+    typeList = ['B2B Partner', 'Build My Brand', 'WL', 'Boost My Brand', 'Corporate'];
+
     cols = [];
     dataList = [];
     searchInputControlInbox = new FormControl('');
@@ -89,7 +95,7 @@ export class InboxComponent extends BaseListingComponent{
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
-
+    module_name = module_name.lead
     total = 0;
     appConfig = AppConfig;
     data: any
@@ -99,17 +105,51 @@ export class InboxComponent extends BaseListingComponent{
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
-        private entityService: EntityService
+        private entityService: EntityService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.lead);
         this.key = this.module_name;
         this.sortColumn = 'priority_id';
         this.sortDirection = 'desc';
-        this.Mainmodule = this
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['last_call_date_time'].value) {
+                resp['table_config']['last_call_date_time'].value = new Date(resp['table_config']['last_call_date_time'].value);
+            }
+            if (resp['table_config']['entry_date_time'].value) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowInbox = true;
+            this.primengTable._filter();
+        });
     }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowInbox = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            if (filterData['table_config']['last_call_date_time'].value) {
+                filterData['table_config']['last_call_date_time'].value = new Date(filterData['table_config']['last_call_date_time'].value);
+            }
+            if (filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
+    }
+
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -169,11 +209,11 @@ export class InboxComponent extends BaseListingComponent{
         // });
 
         this.matDialog.open(DialCallListComponent, {
-            data: { data: record, readonly: true},
+            data: { data: record, readonly: true },
             disableClose: true
         }).afterClosed().subscribe({
             next: (res) => {
-                if(res){
+                if (res) {
                     this.refreshItems();
                 }
             }
@@ -189,7 +229,7 @@ export class InboxComponent extends BaseListingComponent{
         //     disableClose: true
         // });
         this.matDialog.open(DialCallListComponent, {
-            data: { data: record, readonly: true, selectedTabIndex: 3},
+            data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true,
         });
     }
@@ -293,7 +333,7 @@ export class InboxComponent extends BaseListingComponent{
         //         this.refreshItems();
         //     }
         // })
-        this.entityService.raiseleadEntityCall({data: record, readonly: false, editFlag: true})
+        this.entityService.raiseleadEntityCall({ data: record, readonly: false, editFlag: true })
         this.entityService.onrefreshleadEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 this.refreshItems();
@@ -311,4 +351,13 @@ export class InboxComponent extends BaseListingComponent{
             disableClose: true
         });
     }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
+    }
+
 }
