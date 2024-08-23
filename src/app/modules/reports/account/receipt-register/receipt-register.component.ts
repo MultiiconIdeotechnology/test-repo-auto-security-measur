@@ -364,6 +364,10 @@ export class ReceiptRegisterComponent
     }
 
     ngOnDestroy(): void {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
         // this.masterService.setData(this.key, this);
     }
 }
