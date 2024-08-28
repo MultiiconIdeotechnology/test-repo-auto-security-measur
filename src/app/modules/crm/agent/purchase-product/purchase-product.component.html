@@ -46,17 +46,26 @@
                                     <mat-icon class="mat-18">info</mat-icon>
                                     <span style="font-weight: 600">Info</span>
                                 </button>
-                                <button mat-menu-item (click)="editProduct(ListItem)">
+                                <button mat-menu-item (click)="editProduct(ListItem)" *ngIf="ListItem.product_status == 'Pending'">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Modify</span>
                                 </button>
-                                <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.receipt_status !== 'Confirmed'">
+                                <!--*ngIf="ListItem.receipt_status !== 'Confirmed'"   for delete-->
+                                <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.product_status == 'Pending'">
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
-                                <button mat-menu-item (click)="cancelProduct(ListItem)" *ngIf="ListItem.receipt_status == 'Confirmed'">
+                                <button mat-menu-item (click)="cancelProduct(ListItem)" *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && (ListItem.product_status !== 'Pending' || ListItem.product_status !== 'Sales Return'))">
                                     <mat-icon class="mat-18">close</mat-icon>
                                     <span style="font-weight: 600">Cancel</span>
+                                </button>
+                                <button mat-menu-item (click)="salesReturnProduct(ListItem)" *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && ListItem.product_status !== 'Pending')">
+                                    <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
+                                    <span style="font-weight: 600">Sales Return</span>
+                                </button>
+                                <button mat-menu-item (click)="expiryProduct(ListItem)" *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && ListItem.product_status !== 'Pending')">
+                                    <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
+                                    <span style="font-weight: 600">Expiry</span>
                                 </button>
                                 <!-- <button mat-menu-item (click)="paymentProduct(ListItem)">
                                     <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
@@ -122,3 +131,4 @@
     </mat-paginator>
 </div>
 <purchase-product-entry-settings></purchase-product-entry-settings>
+<app-crm-sales-return-right></app-crm-sales-return-right>

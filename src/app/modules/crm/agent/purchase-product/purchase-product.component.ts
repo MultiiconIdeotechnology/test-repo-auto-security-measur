@@ -31,6 +31,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { AgentProductInfoComponent } from '../product-info/product-info.component';
 import { PurchaseProductEntrySettingsComponent } from "../purchase-product-entry-settings/purchase-product-entry-settings.component";
 import { EntityService } from 'app/services/entity.service';
+import { CRMSalesReturnRightComponent } from "../sales-return-right/sales-return-right.component";
 
 @Component({
     selector: 'app-purchase-product',
@@ -38,36 +39,37 @@ import { EntityService } from 'app/services/entity.service';
     styles: [`.tbl-grid { grid-template-columns: 40px 135px 60px 100px 90px 105px 125px 115px 100px 85px }`],
     standalone: true,
     imports: [
-        NgIf,
-        NgFor,
-        NgClass,
-        DatePipe,
-        AsyncPipe,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSnackBarModule,
-        MatSlideToggleModule,
-        NgxMatSelectSearchModule,
-        MatTooltipModule,
-        MatAutocompleteModule,
-        RouterOutlet,
-        MatOptionModule,
-        MatDividerModule,
-        MatSortModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatMenuModule,
-        MatDialogModule,
-        CommonModule,
-        MatTabsModule,
-        MatProgressBarModule,
-        PurchaseProductEntrySettingsComponent
-    ]
+    NgIf,
+    NgFor,
+    NgClass,
+    DatePipe,
+    AsyncPipe,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatSlideToggleModule,
+    NgxMatSelectSearchModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
+    RouterOutlet,
+    MatOptionModule,
+    MatDividerModule,
+    MatSortModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatDialogModule,
+    CommonModule,
+    MatTabsModule,
+    MatProgressBarModule,
+    PurchaseProductEntrySettingsComponent,
+    CRMSalesReturnRightComponent
+]
 })
 export class PurchaseProductComponent {
     module_name = module_name.crmagent;
@@ -94,6 +96,14 @@ export class PurchaseProductComponent {
         this.agentId = this.record?.agentid;
 
         this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if(item){
+                    this.refreshItems();
+                }
+            }
+        });
+
+        this.entityService.onCRMrefreshSalesReturnCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 if(item){
                     this.refreshItems();
@@ -253,11 +263,13 @@ export class PurchaseProductComponent {
     getStatusColor(status: string): string {
         if (status == 'Pending') {
             return 'text-yellow-600';
+        } else if (status == 'Sales Return' || status == 'Cancelled') {
+            return 'text-red-600';
         } else if (status == 'Inprocess') {
             return 'text-green-600';
         } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else if (status == 'Expired' || status == 'Cancel' || status == 'Block') {
+        } else if (status == 'Expired' || status == 'Cancel' || status == 'Block' || status == 'Cancelled') {
             return 'text-red-600';
         } {
             return '';
@@ -429,6 +441,47 @@ export class PurchaseProductComponent {
             });
     }
 
+    expiryProduct(record) {
+        if (!Security.hasPermission(agentPermissions.expiryProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = 'Expiry Product';
+        this.confirmationService
+            .open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    let payload = {
+                        id : record.id
+                    }
+                    this.crmService.expiryProduct(payload).subscribe({
+                        next: () => {
+                            this.alertService.showToast(
+                                'success',
+                                'Product has been expired!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+
+                    });
+                }
+            });
+    }
+
     editProduct(record) {
         // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
@@ -448,11 +501,13 @@ export class PurchaseProductComponent {
         //             );
         //         }
         //     });
-
         this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
     }
 
-    paymentProduct() {
-
+    salesReturnProduct(record){
+        if (!Security.hasPermission(agentPermissions.salesReturnProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        this.entityService.raiseCRMSalesReturnCall({ add: true, data: record })
     }
 }

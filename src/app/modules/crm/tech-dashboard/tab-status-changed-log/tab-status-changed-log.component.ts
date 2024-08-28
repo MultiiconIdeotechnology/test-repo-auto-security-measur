@@ -34,7 +34,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 120px 150px 290px;
+            grid-template-columns: 120px 160px 290px;
         }
     `,
     ],
@@ -157,13 +157,13 @@ export class tabStatusChangedLogComponent {
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Pending') {
+        if (status == 'Sales Return' || status == 'Expiry Date updated') {
             return 'text-red-600';
         } else if (status == 'Inprocess') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
-        } else if (status == 'Waiting for Customer Update') {
+        } else if (status == 'Waiting for Customer Update' || status == 'Pending') {
             return 'text-blue-600';
         } else if (status == 'Waiting for Account Activation') {
             return 'text-blue-600';

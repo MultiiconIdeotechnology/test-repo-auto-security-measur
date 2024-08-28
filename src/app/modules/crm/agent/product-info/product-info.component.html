@@ -132,20 +132,20 @@
                         <div class="pt-3 overflow-hidden w-full flex-row flex">
                             <div class="flex flex-col w-[40%] pt-1">
                                 <span class="text-base font-medium text-secondary dark:text-[#687798]">Status</span>
-                                <span *ngIf="purchase_reg?.purchase_product" class="text-base truncate" [ngClass]="getStatusColor(record?.product_status)">
-                                    {{record?.product_status ? record?.product_status : " -"}}</span>
+                                <span *ngIf="purchase_reg?.purchase_product" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{dataList?.product_status ? dataList?.product_status : " -"}}</span>
 
-                                <span *ngIf="receipt_reg?.receipt_register" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
+                                <span *ngIf="receipt_reg?.receipt_register" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{dataList &&dataList?.product_status ? dataList && dataList?.product_status : " -"}}</span>
 
-                                <span *ngIf="account_reg?.account_receipt" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
+                                <span *ngIf="account_reg?.account_receipt" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{dataList &&dataList?.product_status ? dataList && dataList?.product_status : " -"}}</span>
 
-                                <span *ngIf="sales_product_reg?.sales_product" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
+                                <span *ngIf="sales_product_reg?.sales_product" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{dataList &&dataList?.product_status ? dataList && dataList?.product_status : " -"}}</span>
 
-                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
+                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{dataList &&dataList?.product_status ? dataList && dataList?.product_status : " -"}}</span>
                             </div>
 
                             <div class="flex flex-col w-[40%]">
@@ -308,6 +308,10 @@
             </mat-tab>
             <mat-tab label="WL-Setting Links" [aria-label]="'WL-Setting Links'">
                 <app-payment-info-wl-settings-link #receipts [wlSetting]="getWLSettingList"></app-payment-info-wl-settings-link>
+            </mat-tab>
+
+            <mat-tab label="Sales Return" [aria-label]="'Sales Return'" *ngIf="dataList?.is_sales_return">
+                <app-payment-info-sales-return #salesReturn [salesReturnDetail]="dataList"></app-payment-info-sales-return>
             </mat-tab>
         </mat-tab-group>
     </div>

@@ -188,7 +188,7 @@ export class PaymentInfoItemComponent {
             return 'text-orange-600';
         } else if (status == 'Inprocess') {
             return 'text-blue-600';
-        } else if (status == 'Rejected from Store' || status == 'Cancel') {
+        } else if (status == 'Rejected from Store' || status == 'Cancel' || status == 'Sales Return' || status == 'Cancelled') {
             return 'text-red-600';
         } else if (status == 'Expired') {
             return 'text-red-600';

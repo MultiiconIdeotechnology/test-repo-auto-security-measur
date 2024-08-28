@@ -31,6 +31,9 @@ export class EntityService {
     private refreshInstallmentCall = new ReplaySubject<any>();
     private installmentCall = new ReplaySubject<any>();
 
+    private refreshCRMSalesReturnCall = new ReplaySubject<any>();
+    private crmSalesReturnCall = new ReplaySubject<any>();
+
     private paymentLinkEntityCall = new ReplaySubject<any>();
     private refreshPaymentLinkEntityCall = new ReplaySubject<any>();
 
@@ -68,6 +71,23 @@ export class EntityService {
 
     public onInstallmentCall(): Observable<any> {
         return this.installmentCall.asObservable();
+    }
+
+    /******** CRM Sales Return ***********/
+    public raiseCRMrefreshSalesReturnCall(item): void {
+        this.refreshCRMSalesReturnCall.next(item);
+    }
+
+    public onCRMrefreshSalesReturnCall(): Observable<any> {
+        return this.refreshCRMSalesReturnCall.asObservable();
+    }
+
+    public raiseCRMSalesReturnCall(item): void {
+        this.crmSalesReturnCall.next(item);
+    }
+
+    public onCRMSalesReturnCall(): Observable<any> {
+        return this.crmSalesReturnCall.asObservable();
     }
 
     /********Product Purchase***********/

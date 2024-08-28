@@ -72,6 +72,10 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/delete', model);
     }
 
+    expiryProduct(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/ExpiredProduct', model);
+    }
+
     getTechCollectionList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'CRM/WalletCredit/getTechCollectionList', model);
     }
@@ -86,6 +90,10 @@ export class CrmService {
 
     updateInstallment(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/Updateinstallmentdate', model);
+    }
+
+    createSalesreturn(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createSalesreturn', model);
     }
 
     createReceipt(model: any): Observable<any> {
