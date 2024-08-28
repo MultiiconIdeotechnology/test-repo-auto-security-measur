@@ -115,7 +115,7 @@ export class AmendmentRequestsListComponent
         this.getSupplier("", true);
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -127,11 +127,13 @@ export class AmendmentRequestsListComponent
             this.selectedSupplier = resp['table_config']['company_name']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['amendment_request_time'].value && resp['table_config']['amendment_request_time'].value.length) {
+
+            if (resp?.['table_config']?.['amendment_request_time']?.value != null && resp['table_config']['amendment_request_time'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
             }
-            if (resp['table_config']['travel_date'].value) {
-                resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
+            
+            if (resp['table_config']['travel_date']?.value != null) {
+              resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
@@ -148,11 +150,12 @@ export class AmendmentRequestsListComponent
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
-            if (filterData['table_config']['amendment_request_time'].value && filterData['table_config']['amendment_request_time'].value.length) {
+            if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }
-            if (filterData['table_config']['travel_date'].value) {
-                filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+            
+            if (filterData['table_config']['travel_date']?.value != null) {
+              filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
         }

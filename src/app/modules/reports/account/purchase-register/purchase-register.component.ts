@@ -96,7 +96,7 @@ export class PurchaseRegisterComponent
         this.getCompanyList("");
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -109,7 +109,7 @@ export class PurchaseRegisterComponent
             this.selectedCompany = resp['table_config']['company']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -126,7 +126,7 @@ export class PurchaseRegisterComponent
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
             this.selectedCompany = filterData['table_config']['company']?.value;
-            if ( filterData['table_config']['entry_date_time']?.value.length) {
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time']?.value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];

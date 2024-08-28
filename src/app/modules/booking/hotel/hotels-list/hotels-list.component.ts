@@ -124,7 +124,7 @@ export class HotelsListComponent extends BaseListingComponent {
     // this.getFromCity('');
 
     // common filter
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -136,13 +136,13 @@ export class HotelsListComponent extends BaseListingComponent {
       this.selectedSupplier = resp['table_config']['supplier_name']?.value;
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+      if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
         this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
-      if (resp['table_config']['check_in_date'].value) {
+      if (resp['table_config']['check_in_date']?.value != null) {
         resp['table_config']['check_in_date'].value = new Date(resp['table_config']['check_in_date'].value);
       }
-      if (resp['table_config']['check_out_date'].value) {
+      if (resp['table_config']['check_out_date']?.value != null) {
         resp['table_config']['check_out_date'].value = new Date(resp['table_config']['check_out_date'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -159,13 +159,13 @@ export class HotelsListComponent extends BaseListingComponent {
       this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
       this.selectedSupplier = filterData['table_config']['supplier_name']?.value;
 
-      if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+      if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
-      if (filterData['table_config']['check_in_date'].value) {
+      if (filterData['table_config']['check_in_date']?.value != null) {
         filterData['table_config']['check_in_date'].value = new Date(filterData['table_config']['check_in_date'].value);
       }
-      if (filterData['table_config']['check_out_date'].value) {
+      if (filterData['table_config']['check_out_date']?.value != null) {
         filterData['table_config']['check_out_date'].value = new Date(filterData['table_config']['check_out_date'].value);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];

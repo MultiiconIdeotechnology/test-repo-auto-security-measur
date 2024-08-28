@@ -123,14 +123,14 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   }
 
   ngOnInit() {
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       // console.log("resp['table_config']['payment_request_date']", resp['table_config']['payment_request_date'] );
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['payment_request_date'].value && resp['table_config']['payment_request_date'].value.length) {
+      if (resp['table_config']['payment_request_date']?.value != null && resp['table_config']['payment_request_date'].value.length) {
         this._filterService.rangeDateConvert(resp['table_config']['payment_request_date']);
       }
-      if (resp['table_config']['audit_date_time'].value) {
+      if (resp['table_config']['audit_date_time']?.value != null) {
         resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -144,10 +144,10 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      if (filterData['table_config']['payment_request_date'].value && filterData['table_config']['payment_request_date'].value.length) {
+      if (filterData['table_config']['payment_request_date']?.value != null && filterData['table_config']['payment_request_date'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['payment_request_date']);
       }
-      if (filterData['table_config']['audit_date_time'].value) {
+      if (filterData['table_config']['audit_date_time']?.value != null) {
         filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];

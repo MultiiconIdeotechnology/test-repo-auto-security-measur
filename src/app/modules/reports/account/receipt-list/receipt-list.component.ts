@@ -154,7 +154,7 @@ export class ReceiptListComponent
         this.getAgent('');
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
               const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -164,10 +164,10 @@ export class ReceiptListComponent
           }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['receipt_request_date'].value && resp['table_config']['receipt_request_date'].value.length) {
+            if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
-            if (resp['table_config']['audit_date_time'].value) {
+            if (resp['table_config']['audit_date_time']?.value != null) {
                 resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -182,10 +182,10 @@ export class ReceiptListComponent
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
-            if (filterData['table_config']['receipt_request_date'].value && filterData['table_config']['receipt_request_date'].value.length) {
+            if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
-            if (filterData['table_config']['audit_date_time'].value) {
+            if (filterData['table_config']['audit_date_time']?.value != null) {
                 filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];

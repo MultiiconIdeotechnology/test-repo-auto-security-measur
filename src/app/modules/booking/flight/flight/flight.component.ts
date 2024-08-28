@@ -152,7 +152,7 @@ export class FlightComponent extends BaseListingComponent {
         this.getSupplierList();
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
@@ -182,10 +182,10 @@ export class FlightComponent extends BaseListingComponent {
 
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+            if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
             }
-            if (resp['table_config']['travelDate'].value) {
+            if (resp['table_config']['travelDate']?.value != null) {
                 resp['table_config']['travelDate'].value = new Date(resp['table_config']['travelDate'].value);
             }
             this.primengTable['filters'] = resp['table_config'];

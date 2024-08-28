@@ -134,7 +134,7 @@ export class BusComponent extends BaseListingComponent {
     this.getToCity('');
 
     // common filter
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       this.selectedSupplier = resp['table_config']['supplier']?.value;
       this.selectedFromCity = resp['table_config']['from_id_filters']?.value;
@@ -163,7 +163,7 @@ export class BusComponent extends BaseListingComponent {
 
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['bookingDate'].value && resp['table_config']['bookingDate'].value.length) {
+      if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
         this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -181,7 +181,7 @@ export class BusComponent extends BaseListingComponent {
       this.selectedSupplier = filterData['table_config']['supplier']?.value;
       this.selectedFromCity = filterData['table_config']['from_id_filters']?.value;
       this.selectedToCity = filterData['table_config']['to_id_filters']?.value;
-      if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+      if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
