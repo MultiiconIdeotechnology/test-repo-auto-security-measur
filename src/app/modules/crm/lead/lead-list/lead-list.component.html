@@ -34,7 +34,7 @@
 
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowInbox = !isFilterShowInbox">
+                matTooltip="Advanced Filter" (click)="isFilterShowInbox = !isFilterShowInbox">
                 <img *ngIf="!isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
                 <img *ngIf="isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
@@ -42,7 +42,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Archive'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter"
                 (click)="isFilterShowArchive  = !isFilterShowArchive ">
                 <img *ngIf="!isFilterShowArchive" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -52,7 +52,7 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
-                matTooltip="Saved Filter">
+                matTooltip="Saved Filter" >
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 

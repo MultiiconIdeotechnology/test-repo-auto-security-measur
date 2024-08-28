@@ -53,7 +53,7 @@
                 <span class="ml-2 mr-1">Filter</span>
             </button> -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
-                matTooltip="Saved Filter">
+                matTooltip="Saved Filter" [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 

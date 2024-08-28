@@ -59,7 +59,7 @@
 
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Pending'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="pending?.isLoading"
                 (click)="isFilterShowPending  = !isFilterShowPending">
                 <img *ngIf="!isFilterShowPending" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -68,7 +68,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Completed'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="completed?.isLoading"
                 (click)="isFilterShowCompleted  = !isFilterShowCompleted ">
                 <img *ngIf="!isFilterShowCompleted" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -77,7 +77,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Expired'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="expired?.isLoading"
                 (click)="isFilterShowExpired  = !isFilterShowExpired ">
                 <img *ngIf="!isFilterShowExpired" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -86,7 +86,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Blocked'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="blocked?.isLoading"
                 (click)="isFilterShowBlocked  = !isFilterShowBlocked ">
                 <img *ngIf="!isFilterShowBlocked" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">

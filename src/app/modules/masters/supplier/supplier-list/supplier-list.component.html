@@ -29,7 +29,7 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)" matTooltip="Saved Filter">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)" matTooltip="Saved Filter" [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 

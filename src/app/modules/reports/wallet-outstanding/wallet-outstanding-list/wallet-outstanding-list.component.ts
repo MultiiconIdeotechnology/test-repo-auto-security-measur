@@ -156,7 +156,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
 
             // pass by value variable added to common named variable(id_by_value) for common filter
             for (let i in this.employeeList) {
-                this.employeeList[i].id_by_value = this.employeeList[i].employee_name
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
             }
         });
     }
