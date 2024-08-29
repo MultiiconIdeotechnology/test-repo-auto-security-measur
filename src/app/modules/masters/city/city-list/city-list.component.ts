@@ -146,7 +146,6 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
         ];
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            console.log("resp city", resp);
         });
     }
 
