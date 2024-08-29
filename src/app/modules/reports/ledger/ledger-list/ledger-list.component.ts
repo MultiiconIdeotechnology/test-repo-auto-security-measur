@@ -159,7 +159,6 @@ export class LedgerListComponent extends BaseListingComponent {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      console.log("filterData", filterData);
       
       if (filterData['table_config']['datetime'].value) {
         filterData['table_config']['datetime'].value = new Date(filterData['table_config']['datetime'].value);

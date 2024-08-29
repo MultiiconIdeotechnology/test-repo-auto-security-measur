@@ -142,8 +142,6 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 
 		// common filter
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-			console.log("resp", resp);
-
 			this.selectedAgent = resp['table_config']['master_agent']?.value;
 			if (this.selectedAgent && this.selectedAgent.id) {
 				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -249,8 +247,6 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 	}
 
 	onAgentChange(agent: any) {
-		console.log("this.primengTable", this.primengTable.filter);
-		
 		if (agent) {
 			this.primengTable.filter(agent?.agency_name, 'master_agent', 'equals');
 			setTimeout(() => {
