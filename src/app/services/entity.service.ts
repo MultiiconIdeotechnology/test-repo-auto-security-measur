@@ -37,6 +37,7 @@ export class EntityService {
   private infoWithdrawCall = new ReplaySubject<any>();
 
   private appliedOnCall = new ReplaySubject<any>();
+  private amendmentStatusInfo = new ReplaySubject<any>();
 
 
   constructor() { }
@@ -136,6 +137,15 @@ export class EntityService {
     return this.amendmentReqInfo.asObservable();
   }
   // ### End ### //
+
+  // Amendment Status Drawer
+  public raiseAmendmentStatusInfoCall(item: any): void {
+    this.amendmentStatusInfo.next(item);
+  }
+
+  public onAmendmentStatusInfoCall(): Observable<any> {
+    return this.amendmentStatusInfo.asObservable();
+  }
 
   public raiseSearchChange(item): void {
     this.searchChange.next(item);

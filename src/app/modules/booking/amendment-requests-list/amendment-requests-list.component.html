@@ -88,10 +88,13 @@
                         Amendment Type <p-sortIcon field="amendment_type" />
                     </th>
 
-                    <th class="min-w-[145px]" pSortableColumn="amendment_status" pResizableColumn>
-                        Status <p-sortIcon field="amendment_status" />
-                        <span class="float-right" (click)="isFrozenColumn('amendment_status');$event.stopPropagation()">
-                        </span>
+                    <th class="min-w-[145px] flex justify-between items-center" pSortableColumn="amendment_status" pResizableColumn>
+                        <div>
+                            Status <p-sortIcon field="amendment_status" />
+                        </div>
+                        <!-- <span class="float-right" (click)="isFrozenColumn('amendment_status');$event.stopPropagation()">
+                        </span> -->
+                        <mat-icon class="mat-18" class="icon-size-4" (click)="statusInfo();$event.stopPropagation()">info</mat-icon>
                     </th>
 
                     <!-- <th class="min-w-[145px]" pSortableColumn="status_for_agent" pResizableColumn>
@@ -317,7 +320,7 @@
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Confirm</span>
                             </button> -->
-                            
+
                             <!-- <button mat-menu-item (click)="cancelReq(element)"
                                 *ngIf="element.amendment_status?.toLowerCase() == 'request sent to supplier' ||
                             element.amendment_status?.toLowerCase() == 'quotation sent' || element.amendment_status?.toLowerCase() == 'quotation confirmed by ta'">
@@ -383,7 +386,8 @@
                         {{(element.amendment_confirmation_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td> -->
                     <td *ngFor="let col of columns">
-                        {{col.field == 'travel_date' || col.field == 'sup_refund_date' ? (element[col.field] ? (element[col.field] | date:'dd-MM-yyyy HH:mm:ss') :'') : (element[col.field] || "-")}}
+                        {{col.field == 'travel_date' || col.field == 'sup_refund_date' ? (element[col.field] ?
+                        (element[col.field] | date:'dd-MM-yyyy HH:mm:ss') :'') : (element[col.field] || "-")}}
                     </td>
                 </tr>
             </ng-template>
@@ -401,3 +405,4 @@
 
 <app-update-charge></app-update-charge>
 <app-amendment-request-entry></app-amendment-request-entry>
+<app-status-info></app-status-info>

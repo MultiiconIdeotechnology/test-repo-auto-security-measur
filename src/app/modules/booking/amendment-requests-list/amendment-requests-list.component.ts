@@ -32,6 +32,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { EntityService } from 'app/services/entity.service';
 import { takeUntil } from 'rxjs';
 import { Linq } from 'app/utils/linq';
+import { StatusInfoComponent } from './status-info/status-info.component';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -57,7 +58,8 @@ import { Linq } from 'app/utils/linq';
         NgClass,
         PrimeNgImportsModule,
         UpdateChargeComponent,
-        AmendmentRequestEntryComponent
+        AmendmentRequestEntryComponent,
+        StatusInfoComponent
     ],
 })
 export class AmendmentRequestsListComponent
@@ -294,7 +296,7 @@ export class AmendmentRequestsListComponent
 
     // Status wise color
     getStatusColor(status: string): string {
-        if (status == 'Refund Process' || status == 'Inprocess' || status == 'Account Audit') {
+        if (status == 'Refund Process' || status == 'Inprocess' || status == 'Account Audit' || status == 'Partial Cancellation Pending' || status == 'Cancellation Pending') {
             return 'text-orange-600';
         } else if (status == 'Quotation Sent' || status == "Partial Payment Completed") {
             return 'text-yellow-600';
@@ -348,6 +350,10 @@ export class AmendmentRequestsListComponent
                 })
             }
         })
+    }
+
+    statusInfo(){
+        this.entityService.raiseAmendmentStatusInfoCall(null);
     }
 
     // Show update charge

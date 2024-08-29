@@ -55,8 +55,8 @@
         </div>
 
         <div class="dark:bg-card bg-gray-200 px-5 py-3 mb-4 border-2 rounded-md" *ngIf="allData?.remark">
-            <div class="font-semibold ">Note</div>
-            <div class=" text-secondary">{{allData?.remark}}</div>
+            <div class="font-semibold ">Remark</div>
+            <div class=" text-secondary whitespace-pre-line">{{allData?.remark}}</div>
         </div>
 
         <div class="rounded-md overflow-hidden mb-3" *ngIf="allData?.b2bcharges.charge">
@@ -73,10 +73,10 @@
                     </tr>
                     <tr class="border border-gray-border">
                         <td class="border-l w-[50%]">
-                            {{allData?.b2bcharges.per_person_charge || '0'}}
+                            {{allData.currency_symbol}} {{allData?.b2bcharges?.per_person_charge?.toFixed(2) || '0.00'}}
                         </td>
                         <td class="border-l w-[50%]">
-                            {{allData?.b2bcharges.charge || '0'}}
+                            {{allData.currency_symbol}} {{allData?.b2bcharges?.charge?.toFixed(2) || '0.00'}}
                         </td>
                     </tr>
                 </table>
@@ -97,10 +97,10 @@
                     </tr>
                     <tr class="border border-gray-border">
                         <td class="border-l w-[50%]">
-                            {{allData?.charges.per_person_charge || '0'}}
+                            {{allData.currency_symbol}} {{allData?.charges?.per_person_charge?.toFixed(2) || '0.00'}}
                         </td>
                         <td class="border-l w-[50%]">
-                            {{allData?.charges.charge || '0'}}
+                            {{allData.currency_symbol}} {{allData?.charges?.charge?.toFixed(2) || '0.00'}}
                         </td>
                     </tr>
                 </table>

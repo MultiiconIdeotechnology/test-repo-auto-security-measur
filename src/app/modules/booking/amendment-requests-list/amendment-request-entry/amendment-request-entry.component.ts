@@ -212,8 +212,8 @@ export class AmendmentRequestEntryComponent {
                             // { name: "Supplier Charges", value: "Pending" },
                             { name: "Bonton Markup", value: `${data.currency_symbol} ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
                             { name: "Per Pax Refund", value: `${data.currency_symbol} ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
-                            { name: "Total Refund", value: `${data.currency_symbol} ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
+                            { name: "Total Refund", value: `${data.currency_symbol} ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
                         if (this.recordList.is_refundable) {
                             this.chargesList.unshift({ name: 'Cancellation Charge', value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` })

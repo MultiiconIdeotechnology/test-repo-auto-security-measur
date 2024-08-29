@@ -65,7 +65,7 @@
                     <div class="border border-dashed"></div>
                     <div class="text-lg font-semibold pt-4 text-primary">{{titleCharge}}</div>
                     <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
-                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of chargesList">
+                        <div class="flex flex-col mb-3" [ngClass]="chargesList.length == 4 ? 'w-1/4' : 'w-1/5'" *ngFor="let af of chargesList">
                             <div class="flex flex-row space-x-2">
                                 <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
                             </div>
@@ -181,7 +181,7 @@
             </ng-container>
 
             <ng-container
-                *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent')">
+                *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent')">
                 <button mat-stroked-button (click)="sendMail()">
                     Send Mail To Supplier
                 </button>
