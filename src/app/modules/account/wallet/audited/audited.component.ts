@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -56,6 +56,7 @@ export class AuditedComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowAudit: boolean;
+  @Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
   @Input() filterApiData: any;
   @Input() activeTab: any;
 
@@ -98,7 +99,8 @@ export class AuditedComponent extends BaseListingComponent {
     this.key = this.module_name;
     this.sortColumn = 'request_date_time';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.auditListFilter = {
       particularId: '',
@@ -120,58 +122,94 @@ export class AuditedComponent extends BaseListingComponent {
       this.mopList = this.filterApiData.mopData;
       this.pspList = this.filterApiData.pspData;
     }, 1000);
+
+    this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+      this.selectedMop = resp['table_config']['mop']?.value;
+			this.selectedPsp = resp['table_config']['psp_name']?.value;
+      this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
+      console.log("selected employee", this.selectedEmployee)
+      if (this.selectedEmployee && this.selectedEmployee.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+        if (!match) {
+          this.agentList.push(this.selectedEmployee);
+        }
+      }
+      if (this.selectedMop && this.selectedMop.id) {
+        const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
+        if (!match) {
+          this.mopList.push(this.selectedMop);
+        }
+      }
+      if (this.selectedPsp && this.selectedPsp.id) {
+        const match = this.pspList.find((item: any) => item.id == this.selectedPsp?.id);
+        if (!match) {
+          this.pspList.push(this.selectedPsp);
+        }
+      }
+        if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
+          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+        }
+        if (resp?.['table_config']?.['audited_date_time']?.value != null) {
+          resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
+        }
+        
+        this.isFilterShowAudit = true;
+        this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
+        this.primengTable['filters'] = resp['table_config'];
+
+        this.primengTable._filter();
+    });
+  }
+
+  ngAfterViewInit(): void {
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedMop = filterData['table_config']['mop']?.value;
+			this.selectedPsp = filterData['table_config']['psp_name']?.value;
+      setTimeout(() => {
+        this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
+        if (this.selectedEmployee && this.selectedEmployee.id) {
+					const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+					if (!match) {
+						this.agentList.push(this.selectedEmployee);
+					}
+				}
+				if (this.selectedMop && this.selectedMop.id) {
+					const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
+					if (!match) {
+						this.mopList.push(this.selectedMop);
+					}
+				}
+				if (this.selectedPsp && this.selectedPsp.id) {
+					const match = this.pspList.find((item: any) => item.id == this.selectedPsp?.id);
+					if (!match) {
+						this.pspList.push(this.selectedPsp);
+					}
+				}
+			}, 1000);
+      if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
+        this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
+      }
+      if (filterData['table_config']['audited_date_time']?.value != null) {
+        filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
+      }
+      
+      this.isFilterShowAudit = true;
+      this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      this.primengTable['filters'] = filterData['table_config'];
+    }
   }
   
   
   ngOnChanges(changes: SimpleChanges) {
-    // console.log("changes", changes);
-    
-    if (this.activeTab == 'Audited') {
-      
-      this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-        if(this.activeTab == 'Audited') {
-          // console.log("resp Audited", resp);
-          if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
-            this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
-          }
-          if (resp?.['table_config']?.['audited_date_time']?.value != null) {
-            resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
-          }
-          
-          this.isFilterShowAudit = true;
-          // this.sortColumn = resp['sortColumn'];
-          // this.primengTable['_sortField'] = resp['sortColumn'];
-          this.primengTable['filters'] = resp['table_config'];
-  
-          this.primengTable._filter();
-        }
-      });
-
-      // ngAfterViewInit
-      if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
-          this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
-        }
-        if (filterData['table_config']['audited_date_time']?.value != null) {
-          filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
-        }
-        
-        this.isFilterShowAudit = true;
-        // this.primengTable['_sortField'] = filterData['sortColumn'];
-        // this.sortColumn = filterData['sortColumn'];
-        this.primengTable['filters'] = filterData['table_config'];
-      }
-    }
-
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData?.mopData;
     this.pspList = this.filterApiData?.pspData;
-
-    // if (this.isFilterShowAudit) {
-    //   this.getAgentList('');
-    // }
   }
 
   getAgentList(value: string, bool = true) {
@@ -247,9 +285,7 @@ export class AuditedComponent extends BaseListingComponent {
 
 
   refreshItemsAudited(event?: any) {
-
     this.isLoading = true;
-
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlAudit.value;
     filterReq['Status'] = 'audited';

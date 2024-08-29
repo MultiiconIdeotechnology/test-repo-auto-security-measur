@@ -2,7 +2,7 @@
     <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
         columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
         [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-        [lazy]="true" (onLazyLoad)="refreshItemsAudited($event)" [lazyLoadOnInit]="false" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [lazy]="true" (onLazyLoad)="refreshItemsAudited($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
         [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         [globalFilterFields]="['reference_number', 'request_date_time', 'recharge_for_name', 'recharge_amount','settled_amount','mop','psp_name','psp_ref_number', 'audited_by_name','audited_date_time','user_remark']"
@@ -94,7 +94,7 @@
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agent_info" [filter]="true" filterBy="agent_info"
-                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
                                     <div class="flex align-items-center gap-2">

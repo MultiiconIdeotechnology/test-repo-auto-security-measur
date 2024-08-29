@@ -19,18 +19,18 @@
                 <input [class.hidden]="this.tab == 'Audited' || this.tab == 'Pending'" matInput
                     [formControl]="searchInputControlRejected" [autocomplete]="'off'" [placeholder]="'Search'">
             </mat-form-field> -->
-
-            <div class="flex ctm_search" [class.hidden]="this.tab == 'Audited' || this.tab == 'Rejected'">
+            <!-- [class.hidden]="this.tab == 'Audited' || this.tab == 'Rejected'" -->
+            <div class="flex ctm_search"  *ngIf="tabNameStr == 'Pending'">
                 <input #pendingRef matInput [formControl]="searchInputControlPending" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="pendingRefresh(pendingRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="pendingRefresh(pendingRef.value)"></mat-icon>
             </div>
-
-            <div class="flex ctm_search" [class.hidden]="this.tab == 'Pending' || this.tab == 'Rejected'">
+            <!-- [class.hidden]="this.tab == 'Pending' || this.tab == 'Rejected'" -->
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Audited'">
                 <input #auditRef matInput [formControl]="searchInputControlAudit" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="auditedRefresh(auditRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="auditedRefresh(auditRef.value)"></mat-icon>
             </div>
-
-            <div class="flex ctm_search" [class.hidden]="this.tab == 'Audited' || this.tab == 'Pending'">
+            <!-- [class.hidden]="this.tab == 'Audited' || this.tab == 'Pending'" -->
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Rejected'">
                 <input #rejectRef matInput [formControl]="searchInputControlRejected" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="rejectedRefresh(rejectRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="rejectedRefresh(rejectRef.value)"></mat-icon>
             </div>
@@ -90,18 +90,16 @@
     </div>
 
     <mat-tab-group class="custom-tab wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
-
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
-            <app-pending #pending [isFilterShowPending]="isFilterShowPending" [filterApiData]="filterApiData" [activeTab]="tab"></app-pending>
+            <app-pending *ngIf="tabNameStr == 'Pending'" #pending [(isFilterShowPending)]="isFilterShowPending" [filterApiData]="filterApiData"></app-pending>
         </mat-tab>
 
         <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')" >
-            <app-audited #audited [isFilterShowAudit]="isFilterShowAudit" [filterApiData]="filterApiData" [activeTab]="tab"></app-audited>
+            <app-audited *ngIf="tabNameStr == 'Audited'" #audited [(isFilterShowAudit)]="isFilterShowAudit" [filterApiData]="filterApiData"></app-audited>
         </mat-tab>
 
         <mat-tab label="Rejected" [aria-label]="'Rejected'" *ngIf="getTabsPermission('rejected')">
-            <app-rejected #rejected [isFilterShowReject]="isFilterShowReject" [filterApiData]="filterApiData" [activeTab]="tab"></app-rejected>
+            <app-rejected *ngIf="tabNameStr == 'Rejected'" #rejected [(isFilterShowReject)]="isFilterShowReject" [filterApiData]="filterApiData"></app-rejected>
         </mat-tab>
-
     </mat-tab-group>
 </div>

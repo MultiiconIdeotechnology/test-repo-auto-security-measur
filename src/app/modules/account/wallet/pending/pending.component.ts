@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -61,12 +61,9 @@ export class PendingComponent extends BaseListingComponent {
 
 	@Input() isFilterShowPending: boolean
 	@Input() filterApiData: any;
-	@Input() activeTab: any;
-
-	@ViewChild('tabGroup') tabGroup;
+	@Output() isFilterShowPendingChange = new EventEmitter<boolean>();
 	searchInputControlPending = new FormControl('');
 	filter_table_name = filter_module_name.wallet_recharge_pending;
-
 	module_name = module_name.wallet
 	dataList = [];
 	total = 0;
@@ -96,13 +93,14 @@ export class PendingComponent extends BaseListingComponent {
 		private matDialog: MatDialog,
 		public agentService: AgentService,
 		private entityService: EntityService,
-		public _filterService: CommonFilterService
+		public _filterService: CommonFilterService,
+		private elementRef: ElementRef
 	) {
 		super(module_name.wallet)
 		this.key = this.module_name;
 		this.sortColumn = 'request_date_time';
 		this.sortDirection = 'desc';
-		this.Mainmodule = this
+		this.Mainmodule = this;
 
 		this.pendingFilter = {
 			particularId: 'all',
@@ -116,7 +114,6 @@ export class PendingComponent extends BaseListingComponent {
 		this.pendingFilter.FromDate.setDate(1);
 		this.pendingFilter.FromDate.setMonth(this.pendingFilter.FromDate.getMonth());
 		this._filterService.applyDefaultFilter(this.filter_table_name);
-
 	}
 
 	ngOnInit(): void {
@@ -125,27 +122,60 @@ export class PendingComponent extends BaseListingComponent {
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
+
+		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
+			this.selectedMop = resp['table_config']['mop']?.value;
+			this.selectedPSP = resp['table_config']['psp_name']?.value;
+
+			if (this.selectedEmployee && this.selectedEmployee.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+				if (!match) {
+					this.agentList.push(this.selectedEmployee);
+				}
+			}
+
+			if (this.selectedMop && this.selectedMop.id) {
+				const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
+				if (!match) {
+					this.mopList.push(this.selectedMop);
+				}
+			}
+			if (this.selectedPSP && this.selectedPSP.id) {
+				const match = this.pspList.find((item: any) => item.id == this.selectedPSP?.id);
+				if (!match) {
+					this.pspList.push(this.selectedPSP);
+				}
+			}
+			if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
+				this._filterService.rangeDateConvert(resp.table_config.request_date_time);
+			}
+			this.isFilterShowPending = true;
+			this.isFilterShowPendingChange.emit(this.isFilterShowPending);
+			// this.sortColumn = resp['sortColumn'];
+			// this.primengTable['_sortField'] = resp['sortColumn'];
+			this.primengTable['filters'] = resp['table_config'];
+			this.primengTable._filter();
+		});
 	}
 
 	ngAfterViewInit() {
-	}
-
-	ngOnChanges() {
-		if (this.activeTab == 'Pending') {
-			this.agentList = this.filterApiData.agentData;
-			this.mopList = this.filterApiData.mopData;
-			this.pspList = this.filterApiData.pspData;
-			this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-				this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
-				this.selectedMop = resp['table_config']['mop']?.value;
-				this.selectedPSP = resp['table_config']['psp_name']?.value;
+		// Defult Active filter show
+		if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+			let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+			this.selectedMop = filterData['table_config']['mop']?.value;
+			this.selectedPSP = filterData['table_config']['psp_name']?.value;
+			this.isFilterShowPending = true;
+			this.isFilterShowPendingChange.emit(this.isFilterShowPending);
+			
+			setTimeout(() => {
+				this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
 				if (this.selectedEmployee && this.selectedEmployee.id) {
 					const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
 					if (!match) {
 						this.agentList.push(this.selectedEmployee);
 					}
 				}
-
 				if (this.selectedMop && this.selectedMop.id) {
 					const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
 					if (!match) {
@@ -158,56 +188,21 @@ export class PendingComponent extends BaseListingComponent {
 						this.pspList.push(this.selectedPSP);
 					}
 				}
-				if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
-					this._filterService.rangeDateConvert(resp.table_config.request_date_time);
-				}
-				this.isFilterShowPending = true;
-
-				// this.sortColumn = resp['sortColumn'];
-				// this.primengTable['_sortField'] = resp['sortColumn'];
-				this.primengTable['filters'] = resp['table_config'];
-				this.primengTable._filter();
-			});
-
-			// Defult Active filter show
-			if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-				let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-				this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
-				this.selectedMop = filterData['table_config']['mop']?.value;
-				this.selectedPSP = filterData['table_config']['psp_name']?.value;
-				if (filterData?.table_config?.request_date_time?.value != null && filterData.table_config.request_date_time.value.length) {
-					this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
-				}
-				
-				setTimeout(() => {
-					this.isFilterShowPending = true;
-					if (this.selectedEmployee && this.selectedEmployee.id) {
-						const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
-						if (!match) {
-							this.agentList.push(this.selectedEmployee);
-						}
-					}
-					if (this.selectedMop && this.selectedMop.id) {
-						const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
-						if (!match) {
-							this.mopList.push(this.selectedMop);
-						}
-					}
-					if (this.selectedPSP && this.selectedPSP.id) {
-						const match = this.pspList.find((item: any) => item.id == this.selectedPSP?.id);
-						if (!match) {
-							this.pspList.push(this.selectedPSP);
-						}
-					}
-					this.primengTable['filters'] = filterData['table_config'];
-					this.primengTable._filter();
-				}, 2000);
-				
-				// this.primengTable['_sortField'] = filterData['sortColumn'];
-				// this.sortColumn = filterData['sortColumn'];
+			}, 1000);
+			if (filterData?.table_config?.request_date_time?.value != null && filterData.table_config.request_date_time.value.length) {
+				this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
 			}
+			this.primengTable['filters'] = filterData['table_config'];
 
+			// this.primengTable['_sortField'] = filterData['sortColumn'];
+			// this.sortColumn = filterData['sortColumn'];
 		}
+	}
+
+	ngOnChanges() {
+		this.agentList = this.filterApiData.agentData;
+		this.mopList = this.filterApiData.mopData;
+		this.pspList = this.filterApiData.pspData;
 	}
 
 	getAgentList(value: string) {
@@ -262,7 +257,7 @@ export class PendingComponent extends BaseListingComponent {
 					this.walletService.setRechargeAudit(data.id).subscribe({
 						next: () => {
 							this.alertService.showToast('success', "Wallet Recharge Audited", "top-right", true);
-							this.refreshItemsPending()
+							this.refreshItemsPending();
 							this.entityService.raiseWalletAuditedCall(data.id);
 						}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
 					});
@@ -326,7 +321,6 @@ export class PendingComponent extends BaseListingComponent {
 
 	refreshItemsPending(event?: any) {
 		this.isLoading = true;
-
 		const filterReq = this.getNewFilterReq(event);
 		filterReq['Filter'] = this.searchInputControlPending.value;
 		filterReq['Status'] = 'pending';
@@ -407,6 +401,7 @@ export class PendingComponent extends BaseListingComponent {
 			this.settingsUpdatedSubscription.unsubscribe();
 			this._filterService.activeFiltData = {};
 		}
+
 	}
 
 }

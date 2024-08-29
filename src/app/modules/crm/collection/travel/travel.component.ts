@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -68,7 +68,7 @@ export class TravelCollectionComponent extends BaseListingComponent {
     filter_table_name = filter_module_name.collections_travel;
     @Input() isFilterShowTravel: boolean;
     @Input() dropdownListObj: {};
-    @Input() activeTab: any;
+    @Output() isFilterShowTravelChange = new EventEmitter<boolean>();
 
     public settingsTravelSubscription: Subscription;
     agentList: any[] = [];
@@ -77,8 +77,6 @@ export class TravelCollectionComponent extends BaseListingComponent {
     cols = [];
     dataList = [];
     searchInputControlTravel = new FormControl('');
-    @ViewChild('tabGroup') tabGroup;
-
     Mainmodule: any;
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -104,71 +102,71 @@ export class TravelCollectionComponent extends BaseListingComponent {
         this.key = this.module_name;
         this.sortColumn = 'dueDate';
         this.sortDirection = 'desc';
-        this.Mainmodule = this
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
+        setTimeout(() => {
+            this.agentList = this.dropdownListObj['agentList'];
+        }, 1000);
 
+        this.settingsTravelSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if (!match) {
+                this.agentList.push(this.selectedAgent);
+            }
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+
+            if (resp.table_config?.dueDate?.value != null) {
+                resp['table_config']['dueDate'].value = new Date(resp['table_config']['dueDate'].value);
+            }
+            if (resp.table_config?.expiryDate?.value != null) {
+                resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowTravel = true;
+            this.isFilterShowTravelChange.emit(this.isFilterShowTravel);
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit(): void {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowTravel = true;
+            this.isFilterShowTravelChange.emit(this.isFilterShowTravel);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
+                if (this.selectedAgent && this.selectedAgent?.id) {
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
+
+            if (filterData.table_config?.dueDate?.value != null) {
+                filterData['table_config']['dueDate'].value = new Date(filterData['table_config']['dueDate'].value);
+            }
+            if (filterData.table_config?.expiryDate?.value != null) {
+                filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
+            }
+
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     ngOnChanges() {
-        if (this.activeTab == 'Travel') {
-            this.settingsTravelSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-                this.selectedAgent = resp['table_config']['agencyName']?.value;
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-                // this.sortColumn = resp['sortColumn'];
-                // this.primengTable['_sortField'] = resp['sortColumn'];
-
-                if (resp.table_config?.dueDate?.value != null) {
-                    resp['table_config']['dueDate'].value = new Date(resp['table_config']['dueDate'].value);
-                }
-                if (resp.table_config?.expiryDate?.value != null) {
-                    resp['table_config']['expiryDate'].value = new Date(resp['table_config']['expiryDate'].value);
-                }
-                this.primengTable['filters'] = resp['table_config'];
-                this.isFilterShowTravel = true;
-                this.primengTable._filter();
-            });
-
-            // ngAfterViewInit
-            if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-                this.isFilterShowTravel = true;
-
-                let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-                setTimeout(() => {
-                    this.selectedAgent = filterData['table_config']['agencyName']?.value;
-                    if(this.selectedAgent && this.selectedAgent?.id){
-                        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                        if (!match) {
-                            this.agentList.push(this.selectedAgent);
-                        }
-                    }
-                }, 1000);
-              
-                if (filterData.table_config?.dueDate?.value != null) {
-                    filterData['table_config']['dueDate'].value = new Date(filterData['table_config']['dueDate'].value);
-                }
-                if (filterData.table_config?.expiryDate?.value != null) {
-                    filterData['table_config']['expiryDate'].value = new Date(filterData['table_config']['expiryDate'].value);
-                }
-
-                this.primengTable['filters'] = filterData['table_config'];
-                // this.primengTable['_sortField'] = filterData['sortColumn'];
-                // this.sortColumn = filterData['sortColumn'];
-            }
-        }
-
-        if (this.agentList && !this.agentList.length) {
-            this.getAgent("");
-        }
+        this.agentList = this.dropdownListObj['agentList'];
     }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlTravel.value;
         this.crmService.getTravelCollectionList(filterReq).subscribe({

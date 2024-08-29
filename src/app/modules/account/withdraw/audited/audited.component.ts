@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Input, OnChanges, OnDestroy, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -20,7 +20,7 @@ import { RouterModule } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { WithdrawService } from 'app/services/withdraw.service';
@@ -76,9 +76,9 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 })
 export class WAuditedComponent extends BaseListingComponent implements OnChanges {
 
-  @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowAudit: boolean;
-  @Input() activeTab:any;
+  @Input() filterApiData: any;
+  @Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
 
   searchInputControlAudit = new FormControl('');
   public withdrawAuitedSubscription: Subscription;
@@ -89,14 +89,16 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
   public sortColumn: any;
   public sortDirection: any;
 
-  module_name = module_name.wallet
+  module_name = module_name.wallet;
+  filter_table_name = filter_module_name.withdraw_audited;
+
   dataList = [];
   total = 0;
   appConfig = AppConfig;
   data: any
   filter: any = {};
   agentList: any[] = [];
-
+  selectedEmployee: any;
   withdrawList = [
     { label: 'Deduction', value: 'Deduction' },
     { label: 'Bank Withdraw', value: 'Bank Withdraw' },
@@ -119,8 +121,8 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'asc';
-    this.Mainmodule = this
-
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
     this.filter = {
       agent_id: 'all',
       FromDate: new Date(),
@@ -132,45 +134,64 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnInit(): void {
-   
+    setTimeout(() => {
+      this.agentList = this.filterApiData.agentData;
+    }, 1000);
+
+    this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
+      if (this.selectedEmployee && this.selectedEmployee.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+        if (!match) {
+          this.agentList.push(this.selectedEmployee);
+        }
+      }
+      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShowAudit = true;
+      this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
+      this.primengTable._filter();
+    });
+
   }
 
-  ngOnChanges() {
-    if (this.activeTab == 'Audited') {
-      this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
-          this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+  ngAfterViewInit(): void {
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      setTimeout(() => {
+        this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
+        if (this.selectedEmployee && this.selectedEmployee.id) {
+          const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+          if (!match) {
+            this.agentList.push(this.selectedEmployee);
+          }
         }
-        this.primengTable['filters'] = resp['table_config'];
-        this.isFilterShowAudit = true;
-        this.primengTable._filter();
-      });
-
-      // ngAfterViewInit
-      if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShowAudit = true;
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
-          this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
-        }
-        // this.primengTable['_sortField'] = filterData['sortColumn'];
-        // this.sortColumn = filterData['sortColumn'];
-        this.primengTable['filters'] = filterData['table_config'];
+      }, 1000);
+      this.isFilterShowAudit = true;
+      this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
+      if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
-
-      if(this.agentList && !this.agentList.length) {
-        this.getAgentList("");
-      }
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      this.primengTable['filters'] = filterData['table_config'];
     }
 
   }
 
+  ngOnChanges() {
+
+  }
+
   getAgentList(value: string) {
-      this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
-        this.agentList = data;
-      })
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.agentList = data;
+    })
   }
 
   view(record) {
@@ -240,7 +261,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
 
   refreshItemsAudited(event?: any) {
     this.isLoading = true;
-   
+
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlAudit.value;
     filterReq['status'] = 'audited';

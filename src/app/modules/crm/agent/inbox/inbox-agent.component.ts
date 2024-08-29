@@ -142,7 +142,7 @@ export class InboxAgentComponent extends BaseListingComponent {
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
-            this.primengTable._filter();
+            this.primengTable._filter();   
         });
     }
 

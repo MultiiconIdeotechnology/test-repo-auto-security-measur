@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -16,7 +16,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
 import { WalletService } from 'app/services/wallet.service';
 import { Subject, Subscription } from 'rxjs';
@@ -59,7 +59,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 })
 export class RejectedComponent extends BaseListingComponent {
 
-	@Input() isFilterShowReject: boolean
+	@Input() isFilterShowReject: boolean;
+	@Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
 	@Input() filterApiData: any;
 	@Input() activeTab: any;
 
@@ -69,7 +70,8 @@ export class RejectedComponent extends BaseListingComponent {
 	isLoading = false;
 	public _unsubscribeAll: Subject<any> = new Subject<any>();
 
-	module_name = module_name.wallet
+	module_name = module_name.wallet;
+	filter_table_name = filter_module_name.wallet_recharge_rejected;
 	dataList = [];
 	total = 0;
 	appConfig = AppConfig;
@@ -84,7 +86,7 @@ export class RejectedComponent extends BaseListingComponent {
 
 	selectedMop: any;
 	selectedEmployee: any;
-	selectedPSP: any;
+	selectedPsp: any;
 	public settingsRejectSubscription: Subscription;
 
 	cols = [];
@@ -102,8 +104,8 @@ export class RejectedComponent extends BaseListingComponent {
 		this.key = this.module_name;
 		this.sortColumn = 'request_date_time';
 		this.sortDirection = 'desc';
-		this.Mainmodule = this
-
+		this.Mainmodule = this;
+		this._filterService.applyDefaultFilter(this.filter_table_name);
 	}
 
 	ngOnInit(): void {
@@ -112,97 +114,96 @@ export class RejectedComponent extends BaseListingComponent {
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
+
+		this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
+			this.selectedMop = resp['table_config']['mop']?.value;
+			this.selectedPsp = resp['table_config']['psp_name']?.value;
+			if (this.selectedEmployee && this.selectedEmployee.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+				if (!match) {
+					this.agentList.push(this.selectedEmployee);
+				}
+			}
+
+			if (this.selectedMop && this.selectedMop.id) {
+				const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
+				if (!match) {
+					this.mopList.push(this.selectedMop);
+				}
+			}
+			if (this.selectedPsp && this.selectedPsp.id) {
+				const match = this.pspList.find((item: any) => item.id == this.selectedPsp?.id);
+				if (!match) {
+					this.pspList.push(this.selectedPsp);
+				}
+			}
+			if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
+				this._filterService.rangeDateConvert(resp.table_config.request_date_time);
+			}
+			if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
+				this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+			}
+			if (resp?.['table_config']?.['rejected_date_time']?.value != null) {
+				resp['table_config']['rejected_date_time'].value = new Date(resp['table_config']['rejected_date_time'].value);
+			}
+
+			this.isFilterShowReject = true;
+			this.isFilterShowAuditedChange.emit(this.isFilterShowReject);
+			// this.sortColumn = resp['sortColumn'];
+			// this.primengTable['_sortField'] = resp['sortColumn'];
+			this.primengTable['filters'] = resp['table_config'];
+			this.primengTable._filter();
+		});
 	}
 
-	ngOnChanges(changes: SimpleChanges) {
-		if (this.activeTab == 'Rejected') {
-			this.agentList = this.filterApiData?.agentData;
-			this.mopList = this.filterApiData?.mopData;
-			this.pspList = this.filterApiData?.pspData;
-			this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-				this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
-				this.selectedMop = resp['table_config']['mop']?.value;
-				this.selectedPSP = resp['table_config']['psp_name']?.value;
+	ngAfterViewInit(): void {
+		// ngAfterViewInit
+		if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+			let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+			this.selectedMop = filterData['table_config']['mop']?.value;
+			this.selectedPsp = filterData['table_config']['psp_name']?.value;
+			if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
+				this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
+			}
+			
+			if (filterData?.['table_config']?.['rejected_date_time']?.value != null) {
+				filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
+			}
+			this.isFilterShowReject = true;
+			this.isFilterShowAuditedChange.emit(this.isFilterShowReject);
+			setTimeout(() => {
+				this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
 				if (this.selectedEmployee && this.selectedEmployee.id) {
 					const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
 					if (!match) {
 						this.agentList.push(this.selectedEmployee);
 					}
 				}
-
 				if (this.selectedMop && this.selectedMop.id) {
 					const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
 					if (!match) {
 						this.mopList.push(this.selectedMop);
 					}
 				}
-				if (this.selectedPSP && this.selectedPSP.id) {
-					const match = this.pspList.find((item: any) => item.id == this.selectedPSP?.id);
+				if (this.selectedPsp && this.selectedPsp.id) {
+					const match = this.pspList.find((item: any) => item.id == this.selectedPsp?.id);
 					if (!match) {
-						this.pspList.push(this.selectedPSP);
+						this.pspList.push(this.selectedPsp);
 					}
 				}
-				if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
-					this._filterService.rangeDateConvert(resp.table_config.request_date_time);
-				}
-				if (this.activeTab == 'Rejected') { // <= This if condition is required
-					if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
-						this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
-					}
-					if (resp?.['table_config']?.['rejected_date_time']?.value != null) {
-						resp['table_config']['rejected_date_time'].value = new Date(resp['table_config']['rejected_date_time'].value);
-					}
-
-					this.isFilterShowReject = true;
-					// this.sortColumn = resp['sortColumn'];
-					// this.primengTable['_sortField'] = resp['sortColumn'];
-					this.primengTable['filters'] = resp['table_config'];
-					this.primengTable._filter();
-				}
-			});
-
-			// ngAfterViewInit
-			if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-				let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-				this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
-				this.selectedMop = filterData['table_config']['mop']?.value;
-				this.selectedPSP = filterData['table_config']['psp_name']?.value;
-				if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
-					this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
-				}
-
-				if (filterData?.['table_config']?.['rejected_date_time']?.value != null) {
-					filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
-				}
-
-				setTimeout(() => {
-					this.isFilterShowReject = true;
-					if (this.selectedEmployee && this.selectedEmployee.id) {
-						const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
-						if (!match) {
-							this.agentList.push(this.selectedEmployee);
-						}
-					}
-					if (this.selectedMop && this.selectedMop.id) {
-						const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
-						if (!match) {
-							this.mopList.push(this.selectedMop);
-						}
-					}
-					if (this.selectedPSP && this.selectedPSP.id) {
-						const match = this.pspList.find((item: any) => item.id == this.selectedPSP?.id);
-						if (!match) {
-							this.pspList.push(this.selectedPSP);
-						}
-					}
-					this.primengTable['filters'] = filterData['table_config'];
-					this.primengTable._filter();
-				}, 2000);
-				// this.primengTable['_sortField'] = filterData['sortColumn'];
-				// this.sortColumn = filterData['sortColumn'];
-			}
+				this.primengTable['filters'] = filterData['table_config'];
+				// this.primengTable._filter();
+			}, 1000);
+			// this.primengTable['_sortField'] = filterData['sortColumn'];
+			// this.sortColumn = filterData['sortColumn'];
 		}
+	}
 
+	ngOnChanges(changes: SimpleChanges) {
+		this.agentList = this.filterApiData.agentData;
+		this.mopList = this.filterApiData.mopData;
+		this.pspList = this.filterApiData.pspData;
 	}
 
 	getAgentList(value: string) {

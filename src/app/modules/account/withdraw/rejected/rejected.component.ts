@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Input, OnChanges, OnDestroy, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { WithdrawService } from 'app/services/withdraw.service';
@@ -76,9 +76,9 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 })
 export class WRejectedComponent extends BaseListingComponent implements OnChanges {
 
-  @ViewChild('tabGroup') tabGroup;
-  @Input() isFilterShowReject: boolean
-  @Input() activeTab:any;
+  @Input() isFilterShowReject: boolean;
+  @Input() filterApiData: any;
+  @Output() isFilterShowRejectedChange = new EventEmitter<boolean>();
 
   searchInputControlRejected = new FormControl('');
   public withdrawRejectSubscription: Subscription;
@@ -89,13 +89,15 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
   public sortColumn: any;
   public sortDirection: any;
 
-  module_name = module_name.wallet
+  module_name = module_name.wallet;
+  filter_table_name = filter_module_name.withdraw_rejected;
   dataList = [];
   total = 0;
   appConfig = AppConfig;
   data: any;
   filter: any = {};
   agentList: any[] = [];
+  selectedEmployee:any;
 
   withdrawList = [
     { label: 'Deduction', value: 'Deduction' },
@@ -105,11 +107,9 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
   cols = [];
   protected masterService: MasterService;
 
-
   constructor(
     private withdrawService: WithdrawService,
     private conformationService: FuseConfirmationService,
-    private matDialog: MatDialog,
     public agentService: AgentService,
     private entityService: EntityService,
     public _filterService: CommonFilterService
@@ -118,8 +118,8 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'asc';
-    this.Mainmodule = this
-
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
     this.filter = {
       agent_id: 'all',
       FromDate: new Date(),
@@ -137,28 +137,46 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
   }
 
   ngOnInit(): void {
-  
+    setTimeout(() => {
+			this.agentList = this.filterApiData.agentData;
+		}, 1000);
+
+    this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
+      if (this.selectedEmployee && this.selectedEmployee.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+        if (!match) {
+          this.agentList.push(this.selectedEmployee);
+        }
+      }
+      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+   
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShowReject = true;
+      this.isFilterShowRejectedChange.emit(this.isFilterShowReject);
+      this.primengTable._filter();
+    });
   }
 
-  ngOnChanges() {
-    if (this.activeTab == 'Rejected') {
-      this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
-          this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-        }
-     
-        this.primengTable['filters'] = resp['table_config'];
+  ngAfterViewInit(): void {
+       if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
         this.isFilterShowReject = true;
-        this.primengTable._filter();
-      });
-
-      // ngAfterViewInit
-      if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShowReject = true;
+        this.isFilterShowRejectedChange.emit(this.isFilterShowReject);
         let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        setTimeout(() => {
+          this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
+          if (this.selectedEmployee && this.selectedEmployee.id) {
+            const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+            if (!match) {
+              this.agentList.push(this.selectedEmployee);
+            }
+          }
+        }, 1000);
         if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
           this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
         }
@@ -167,11 +185,10 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         // this.primengTable['_sortField'] = filterData['sortColumn'];
         // this.sortColumn = filterData['sortColumn'];
       }
-      if(this.agentList && !this.agentList.length) {
-        this.getAgentList("");
-      }
-    }
+  }
 
+  ngOnChanges() {
+			this.agentList = this.filterApiData.agentData;
   }
 
   getAgentList(value: string) {
@@ -303,8 +320,6 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
       this.withdrawRejectSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
-    this._unsubscribeAll.next(null);
-    this._unsubscribeAll.complete();
   }
   
 }

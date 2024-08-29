@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -69,7 +69,8 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowPending: boolean;
-  @Input() activeTab:any;
+  @Output() isFilterShowPendingChange = new EventEmitter<boolean>();
+  @Input() filterApiData: any;
 
   searchInputControlPending = new FormControl('');
   filter_table_name = filter_module_name.withdraw_pending;
@@ -89,6 +90,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
   data: any
   filter: any = {}
   agentList: any[] = [];
+  selectedEmployee:any;
 
   withdrawList = [
     { label: 'Deduction', value: 'Deduction' },
@@ -111,8 +113,8 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
-
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
     this.masterService = ReflectionInjector.get(MasterService);
 
     this.filter = {
@@ -132,13 +134,47 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnInit(): void {
+
+    setTimeout(() => {
+      this.agentList = this.filterApiData.agentData;
+    }, 1000);
+
+    this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
+      if (this.selectedEmployee && this.selectedEmployee.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+        if (!match) {
+          this.agentList.push(this.selectedEmployee);
+        }
+      }
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShowPending = true;
+      this.isFilterShowPendingChange.emit(this.isFilterShowPending);
+      this.primengTable._filter();
+    });
+
   }
 
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShowPending = true;
+      this.isFilterShowPendingChange.emit(this.isFilterShowPending);
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      setTimeout(() => {
+        this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
+        if (this.selectedEmployee && this.selectedEmployee.id) {
+          const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+          if (!match) {
+            this.agentList.push(this.selectedEmployee);
+          }
+        }
+      }, 1000);
       if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
@@ -150,25 +186,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnChanges() {
-    
-    if(this.activeTab == 'Pending') {
-      this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
-          this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-        }
-        this.primengTable['filters'] = resp['table_config'];
-        this.isFilterShowPending = true;
-        this.primengTable._filter();
-      });
-
-      if(this.agentList && !this.agentList.length) {
-        this.getAgentList("");
-      }
-    }
-
+    this.agentList = this.filterApiData.agentData;
   }
 
   getAgentList(value: string) {

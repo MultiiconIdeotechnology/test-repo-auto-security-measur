@@ -61,11 +61,11 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   ],
 })
 export class WithdrawListComponent extends BaseListingComponent implements OnDestroy {
-  
+
   @ViewChild('pending') pending: WPendingComponent;
   @ViewChild('audited') audited: WAuditedComponent;
   @ViewChild('rejected') rejected: WRejectedComponent;
-  
+
   filter_table_name = filter_module_name;
   public apiCalls: any = {};
   tabName: any
@@ -75,18 +75,10 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   isThird: boolean = true
   filterData: any = {};
   module_name = module_name.withdraw
-  agentData: any[] = [];
+  filterApiData: any = {};
 
-  // @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  // @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlPending = new FormControl('');
-
-  // @ViewChild(MatPaginator) public _paginatorAudit: MatPaginator;
-  // @ViewChild(MatSort) public _sortPaid: MatSort;
   searchInputControlAudit = new FormControl('');
-
-  // @ViewChild(MatPaginator) public _paginatorRejected: MatPaginator;
-  // @ViewChild(MatSort) public _sortRejected: MatSort;
   searchInputControlRejected = new FormControl('');
 
   isFilterShowPending: boolean = false;
@@ -100,7 +92,6 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     public _filterService: CommonFilterService
   ) {
     super(module_name.withdraw)
-    // this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'request_date_time';
     this.sortDirection = 'asc';
@@ -117,68 +108,26 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   }
 
   ngOnInit(): void {
-
-    // this.agentService.getAgentCombo("").subscribe({
-    //   next: (value: any) => {
-    //     this.filterData.agent_id = value[0].id;
-    //     this.filterData.agency_name = value[0].agency_name;
-
-    //     this.audited.filter = this.filterData;
-    //     this.rejected.filter = this.filterData;
-    //     this.pending.filter = this.filterData;
-
-    //     this.pending.refreshItemsPending()
-    //   },
-    // });
-
-    // this.searchInputControlPending.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.pending.searchInputControlPending.patchValue(value)
-        
-    //   });
-
-    // this.searchInputControlAudit.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.audited.searchInputControlAudit.patchValue(value)
-    //   });
-
-    // this.searchInputControlRejected.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.rejected.searchInputControlRejected.patchValue(value)
-    //   });
-
-      this.getAgentList("", true);
+    this.getAgentList("");
   }
 
-  getAgentList(value: string, bool:boolean) {
-    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
-      this.agentData = data;
+  getAgentList(value: string) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.filterApiData['agentData'] = data;
     })
   }
 
-  rejectedRefresh(event:any){
+  rejectedRefresh(event: any) {
     this.rejected.searchInputControlRejected.patchValue(event)
     this.rejected.refreshItemsRejected()
   }
-  
-  auditedRefresh(event:any){
+
+  auditedRefresh(event: any) {
     this.audited.searchInputControlAudit.patchValue(event)
     this.audited.refreshItemsAudited()
   }
-  
-  pendingRefresh(event:any){
+
+  pendingRefresh(event: any) {
     this.pending.searchInputControlPending.patchValue(event);
     this.pending.refreshItemsPending()
   }
@@ -193,50 +142,32 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   }
 
   public tabChanged(event: any): void {
-    this.isDestroy();
-
     const tabName = event?.tab?.ariaLabel;
     this.tabNameStr = tabName
     this.tabName = tabName
 
     switch (tabName) {
       case 'Pending':
-        this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_pending);
+        // this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_pending);
         this.tab = 'Pending';
         break;
       case 'Audited':
-        this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_audited);
+        // this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_audited);
         this.tab = 'Audited';
-        if (this.isSecound) {
-          this.isSecound = false
+        // this.isSecound = false
+        setTimeout(() => {
           this.audited.refreshItemsAudited()
-        }
+        }, 0);
         break;
       case 'Rejected':
-        this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_rejected);
+        // this._filterService.applyDefaultFilter(this.filter_table_name.withdraw_rejected);
         this.tab = 'Rejected';
-        if (this.isThird) {
-          this.isThird = false
+        // this.isThird = false
+        setTimeout(() => {
           this.rejected.refreshItemsRejected()
-        }
+        }, 0);
         break;
     }
-  }
-
-  isDestroy() {
-    this._filterService.activeFiltData = {};
-    this.resetPrimengTable();
-    if (this.pending.withdrawUpdatedSubscription) {
-      this.pending.withdrawUpdatedSubscription.unsubscribe();
-    }
-
-    if (this.audited.withdrawAuitedSubscription) {
-      this.audited.withdrawAuitedSubscription.unsubscribe();
-    }
- 
-    if (this.rejected.withdrawRejectSubscription) {
-      this.rejected.withdrawRejectSubscription.unsubscribe();
-    }    
   }
 
   openTabFiterDrawer() {
@@ -249,26 +180,19 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     }
   }
 
-  private ifNotThenCall(call: string, callback: () => void): void {
-    if (!this.apiCalls[call]) {
-      this.apiCalls[call] = false;
-      callback();
-    }
-  }
+  // ngAfterViewInit(): void {
+  //   this.apiCalls = {
+  //     Pending: false,
+  //     Audited: false,
+  //     Rejected: false,
+  //   };
 
-  ngAfterViewInit(): void {
-    this.apiCalls = {
-      Pending: false,
-      Audited: false,
-      Rejected: false,
-    };
-
-    setTimeout(() => {
-      this.audited.filter = this.filterData;
-      this.rejected.filter = this.filterData;
-      this.pending.filter = this.filterData;
-    });
-  }
+  //   setTimeout(() => {
+  //     this.audited.filter = this.filterData;
+  //     this.rejected.filter = this.filterData;
+  //     this.pending.filter = this.filterData;
+  //   });
+  // }
 
   createInternal(): void {
     this.matDialog.open(WithdrawEntryComponent, {
@@ -310,4 +234,10 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     else
       this.pending.refreshItemsPending()
   }
+
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.unsubscribe();
+  }
+
 }

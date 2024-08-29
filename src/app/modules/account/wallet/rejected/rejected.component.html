@@ -2,7 +2,7 @@
     <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
         columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
         [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-        [lazy]="true" (onLazyLoad)="refreshItemsRejected($event)" [lazyLoadOnInit]="false" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [lazy]="true" (onLazyLoad)="refreshItemsRejected($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
         [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         [globalFilterFields]="['reference_number', 'request_date_time', 'recharge_for_name', 'recharge_amount','mop','filename', 'rejected_by_name','rejected_date_time','user_remark']"

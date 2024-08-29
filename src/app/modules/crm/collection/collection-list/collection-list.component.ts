@@ -70,7 +70,6 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
     searchInputControlTravel = new FormControl('');
     dataListpartners = [];
     dropdownListObj: any = {};
-
     isFilterShowTech: boolean = false;
     isFilterShowTravel: boolean = false;
 
@@ -96,25 +95,8 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
     }
 
     ngOnInit(): void {
-        // this.searchInputControlTech.valueChanges
-        //     .pipe(
-        //         takeUntil(this._unsubscribeAll),
-        //         debounceTime(AppConfig.searchDelay)
-        //     )
-        //     .subscribe((value) => {
-        //         this.tech.searchInputControlTech.patchValue(value)
-        //     });
-
-        // this.searchInputControlTravel.valueChanges
-        //     .pipe(
-        //         takeUntil(this._unsubscribeAll),
-        //         debounceTime(AppConfig.searchDelay)
-        //     )
-        //     .subscribe((value) => {
-        //         this.travel.searchInputControlTravel.patchValue(value)
-        //     });
-
         // calling Api for defatult value for first time to get Agent list.
+        this.getAgent('');
     }
 
     // Function to get the agentList  from api
@@ -125,7 +107,7 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
             for (let i in this.dropdownListObj['agentList']) {
                 this.dropdownListObj['agentList'][i]['agent_info'] =
                     `${this.dropdownListObj['agentList'][i].code}-${this.dropdownListObj['agentList'][i].agency_name}${this.dropdownListObj['agentList'][i].email_address}`;
-                    this.dropdownListObj['agentList'][i].id_by_value = this.dropdownListObj['agentList'][i].agency_name;
+                this.dropdownListObj['agentList'][i].id_by_value = this.dropdownListObj['agentList'][i].agency_name;
             }
         })
     }
@@ -134,42 +116,33 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
         const tabName = event?.tab?.ariaLabel;
         this.tabNameStr = tabName;
         this.tabName = tabName;
-        this.isDestroy();
+        // this.isDestroy();
 
         switch (tabName) {
             case 'Tech':
                 this._filterService.applyDefaultFilter(this.filter_table_name.collections_tech);
                 this.tab = 'tech';
+                this.tech?.refreshItems();
                 break;
 
             case 'Travel':
                 this._filterService.applyDefaultFilter(this.filter_table_name.collections_travel);
                 this.tab = 'travel';
-                if (this.isSecound) {
+                // if (this.isSecound) {
+                setTimeout(() => {
                     this.travel?.refreshItems()
-                    this.isSecound = false;
-                }
-            break;
-        }
-    }
-
-    isDestroy() {
-        this._filterService.activeFiltData = {};
-        this.resetPrimengTable();
-        if (this.tech.settingsTechSubscription) {
-            this.tech.settingsTechSubscription.unsubscribe();
-        }
-
-        if (this.travel.settingsTravelSubscription) {
-            this.travel.settingsTravelSubscription.unsubscribe();
+                }, 0);
+                this.isSecound = false;
+                // }
+                break;
         }
     }
 
     openTabFiterDrawer() {
         if (this.tabNameStr == 'Tech') {
-          this._filterService.openDrawer(this.filter_table_name.collections_tech, this.tech.primengTable);
+            this._filterService.openDrawer(this.filter_table_name.collections_tech, this.tech.primengTable);
         } else {
-          this._filterService.openDrawer(this.filter_table_name.collections_travel, this.travel.primengTable);
+            this._filterService.openDrawer(this.filter_table_name.collections_travel, this.travel.primengTable);
         }
     }
 
@@ -180,12 +153,12 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
             this.travel?.refreshItems();
     }
 
-    techRefresh(event:any) {
+    techRefresh(event: any) {
         this.tech.searchInputControlTech.patchValue(event)
         this.tech?.refreshItems();
     }
 
-    travelRefresh(event:any) {
+    travelRefresh(event: any) {
         this.travel.searchInputControlTravel.patchValue(event)
         this.travel?.refreshItems();
     }

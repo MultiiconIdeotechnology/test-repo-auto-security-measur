@@ -30,7 +30,7 @@
                     [placeholder]="'Search'" (keyup.enter)="partnersRefresh(partnerRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                     (click)="partnersRefresh(partnerRef.value)"></mat-icon>
-            </div>
+            </div>   
 
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"

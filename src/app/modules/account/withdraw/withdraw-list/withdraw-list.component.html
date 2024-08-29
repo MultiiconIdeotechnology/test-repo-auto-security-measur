@@ -35,7 +35,7 @@
             </div>
 
             <!------global filter------>
-            <button *ngIf="this.tab == 'Pending'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <button *ngIf="this.tabNameStr == 'Pending'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShowPending  = !isFilterShowPending ">
                 <img *ngIf="!isFilterShowPending " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -43,7 +43,7 @@
                     alt="c">
             </button>
 
-            <button *ngIf="this.tab == 'Audited'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <button *ngIf="this.tabNameStr == 'Audited'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShowAudit  = !isFilterShowAudit ">
                 <img *ngIf="!isFilterShowAudit " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -51,7 +51,7 @@
                     alt="c">
             </button>
 
-            <button *ngIf="this.tab == 'Rejected'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <button *ngIf="this.tabNameStr == 'Rejected'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShowReject  = !isFilterShowReject ">
                 <img *ngIf="!isFilterShowReject " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -91,15 +91,15 @@
     <mat-tab-group class="custom-tab wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
 
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
-            <app-wpending #pending [isFilterShowPending]="isFilterShowPending" [activeTab]="tab"></app-wpending>
+            <app-wpending *ngIf="tabNameStr == 'Pending'" #pending [(isFilterShowPending)]="isFilterShowPending" [filterApiData]="filterApiData"></app-wpending>
         </mat-tab>
 
         <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')">
-            <app-waudited #audited [isFilterShowAudit]="isFilterShowAudit" [activeTab]="tab"></app-waudited>
+            <app-waudited *ngIf="tabNameStr == 'Audited'" #audited [(isFilterShowAudit)]="isFilterShowAudit" [filterApiData]="filterApiData"></app-waudited>
         </mat-tab>
 
         <mat-tab label="Rejected" [aria-label]="'Rejected'" *ngIf="getTabsPermission('rejected')">
-            <app-wrejected #rejected [isFilterShowReject]="isFilterShowReject" [activeTab]="tab"></app-wrejected>
+            <app-wrejected *ngIf="tabNameStr == 'Rejected'" #rejected [(isFilterShowReject)]="isFilterShowReject" [filterApiData]="filterApiData"></app-wrejected>
         </mat-tab>
 
     </mat-tab-group>

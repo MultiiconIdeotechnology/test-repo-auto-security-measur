@@ -80,10 +80,10 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   isFilterShowPending: boolean = false;
   isFilterShowAudit: boolean = false;
   isFilterShowReject: boolean = false;
-  filterApiData:any = {};
+  filterApiData: any = {};
   agentData: any[] = [];
-  mopData:any[] = [];
-  pspData:any[] = [];
+  mopData: any[] = [];
+  pspData: any[] = [];
 
   constructor(
     private walletService: WalletService,
@@ -96,7 +96,7 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     this.key = this.module_name;
     this.sortColumn = 'request_date_time';
     this.sortDirection = 'asc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
 
     this.filterData = {
       particularId: 'all',
@@ -123,37 +123,37 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     })
   }
 
-  getMopList(value:string){
+  getMopList(value: string) {
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
-       this.filterApiData.mopData = data;
+      this.filterApiData.mopData = data;
 
-       for(let i in this.filterApiData.mopData){
+      for (let i in this.filterApiData.mopData) {
         this.filterApiData.mopData[i].id_by_value = this.filterApiData.mopData[i].mop;
-     }
+      }
     })
   }
 
-  getPspList(value:string){
+  getPspList(value: string) {
     this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
       this.filterApiData.pspData = data;
 
-      for(let i in this.filterApiData.pspData){
+      for (let i in this.filterApiData.pspData) {
         this.filterApiData.pspData[i].id_by_value = this.filterApiData.pspData[i].provider;
-     }
+      }
     })
   }
 
-  rejectedRefresh(event:any){
+  rejectedRefresh(event: any) {
     this.rejected.searchInputControlRejected.patchValue(event)
     this.rejected.refreshItemsRejected()
   }
 
-  auditedRefresh(event:any){
+  auditedRefresh(event: any) {
     this.audited.searchInputControlAudit.patchValue(event)
     this.audited.refreshItemsAudited()
   }
 
-  pendingRefresh(event:any){
+  pendingRefresh(event: any) {
     this.pending.searchInputControlPending.patchValue(event)
     this.pending.refreshItemsPending()
   }
@@ -168,62 +168,39 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   public tabChanged(event: any): void {
-    this.isDestroy();
     const tabName = event?.tab?.ariaLabel;
     this.tabNameStr = tabName
     this.tabName = tabName
 
     switch (tabName) {
       case 'Pending':
-        this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_pending);
         this.tab = 'Pending';
+        // this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_pending);
+          // this.pending.refreshItemsPending();
         break;
 
       case 'Audited':
         this.tab = 'Audited';
-        this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_audited);
-        if (this.isSecound) {
-          this.audited.refreshItemsAudited()
-          this.isSecound = false
-        }
+
+        // this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_audited);
+        // if (this.isSecound) {
+        // setTimeout(() => {
+        //   this.audited.refreshItemsAudited()
+        // }, 0);
+        this.isSecound = false
+        // }
         break;
 
       case 'Rejected':
         this.tab = 'Rejected';
-        this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_rejected);
-        if (this.isThird) {
-          this.rejected.refreshItemsRejected()
-          this.isThird = false
-        }
+        // this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_rejected);
+        // if (this.isThird) {
+        // setTimeout(() => {
+        //   this.rejected.refreshItemsRejected()
+        // }, 0);
+        this.isThird = false
+        // }
         break;
-    }
-  }
-
-  isDestroy() {
-    this._filterService.activeFiltData = {};
-    this.cd.detectChanges();
-    this.isFilterShowPending = false
-    this.isFilterShowAudit = false
-    this.isFilterShowReject = false
-    this.resetPrimengTable();
-    if (this.pending.settingsUpdatedSubscription) {
-      this.pending.settingsUpdatedSubscription.unsubscribe();
-    }
-
-    if (this.audited.settingsAuitedSubscription) {
-      this.audited.settingsAuitedSubscription.unsubscribe();
-    }
- 
-    if (this.rejected.settingsRejectSubscription) {
-      this.rejected.settingsRejectSubscription.unsubscribe();
-    }
-    this.cd.detectChanges();
-  }
-
-  private ifNotThenCall(call: string, callback: () => void): void {
-    if (!this.apiCalls[call]) {
-      this.apiCalls[call] = false;
-      callback();
     }
   }
 
@@ -248,18 +225,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       });
   }
 
-  ngAfterViewInit(): void {
-    this.audited.auditListFilter = this.filterData;
-    this.rejected.rejectFilter = this.filterData;
-    this.pending.pendingFilter = this.filterData;
-
-    this.apiCalls = {
-      Pending: false,
-      Audited: false,
-      Rejected: false,
-    };
-  }
-
   filter(): void {
     this.matDialog.open(WalletFilterComponent, {
       data: this.filterData,
@@ -282,8 +247,9 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       this.audited.refreshItemsAudited()
     else if (this.tab == 'Rejected')
       this.rejected.refreshItemsRejected()
-    else
-      this.pending.refreshItemsPending()
+    else{
+        this.pending.refreshItemsPending()
+    }
   }
 
   openTabFiterDrawer() {
@@ -305,5 +271,9 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       this.pending.exportExcel()
   }
 
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.unsubscribe();
+  }
 
 }
