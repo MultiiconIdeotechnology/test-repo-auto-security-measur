@@ -1,4 +1,4 @@
-import { module_name } from 'app/security';
+import { filter_module_name, module_name } from 'app/security';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -17,7 +17,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-message-events-list',
@@ -52,6 +53,8 @@ export class MessageEventsListComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.messageevents;
+    filter_table_name = filter_module_name.message_events;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
 
@@ -88,7 +91,8 @@ export class MessageEventsListComponent
         private messageeventService: MessageEventsService,
         private conformationService: FuseConfirmationService,
         public toasterService: ToasterService,
-        private matDialog: MatDialog
+        private matDialog: MatDialog,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.messageevents);
         this.cols = this.columns.map((x) => x.key);
@@ -96,9 +100,30 @@ export class MessageEventsListComponent
         this.sortColumn = 'event_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
-    refreshItems(event?:any): void {
+    ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
+    }
+
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.messageeventService
             .getMessageEventList(this.getNewFilterReq(event))
@@ -205,5 +230,9 @@ export class MessageEventsListComponent
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

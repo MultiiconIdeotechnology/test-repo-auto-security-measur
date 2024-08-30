@@ -19,56 +19,67 @@
             </mat-form-field> -->
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Tech'">
-                <input #techRef matInput [formControl]="searchInputControlTech" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="techRefresh(techRef.value)" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="techRefresh(techRef.value)"></mat-icon>
+                <input #techRef matInput [formControl]="searchInputControlTech" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="techRefresh(techRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="techRefresh(techRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Travel'">
-                <input #travelRef matInput [formControl]="searchInputControlTravel" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="travelRefresh(travelRef.value)" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="travelRefresh(travelRef.value)"></mat-icon>
+                <input #travelRef matInput [formControl]="searchInputControlTravel" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="travelRefresh(travelRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="travelRefresh(travelRef.value)"></mat-icon>
             </div>
 
-
-
             <!------global filter------>
-            <button *ngIf="this.tabNameStr == 'Tech'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
-                [disabled]="isLoading" (click)="isFilterShowTech  = !isFilterShowTech ">
-                <img *ngIf="!isFilterShowTech " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+            <button *ngIf="this.tabNameStr == 'Tech'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowTech  = !isFilterShowTech ">
+                <img *ngIf="!isFilterShowTech" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
-                <img *ngIf="isFilterShowTech " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                <img *ngIf="isFilterShowTech" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
 
-            <button *ngIf="this.tabNameStr == 'Travel'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
-            [disabled]="isLoading" (click)="isFilterShowTravel  = !isFilterShowTravel ">
-            <img *ngIf="!isFilterShowTravel " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
-                alt="c">
-            <img *ngIf="isFilterShowTravel " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
-                alt="c">
-        </button>
+            <button *ngIf="this.tabNameStr == 'Travel'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="isLoading"
+                (click)="isFilterShowTravel  = !isFilterShowTravel ">
+                <img *ngIf="!isFilterShowTravel" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowTravel" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
 
-        <ng-container *ngIf="tabNameStr == 'Tech'">
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Tech')">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
-        </ng-container>
-        <ng-container *ngIf="tabNameStr == 'Travel'">
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Travel')">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-            </button>
-        </ng-container>
+
+            <ng-container *ngIf="tabNameStr == 'Tech'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Tech')"
+                    matTooltip="Refresh">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+            </ng-container>
+            <ng-container *ngIf="tabNameStr == 'Travel'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Travel')"
+                    matTooltip="Refresh">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+            </ng-container>
         </div>
     </div>
 
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Tech" [aria-label]="'Tech'" *ngIf="getTabsPermission('tech')">
-            <app-tech #tech [isFilterShowTech]="isFilterShowTech" [dropdownListObj]="dropdownListObj"></app-tech>
+            <app-tech *ngIf="tabNameStr == 'Tech'" #tech [(isFilterShowTech)]="isFilterShowTech"
+                [dropdownListObj]="dropdownListObj"></app-tech>
         </mat-tab>
 
         <mat-tab label="Travel" [aria-label]="'Travel'" *ngIf="getTabsPermission('travel')">
-            <!-- <ng-container *ngIf="tabNameStr == 'Travel'"> -->
-            <app-travel #travel [isFilterShowTravel]="isFilterShowTravel" [dropdownListObj]="dropdownListObj"></app-travel>
-        <!-- </ng-container> -->
+            <app-travel *ngIf="tabNameStr == 'Travel'" #travel [(isFilterShowTravel)]="isFilterShowTravel"
+                [dropdownListObj]="dropdownListObj"></app-travel>
         </mat-tab>
     </mat-tab-group>
 </div>

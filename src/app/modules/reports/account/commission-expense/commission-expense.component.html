@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,12 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- <button class="ml-4" mat-flat-button [color]="'primary'">
@@ -53,19 +61,19 @@
 
     <!--refreshItems($event) -->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
-            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
-            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
-            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
-            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
-            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['booking_date','booking_ref_no','agent_code','agency_name', 'pnr', 'gds_pnr', 'particular','commission','tds','net_commission']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="booking_date" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.booking_date"
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="booking_date" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_date"
                         [ngClass]="{'left-0': !frozenObj?.booking_date}">
                         Booking Date <p-sortIcon field="booking_date" />
                         <span class="float-right" (click)="isFrozenColumn('booking_date');$event.stopPropagation()">
@@ -106,21 +114,16 @@
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_date">
                         <p-columnFilter field="booking_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar
-                                        selectionMode="range"
-                                        [ngModel]="value"
-                                        (ngModelChange)="onDateRangeChange($event, filter)"
-                                        [readonlyInput]="true"
-                                        dateFormat="dd-mm-yy"
-                                        appendTo="body"
-                                        placeholder="Search by Date Range">
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no" placeholder="Search by Booking Ref. No."
-                            ariaLabel="Filter Booking Ref. No." />
+                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
+                            placeholder="Search by Booking Ref. No." ariaLabel="Filter Booking Ref. No." />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
@@ -131,35 +134,36 @@
                             ariaLabel="Filter Agency Name" /> -->
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                        (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                        <ng-template let-agent pTemplate="item">
-                                            <div class="flex align-items-center gap-1">
-                                                <div [value]="agent.id">
-                                                    <div class="m-0">
-                                                        {{agent.code}} - {{agent.agency_name}}
-                                                        <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                    </div>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                                 </div>
                                             </div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR" ariaLabel="Filter PNR" />
+                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
+                            ariaLabel="Filter PNR" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GSD PNR"
                             ariaLabel="Filter GSD PNR" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="particular" placeholder="Search by Particular"
-                            ariaLabel="Filter Particular" />
+                        <p-columnFilter type="text" matchMode="contains" field="particular"
+                            placeholder="Search by Particular" ariaLabel="Filter Particular" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="commission" placeholder="Search by Commission"
@@ -177,8 +181,9 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_date">{{element.booking_date | date:'dd-MM-yyyy HH:mm:ss'}}</td>
-                    <td >
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_date">{{element.booking_date |
+                        date:'dd-MM-yyyy HH:mm:ss'}}</td>
+                    <td>
                         <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
                             {{element.booking_ref_no || "-"}}
                         </span>
@@ -202,9 +207,11 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td class="text-right">{{tablesTotal?.totalCommission ? tablesTotal?.totalCommission.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{tablesTotal?.totalCommission ? tablesTotal?.totalCommission.toFixed(2) :
+                        0}}</td>
                     <td class="text-right">{{tablesTotal?.totalTds ? tablesTotal?.totalTds.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{tablesTotal?.totalNetCommission ? tablesTotal?.totalNetCommission.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{tablesTotal?.totalNetCommission ?
+                        tablesTotal?.totalNetCommission.toFixed(2) : 0}}</td>
                 </tr>
             </ng-template>
 

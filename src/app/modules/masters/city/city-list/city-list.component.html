@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,13 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -42,36 +51,31 @@
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
-
-             <!------Common Filter------->
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="_filterService.openDrawer('Flight-Booking')">
-                <mat-icon [svgIcon]="'heroicons_solid:bars-3-bottom-left'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button> -->
         </div>
     </div>
 
     <!----------------Table----------------->
 
     <div class="table-container paginator-bottom">
-        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true" columnResizeMode="expand"
-            [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize"
-            [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['city_name', 'state_name', 'country', 'display_name']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="min-w-5 w-auto text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th pSortableColumn="city_name" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.city_name"
-                        class="min-w-36 dark:bg-[#1e293b]" [ngClass]="{'left-0': !frozenObj?.city_name}">
+                    <th pSortableColumn="city_name" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.city_name" class="min-w-36 dark:bg-[#1e293b]"
+                        [ngClass]="{'left-0': !frozenObj?.city_name}">
                         City <p-sortIcon field="city_name" />
                         <span class="float-right" (click)="isFrozenColumn('city_name');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.city_name" class="pi pi-lock-open icon-size-3"></i>
@@ -98,15 +102,15 @@
                             ariaLabel="Filter City" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="state_name" placeholder="Search by State"
-                            ariaLabel="Filter State" />
+                        <p-columnFilter type="text" matchMode="contains" field="state_name"
+                            placeholder="Search by State" ariaLabel="Filter State" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="country" placeholder="Search by Country"
                             ariaLabel="Filter Country" />
                     </th>
                     <th *ngFor="let col of columns">
-                        <p-columnFilter  type="text" [field]="col.field" [placeholder]="'Search by '+ col.header"
+                        <p-columnFilter type="text" [field]="col.field" [placeholder]="'Search by '+ col.header"
                             [ariaLabel]="'Filter '+ col.header" />
                     </th>
                 </tr>
@@ -150,7 +154,7 @@
                     <td>{{element.state_name || "_"}}</td>
                     <td>{{element.country || "_"}}</td>
                     <td *ngFor="let col of columns">
-                            {{element[col.field] || "-"}}
+                        {{element[col.field] || "-"}}
                     </td>
                 </tr>
             </ng-template>

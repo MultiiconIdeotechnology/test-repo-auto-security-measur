@@ -14,15 +14,16 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { RefferralService } from 'app/services/referral.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
-import { ReferralEditComponent } from '../referral-edit/referral-edit.component';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { EntityService } from 'app/services/entity.service';
 import { ReferralSettingsComponent } from '../referral-entry-settings/referral-entry-settings.component';
 import { takeUntil } from 'rxjs';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-referral-list',
@@ -53,52 +54,13 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 })
 export class ReferralListComponent extends BaseListingComponent {
 
-    module_name = module_name.Referrallink
+    module_name = module_name.Referrallink;
+    filter_table_name = filter_module_name.referral_link;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     isFilterShow: boolean = false;
-    selectedAgent:string;
-    employeeList:any[] = [];
-
-    constructor(
-        public alertService: ToasterService,
-        private conformationService: FuseConfirmationService,
-        private toasterService: ToasterService,
-        private refferralService: RefferralService,
-        private clipboard: Clipboard,
-        private entityService: EntityService
-    ) {
-        super(module_name.Referrallink)
-        this.cols = this.columns.map(x => x.key);
-        this.key = this.module_name;
-        this.sortColumn = 'entry_date_time';
-        this.sortDirection = 'desc';
-        this.Mainmodule = this
-
-        this.entityService.onrefreshreferralEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-            next: (item) => {
-                if(item){
-                    this.refreshItems();
-                }
-            }
-        })
-    }
-
-    ngOnInit(): void {
-        this.getEmployeeList("")
-    }
-
-    columns = [
-        { key: 'campaign_name', name: 'Campaign Name', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'referral_link_for', name: 'Campaign Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'referral_code', name: 'Campaign Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'relationship_manager_name', name: 'Relationship Manager', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'referral_link', name: 'Link', is_date: false, date_formate: '', is_sortable: false, class: 'header-center-view ', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, isicon: true },
-        { key: 'no_of_leads', name: 'No Of Leads', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'no_of_signup', name: 'No Of Signup', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'entry_date_time', name: 'Create Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'start_date', name: 'Start Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'remark', name: 'Remark', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    ];
+    employeeList: any[] = [];
+    selectedRm: any;
 
     linkList: any[] = [
         { value: 'B2B Partner', label: 'B2B Partner' },
@@ -109,6 +71,69 @@ export class ReferralListComponent extends BaseListingComponent {
     ];
 
     cols = [];
+
+    constructor(
+        public alertService: ToasterService,
+        private conformationService: FuseConfirmationService,
+        private toasterService: ToasterService,
+        private refferralService: RefferralService,
+        private clipboard: Clipboard,
+        private entityService: EntityService,
+        public _filterService: CommonFilterService
+    ) {
+        super(module_name.Referrallink)
+        this.key = this.module_name;
+        this.sortColumn = 'entry_date_time';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.entityService.onrefreshreferralEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if (item) {
+                    this.refreshItems();
+                }
+            }
+        })
+    }
+
+    ngOnInit(): void {
+        this.getEmployeeList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedRm = resp['table_config']['rm_id_filtres']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['entry_date_time'].value) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            if (resp['table_config']['start_date'].value) {
+                resp['table_config']['start_date'].value = new Date(resp['table_config']['start_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedRm = filterData['table_config']['rm_id_filtres']?.value;
+            if (filterData['table_config']['entry_date_time'].value) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            if (filterData['table_config']['start_date'].value) {
+                filterData['table_config']['start_date'].value = new Date(filterData['table_config']['start_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
+    }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -123,10 +148,10 @@ export class ReferralListComponent extends BaseListingComponent {
         })
     }
 
-      // Api to get the Employee list data
-    getEmployeeList(value:string){
-        this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data:any) => {
-                this.employeeList = data;
+    // Api to get the Employee list data
+    getEmployeeList(value: string) {
+        this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
+            this.employeeList = data;
         });
     }
 
@@ -145,7 +170,7 @@ export class ReferralListComponent extends BaseListingComponent {
         //             this.refreshItems();
         //         }
         //     });
-        this.entityService.raisereferralEntityCall({data: record, edit: true})
+        this.entityService.raisereferralEntityCall({ data: record, edit: true })
     }
 
     createReferral(): void {
@@ -166,7 +191,7 @@ export class ReferralListComponent extends BaseListingComponent {
         //             this.refreshItems();
         //         }
         //     });
-        this.entityService.raisereferralEntityCall({create: true})
+        this.entityService.raisereferralEntityCall({ create: true })
     }
 
     deleteInternal(record): void {
@@ -201,5 +226,12 @@ export class ReferralListComponent extends BaseListingComponent {
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
+    }
+
+    ngOnDestroy(): void {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

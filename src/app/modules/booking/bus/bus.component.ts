@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { BusService } from 'app/services/bus.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
@@ -34,18 +34,14 @@ import { StatusUpdateComponent } from '../flight/flight/status-update/status-upd
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
-import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
   selector: 'app-bus',
   templateUrl: './bus.component.html',
   styleUrls: ['./bus.component.scss'],
-  styles: [`
-    .tbl-grid {
-      grid-template-columns:  40px 250px 170px 180px 110px 210px 220px 100px 100px 140px 130px 180px 180px 60px 120px 130px;
-    }
-  `],
   standalone: true,
   imports: [
     NgIf,
@@ -77,69 +73,23 @@ import { Observable } from 'rxjs';
 })
 export class BusComponent extends BaseListingComponent {
 
-  module_name = module_name.bus
+  module_name = module_name.bus;
+  filter_table_name = filter_module_name.bus_booking;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
   busFilter: any;
   statusList = ['Payment Failed', 'Waiting for Payment', 'Booking Failed', 'Confirmation Pending', 'Transaction Failed', 'Pending', 'Failed', 'Confirmed', 'Cancelled'];
   isFilterShow: boolean = false;
   agentList: any[] = [];
-  selectedAgent!:string;
-  selectedFromCity!:string;
-  selectedToCity!:string;
-  selectedSupplier!:string;
+  selectedAgent: any;
+  selectedFromCity: any;
+  selectedToCity: any;
+  selectedSupplier: any;
   fromcityList: any[] = [];
   tocityList: any[] = [];
   supplierListAll: any[] = [];
   isfirst: boolean = true;
-
-  columns = [
-    {
-      key: 'booking_ref_no', name: 'Reference No.', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toBooking: true
-    },
-    {
-      key: 'status', name: 'Status', is_fixed2: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toColor: true
-    },
-    {
-      key: 'bookingDate', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'tin', name: 'TIN', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, copyClick: true
-    },
-    {
-      key: 'ticket_no', name: 'Ticket No.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, copyClick: true
-    },
-    {
-      key: 'agent_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-    },
-    {
-      key: 'user_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'mop', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'supplier', name: 'Supplier', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'purchase_price', name: 'Purchase Price', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'sourceCity', name: 'From', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'destination', name: 'To', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'pax', name: 'Pax', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'payment_gateway', name: 'PG', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-    {
-      key: 'ip_address', name: 'IP Address', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-    },
-  ]
   cols = [];
 
   constructor(
@@ -151,14 +101,14 @@ export class BusComponent extends BaseListingComponent {
     private agentService: AgentService,
     private flighttabService: FlightTabService,
     private clipboard: Clipboard,
-
+    public _filterService: CommonFilterService
   ) {
     super(module_name.bus);
-    this.cols = this.columns.map((x) => x.key);
     this.key = this.module_name;
     this.sortColumn = 'bookingDate';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.busFilter = {
       From: '',
@@ -178,9 +128,66 @@ export class BusComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-      this.getAgent("", true);
-      this.getSupplier();
-      this.getFromCity('');
+    this.getAgent("", true);
+    this.getSupplier();
+    this.getFromCity('');
+    this.getToCity('');
+
+    // common filter
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+      this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+      this.selectedSupplier = resp['table_config']['supplier']?.value;
+      this.selectedFromCity = resp['table_config']['from_id_filters']?.value;
+      this.selectedToCity = resp['table_config']['to_id_filters']?.value;
+
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
+      if (this.selectedFromCity && this.selectedFromCity.id) {
+        const match = this.fromcityList.find((item: any) => item.id == this.selectedFromCity?.id);
+        if (!match) {
+          this.fromcityList.push(this.selectedFromCity);
+        }
+      }
+
+      if (this.selectedToCity && this.selectedToCity.id) {
+        const match = this.tocityList.find((item: any) => item.id == this.selectedToCity?.id);
+        if (!match) {
+          this.tocityList.push(this.selectedToCity);
+        }
+      }
+
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+      this.selectedSupplier = filterData['table_config']['supplier']?.value;
+      this.selectedFromCity = filterData['table_config']['from_id_filters']?.value;
+      this.selectedToCity = filterData['table_config']['to_id_filters']?.value;
+      if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
+        this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+      }
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      this.primengTable['filters'] = filterData['table_config'];
+    }
   }
 
   copy(link) {
@@ -192,8 +199,15 @@ export class BusComponent extends BaseListingComponent {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
 
-      for(let i in this.agentList){
-        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
       }
     });
   }
@@ -201,34 +215,47 @@ export class BusComponent extends BaseListingComponent {
   getFromCity(value: string) {
     this.busService.getBusCityCombo(value).subscribe((data) => {
       this.fromcityList = data;
-      if(value == ""){
-        this.tocityList = data;
+
+      if (this.selectedFromCity && this.selectedFromCity.id) {
+        const match = this.fromcityList.find((item: any) => item.id == this.selectedFromCity?.id);
+        if (!match) {
+          this.fromcityList.push(this.selectedFromCity);
+        }
       }
+     
     });
   }
 
   getToCity(value: string) {
     this.busService.getBusCityCombo(value).subscribe((data) => {
       this.tocityList = data;
+
+      if (this.selectedToCity && this.selectedToCity.id) {
+        const match = this.tocityList.find((item: any) => item.id == this.selectedToCity?.id);
+        if (!match) {
+          this.tocityList.push(this.selectedToCity);
+        }
+      }
     });
   }
 
   getSupplier() {
     this.flighttabService.getSupplierBoCombo('Bus').subscribe((data) => {
       this.supplierListAll = data;
+
+      for (let i in this.supplierListAll) {
+        this.supplierListAll[i].id_by_value = this.supplierListAll[i].company_name;
+      }
     })
   }
 
 
   getFilter(): any {
     const filterReq = {};
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginator,
-    //   this._sort,
-    //   this.searchInputControl.value
-    // );
-    filterReq['FromDate'] = DateTime.fromJSDate(this.busFilter.FromDate).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(this.busFilter.ToDate).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = '';
+    filterReq['ToDate'] = '';
+    // filterReq['FromDate'] = DateTime.fromJSDate(this.busFilter.FromDate).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(this.busFilter.ToDate).toFormat('yyyy-MM-dd');
     filterReq['agent_id'] = this.busFilter?.agent_id?.id || '';
     filterReq['From'] = this.busFilter?.From?.id || '';
     filterReq['To'] = this.busFilter?.To?.id || '';
@@ -274,7 +301,7 @@ export class BusComponent extends BaseListingComponent {
 
   viewInternal(record): void {
     if (!Security.hasViewDetailPermission(module_name.bus)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
     // let queryParams: any= this.router.navigate([Routes.booking.booking_details_route + '/' + record.id + '/readonly'])
     Linq.recirect('/booking/bus/details/' + record.id);
@@ -375,6 +402,14 @@ export class BusComponent extends BaseListingComponent {
         ],
         data.data, "Bus Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
     });
+  }
+
+  ngOnDestroy(): void {
+
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 
 }

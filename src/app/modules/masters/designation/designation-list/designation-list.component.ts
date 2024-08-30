@@ -1,4 +1,4 @@
-import { module_name } from 'app/security';
+import { filter_module_name, module_name } from 'app/security';
 import { Component } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,8 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-designation-list',
@@ -50,6 +52,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 })
 export class DesignationListComponent extends BaseListingComponent {
     module_name = module_name.designation;
+    filter_table_name = filter_module_name.designation;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     isFilterShow: boolean = false;
 
@@ -121,6 +125,7 @@ export class DesignationListComponent extends BaseListingComponent {
         private designationService: DesignationService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
+        public _filterService: CommonFilterService,
         public toasterService: ToasterService
     ) {
         super(module_name.designation);
@@ -129,6 +134,27 @@ export class DesignationListComponent extends BaseListingComponent {
         this.sortColumn = 'department_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
+    }
+
+    ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -222,7 +248,7 @@ export class DesignationListComponent extends BaseListingComponent {
                         },
                         error: (err) => {
                             this.alertService.showToast('error', err, 'top-right', true);
-                            
+
                         },
                     });
                 }
@@ -238,5 +264,9 @@ export class DesignationListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

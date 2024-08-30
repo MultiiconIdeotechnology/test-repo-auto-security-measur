@@ -23,6 +23,13 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                 (click)="_filterService.openDrawer(filter_table_name, primengTable)"
+                 matTooltip="Saved Filter" [disabled]="isLoading">
+                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+             </button>
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -30,10 +37,10 @@
             </button>
 
             <!--- Modal filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="mr-1">Filter</span>
-            </button>
+            </button> -->
 
             <!------ Export Excel ------->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
@@ -169,15 +176,13 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList"
                                     optionLabel="agent_info" [filter]="true" filterBy="agent_info"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.id)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -192,8 +197,8 @@
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList" [(ngModel)]="selectedSupplier" optionLabel="company_name"
-                                    [filter]="true" filterBy="company_name" (onFilter)="getSupplier($event?.filter)"
-                                    (onChange)="filter($event.value?.company_name)" [showClear]="true" appendTo="body"
+                                    [filter]="true" filterBy="company_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
@@ -304,7 +309,7 @@
                             </button>
 
                             <!-- <mat-divider
-                                *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || 
+                                *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') ||
                                     element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed'"></mat-divider>
 
                             <button mat-menu-item (click)="inprocess(element)"

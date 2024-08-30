@@ -55,8 +55,6 @@
                         ariaLabel="Filter Agency" />
                 </th>
                 <th>
-                <!-- <p-columnFilter type="text" matchMode="contains" field="lead_status" placeholder="Search by Status"
-                    ariaLabel="Filter Status" /> -->
                     <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
@@ -70,8 +68,6 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                <!-- <p-columnFilter type="text" matchMode="contains" field="lead_type" placeholder="Search by Type"
-                    ariaLabel="Filter Type" /> -->
                     <p-columnFilter field="lead_type" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="typeList"

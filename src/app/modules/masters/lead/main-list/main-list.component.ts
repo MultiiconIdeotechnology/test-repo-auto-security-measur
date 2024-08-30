@@ -1,4 +1,4 @@
-import { Security, leadsPermissions, messages, module_name } from './../../../../security';
+import { Security, filter_module_name, leadsPermissions, messages, module_name } from './../../../../security';
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -35,6 +35,9 @@ import { MarkupProfileDialogeComponent } from '../../agent/markup-profile-dialog
 import { SetKycProfileComponent } from '../../agent/set-kyc-profile/set-kyc-profile.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { EmployeeService } from 'app/services/employee.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-main-list',
@@ -67,32 +70,27 @@ import { EmployeeService } from 'app/services/employee.service';
     WRejectedComponent,
     LeadListComponent,
     ConvertedListComponent,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    MatTooltipModule
   ],
 })
 export class MainListComponent extends BaseListingComponent {
 
-  module_name = module_name.newSignup
+  module_name = module_name.newSignup;
+  filter_table_name = filter_module_name.newsignup_customer;
+  private settingsUpdatedSubscription: Subscription;
   dataList = [];
   user: any = {};
   total = 0;
   Mainmodule: any;
   _selectedColumns: Column[];
   isFilterShow: boolean = false;
-  selectedRm:string;
+  selectedRm:any;
   employeeList:any[] = [];
-  // user: any = {};
 
-  columns = [
-    { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-    { key: 'lead_status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false },
-    { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false },
-    { key: 'relation_manager', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-    { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-    { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false },
-    { key: 'city_name', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, width: '50', align: '', indicator: false, tooltip: true },
-  ]
-  cols = [];
+  cols: any = [
+    { field: 'contact_person', header: 'Contact Person', type: 'text' },
+  ];
 
   statusList =  [ 'New', 'Converted', 'Live', 'Kyc Pending']
 
@@ -105,13 +103,14 @@ export class MainListComponent extends BaseListingComponent {
     private employeeService: EmployeeService,
     private matDialog: MatDialog,
     private router: Router,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.newSignup)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.userService.user$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -121,11 +120,37 @@ export class MainListComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'contact_person', header: 'Contact Person', type: 'text' },
-    ];
 
     this.getRelationManagerList("");
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        this.selectedRm = resp['table_config']['relation_manager']?.value;
+        console.log("resp['table_config']", resp['table_config'])
+        // this.sortColumn = resp['sortColumn'];
+        // this.primengTable['_sortField'] = resp['sortColumn'];
+        if(resp['table_config']['entry_date_time'].value){
+            resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+        }
+        this.primengTable['filters'] = resp['table_config'];
+        this._selectedColumns = resp['selectedColumns'] || [];
+        this.isFilterShow = true;
+        this.primengTable._filter();
+   });
+  }
+
+  ngAfterViewInit(){
+    // Defult Active filter show
+    if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedRm = filterData['table_config']['relation_manager']?.value;
+      if (filterData['table_config']['entry_date_time'].value) {
+        filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+      }
+      this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
+
+    }
   }
 
   get selectedColumns(): Column[] {
@@ -133,7 +158,13 @@ export class MainListComponent extends BaseListingComponent {
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   refreshItems(event?: any): void {
@@ -168,6 +199,10 @@ export class MainListComponent extends BaseListingComponent {
   getRelationManagerList(value: any) {
     this.employeeService.getemployeeCombo(value).subscribe((data) => {
         this.employeeList = data;
+
+        for(let i in this.employeeList){
+           this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+        }
     })
 }
 
@@ -423,6 +458,12 @@ export class MainListComponent extends BaseListingComponent {
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  ngOnDestroy(): void {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+    }
   }
 
 }

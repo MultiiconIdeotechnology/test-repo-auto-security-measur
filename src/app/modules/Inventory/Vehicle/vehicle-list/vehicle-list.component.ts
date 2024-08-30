@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Security, messages, module_name, vehiclePermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, vehiclePermissions } from 'app/security';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { VehicleService } from 'app/services/vehicle.service';
 import { VehicleEntryComponent } from '../vehicle-entry/vehicle-entry.component';
@@ -19,6 +19,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ImagesComponent } from 'app/modules/masters/destination/images/images.component';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-vehicle-list',
@@ -45,6 +47,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 })
 export class VehicleListComponent extends BaseListingComponent {
     module_name = module_name.vehicle;
+    filter_table_name = filter_module_name.vehicle;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     cols = [];
@@ -157,8 +161,8 @@ export class VehicleListComponent extends BaseListingComponent {
             tooltip: true,
         },
     ];
-    
-    selectedAction:string;
+
+    selectedAction: string;
     actionList: any[] = [
         { label: 'Yes', value: true },
         { label: 'No', value: false },
@@ -170,7 +174,7 @@ export class VehicleListComponent extends BaseListingComponent {
         private toasterService: ToasterService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
-        private router: Router
+        public _filterService: CommonFilterService
     ) {
         super(module_name.vehicle);
         // this.cols = this.columns.map((x) => x.key);
@@ -178,6 +182,7 @@ export class VehicleListComponent extends BaseListingComponent {
         this.sortColumn = 'vehicle_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     refreshItems(event?: any): void {
@@ -191,10 +196,31 @@ export class VehicleListComponent extends BaseListingComponent {
 
             },
             error: (err) => {
-                this.toasterService.showToast('error',err)
+                this.toasterService.showToast('error', err)
                 this.isLoading = false;
             },
         });
+    }
+
+    ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     createInternal(model): void {
@@ -270,7 +296,7 @@ export class VehicleListComponent extends BaseListingComponent {
                             this.refreshItems();
                         },
                         error: (err) => {
-                            this.toasterService.showToast('error',err)
+                            this.toasterService.showToast('error', err)
                             this.isLoading = false;
                         },
 
@@ -320,7 +346,7 @@ export class VehicleListComponent extends BaseListingComponent {
                             }
                         },
                         error: (err) => {
-                            this.toasterService.showToast('error',err)
+                            this.toasterService.showToast('error', err)
                             this.isLoading = false;
                         },
                     });
@@ -369,7 +395,7 @@ export class VehicleListComponent extends BaseListingComponent {
                             }
                         },
                         error: (err) => {
-                            this.toasterService.showToast('error',err)
+                            this.toasterService.showToast('error', err)
                             this.isLoading = false;
                         },
                     });
@@ -383,14 +409,14 @@ export class VehicleListComponent extends BaseListingComponent {
         }
 
         this.matDialog
-        .open(ImagesComponent, {
-            data: {data: model, name : 'Vehicle'},
-            disableClose: true,
-        })
-        .afterClosed()
-        .subscribe((res) => {
+            .open(ImagesComponent, {
+                data: { data: model, name: 'Vehicle' },
+                disableClose: true,
+            })
+            .afterClosed()
+            .subscribe((res) => {
                 // this.refreshItems();
-        });
+            });
         // const Id = model['id'];
         // this.matDialog
         //     .open(VehicleImageComponent, {
@@ -420,5 +446,9 @@ export class VehicleListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

@@ -21,7 +21,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { EmailSetupService } from 'app/services/email-setup.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -32,6 +32,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PaymentFilterComponent } from '../payment-filter/payment-filter.component';
 import { PaymentInfoComponent } from './payment-info/payment-info.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-payment-list',
@@ -72,6 +74,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 export class PaymentListComponent extends BaseListingComponent implements OnDestroy {
 
   module_name = module_name.payment;
+  filter_table_name = filter_module_name.account_payments;
+  private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   flashMessage: 'success' | 'error' | null = null;
   dataList = [];
@@ -82,21 +86,31 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   appConfig = AppConfig;
   settings: any;
   currentFilter: any;
-
+  cols: any = [
+    { field: 'payment_reject_reason', header: 'Payment Reject Reason' },
+    { field: 'payment_type', header: 'Payment Type' },
+  ];
+  _selectedColumns: Column[];
+  isFilterShow: boolean = false;
+  selectedStatus: string;
+  statusList = [
+    { label: 'Confirmed', value: 'Confirmed' },
+    { label: 'Rejected', value: 'Rejected' },
+    { label: 'Pending', value: 'Pending' },
+  ];
 
   constructor(
     private accountService: AccountService,
-    private confirmService: FuseConfirmationService,
-    private router: Router,
     private matDialog: MatDialog,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.payment)
-    this.cols = this.columns.map(x => x.key);
     this.key = 'payment_request_date';
     this.sortColumn = 'payment_request_date';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.currentFilter = {
       status: 'All',
@@ -108,34 +122,40 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     this.currentFilter.fromDate.setMonth(this.currentFilter.fromDate.getMonth());
   }
 
-  columns = [
-    { key: 'transaction_ref_no', name: 'Transaction ID', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, isview: true },
-    { key: 'payment_ref_no', name: 'Ref no.', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'payment_status', name: 'Status', is_date: false, date_formate: '', is_sortable: true, class: 'header-center-view', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, iscolor: true },
-    { key: 'payment_to', name: 'To', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'service_for', name: 'For', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'payment_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-    { key: 'mode_of_payment', name: 'Mode of Payment', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-    { key: 'payment_request_date', name: 'Requested', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    { key: 'audit_date_time', name: 'Audited', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-  ]
-  cols = [];
-  _selectedColumns: Column[];
-  isFilterShow: boolean = false;
-  selectedStatus: string;
-  statusList = [
-    { label: 'Confirmed', value: 'Confirmed' },
-    { label: 'Rejected', value: 'Rejected' },
-    { label: 'Pending', value: 'Pending' },
-  ];
-
   ngOnInit() {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+      // console.log("resp['table_config']['payment_request_date']", resp['table_config']['payment_request_date'] );
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['payment_request_date']?.value != null && resp['table_config']['payment_request_date'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['payment_request_date']);
+      }
+      if (resp['table_config']['audit_date_time']?.value != null) {
+        resp['table_config']['audit_date_time'].value = new Date(resp['table_config']['audit_date_time'].value);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
+  }
 
-    this.cols = [
-      // { field: 'payment_date', header: 'Payment Date' },
-      { field: 'payment_reject_reason', header: 'Payment Reject Reason' },
-      { field: 'payment_type', header: 'Payment Type' },
-    ];
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      if (filterData['table_config']['payment_request_date']?.value != null && filterData['table_config']['payment_request_date'].value.length) {
+        this._filterService.rangeDateConvert(filterData['table_config']['payment_request_date']);
+      }
+      if (filterData['table_config']['audit_date_time']?.value != null) {
+        filterData['table_config']['audit_date_time'].value = new Date(filterData['table_config']['audit_date_time'].value);
+      }
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
+    }
   }
 
   get selectedColumns(): Column[] {
@@ -143,7 +163,13 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   }
 
   set selectedColumns(val: Column[]) {
-    this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    if (Array.isArray(val)) {
+      this._selectedColumns = this.cols.filter(col =>
+        val.some(selectedCol => selectedCol.field === col.field)
+      );
+    } else {
+      this._selectedColumns = [];
+    }
   }
 
   getFilter(): any {
@@ -156,8 +182,10 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     // );
     // const filter = this.currentFilter;
     filterReq['status'] = this.currentFilter.status;
-    filterReq['fromDate'] = DateTime.fromJSDate(this.currentFilter.fromDate).toFormat('yyyy-MM-dd');
-    filterReq['toDate'] = DateTime.fromJSDate(this.currentFilter.toDate).toFormat('yyyy-MM-dd')
+    filterReq['fromDate'] = "";
+    filterReq['toDate'] = "";
+    // filterReq['fromDate'] = DateTime.fromJSDate(this.currentFilter.fromDate).toFormat('yyyy-MM-dd');
+    // filterReq['toDate'] = DateTime.fromJSDate(this.currentFilter.toDate).toFormat('yyyy-MM-dd')
     return filterReq;
   }
 
@@ -270,5 +298,12 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  ngOnDestroy() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
   }
 }
