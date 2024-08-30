@@ -73,10 +73,9 @@ export class ProductComponent {
         'itemCount',
         'count',
         'product_status',
-        'is_payment_due',
+        'purchase_amount',
+        'due_Amount',
         'start_integration',
-        'acivation_date',
-        'expiry_date',
         'entry_date_time',
     ];
 

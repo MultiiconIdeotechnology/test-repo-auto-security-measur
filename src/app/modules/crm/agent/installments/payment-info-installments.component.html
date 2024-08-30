@@ -23,7 +23,7 @@
                 <ng-container *ngIf="installmentDetail?.installment?.length > 0; else noGridItems">
                     <ng-container *ngFor="let ListItem of installmentDetail?.installment; let i = index">
                         <div class="tbl-grid gridwidth grid items-center px-0 py-0 border-b cursor-pointer">
-                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
+                            <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu" [disabled]="ListItem.is_payment_audited"
                                 class="sticky left-0 bg-card" style="border-radius: 0%; width: 100%">
                                 <mat-icon> more_vert </mat-icon>
                             </button>
@@ -34,18 +34,33 @@
                                 </button>
                             </mat-menu>
                             <ng-container *ngFor="let col of columns">
-                                <div [class]="'flex flex-row items-center space-x-2 truncate' + col.class" [ngClass]="ListItem.installment_date ? 'pl-0': col.align === 'left' ? 'justify-center' : 'pl-0'">
+                                <div [class]="'flex flex-row items-center space-x-0 truncate' + col.class" [ngClass]="ListItem.installment_date ? 'pl-0': col.align === 'left' ? 'justify-center' : 'pl-0'">
                                     <span *ngIf="col.callAction && col.key === 'dueammount'">
                                         <span *ngIf="col.name == 'Due Amount'">{{ListItem[col.key] ? ListItem[col.key] : 0 }}</span>
                                     </span>
 
                                     <div *ngIf="col.indicator" [matTooltip]="ListItem['is_payment_audited'] == true ? 'Payment Received' : 'Payment Pending'"
                                         class="w-2 h-2 rounded-full mr-[6px]"
-                                        [ngClass]="getPaymentIndicatorClass(ListItem['is_payment_audited'])"></div>
+                                        [ngClass]="getPaymentIndicatorClass(ListItem['is_payment_audited'])">
+                                    </div>
+
+                                    <div *ngIf="col.installmentAmount">
+                                        {{ ListItem['installment_amount'] != null ? (ListItem['installment_amount'] | currency: (installmentDetail?.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                    </div>
+
+                                    <div *ngIf="col.receivedAmount">
+                                        {{ ListItem['payment_amount'] != null ? (ListItem['payment_amount'] | currency: (installmentDetail?.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                    </div>
+
+                                    <div *ngIf="col.dueAmount">
+                                        {{ ListItem['dueammount'] != null ? (ListItem['dueammount'] | currency: (installmentDetail?.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                    </div>
+
+                                    <!-- {{installmentDetail?.currency}} -->
 
                                     <div
                                         [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? '' : '') ">
-                                        <span class="truncate" *ngIf="!col.toColor && !col.callAction"
+                                        <span class="truncate" *ngIf="!col.toColor && !col.callAction && !col.installmentAmount && !col.receivedAmount && !col.dueAmount"
                                             [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
                                             {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
                                             " - " : ListItem[col.key] || " - " }}

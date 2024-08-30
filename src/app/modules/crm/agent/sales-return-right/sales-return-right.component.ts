@@ -1,5 +1,5 @@
 import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -65,6 +65,7 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
     formGroup: FormGroup;
     btnLabel = "Submit";
     todayDateTime = new Date();
+    @Input() salesReturnDetail: any;
 
     ngOnInit(): void {
         this.formGroup = this.formBuilder.group({
@@ -84,9 +85,8 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
     ) {
         this.entityService.onCRMSalesReturnCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                this.settingsDrawer.toggle();
+                this.settingsDrawer?.toggle();
                 this.record = item?.data ?? {}
-
                 if (item?.add) {
                     this.formGroup = this.formBuilder.group({
                         id: "",
@@ -98,6 +98,7 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
 
                 const luxonDate = DateTime.fromJSDate(this.todayDateTime).toISODate();
                 this.formGroup.get('sales_retrun_date').patchValue(luxonDate);
+                this.formGroup.get('sales_return_amount').patchValue(this.record?.default_sales_Amount);
             }
         })
     }
@@ -129,10 +130,11 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
 
         const json = this.formGroup.getRawValue();
 
+        // sales_return_amount: json?.sales_return_amount ? json?.sales_return_amount : "",
         const newJson = {
             id: this.record?.id ? this.record?.id : "",
             is_sales_return: false,
-            sales_return_amount: json?.sales_return_amount ? json?.sales_return_amount : "",
+            sales_return_amount: json?.sales_return_amount ? json?.sales_return_amount : this.record?.default_sales_Amount,
             sales_retrun_date: json?.sales_retrun_date ? DateTime.fromISO(json.sales_retrun_date).toFormat('yyyy-MM-dd') : "",
             sales_retrun_remark: json?.sales_retrun_remark ? json?.sales_retrun_remark : ""
         }

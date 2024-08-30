@@ -36,7 +36,7 @@ import { InstallmentRightComponent } from '../installment-right/installment-righ
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 40px 170px 130px 150px 150px 120px;
+            grid-template-columns: 40px 160px 130px 150px 150px 120px;
         }`,
     ],
     standalone: true,
@@ -90,6 +90,9 @@ export class InstallmentsInfoItemComponent {
             align: '',
             indicator: true,
             tooltip: false,
+            installmentAmount: false,
+            receivedAmount: false,
+            dueAmount: false
         },
         {
             key: 'installment_amount',
@@ -102,7 +105,10 @@ export class InstallmentsInfoItemComponent {
             align: '',
             indicator: false,
             tooltip: false,
-            is_amount: true
+            is_amount: true,
+            installmentAmount: true,
+            receivedAmount: false,
+            dueAmount: false
         },
         {
             key: 'payment_date',
@@ -115,6 +121,9 @@ export class InstallmentsInfoItemComponent {
             align: '',
             indicator: false,
             tooltip: false,
+            installmentAmount: false,
+            receivedAmount: false,
+            dueAmount: false
         },
         {
             key: 'payment_amount',
@@ -126,7 +135,10 @@ export class InstallmentsInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: false
+            tooltip: false,
+            installmentAmount: false,
+            receivedAmount: true,
+            dueAmount: false
         },
         {
             key: 'dueammount',
@@ -138,7 +150,10 @@ export class InstallmentsInfoItemComponent {
             is_sticky: false,
             align: '',
             indicator: false,
-            tooltip: false
+            tooltip: false,
+            installmentAmount: false,
+            receivedAmount: false,
+            dueAmount: true
         }
     ]
     dataList: any;

@@ -770,3 +770,9 @@ div:where(.swal2-container) input:where(.swal2-input):focus {
     background-color: transparent !important;
     box-shadow: none !important;
 }
+
+.right-side-title {
+    .mat-sort-header-container {
+        float: inline-end !important;
+    }
+}

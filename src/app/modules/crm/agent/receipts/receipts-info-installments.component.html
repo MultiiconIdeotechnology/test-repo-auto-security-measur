@@ -44,28 +44,49 @@
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
-                                <button mat-menu-item (click)="proofAttachment(ListItem['proof_attachment'])">
+
+                                <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['proof_attachment'],
+                                'cursor-not-allowed text-blue-400 opacity-20': !ListItem['proof_attachment']}"
+                                    (click)="paymentAttachment(ListItem['proof_attachment'])">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                         class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
                                     <span style="font-weight: 600">Proof Attachment</span>
                                 </button>
-                                <button mat-menu-item (click)="paymentAttachment(ListItem['payment_attachment'])">
+
+                                <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['payment_attachment'],
+                                'cursor-not-allowed text-blue-400 opacity-20': !ListItem['payment_attachment']}"
+                                    (click)="paymentAttachment(ListItem['payment_attachment'])">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                         class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
                                     <span style="font-weight: 600">Payment Attachment</span>
                                 </button>
+
+                                <button mat-menu-item
+                                    [ngClass]="{'cursor-pointer text-blue-600': ListItem['isInvoice'], 'cursor-not-allowed text-blue-100': !ListItem['isInvoice']}"
+                                    (click)="downloadInvoice(ListItem['receiptid'])"
+                                    [attr.disabled]="!ListItem['isInvoice'] ? true : null">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                                        class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
+                                    <span style="font-weight: 600">Invoice</span>
+                                </button>
+
                             </mat-menu>
                             <ng-container *ngFor="let col of columns">
                                 <div [class]="'flex flex-row items-center space-x-0 truncate pl-0 ' + col.class"
                                     [ngClass]="{ 'justify-center': col.align === 'left' }">
 
-                                    <span *ngIf="col.isicon" class="text-center justify-center">
+                                    <div class="truncate max-w-[190px]" *ngIf="col.reference_number"
+                                        [matTooltip]="ListItem['receipt_ref_no'] || '-'">
+                                        {{ ListItem['receipt_ref_no'] || '-' }}
+                                    </div>
+
+                                    <!-- <span *ngIf="col.isicon" class="text-center justify-center">
                                         <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                             class="rounded-full cursor-pointer text-blue-600 p-0.5"
                                             (click)="downloadInvoice(ListItem['receiptid'])"
                                             [attr.disabled]="!ListItem['isInvoice'] ? true : null"
                                             [ngClass]="{'cursor-pointer text-blue-600': ListItem['isInvoice'], 'cursor-not-allowed text-blue-100': !ListItem['isInvoice']}"
-                                            [matTooltip]="'Download'"></mat-icon></span>
+                                            [matTooltip]="'Download'"></mat-icon></span> -->
 
                                     <span *ngIf="col.isAudited" class="text-center">
                                         <span *ngIf="ListItem[col.key]" class="text-green-600">Yes</span>
@@ -74,14 +95,28 @@
 
                                     <div class="flex">
                                         <div *ngIf="col.indicator" [matTooltip]="ListItem['receipt_Status']"
-                                                class="w-2 h-2 rounded-full mr-[6px]"
-                                                [matTooltip]="getTooltip(ListItem)"
-                                                [ngClass]="getStatusIndicatorClass(ListItem['receipt_Status'])"></div>
-                                        </div>
+                                            class="w-2 h-2 rounded-full mr-[6px]"
+                                            [ngClass]="getStatusIndicatorClass(ListItem['receipt_Status'])"></div>
+                                    </div>
+
+                                    <!-- <div class="flex" *ngIf="col.indicator"
+                                        [matTooltip]="ListItem['is_audited'] == true ? 'Audited' : 'Pending'"
+                                        class="w-2 h-2 rounded-full mr-[6px]"
+                                        [ngClass]="getReceiptStatusClass(ListItem['is_audited'])"></div> -->
+
+                                    <div class="flex" *ngIf="col.isprice">
+                                        {{ ListItem['payment_amount'] != null ? (ListItem['payment_amount'] | currency:
+                                        (ListItem['currency'] || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                    </div>
+
+                                    <div class="truncate max-w-[284px]" *ngIf="col.reject_reason"
+                                        [matTooltip]="ListItem['receipt_reject_reason'] || '-'">
+                                        {{ ListItem['receipt_reject_reason'] || '-' }}
+                                    </div>
                                     <div
                                         [class]="'flex flex-col truncate '+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
                                         <span class="truncate"
-                                            *ngIf="!col.toColor && !col.callAction && !col.isicon && !col.isAudited"
+                                            *ngIf="!col.toColor && !col.callAction && !col.isicon && !col.isAudited && !col.isprice && !col.reject_reason && !col.reference_number"
                                             [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
                                             {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
                                             " - " : ListItem[col.key] ?? " - " }}

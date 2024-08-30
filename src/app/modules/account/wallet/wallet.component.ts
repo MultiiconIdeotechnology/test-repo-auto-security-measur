@@ -12,22 +12,21 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { MatTabGroup, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name, walletCreditPermissions, walletRechargePermissions } from 'app/security';
+import { Security, module_name, walletRechargePermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { takeUntil, debounceTime } from 'rxjs';
 import { AuditedComponent } from './audited/audited.component';
 import { PendingComponent } from './pending/pending.component';
 import { RejectedComponent } from './rejected/rejected.component';
 import { WalletFilterComponent } from './wallet-filter/wallet-filter.component';
-import { WalletInfoComponent } from './wallet-info/wallet-info.component';
 import { AgentService } from 'app/services/agent.service';
 import { WalletEntryComponent } from './wallet-entry/wallet-entry.component';
+import { WalletEnterySettingsComponent } from "./wallet-entry-settings/wallet-entry-settings.component";
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
   selector: 'app-wallet',
@@ -61,8 +60,8 @@ import { WalletEntryComponent } from './wallet-entry/wallet-entry.component';
     PendingComponent,
     AuditedComponent,
     RejectedComponent,
-
-  ],
+    WalletEnterySettingsComponent
+],
 })
 export class WalletComponent extends BaseListingComponent implements OnDestroy {
   module_name = module_name.wallet;
@@ -104,6 +103,7 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private agentService: AgentService,
+    private entityService: EntityService
   ) {
     super(module_name.wallet)
     this.key = this.module_name;
@@ -122,6 +122,16 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
 
     this.filterData.FromDate.setDate(1);
     this.filterData.FromDate.setMonth(this.filterData.FromDate.getMonth());
+
+    this.entityService.onrefreshrefreshWalletRechargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+        next: (item) => {
+            if(item){
+                  this.pending.refreshItemsPending()
+                  this.audited.refreshItemsAudited()
+                  this.rejected.refreshItemsRejected()
+            }
+        }
+    })
   }
 
   ngOnInit(): void {
@@ -268,6 +278,10 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
         }
       });
   }
+
+  createWallet(): void {
+    this.entityService.raisewalletRechargeCall({create: true})
+}
 
   ngAfterViewInit(): void {
     this.audited.auditListFilter = this.filterData;

@@ -30,12 +30,13 @@ export class EntityService {
     private appliedOnCall = new ReplaySubject<any>();
     private refreshInstallmentCall = new ReplaySubject<any>();
     private installmentCall = new ReplaySubject<any>();
-
     private refreshCRMSalesReturnCall = new ReplaySubject<any>();
     private crmSalesReturnCall = new ReplaySubject<any>();
-
     private paymentLinkEntityCall = new ReplaySubject<any>();
     private refreshPaymentLinkEntityCall = new ReplaySubject<any>();
+
+    private refreshWalletRechargeCall = new ReplaySubject<any>();
+    private walletRechargeCall = new ReplaySubject<any>();
 
     constructor() { }
 
@@ -88,6 +89,23 @@ export class EntityService {
 
     public onCRMSalesReturnCall(): Observable<any> {
         return this.crmSalesReturnCall.asObservable();
+    }
+
+    /********Wallet Recharge***********/
+    public raiserefreshWalletRechargeCall(item): void {
+        this.refreshWalletRechargeCall.next(item);
+    }
+
+    public onrefreshrefreshWalletRechargeCall(): Observable<any> {
+        return this.refreshWalletRechargeCall.asObservable();
+    }
+
+    public raisewalletRechargeCall(item): void {
+        this.walletRechargeCall.next(item);
+    }
+
+    public onwalletRechargeCall(): Observable<any> {
+        return this.walletRechargeCall.asObservable();
     }
 
     /********Product Purchase***********/

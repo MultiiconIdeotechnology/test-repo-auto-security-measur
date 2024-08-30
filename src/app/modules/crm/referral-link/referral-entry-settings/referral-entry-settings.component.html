@@ -92,7 +92,7 @@
         <div
             class="h-16 flex items-center justify-end pt-4 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-5 dark:bg-[#1e293b] bg-white border-t m-auto">
             <button mat-stroked-button (click)="settingsDrawer.close()">Close</button>
-            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid || disableBtn">
                 {{ btnLabel }}
             </button>
         </div>
