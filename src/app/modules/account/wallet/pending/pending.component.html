@@ -74,12 +74,17 @@
                         [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
-                                optionLabel="agency_name" [filter]="true" filterBy="agency_name"
+                                optionLabel="agent_info" [filter]="true" filterBy="agent_info"
                                 (onFilter)="getAgentList($event?.filter)"
                                 (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                 placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
-                                    <div [value]="employee.id">{{ employee.agency_name }}</div>
+                                    <div class="flex align-items-center gap-1">
+                                        <div class="m-0">
+                                            {{employee.code}} - {{employee.agency_name}}
+                                            <div class="text-sm text-slate-500">{{employee.email_address}}</div>
+                                        </div>
+                                    </div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>

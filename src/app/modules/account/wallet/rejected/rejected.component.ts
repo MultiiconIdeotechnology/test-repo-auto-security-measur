@@ -158,7 +158,6 @@ export class RejectedComponent extends BaseListingComponent {
 	}
 
 	ngAfterViewInit(): void {
-		// ngAfterViewInit
 		if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
 			let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
 			this.selectedMop = filterData['table_config']['mop']?.value;
@@ -209,6 +208,9 @@ export class RejectedComponent extends BaseListingComponent {
 	getAgentList(value: string) {
 		this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
 			this.agentList = data;
+			for (let i in this.agentList) {
+				this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+			}
 		})
 	}
 

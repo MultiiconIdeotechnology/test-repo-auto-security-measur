@@ -167,7 +167,7 @@ export class PendingComponent extends BaseListingComponent {
 			this.selectedPSP = filterData['table_config']['psp_name']?.value;
 			this.isFilterShowPending = true;
 			this.isFilterShowPendingChange.emit(this.isFilterShowPending);
-			
+
 			setTimeout(() => {
 				this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
 				if (this.selectedEmployee && this.selectedEmployee.id) {
@@ -208,6 +208,9 @@ export class PendingComponent extends BaseListingComponent {
 	getAgentList(value: string) {
 		this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
 			this.agentList = data;
+			for (let i in this.agentList) {
+				this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+			}
 		})
 	}
 

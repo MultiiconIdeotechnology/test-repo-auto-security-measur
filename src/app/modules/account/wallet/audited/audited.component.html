@@ -11,8 +11,8 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn pResizableColumn alignFrozen="left"
-                    pFrozenColumn [frozen]="frozenObj?.reference_number"
+                <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn
+                    pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number"
                     [ngClass]="{'left-0': !frozenObj?.reference_number}">
                     Ref. No <p-sortIcon field="reference_number" />
                     <span class="float-right" (click)="isFrozenColumn('reference_number');$event.stopPropagation()">
@@ -61,8 +61,8 @@
             <tr *ngIf="isFilterShowAudit">
                 <th class=" left-[-1px]" pFrozenColumn></th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">
-                    <p-columnFilter type="text" matchMode="contains" field="reference_number" placeholder="Search by Reference Number"
-                        ariaLabel="Filter Reference Number" />
+                    <p-columnFilter type="text" matchMode="contains" field="reference_number"
+                        placeholder="Search by Reference Number" ariaLabel="Filter Reference Number" />
                 </th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.request_date_time">
                     <!-- <p-columnFilter field="request_date_time" type="date">
@@ -73,14 +73,9 @@
                     </p-columnFilter> -->
                     <p-columnFilter field="request_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar
-                                    selectionMode="range"
-                                    [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)"
-                                    [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy"
-                                    appendTo="body"
-                                    placeholder="Search by Date Range">
+                            <p-calendar selectionMode="range" [ngModel]="value"
+                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                             </p-calendar>
                         </ng-template>
                     </p-columnFilter>
@@ -90,15 +85,19 @@
                         ariaLabel="Filter Agent Code" />
                 </th>
                 <th>
-                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals"
+                        [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
                                 optionLabel="agent_info" [filter]="true" filterBy="agent_info"
                                 (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
-                                    <div class="flex align-items-center gap-2">
-                                        <div [value]="employee.id">{{ employee.agency_name }}</div>
+                                    <div class="flex align-items-center gap-1">
+                                        <div class="m-0">
+                                            {{employee.code}} - {{employee.agency_name}}
+                                            <div class="text-sm text-slate-500">{{employee.email_address}}</div>
+                                        </div>
                                     </div>
                                 </ng-template>
                             </p-dropdown>
@@ -122,11 +121,11 @@
                     <p-columnFilter class="searchableDropdown" field="mop" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="mopList" [(ngModel)]="selectedMop"
-                                optionLabel="mop" [filter]="true" filterBy="mop"
-                                (onFilter)="getMopList($event?.filter)" (onChange)="filter($event.value?.mop)"
-                                [showClear]="true" appendTo="body" placeholder="Select a MOP">
+                                optionLabel="mop" [filter]="true" filterBy="mop" (onFilter)="getMopList($event?.filter)"
+                                (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                placeholder="Select a MOP">
                                 <ng-template let-option pTemplate="item">
-                                        <div >{{ option.mop }}</div>
+                                    <div>{{ option.mop }}</div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
@@ -138,31 +137,34 @@
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="pspList" [(ngModel)]="selectedPsp"
                                 optionLabel="provider" [filter]="true" filterBy="provider"
-                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value?.provider)"
+                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a PSP">
                                 <ng-template let-option pTemplate="item">
-                                        <div >{{ option.provider }}</div>
+                                    <div>{{ option.provider }}</div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="psp_ref_number" placeholder="Search by PSP Ref Name" ariaLabel="Filter PSP Ref Name" />
+                    <p-columnFilter type="text" matchMode="contains" field="psp_ref_number"
+                        placeholder="Search by PSP Ref Name" ariaLabel="Filter PSP Ref Name" />
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="audited_by_name" placeholder="Search by Audited By" ariaLabel="Filter Audited By" />
+                    <p-columnFilter type="text" matchMode="contains" field="audited_by_name"
+                        placeholder="Search by Audited By" ariaLabel="Filter Audited By" />
                 </th>
                 <th>
                     <p-columnFilter field="audited_date_time" type="date">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                placeholder="Search by Audit Date"></p-calendar>
+                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                appendTo="body" placeholder="Search by Audit Date"></p-calendar>
                         </ng-template>
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="user_remark" placeholder="Search by User Remark" ariaLabel="Filter User Remark" />
+                    <p-columnFilter type="text" matchMode="contains" field="user_remark"
+                        placeholder="Search by User Remark" ariaLabel="Filter User Remark" />
                 </th>
             </tr>
         </ng-template>

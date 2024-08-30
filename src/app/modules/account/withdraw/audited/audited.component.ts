@@ -191,6 +191,10 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
   getAgentList(value: string) {
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
+
+      for(let i in this.agentList){
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+      }
     })
   }
 

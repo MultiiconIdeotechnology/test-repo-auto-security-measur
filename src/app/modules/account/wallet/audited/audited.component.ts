@@ -127,7 +127,6 @@ export class AuditedComponent extends BaseListingComponent {
       this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPsp = resp['table_config']['psp_name']?.value;
       this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
-      console.log("selected employee", this.selectedEmployee)
       if (this.selectedEmployee && this.selectedEmployee.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
         if (!match) {
