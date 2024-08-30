@@ -53,13 +53,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 @Component({
     selector: 'app-receipt-list',
     templateUrl: './receipt-list.component.html',
-    styles: [
-        `
-            .tbl-grid {
-                grid-template-columns: 40px 65px 107px 240px 95px 150px 220px 90px 90px 80px 75px 170px 170px 360px 120px 220px;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,

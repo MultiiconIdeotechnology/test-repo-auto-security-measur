@@ -37,25 +37,25 @@
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Pending'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShowPending  = !isFilterShowPending ">
-                <img *ngIf="!isFilterShowPending " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                <img *ngIf="!isFilterShowPending" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
-                <img *ngIf="isFilterShowPending " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                <img *ngIf="isFilterShowPending" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
 
             <button *ngIf="this.tabNameStr == 'Audited'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShowAudit  = !isFilterShowAudit ">
-                <img *ngIf="!isFilterShowAudit " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                <img *ngIf="!isFilterShowAudit" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
-                <img *ngIf="isFilterShowAudit " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                <img *ngIf="isFilterShowAudit" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
 
             <button *ngIf="this.tabNameStr == 'Rejected'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShowReject  = !isFilterShowReject ">
-                <img *ngIf="!isFilterShowReject " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                <img *ngIf="!isFilterShowReject" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
-                <img *ngIf="isFilterShowReject " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                <img *ngIf="isFilterShowReject" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
 

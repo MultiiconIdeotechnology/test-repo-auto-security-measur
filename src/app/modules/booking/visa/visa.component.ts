@@ -168,7 +168,6 @@ export class VisaComponent extends BaseListingComponent {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            console.log("filterData", filterData)
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);

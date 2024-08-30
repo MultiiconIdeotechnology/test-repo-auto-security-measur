@@ -119,7 +119,7 @@ export class OfflineListComponent extends BaseListingComponent {
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this.selectedAgent = resp['table_config']['dec_agent_id']?.value;
+      this.selectedAgent = resp['table_config']['agency_name_agent_id']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
         if (!match) {
@@ -144,7 +144,7 @@ export class OfflineListComponent extends BaseListingComponent {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      this.selectedAgent = filterData['table_config']['dec_agent_id']?.value;
+      this.selectedAgent = filterData['table_config']['agency_name_agent_id']?.value;
       this.selectedEmployee = filterData['table_config']['sales_person_flitres']?.value;
       if (filterData['table_config']['entry_date_time'].value) {
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);

@@ -31,11 +31,6 @@ import { BusFilterComponent } from './bus-filter/bus-filter.component';
   standalone: true,
   templateUrl: './bus.component.html',
   styleUrls: ['./bus.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 50px 110px 80px 190px 160px 130px 110px 180px 210px 120px 130px 120px 130px 120px 120px;
-  }
-  `],
   imports: [
     NgIf,
     NgFor,
@@ -170,7 +165,7 @@ export class BusComponent {
     });
   }
 
-  filter() {
+  filterModal() {
     this.matDialog
       .open(BusFilterComponent, {
         data: this.airlineFilter,

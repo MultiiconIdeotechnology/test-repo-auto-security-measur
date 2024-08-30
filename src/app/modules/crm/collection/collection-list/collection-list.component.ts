@@ -120,13 +120,13 @@ export class CRMCollectionListComponent extends BaseListingComponent implements 
 
         switch (tabName) {
             case 'Tech':
-                this._filterService.applyDefaultFilter(this.filter_table_name.collections_tech);
+                // this._filterService.applyDefaultFilter(this.filter_table_name.collections_tech);
                 this.tab = 'tech';
                 this.tech?.refreshItems();
                 break;
 
             case 'Travel':
-                this._filterService.applyDefaultFilter(this.filter_table_name.collections_travel);
+                // this._filterService.applyDefaultFilter(this.filter_table_name.collections_travel);
                 this.tab = 'travel';
                 // if (this.isSecound) {
                 setTimeout(() => {

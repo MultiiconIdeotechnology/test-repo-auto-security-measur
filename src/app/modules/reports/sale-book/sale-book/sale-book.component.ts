@@ -169,6 +169,12 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			if (typeof (resp['table_config']['master_agent'].value) == 'object') {
 				resp['table_config']['master_agent'].value = resp['table_config']['master_agent'].value?.agency_name;
 			}
+			if (typeof (resp['table_config']['supplier'].value) == 'object') {
+				resp['table_config']['supplier'].value = resp['table_config']['supplier'].value?.company_name;
+			}
+			if (typeof (resp['table_config']['billing_company'].value) == 'object') {
+				resp['table_config']['billing_company'].value = resp['table_config']['billing_company'].value?.company_name;
+			}
 			this.primengTable['filters'] = resp['table_config'];
 			this.isFilterShow = true;
 			this.primengTable._filter();
@@ -198,6 +204,12 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			}
 			if (typeof (filterData['table_config']['master_agent'].value) == 'object') {
 				filterData['table_config']['master_agent'].value = filterData['table_config']['master_agent'].value?.agency_name;
+			}
+			if (typeof (filterData['table_config']['supplier'].value) == 'object') {
+				filterData['table_config']['supplier'].value = filterData['table_config']['supplier'].value?.company_name;
+			}
+			if (typeof (filterData['table_config']['billing_company'].value) == 'object') {
+				filterData['table_config']['billing_company'].value = filterData['table_config']['billing_company'].value?.company_name;
 			}
 			// this.primengTable['_sortField'] = filterData['sortColumn'];
 			// this.sortColumn = filterData['sortColumn'];
@@ -255,6 +267,30 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 		} else {
 			this.primengTable.filter(null, 'master_agent', 'equals');
 			this.primengTable.filters['master_agent'] = { value: null, matchMode: 'equals' };
+		}
+	}
+
+	onSupplierChange(supplier: any) {
+		if (supplier) {
+			this.primengTable.filter(supplier?.company_name, 'supplier', 'equals');
+			setTimeout(() => {
+				this.primengTable.filters['supplier']['value'] = supplier;
+			},  this.primengTable.filterDelay);
+		} else {
+			this.primengTable.filter(null, 'supplier', 'equals');
+			this.primengTable.filters['supplier'] = { value: null, matchMode: 'equals' };
+		}
+	}
+
+	onBillingComChange(billingCompany:any){
+		if (billingCompany) {
+			this.primengTable.filter(billingCompany?.company_name, 'billing_company', 'equals');
+			setTimeout(() => {
+				this.primengTable.filters['billing_company']['value'] = billingCompany;
+			},  this.primengTable.filterDelay);
+		} else {
+			this.primengTable.filter(null, 'billing_company', 'equals');
+			this.primengTable.filters['billing_company'] = { value: null, matchMode: 'equals' };
 		}
 	}
 

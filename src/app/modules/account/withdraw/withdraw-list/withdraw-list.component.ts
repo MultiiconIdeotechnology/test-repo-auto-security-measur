@@ -175,9 +175,9 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
   }
 
   openTabFiterDrawer() {
-    if (this.tab == 'Audited') {
+    if (this.tabNameStr == 'Audited') {
       this._filterService.openDrawer(this.filter_table_name.withdraw_audited, this.audited.primengTable);
-    } else if (this.tab == 'Rejected') {
+    } else if (this.tabNameStr == 'Rejected') {
       this._filterService.openDrawer(this.filter_table_name.withdraw_rejected, this.rejected.primengTable);
     } else {
       this._filterService.openDrawer(this.filter_table_name.withdraw_pending, this.pending.primengTable);

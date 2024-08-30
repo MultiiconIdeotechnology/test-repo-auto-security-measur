@@ -9,7 +9,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -22,13 +21,10 @@ import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
-import { ToasterService } from 'app/services/toaster.service';
 import { WithdrawService } from 'app/services/withdraw.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
-import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { takeUntil, debounceTime, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
 import { EntityService } from 'app/services/entity.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
@@ -39,11 +35,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   selector: 'app-waudited',
   templateUrl: './audited.component.html',
   styleUrls: ['./audited.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 170px 140px 110px 204px 210px;
-  }
-  `],
   standalone: true,
   imports: [
     NgIf,
@@ -68,7 +59,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     MatTooltipModule,
     MatMenuModule,
     MatTabsModule,
-    MatPaginatorModule,
     MatSortModule,
     InfoWithdrawComponent,
     PrimeNgImportsModule,
@@ -185,7 +175,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnChanges() {
-
+    
   }
 
   getAgentList(value: string) {
@@ -288,7 +278,6 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
           this.totalRecords = data.total;
         }, error: err => {
           this.alertService.showToast('error', err);
-
           this.isLoading = false;
         }
       }

@@ -99,8 +99,6 @@
                             placeholder="Search by Booking Ref." ariaLabel="Filter Booking Ref." />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="status" placeholder="Search by Status"
-                            ariaLabel="Filter Status" /> -->
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
@@ -118,9 +116,7 @@
                             ariaLabel="Filter Agent Code" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent Name"
-                            ariaLabel="Filter Agent Name" /> -->
-                        <p-columnFilter class="searchableDropdown" field="dec_agent_id" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="agency_name_agent_id" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"

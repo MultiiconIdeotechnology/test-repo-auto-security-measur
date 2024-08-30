@@ -119,7 +119,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     dataList = [];
     sortColumn: any = 'complete_date_time';
     selectedAgent: any;
-    selectedEmployee: any;
+    selectedSupplier: any;
 
     constructor(
         private salesReturnService: SalesReturnService,
@@ -151,6 +151,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agent']?.value;
+            this.selectedSupplier = resp['table_config']['supplier']?.value;
+
             if (this.selectedAgent && this.selectedAgent.id) {
 				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
 				if (!match) {
@@ -165,6 +167,9 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             if (typeof (resp['table_config']['agent'].value) == 'object') {
 				resp['table_config']['agent'].value = resp['table_config']['agent'].value?.agency_name;
 			}
+            if (typeof (resp['table_config']['supplier'].value) == 'object') {
+				resp['table_config']['supplier'].value = resp['table_config']['supplier'].value?.company_name;
+			}
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -177,11 +182,15 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent']?.value;
+            this.selectedSupplier = filterData['table_config']['supplier']?.value;
             if (filterData['table_config']['complete_date_time'].value) {
                 filterData['table_config']['complete_date_time'].value = new Date(filterData['table_config']['complete_date_time'].value);
             }
             if (typeof (filterData['table_config']['agent'].value) == 'object') {
 				filterData['table_config']['agent'].value = filterData['table_config']['agent'].value?.agency_name;
+			}
+            if (typeof (filterData['table_config']['supplier'].value) == 'object') {
+				filterData['table_config']['supplier'].value = filterData['table_config']['supplier'].value?.company_name;
 			}
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
@@ -219,7 +228,19 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
 		}
 	}
 
-    filter() {
+    onSupplierChange(supplier: any) {
+		if (supplier) {
+			this.primengTable.filter(supplier?.company_name, 'supplier', 'equals');
+			setTimeout(() => {
+				this.primengTable.filters['supplier']['value'] = supplier;
+			},  this.primengTable.filterDelay);
+		} else {
+			this.primengTable.filter(null, 'supplier', 'equals');
+			this.primengTable.filters['supplier'] = { value: null, matchMode: 'equals' };
+		}
+	}
+
+    filterModal() {
         this._matdialog
             .open(SalesReturnFilterComponent, {
                 data: this.saleFilter,

@@ -126,7 +126,7 @@ export class LedgerListComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    this.filter();
+    this.filterCriteria();
 
     this.searchInternalFilter.valueChanges.subscribe(text => {
       const filterdData = this.Alldata.filter(x =>
@@ -174,7 +174,7 @@ export class LedgerListComponent extends BaseListingComponent {
     const debit = (dataList.balance) - (dataList.debit)
   }
 
-  filter(): void {
+  filterCriteria(): void {
     this.matDialog.open(LedgerFilterComponent, {
       data: this.legerFilter,
       disableClose: true

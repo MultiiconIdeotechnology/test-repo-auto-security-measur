@@ -250,7 +250,6 @@
                     </th>
 
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="master_agent" placeholder="Search by Agent" ariaLabel="Filter Agent" /> -->
                         <p-columnFilter class="searchableDropdown" field="master_agent" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -274,7 +273,6 @@
                     </th>
 
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="service_type" placeholder="Search by Service Type" ariaLabel="Filter Service Type" /> -->
                         <p-columnFilter field="service_type" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="ServicesBy"
@@ -315,7 +313,6 @@
                     </th>
 
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="booking_date" placeholder="Search by Booking Date" ariaLabel="Filter Booking Date" /> -->
                         <p-columnFilter field="booking_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
@@ -326,7 +323,6 @@
                     </th>
 
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="travel_date" placeholder="Search by Travel Date" ariaLabel="Filter Travel Date" /> -->
                         <p-columnFilter field="travel_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
@@ -337,7 +333,6 @@
                     </th>
 
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="inquiry_date" placeholder="Search by Inquiry Date" ariaLabel="Filter Inquiry Date" /> -->
                         <p-columnFilter field="inquiry_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
@@ -348,7 +343,6 @@
                     </th>
 
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="invoice_date" placeholder="Search by Invoice Date" ariaLabel="Filter Invoice Date" /> -->
                         <p-columnFilter field="invoice_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
@@ -476,7 +470,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="companyList" optionLabel="company_name"
                                     [filter]="true" filterBy="company_name" [(ngModel)]="selectedCompany"
-                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    (onChange)="onBillingComChange($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Company">
                                     <ng-template let-company pTemplate="item">
                                         <div> {{company.company_name}}</div>
@@ -492,7 +486,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
                                     [filter]="true" filterBy="company_name" [(ngModel)]="selectedSupplier"
-                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    (onChange)="onSupplierChange($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select Supplier">
                                     <ng-template let-supplier pTemplate="item">
                                         <div>

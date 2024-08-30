@@ -39,7 +39,7 @@
             </button>
 
             <!-- Filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filterModal()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
             </button>
@@ -146,11 +146,9 @@
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -168,7 +166,7 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList"
                                     [(ngModel)]="selectedSupplier" optionLabel="company_name" [filter]="true"
-                                    filterBy="company_name" (onChange)="filter($event.value?.company_name)"
+                                    filterBy="company_name" (onChange)="onSupplierChange($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">

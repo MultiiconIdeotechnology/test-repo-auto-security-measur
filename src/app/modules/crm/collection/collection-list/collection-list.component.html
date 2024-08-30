@@ -35,18 +35,18 @@
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Tech'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
                 matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowTech  = !isFilterShowTech ">
-                <img *ngIf="!isFilterShowTech " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                <img *ngIf="!isFilterShowTech" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
-                <img *ngIf="isFilterShowTech " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                <img *ngIf="isFilterShowTech" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
 
             <button *ngIf="this.tabNameStr == 'Travel'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
                 matTooltip="Advanced Filter" [disabled]="isLoading"
                 (click)="isFilterShowTravel  = !isFilterShowTravel ">
-                <img *ngIf="!isFilterShowTravel " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                <img *ngIf="!isFilterShowTravel" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
-                <img *ngIf="isFilterShowTravel " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                <img *ngIf="isFilterShowTravel" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
 

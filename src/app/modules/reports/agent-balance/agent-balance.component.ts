@@ -36,11 +36,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     selector: 'app-agent-balance',
     templateUrl: './agent-balance.component.html',
     styleUrls: ['./agent-balance.component.scss'],
-    styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 240px 100px 110px 110px 180px 130px 200px 180px;
-  }
-  `],
     standalone: true,
     imports: [
         NgIf,
@@ -79,7 +74,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
     isFilterShow: boolean = false;
     agentList: any[] = [];
     employeeList: any[] = [];
-    selectedRM!: any;
+    selectedRM: any;
     selectedAgent: any;
 
     constructor(
@@ -104,6 +99,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agent_name']?.value;
+            this.selectedRM = resp['table_config']['rm']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -111,11 +107,10 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
                 }
             }
 
-            this.selectedRM = resp['table_config']['rm']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['last_top_up'].value) {
-                resp['table_config']['last_top_up'].value = new Date(resp['table_config']['last_top_up'].value);
+                this._filterService.rangeDateConvert(resp['table_config']['last_top_up']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
@@ -132,7 +127,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
             this.selectedRM = filterData['table_config']['rm']?.value;
 
             if (filterData['table_config']['last_top_up'].value) {
-                filterData['table_config']['last_top_up'].value = new Date(filterData['table_config']['last_top_up'].value);
+                this._filterService.rangeDateConvert(filterData['table_config']['last_top_up']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
