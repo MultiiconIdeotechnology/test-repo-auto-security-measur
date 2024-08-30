@@ -55,7 +55,8 @@
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
-                                <button mat-menu-item (click)="cancelProduct(ListItem)" *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && (ListItem.product_status !== 'Pending' || ListItem.product_status !== 'Sales Return'))">
+                                <!-- *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && (ListItem.product_status !== 'Pending' || ListItem.product_status !== 'Sales Return'))" -->
+                                <button mat-menu-item (click)="cancelProduct(ListItem)" *ngIf="ListItem.product_status == 'Delivered'">
                                     <mat-icon class="mat-18">close</mat-icon>
                                     <span style="font-weight: 600">Cancel</span>
                                 </button>
