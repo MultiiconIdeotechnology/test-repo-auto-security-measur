@@ -63,7 +63,7 @@ export class CurrencyListComponent extends BaseListingComponent {
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     public _userService: UserService,
-
+    public _filterService: CommonFilterService
   ) {
     super(module_name.currency)
     this.cols = this.columns.map(x => x.key);

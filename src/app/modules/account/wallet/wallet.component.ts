@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -8,17 +8,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Security, filter_module_name, module_name, walletRechargePermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet.service';
-import { takeUntil, debounceTime } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { AuditedComponent } from './audited/audited.component';
 import { PendingComponent } from './pending/pending.component';
 import { RejectedComponent } from './rejected/rejected.component';
@@ -90,9 +89,8 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     private walletService: WalletService,
     private matDialog: MatDialog,
     private agentService: AgentService,
-    private entityService: EntityService
+    private entityService: EntityService,
     public _filterService: CommonFilterService,
-    private cd: ChangeDetectorRef
   ) {
     super(module_name.wallet)
     this.key = this.module_name;
