@@ -802,6 +802,12 @@ div:where(.swal2-container) div:where(.swal2-actions):not(.swal2-loading) .swal2
     box-shadow: none !important;
 }
 
+.right-side-title {
+    .mat-sort-header-container {
+        float: inline-end !important;
+    }
+}
+
 div:where(.swal2-container) button:where(.swal2-close) {
     font-family: 'primeicons' !important;
     margin-bottom: -1.5em !important;

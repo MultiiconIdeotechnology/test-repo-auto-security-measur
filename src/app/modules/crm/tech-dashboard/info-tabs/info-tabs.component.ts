@@ -137,7 +137,8 @@ export class TechInfoTabsComponent {
                                     this.record?.product_status === 'Waiting for Account Activation' ? 'text-blue-600 font-semibold' :
                                         this.record?.product_status === 'Rejected from Store' ? 'text-red-600 font-semibold' :
                                             this.record?.product_status === 'Block' ? 'text-red-600 font-semibold' :
-                                                this.record?.product_status === 'Expired' ? 'text-red-600 font-semibold' : ''
+                                                this.record?.product_status === 'Sales Return' ? 'text-red-600 font-semibold' :
+                                                    this.record?.product_status === 'Expired' ? 'text-red-600 font-semibold' : ''
                 },
                 { name: 'Agent Code', value: this.record?.agentCode },
                 { name: 'Agency Name', value: this.record?.agency_name },

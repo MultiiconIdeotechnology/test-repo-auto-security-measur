@@ -31,43 +31,45 @@ import { Subject, takeUntil } from 'rxjs';
 import { AgentProductInfoComponent } from '../product-info/product-info.component';
 import { PurchaseProductEntrySettingsComponent } from "../purchase-product-entry-settings/purchase-product-entry-settings.component";
 import { EntityService } from 'app/services/entity.service';
+import { CRMSalesReturnRightComponent } from "../sales-return-right/sales-return-right.component";
 
 @Component({
     selector: 'app-purchase-product',
     templateUrl: './purchase-product.component.html',
-    styles: [`.tbl-grid { grid-template-columns: 40px 135px 60px 100px 90px 105px 125px 115px 100px 85px }`],
+    styles: [`.tbl-grid { grid-template-columns: 40px 190px 45px 100px 110px 105px 120px 130px 85px}`],
     standalone: true,
     imports: [
-        NgIf,
-        NgFor,
-        NgClass,
-        DatePipe,
-        AsyncPipe,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSnackBarModule,
-        MatSlideToggleModule,
-        NgxMatSelectSearchModule,
-        MatTooltipModule,
-        MatAutocompleteModule,
-        RouterOutlet,
-        MatOptionModule,
-        MatDividerModule,
-        MatSortModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatMenuModule,
-        MatDialogModule,
-        CommonModule,
-        MatTabsModule,
-        MatProgressBarModule,
-        PurchaseProductEntrySettingsComponent
-    ]
+    NgIf,
+    NgFor,
+    NgClass,
+    DatePipe,
+    AsyncPipe,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatSlideToggleModule,
+    NgxMatSelectSearchModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
+    RouterOutlet,
+    MatOptionModule,
+    MatDividerModule,
+    MatSortModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatDialogModule,
+    CommonModule,
+    MatTabsModule,
+    MatProgressBarModule,
+    PurchaseProductEntrySettingsComponent,
+    CRMSalesReturnRightComponent
+]
 })
 export class PurchaseProductComponent {
     module_name = module_name.crmagent;
@@ -100,6 +102,14 @@ export class PurchaseProductComponent {
                 }
             }
         });
+
+        this.entityService.onCRMrefreshSalesReturnCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if(item){
+                    this.refreshItems();
+                }
+            }
+        });
     }
 
     columns = [
@@ -123,11 +133,11 @@ export class PurchaseProductComponent {
             is_date: false,
             date_formate: '',
             is_sortable: false,
-            class: '',
+            class: ' pr-[10px]',
             is_sticky: false,
             indicator: false,
             tooltip: false,
-            align: 'left',
+            align: 'center',
             applied: false
         },
         {
@@ -136,9 +146,9 @@ export class PurchaseProductComponent {
             is_date: false,
             date_formate: '',
             is_sortable: false,
-            class: '',
+            class: ' pr-[15px]',
             is_sticky: false,
-            align: 'left',
+            align: 'center',
             indicator: false,
             tooltip: false,
             applied: false
@@ -158,19 +168,49 @@ export class PurchaseProductComponent {
             applied: false
         },
         {
-            key: 'is_payment_due',
-            name: 'Payment Due',
+            key: 'purchase_amount',
+            name: 'Price',
             is_date: false,
             date_formate: '',
-            is_sortable: false,
-            class: '',
+            is_sortable: true,
+            class: ' header-right-view',
             is_sticky: false,
-            align: 'center',
+            align: '',
             indicator: false,
             tooltip: false,
-            payment: true,
-            applied: false
+            applied: false,
+            price: true,
+            dueAmount: false
         },
+        {
+            key: 'due_Amount',
+            name: 'Due Amount',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: ' header-right-view',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: false,
+            applied: false,
+            price: false,
+            dueAmount: true
+        },
+        // {
+        //     key: 'is_payment_due',
+        //     name: 'Payment Due',
+        //     is_date: false,
+        //     date_formate: '',
+        //     is_sortable: false,
+        //     class: '',
+        //     is_sticky: false,
+        //     align: 'center',
+        //     indicator: false,
+        //     tooltip: false,
+        //     payment: true,
+        //     applied: false
+        // },
         {
             key: 'start_integration',
             name: 'Start Integration',
@@ -185,32 +225,32 @@ export class PurchaseProductComponent {
             startIntegration: true,
             applied: false
         },
-        {
-            key: 'acivation_date',
-            name: 'Activation Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            tooltip: false,
-            applied: false
-        },
-        {
-            key: 'expiry_date',
-            name: 'Expiry Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: 'left',
-            indicator: false,
-            tooltip: false,
-            applied: false
-        },
+        // {
+        //     key: 'acivation_date',
+        //     name: 'Activation Date',
+        //     is_date: true,
+        //     date_formate: 'dd-MM-yyyy',
+        //     is_sortable: false,
+        //     class: '',
+        //     is_sticky: false,
+        //     align: 'left',
+        //     indicator: false,
+        //     tooltip: false,
+        //     applied: false
+        // },
+        // {
+        //     key: 'expiry_date',
+        //     name: 'Expiry Date',
+        //     is_date: true,
+        //     date_formate: 'dd-MM-yyyy',
+        //     is_sortable: false,
+        //     class: '',
+        //     is_sticky: false,
+        //     align: 'left',
+        //     indicator: false,
+        //     tooltip: false,
+        //     applied: false
+        // },
         {
             key: 'entry_date_time',
             name: 'Entry Date',
@@ -253,11 +293,13 @@ export class PurchaseProductComponent {
     getStatusColor(status: string): string {
         if (status == 'Pending') {
             return 'text-yellow-600';
+        } else if (status == 'Sales Return' || status == 'Cancelled') {
+            return 'text-red-600';
         } else if (status == 'Inprocess') {
             return 'text-green-600';
         } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else if (status == 'Expired' || status == 'Cancel' || status == 'Block') {
+        } else if (status == 'Expired' || status == 'Cancel' || status == 'Block' || status == 'Cancelled') {
             return 'text-red-600';
         } {
             return '';
@@ -429,6 +471,47 @@ export class PurchaseProductComponent {
             });
     }
 
+    expiryProduct(record) {
+        if (!Security.hasPermission(agentPermissions.expiryProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = 'Expiry Product';
+        this.confirmationService
+            .open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    let payload = {
+                        id : record.id
+                    }
+                    this.crmService.expiryProduct(payload).subscribe({
+                        next: () => {
+                            this.alertService.showToast(
+                                'success',
+                                'Product has been expired!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+
+                    });
+                }
+            });
+    }
+
     editProduct(record) {
         // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
@@ -448,11 +531,13 @@ export class PurchaseProductComponent {
         //             );
         //         }
         //     });
-
         this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
     }
 
-    paymentProduct() {
-
+    salesReturnProduct(record){
+        if (!Security.hasPermission(agentPermissions.salesReturnProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        this.entityService.raiseCRMSalesReturnCall({ add: true, data: record })
     }
 }

@@ -73,10 +73,9 @@ export class ProductComponent {
         'itemCount',
         'count',
         'product_status',
-        'is_payment_due',
+        'purchase_amount',
+        'due_Amount',
         'start_integration',
-        'acivation_date',
-        'expiry_date',
         'entry_date_time',
     ];
 
@@ -147,10 +146,10 @@ export class ProductComponent {
         if (status == 'Pending') {
             return 'text-yellow-600';
         } else if (status == 'Inprocess') {
+            return 'text-green-600';
+        } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else if (status == 'Expired') {
-            return 'text-red-600';
-        } else if (status == 'Cancelled') {
+        } else if (status == 'Cancel' || status == 'Sales Return' || status == 'Expired' || status == 'Block' || status == 'Cancelled') {
             return 'text-red-600';
         }
         else {

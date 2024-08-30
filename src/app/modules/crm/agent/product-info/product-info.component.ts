@@ -34,6 +34,7 @@ import { EntityService } from 'app/services/entity.service';
 import { ReceiptRightComponent } from "../receipt-right/receipt-right.component";
 import { PaymentInfoWLSetttingLinkComponent } from '../wl-settings-link/payment-info-wl-settings-link.component';
 import { Linq } from 'app/utils/linq';
+import { PaymentInfoSalesReturnComponent } from "../sales-return/payment-info-sales-return.component";
 
 @Component({
     selector: 'app-product-info',
@@ -72,7 +73,8 @@ import { Linq } from 'app/utils/linq';
     InstallmentsInfoItemComponent,
     ReceiptsInfoItemComponent,
     ReceiptRightComponent,
-    PaymentInfoWLSetttingLinkComponent
+    PaymentInfoWLSetttingLinkComponent,
+    PaymentInfoSalesReturnComponent
 ]
 })
 export class AgentProductInfoComponent {
@@ -84,7 +86,7 @@ export class AgentProductInfoComponent {
     @ViewChild(MatSort) public _sort: MatSort;
     @ViewChild('receipts') receipts: ReceiptsInfoItemComponent;
     @ViewChild('wlsettinglinks') wlsettinglinks: ReceiptsInfoItemComponent;
-
+    @ViewChild('salesreturn') salesreturn: PaymentInfoSalesReturnComponent;
     @ViewChild('installments') installments: InstallmentsInfoItemComponent;
     @ViewChild('payments') payments: PaymentInfoItemComponent;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -196,7 +198,7 @@ export class AgentProductInfoComponent {
             return 'text-blue-600';
         } else if (status == 'Expired') {
             return 'text-red-600';
-        } else if (status == 'Cancelled' || status == 'Cancel' || status == 'Block') {
+        } else if (status == 'Cancelled' || status == 'Cancel' || status == 'Block' || status == 'Sales Return' || status == 'Cancelled') {
             return 'text-red-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
@@ -253,6 +255,10 @@ export class AgentProductInfoComponent {
                 break;
             case 'WL-Setting Links':
                 this.tab = 'wlsettinglinks';
+                break;
+
+            case 'Sales Return':
+                this.tab = 'salesreturn';
                 break;
         }
     }

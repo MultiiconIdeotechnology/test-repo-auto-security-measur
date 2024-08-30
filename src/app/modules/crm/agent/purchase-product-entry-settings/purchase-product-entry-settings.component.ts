@@ -159,7 +159,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // this.record = data?.data ?? {}
         this.entityService.onproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
-                this.settingsDrawer.toggle()
+                this.settingsDrawer?.toggle()
                 if (item) {
                     if (item?.addFlag) {
                         this.addAgentId = item?.data.agentid;
@@ -436,7 +436,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         }
 
         // if (!this.record) {
-        //     console.log("452", json.proof_attachment);
         //     if (json.proof_attachment == null || !json.proof_attachment.fileName) {
         //         this.disableBtn = false;
         //         this.alertService.showToast('error', 'Proof Attachment is required.')

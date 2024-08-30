@@ -185,15 +185,15 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
                 debounceTime(200),
                 distinctUntilChanged(),
                 switchMap((value: any) => {
-                    const filterReq = this.getFilterReq()
-                    filterReq['service_for'] = "lead_assigned";
-                    filterReq['Filter'] = value;
-                    return this.employeeService.getEmployeeList(filterReq);
+                    // const filterReq = this.getFilterReq()
+                    // filterReq['service_for'] = "lead_assigned";
+                    // filterReq['Filter'] = value;
+                    return this.employeeService.getEmployeeLeadAssignCombo(value);
                 })
             )
             .subscribe({
                 next: data => {
-                    this.dataList = data.data;
+                    this.dataList = data;
                     // Sort array in asc order based on employee_name
                     this.dataList.sort((a, b) => {
                         if (a.employee_name < b.employee_name) {
@@ -210,7 +210,7 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
                         "id": "",
                         "employee_name": "Self",
                     })
-                    data.data.forEach(employee => {
+                    data.forEach(employee => {
                         this.dataList.push(employee);
                     });
                     this.formGroup.get("call_assign_to").patchValue("");

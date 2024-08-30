@@ -63,7 +63,6 @@ export class CurrencyListComponent extends BaseListingComponent {
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     public _userService: UserService,
-    public _filterService: CommonFilterService,
 
   ) {
     super(module_name.currency)
@@ -75,6 +74,7 @@ export class CurrencyListComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
+
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
         // this.sortColumn = resp['sortColumn'];
         // this.primengTable['_sortField'] = resp['sortColumn'];

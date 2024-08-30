@@ -219,13 +219,13 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Pending') {
+        if (status == 'Sales Return' || status == 'Cancelled') {
             return 'text-red-600';
         } else if (status == 'Inprocess') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
-        } else if (status == 'Waiting for Customer Update') {
+        } else if (status == 'Waiting for Customer Update' || status == 'Pending') {
             return 'text-blue-600';
         } else if (status == 'Waiting for Account Activation') {
             return 'text-blue-600';

@@ -15,7 +15,6 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Security, filter_module_name, module_name, walletRechargePermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet.service';
@@ -26,6 +25,8 @@ import { RejectedComponent } from './rejected/rejected.component';
 import { WalletFilterComponent } from './wallet-filter/wallet-filter.component';
 import { AgentService } from 'app/services/agent.service';
 import { WalletEntryComponent } from './wallet-entry/wallet-entry.component';
+import { WalletEnterySettingsComponent } from "./wallet-entry-settings/wallet-entry-settings.component";
+import { EntityService } from 'app/services/entity.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
@@ -56,8 +57,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     PendingComponent,
     AuditedComponent,
     RejectedComponent,
-
-  ],
+    WalletEnterySettingsComponent
+],
 })
 export class WalletComponent extends BaseListingComponent implements OnDestroy {
   module_name = module_name.wallet;
@@ -89,6 +90,7 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     private walletService: WalletService,
     private matDialog: MatDialog,
     private agentService: AgentService,
+    private entityService: EntityService
     public _filterService: CommonFilterService,
     private cd: ChangeDetectorRef
   ) {
@@ -109,6 +111,16 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
 
     this.filterData.FromDate.setDate(1);
     this.filterData.FromDate.setMonth(this.filterData.FromDate.getMonth());
+
+    this.entityService.onrefreshrefreshWalletRechargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+        next: (item) => {
+            if(item){
+                  this.pending.refreshItemsPending()
+                  this.audited.refreshItemsAudited()
+                  this.rejected.refreshItemsRejected()
+            }
+        }
+    })
   }
 
   ngOnInit(): void {
@@ -227,6 +239,22 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
           this.rejected.refreshItemsRejected()
         }
       });
+  }
+
+  createWallet(): void {
+    this.entityService.raisewalletRechargeCall({create: true})
+}
+
+  ngAfterViewInit(): void {
+    this.audited.auditListFilter = this.filterData;
+    this.rejected.rejectFilter = this.filterData;
+    this.pending.pendingFilter = this.filterData;
+
+    this.apiCalls = {
+      Pending: false,
+      Audited: false,
+      Rejected: false,
+    };
   }
 
   filter(): void {

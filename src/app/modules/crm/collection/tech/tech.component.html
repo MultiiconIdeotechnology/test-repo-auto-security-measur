@@ -152,7 +152,8 @@
                     {{element.product || '-'}}
                 </td>
                 <td class="text-right">
-                    {{element.amount || '-'}}
+                    <!-- {{element.amount || '-'}} -->
+                    {{ element?.amount != null ? (element?.amount | currency: (element.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
                 </td>
                 <td>
                     {{(element.installmentDate | date: 'dd-MM-yyyy') || "-"}}

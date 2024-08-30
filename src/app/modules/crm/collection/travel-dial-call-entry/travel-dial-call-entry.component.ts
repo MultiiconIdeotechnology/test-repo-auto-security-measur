@@ -188,44 +188,44 @@ export class TravelDialCallEntryComponent extends BaseListingComponent implement
         });
 
         this.formGroup
-            .get('assignfilter')
-            .valueChanges.pipe(
-                filter((search) => !!search),
-                startWith(''),
-                debounceTime(200),
-                distinctUntilChanged(),
-                switchMap((value: any) => {
-                    const filterReq = this.getFilterReq()
-                    filterReq['service_for'] = "lead_assigned";
-                    filterReq['Filter'] = value;
-                    return this.employeeService.getEmployeeList(filterReq);
-                })
-            )
-            .subscribe({
-                next: data => {
-                    this.dataList = data.data;
-                    // Sort array in asc order based on employee_name
-                    this.dataList.sort((a, b) => {
-                        if (a.employee_name < b.employee_name) {
-                            return -1;
-                        }
-                        if (a.employee_name > b.employee_name) {
-                            return 1;
-                        }
-                        return 0;
-                    });
+        .get('assignfilter')
+        .valueChanges.pipe(
+            filter((search) => !!search),
+            startWith(''),
+            debounceTime(200),
+            distinctUntilChanged(),
+            switchMap((value: any) => {
+                // const filterReq = this.getFilterReq()
+                // filterReq['service_for'] = "lead_assigned";
+                // filterReq['Filter'] = value;
+                return this.employeeService.getEmployeeLeadAssignCombo(value);
+            })
+        )
+        .subscribe({
+            next: data => {
+                this.dataList = data;
+                // Sort array in asc order based on employee_name
+                this.dataList.sort((a, b) => {
+                    if (a.employee_name < b.employee_name) {
+                        return -1;
+                    }
+                    if (a.employee_name > b.employee_name) {
+                        return 1;
+                    }
+                    return 0;
+                });
 
-                    this.dataList = [];
-                    this.dataList.push({
-                        "id": "",
-                        "employee_name": "Self",
-                    })
-                    data.data.forEach(employee => {
-                        this.dataList.push(employee);
-                    });
-                    this.formGroup.get("call_assign_to").patchValue("");
-                }
-            });
+                this.dataList = [];
+                this.dataList.push({
+                    "id": "",
+                    "employee_name": "Self",
+                })
+                data.forEach(employee => {
+                    this.dataList.push(employee);
+                });
+                this.formGroup.get("call_assign_to").patchValue("");
+            }
+        });
     }
 
     public compareWith(v1: any, v2: any) {

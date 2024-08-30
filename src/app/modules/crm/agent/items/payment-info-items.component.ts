@@ -34,7 +34,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 230px 130px 150px 130px;
+            grid-template-columns: 400px 150px 150px 130px;
         }
     `,
     ],
@@ -188,7 +188,7 @@ export class PaymentInfoItemComponent {
             return 'text-orange-600';
         } else if (status == 'Inprocess') {
             return 'text-blue-600';
-        } else if (status == 'Rejected from Store' || status == 'Cancel') {
+        } else if (status == 'Rejected from Store' || status == 'Cancel' || status == 'Sales Return' || status == 'Cancelled') {
             return 'text-red-600';
         } else if (status == 'Expired') {
             return 'text-red-600';
