@@ -71,18 +71,6 @@ export class StatusInfoComponent implements OnInit {
       desc: `Refund Completed for Particular Sales Return Amendment.`
     },
     {
-      title: "Completed",
-      desc: `Amendment Process is Completed.`
-    },
-    {
-      title: "Rejected",
-      desc: `Amendment Process is Rejected.`
-    },
-    {
-      title: "Cancelled",
-      desc: `Amendment Process is Cancelled.`
-    },
-    {
       title: "Partial Payment Completed",
       desc: `Half Payment Completed Thought Wallet and Rest of Payment Collection Pending From PG Side.`
     },
@@ -101,6 +89,18 @@ export class StatusInfoComponent implements OnInit {
     {
       title: "Partial Cancellation Pending",
       desc: `While We Gave Confirmation to Supplier Through API for Particular Partial Cancellation.`
+    },
+    {
+      title: "Completed",
+      desc: `Amendment Process is Completed.`
+    },
+    {
+      title: "Rejected",
+      desc: `Amendment Process is Rejected.`
+    },
+    {
+      title: "Cancelled",
+      desc: `Amendment Process is Cancelled.`
     },
   ];
 

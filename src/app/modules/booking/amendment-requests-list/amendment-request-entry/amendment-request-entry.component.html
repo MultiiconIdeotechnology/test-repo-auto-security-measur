@@ -92,7 +92,7 @@
                 <div
                     *ngIf="recordList && recordList?.amendment_info?.status == 'Account Audit' || recordList?.amendment_info?.status == 'Account Rejected' || recordList?.amendment_info?.status == 'Completed'">
                     <div class="border border-dashed"></div>
-                    <div class="text-lg font-semibold pt-4 text-primary">Refund Details</div>
+                    <div class="text-lg font-semibold pt-4 text-primary">{{this.recordList.is_refundable ? 'Refund' : 'Payment'}} Details</div>
                     <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
                         <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of PGRefundList">
                             <div class="flex flex-row space-x-2">
@@ -100,9 +100,9 @@
                             </div>
                             <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
                                 *ngIf="af.name == 'Credit Invoice' || af.name == 'Debit Invoice'"
-                                (click)="invoice(af.value,af.name)" class="icon-size-5 cursor-pointer"
+                                (click)="af.value ? invoice(af.value,af.name) : null" class="icon-size-5 cursor-pointer"
                                 [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
-                                [matTooltip]="'Download'"></mat-icon>
+                                [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
                             <span class="text-base truncate"
                                 *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value || af.value == 0)
                                 ? af.value : '--'}}</span>
@@ -113,7 +113,7 @@
                 <div
                     *ngIf="recordList && recordList?.amendment_info?.status == 'Completed'">
                     <div class="border border-dashed"></div>
-                    <div class="text-lg font-semibold pt-4 text-primary">Supplier Refund Details</div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Supplier {{this.recordList.is_refundable ? 'Refund' : 'Payment'}} Details</div>
                     <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
                         <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of SupplierRefundDetailsList">
                             <div class="flex flex-row space-x-2">
