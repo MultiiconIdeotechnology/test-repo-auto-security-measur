@@ -57,11 +57,9 @@
                     (click)="blockedRefresh(blockedRef.value)"></mat-icon>
             </div>
 
-
-
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Pending'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="pending?.isLoading"
                 (click)="isFilterShowPending  = !isFilterShowPending">
                 <img *ngIf="!isFilterShowPending" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -70,7 +68,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Completed'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="completed?.isLoading"
                 (click)="isFilterShowCompleted  = !isFilterShowCompleted ">
                 <img *ngIf="!isFilterShowCompleted" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -79,7 +77,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Expired'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="expired?.isLoading"
                 (click)="isFilterShowExpired  = !isFilterShowExpired ">
                 <img *ngIf="!isFilterShowExpired" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -88,7 +86,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Blocked'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter" [disabled]="blocked?.isLoading"
                 (click)="isFilterShowBlocked  = !isFilterShowBlocked ">
                 <img *ngIf="!isFilterShowBlocked" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -96,24 +94,30 @@
                     alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
+                matTooltip="Saved Filter">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <ng-container *ngIf="tabNameStr == 'Pending'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Completed'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Completed')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Completed')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Expired'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Expired')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Expired')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
 
             <ng-container *ngIf="tabNameStr == 'Blocked'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Blocked')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Blocked')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
@@ -123,28 +127,28 @@
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
             <ng-container *ngIf="tabNameStr == 'Pending'">
-                <app-crm-tech-dashboard-pending #pending [isFilterShowPending]="isFilterShowPending"
+                <app-crm-tech-dashboard-pending #pending   [(isFilterShowPending)]="isFilterShowPending"
                     [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-pending>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Completed" [aria-label]="'Completed'" *ngIf="getTabsPermission('completed')">
             <ng-container *ngIf="tabNameStr == 'Completed'">
-                <app-crm-tech-dashboard-completed #completed [isFilterShowCompleted]="isFilterShowCompleted"
+                <app-crm-tech-dashboard-completed #completed [(isFilterShowCompleted)]="isFilterShowCompleted"
                     [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-completed>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Blocked" [aria-label]="'Blocked'" *ngIf="getTabsPermission('blocked')">
             <ng-container *ngIf="tabNameStr == 'Blocked'">
-                <app-crm-tech-dashboard-blocked #blocked [isFilterShowBlocked]="isFilterShowBlocked"
+                <app-crm-tech-dashboard-blocked #blocked [(isFilterShowBlocked)]="isFilterShowBlocked"
                     [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-blocked>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Expired" [aria-label]="'Expired'" *ngIf="getTabsPermission('expired')">
             <ng-container *ngIf="tabNameStr == 'Expired'">
-                <app-crm-tech-dashboard-expired #expired [isFilterShowExpired]="isFilterShowExpired"
+                <app-crm-tech-dashboard-expired #expired [(isFilterShowExpired)]="isFilterShowExpired"
                     [dropdownFirstCallObj]="dropdownFirstCallObj"></app-crm-tech-dashboard-expired>
             </ng-container>
         </mat-tab>

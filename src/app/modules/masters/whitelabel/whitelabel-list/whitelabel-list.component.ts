@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Component } from '@angular/core';
-import { Security, messages, module_name, whiteLablePermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, whiteLablePermissions } from 'app/security';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -25,7 +25,8 @@ import { UserService } from 'app/core/user/user.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { isBoolean } from 'lodash';
 import { AgentService } from 'app/services/agent.service';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-whitelabel-list',
@@ -59,171 +60,25 @@ import { AgentService } from 'app/services/agent.service';
 })
 export class WhitelabelListComponent extends BaseListingComponent {
     module_name = module_name.whitelabel;
+    filter_table_name = filter_module_name.whitelabel_customer;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     user: any = {};
     total = 0;
     agentList:any[] = [];
-    selectedAgent:string;
-
-    columns = [
-        {
-            key: 'agency_name',
-            name: 'Agent Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'email_address',
-            name: 'Email',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'mobile_number',
-            name: 'Mobile',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'wl_activation_date',
-            name: 'Activation Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'wl_expiry_date',
-            name: 'Expiry Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy HH:mm:ss',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: true
-        },
-        {
-            key: 'is_b2b_wl',
-            name: 'B2B WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: 'is_b2c_wl',
-            name: 'B2C WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: 'is_android_wl',
-            name: 'Android WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: 'is_ios_wl',
-            name: 'IOS WL',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: 'header-center-view',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: true,
-            tooltip: true
-        },
-        {
-            key: '.',
-            name: '',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            is_required: false,
-            is_included: false,
-            is_boolean: false,
-            tooltip: false
-        },
-    ];
+    selectedAgent:any = {};
 
     checkList = [
         { label: 'Yes', value: true },
         { label: 'No', value: false }
     ];
     
-    cols: any[];
+    cols: any = [
+        { field: 'is_payment_due', header: 'Payment Due', isBoolean: true },
+        { field: 'is_wl_expired', header: 'Wl Expired', isBoolean: true },
+        { field: 'address_1', header: 'Address 1', isBoolean: false },
+        { field: 'address_2', header: 'Address 2', isBoolean: false }
+    ];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
@@ -233,14 +88,15 @@ export class WhitelabelListComponent extends BaseListingComponent {
         private matDialog: MatDialog,
         private userService: UserService,
         private router: Router,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.whitelabel);
-        this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'wl_activation_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name)
 
         this.userService.user$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -250,26 +106,61 @@ export class WhitelabelListComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'is_payment_due', header: 'Payment Due', isBoolean: true },
-            { field: 'is_wl_expired', header: 'Wl Expired', isBoolean: true },
-            { field: 'address_1', header: 'Address 1', isBoolean: false },
-            { field: 'address_2', header: 'Address 2', isBoolean: false },
-            // { field: 'is_b2b_partner_wl', header: 'B2B Partner WL', isBoolean: true },
-            // { field: 'is_b2c_mobile_wl', header: 'B2C Mobile WL', isBoolean: true },
-            // { field: 'is_enabled', header: 'Enabled', isBoolean: true },
-        ];
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['wl_expiry_date'].value){
+                resp['table_config']['wl_expiry_date'].value = new Date(resp['table_config']['wl_expiry_date'].value);
+            }
+            if(resp['table_config']['wl_activation_date'].value){
+                resp['table_config']['wl_activation_date'].value = new Date(resp['table_config']['wl_activation_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
 
          // To call Agent lis api on default data
          this.getAgent("");
     }
+
+    ngAfterViewInit(){
+        // Defult Active filter show
+        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            if(filterData['table_config']['wl_expiry_date'].value){
+                filterData['table_config']['wl_expiry_date'].value = new Date(filterData['table_config']['wl_expiry_date'].value);
+            }
+            if(filterData['table_config']['wl_activation_date'].value){
+                filterData['table_config']['wl_activation_date'].value = new Date(filterData['table_config']['wl_activation_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
+      }
 
     get selectedColumns(): Column[] {
         return this._selectedColumns;
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?:any): void {
@@ -302,9 +193,15 @@ export class WhitelabelListComponent extends BaseListingComponent {
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value,true).subscribe((data) => {
             this.agentList = data;
-
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            } 
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -462,5 +359,9 @@ export class WhitelabelListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+        }
     }
 }

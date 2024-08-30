@@ -25,7 +25,14 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                 (click)="_filterService.openDrawer(filter_table_name, primengTable)"
+                 matTooltip="Saved Filter" [disabled]="isLoading">
+                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+             </button>
+
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()" matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -104,11 +111,11 @@
                     <th>
                         <p-columnFilter field="is_airport_pickup" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Airport Pickup" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Airport Pickup"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
@@ -122,11 +129,11 @@
                     <th>
                         <p-columnFilter field="is_airport_dropoff" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Airport Dropoff" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Airport Dropoff"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">
@@ -140,11 +147,11 @@
                     <th>
                         <p-columnFilter field="is_inter_hotel_transfer" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" 
-                                            [ngModel]="value" 
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
                                             [options]="actionList"
-                                            (onChange)="filter($event.value)" 
-                                            placeholder="Select Inter Hotel Transfer" 
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Inter Hotel Transfer"
                                              appendTo="body"
                                             [showClear]="true">
                                     <ng-template let-option pTemplate="item">

@@ -25,22 +25,23 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()" matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
-            
+
             <!------Create------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
-
-            <!------Common Filter------->
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="_filterService.openDrawer('Bus-Booking')">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Filter</span>
-            </button> -->
         </div>
     </div>
 
@@ -54,7 +55,7 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['currency', 'currency_short_code', 'currency_symbol']"
             styleClass="p-datatable-gridlines p-datatable-sm">
-    
+
             <ng-template pTemplate="header">
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
@@ -73,7 +74,7 @@
                         Symbol <p-sortIcon field="currency_symbol" />
                     </th>
                 </tr>
-    
+
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.currency">
@@ -90,14 +91,14 @@
                     </th>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="body" let-element>
                 <tr>
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
-    
+
                         <mat-menu #optionMenu>
                             <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
@@ -124,7 +125,7 @@
                     </td>
                 </tr>
             </ng-template>
-    
+
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
                     <td colspan="4" class="text-center font-semibold text-lg">

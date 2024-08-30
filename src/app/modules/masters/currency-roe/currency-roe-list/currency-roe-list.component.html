@@ -28,28 +28,24 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
-            <!------Sync------->
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="sync()">
-                <mat-icon svgIcon="heroicons_outline:arrow-path-rounded-square"></mat-icon>
-                <span class="ml-2 mr-1">Sync</span>
-            </button> -->
-
-            <!------Update------->
-            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="bulkUpdate()">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Update</span>
-            </button> -->
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()" matTooltip="Refresh">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
 
             <!------Create------->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
+
 
             <!------- Export Excel -->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
@@ -65,6 +61,7 @@
                     <span>Update</span>
                 </button>
             </mat-menu>
+
         </div>
     </div>
 

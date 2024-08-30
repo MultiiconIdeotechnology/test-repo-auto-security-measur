@@ -32,11 +32,6 @@ import { HotelFilterComponent } from './hotel-filter/hotel-filter.component';
   standalone: true,
   templateUrl: './hotel.component.html',
   styleUrls: ['./hotel.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 50px 110px 80px 190px 160px 130px 110px 180px 210px 120px 130px 120px 130px 120px 120px;
-  }
-  `],
   imports: [
     NgIf,
     NgFor,
@@ -171,7 +166,7 @@ export class HotelComponent {
     });
   }
 
-  filter() {
+  filterModal() {
     this.matDialog
       .open(HotelFilterComponent, {
         data: this.airlineFilter,

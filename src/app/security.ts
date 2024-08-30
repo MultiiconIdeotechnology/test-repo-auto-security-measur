@@ -351,7 +351,7 @@ export const filter_module_name = {
     commission_expense: "commission_expense",
     first_transaction: "first_transaction",
     account_ledger: "account_ledger",
-    purchase_register: "account_ledger",
+    purchase_register: "purchase_register",
     receipt_register: "receipt_register",
     sale_book: "sale_book",
     sales_return: "sales_return",

@@ -70,11 +70,11 @@
                     <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent Name"
                         ariaLabel="Filter Agent Name" /> -->
 
-                    <p-columnFilter class="searchableDropdown" field="agent_id" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
-                                optionLabel="agency_name" [filter]="true" filterBy="agency_name"
-                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                optionLabel="agent_info" [filter]="true" filterBy="agent_info"
+                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
                                     <div class="flex align-items-center gap-2">

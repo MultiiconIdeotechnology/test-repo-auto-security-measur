@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet, Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { WalletOutstandingService } from 'app/services/wallet-outstanding.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
@@ -27,17 +27,13 @@ import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
-
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-wallet-outstanding-list',
     templateUrl: './wallet-outstanding-list.component.html',
     styleUrls: ['./wallet-outstanding-list.component.scss'],
-    styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 240px 200px 110px 210px 120px 140px 150px 180px 130px 150px;
-  }
-  `],
     standalone: true,
     imports: [
         NgIf,
@@ -68,54 +64,87 @@ import { RefferralService } from 'app/services/referral.service';
 })
 export class WalletOutstandingListComponent extends BaseListingComponent implements OnDestroy {
 
+    module_name = module_name.walletOutstanding;
+    filter_table_name = filter_module_name.wallet_outstanding;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
-    module_name = module_name.walletOutstanding
     isFilterShow: boolean = false;
     agentList: any[] = [];
-    selectedAgent!: string;
     employeeList: any[] = [];
-    selectedRM!: string;
-
-    columns = [
-        { key: 'agency_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'employee_name', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'mobile_number', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'email_address', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'credit_balance', name: 'Credit', is_date: false, date_formate: '', is_sortable: true, class: 'text-right', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'payment_cycle_policy', name: 'Payment Cycle', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-        { key: 'payment_cycle_policy_type', name: 'Payment Policy', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'due_date', name: 'Due Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'outstanding_on_due_date', name: 'Outstanding', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'over_due_count', name: 'Over Due Count', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
-    // cols = [];
+    selectedAgent: any;
+    selectedRM: any;
 
     constructor(
         private agentService: AgentService,
         private refferralService: RefferralService,
         private walletOutstandingService: WalletOutstandingService,
-        // private clipboard: Clipboard
+        public _filterService: CommonFilterService
     ) {
         super(module_name.walletOutstanding)
-        // this.cols = this.columns.map(x => x.key);
         this.key = 'payment_request_date';
         this.sortColumn = 'due_date';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
         this.getAgent('');
-        this.getEmployeeList("")
+        this.getEmployeeList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedRM = resp['table_config']['employee_name']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['due_date']?.value != null && resp['table_config']['due_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['due_date']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            this.selectedRM = filterData['table_config']['employee_name']?.value;
+            if (filterData['table_config']['due_date']?.value != null && filterData['table_config']['due_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
             }
         })
     }
@@ -124,6 +153,11 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
+
+            // pass by value variable added to common named variable(id_by_value) for common filter
+            for (let i in this.employeeList) {
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+            }
         });
     }
 
@@ -176,6 +210,14 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
                 ],
                 data.data, "Wallet Outstanding", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 
 }

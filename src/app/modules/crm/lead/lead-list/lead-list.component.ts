@@ -14,14 +14,14 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { AppConfig } from 'app/config/app-config';
-import { Security, crmLeadPermissions, messages, module_name } from 'app/security';
-import { takeUntil, debounceTime, Subject } from 'rxjs';
+import { Security, crmLeadPermissions, filter_module_name, messages, module_name } from 'app/security';
+import { takeUntil, Subject } from 'rxjs';
 import { InboxComponent } from '../inbox/inbox.component';
 import { ArchiveComponent } from '../archive/archive.component';
 import { ToasterService } from 'app/services/toaster.service';
 import { EntityService } from 'app/services/entity.service';
 import { LeadEntrySettingsComponent } from '../lead-entry-settings/lead-entry-settings.component';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-crm-lead-list',
@@ -52,9 +52,10 @@ import { LeadEntrySettingsComponent } from '../lead-entry-settings/lead-entry-se
     ],
 })
 export class CRMLeadListComponent implements OnDestroy {
-    module_name = module_name.lead;
     @ViewChild('inbox') inbox: InboxComponent;
     @ViewChild('archive') archive: ArchiveComponent;
+    module_name = module_name.lead;
+    filter_table_name = filter_module_name;
 
     public apiCalls: any = {};
     tabName: any
@@ -72,7 +73,8 @@ export class CRMLeadListComponent implements OnDestroy {
 
     constructor(
         private alertService: ToasterService,
-        private entityService: EntityService
+        private entityService: EntityService,
+        public _filterService: CommonFilterService
     ) {
         this.entityService.onrefreshleadEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -106,10 +108,18 @@ export class CRMLeadListComponent implements OnDestroy {
             case 'Archive':
                 this.tab = 'archive';
                 // if (this.isSecound) {
-                    this.archive?.refreshItems()
-                    // this.isSecound = false
+                this.archive?.refreshItems()
+                // this.isSecound = false
                 // }
                 break;
+        }
+    }
+
+    openTabFiterDrawer() {
+        if (this.tabNameStr == 'Inbox') {
+            this._filterService.openDrawer(this.filter_table_name.leads_inbox, this.inbox.primengTable);
+        } else if (this.tabNameStr == 'Archive') {
+            this._filterService.openDrawer(this.filter_table_name.leads_archive, this.archive.primengTable);
         }
     }
 

@@ -18,7 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, bookingsVisaPermissions, messages, module_name } from 'app/security';
+import { Security, bookingsVisaPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -33,17 +33,14 @@ import { UserService } from 'app/core/user/user.service';
 import { takeUntil } from 'rxjs';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
     selector: 'app-visa',
     templateUrl: './visa.component.html',
     styleUrls: ['./visa.component.scss'],
-    styles: [`
-    .tbl-grid {
-      grid-template-columns:  40px 250px 170px 170px 200px 190px 130px 80px 100px 150px 120px 70px 120px 140px ;
-    }
-  `],
     standalone: true,
     imports: [
         NgIf,
@@ -73,59 +70,27 @@ import { AgentService } from 'app/services/agent.service';
     ]
 })
 export class VisaComponent extends BaseListingComponent {
-    module_name = module_name.visa
+    module_name = module_name.visa;
+    filter_table_name = filter_module_name.visa_booking;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     visaFilter: any;
     user: any = {};
-    cols = [];
+    cols: any = [
+        { field: 'visa_type', header: 'Visa Type', isDate: false, type: 'text' },
+        { field: 'length_of_stay', header: 'Length of Stay', isDate: false, type: 'numeric' },
+        { field: 'customer_name', header: 'Customer Name', isDate: false, type: 'text' },
+        { field: 'payment_request_time', header: 'Payment Request Time', isDate: true, type: 'date' },
+        { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true, type: 'date' },
+        { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false, type: 'text' },
+        { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false, type: 'text' },
+    ];
     agentList: any[] = [];
     isFilterShow: boolean = false;
     _selectedColumns: Column[];
-    selectedAgent!:string;
+    selectedAgent:any;
     statusList = [ 'Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
-
-    columns = [
-        {
-            key: 'booking_ref_no', name: 'Reference No.', is_fixed: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false, toBooking: true
-        },
-        {
-            key: 'visa_status', name: 'Status', is_fixed2: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true, toColor: true
-        },
-        {
-            key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'operation_person', name: 'Operation Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'agent', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'purchase_price', name: 'Purchase Price', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'user_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'payment_mode', name: 'MOP', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'destination_caption', name: 'Destination', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: true
-        },
-        {
-            key: 'travel_date', name: 'Travel Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'pax', name: 'Pax', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'payment_gateway', name: 'PG', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-        {
-            key: 'ip_address', name: 'IP Address', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: true, applied: false, tooltip: false
-        },
-    ]
 
     constructor(
         private matDialog: MatDialog,
@@ -133,14 +98,15 @@ export class VisaComponent extends BaseListingComponent {
         private visaService: VisaService,
         private userService: UserService,
         private conformationService: FuseConfirmationService,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.visa);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.visaFilter = {
             From: '',
@@ -165,50 +131,111 @@ export class VisaComponent extends BaseListingComponent {
 
     ngOnInit() {
 
-        this.cols = [
-          { field: 'visa_type', header: 'Visa Type', isDate:false, type:'text' },
-          { field: 'length_of_stay', header: 'Length of Stay', isDate:false, type:'numeric' },
-          { field: 'customer_name', header: 'Customer Name', isDate:false, type:'text' },
-          { field: 'payment_request_time', header: 'Payment Request Time', isDate:true, type:'date' },
-          { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate:true, type:'date' },
-          { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate:false, type:'text' },
-          { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate:false, type:'text' },
-        ];
-
         this.getAgent("", true);
-      }
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
+            this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+            }
+            if (resp['table_config']['travel_date']?.value != null) {
+                resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
+            }
+            if (resp['table_config']?.['payment_request_time']?.value != null) {
+                resp['table_config']['payment_request_time'].value = new Date(resp['table_config']['payment_request_time'].value);
+            }
+            if (resp['table_config']?.['payment_confirmation_time']?.value != null) {
+                resp['table_config']['payment_confirmation_time'].value = new Date(resp['table_config']['payment_confirmation_time'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+            }
+            if (filterData['table_config']['travel_date']?.value != null) {
+                filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+            }
+            if (filterData['table_config']?.['payment_request_time']?.value != null) {
+                filterData['table_config']['payment_request_time'].value = new Date(filterData['table_config']['payment_request_time'].value);
+            }
+            if (filterData['table_config']?.['payment_confirmation_time']?.value != null) {
+                filterData['table_config']['payment_confirmation_time'].value = new Date(filterData['table_config']['payment_confirmation_time'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
+    }
 
     get selectedColumns(): Column[] {
         return this._selectedColumns;
-      }
-    
+    }
+
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     getFilter(): any {
         const filterReq = {};
+        filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
+        filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
+        filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
         // const filterReq = GridUtils.GetFilterReq(
         //     this._paginator,
         //     this._sort,
         //     this.searchInputControl.value
         // );
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = ''; 
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
-        filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
-        // filterReq['FromDate'] = "2024-01-01";
-        // filterReq['ToDate'] = "2024-07-19";
         filterReq['agent_id'] = this.visaFilter?.agent_id?.id || '';
         filterReq['Status'] = this.visaFilter?.Status == 'All' ? '' : this.visaFilter?.Status;
         return filterReq;
     }
 
-    getAgent(value:string, bool:boolean = true){
+    getAgent(value: string, bool: boolean = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
             }
         });
     }
@@ -364,15 +391,23 @@ export class VisaComponent extends BaseListingComponent {
                     { header: 'Pax', property: 'pax' },
                     { header: 'PG', property: 'payment_gateway' },
                     { header: 'IP Address', property: 'ip_address' },
-                    { property: 'visa_type', header: 'Visa Type'},
-                    { property: 'length_of_stay', header: 'Length of Stay'},
-                    { property: 'customer_name', header: 'Customer Name'},
-                    { property: 'payment_request_time', header: 'Payment Request Time'},
-                    { property: 'payment_confirmation_time', header: 'Payment Confirmation Time'},
-                    { property: 'psp_ref_number', header: 'PSP Refrence No.'},
-                    { property: 'payment_fail_reason', header: 'Payment Fail Reason'},
+                    { property: 'visa_type', header: 'Visa Type' },
+                    { property: 'length_of_stay', header: 'Length of Stay' },
+                    { property: 'customer_name', header: 'Customer Name' },
+                    { property: 'payment_request_time', header: 'Payment Request Time' },
+                    { property: 'payment_confirmation_time', header: 'Payment Confirmation Time' },
+                    { property: 'psp_ref_number', header: 'PSP Refrence No.' },
+                    { property: 'payment_fail_reason', header: 'Payment Fail Reason' },
                 ],
                 data.data, "Visa Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

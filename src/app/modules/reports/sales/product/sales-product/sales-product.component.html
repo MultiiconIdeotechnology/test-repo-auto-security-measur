@@ -26,8 +26,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -37,14 +39,20 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
             <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
-             <!----Export------>
-             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
+            <!----Export------>
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
             </button>
             <mat-menu #menu>
@@ -53,7 +61,6 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
         </div>
     </div>
 
@@ -70,8 +77,9 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[145px]  dark:bg-[#1e293b]" pSortableColumn="agent_code" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.agent_code" [ngClass]="{'left-0': !frozenObj?.agent_code}">
+                    <th class="min-w-[145px]  dark:bg-[#1e293b]" pSortableColumn="agent_code" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code"
+                        [ngClass]="{'left-0': !frozenObj?.agent_code}">
                         Agent Code <p-sortIcon field="agent_code" />
                         <span class="float-right" (click)="isFrozenColumn('agent_code');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.agent_code" class="pi pi-lock-open icon-size-3"></i>
@@ -99,7 +107,7 @@
                     </ng-container>
                 </tr>
 
-               <tr *ngIf="isFilterShow">
+                <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
                         <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
                             ariaLabel="Filter Agent Code" />
@@ -107,38 +115,31 @@
                     <th>
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                        (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                        <ng-template let-agent pTemplate="item">
-                                            <div class="flex align-items-center gap-1">
-                                                <div [value]="agent.id">
-                                                    <div class="m-0">
-                                                        {{agent.code}} - {{agent.agency_name}}
-                                                        <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                    </div>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                                 </div>
                                             </div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
                         </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                    [options]="employeeList"
-                                    optionLabel="employee_name"
-                                    [(ngModel)]="selectedRM"
-                                    [filter]="true"
-                                    filterBy="employee_name"
-                                    (onFilter)="getEmployeeList($event?.filter)"
-                                    (onChange)="filter($event.value?.employee_name)"
-                                    [showClear]="true"
-                                    appendTo="body"
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="selectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select RM">
                                     <ng-template let-employee pTemplate="item">
                                         <div>{{employee.employee_name}}</div>
@@ -176,8 +177,9 @@
                     </td> -->
 
                     <!-- border-b border-gray-500  -->
-                    <td  *ngFor="let item of element.itemCodes">
-                        <span (click)="viewData(element, item)" [ngClass]="item?.value ? 'cursor-pointer border-b border-gray-500': null">
+                    <td *ngFor="let item of element.itemCodes">
+                        <span (click)="viewData(element, item)"
+                            [ngClass]="item?.value ? 'cursor-pointer border-b border-gray-500': null">
                             {{(item?.value | date:'dd-MM-yyyy') || "-"}}
                             <!-- {{(item.value )  || "-"}} -->
                         </span>

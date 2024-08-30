@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -16,7 +16,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, module_name, walletRechargePermissions } from 'app/security';
+import { Security, filter_module_name, module_name, walletRechargePermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet.service';
 import { takeUntil, debounceTime } from 'rxjs';
 import { AuditedComponent } from './audited/audited.component';
@@ -27,16 +27,13 @@ import { AgentService } from 'app/services/agent.service';
 import { WalletEntryComponent } from './wallet-entry/wallet-entry.component';
 import { WalletEnterySettingsComponent } from "./wallet-entry-settings/wallet-entry-settings.component";
 import { EntityService } from 'app/services/entity.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-wallet',
   templateUrl: './wallet.component.html',
   styleUrls: ['./wallet.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 200px 190px 160px 150px 130px 190px;
-  }
-  `],
+  styles: [],
   standalone: true,
   imports: [
     NgIf,
@@ -65,7 +62,7 @@ import { EntityService } from 'app/services/entity.service';
 })
 export class WalletComponent extends BaseListingComponent implements OnDestroy {
   module_name = module_name.wallet;
-
+  filter_table_name = filter_module_name;
   @ViewChild('pending') pending: PendingComponent;
   @ViewChild('audited') audited: AuditedComponent;
   @ViewChild('rejected') rejected: RejectedComponent;
@@ -77,39 +74,31 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   isThird: boolean = true
   filterData: any = {};
 
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlPending = new FormControl('');
-
-  @ViewChild(MatPaginator) public _paginatorAudit: MatPaginator;
-  @ViewChild(MatSort) public _sortPaid: MatSort;
   searchInputControlAudit = new FormControl('');
-
-  @ViewChild(MatPaginator) public _paginatorRejected: MatPaginator;
-  @ViewChild(MatSort) public _sortRejected: MatSort;
   searchInputControlRejected = new FormControl('');
 
   isFilterShowPending: boolean = false;
   isFilterShowAudit: boolean = false;
   isFilterShowReject: boolean = false;
-  filterApiData:any = {};
+  filterApiData: any = {};
   agentData: any[] = [];
-  mopData:any[] = [];
-  pspData:any[] = [];
-
+  mopData: any[] = [];
+  pspData: any[] = [];
 
   constructor(
     private walletService: WalletService,
-    private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private agentService: AgentService,
     private entityService: EntityService
+    public _filterService: CommonFilterService,
+    private cd: ChangeDetectorRef
   ) {
     super(module_name.wallet)
     this.key = this.module_name;
     this.sortColumn = 'request_date_time';
     this.sortDirection = 'asc';
-    this.Mainmodule = this
+    this.Mainmodule = this;
 
     this.filterData = {
       particularId: 'all',
@@ -135,80 +124,52 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-
-    // this.searchInputControlPending.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.pending.searchInputControlPending.patchValue(value)
-    //   });
-
-    // this.searchInputControlAudit.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.audited.searchInputControlAudit.patchValue(value)
-    //   });
-
-    // this.searchInputControlRejected.valueChanges
-    //   .pipe(
-    //     takeUntil(this._unsubscribeAll),
-    //     debounceTime(AppConfig.searchDelay)
-    //   )
-    //   .subscribe((value) => {
-    //     this.rejected.searchInputControlRejected.patchValue(value)
-    //   });
-
     this.getAgentList("");
     this.getMopList("");
     this.getPspList("");
-
-    // this.agentService.getAgentCombo("").subscribe({
-    //   next: (value: any) => {
-
-    // this.audited.auditListFilter = this.filterData;
-    // this.rejected.rejectFilter = this.filterData;
-    // this.pending.pendingFilter = this.filterData;
-
-    // this.pending.refreshItemsPending()
-    //   },
-    // });
-
   }
 
-  getAgentList(value: string,  bool=true) {
-    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+  getAgentList(value: string) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.filterApiData.agentData = data;
+
+      for (let i in this.filterApiData.agentData) {
+				this.filterApiData.agentData[i]['agent_info'] = `${this.filterApiData.agentData[i].code}-${this.filterApiData.agentData[i].agency_name}-${this.filterApiData.agentData[i].email_address}`
+			}
     })
   }
 
-  getMopList(value:string){
+  getMopList(value: string) {
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
-       this.filterApiData.mopData = data;
+      this.filterApiData.mopData = data;
+
+      for (let i in this.filterApiData.mopData) {
+        this.filterApiData.mopData[i].id_by_value = this.filterApiData.mopData[i].mop;
+      }
     })
   }
 
-  getPspList(value:string){
+  getPspList(value: string) {
     this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
       this.filterApiData.pspData = data;
+
+      for (let i in this.filterApiData.pspData) {
+        this.filterApiData.pspData[i].id_by_value = this.filterApiData.pspData[i].provider;
+      }
     })
   }
 
-  rejectedRefresh(event:any){
+  rejectedRefresh(event: any) {
     this.rejected.searchInputControlRejected.patchValue(event)
     this.rejected.refreshItemsRejected()
   }
 
-  auditedRefresh(event:any){
+  auditedRefresh(event: any) {
     this.audited.searchInputControlAudit.patchValue(event)
     this.audited.refreshItemsAudited()
   }
 
-  pendingRefresh(event:any){
+  pendingRefresh(event: any) {
     this.pending.searchInputControlPending.patchValue(event)
     this.pending.refreshItemsPending()
   }
@@ -223,7 +184,6 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   public tabChanged(event: any): void {
-
     const tabName = event?.tab?.ariaLabel;
     this.tabNameStr = tabName
     this.tabName = tabName
@@ -231,30 +191,32 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     switch (tabName) {
       case 'Pending':
         this.tab = 'Pending';
+        // this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_pending);
+          // this.pending.refreshItemsPending();
         break;
 
       case 'Audited':
         this.tab = 'Audited';
-        if (this.isSecound) {
-          this.audited.refreshItemsAudited()
-          this.isSecound = false
-        }
+
+        // this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_audited);
+        // if (this.isSecound) {
+        // setTimeout(() => {
+        //   this.audited.refreshItemsAudited()
+        // }, 0);
+        this.isSecound = false
+        // }
         break;
 
       case 'Rejected':
         this.tab = 'Rejected';
-        if (this.isThird) {
-          this.rejected.refreshItemsRejected()
-          this.isThird = false
-        }
+        // this._filterService.applyDefaultFilter(this.filter_table_name.wallet_recharge_rejected);
+        // if (this.isThird) {
+        // setTimeout(() => {
+        //   this.rejected.refreshItemsRejected()
+        // }, 0);
+        this.isThird = false
+        // }
         break;
-    }
-  }
-
-  private ifNotThenCall(call: string, callback: () => void): void {
-    if (!this.apiCalls[call]) {
-      this.apiCalls[call] = false;
-      callback();
     }
   }
 
@@ -317,8 +279,19 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       this.audited.refreshItemsAudited()
     else if (this.tab == 'Rejected')
       this.rejected.refreshItemsRejected()
-    else
-      this.pending.refreshItemsPending()
+    else{
+        this.pending.refreshItemsPending()
+    }
+  }
+
+  openTabFiterDrawer() {
+    if (this.tab == 'Audited') {
+      this._filterService.openDrawer(this.filter_table_name.wallet_recharge_audited, this.audited.primengTable);
+    } else if (this.tab == 'Rejected') {
+      this._filterService.openDrawer(this.filter_table_name.wallet_recharge_rejected, this.rejected.primengTable);
+    } else {
+      this._filterService.openDrawer(this.filter_table_name.wallet_recharge_pending, this.pending.primengTable);
+    }
   }
 
   exportExcel(): void {
@@ -330,5 +303,9 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
       this.pending.exportExcel()
   }
 
+  ngOnDestroy(): void {
+    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.unsubscribe();
+  }
 
 }
