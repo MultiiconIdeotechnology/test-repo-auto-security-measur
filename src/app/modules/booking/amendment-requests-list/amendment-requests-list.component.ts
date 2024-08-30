@@ -77,7 +77,6 @@ export class AmendmentRequestsListComponent
     selectedSupplier!: string;
     agentList: any[] = [];
     supplierList: any[] = [];
-    isMenuOpen: boolean = false;
 
     typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
     statusList = [
@@ -145,7 +144,6 @@ export class AmendmentRequestsListComponent
     }
 
     ngOnInit() {
-        this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
 
         this.cols = [
             { field: 'gds_pnr', header: 'GDS PNR' },
@@ -328,30 +326,6 @@ export class AmendmentRequestsListComponent
         }
     }
 
-    // Complete Amendment
-    completeAmendment(model: any) {
-        if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: 'Amendment process',
-            message: 'Are you sure to complete this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.completeAmendment(model.id).subscribe({
-                    next: (value: any) => {
-                        this.alertService.showToast('success', "Amendment process completed!", "top-right", true);
-                        this.refreshItems();
-                    }, error: (err) => {
-                        this.alertService.showToast('error', err, "top-right", true);
-                    },
-                })
-            }
-        })
-    }
-
     statusInfo(){
         this.entityService.raiseAmendmentStatusInfoCall(null);
     }
@@ -371,33 +345,6 @@ export class AmendmentRequestsListComponent
         this.entityService.raiseUpdateChargeCall({ data: model });
     }
 
-    // Confirmation Action
-    confirmation(data: any): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: "Confirm Amendment",
-            message: 'Are you sure to confirm ' + data.reference_no + ' amendment?'
-        }).afterClosed().subscribe(ress => {
-            if (ress === 'confirmed') {
-                const json = {
-                    id: data.id
-                }
-
-                this.amendmentrequestsService.confirmAmendment(json).subscribe({
-                    next: (res) => {
-                        this.alertService.showToast('success', 'Amendment Confirmed!');
-                        this.refreshItems();
-                    }, error: (err) => {
-                        this.alertService.showToast('error', err)
-                    }
-                })
-            }
-        })
-    }
-
     // Status Logs Action
     statusLogs(model: any): void {
         if (!Security.hasPermission(amendmentRequestsPermissions.statusLogsPermissions)) {
@@ -407,78 +354,6 @@ export class AmendmentRequestsListComponent
         this.matDialog.open(StatusLogComponent, {
             data: model,
             disableClose: true
-        })
-    }
-
-    // Inprocess Action
-    inprocess(model: any): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: 'Amendment Inprocess',
-            message: 'Are you sure to inprocess this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.amendmentInprocess({ id: model.id }).subscribe({
-                    next: (data) => {
-                        this.alertService.showToast('success', "Amendment inprocessed!", "top-right", true);
-                        this.refreshItems();
-                    }, error: (err) => {
-                        this.alertService.showToast("error", err);
-                    },
-                })
-            }
-        })
-    }
-
-    // Refund Initiate Action
-    refundInitiate(model: any): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: 'Amendment Refund Initiate',
-            message: 'Are you sure to refund initiate this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.amendmentRefundInitiate({ id: model.id }).subscribe({
-                    next: (data) => {
-                        this.alertService.showToast('success', "Amendment refund initiated!", "top-right", true);
-                        this.refreshItems();
-                    }, error: (err) => {
-                        this.alertService.showToast("error", err);
-                    },
-                })
-            }
-        })
-    }
-
-    // Complete Action
-    complete(model: any): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-
-        this.confirmationService.open({
-            title: 'Amendment Complete',
-            message: 'Are you sure to complete this amendment process ?',
-            icon: { show: true, name: 'heroicons_outline:check-circle', color: 'primary', }
-        }).afterClosed().subscribe(res => {
-            if (res === 'confirmed') {
-                this.amendmentrequestsService.completeAmendment(model.id).subscribe({
-                    next: () => {
-                        this.alertService.showToast('success', "Amendment completed!", "top-right", true);
-                        this.refreshItems();
-                    }, error: (err) => {
-                        this.alertService.showToast("error", err);
-                    },
-                })
-            }
         })
     }
 
@@ -502,11 +377,6 @@ export class AmendmentRequestsListComponent
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        // const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value);
-        // const req = Object.assign(filterReq);
-
-        // req.skip = 0;
-        // req.take = this._paginator.length;
         let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq({})
         const filterReq = { ...extraModel, ...newModel };

@@ -53,6 +53,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     MatDatepickerModule,
     MatTooltipModule,
 
+
   ]
 })
 export class RefundInitiateComponent implements OnInit {
@@ -142,6 +143,11 @@ export class RefundInitiateComponent implements OnInit {
 
     if (this.data.isDateRequired && !this.formGroup.get('date').value) {
       this.alertService.showToast('error', "Date is required");
+      return;
+    }
+
+    if (this.data?.balance && ((this.data.balance.wallet_Balance + this.data.balance.wallet_Balance) < this.data.balance.purchase_Price)) {
+      this.alertService.showToast('error', "Insufficient wallet balance");
       return;
     }
 

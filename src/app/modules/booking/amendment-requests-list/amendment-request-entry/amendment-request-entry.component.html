@@ -34,7 +34,7 @@
                             <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
                         </div>
                         <div class="truncate" *ngIf="!af.toFlight">
-                            <span class="text-base truncate" [ngClass]="af.classes" [matTooltip]="af.value">{{af.value
+                            <span class="text-base whitespace-pre-line truncate" [ngClass]="af.classes" [matTooltip]="af.value">{{af.value
                                 || '--'}}</span>
                         </div>
                         <span class="cursor-pointer truncate hover:text-primary-200 underline"
@@ -149,8 +149,8 @@
             </ng-container>
 
             <ng-container *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'confirmation sent to supplier'">
-                <button mat-stroked-button (click)="refundInitiate()">
-                    Refund Initiate
+                <button mat-stroked-button (click)="refundInitiate()" [disabled]="">
+                    {{!recordList.is_refundable ? 'Confirmed By Supplier' : 'Refund Initiate'}}
                 </button>
             </ng-container>
 
@@ -175,13 +175,14 @@
 
             <ng-container
                 *ngIf="recordList?.amendment_info?.status == 'Quotation Sent' || recordList?.amendment_info?.status_for_agent == 'Quotation Received'">
-                <button mat-stroked-button (click)="confirmation()">
+                <button mat-stroked-button (click)="confirmation()" [disabled]="isLoading">
                     Confirm By TA
                 </button>
             </ng-container>
 
+            <!-- *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent')"> -->
             <ng-container
-                *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent')">
+                *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier')">
                 <button mat-stroked-button (click)="sendMail()">
                     Send Mail To Supplier
                 </button>

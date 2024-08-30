@@ -7,10 +7,6 @@
 
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
             <!------Global Search------>
-            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
-                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
-            </mat-form-field> -->
             <div class="flex ctm_search">
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
                     (keyup.enter)="refreshItems()" />
@@ -92,18 +88,8 @@
                         <div>
                             Status <p-sortIcon field="amendment_status" />
                         </div>
-                        <!-- <span class="float-right" (click)="isFrozenColumn('amendment_status');$event.stopPropagation()">
-                        </span> -->
                         <mat-icon class="mat-18" class="icon-size-4" (click)="statusInfo();$event.stopPropagation()">info</mat-icon>
                     </th>
-
-                    <!-- <th class="min-w-[145px]" pSortableColumn="status_for_agent" pResizableColumn>
-                        Agent Status <p-sortIcon field="status_for_agent" />
-                    </th>
-
-                    <th class="min-w-[145px]" pSortableColumn="reject_reason" pResizableColumn>
-                        Reject Reason <p-sortIcon field="reject_reason" />
-                    </th> -->
 
                     <th class="" pSortableColumn="company_name" pResizableColumn>
                         Supplier <p-sortIcon field="company_name" />
@@ -117,8 +103,8 @@
                         PNR <p-sortIcon field="pnr" />
                     </th>
 
-                    <th pSortableColumn="agent_id_filters" pResizableColumn>
-                        Agent Code <p-sortIcon field="agent_id_filters" />
+                    <th pSortableColumn="agent_code" pResizableColumn>
+                        Agent Code <p-sortIcon field="agent_code" />
                     </th>
 
                     <th pSortableColumn="agency_name" pResizableColumn>
@@ -200,8 +186,8 @@
                             ariaLabel="Filter PNR" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="contains" field="agent_id_filters"
-                            placeholder="Search by Agent Code" ariaLabel="Filter agent_id_filters" />
+                        <p-columnFilter type="numeric" matchMode="contains" field="agent_code"
+                            placeholder="Search by Agent Code" ariaLabel="Filter agent_code" />
                     </th>
 
                     <th>
@@ -289,45 +275,6 @@
                                 <span style="font-weight: 600">Update Charge</span>
                             </button>
 
-                            <!-- ((element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') || 
-                                    element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed' || 
-                                    (element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received')) ||  -->
-                            <!-- <mat-divider *ngIf="isMenuOpen"></mat-divider> -->
-
-                            <!-- (element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') ||  -->
-                            <!-- <button mat-menu-item (click)="inprocess(element)" *ngIf="isMenuOpen">
-                                <mat-icon class="mat-18">send</mat-icon>
-                                <span style="font-weight: 600">Confirmation Sent to Supplier</span>
-                            </button> -->
-
-                            <!-- (element.amendment_status.toLowerCase() == 'confirmation sent to supplier' && 
-                                (element.amendment_type.toLowerCase() != 'reissue quotation' && element.amendment_type.toLowerCase() != 'correction quotation' &&
-                                element.amendment_type.toLowerCase() != 'wheel chair request' && element.amendment_type.toLowerCase() != 'meal quotation(ssr)'
-                                && element.amendment_type.toLowerCase() != 'baggage quotation(ssr)' )) ||  -->
-                            <!-- <button mat-menu-item (click)="refundInitiate(element)" *ngIf="isMenuOpen">
-                                <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
-                                <span style="font-weight: 600">Refund Initiate</span>
-                            </button> -->
-
-                            <!-- (element.amendment_status.toLowerCase() == 'refund completed') ||  -->
-                            <!-- <button mat-menu-item (click)="complete(element)" *ngIf="isMenuOpen">
-                                <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
-                                <span style="font-weight: 600">Complete</span>
-                            </button> -->
-
-                            <!-- (element.amendment_status == 'Quotation Sent' || element.status_for_agent == 'Quotation Received') ||  -->
-                            <!-- <button mat-menu-item (click)="confirmation(element)" *ngIf="isMenuOpen">
-                                <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
-                                <span style="font-weight: 600">Confirm</span>
-                            </button> -->
-
-                            <!-- <button mat-menu-item (click)="cancelReq(element)"
-                                *ngIf="element.amendment_status?.toLowerCase() == 'request sent to supplier' ||
-                            element.amendment_status?.toLowerCase() == 'quotation sent' || element.amendment_status?.toLowerCase() == 'quotation confirmed by ta'">
-                                <mat-icon class="mat-18">cancel</mat-icon>
-                                <span style="font-weight: 600">Cancel</span>
-                            </button> -->
-
                             <mat-divider></mat-divider>
                             <button mat-menu-item (click)="statusLogs(element)">
                                 <mat-icon class="mat-18">text_snippet</mat-icon>
@@ -348,14 +295,6 @@
                             {{element.amendment_status || "-"}}
                         </span>
                     </td>
-                    <!-- <td>
-                        <span [ngClass]="getStatusColorForAgent(element.status_for_agent)">
-                            {{element.status_for_agent || "-"}}
-                        </span>
-                    </td>
-                    <td>
-                        {{element.reject_reason || "-"}}
-                    </td> -->
                     <td>
                         {{element.company_name || "-"}}
                     </td>
@@ -368,7 +307,7 @@
                         {{element.pnr || "-"}}
                     </td>
                     <td>
-                        {{element.agent_id_filters || "-"}}
+                        {{element.agent_code || "-"}}
                     </td>
                     <td>
                         {{element.agency_name || "-"}}
@@ -376,15 +315,6 @@
                     <td>
                         {{(element.amendment_request_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
-                    <!-- <td>
-                        {{element.gds_pnr || "-"}}
-                    </td>
-                    <td>
-                        {{(element.travel_date | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td class="w-full min-w-[160px]">
-                        {{(element.amendment_confirmation_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td> -->
                     <td *ngFor="let col of columns">
                         {{col.field == 'travel_date' || col.field == 'sup_refund_date' ? (element[col.field] ?
                         (element[col.field] | date:'dd-MM-yyyy HH:mm:ss') :'') : (element[col.field] || "-")}}

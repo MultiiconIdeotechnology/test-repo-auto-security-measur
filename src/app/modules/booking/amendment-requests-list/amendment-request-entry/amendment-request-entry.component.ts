@@ -66,6 +66,7 @@ export class AmendmentRequestEntryComponent {
     @ViewChild('amendmentInfoDrawer') public amendmentInfoDrawer: MatSidenav;
 
     record: any = {};
+    isLoading: boolean = false;
     agentInfoList: any[] = [];
     paymentInfoList: any[] = [];
     PGRefundList: any[] = [];
@@ -127,6 +128,8 @@ export class AmendmentRequestEntryComponent {
                             { name: 'Name', value: data.agent_info.name },
                             { name: 'Email', value: data.agent_info.email },
                             { name: 'Contact', value: data.agent_info.contact },
+                            { name: 'Wallet Balance', value: `${data.agent_info.currency_symbol} ${data.agent_info.walletBalance.toFixed(2)}` },
+                            { name: 'Credit Balance', value: `${data.agent_info.currency_symbol} ${data.agent_info.creaditbalance.toFixed(2)}` },
                         ];
                         this.paymentInfoList = [
                             { name: 'MOP', value: data.paymentbyInfo?.mop },
@@ -139,10 +142,6 @@ export class AmendmentRequestEntryComponent {
                             { name: 'PG Charge', value: data.paymentbyInfo?.pg_charge },
                             { name: 'PG Error', value: data.paymentbyInfo?.pg_error || '-' },
                             { name: 'PG Settlement', value: data.paymentbyInfo?.pg_settlement },
-                            { name: 'Refund Amount', value: data.paymentbyInfo?.refund_amount },
-                            { name: 'Refund Date', value: data.paymentbyInfo?.refund_datetime ? DateTime.fromISO(data.paymentbyInfo.refund_datetime).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
-                            { name: 'Refund Reason', value: data.paymentbyInfo?.refund_reason || '-' },
-                            { name: 'Refund Status', value: data.paymentbyInfo?.refund_status || '-' },
                         ];
                         this.amendmentInfoList = [
                             { name: 'Type', value: data.amendment_info.type, classes: '' },
@@ -159,12 +158,19 @@ export class AmendmentRequestEntryComponent {
                             { name: 'Remark', value: data.amendment_info.remark, classes: '', isShowRemark: data.amendment_info.remark ? false : true },
                             { name: 'Agent Remark', value: data.remark, classes: '' },
                         ];
+
                         if (data.amendment_info.type === 'Reissue Quotation') {
                             this.paxInfoList = data.pax_info.map(pax => [
                                 { name: 'Passenger Name', value: pax.passenger_name },
                                 { name: 'Segment Detail', value: pax.traveller_detail },
                                 { name: 'Old Booking Date', value: pax.old_booking_date ? DateTime.fromISO(pax.old_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
                                 { name: 'New Booking Date', value: pax.new_booking_date ? DateTime.fromISO(pax.new_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+                            ]);
+                        } else if (data.amendment_info.type === 'Baggage Quotation(SSR)') {
+                            this.paxInfoList = data.pax_info.map(pax => [
+                                { name: 'Passenger Name', value: pax.passenger_name },
+                                { name: 'Segment Detail', value: pax.traveller_detail },
+                                { name: 'Baggage', value: pax.extra_baggage },
                             ]);
                         } else {
                             let isFlag = true
@@ -176,6 +182,7 @@ export class AmendmentRequestEntryComponent {
                                 { name: 'New Passenger Name', value: pax.new_passenger_name, toCorrection: isFlag },
                                 { name: 'Segment Detail', value: pax.traveller_detail, toCorrection: false },
                             ]);
+
                         }
 
                         this.PGRefundList = [
@@ -194,30 +201,29 @@ export class AmendmentRequestEntryComponent {
                             { name: 'Audit By', value: data.supplier_refund_details?.audit_by || '-' },
                             { name: 'Audit Date', value: data.supplier_refund_details?.audit_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.audit_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
                         ]
-                        // let name1;
-                        // let name2;
-                        // if (this.recordList.is_refundable) {
-                        //     name1 = 'Per Person Refund'
-                        //     name2 = 'Total Refund'
-                        //     this.titleCharge = 'Quotation'
-                        // } else {
-                        //     name1 = 'Per Person Charge'
-                        //     name2 = 'Charge'
-                        //     this.titleCharge = 'Quotation'
-
-                        // }
+                        let name1;
+                        let name2;
+                        if (this.recordList.is_refundable) {
+                            name1 = 'Per Pax Refund'
+                            name2 = 'Total Refund'
+                            this.titleCharge = 'Quotation'
+                        } else {
+                            name1 = 'Per Pax Charge'
+                            name2 = 'Total Charge'
+                            this.titleCharge = 'Quotation'
+                        }
 
                         this.titleCharge = 'Quotation'
                         this.chargesList = [
-                            // { name: "Supplier Charges", value: "Pending" },
+                            { name: "Cancellation Charge", value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` },
                             { name: "Bonton Markup", value: `${data.currency_symbol} ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
-                            { name: "Per Pax Refund", value: `${data.currency_symbol} ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
+                            { name: name1, value: `${data.currency_symbol} ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
-                            { name: "Total Refund", value: `${data.currency_symbol} ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
+                            { name: name2, value: `${data.currency_symbol} ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
-                        if (this.recordList.is_refundable) {
-                            this.chargesList.unshift({ name: 'Cancellation Charge', value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` })
-                        }
+                        // // if (this.recordList.is_refundable) {
+                        //     this.chargesList.unshift({ name: 'Cancellation Charge', value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` })
+                        // }
 
                     }
                 }, error: (err) => {
@@ -230,6 +236,10 @@ export class AmendmentRequestEntryComponent {
     }
 
     cancelReq() {
+        if (!Security.hasPermission(amendmentRequestsPermissions.cancelAmendmentPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
         this.conformationService.open({
             title: 'Cancel Amendment',
             message: 'Are you sure want to cancel amendment?',
@@ -249,9 +259,6 @@ export class AmendmentRequestEntryComponent {
     }
 
     flightDetails() {
-        // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
-        //   return this.alertService.showToast('error', messages.permissionDenied);
-        // }
         Linq.recirect('/booking/flight/details/' + this.booking_id);
     }
 
@@ -261,21 +268,19 @@ export class AmendmentRequestEntryComponent {
 
 
     updateCharge(): void {
-        // this.matDialogRef.close();
+        if (!Security.hasPermission(amendmentRequestsPermissions.updateChargePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
         this.amendmentInfoDrawer.close();
         this.entityService.raiseUpdateChargeCall({ data: this.record });
-
-        // this.matDialog.open(UpdateChargeComponent, {
-        //     data: this.record,
-        //     disableClose: true
-        // }).afterClosed().subscribe(res => {
-        //     if (res) {
-        //         this.alertService.showToast('success', "Charge has been Updated!", "top-right", true);
-        //     }
-        // })
     }
 
     sendMail() {
+        if (!Security.hasPermission(amendmentRequestsPermissions.sendMailToSupplierPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
         this.conformationService.open({
             title: 'Send Mail',
             message: 'Do you want to resend the quotation request mail to a supplier?'
@@ -310,7 +315,7 @@ export class AmendmentRequestEntryComponent {
     }
 
     inprocess(): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.inprocessPermissions)) {
+        if (!Security.hasPermission(amendmentRequestsPermissions.confirmationSenttoSupplierPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
@@ -334,7 +339,7 @@ export class AmendmentRequestEntryComponent {
     }
 
     refundInitiate(): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiate_ConfirmedBySupplierPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
@@ -342,8 +347,10 @@ export class AmendmentRequestEntryComponent {
             autoFocus: false,
             disableClose: false,
             data: {
-                title: "Amendment Refund Initiate",
-                desc: "Do you want to process refund for this amendment? By giving confirmation Travel agent will receive refund amount to back to source.",
+                title: this.recordList.is_refundable ? "Amendment Refund Initiate" : "Amendment Confirmed by Supplier",
+                desc: this.recordList.is_refundable ?
+                    "Do you want to process refund for this amendment? By giving confirmation Travel agent will receive refund amount to back to source."
+                    : "Do you want to process Confirmed by Supplier for this amendment? By giving confirmation, the Travel agent will receive a completion of this amendment.",
                 document: this.recordList.confirmation_proof,
                 document_title: 'Confirmation Proof',
                 icon: 'heroicons_outline:check-circle',
@@ -369,7 +376,7 @@ export class AmendmentRequestEntryComponent {
 
 
     AccountReject(): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+        if (!Security.hasPermission(amendmentRequestsPermissions.accountRejectPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
@@ -409,7 +416,7 @@ export class AmendmentRequestEntryComponent {
     }
 
     Reject(): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.refundInitiatePermissions)) {
+        if (!Security.hasPermission(amendmentRequestsPermissions.rejectPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
@@ -449,7 +456,7 @@ export class AmendmentRequestEntryComponent {
     }
 
     complete(): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.completePermissions)) {
+        if (!Security.hasPermission(amendmentRequestsPermissions.accountCompletePermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
@@ -487,28 +494,70 @@ export class AmendmentRequestEntryComponent {
     }
 
     confirmation(): void {
-        if (!Security.hasPermission(amendmentRequestsPermissions.confirmPermissions)) {
+        if (!Security.hasPermission(amendmentRequestsPermissions.confirmByTAPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.conformationService.open({
-            title: "Confirm Amendment",
-            message: 'Do you want to confirm amendment quotation on be half of Travel Agent?'
-        }).afterClosed().subscribe(ress => {
-            if (ress === 'confirmed') {
-                this.amendmentRequestsService.confirmAmendment({ id: this.record.id }).subscribe({
-                    next: (res) => {
-                        this.alertService.showToast('success', 'Amendment Confirmed!');
-                        this.amendmentInfoDrawer.close();
-                        this.entityService.raiserefreshUpdateChargeCall(true);
-                    }, error: (err) => {
-                        this.alertService.showToast('error', err)
+        if (this.recordList.is_refundable) {
+            this.conformationService.open({
+                title: "Confirm Amendment",
+                message: 'Do you want to confirm amendment quotation on be half of Travel Agent?'
+            }).afterClosed().subscribe(ress => {
+                if (ress === 'confirmed') {
+                    this.amendmentRequestsService.confirmAmendment({ id: this.record.id }).subscribe({
+                        next: (res) => {
+                            this.alertService.showToast('success', 'Amendment Confirmed!');
+                            this.amendmentInfoDrawer.close();
+                            this.entityService.raiserefreshUpdateChargeCall(true);
+                        }, error: (err) => {
+                            this.alertService.showToast('error', err)
+                        }
+                    });
+                }
+            })
+        } else {
+            this.matDialog.open(RefundInitiateComponent, {
+                autoFocus: false,
+                disableClose: false,
+                data: {
+                    title: "Amendment Confirm By TA",
+                    desc: "Do you want to process Confirm By TA for this amendment? By giving confirmation, Agent's wallet will deducted as per amendment price.",
+                    icon: 'heroicons_outline:check-circle',
+                    color: 'primary',
+                    balance : {
+                        wallet_Balance: this.recordList.agent_info.walletBalance,
+                        credit_Balance: this.recordList.agent_info.creaditbalance,
+                        purchase_Price: this.recordList.charges?.charge || 0.00,
+                        currency_symbol: this.recordList.currency_symbol,
                     }
-                })
-            }
-        })
-    }
+                },
+                panelClass: 'app-refund-initiate',
+            }).afterClosed().subscribe(res => {
+                if (!res.status)
+                    return;
 
+                this.isLoading = true;
+                const json = {
+                    amendment_id: this.record.id,
+                    payment_method: "Wallet",
+                    payment_mode: "Wallet"
+                }
+                this.amendmentRequestsService.amendmentChargesDeduction(json).subscribe({
+                    next: (res) => {
+                        if (res) {
+                            this.alertService.showToast('success', 'Amendment Confirmed!');
+                            this.amendmentInfoDrawer.close();
+                            this.entityService.raiserefreshUpdateChargeCall(true);
+                        }
+                        this.isLoading = false;
+                    }, error: (err) => {
+                        this.alertService.showToast('error', err);
+                        this.isLoading = false;
+                    }
+                });
+            })
+        }
+    }
 
     invoice(id: string, name: string): void {
         this.amendmentRequestsService.printInvoice(id).subscribe({
