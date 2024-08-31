@@ -46,6 +46,7 @@ export class StatusLogComponent {
   splitFormat = "<<split>>";
   replaceFormat = "<<replace>>";
   imageFormat = "<<image>>";
+  isLoading: boolean = false;
 
   constructor(
     public matDialogRef: MatDialogRef<StatusLogComponent>,
@@ -64,6 +65,7 @@ export class StatusLogComponent {
 
   ngOnInit(): void {
     if (this.record.id) {
+      this.isLoading = true;
       this.amendmentRequestsService.getAmendmentStatusLog(this.record.id).subscribe({
         next: (data) => {
           if (data) {
@@ -82,10 +84,11 @@ export class StatusLogComponent {
 
             // this.logList = data.data;
           }
+          this.isLoading = false;
         },
         error: (err) => {
           this.alertService.showToast('error', err)
-
+          this.isLoading = false;
         },
       });
     }

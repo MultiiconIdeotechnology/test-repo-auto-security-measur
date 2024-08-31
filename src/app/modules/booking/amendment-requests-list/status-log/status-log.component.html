@@ -45,7 +45,7 @@
                 </li>
             </ul>
             <div *ngIf="logList.length < 1" class="text-center w-full">
-                <div class="text-xl font-medium">No Status Logs Available!</div>
+                <div class="text-xl font-medium">{{isLoading ? 'Loading...' : 'No Status Logs Available!'}}</div>
             </div>
         </div>
 

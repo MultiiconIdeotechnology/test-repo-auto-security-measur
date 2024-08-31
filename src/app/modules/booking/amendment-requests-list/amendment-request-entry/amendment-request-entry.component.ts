@@ -473,7 +473,7 @@ export class AmendmentRequestEntryComponent {
                 value1: {
                     required: true,
                     type: 'number',
-                    label: 'Supplier Refund Amount',
+                    label: this.recordList.is_refundable ? 'Supplier Refund Amount' : 'Supplier Charges',
                 },
                 isDateRequired: true,
             },
