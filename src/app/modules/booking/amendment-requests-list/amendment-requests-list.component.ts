@@ -33,6 +33,7 @@ import { KycDocumentService } from 'app/services/kyc-document.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -56,7 +57,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatTooltipModule,
         MatDividerModule,
         NgClass,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MultiSelectModule
     ],
 })
 export class AmendmentRequestsListComponent
@@ -73,6 +75,7 @@ export class AmendmentRequestsListComponent
     cols = [];
     selectedAgent:any
     selectedSupplier:any;
+    selectedStatus:any;
     agentList: any[] = [];
     supplierList: any[] = [];
     isMenuOpen: boolean = false;

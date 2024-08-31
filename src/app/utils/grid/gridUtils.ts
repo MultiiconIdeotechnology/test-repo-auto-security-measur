@@ -144,13 +144,15 @@ export class GridUtils {
 
     // Date Range convert in String
     static convertArrayToString(dates: any): any {
-        if(dates && dates.length) {
+        if(dates && dates.length && typeof dates[0] == 'object') {
             return dates.map((dateStr: any) => {
                 const date = new Date(dateStr);
                 return date.toISOString().slice(0, -1);
             }).join(','); 
+        } else if(dates && dates.length && typeof dates[0] == 'string') {
+            return dates.join(",");
         } else {
-            return dates;
+            return dates
         }
     }
     
