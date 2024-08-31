@@ -1,102 +1,199 @@
-<div class="flex flex-col max-w-240 md:min-w-240 max-h-screen -m-6">
-
-    <!-- Header -->
-    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
-        <div class="text-lg font-medium text-white">{{title}}</div>
-        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
-            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-        </button>
-    </div>
-
-    <div class="px-8 max-h-120">
-        <div class="text-lg font-semibold pt-4">Agent Info</div>
-        <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
-            <div class="flex flex-col mb-3 w-1/3" *ngFor="let af of agentInfoList">
-                <div class="flex flex-row space-x-2">
-                    <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
-                </div>
-                <span class="text-base truncate" [matTooltip]="af.value">{{af.value || '--'}}</span>
-            </div>
+<fuse-drawer class="w-screen min-w-screen sm:w-200 sm:min-w-200 z-999" fixed [mode]="'over'"
+    [name]="'amendmentInfoDrawer'" [position]="'right'" #amendmentInfoDrawer>
+    <div class="flex flex-col w-full overflow-auto max-h-[calc(100vh-60px)] bg-card">
+        <div
+            class="flex flex-row sticky top-0 items-center px-5 border-b h-13 min-h-13 dark:text-white bg-white dark:bg-card">
+            <div class="text-lg font-medium tracking-tight">{{title}}</div>
+            <button class="ml-auto" mat-icon-button (click)="amendmentInfoDrawer.close()">
+                <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
         </div>
-        <mat-divider></mat-divider>
-        <div class="text-lg font-semibold pt-4">Amendment Info</div>
-        <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl ">
-            <div class="flex flex-col mb-3 truncate"
-                [ngClass]="af.name == 'Remark' ? 'w-1/2' : af.name == 'Agent Remark' ? 'w-full' : 'w-1/4'"
-                *ngFor="let af of amendmentInfoList">
-                <div class="flex flex-row space-x-2">
-                    <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
-                </div>
-                <div class="truncate" *ngIf="af.value && !af.toFlight">
-                    <span class="text-base truncate" [ngClass]="af.classes" [matTooltip]="af.value">{{af.value || '--'}}</span>
-                </div>
-                <span class="cursor-pointer truncate hover:text-primary-200" *ngIf="af.toFlight && af.name === 'Air Booking No'"
-                    (click)="flightDetails()">{{af.value || ' 0 '}}</span>
-                <!-- <span class="text-base"  [matTooltip]="af.value">
-                    <span *ngIf="af.value == 0">{{af.value || ' 0 '}}</span>
-                </span> -->
-            </div>
-        </div>
-        <div *ngIf="paxInfoList?.length > 0">
-            <mat-divider></mat-divider>
-            <div class="text-lg font-semibold pt-4">Pax Info</div>
-            <div class="pt-4 pb-2">
-                <div class="flex flex-wrap bg-card rounded-2xl" *ngFor="let paxl of paxInfoList">
-                    <div class="flex flex-col w-1/4 mb-3" *ngFor="let pax of paxl">
-                        <ng-container *ngIf="!pax.toCorrection">
-                            <div class="flex flex-row space-x-2">
-                                <span class=" text-md font-semibold text-secondary">{{pax.name}}</span>
-                            </div>
-                            <span class="text-base truncate" [matTooltip]="pax.value">{{pax.value || '--'}}</span>
-                        </ng-container>
-                    </div>
-                </div>
-            </div>
 
-            <mat-divider></mat-divider>
-            <div class="text-lg font-semibold pt-4">{{titleCharge}}</div>
-            <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
-                <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of chargesList">
+        <div class="px-5">
+            <div class="text-lg font-semibold pt-3 text-primary">Agent Info</div>
+            <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                <div class="flex flex-col mb-3" *ngFor="let af of agentInfoList"
+                    [ngClass]="af.name == 'Name' ? 'w-1/2' : 'w-1/4'">
                     <div class="flex flex-row space-x-2">
                         <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
                     </div>
-                    <span class="text-base truncate" [matTooltip]="af.value">{{af.value || ' 0 '}}</span>
+                    <span class="text-base truncate"
+                        [ngClass]="af.name == 'Name' ? 'underline hover:text-primary-200 cursor-pointer' : ''"
+                        [matTooltip]="af.value" (click)="af.name == 'Name' ? openAgent() : null">{{af.value ||
+                        '--'}}</span>
                 </div>
             </div>
+            <div class="border border-dashed"></div>
 
-            
-            <div *ngIf="this.recordList.paymentbyInfo">
-                <mat-divider></mat-divider>
-                <div class="text-lg font-semibold pt-4">Payment Info</div>
-                <div class="flex flex-wrap pt-4 pb-2 bg-card rounded-2xl">
-                    <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of paymentInfoList">
+            <div class="text-lg font-semibold pt-4 text-primary">Amendment Info</div>
+            <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                <div class="flex flex-col mb-3 truncate" *ngFor="let af of amendmentInfoList"
+                    [ngClass]="af.name == 'Remark' ? 'w-full' : af.name == 'Agent Remark' ? 'w-full' : 'w-1/4'">
+                    <ng-container *ngIf="!af.isShowRemark">
                         <div class="flex flex-row space-x-2">
                             <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
                         </div>
-                        <span class="text-base truncate" [matTooltip]="af.value">{{(af.value || af.value == 0) ? af.value :
-                            '--'}}</span>
+                        <div class="truncate" *ngIf="!af.toFlight">
+                            <span class="text-base whitespace-pre-line truncate" [ngClass]="af.classes" [matTooltip]="af.value">{{af.value
+                                || '--'}}</span>
+                        </div>
+                        <span class="cursor-pointer truncate hover:text-primary-200 underline"
+                            *ngIf="af.toFlight && af.name === 'Flight No'" (click)="flightDetails()">
+                            {{af.value || ' 0 '}}
+                        </span>
+                    </ng-container>
+                </div>
+            </div>
+            <div *ngIf="paxInfoList && paxInfoList?.length > 0">
+                <div class="border border-dashed"></div>
+                <div class="text-lg font-semibold pt-4 text-primary">Pax Info</div>
+                <div class="pt-2 pb-2">
+                    <div class="flex flex-wrap bg-card rounded-2xl" *ngFor="let paxl of paxInfoList">
+                        <div class="flex flex-col w-1/4 mb-3" *ngFor="let pax of paxl">
+                            <ng-container *ngIf="!pax.toCorrection">
+                                <div class="flex flex-row space-x-2">
+                                    <span class=" text-md font-semibold text-secondary">{{pax.name}}</span>
+                                </div>
+                                <span class="text-base truncate" [matTooltip]="pax.value">{{pax.value || '--'}}</span>
+                            </ng-container>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex items-center justify-end  mt-4 pb-4 space-x-4">
-                <ng-container class="w-1/2" *ngIf="this.record.amendment_status != 'Completed'">
-                    <ng-container *ngIf="this.record.amendment_status != 'Confirm'">
-                        <div class="w-1/2">
-                            <button mat-stroked-button (click)="sendMail()">
-                                Send Mail To Supplier
-                            </button>
+                <!-- && recordList?.amendment_info?.status_for_agent !== 'Inprocess' && recordList?.amendment_info?.status_for_agent !== 'Request Sent to Supplier' -->
+                <ng-container *ngIf="recordList && recordList?.amendment_info?.status != 'Request Sent to Supplier'">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">{{titleCharge}}</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3" [ngClass]="chargesList.length == 4 ? 'w-1/4' : 'w-1/5'" *ngFor="let af of chargesList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <span class="text-base truncate pr-2">{{af.value || ' 0 '}}</span>
                         </div>
-                    </ng-container>
+                    </div>
                 </ng-container>
-                <div class="w-1/2 flex justify-end">
-                    <button class="mr-2" mat-stroked-button *ngIf="data.showUpdateCharge" (click)="updateCharge()">
-                        Update Charges
-                    </button>
-                    <button mat-stroked-button (click)="matDialogRef.close()">
-                        Close
-                    </button>
-                </div>
-            </div>
 
+                <div *ngIf="recordList.paymentbyInfo">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Payment Info</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of paymentInfoList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <span class="text-base truncate" [matTooltip]="af.value">{{(af.value || af.value == 0) ?
+                                af.value :
+                                '--'}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    *ngIf="recordList && recordList?.amendment_info?.status == 'Account Audit' || recordList?.amendment_info?.status == 'Account Rejected' || recordList?.amendment_info?.status == 'Completed'">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">{{this.recordList.is_refundable ? 'Refund' : 'Payment'}} Details</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of PGRefundList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
+                                *ngIf="af.name == 'Credit Invoice' || af.name == 'Debit Invoice'"
+                                (click)="af.value ? invoice(af.value,af.name) : null" class="icon-size-5 cursor-pointer"
+                                [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
+                                [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
+                            <span class="text-base truncate"
+                                *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value || af.value == 0)
+                                ? af.value : '--'}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    *ngIf="recordList && recordList?.amendment_info?.status == 'Completed'">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Supplier {{this.recordList.is_refundable ? 'Refund' : 'Payment'}} Details</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of SupplierRefundDetailsList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <span class="text-base truncate">{{(af.value || af.value == 0)
+                                ? af.value : '--'}}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
+    </div>
+
+    <div
+        class="flex items-center justify-end pt-4 px-5 h-15 sm:mt-0 pb-4 space-x-3 fixed bottom-0 w-full pr-4 dark:bg-[#1e293b] bg-white border-t m-auto">
+        <div class="w-full flex justify-end gap-3">
+
+            <ng-container
+                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' ||
+                        recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta'">
+                <button mat-stroked-button (click)="cancelReq()">
+                    Cancel Amendment
+                </button>
+            </ng-container>
+
+            <ng-container
+                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta'">
+                <button mat-stroked-button (click)="inprocess()">
+                    Confirmation Sent to Supplier
+                </button>
+            </ng-container>
+
+            <ng-container *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'confirmation sent to supplier'">
+                <button mat-stroked-button (click)="refundInitiate()" [disabled]="">
+                    {{!recordList.is_refundable ? 'Confirmed By Supplier' : 'Refund Initiate'}}
+                </button>
+            </ng-container>
+
+            <ng-container *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'confirmation sent to supplier'">
+                <button mat-stroked-button (click)="Reject()">
+                    Reject
+                </button>
+            </ng-container>
+
+            <ng-container *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'account audit'">
+                <button mat-stroked-button (click)="AccountReject()">
+                    Account Reject
+                </button>
+            </ng-container>
+
+            <ng-container
+                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'account audit' || recordList?.amendment_info?.status?.toLowerCase() == 'account rejected'">
+                <button mat-stroked-button (click)="complete()">
+                    Account Complete
+                </button>
+            </ng-container>
+
+            <ng-container
+                *ngIf="recordList?.amendment_info?.status == 'Quotation Sent' || recordList?.amendment_info?.status_for_agent == 'Quotation Received'">
+                <button mat-stroked-button (click)="confirmation()" [disabled]="isLoading">
+                    Confirm By TA
+                </button>
+            </ng-container>
+
+            <!-- *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent')"> -->
+            <ng-container
+                *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request to supplier failed' || recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier')">
+                <button mat-stroked-button (click)="sendMail()">
+                    Send Mail To Supplier
+                </button>
+            </ng-container>
+
+            <ng-container *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent'
+                || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta')">
+                <button [color]="'primary'" mat-flat-button (click)="updateCharge()">
+                    Update Charges
+                </button>
+            </ng-container>
+        </div>
+    </div>
+</fuse-drawer>

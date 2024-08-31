@@ -2,136 +2,214 @@
 
     <!-- Header -->
     <div class="flex flex-0 items-center justify-between h-16 pr-1 sm:pr-5 pl-3 sm:pl-8 bg-primary mb-3 text-white">
-        <div class="text-lg font-medium text-white ">Ticket Amendment</div>
+        <div class="text-lg font-medium text-white ">
+            {{datas.isInstantCancalation ? 'Instant Cancellation' : 'Ticket Amendment'}}
+        </div>
         <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
             <mat-icon class="text-white " [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
     </div>
 
     <div class="px-5 pb-5" *ngIf="!Loading">
-        <mat-form-field class="w-full ebr">
-            <mat-select class="font-semibold" [(ngModel)]="amendmentType" required (ngModelChange)="selectedType($event)">
+        <mat-form-field class="w-full ebr" *ngIf="datas && !datas.isInstantCancalation">
+            <mat-select class="font-semibold" [(ngModel)]="amendmentType" required
+                (ngModelChange)="selectedType($event)">
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search Amendment Type"
-                    noEntriesFoundLabel="'no matching found'"
-                    [(ngModel)]="amendmentfilter"
-                    (input)="filterTypes($event.target.value)">
+                        noEntriesFoundLabel="'no matching found'" [(ngModel)]="amendmentfilter"
+                        (input)="filterTypes($event.target.value)">
                     </ngx-mat-select-search>
                 </mat-option>
                 <mat-option *ngFor="let tt of TypesList" [value]="tt">{{tt}}</mat-option>
             </mat-select>
         </mat-form-field>
 
-        <div class="rounded-lg border gray-border overflow-hidden">
-            <div class="border-gray-bg font-semibold px-5 py-3 dark:bg-primary bg-gray-200">Segment</div>
-            <div class="px-5 flex flex-col pt-2" *ngFor="let ad of segmentsData;let i = index">
-                <mat-checkbox [(ngModel)]="ad.is_selected" class="flex items-center space-x-2" (change)="segment()" [disabled]="segmentdis">
-                    <span class="relative top-[-2px] dark:text-white text-black">{{ad.origin}}</span>
-                    <mat-icon class="text-lg dark:text-white text-black rotate-90 z-10 relative top-[2px] mx-2">flight</mat-icon>
-                    <span class="relative top-[-2px] dark:text-white text-black">{{ad.destination}}</span>
-                </mat-checkbox>
+        <div *ngIf="amendmentType != 'Correction Quotation'"
+            class="main-table rounded mobile:overflow-auto mobile:max-w-full mobile:w-full overflow-hidden">
+            <table cellPadding="10px" class="w-full rounded-sm">
+                <tr class="font-semibold border-gray-bg dark:text-white text-black dark:bg-primary bg-gray-200">
+                    <td>
+                        Pax
+                    </td>
+                    <td>
+                        Segment
+                    </td>
+                    <td>
+                        Passanger
+                    </td>
+                    <td *ngIf="amendmentType === 'Baggage Quotation(SSR)'">
+                        Baggage
+                    </td>
+                </tr>
+
+                <tr *ngFor="let formData of formDataList; let j = index;"
+                    [ngClass]="{'opacity-60': formData.isPaxDisabled}">
+                    <td class="max-w-[8%] items-start">
+                        <mat-checkbox [name]="'formData' + j" [(ngModel)]="formData.pax"
+                            class="flex items-start space-x-2 mt-[-4px]" [disabled]="paxdis || formData.isPaxDisabled"
+                            (change)="isPaxChange(formData)">
+                        </mat-checkbox>
+                    </td>
+                    <td>
+                        <span class="relative theme-black-text">{{formData.origin}}</span>
+                        <mat-icon class="text-lg text-white rotate-90 z-10 relative top-[2px] mx-2">flight</mat-icon>
+                        <span class="relative theme-black-text">{{formData.destination}} </span>
+                        <span class="relative theme-black-text"> - {{formData.isReturn ?
+                            (amendmentData.return_booking_date | date: 'd MMM yy') :
+                            (amendmentData.booking_date | date: 'd MMM yy')}}
+                        </span>
+                    </td>
+                    <td>
+                        {{formData.prefix}} {{formData.first_name}} {{formData.last_name}}
+                    </td>
+                    <td class="text-center" *ngIf="amendmentType === 'Baggage Quotation(SSR)'" width="30%">
+                        <mat-form-field class="w-full" style="margin-bottom: -1.25em">
+                            <mat-select required [name]="'formData' + '-' + j" [(ngModel)]="formData.baggage">
+                                <mat-option *ngFor="let bg of Baggages" [value]="bg.value">
+                                    {{bg.viewValue}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="flex pt-2 w-full mt-3" *ngIf="amendmentType === 'Reissue Quotation'">
+                <div class="w-[35%] mr-[1%]">
+                    <div class="font-semibold">Old Date</div>
+                    <mat-form-field class="flex-grow w-full pt-1">
+                        <input matInput readonly required [ngModel]="old_date | date: 'MMMM d, y, h:mm:ss a'" readonly>
+                        <mat-datepicker-toggle matSuffix class="absolute right-[10px] gray-text"
+                            disabled></mat-datepicker-toggle>
+                    </mat-form-field>
+                </div>
+
+                <div class="w-[35%] mx-[1%]">
+                    <div class="font-semibold">New Date</div>
+                    <mat-form-field class="flex-grow w-full pt-1">
+                        <input matInput readonly [matDatepicker]="pickerone" [min]="todayDate" (click)="pickerone.open()"
+                            [(ngModel)]="new_date">
+                        <mat-datepicker-toggle matSuffix [for]="pickerone"
+                            class="absolute right-[10px] gray-text"></mat-datepicker-toggle>
+                        <mat-datepicker class="gray-text" #pickerone></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div class="w-[28%] ml-[1%]">
+                    <div class="font-semibold">New Time</div>
+                    <mat-form-field class="flex-grow w-full pt-1">
+                        <input matInput readonly name="new_date_time" format="24" [(ngModel)]="new_date_time"
+                            [ngxMatTimepicker]="pickerA" placeholder="16:00" />
+                        <mat-icon matSuffix (click)="pickerA.open()">
+                            watch_later
+                        </mat-icon>
+                    </mat-form-field>
+                    <ngx-mat-timepicker #pickerA dottedMinutesInGap enableKeyboardInput></ngx-mat-timepicker>
+                </div>
             </div>
         </div>
 
-        <div class="rounded-lg border gray-border overflow-hidden mt-5">
-            <div class="border-gray-bg font-semibold px-5 py-3 flex dark:text-white text-black dark:bg-primary bg-gray-200">
-                <div *ngIf="showpax" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[10%]':'w-[10%]'">Pax</div>
-                <div *ngIf="showName" [ngClass]="amendmentType === 'Reissue Quotation'? 'w-[30%]':'w-[20%]'"><span *ngIf="amendmentType === 'Correction Quotation'">Ticket Issued Name</span><span *ngIf="amendmentType != 'Correction Quotation'">Name</span></div>
-                <div *ngIf="shownamefields" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[16%]':'w-[20%]'">Title</div>
-                <div *ngIf="shownamefields" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[25%]':'w-[35%]'">First Name</div>
-                <div *ngIf="shownamefields" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[25%]':'w-[35%]'">Last Name</div>
-                <div *ngIf="showcorrection" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[14%]':''"></div>
-                <div *ngIf="showbaggage" class="min-w-[40%] ml-2">Baggage</div>
+        <!-- Selct Tyoe Correction Quotation  -->
+        <div *ngIf="amendmentType == 'Correction Quotation'"
+            class="rounded border gray-border mobile:overflow-auto mobile:max-w-full mobile:w-full overflow-hidden border-gray-bg">
+            <div class="border-gray-bg font-semibold px-5 mb-4 mobile:px-3 py-1 flex mobile:w-[800px] dark:text-white text-black dark:bg-primary bg-gray-200">
+                <div class="w-[10%]">Pax</div>
+                <div class="w-[30%]">
+                    Ticket Issued Name
+                </div>
+                <div class="w-[16%]">
+                    Title
+                </div>
+                <div class="w-[25%]">
+                    First Name
+                </div>
+                <div class="w-[25%]">
+                    Last Name
+                </div>
+                <div class="w-[14%]"></div>
             </div>
-            <div class="px-5 flex flex-col min-h-14 justify-center">
+
+            <div class="pl-2 flex flex-col min-h-14 justify-center mobile:w-[800px]">
                 <div class="flex" *ngFor="let formData of formDataList; let i = index">
-                    <div *ngIf="showpax" class="w-[10%] flex items-center">
-                        <mat-checkbox [(ngModel)]="formData.pax" class="flex items-center space-x-2 mt-[2px]" [disabled]="paxdis"></mat-checkbox>
+                    <div class="w-[10%] flex items-start">
+                        <mat-checkbox [(ngModel)]="formData.pax" class="flex items-start space-x-2 mt-[-4px]"
+                            [disabled]="paxdis || formData.isPaxDisabled" (change)="isPaxChange(formData)">
+                        </mat-checkbox>
                     </div>
-                    <div *ngIf="showName" class="flex items-center" [ngClass]="amendmentType === 'Reissue Quotation'? 'w-[30%]':'w-[20%]'">
+
+                    <div class="flex items-start w-[20%]">
                         <span class="relative">
                             {{formData.old_name}}
                         </span>
                     </div>
-                    <div *ngIf="shownamefields" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[16%]':'w-[20%]'">
-                        <mat-form-field class="flex-grow w-[90%] pt-4">
-                            <mat-select required [(ngModel)]="formData.prefix" *ngIf="!readonly">
+                    <div class="w-[16%]">
+                        <mat-form-field class="flex-grow w-[90%]">
+                            <mat-select required [(ngModel)]="formData.prefix">
                                 <mat-option *ngFor="let title of titles" [value]="title.value">
-                                {{title.viewValue}}
+                                    {{title.viewValue}}
                                 </mat-option>
                             </mat-select>
-                            <input matInput required [(ngModel)]="formData.prefix" *ngIf="readonly" readonly>
                         </mat-form-field>
                     </div>
-                    <div *ngIf="shownamefields" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[25%]':'w-[35%]'">
-                        <mat-form-field class="flex-grow w-[100%] pt-4">
-                            <input matInput required [(ngModel)]="formData.first_name" [readonly]="readonly">
+                    <div class="w-[24%]">
+                        <mat-form-field class="flex-grow w-[100%] pr-[5%]">
+                            <input matInput required [(ngModel)]="formData.first_name">
                         </mat-form-field>
                     </div>
-                    <div *ngIf="shownamefields" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[25%]':'w-[35%]'">
-                        <mat-form-field class="flex-grow w-[95%] pt-4 ml-[5%]">
-                            <input matInput required [(ngModel)]="formData.last_name" [readonly]="readonly">
+
+                    <div class="w-[25%]">
+                        <mat-form-field class="flex-grow w-[95%]">
+                            <input matInput required [(ngModel)]="formData.last_name">
                         </mat-form-field>
                     </div>
-                    <div *ngIf="showcorrection" [ngClass]="amendmentType === 'Correction Quotation'? 'w-[14%]':''" class="flex items-center ml-[1.5%] relative top-[-2px]">
-                        <div class="light-blue-bg py-3 px-3 w-full rounded-lg flex justify-center relative">
-                            <input class="absolute top-0 w-full h-full opacity-0" type="file" required [(ngModel)]="formData.file" (change)="onFileSelected($event,i)">
+
+                    <div class="flex items-center mr-[1.5%] relative top-[-10px] w-[14%]">
+                        <div class="light-blue-bg py-2 px-2 w-full rounded-lg flex justify-center relative"
+                            matTooltip="Upload Your Id Proof">
+                            <input class="absolute top-0 w-full h-full opacity-0" type="file" required
+                                [(ngModel)]="formData.file" (change)="onFileSelected($event,i)">
                             <mat-icon class="primary-text">cloud_upload</mat-icon>
                             <span class="primary-text pl-3 font-medium">Upload</span>
                         </div>
                     </div>
-                    <div *ngIf="showbaggage" class="min-w-[40%]">
-                        <mat-form-field class="w-full ml-2 pt-4">
-                            <mat-select required [(ngModel)]="formData.Baggage">
-                                <mat-option *ngFor="let bg of Baggages" [value]="bg.value">
-                                {{bg.viewValue}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
                 </div>
-                
             </div>
         </div>
 
-        <div class="flex pt-2 w-full" *ngIf="showdate">
-            <div class="w-[49%] mr-[1%]">
-                <div class="font-semibold">Old Date</div>
-                <mat-form-field class="flex-grow w-full pt-1">
-                    <input class="text-black" readonly matInput [matDatepicker]="picker" [min]="minDate"
-                        (click)="picker.open()" [(ngModel)]="old_date" disabled>
-                    <mat-datepicker-toggle matSuffix [for]="picker"
-                        class="absolute right-[10px] gray-text"></mat-datepicker-toggle>
-                    <mat-datepicker class="gray-text" #picker></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div class="w-[49%] ml-[1%]">
-                <div class="font-semibold">New Date</div>
-                <mat-form-field class="flex-grow w-full pt-1">
-                    <input matInput [matDatepicker]="pickerone" [min]="minDate"
-                        (click)="pickerone.open()" [(ngModel)]="new_date">
-                    <mat-datepicker-toggle matSuffix [for]="pickerone"
-                        class="absolute right-[10px] gray-text"></mat-datepicker-toggle>
-                    <mat-datepicker class="gray-text" #pickerone></mat-datepicker>
-                </mat-form-field>
-            </div>
-        </div>
 
         <div [ngClass]="showdate? '':'mt-5'">
             <mat-form-field class="w-full">
                 <mat-label class="font-semibold">Note</mat-label>
-                <textarea matInput [(ngModel)]="note"  placeholder="Note"></textarea>
-              </mat-form-field>
+                <textarea matInput [(ngModel)]="note" placeholder="Note"></textarea>
+            </mat-form-field>
         </div>
 
-        <div *ngIf="showInfo" class="first relative flex flex-col mt-2 mb-3 bg-[#FFECEC] px-5 py-4 rounded-md shadow-[0_0_15px_0_rgba(167,167,167,0.2)] overflow-x-hidden">
+        <div *ngIf="showInfo"
+            class="first relative flex flex-col mt-2 mb-3 bg-[#FFECEC] px-5 py-4 rounded-md shadow-[0_0_15px_0_rgba(167,167,167,0.2)] overflow-x-hidden">
             <div class=" text-red-600 font-medium">
-                <span *ngIf="amendmentType === 'Baggage Quotation(SSR)'">Please add extra baggage value only if you need to carry extra weight beyond the standard baggage allowed by airlines. Select "No Baggage" if no extra baggage is needed.</span>
-                <span *ngIf="amendmentType === 'Correction Quotation'">Add updated name values if and for the individuals who need to edit previously entered names. In case no changes are needed, please leave the field/s empty.</span>
-                <span *ngIf="amendmentType === 'Reissue Quotation'">Add updated dates if and for changes in previously entered dates. In case no changes are needed, please leave such field/s as it is.</span>
-                <span *ngIf="amendmentType === 'Instant Cancellation'">By selecting <b class="ml-1">Instant Cancellation</b>, your ticket will be immediately canceled with the applicable refund amount.</span>
+                <span *ngIf="amendmentType === 'Baggage Quotation(SSR)'">Please add extra baggage value only if you need
+                    to carry extra weight beyond the standard baggage allowed by airlines. Select "No Baggage" if no
+                    extra baggage is needed.</span>
+                <span *ngIf="amendmentType === 'Correction Quotation'">Add updated name values if and for the
+                    individuals who need to edit previously entered names. In case no changes are needed, please leave
+                    the field/s empty.</span>
+                <span *ngIf="amendmentType === 'Reissue Quotation'">Add updated dates if and for changes in previously
+                    entered dates. In case no changes are needed, please leave such field/s as it is.</span>
+                <span *ngIf="amendmentType === 'Instant Cancellation'">By selecting <b class="ml-1">Instant
+                        Cancellation</b>, your ticket will be immediately canceled with the applicable refund
+                    amount.</span>
             </div>
         </div>
+
+        <div *ngIf="datas.isInstantCancalation"
+            class="first relative flex flex-col mt-2 mb-3 bg-[#FFECEC] px-5 py-4 rounded-md shadow-[0_0_15px_0_rgba(167,167,167,0.2)] overflow-x-hidden">
+            <div class="text-red-600 font-medium">
+                <span>By selecting <b>Instant Cancellation</b>, your
+                    ticket will be immediately canceled with the applicable refund amount.
+                </span>
+            </div>
+        </div>
+
 
         <div class="flex space-x-3">
             <div>Is Manual</div>

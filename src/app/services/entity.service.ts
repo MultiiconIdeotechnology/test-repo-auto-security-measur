@@ -5,6 +5,9 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
     providedIn: 'root'
 })
 export class EntityService {
+    private updateChargeCall = new ReplaySubject<any>();
+    private refreshUpdateChargeCall = new ReplaySubject<any>();
+    private amendmentReqInfo = new ReplaySubject<any>();
     private searchChange = new Subject<any>();
     private WithdrawAuditedCall = new Subject<any>();
     private WithdrawRejectedCall = new Subject<any>();
@@ -70,6 +73,8 @@ export class EntityService {
         this.installmentCall.next(item);
     }
 
+    private appliedOnCall = new ReplaySubject<any>();
+    private amendmentStatusInfo = new ReplaySubject<any>();
     public onInstallmentCall(): Observable<any> {
         return this.installmentCall.asObservable();
     }
@@ -147,6 +152,46 @@ export class EntityService {
         this.refreshreferralEntityCall.next(item);
     }
 
+  public onleadEntityCall(): Observable<any> {
+    return this.leadEntityCall.asObservable();
+  }
+  
+  // Amendment Update Charge Drawer
+  public raiseUpdateChargeCall(item: any): void {
+    this.updateChargeCall.next(item);
+  }
+
+  public onUpdateChargeCall(): Observable<any> {
+    return this.updateChargeCall.asObservable();
+  }
+
+  public raiserefreshUpdateChargeCall(item: any): void {
+    this.refreshUpdateChargeCall.next(item);
+  }
+
+  public onraiserefreshUpdateChargeCall(): Observable<any> {
+    return this.refreshUpdateChargeCall.asObservable();
+  }
+  // ### End ### //
+
+  // Amendment Request Info Drawer
+  public raiseAmendmentInfoCall(item: any): void {
+    this.amendmentReqInfo.next(item);
+  }
+
+  public onAmendmentInfoCall(): Observable<any> {
+    return this.amendmentReqInfo.asObservable();
+  }
+  // ### End ### //
+
+  // Amendment Status Drawer
+  public raiseAmendmentStatusInfoCall(item: any): void {
+    this.amendmentStatusInfo.next(item);
+  }
+
+  public onAmendmentStatusInfoCall(): Observable<any> {
+    return this.amendmentStatusInfo.asObservable();
+  }
     public onrefreshreferralEntityCall(): Observable<any> {
         return this.refreshreferralEntityCall.asObservable();
     }
