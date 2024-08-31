@@ -456,7 +456,8 @@ export const agentPermissions = {
     businessanalyticsPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Business Analytics', category_name: category_name.operation },
     cancelProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Cancel', category_name: category_name.operation },
     expiryProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Expiry Product', category_name: category_name.operation },
-    salesReturnProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Sales Return', category_name: category_name.operation }
+    salesReturnProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Sales Return', category_name: category_name.operation },
+    deleteProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Delete', category_name: category_name.operation },
     // techServicePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Tech Service', category_name: category_name.operation },
     // techCallHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline Call History', category_name: category_name.operation }
 }

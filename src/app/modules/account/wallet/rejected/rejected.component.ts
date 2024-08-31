@@ -165,7 +165,7 @@ export class RejectedComponent extends BaseListingComponent {
 			if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
 				this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
 			}
-			
+
 			if (filterData?.['table_config']?.['rejected_date_time']?.value != null) {
 				filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
 			}
@@ -335,16 +335,16 @@ export class RejectedComponent extends BaseListingComponent {
 		filterReq['particularId'] = this.rejectFilter?.particularId == "all" ? '' : this.rejectFilter?.particularId;
 		filterReq['mop'] = this.rejectFilter?.mop || '';
 		filterReq['psp'] = this.rejectFilter?.psp || '';
-		filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.FromDate)).toFormat('yyyy-MM-dd');
-		filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.ToDate)).toFormat('yyyy-MM-dd');
+		// filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.FromDate)).toFormat('yyyy-MM-dd');
+		// filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.rejectFilter.ToDate)).toFormat('yyyy-MM-dd');
 		filterReq['Skip'] = 0;
 		filterReq['Take'] = this.totalRecords;
 
 
 		this.walletService.getWalletRechargeFilterList(filterReq).subscribe(data => {
 			for (var dt of data.data) {
-				dt.rejected_date_time = DateTime.fromISO(dt.rejected_date_time).toFormat('dd-MM-yyyy hh:mm a')
-				dt.request_date_time = DateTime.fromISO(dt.request_date_time).toFormat('dd-MM-yyyy hh:mm a')
+				dt.rejected_date_time = dt.rejected_date_time ? DateTime.fromISO(dt.rejected_date_time).toFormat('dd-MM-yyyy hh:mm a') : '';
+				dt.request_date_time = dt.request_date_time ? DateTime.fromISO(dt.request_date_time).toFormat('dd-MM-yyyy hh:mm a') : '';
 				// dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
 			}
 			Excel.export(

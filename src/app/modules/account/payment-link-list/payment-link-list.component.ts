@@ -205,9 +205,9 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
 
         this.accountService.getPaymentList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.payment_request_date = DateTime.fromISO(dt.payment_request_date).toFormat('dd-MM-yyyy hh:mm a')
-                dt.audit_date_time = DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy hh:mm a')
-                dt.payment_date = DateTime.fromISO(dt.payment_date).toFormat('dd-MM-yyyy hh:mm a')
+                dt.payment_request_date = dt.payment_request_date ? DateTime.fromISO(dt.payment_request_date).toFormat('dd-MM-yyyy hh:mm a') : '';
+                dt.audit_date_time = dt.audit_date_time ? DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy hh:mm a') : '';
+                dt.payment_date = dt.payment_date ? DateTime.fromISO(dt.payment_date).toFormat('dd-MM-yyyy hh:mm a') : '';
                 dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
             }
             Excel.export(

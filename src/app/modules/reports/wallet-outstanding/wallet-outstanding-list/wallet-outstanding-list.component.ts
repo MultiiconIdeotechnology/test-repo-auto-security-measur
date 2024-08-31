@@ -144,7 +144,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
 
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -191,7 +191,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
 
         this.walletOutstandingService.getWalletOutstanding(this.getNewFilterReq(event)).subscribe(data => {
             for (var dt of data.data) {
-                dt.due_date = DateTime.fromISO(dt.due_date).toFormat('dd-MM-yyyy hh:mm a');
+                dt.due_date = dt.due_date ? DateTime.fromISO(dt.due_date).toFormat('dd-MM-yyyy hh:mm a') : '';
             }
             Excel.export(
                 'Wallet Outstanding',

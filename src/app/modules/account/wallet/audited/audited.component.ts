@@ -151,7 +151,7 @@ export class AuditedComponent extends BaseListingComponent {
         if (resp?.['table_config']?.['audited_date_time']?.value != null) {
           resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
         }
-        
+
         this.isFilterShowAudit = true;
         this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
         // this.sortColumn = resp['sortColumn'];
@@ -164,7 +164,7 @@ export class AuditedComponent extends BaseListingComponent {
 
   ngAfterViewInit(): void {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        
+
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedMop = filterData['table_config']['mop']?.value;
 			this.selectedPsp = filterData['table_config']['psp_name']?.value;
@@ -195,7 +195,7 @@ export class AuditedComponent extends BaseListingComponent {
       if (filterData['table_config']['audited_date_time']?.value != null) {
         filterData['table_config']['audited_date_time'].value = new Date(filterData['table_config']['audited_date_time'].value);
       }
-      
+
       this.isFilterShowAudit = true;
       this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
       // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -203,8 +203,8 @@ export class AuditedComponent extends BaseListingComponent {
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
-  
-  
+
+
   ngOnChanges(changes: SimpleChanges) {
     this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData?.mopData;
@@ -341,8 +341,8 @@ export class AuditedComponent extends BaseListingComponent {
 
     this.walletService.getWalletRechargeFilterList(filterReq).subscribe(data => {
       for (var dt of data.data) {
-        dt.audited_date_time = DateTime.fromISO(dt.audited_date_time).toFormat('dd-MM-yyyy hh:mm a')
-        dt.request_date_time = DateTime.fromISO(dt.request_date_time).toFormat('dd-MM-yyyy hh:mm a')
+        dt.audited_date_time = dt.audited_date_time ? DateTime.fromISO(dt.audited_date_time).toFormat('dd-MM-yyyy hh:mm a') : ''
+        dt.request_date_time = dt.request_date_time ? DateTime.fromISO(dt.request_date_time).toFormat('dd-MM-yyyy hh:mm a') : ''
         // dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
       }
       Excel.export(

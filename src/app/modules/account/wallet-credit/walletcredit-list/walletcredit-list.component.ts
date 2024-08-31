@@ -134,7 +134,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['master_agent_name']?.value;
-      
+
       if (filterData['table_config']['expiry_date'].value) {
         filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
       }
@@ -186,10 +186,10 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         if (!match) {
           this.agentList.push(this.selectedAgent);
         }
-      } 
+      }
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-        this.agentList[i].id_by_value = this.agentList[i].agency_name; 
+        this.agentList[i].id_by_value = this.agentList[i].agency_name;
       }
     })
   }
@@ -336,8 +336,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
 
     this.walletService.getWalletCreditList(modal).subscribe(data => {
       for (var dt of data.data) {
-        dt.expiry_date = DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy hh:mm a')
-        dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a')
+        dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy hh:mm a') : '';
+        dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a') : '';
         // dt.entry_by = DateTime.fromISO(dt.entry_by).toFormat('dd-MM-yyyy hh:mm a')
 
       }

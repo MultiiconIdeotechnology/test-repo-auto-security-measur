@@ -197,7 +197,7 @@ export class ReceiptListComponent
                 if (!match) {
                   this.agentList.push(this.selectedAgent);
                 }
-            } 
+            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
@@ -504,8 +504,8 @@ export class ReceiptListComponent
 
         this.accountService.getReceiptList(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.receipt_request_date = DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a');
-                dt.audit_date_time = DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy hh:mm a');
+                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a')  : '';
+                dt.audit_date_time = dt.audit_date_time  ? DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy hh:mm a')  : '';
                 dt.agent_name = dt.agent_Code + ' ' + dt.agent_name;
                 // dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
             }

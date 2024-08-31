@@ -401,9 +401,10 @@ export class PurchaseProductComponent {
     }
 
     deleteProduct(record) {
-        // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+        if (!Security.hasPermission(agentPermissions.deleteProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
         const label: string = 'Delete Purchase product'
         this.confirmationService.open({
             title: label,

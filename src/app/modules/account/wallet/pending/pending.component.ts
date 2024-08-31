@@ -379,8 +379,8 @@ export class PendingComponent extends BaseListingComponent {
 
 		this.walletService.getWalletRechargeFilterList(filterReq).subscribe(data => {
 			for (var dt of data.data) {
-				dt.request_date_time = DateTime.fromISO(dt.request_date_time).toFormat('dd-MM-yyyy hh:mm a')
-				dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a')
+				dt.request_date_time = dt.request_date_time ? DateTime.fromISO(dt.request_date_time).toFormat('dd-MM-yyyy hh:mm a') : ''
+				dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy hh:mm a') : ''
 				// dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
 			}
 			Excel.export(
