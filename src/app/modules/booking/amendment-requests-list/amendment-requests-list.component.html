@@ -175,7 +175,7 @@
                         <p-columnFilter field="amendment_status" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-multiSelect [ngModel]="value" [options]="statusList" placeholder="Select Status"
-                                    (onChange)="filter($event.value)" display="chip" appendTo="body">
+                                    (onChange)="filter($event.value)" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option}}</p>
                                     </ng-template>
