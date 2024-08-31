@@ -214,7 +214,7 @@
                             ariaLabel="Filter GDS PNR" />
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals"
+                        <!-- <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
@@ -227,6 +227,20 @@
                                         </div>
                                     </ng-template>
                                 </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter> -->
+
+                        <p-columnFilter field="supplier_name" matchMode="in" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
+                                    placeholder="Select Supplier" (onChange)="filter($event.value)"
+                                    appendTo="body">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div>
+                                            {{agent.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
                             </ng-template>
                         </p-columnFilter>
                     </th>
