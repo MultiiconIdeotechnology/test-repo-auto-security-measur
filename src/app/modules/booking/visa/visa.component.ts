@@ -214,7 +214,7 @@ export class VisaComponent extends BaseListingComponent {
         //     this.searchInputControl.value
         // );
         filterReq['FromDate'] = '';
-        filterReq['ToDate'] = ''; 
+        filterReq['ToDate'] = '';
         // filterReq['FromDate'] = DateTime.fromJSDate(this.visaFilter.FromDate).toFormat('yyyy-MM-dd');
         // filterReq['ToDate'] = DateTime.fromJSDate(this.visaFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['date_'] = this.visaFilter.date_ ? DateTime.fromJSDate(new Date(this.visaFilter.date_)).toFormat('yyyy-MM-dd') : '';
@@ -369,10 +369,10 @@ export class VisaComponent extends BaseListingComponent {
 
         this.visaService.getVisaBookingList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.travel_date = DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy')
-                dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss')
-                dt.payment_request_time = DateTime.fromISO(dt.payment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
-                dt.payment_confirmation_time = DateTime.fromISO(dt.payment_confirmation_time).toFormat('dd-MM-yyyy HH:mm:ss')
+                dt.travel_date = dt.travel_date ? DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy') : '';
+                dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.payment_request_time = dt.payment_request_time ? DateTime.fromISO(dt.payment_request_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.payment_confirmation_time = dt.payment_confirmation_time ? DateTime.fromISO(dt.payment_confirmation_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
 
             }
             Excel.export(

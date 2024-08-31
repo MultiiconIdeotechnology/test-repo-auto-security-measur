@@ -131,7 +131,7 @@ export class AmendmentRequestsListComponent
             if (resp?.['table_config']?.['amendment_request_time']?.value != null && resp['table_config']['amendment_request_time'].value.length) {
                 this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
             }
-            
+
             if (resp['table_config']['travel_date']?.value != null) {
               resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
             }
@@ -153,7 +153,7 @@ export class AmendmentRequestsListComponent
             if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }
-            
+
             if (filterData['table_config']['travel_date']?.value != null) {
               filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
@@ -169,7 +169,7 @@ export class AmendmentRequestsListComponent
         );
 
         filterReq['FromDate'] = '';
-        filterReq['ToDate'] = ''; 
+        filterReq['ToDate'] = '';
         // filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
         // filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['agent_id'] = this.AmendmentFilter?.agent_id?.id || '';
@@ -188,7 +188,7 @@ export class AmendmentRequestsListComponent
                 if (!match) {
                   this.agentList.push(this.selectedAgent);
                 }
-            } 
+            }
 
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
@@ -519,8 +519,8 @@ export class AmendmentRequestsListComponent
 
         this.amendmentrequestsService.getAirAmendmentList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
-                dt.travel_date = DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy HH:mm:ss')
+                dt.amendment_request_time = dt.amendment_request_time ? DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.travel_date = dt.travel_date ? DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
             }
             Excel.export(
                 'Amendment Booking',

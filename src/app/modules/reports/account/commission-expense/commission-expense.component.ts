@@ -202,7 +202,7 @@ export class CommissionExpenseComponent
         filterReq['Take'] = this.totalRecords;
         this.accountService.getcommissionExpense(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.booking_date = DateTime.fromISO(dt.booking_date).toFormat('dd-MM-yyyy hh:mm a');
+                dt.booking_date = dt.booking_date ? DateTime.fromISO(dt.booking_date).toFormat('dd-MM-yyyy hh:mm a') : '';
             }
             Excel.export(
                 'Commission Expense',

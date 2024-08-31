@@ -419,7 +419,7 @@ export class MainListComponent extends BaseListingComponent {
     this.leadsService.getAgentLeadList(filterReq).subscribe(data => {
       for (var dt of data.data) {
         // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
-        dt.entry_date_time = DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy')
+        dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy') : ''
       }
       Excel.export(
         'New Signup',

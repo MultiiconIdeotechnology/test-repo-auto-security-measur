@@ -156,7 +156,7 @@ export class GroupInquiryListComponent
     getAgent(value: string, bool: boolean = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
-            
+
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -173,7 +173,7 @@ export class GroupInquiryListComponent
     getSupplier(value: string, bool: boolean = true) {
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
-            
+
             for(let i in this.supplierList){
                 this.supplierList[i].id_by_value = this.supplierList[i].company_name;
              }
@@ -225,8 +225,8 @@ export class GroupInquiryListComponent
 
         this.groupInquiryService.getAirGroupInquiryList(request).subscribe(data => {
             for (var dt of data.data) {
-                dt.departure_date = DateTime.fromISO(dt.departure_date).toFormat('dd-MM-yyyy hh:mm a');
-                dt.arrival_date = DateTime.fromISO(dt.arrival_date).toFormat('dd-MM-yyyy hh:mm a');
+                dt.departure_date = dt.departure_date ? DateTime.fromISO(dt.departure_date).toFormat('dd-MM-yyyy hh:mm a') : '';
+                dt.arrival_date = dt.arrival_date ? DateTime.fromISO(dt.arrival_date).toFormat('dd-MM-yyyy hh:mm a') : '';
                 dt.pax = 'Adult:' + dt.adults + " child:" + dt.child + " Infants:" + dt.infants;
             }
             Excel.export(

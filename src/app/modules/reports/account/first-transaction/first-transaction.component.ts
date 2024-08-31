@@ -172,7 +172,7 @@ export class FirstTransactionComponent
 
         this.accountService.getFirstTransaction(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.first_transaction_date_time = DateTime.fromISO(dt.first_transaction_date_time).toFormat('dd-MM-yyyy hh:mm a');
+                dt.first_transaction_date_time = dt.first_transaction_date_time ? DateTime.fromISO(dt.first_transaction_date_time).toFormat('dd-MM-yyyy hh:mm a') : '';
                 dt.address_line1 = dt.address_line1 ? (dt.address_line2 ? dt.address_line1 + ', ' + dt.address_line2 : dt.address_line1) : ''
                 dt.gst_number = dt.gst_number ? dt.gst_number : dt.vat_number || ''
             }

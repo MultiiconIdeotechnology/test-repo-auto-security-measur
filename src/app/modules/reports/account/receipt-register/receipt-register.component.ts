@@ -261,7 +261,7 @@ export class ReceiptRegisterComponent
 
         this.accountService.getReceiptRegister(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.receipt_request_date = DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a');
+                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a') : '';
             }
             Excel.export(
                 'Receipt Register',

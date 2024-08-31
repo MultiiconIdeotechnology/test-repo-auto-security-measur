@@ -222,7 +222,7 @@ export class BusComponent extends BaseListingComponent {
           this.fromcityList.push(this.selectedFromCity);
         }
       }
-     
+
     });
   }
 
@@ -377,8 +377,8 @@ export class BusComponent extends BaseListingComponent {
 
     this.busService.getBusBookingList(request).subscribe(data => {
       for (var dt of data.data) {
-        dt.bookingDate = DateTime.fromISO(dt.bookingDate).toFormat('dd-MM-yyyy HH:mm:ss')
-        dt.departuteDate = DateTime.fromISO(dt.departuteDate).toFormat('dd-MM-yyyy HH:mm:ss')
+        dt.bookingDate = dt.bookingDate ? DateTime.fromISO(dt.bookingDate).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.departuteDate = dt.departuteDate ? DateTime.fromISO(dt.departuteDate).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }
 
       Excel.export(

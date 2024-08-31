@@ -445,7 +445,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 if (dt.lastCallFeedback == null) {
                     dt.lastCall = dt.lastCallFeedback == null ? null : DateTime.fromISO(dt.lastCall).toFormat('dd-MM-yyyy')
                 }
-                dt.leadDate = DateTime.fromISO(dt.leadDate).toFormat('dd-MM-yyyy')
+                dt.leadDate = dt.leadDate ? DateTime.fromISO(dt.leadDate).toFormat('dd-MM-yyyy') : ''
                 // dt.lastCall = DateTime.fromISO(dt.lastCall).toFormat('dd-MM-yyyy')
                 dt.kycStarted = dt.kycStarted ? 'Yes' : 'No'
             }

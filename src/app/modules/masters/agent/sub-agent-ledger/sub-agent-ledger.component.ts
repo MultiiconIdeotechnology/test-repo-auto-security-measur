@@ -114,7 +114,7 @@ export class SubAgentLedgerComponent {
     this.route.paramMap.subscribe(params => {
       this.idUrl = params.get('id');
     })
-  
+
     this.agentfilter.valueChanges.pipe(
       filter((search) => !!search),
       startWith(''),
@@ -170,7 +170,7 @@ export class SubAgentLedgerComponent {
   exportExcel(): void {
     this.tempData = cloneDeep(this.dataSource.data);
     for (var dt of this.tempData) {
-      dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm');
+      dt.datetime = dt.datetime ? DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm') : '';
     }
 
     Excel.export(

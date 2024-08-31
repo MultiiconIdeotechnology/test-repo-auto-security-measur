@@ -207,7 +207,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
 
         this.agentBalanceService.getWalletReportList(req).subscribe(data => {
             for (var dt of data.data) {
-                dt.last_top_up = DateTime.fromISO(dt.last_top_up).toFormat('dd-MM-yyyy hh:mm a')
+                dt.last_top_up = dt.last_top_up ? DateTime.fromISO(dt.last_top_up).toFormat('dd-MM-yyyy hh:mm a') : '';
                 dt.balance = dt.currency + ' ' + dt.balance
             }
             Excel.export(

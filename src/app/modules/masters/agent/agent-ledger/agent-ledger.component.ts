@@ -110,7 +110,7 @@ export class AgentLedgerComponent{
     private ledgerService: LedgerService,
 
   ) {
-   
+
 
     this.dateRanges = CommonUtils.valuesArray(dateRange);
     this.date.patchValue(dateRange.lastMonth);
@@ -169,7 +169,7 @@ export class AgentLedgerComponent{
     }
     this.ledgerService.getLedger(this.getFilter()).subscribe(data => {
       for (var dt of data.data) {
-        dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
+        dt.datetime = dt.datetime ? DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a') : ''
       }
       Excel.export(
         'Ledger',
@@ -266,5 +266,5 @@ export class AgentLedgerComponent{
     this.date.patchValue('Today');
     this.updateDate(dateRange.today);
   }
-  
+
 }

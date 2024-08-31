@@ -333,9 +333,9 @@ export class HotelsListComponent extends BaseListingComponent {
 
     this.hotelBookingService.getHotelBookingList(filterReq).subscribe(data => {
       for (var dt of data.data) {
-        dt.bookingDate = DateTime.fromISO(dt.bookingDate).toFormat('dd-MM-yyyy HH:mm:ss')
-        dt.check_in_date = DateTime.fromISO(dt.check_in_date).toFormat('dd-MM-yyyy')
-        dt.check_out_date = DateTime.fromISO(dt.check_out_date).toFormat('dd-MM-yyyy')
+        dt.bookingDate = dt.bookingDate ? DateTime.fromISO(dt.bookingDate).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.check_in_date = dt.check_in_date ? DateTime.fromISO(dt.check_in_date).toFormat('dd-MM-yyyy') : '';
+        dt.check_out_date = dt.check_out_date ? DateTime.fromISO(dt.check_out_date).toFormat('dd-MM-yyyy') : '';
       }
       Excel.export(
         'Hotel Booking',

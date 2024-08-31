@@ -473,8 +473,8 @@ export class FlightComponent extends BaseListingComponent {
 
         this.flighttabService.getAirBookingList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.bookingDate = DateTime.fromISO(dt.bookingDate).toFormat('dd-MM-yyyy HH:mm:ss')
-                dt.travelDate = DateTime.fromISO(dt.travelDate).toFormat('dd-MM-yyyy HH:mm:ss')
+                dt.bookingDate = dt.bookingDate ? DateTime.fromISO(dt.bookingDate).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.travelDate = dt.travelDate ? DateTime.fromISO(dt.travelDate).toFormat('dd-MM-yyyy HH:mm:ss') : '';
                 dt.from = dt.from + ' to ' + dt.to + ' - ' + dt.cabin;
                 dt.pax = 'Adult: ' + dt.adults + ', child: ' + dt.child + ', Infants:' + dt.infants;
                 // dt.fieldslist = '';
