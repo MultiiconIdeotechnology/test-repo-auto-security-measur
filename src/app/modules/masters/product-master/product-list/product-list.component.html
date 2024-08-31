@@ -25,6 +25,13 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -32,7 +39,7 @@
             </button>
 
              <!------Create------->
-             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
@@ -68,12 +75,12 @@
                     <th pSortableColumn="product_expiry" pResizableColumn>
                         Expiry <p-sortIcon field="product_expiry" />
                     </th>
-                    <th class="text-center" pSortableColumn="is_amc_required" pResizableColumn>
+                    <!-- <th class="text-center" pSortableColumn="is_amc_required" pResizableColumn>
                         AMC Required <p-sortIcon field="is_amc_required" />
-                    </th>
-                    <th class="text-right" pSortableColumn="amc_amount" pResizableColumn>
+                    </th> -->
+                     <!-- <th class="text-right" pSortableColumn="amc_amount" pResizableColumn>
                         AMC Amount <p-sortIcon field="amc_amount" />
-                    </th>
+                    </th> -->
                     <th class="w-full" pSortableColumn="max_installment" pResizableColumn>
                         Max Installment <p-sortIcon field="max_installment" />
                     </th>
@@ -95,7 +102,7 @@
                         <p-columnFilter type="text" matchMode="contains" field="product_expiry" placeholder="Search by Expiry"
                             ariaLabel="Filter Expiry" />
                     </th>
-                    <th>
+                    <!-- <th>
                         <p-columnFilter field="is_amc_required" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown"
@@ -111,11 +118,11 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
-                    <th>
+                    </th> -->
+                     <!-- <th>
                         <p-columnFilter type="numeric" field="amc_amount" placeholder="Search by AMC Amount"
                             ariaLabel="Filter AMC Amount" />
-                    </th>
+                    </th> -->
                     <th>
                         <p-columnFilter type="numeric" field="max_installment" placeholder="Search by Max Installment"
                             ariaLabel="Filter Max Installment" />
@@ -149,11 +156,11 @@
                     </td>
                     <td class="text-right">{{element.one_time_cost}}</td>
                     <td>{{element.product_expiry}}</td>
-                    <td class="text-center">
+                    <!-- <td class="text-center">
                         <mat-icon class="text-green-600" *ngIf="element.is_amc_required">done</mat-icon>
                         <mat-icon class="text-red-600" *ngIf="!element.is_amc_required">clear</mat-icon>
-                    </td>
-                    <td class="text-right">{{element.amc_amount}}</td>
+                    </td> -->
+                     <!-- <td class="text-right">{{element.amc_amount}}</td> -->
                     <td>
                         <div class="pl-[60px]">{{element.max_installment}}</div>
                     </td>

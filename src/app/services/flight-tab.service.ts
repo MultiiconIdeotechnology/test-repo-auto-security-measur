@@ -13,7 +13,7 @@ export class FlightTabService {
   constructor(private http: HttpClient) { }
 
   getAirBookingList(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'AirBooking/getAirBookingList', model);
+    return this.http.post<any>(this.baseUrl + 'AirBooking/getAirBookingListNew', model);
   }
 
   getAirLineList(model: any): Observable<any> {

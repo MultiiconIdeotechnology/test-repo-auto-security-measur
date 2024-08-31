@@ -1,10 +1,10 @@
 <div class="flex flex-col flex-auto overflow-hidden -m-6">
     <div class="flex flex-0 justify-between h-13 pr-0 sm:pr-0 pl-0 sm:pl-0">
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="sales_product_reg?.sales_product">{{title}} - {{dataList?.product_name}}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="purchase_reg?.purchase_product">{{title}} - {{record?.product_name}}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="receipt_reg?.receipt_register">{{title}} - {{dataList?.product_name }}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="account_reg?.account_receipt">{{title}} - {{dataList?.product_name }}</div>
-        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6" *ngIf="agent_info_reg?.agentInfo">{{title}} - {{dataList?.product_name }}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="sales_product_reg?.sales_product" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name}}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="purchase_reg?.purchase_product" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name}}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="receipt_reg?.receipt_register" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }}</div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="account_reg?.account_receipt" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }} </div>
+        <div class="text-xl font-bold tracking-tight pt-[15px] pl-6 cursor-pointer" *ngIf="agent_info_reg?.agentInfo" (click)="agentDetail(dataList?.agentid)">{{dataList?.agent_code}} - {{dataList?.agent_name }}</div>
 
         <div class="mt-2 mr-5">
             <!-- <div class="flex text-right justify-end items-end m-auto mt-[-14px]" *ngIf="tabName == 'Receipts'">
@@ -24,8 +24,7 @@
         </div>
     </div>
     <mat-divider></mat-divider>
-    <div
-        class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-w-[900px] lg:max-w-[900px] xl:max-w-[900px] mt-[-10px]">
+    <div class="flex flex-col flex-auto overflow-hidden overflow-y-auto overflow-x-auto lg:min-w-[900px] lg:max-w-[900px] xl:max-w-[900px] mt-[-10px]">
         <!-- <div class="flex flex-raw overflow-hidden overflow-x-auto border rounded-[10px] m-4">
             <div class="w-full pb-2 field-blue-bg dark:bg-[#2A374A] bg-gray-200">
                 <div class="pl-3 pt-3 overflow-hidden w-full flex-row flex">
@@ -97,7 +96,7 @@
                 <div class="flex flex-raw overflow-hidden overflow-x-auto mt-[-10px]">
                     <div class="w-full pb-0 field-blue-bg">
                         <div class="overflow-hidden w-full flex-row flex">
-                            <div class="flex flex-col w-[40%] pl-3 pt-1">
+                            <div class="flex flex-col w-[40%] pt-1">
                                 <span class="text-base font-medium text-secondary dark:text-[#687798]">Product</span>
                                 <span class="text-base truncate dark:text-white text-black" *ngIf="purchase_reg?.purchase_product">{{record?.product_name ? record?.product_name : " -"}}</span>
                                 <span class="text-base truncate dark:text-white text-black" *ngIf="receipt_reg?.receipt_register">{{dataList?.product_name ? dataList?.product_name : " -"}}</span>
@@ -106,19 +105,84 @@
                                 <span class="text-base truncate dark:text-white text-black" *ngIf="agent_info_reg?.agentInfo">{{dataList?.product_name ? dataList?.product_name : " -"}}</span>
                             </div>
 
-                            <div class="flex flex-col w-[40%] pl-3 pt-1">
-                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Product
+                            <div class="flex flex-col w-[40%] pt-1">
+                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Original
                                     Price</span>
-                                <span class="text-base truncate dark:text-white text-black" *ngIf="purchase_reg?.purchase_product">{{record?.purchase_amount ? '₹ ' + record?.purchase_amount : " -"}}</span>
-                                <span class="text-base truncate dark:text-white text-black" *ngIf="receipt_reg?.receipt_register">{{dataList?.purchase_amount ? '₹ ' + dataList?.purchase_amount : " -"}}</span>
-                                <span class="text-base truncate dark:text-white text-black" *ngIf="account_reg?.account_receipt">{{dataList?.purchase_amount ? '₹ ' + dataList?.purchase_amount : " -"}}</span>
-                                <span class="text-base truncate dark:text-white text-black" *ngIf="sales_product_reg?.sales_product">{{dataList?.purchase_amount ? '₹ ' + dataList?.purchase_amount : " -"}}</span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="purchase_reg?.purchase_product">
+                                    <!-- {{dataList?.one_time_cost ? '₹ ' + dataList?.one_time_cost : " -"}}</span> -->
+                                    {{ dataList?.one_time_cost != null ?
+                                        (dataList.one_time_cost | currency: dataList.currency : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="receipt_reg?.receipt_register">
+                                    {{ dataList?.one_time_cost != null ?
+                                        (dataList.one_time_cost | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="account_reg?.account_receipt">
+                                    {{ dataList?.one_time_cost != null ?
+                                        (dataList.one_time_cost | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="sales_product_reg?.sales_product">
+                                    {{ dataList?.one_time_cost != null ?
+                                        (dataList.one_time_cost | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
                                 <span class="text-base truncate dark:text-white text-black" *ngIf="agent_info_reg?.agentInfo">
-                                    ₹ {{dataList.purchase_amount ? dataList.purchase_amount : '-' }}
+                                    {{ dataList?.one_time_cost != null ?
+                                        (dataList.one_time_cost | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
                                 </span>
                             </div>
 
                             <div class="flex flex-col w-[20%] pt-1">
+                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Product
+                                    Price</span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="purchase_reg?.purchase_product">
+                                    <!-- {{record?.purchase_amount ? '₹ ' + record?.purchase_amount : " -"}} -->
+                                    {{ dataList?.purchase_amount != null ?
+                                        (dataList.purchase_amount | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="receipt_reg?.receipt_register">
+                                    {{ dataList?.purchase_amount != null ?
+                                        (dataList.purchase_amount | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="account_reg?.account_receipt">
+                                    {{ dataList?.purchase_amount != null ?
+                                        (dataList.purchase_amount | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="sales_product_reg?.sales_product">
+                                    {{ dataList?.purchase_amount != null ?
+                                        (dataList.purchase_amount | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                                <span class="text-base truncate dark:text-white text-black" *ngIf="agent_info_reg?.agentInfo">
+                                    {{ dataList?.purchase_amount != null ?
+                                        (dataList.purchase_amount | currency: (dataList.currency || 'INR') : 'symbol' : '1.2-2') :  '-' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="pt-3 overflow-hidden w-full flex-row flex">
+                            <div class="flex flex-col w-[40%] pt-1">
+                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Status</span>
+                                <span *ngIf="purchase_reg?.purchase_product" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{ dataList?.product_status || '-' }}
+                                </span>
+
+                                <span *ngIf="receipt_reg?.receipt_register" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{ dataList?.product_status || '-' }}
+                                </span>
+
+                                <span *ngIf="account_reg?.account_receipt" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{ dataList?.product_status || '-' }}
+                                </span>
+
+                                <span *ngIf="sales_product_reg?.sales_product" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    {{ dataList?.product_status || '-' }}
+                                </span>
+
+                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate" [ngClass]="getStatusColor(dataList?.product_status)">
+                                    <!-- {{dataList && dataList?.product_status ? dataList && dataList?.product_status : " -"}} -->
+                                    {{ dataList?.product_status || '-' }}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-col w-[40%]">
                                 <span class="text-md font-medium text-secondary dark:text-[#687798]">Payment Due</span>
                                 <span *ngIf="purchase_reg?.purchase_product" class="text-base w-full" [ngClass]="record?.is_payment_due == true ? 'text-green-600' : 'text-red-600'">
                                     {{record?.is_payment_due == true ? 'Yes' : 'No'}}</span>
@@ -131,9 +195,8 @@
 
                                 <span *ngIf="agent_info_reg?.agentInfo" class="text-base w-full" [ngClass]="dataList?.is_payment_due == true ? 'text-green-600' : 'text-red-600'"> {{dataList?.is_payment_due == true ? 'Yes' : 'No'}}</span>
                             </div>
-                        </div>
-                        <div class="pt-3 pr-3 overflow-hidden w-full flex-row flex">
-                            <div class="flex flex-col w-[40%] pl-3">
+
+                            <div class="flex flex-col w-[20%]">
                                 <span class="text-md font-medium text-secondary dark:text-[#687798]">Start
                                     Integration</span>
                                 <span *ngIf="purchase_reg?.purchase_product" class="text-base w-full" [ngClass]="record?.start_integration ? 'text-green-600' : 'text-red-600'">
@@ -150,26 +213,27 @@
                                 <span *ngIf="agent_info_reg?.agentInfo" class="text-base w-full" [ngClass]="dataList?.start_integration ? 'text-green-600' : 'text-red-600'">
                                     {{dataList?.start_integration == true ? 'Yes' : 'No'}}</span>
                             </div>
+                        </div>
+                        <div class="pt-3 overflow-hidden w-full flex-row flex">
+                            <div class="flex flex-col w-[40%]">
+                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Entry Date</span>
+                                <span *ngIf="purchase_reg?.purchase_product" class="text-base truncate dark:text-white text-black">{{record?.entry_date_time ?
+                                    (record?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
 
-                            <div class="flex flex-col w-[40%] pl-3">
-                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Status</span>
-                                <span *ngIf="purchase_reg?.purchase_product" class="text-base truncate" [ngClass]="getStatusColor(record?.product_status)">
-                                    {{record?.product_status ? record?.product_status : " -"}}</span>
+                                <span *ngIf="receipt_reg?.receipt_register" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
+                                    (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
 
-                                <span *ngIf="receipt_reg?.receipt_register" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
+                                <span *ngIf="account_reg?.account_receipt" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
+                                    (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
 
-                                <span *ngIf="account_reg?.account_receipt" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
+                                <span *ngIf="sales_product_reg?.sales_product" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
+                                        (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
 
-                                <span *ngIf="sales_product_reg?.sales_product" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
-
-                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate" [ngClass]="getStatusColor(dataList?.item?.[0]?.status)">
-                                    {{dataList && dataList?.item?.[0]?.status ? dataList && dataList?.item?.[0]?.status : " -"}}</span>
+                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
+                                    (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
                             </div>
 
-                            <div class="flex flex-col w-[20%] pl-3">
+                            <div class="flex flex-col w-[40%]">
                                 <span class="text-base font-medium text-secondary dark:text-[#687798]">Activation
                                     Date</span>
                                 <span *ngIf="purchase_reg?.purchase_product" class="text-base truncate dark:text-white text-black">{{record?.acivation_date ?
@@ -187,9 +251,8 @@
                                 <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.acivation_date ?
                                     (dataList?.item?.[0]?.acivation_date | date:'dd-MM-yyyy') : " -"}}</span>
                             </div>
-                        </div>
-                        <div class="pt-3 pr-3 overflow-hidden w-full flex-row flex">
-                            <div class="flex flex-col w-[40%] pr-3 pl-3">
+
+                            <div class="flex flex-col w-[20%]">
                                 <span class="text-md font-medium text-secondary dark:text-[#687798]">Expiry Date</span>
                                 <span *ngIf="purchase_reg?.purchase_product" class="text-base w-full dark:text-white text-black">{{record?.expiry_date ?
                                     (record?.expiry_date | date:'dd-MM-yyyy') : " -"}}</span>
@@ -206,27 +269,9 @@
                                 <span *ngIf="agent_info_reg?.agentInfo" class="text-base w-full dark:text-white text-black">{{dataList?.item?.[0]?.expiry_date ?
                                         (dataList?.item?.[0]?.expiry_date | date:'dd-MM-yyyy') : " -"}}</span>
                             </div>
-
-                            <div class="flex flex-col w-[40%] pr-3 pl-3">
-                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Entry Date</span>
-                                <span *ngIf="purchase_reg?.purchase_product" class="text-base truncate dark:text-white text-black">{{record?.entry_date_time ?
-                                    (record?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
-
-                                <span *ngIf="receipt_reg?.receipt_register" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
-                                    (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
-
-                                <span *ngIf="account_reg?.account_receipt" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
-                                    (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
-
-                                <span *ngIf="sales_product_reg?.sales_product" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
-                                        (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
-
-                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base truncate dark:text-white text-black">{{dataList?.item?.[0]?.entry_date_time ?
-                                    (dataList?.item?.[0]?.entry_date_time | date:'dd-MM-yyyy') : " -"}}</span>
-                            </div>
                         </div>
                         <div class="pb-2 pt-2 overflow-hidden w-full flex-row flex">
-                            <div class="flex flex-col w-full pl-3">
+                            <div class="flex flex-col w-full">
                                 <span class="text-base font-medium text-secondary dark:text-[#687798]">Remark</span>
                                 <span *ngIf="purchase_reg?.purchase_product" class="text-base dark:text-white text-black">{{record?.rm_remark ?
                                     record?.rm_remark : " -"}}</span>
@@ -242,6 +287,43 @@
 
                                 <span *ngIf="agent_info_reg?.agentInfo" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
                                     dataList?.rm_remark : " -"}}</span>
+                            </div>
+                        </div>
+                        <div class="pb-2 pt-2 overflow-hidden w-full flex-row flex">
+                            <div class="flex flex-col w-full">
+                                <span class="text-base font-medium text-secondary dark:text-[#687798]">
+                                    Proof Attachment
+                                </span>
+                                <span class="text-base dark:text-white text-black" *ngIf="purchase_reg?.purchase_product">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                        [attr.disabled]="!dataList?.proof_attachment ? true : null"
+                                        (click)="downloadfile(dataList?.proof_attachment)" [matTooltip]="'Download'">
+                                    </mat-icon>
+                                </span>
+                                <span class="text-base dark:text-white text-black" *ngIf="receipt_reg?.receipt_register">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                        [attr.disabled]="!dataList?.proof_attachment ? true : null"
+                                        (click)="downloadfile(dataList?.proof_attachment)" [matTooltip]="'Download'">
+                                    </mat-icon>
+                                </span>
+                                <span class="text-base dark:text-white text-black" *ngIf="account_reg?.account_receipt">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                        [attr.disabled]="!dataList?.proof_attachment ? true : null"
+                                        (click)="downloadfile(dataList?.proof_attachment)" [matTooltip]="'Download'">
+                                    </mat-icon>
+                                </span>
+                                <span class="text-base dark:text-white text-black" *ngIf="sales_product_reg?.sales_product">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                        [attr.disabled]="!dataList?.proof_attachment ? true : null"
+                                        (click)="downloadfile(dataList?.proof_attachment)" [matTooltip]="'Download'">
+                                    </mat-icon>
+                                </span>
+                                <span class="text-base dark:text-white text-black" *ngIf="agent_info_reg?.agentInfo">
+                                    <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="rounded-full cursor-pointer text-blue-600 p-0.5"
+                                        [attr.disabled]="!dataList?.proof_attachment ? true : null"
+                                        (click)="downloadfile(dataList?.proof_attachment)" [matTooltip]="'Download'">
+                                    </mat-icon>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -260,6 +342,10 @@
             </mat-tab>
             <mat-tab label="WL-Setting Links" [aria-label]="'WL-Setting Links'">
                 <app-payment-info-wl-settings-link #receipts [wlSetting]="getWLSettingList"></app-payment-info-wl-settings-link>
+            </mat-tab>
+
+            <mat-tab label="Sales Return" [aria-label]="'Sales Return'" *ngIf="dataList?.is_sales_return">
+                <app-payment-info-sales-return #salesreturn [salesReturnDetail]="dataList"></app-payment-info-sales-return>
             </mat-tab>
         </mat-tab-group>
     </div>

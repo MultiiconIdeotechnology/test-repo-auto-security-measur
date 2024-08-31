@@ -1,21 +1,20 @@
-<!-- Button -->
-<button
-    mat-icon-button
-    [matMenuTriggerFor]="userActions">
-    <span class="relative">
-        <img
-            class="w-7 h-7 rounded-full"
-            *ngIf="showAvatar && user.avatar"
-            [src]="user.avatar">
-        <mat-icon
-            *ngIf="!showAvatar || !user.avatar"
-            [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
-    </span>
-</button>
+<div class="flex flex-col items-center">
+    <!-- Button -->
+    <button mat-icon-button [matMenuTriggerFor]="userActions">
+        <span class="relative">
+            <img class="w-7 h-7 rounded-full" *ngIf="showAvatar && user.avatar" [src]="user.avatar">
+            <mat-icon *ngIf="!showAvatar || !user.avatar" [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+        </span>
+    </button>
 
-<mat-menu
-    [xPosition]="'before'"
-    #userActions="matMenu">
+    <!-- Global Search Button -->
+    <button class="mt-1 rounded-full hover:bg-[#22293b] pt-[10px] pr-[11px] pb-[6px] pl-[11px]"
+        (click)="openGlobalSearchDialog()">
+        <mat-icon class="icon-size-[18px]" svgIcon="heroicons_outline:magnifying-glass"></mat-icon>
+    </button>
+</div>
+
+<mat-menu [xPosition]="'before'" #userActions="matMenu">
     <button mat-menu-item>
         <span class="flex flex-col leading-none">
             <span>Signed in as</span>
@@ -43,7 +42,7 @@
             <span>Dark</span>
         </button>
     </ng-container>
-    
+
     <ng-template #other_content>
         <button mat-menu-item (click)="setScheme('light')">
             <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:sun'"></mat-icon>
@@ -52,9 +51,7 @@
     </ng-template>
 
     <mat-divider class="my-2"></mat-divider>
-    <button
-        mat-menu-item
-        (click)="signOut()">
+    <button mat-menu-item (click)="signOut()">
         <mat-icon [svgIcon]="'heroicons_outline:arrow-right-on-rectangle'"></mat-icon>
         <span>Sign out</span>
     </button>

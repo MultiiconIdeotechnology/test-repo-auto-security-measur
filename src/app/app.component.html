@@ -11,10 +11,15 @@
   }" [@slideRight] (click)="closeToast()">
     <!-- <span class="closeBtn" (click)="closeToast()">x</span> -->
     <div class="toast-content flex items-center">
-      <span class="icon" *ngIf="toastrType == 'success'"><mat-icon class="relative text-[22px]">check</mat-icon></span>
-      <span class="icon" *ngIf="toastrType == 'error'"><mat-icon class="relative text-[22px]">close</mat-icon></span>
-      <span class="icon" *ngIf="toastrType == 'warn'"><mat-icon class="relative text-[22px]">warning</mat-icon></span>
-      <span class="icon" *ngIf="toastrType == 'info'"><mat-icon class="relative text-[22px]">info</mat-icon></span>
-      <span class="relative font-semibold top-[-1px]">{{ toastrMsg }}</span>
+        <span class="icon" *ngIf="toastrType == 'success'"><mat-icon
+                class="relative text-[22px]">check</mat-icon></span>
+        <span class="icon" *ngIf="toastrType == 'error'"><mat-icon class="relative text-[22px]">close</mat-icon></span>
+        <span class="icon" *ngIf="toastrType == 'warn'"><mat-icon class="relative text-[22px]">warning</mat-icon></span>
+        <span class="icon" *ngIf="toastrType == 'info'"><mat-icon class="relative text-[22px]">info</mat-icon></span>
+        <span class="relative font-semibold top-[-1px]">{{ toastrMsg }}</span>
     </div>
-  </div>
+</div>
+
+<p-sidebar [(visible)]="_filterService.filterDrawerVisible" position="right" [styleClass]="'custom-sidebar'">
+    <app-common-filter></app-common-filter>
+</p-sidebar>

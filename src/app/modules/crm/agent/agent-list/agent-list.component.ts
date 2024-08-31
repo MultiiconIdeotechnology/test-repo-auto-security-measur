@@ -13,14 +13,15 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Security, crmLeadPermissions, module_name } from 'app/security';
+import { Security, crmLeadPermissions, filter_module_name, module_name } from 'app/security';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { AppConfig } from 'app/config/app-config';
 import { InboxAgentComponent } from '../inbox/inbox-agent.component';
 import { PartnersComponent } from "../partners/partners.component";
-import { Table } from 'primeng/table';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+
 
 @Component({
     selector: 'app-crm-agent-list',
@@ -49,10 +50,13 @@ import { AgentService } from 'app/services/agent.service';
         PartnersComponent
     ]
 })
+
 export class CRMAgentListComponent implements OnDestroy {
-    module_name = module_name.crmagent;
     @ViewChild('inbox') inbox: InboxAgentComponent;
     @ViewChild('partners') partners: PartnersComponent;
+
+    module_name = module_name.crmagent;
+    filter_table_name = filter_module_name;
 
     public apiCalls: any = {};
     tabName: any
@@ -71,13 +75,9 @@ export class CRMAgentListComponent implements OnDestroy {
     dropdownListObj:any = {};
     
     constructor(
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
-    }
-
-    ngOnDestroy(): void {
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.unsubscribe();
     }
 
     public getTabsPermission(tab: string): boolean {
@@ -90,23 +90,6 @@ export class CRMAgentListComponent implements OnDestroy {
 
 
     ngOnInit(): void {
-        this.searchInputControlInbox.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.inbox.searchInputControlInbox.patchValue(value)
-            });
-
-        this.searchInputControlpartners.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.partners.searchInputControlpartners.patchValue(value)
-            });
 
         // calling Api for defatult value for first time to get Agent list.
         this.getAgent('');
@@ -114,12 +97,13 @@ export class CRMAgentListComponent implements OnDestroy {
 
 
     // Function to get the agentList  from api
-    getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+    getAgent(value: string, bool=true) {
+        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.dropdownListObj['agentList'] = data;
 
             for(let i in this.dropdownListObj['agentList']){
                 this.dropdownListObj['agentList'][i]['agent_info'] = `${this.dropdownListObj['agentList'][i].code}-${this.dropdownListObj['agentList'][i].agency_name}${this.dropdownListObj['agentList'][i].email_address}`
+                this.dropdownListObj['agentList'][i].id_by_value = this.dropdownListObj['agentList'][i].agency_name; 
             }
         })
     }
@@ -137,11 +121,19 @@ export class CRMAgentListComponent implements OnDestroy {
 
             case 'Partners':
                 this.tab = 'partners';
-                if (this.isSecound) {
+                // if (this.isSecound) {
                     this.partners?.refreshItems()
                     this.isSecound = false
-                }
+                // }
                 break;
+        }
+    }
+
+    openTabFiterDrawer() {
+        if (this.tabNameStr == 'Inbox') {
+            this._filterService.openDrawer(this.filter_table_name.agents_inbox, this.inbox.primengTable);
+        } else if (this.tabNameStr == 'Partners') {
+            this._filterService.openDrawer(this.filter_table_name.agents_partners, this.partners.primengTable);
         }
     }
 
@@ -152,11 +144,18 @@ export class CRMAgentListComponent implements OnDestroy {
             this.partners?.refreshItems();
     }
 
-    inboxRefresh() {
+    inboxRefresh(event) {
+        this.inbox.searchInputControlInbox.patchValue(event)
         this.inbox?.refreshItems();
     }
 
-    partnersRefresh() {
+    partnersRefresh(event) {
+        this.partners.searchInputControlpartners.patchValue(event)
         this.partners?.refreshItems();
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.unsubscribe();
     }
 }

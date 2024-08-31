@@ -5,19 +5,24 @@
         [lazy]="true" (onLazyLoad)="refreshItemsRejected($event)" [lazyLoadOnInit]="false" [scrollable]="true"
         [scrollHeight]="scrollHeightWTab" [showCurrentPageReport]="true" [showPageLinks]="false"
         [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-        [globalFilterFields]="['entry_date_time', 'withdraw_amount', 'agent_Code', 'agent_name','account_number']"
+        [globalFilterFields]="['entry_date_time', 'withdraw_amount', 'agent_Code', 'agent_name','account_number','withdraw_type']"
         styleClass="p-datatable-gridlines p-datatable-sm">
 
         <ng-template pTemplate="header">
             <tr>
                 <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="entry_date_time" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-                    [frozen]="frozenObj?.entry_date_time" [ngClass]="{'left-0': !frozenObj?.entry_date_time}">
-                    Date <p-sortIcon field="entry_date_time" />
-                    <span class="float-right" (click)="isFrozenColumn('entry_date_time');$event.stopPropagation()">
-                        <i *ngIf="!frozenObj?.entry_date_time" class="pi pi-lock-open icon-size-3"></i>
-                        <i *ngIf="frozenObj?.entry_date_time" class="pi pi-lock icon-size-3"></i>
+                <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="withdraw_ref_no" pResizableColumn
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.withdraw_ref_no"
+                    [ngClass]="{'left-0': !frozenObj?.withdraw_ref_no}">
+                    Ref. No. <p-sortIcon field="withdraw_ref_no" />
+                    <span class="float-right" (click)="isFrozenColumn('withdraw_ref_no');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.withdraw_ref_no" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.withdraw_ref_no" class="pi pi-lock icon-size-3"></i>
                     </span>
+                </th>
+
+                <th pSortableColumn="entry_date_time" pResizableColumn>
+                    Date <p-sortIcon field="entry_date_time" />
                 </th>
                 <th class="text-right" pSortableColumn="withdraw_amount" pResizableColumn>
                     Amount <p-sortIcon field="withdraw_amount" />
@@ -28,30 +33,27 @@
                 <th pSortableColumn="agent_name" pResizableColumn>
                     Agency Name <p-sortIcon field="agent_name" />
                 </th>
-                <th class="w-full" pSortableColumn="account_number" pResizableColumn>
+                <th pSortableColumn="account_number" pResizableColumn>
                     Bank <p-sortIcon field="account_number" />
+                </th>
+                <th class="w-full" pSortableColumn="withdraw_type" pResizableColumn>
+                    Withdraw Type <p-sortIcon field="withdraw_type" />
                 </th>
             </tr>
 
             <tr *ngIf="isFilterShowReject">
                 <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.withdraw_ref_no">
+                    <p-columnFilter type="text" field="withdraw_ref_no" placeholder="Search by Ref. No"
+                    ariaLabel="Filter Ref. No" />
+                </th>
+
                 <th>
-                    <!-- <p-columnFilter field="entry_date_time" type="date">
-                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                placeholder="Search by Entry Date"></p-calendar>
-                        </ng-template>
-                    </p-columnFilter> -->
                     <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar
-                                    selectionMode="range"
-                                    [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)"
-                                    [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy"
-                                    appendTo="body"
-                                    placeholder="Search by Date Range">
+                            <p-calendar selectionMode="range" [ngModel]="value"
+                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                             </p-calendar>
                         </ng-template>
                     </p-columnFilter>
@@ -68,11 +70,11 @@
                     <!-- <p-columnFilter type="text" matchMode="contains" field="agent_name" placeholder="Search by Agent Name"
                         ariaLabel="Filter Agent Name" /> -->
 
-                    <p-columnFilter class="searchableDropdown" field="agent_id" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
-                                optionLabel="agency_name" [filter]="true" filterBy="agency_name"
-                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                optionLabel="agent_info" [filter]="true" filterBy="agent_info"
+                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
                                     <div class="flex align-items-center gap-2">
@@ -91,6 +93,19 @@
                 <th>
                     <p-columnFilter type="text" matchMode="contains" field="account_number" placeholder="Search by Bnak"
                         ariaLabel="Filter Bank" />
+                </th>
+                <th>
+                    <p-columnFilter field="withdraw_type" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="withdrawList"
+                                (onChange)="filter($event.value)" placeholder="Select Type" appendTo="body"
+                                [showClear]="true">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option.value}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
                 </th>
             </tr>
         </ng-template>
@@ -113,7 +128,10 @@
                         </button>
                     </mat-menu>
                 </td>
-                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.entry_date_time">
+                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.withdraw_ref_no">
+                    {{(element.withdraw_ref_no) || '-'}}
+                </td>
+                <td>
                     {{(element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                 </td>
                 <td class="text-right">
@@ -132,15 +150,17 @@
                         [ngClass]="element.bank_audit ? 'bg-green-500' : 'bg-red-500'"></div>
 
                     <span class=" truncate cursor-pointer border-b border-gray-500 "
-                        (click)="element.account_number && element.account_number.trim() != '-' ? bankDetails(element) : null">{{element.account_number
-                        || '-'}}</span>
+                        (click)="element.account_number && element.account_number.trim() != '-' ? bankDetails(element) : null">{{element.account_number || '-'}} - {{element.bank_name}}</span>
+                </td>
+                <td>
+                    {{element.withdraw_type || '-'}}
                 </td>
             </tr>
         </ng-template>
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="6" class="text-center font-semibold text-lg">
+                <td colspan="8" class="text-center font-semibold text-lg">
                     {{getNodataTextRejected()}}
                 </td>
             </tr>

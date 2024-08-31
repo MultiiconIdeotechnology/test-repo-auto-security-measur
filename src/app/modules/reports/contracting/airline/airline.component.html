@@ -20,11 +20,13 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'">
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
-            <button class="ml-4" mat-flat-button [disabled]="loading" (click)="refreshItems()" [color]="'primary'">
+            <button class="ml-4" mat-flat-button [disabled]="loading" (click)="refreshItems()" [color]="'primary'" matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -35,250 +37,250 @@
         </div>
     </div>
 
-    
+
     <!-- 0 -->
-    <div class="overflow-auto flex flex-col rounded-b-lg"  *ngIf="this.airlineFilter.Type == 'Month Wise' && (this.airlineFilter.status == 'Confirmed Count' || this.airlineFilter.status == 'Failed Count')">
-            <div class="flex flex-col overflow-auto max-w-full rounded-b-lg">
-                <table mat-table [dataSource]="dataSource" class="border-collapse border sale-tab" matSort
-                    matSortDisableClear matSortDirection="desc" matSortActive="may" (matSortChange)="refreshItems()">
-                    <ng-container matColumnDef="company_name">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-40 max-w-40"
-                            *matHeaderCellDef>
-                            Supplier Name
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-40 max-w-40">
-                            <span
-                                class="white-text px-1 flex items-center truncate min-w-32 rounded-md w-fit text-md font-medium">
-                                <span>{{ element.company_name }}</span>
-                            </span>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md field-blue-bg min-w-26 max-w-26 text-left pl-5"
-                            *matFooterCellDef>
-                            Total
-                        </th>
-                    </ng-container>
+    <div class="overflow-auto flex flex-col rounded-b-lg"
+        *ngIf="this.airlineFilter.Type == 'Month Wise' && (this.airlineFilter.status == 'Confirmed Count' || this.airlineFilter.status == 'Failed Count')">
+        <div class="flex flex-col overflow-auto max-w-full rounded-b-lg">
+            <table mat-table [dataSource]="dataSource" class="border-collapse border sale-tab" matSort
+                matSortDisableClear matSortDirection="desc" matSortActive="may" (matSortChange)="refreshItems()">
+                <ng-container matColumnDef="company_name">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-40 max-w-40"
+                        *matHeaderCellDef>
+                        Supplier Name
+                    </th>
+                    <td mat-cell *matCellDef="let element" class=" min-w-40 max-w-40">
+                        <span
+                            class="white-text px-1 flex items-center truncate min-w-32 rounded-md w-fit text-md font-medium">
+                            <span>{{ element.company_name }}</span>
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md field-blue-bg min-w-26 max-w-26 text-left pl-5"
+                        *matFooterCellDef>
+                        Total
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="jan">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md  justify-center field-blue-bg min-w-26 max-w-26" *matHeaderCellDef>
-                            <span class="justify-center">Jan</span>
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26">
-                            <span
-                                class="white-text px-1 flex items-center min-w-20 rounded-md w-fit text-md font-medium"
-                                (click)="info(element, 1)">
-                                <span>{{ element.jan ?? ' - ' }} ({{ element.jan_per ? element.jan_per.toFixed(2) ?? '0'
-                                    :
-                                    element.jan_per ?? '0'}} %)</span>
-                            </span>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.jan}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="jan">
+                    <th mat-header-cell mat-sort-header
+                        class="font-bold text-md  justify-center field-blue-bg min-w-26 max-w-26" *matHeaderCellDef>
+                        <span class="justify-center">Jan</span>
+                    </th>
+                    <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26">
+                        <span class="text-md font-medium">
+                            <span class="cursor-pointer" (click)="info(element, 1)">{{ element.jan ?? ' - ' }} ({{
+                                element.jan_per ? element.jan_per.toFixed(2) ?? '0'
+                                :
+                                element.jan_per ?? '0'}} %)</span>
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.jan}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="feb">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Feb
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26 cursor-pointer">
-                            <p class="text-md font-medium truncate pr-1 cursor-pointer" [matTooltip]="element.feb"
-                            (click)="info(element, 2)">
-                                {{ element.feb ?? ' - ' }} ({{ element.feb_per ? element.feb_per.toFixed(2) ?? '0' :
-                                element.feb_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.feb}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="feb">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Feb
+                    </th>
+                    <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26 ">
+                        <span class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 2)">
+                            {{ element.feb ?? ' - ' }} ({{ element.feb_per ? element.feb_per.toFixed(2) ?? '0' :
+                            element.feb_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.feb}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="mar">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Mar
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26 cursor-pointer">
-                            <p class="text-md font-medium truncate pr-1 cursor-pointer" [matTooltip]="element.mar" (click)="info(element, 3)">
-                                {{ element.mar ?? ' - ' }} ({{ element.mar_per ? element.mar_per.toFixed(2) ?? '0' :
-                                element.mar_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.mar}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="mar">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Mar
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26 ">
+                        <span class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 3)">
+                            {{ element.mar ?? ' - ' }} ({{ element.mar_per ? element.mar_per.toFixed(2) ?? '0' :
+                            element.mar_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.mar}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="apr">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Apr
-                        </th>
-                        <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26">
-                            <p class="text-md font-medium pr-1 truncate" [matTooltip]="element.apr" (click)="info(element, 4)">
-                                {{ element.apr ?? ' - ' }} ({{ element.apr_per ? element.apr_per.toFixed(2) ?? '0' :
-                                element.apr_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.apr}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="apr">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Apr
+                    </th>
+                    <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26">
+                        <span class="text-md font-medium pr-1 truncate cursor-pointer" (click)="info(element, 4)">
+                            {{ element.apr ?? ' - ' }} ({{ element.apr_per ? element.apr_per.toFixed(2) ?? '0' :
+                            element.apr_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.apr}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="may">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-28 max-w-28"
-                            *matHeaderCellDef>
-                            May
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-28 max-w-28">
-                            <p class="text-md font-medium truncate pr-1" [matTooltip]="element.may" (click)="info(element, 5)">
-                                {{ element.may ?? ' - ' }} ({{ element.may_per ? element.may_per.toFixed(2) ?? '0' :
-                                element.may_per ?? '0' }} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.may}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="may">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-28 max-w-28"
+                        *matHeaderCellDef>
+                        May
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-28 max-w-28">
+                        <span class="text-md font-medium truncate pr-1 cursor-pointer
+                        " (click)="info(element, 5)">
+                            {{ element.may ?? ' - ' }} ({{ element.may_per ? element.may_per.toFixed(2) ?? '0' :
+                            element.may_per ?? '0' }} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.may}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="jun">
-                        <th mat-header-cell mat-sort-header
-                            class="font-bold text-md field-blue-bg min-w-26 max-w-26 mat-header-right-view"
-                            *matHeaderCellDef>
-                            Jun
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
-                            <p class="text-md font-medium" (click)="info(element, 6)" >
-                                {{ element.jun ?? ' - ' }} ({{ element.jun_per ? element.jun_per.toFixed(2) ?? '0' :
-                                element.jun_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.jun}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="jun">
+                    <th mat-header-cell mat-sort-header
+                        class="font-bold text-md field-blue-bg min-w-26 max-w-26 mat-header-right-view"
+                        *matHeaderCellDef>
+                        Jun
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
+                        <span class="text-md font-medium truncate cursor-pointer" (click)="info(element, 6)">
+                            {{ element.jun ?? ' - ' }} ({{ element.jun_per ? element.jun_per.toFixed(2) ?? '0' :
+                            element.jun_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.jun}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="jul">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Jul
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
-                            <p class="text-md font-medium" (click)="info(element, 7)">
-                                {{ element.jul ?? ' - ' }} ({{ element.jul_per ? element.jul_per.toFixed(2) ?? '0' :
-                                element.jul_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.jul}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="jul">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Jul
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
+                        <span class="text-md font-medium truncate cursor-pointer" (click)="info(element, 7)">
+                            {{ element.jul ?? ' - ' }} ({{ element.jul_per ? element.jul_per.toFixed(2) ?? '0' :
+                            element.jul_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.jul}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="aug">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Aug
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
-                            <p class="text-md font-medium" (click)="info(element, 8)">
-                                {{ element.aug ?? ' - ' }} ({{ element.aug_per ? element.aug_per.toFixed(2) ?? '0' :
-                                element.aug_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.aug}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="aug">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Aug
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
+                        <span class="text-md font-medium truncate cursor-pointer" (click)="info(element, 8)">
+                            {{ element.aug ?? ' - ' }} ({{ element.aug_per ? element.aug_per.toFixed(2) ?? '0' :
+                            element.aug_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.aug}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="sep">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Sep
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
-                            <p class="text-md font-medium" (click)="info(element, 9)">
-                                {{ element.sep ?? ' - ' }} ({{ element.sep_per ? element.sep_per.toFixed(2) ?? '0' :
-                                element.sep_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.sep}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="sep">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Sep
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
+                        <span class="text-md font-medium truncate cursor-pointer" (click)="info(element, 9)">
+                            {{ element.sep ?? ' - ' }} ({{ element.sep_per ? element.sep_per.toFixed(2) ?? '0' :
+                            element.sep_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.sep}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="oct">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Oct
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
-                            <p class="text-md font-medium" (click)="info(element, 10)">
-                                {{ element.oct ?? ' - ' }} ({{ element.oct_per ? element.oct_per.toFixed(2) ?? '0' :
-                                element.oct_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.oct}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="oct">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Oct
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
+                        <span class="text-md font-medium truncate cursor-pointer" (click)="info(element, 10)">
+                            {{ element.oct ?? ' - ' }} ({{ element.oct_per ? element.oct_per.toFixed(2) ?? '0' :
+                            element.oct_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.oct}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="nov">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md  field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Nov
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
-                            <p class="text-md font-medium" (click)="info(element, 11)">
-                                {{ element.nov ?? ' - ' }} ({{ element.nov_per ? element.nov_per.toFixed(2) ?? '0' :
-                                element.nov_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.nov}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="nov">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md  field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Nov
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
+                        <span class="text-md font-medium truncate cursor-pointer" (click)="info(element, 11)">
+                            {{ element.nov ?? ' - ' }} ({{ element.nov_per ? element.nov_per.toFixed(2) ?? '0' :
+                            element.nov_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.nov}}
+                    </th>
+                </ng-container>
 
-                    <ng-container matColumnDef="dec">
-                        <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-26 max-w-26"
-                            *matHeaderCellDef>
-                            Dec
-                        </th>
-                        <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
-                            <p class="text-md font-medium" (click)="info(element, 12)">
-                                {{ element.dec ?? ' - ' }} ({{ element.dec_per ? element.dec_per.toFixed(2) ?? '0' :
-                                element.dec_per ?? '0'}} %)
-                            </p>
-                        </td>
-                        <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
-                            *matFooterCellDef>
-                            {{monthTotal?.dec}}
-                        </th>
-                    </ng-container>
+                <ng-container matColumnDef="dec">
+                    <th mat-header-cell mat-sort-header class="font-bold text-md   field-blue-bg min-w-26 max-w-26"
+                        *matHeaderCellDef>
+                        Dec
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26">
+                        <span class="text-md font-medium truncate cursor-pointer" (click)="info(element, 12)">
+                            {{ element.dec ?? ' - ' }} ({{ element.dec_per ? element.dec_per.toFixed(2) ?? '0' :
+                            element.dec_per ?? '0'}} %)
+                        </span>
+                    </td>
+                    <th mat-footer-cell class="font-bold text-md text-left pl-5 field-blue-bg min-w-26 max-w-26"
+                        *matFooterCellDef>
+                        {{monthTotal?.dec}}
+                    </th>
+                </ng-container>
 
-                    <tr class="h-9 min-h-9 sticky top-0 z-10" mat-header-row *matHeaderRowDef="columns; sticky: true">
-                    </tr>
-                    <tr class="h-9 min-h-9 sticky bottom-0 text-left pl-5 z-10" mat-footer-row
-                        *matFooterRowDef="columns; sticky: true"></tr>
-                    <tr class="h-9 border-0" mat-row *matRowDef="let row; columns: columns"></tr>
-                </table>
+                <tr class="h-9 min-h-9 sticky top-0 z-10" mat-header-row *matHeaderRowDef="columns; sticky: true">
+                </tr>
+                <tr class="h-9 min-h-9 sticky bottom-0 text-left pl-5 z-10" mat-footer-row
+                    *matFooterRowDef="columns; sticky: true"></tr>
+                <tr class="h-9 border-0" mat-row *matRowDef="let row; columns: columns"></tr>
+            </table>
+        </div>
+        <div *ngIf="dataSource.filteredData.length <= 0">
+            <div class="p-8 sm:p-16  text-3xl tracking-tight text-center pt-20">
+                {{getNodataText()}}
             </div>
-            <div *ngIf="dataSource.filteredData.length <= 0">
-                <div class="p-8 sm:p-16  text-3xl tracking-tight text-center pt-20">
-                    {{getNodataText()}}
-                </div>
-            </div>
+        </div>
         <mat-paginator class="absolute z-10  w-full bottom-0 border-t dark:bg-gray-900 rounded-lg" #paginator
             [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10" (page)="refreshItems()" showFirstLastButtons>
         </mat-paginator>
@@ -862,7 +864,8 @@
     </div>
 
     <!-- 3 -->
-    <div class="overflow-auto flex flex-col rounded-b-lg" *ngIf="this.airlineFilter.status == 'Pax Count' && this.airlineFilter.Type == 'Month Wise'">
+    <div class="overflow-auto flex flex-col rounded-b-lg"
+        *ngIf="this.airlineFilter.status == 'Pax Count' && this.airlineFilter.Type == 'Month Wise'">
         <div class="flex flex-col overflow-auto max-w-full rounded-b-lg">
             <table mat-table [dataSource]="dataSource3" class="border-collapse border sale-tab" matSort
                 matSortDisableClear matSortDirection="desc" matSortActive="may" (matSortChange)="refreshItems3()">
@@ -1122,7 +1125,8 @@
                         <span class="justify-center">Day 1</span>
                     </th>
                     <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26 cursor-pointer">
-                        <p class="text-md font-medium truncate pr-1 cursor-pointer" [matTooltip]="element.day1" (click)="info(element, 1)">
+                        <p class="text-md font-medium truncate pr-1 cursor-pointer" [matTooltip]="element.day1"
+                            (click)="info(element, 1)">
                             {{ element.day1 ?? ' - ' }}
                         </p>
                     </td>
@@ -1138,7 +1142,8 @@
                         Day 2
                     </th>
                     <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26 cursor-pointer">
-                        <p class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 2)" [matTooltip]="element.day2">
+                        <p class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 2)"
+                            [matTooltip]="element.day2">
                             {{ element.day2 ?? ' - ' }}
                         </p>
                     </td>
@@ -1154,7 +1159,8 @@
                         Day 3
                     </th>
                     <td mat-cell *matCellDef="let element" class="min-w-26 max-w-26 cursor-pointer">
-                        <p class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 3)" [matTooltip]="element.day3">
+                        <p class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 3)"
+                            [matTooltip]="element.day3">
                             {{ element.day3 ?? ' - ' }}
                         </p>
                     </td>
@@ -1170,7 +1176,8 @@
                         Day 4
                     </th>
                     <td mat-cell *matCellDef="let element" class=" min-w-26 max-w-26">
-                        <p class="text-md font-medium pr-1 truncate cursor-pointer" (click)="info(element, 4)" [matTooltip]="element.day4">
+                        <p class="text-md font-medium pr-1 truncate cursor-pointer" (click)="info(element, 4)"
+                            [matTooltip]="element.day4">
                             {{ element.day4 ?? ' - ' }}
                         </p>
                     </td>
@@ -1186,7 +1193,8 @@
                         Day 5
                     </th>
                     <td mat-cell *matCellDef="let element" class="min-w-28 max-w-28">
-                        <p class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 5)" [matTooltip]="element.day5">
+                        <p class="text-md font-medium truncate pr-1 cursor-pointer" (click)="info(element, 5)"
+                            [matTooltip]="element.day5">
                             {{ element.day5 ?? ' - ' }}
                         </p>
                     </td>
@@ -1628,7 +1636,8 @@
     </div>
 
     <!-- 4 -->
-    <div class="overflow-auto flex flex-col rounded-b-lg" *ngIf="this.airlineFilter.Type == 'Day Wise' && this.airlineFilter.status == 'Markup'">
+    <div class="overflow-auto flex flex-col rounded-b-lg"
+        *ngIf="this.airlineFilter.Type == 'Day Wise' && this.airlineFilter.status == 'Markup'">
         <div class="flex flex-col overflow-auto max-w-full rounded-b-lg">
             <table mat-table [dataSource]="dataSource4" class="border-collapse border sale-tab" matSort
                 matSortDisableClear matSortDirection="desc" matSortActive="may" (matSortChange)="refreshItems4()">
@@ -2699,7 +2708,8 @@
     </div>
 
     <!-- 6 -->
-    <div class="overflow-auto flex flex-col rounded-b-lg" *ngIf="this.airlineFilter.Type == 'Month Wise' && this.airlineFilter.status == 'Markup'">
+    <div class="overflow-auto flex flex-col rounded-b-lg"
+        *ngIf="this.airlineFilter.Type == 'Month Wise' && this.airlineFilter.status == 'Markup'">
         <div class="flex flex-col overflow-auto max-w-full rounded-b-lg">
             <table mat-table [dataSource]="dataSource6" class="border-collapse border sale-tab" matSort
                 matSortDisableClear matSortDirection="desc" matSortActive="may" (matSortChange)="refreshItems6()">

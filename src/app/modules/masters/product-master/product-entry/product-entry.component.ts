@@ -58,6 +58,7 @@ export class ProductEntryComponent {
     { value: 'Quarterly', viewValue: 'Quarterly' },
     { value: 'Six Months', viewValue: 'Six Months' },
     { value: 'Yearly', viewValue: 'Yearly' },
+    { value: 'One Time', viewValue: 'One Time' },
   ];
 
   constructor(
@@ -83,10 +84,10 @@ export class ProductEntryComponent {
       ItemId: [''],
       one_time_cost: [''],
       product_expiry: [''],
-      amc_amount: [''],
+      // amc_amount: [''],
       max_installment: [''],
       product_remark: [''],
-      is_amc_required: [false]
+      // is_amc_required: [false]
     });
 
     this.formGroup.get('product_expiry').patchValue('Monthly')
@@ -149,7 +150,7 @@ export class ProductEntryComponent {
     // json.ItemId = this.formGroup.get('ItemId').value.map(x => x.item_name)
     json.ItemId = Array.prototype.map.call(json.ItemId, (item: any) => { return item.id; }).join(",");
 
-    json.amc_amount = json.is_amc_required ? json.amc_amount : 0
+    // json.amc_amount = json.is_amc_required ? json.amc_amount : 0
 
     this.productService.create(json).subscribe({
       next: () => {

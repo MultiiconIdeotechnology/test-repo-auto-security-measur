@@ -26,30 +26,36 @@ import { AppConfig } from 'app/config/app-config';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { CrmService } from 'app/services/crm.service';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
+import { EntityService } from 'app/services/entity.service';
+import { agentPermissions, messages, Security } from 'app/security';
+import { PurchaseProductEntrySettingsComponent } from "../../../crm/agent/purchase-product-entry-settings/purchase-product-entry-settings.component";
+import { CRMSalesReturnRightComponent } from "../../../crm/agent/sales-return-right/sales-return-right.component";
 
 @Component({
     selector: 'app-product',
     standalone: true,
     imports: [
-        CommonModule,
-        NgIf,
-        NgFor,
-        NgClass,
-        DatePipe,
-        RouterOutlet,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatTableModule,
-        MatFormFieldModule,
-        MatProgressSpinnerModule,
-        MatTooltipModule,
-        MatSortModule,
-        MatPaginatorModule,
-        MatMenuModule,
-        MatDividerModule
-    ],
+    CommonModule,
+    NgIf,
+    NgFor,
+    NgClass,
+    DatePipe,
+    RouterOutlet,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatDividerModule,
+    PurchaseProductEntrySettingsComponent,
+    CRMSalesReturnRightComponent
+],
     templateUrl: './product.component.html',
     styleUrls: ['./product.component.scss']
 })
@@ -73,10 +79,9 @@ export class ProductComponent {
         'itemCount',
         'count',
         'product_status',
-        'is_payment_due',
+        'purchase_amount',
+        'due_Amount',
         'start_integration',
-        'acivation_date',
-        'expiry_date',
         'entry_date_time',
     ];
 
@@ -93,6 +98,7 @@ export class ProductComponent {
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
         private crmService: CrmService,
+        private entityService: EntityService,
     ) {
 
     }
@@ -147,14 +153,158 @@ export class ProductComponent {
         if (status == 'Pending') {
             return 'text-yellow-600';
         } else if (status == 'Inprocess') {
+            return 'text-green-600';
+        } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else if (status == 'Expired') {
-            return 'text-red-600';
-        } else if (status == 'Cancelled') {
+        } else if (status == 'Cancel' || status == 'Sales Return' || status == 'Expired' || status == 'Block' || status == 'Cancelled') {
             return 'text-red-600';
         }
         else {
             return '';
         }
+    }
+
+    editProduct(record) {
+        this.entityService.raiseproductPurchaseCall({ editData: record, editFlag: true })
+    }
+
+    deleteProduct(record) {
+        if (!Security.hasPermission(agentPermissions.deleteProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = 'Delete Purchase product'
+        this.conformationService.open({
+            title: label,
+            message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?'
+        }).afterClosed().subscribe(res => {
+            if (res === 'confirmed') {
+                const json = {
+                    id: record.id
+                }
+                this.crmService.deletePurchaseProduct(json).subscribe({
+                    next: (res) => {
+                        if (res)
+                            this.alertService.showToast('success', "Purchase product has been deleted!", "top-right", true);
+                        this.refreshItems()
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, "top-right", true);
+                    }
+                })
+            }
+        })
+    }
+
+    cancelProduct(record) {
+        if (!Security.hasPermission(agentPermissions.cancelProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = 'Cancel Purchase product';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Do you want to Cancel?',
+                inputBox: 'Remark',
+                customShow: true,
+                dateCustomShow: false
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res?.action === 'confirmed') {
+                    let newJson = {
+                        id: record.id,
+                        cancel_remark: res?.statusRemark ? res?.statusRemark : ""
+                    }
+                    this.crmService.cancelPurchaseProduct(newJson).subscribe({
+                        next: (res) => {
+                            this.alertService.showToast(
+                                'success',
+                                'Purchase product has been cancelled!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems()
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+                    });
+                }
+            });
+    }
+
+    purchaseProductInfo(record): void {
+        // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+        // this.matDialog.open(AgentProductInfoComponent, {
+        //     data: { data: record, agencyName: agencyName, readonly: true, purchase_product: true },
+        //     disableClose: true
+        // });
+    }
+
+    salesReturnProduct(record) {
+        if (!Security.hasPermission(agentPermissions.salesReturnProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        this.entityService.raiseCRMSalesReturnCall({ add: true, data: record })
+    }
+
+    getStartIntegrationColor(data: any): any {
+        if (data?.start_integration == true) {
+            return 'text-green-600';
+        } else if (data?.start_integration == false) {
+            return 'text-red-600';
+        } else {
+            return '';
+        }
+    }
+
+    expiryProduct(record) {
+        if (!Security.hasPermission(agentPermissions.expiryProductPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const label: string = 'Expiry Product';
+        this.conformationService
+            .open({
+                title: label,
+                message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    let payload = {
+                        id: record.id
+                    }
+                    this.crmService.expiryProduct(payload).subscribe({
+                        next: () => {
+                            this.alertService.showToast(
+                                'success',
+                                'Product has been expired!',
+                                'top-right',
+                                true
+                            );
+                            this.refreshItems();
+                        },
+                        error: (err) => {
+                            this.alertService.showToast(
+                                'error',
+                                err,
+                                'top-right',
+                                true
+                            );
+                        },
+
+                    });
+                }
+            });
     }
 }

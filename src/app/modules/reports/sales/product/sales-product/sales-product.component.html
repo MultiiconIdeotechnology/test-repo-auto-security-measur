@@ -26,8 +26,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -37,14 +39,20 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
             <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
-             <!----Export------>
-             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
+            <!----Export------>
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
             </button>
             <mat-menu #menu>
@@ -53,7 +61,6 @@
                     <span>Export Excel</span>
                 </button>
             </mat-menu>
-
         </div>
     </div>
 
@@ -70,8 +77,9 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[145px]  dark:bg-[#1e293b]" pSortableColumn="agent_code" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.agent_code" [ngClass]="{'left-0': !frozenObj?.agent_code}">
+                    <th class="min-w-[145px]  dark:bg-[#1e293b]" pSortableColumn="agent_code" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code"
+                        [ngClass]="{'left-0': !frozenObj?.agent_code}">
                         Agent Code <p-sortIcon field="agent_code" />
                         <span class="float-right" (click)="isFrozenColumn('agent_code');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.agent_code" class="pi pi-lock-open icon-size-3"></i>
@@ -84,16 +92,16 @@
                     <th pSortableColumn="rm" pResizableColumn>
                         RM <p-sortIcon field="rm" />
                     </th>
+                    <th pSortableColumn="Amount" pResizableColumn class="text-right">
+                        Amount <p-sortIcon field="Amount" />
+                    </th>
                     <th pSortableColumn="Due_amount" pResizableColumn class="text-right">
                         Due Amount <p-sortIcon field="Due_amount" />
                     </th>
 
-                    <th pSortableColumn="Amount" pResizableColumn class="text-right">
-                        Amount <p-sortIcon field="Amount" />
-                    </th>
 
                     <ng-container *ngFor="let item of dataList[0]?.itemCodes">
-                        <th>
+                        <th (mouseover)="getToolTip(item.key)" [matTooltip]="selectedToolTip">
                             {{item.key}}
                         </th>
                     </ng-container>
@@ -105,44 +113,33 @@
                             ariaLabel="Filter Agent Code" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency Name"
-                            ariaLabel="Filter Agency Name" /> -->
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                        [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                        (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
-                                        [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                        <ng-template let-agent pTemplate="item">
-                                            <div class="flex align-items-center gap-1">
-                                                <div [value]="agent.id">
-                                                    <div class="m-0">
-                                                        {{agent.code}} - {{agent.agency_name}}
-                                                        <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                    </div>
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                                 </div>
                                             </div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
                         </p-columnFilter>
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="rm" placeholder="Search by RM" ariaLabel="Filter RM" /> -->
-
                         <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                    [options]="employeeList"
-                                    optionLabel="employee_name"
-                                    [(ngModel)]="selectedRM"
-                                    [filter]="true"
-                                    filterBy="employee_name"
-                                    (onFilter)="getEmployeeList($event?.filter)"
-                                    (onChange)="filter($event.value?.employee_name)"
-                                    [showClear]="true"
-                                    appendTo="body"
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="selectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select RM">
                                     <ng-template let-employee pTemplate="item">
                                         <div>{{employee.employee_name}}</div>
@@ -152,12 +149,12 @@
                         </p-columnFilter>
                     </th>
                     <th alignFrozen="left">
-                        <p-columnFilter type="numeric" field="Due_amount" placeholder="Search by Due Amount"
-                            ariaLabel="Filter Due Amount" />
-                    </th>
-                    <th alignFrozen="left">
                         <p-columnFilter type="numeric" field="Amount" placeholder="Search by Amount"
                             ariaLabel="Filter Amount" />
+                    </th>
+                    <th alignFrozen="left">
+                        <p-columnFilter type="numeric" field="Due_amount" placeholder="Search by Due Amount"
+                            ariaLabel="Filter Due Amount" />
                     </th>
                     <ng-container *ngFor="let item of dataList[0]?.itemCodes">
                         <th [pSortableColumn]="item.key">
@@ -173,15 +170,16 @@
                     </td>
                     <td>{{element.agency_name || "-"}}</td>
                     <td>{{element.rm || "-"}}</td>
-                    <td class="text-right">{{element.Due_amount ? element.Due_amount.toFixed(2) : '0'}}</td>
                     <td class="text-right">{{element.Amount ? element.Amount.toFixed(2) : '0'}}</td>
+                    <td class="text-right">{{element.Due_amount ? element.Due_amount.toFixed(2) : '0'}}</td>
                     <!-- <td *ngFor="let item of element.itemCodes">
                         {{(item.value | date:'dd-MM-yyyy') || '-'}}
                     </td> -->
 
                     <!-- border-b border-gray-500  -->
-                    <td  *ngFor="let item of element.itemCodes">
-                        <span (click)="viewData(element, item)" [ngClass]="item?.value ? 'cursor-pointer border-b border-gray-500': null">
+                    <td *ngFor="let item of element.itemCodes">
+                        <span (click)="viewData(element, item)"
+                            [ngClass]="item?.value ? 'cursor-pointer border-b border-gray-500': null">
                             {{(item?.value | date:'dd-MM-yyyy') || "-"}}
                             <!-- {{(item.value )  || "-"}} -->
                         </span>

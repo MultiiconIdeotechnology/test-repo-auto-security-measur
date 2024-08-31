@@ -2,7 +2,7 @@
     <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
         columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
         [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-        [lazy]="true" (onLazyLoad)="refreshItemsAudited($event)" [lazyLoadOnInit]="false" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [lazy]="true" (onLazyLoad)="refreshItemsAudited($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
         [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         [globalFilterFields]="['reference_number', 'request_date_time', 'recharge_for_name', 'recharge_amount','settled_amount','mop','psp_name','psp_ref_number', 'audited_by_name','audited_date_time','user_remark']"
@@ -11,8 +11,8 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn pResizableColumn alignFrozen="left"
-                    pFrozenColumn [frozen]="frozenObj?.reference_number"
+                <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn
+                    pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number"
                     [ngClass]="{'left-0': !frozenObj?.reference_number}">
                     Ref. No <p-sortIcon field="reference_number" />
                     <span class="float-right" (click)="isFrozenColumn('reference_number');$event.stopPropagation()">
@@ -23,8 +23,14 @@
                 <th pSortableColumn="request_date_time" pResizableColumn>
                     Request <p-sortIcon field="request_date_time" />
                 </th>
+                <th pSortableColumn="agent_code" pResizableColumn>
+                    Agent Code <p-sortIcon field="agent_code" />
+                </th>
                 <th pSortableColumn="recharge_for_name" pResizableColumn>
                     Agent <p-sortIcon field="recharge_for_name" />
+                </th>
+                <th pSortableColumn="currency" pResizableColumn>
+                    Currency <p-sortIcon field="currency" />
                 </th>
                 <th class="text-right" pSortableColumn="recharge_amount" pResizableColumn>
                     Amount <p-sortIcon field="recharge_amount" />
@@ -55,8 +61,8 @@
             <tr *ngIf="isFilterShowAudit">
                 <th class=" left-[-1px]" pFrozenColumn></th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">
-                    <p-columnFilter type="text" matchMode="contains" field="reference_number" placeholder="Search by Reference Number"
-                        ariaLabel="Filter Reference Number" />
+                    <p-columnFilter type="text" matchMode="contains" field="reference_number"
+                        placeholder="Search by Reference Number" ariaLabel="Filter Reference Number" />
                 </th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.request_date_time">
                     <!-- <p-columnFilter field="request_date_time" type="date">
@@ -67,33 +73,40 @@
                     </p-columnFilter> -->
                     <p-columnFilter field="request_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar
-                                    selectionMode="range"
-                                    [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)"
-                                    [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy"
-                                    appendTo="body"
-                                    placeholder="Search by Date Range">
+                            <p-calendar selectionMode="range" [ngModel]="value"
+                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                             </p-calendar>
                         </ng-template>
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter class="searchableDropdown" field="recharge_for_id" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
+                        ariaLabel="Filter Agent Code" />
+                </th>
+                <th>
+                    <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals"
+                        [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
-                                optionLabel="agency_name" [filter]="true" filterBy="agency_name"
-                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value?.id)"
+                                optionLabel="agent_info" [filter]="true" filterBy="agent_info"
+                                (onFilter)="getAgentList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a Agent">
                                 <ng-template let-employee pTemplate="item">
-                                    <div class="flex align-items-center gap-2">
-                                        <div [value]="employee.id">{{ employee.agency_name }}</div>
+                                    <div class="flex align-items-center gap-1">
+                                        <div class="m-0">
+                                            {{employee.code}} - {{employee.agency_name}}
+                                            <div class="text-sm text-slate-500">{{employee.email_address}}</div>
+                                        </div>
                                     </div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
                     </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="currency" placeholder="Search by Currency"
+                        ariaLabel="Filter Currency" />
                 </th>
                 <th>
                     <p-columnFilter type="numeric" field="recharge_amount" placeholder="Search by Recharge Amount"
@@ -108,11 +121,11 @@
                     <p-columnFilter class="searchableDropdown" field="mop" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="mopList" [(ngModel)]="selectedMop"
-                                optionLabel="mop" [filter]="true" filterBy="mop"
-                                (onFilter)="getMopList($event?.filter)" (onChange)="filter($event.value?.mop)"
-                                [showClear]="true" appendTo="body" placeholder="Select a MOP">
+                                optionLabel="mop" [filter]="true" filterBy="mop" (onFilter)="getMopList($event?.filter)"
+                                (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                placeholder="Select a MOP">
                                 <ng-template let-option pTemplate="item">
-                                        <div >{{ option.mop }}</div>
+                                    <div>{{ option.mop }}</div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
@@ -124,31 +137,34 @@
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="pspList" [(ngModel)]="selectedPsp"
                                 optionLabel="provider" [filter]="true" filterBy="provider"
-                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value?.provider)"
+                                (onFilter)="getPspList($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select a PSP">
                                 <ng-template let-option pTemplate="item">
-                                        <div >{{ option.provider }}</div>
+                                    <div>{{ option.provider }}</div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="psp_ref_number" placeholder="Search by PSP Ref Name" ariaLabel="Filter PSP Ref Name" />
+                    <p-columnFilter type="text" matchMode="contains" field="psp_ref_number"
+                        placeholder="Search by PSP Ref Name" ariaLabel="Filter PSP Ref Name" />
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="audited_by_name" placeholder="Search by Audited By" ariaLabel="Filter Audited By" />
+                    <p-columnFilter type="text" matchMode="contains" field="audited_by_name"
+                        placeholder="Search by Audited By" ariaLabel="Filter Audited By" />
                 </th>
                 <th>
                     <p-columnFilter field="audited_date_time" type="date">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                placeholder="Search by Audit Date"></p-calendar>
+                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                appendTo="body" placeholder="Search by Audit Date"></p-calendar>
                         </ng-template>
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="user_remark" placeholder="Search by User Remark" ariaLabel="Filter User Remark" />
+                    <p-columnFilter type="text" matchMode="contains" field="user_remark"
+                        placeholder="Search by User Remark" ariaLabel="Filter User Remark" />
                 </th>
             </tr>
         </ng-template>
@@ -174,14 +190,20 @@
                     {{(element.request_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                 </td>
                 <td>
+                    {{element.agent_code || '-'}}
+                </td>
+                <td>
                     {{element.recharge_for_name || '-'}}
+                </td>
+                <td>
+                    {{element.currency || '-'}}
                 </td>
                 <td class="text-right">
                     {{element.recharge_amount || '-'}}
                 </td>
                 <td class="text-right">
                     {{element.settled_amount || '-'}}
-                </td> 
+                </td>
                 <td>
                     {{element.mop || '-'}}
                 </td>
@@ -205,7 +227,7 @@
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="12" class="text-center font-semibold text-lg">
+                <td colspan="14" class="text-center font-semibold text-lg">
                     {{getNodataTextAudited()}}
                 </td>
             </tr>

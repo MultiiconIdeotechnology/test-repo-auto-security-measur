@@ -208,7 +208,8 @@ export class PurchaseComponent extends BaseListingComponent implements AfterView
     this.matDialog.open(DownloadDocumentComponent, {
       data: { data: data, Obs_id: this.id, isInvoiceGenerated: this.isInvoiceGenerated }
     }).afterClosed().subscribe(x => {
-      this.refreshItems();
+      if (x)
+        this.refreshItems();
     })
     // }
   }
@@ -221,7 +222,8 @@ export class PurchaseComponent extends BaseListingComponent implements AfterView
     this.matDialog.open(DownloadDocumentComponent, {
       data: { data: data, Obs_id: this.id, isInvoiceGenerated: this.isInvoiceGenerated }
     }).afterClosed().subscribe(x => {
-      this.refreshItems();
+      if (x)
+        this.refreshItems();
     })
     // }
   }

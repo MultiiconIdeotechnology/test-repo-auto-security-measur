@@ -1,4 +1,4 @@
-import { messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,9 @@ import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { Linq } from 'app/utils/linq';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-commission-expense',
@@ -39,13 +42,16 @@ import { AgentService } from 'app/services/agent.service';
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class CommissionExpenseComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.commissionExpense;
+    filter_table_name = filter_module_name.commission_expense;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     tablesTotal: any;
     total = 0;
@@ -58,138 +64,14 @@ export class CommissionExpenseComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    selectedAgent!:string
-
-    columns = [
-        {
-            key: 'booking_date',
-            name: 'Booking Date',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'booking_ref_no',
-            name: 'Booking Ref. No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agent_code',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'pnr',
-            name: 'PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'gds_pnr',
-            name: 'GSD PNR',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'particular',
-            name: 'Particular',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'commission',
-            name: 'Commission',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'tds',
-            name: 'TDS',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-        ,{
-            key: 'net_commission',
-            name: 'Net Commission',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
-    ];
-
-
+    selectedAgent!: any;
     cols: Column[];
     isFilterShow: boolean = false;
 
     constructor(
         private accountService: AccountService,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.commissionExpense);
         // this.cols = this.columns.map((x) => x.key);
@@ -197,23 +79,67 @@ export class CommissionExpenseComponent
         this.sortColumn = 'booking_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
         this.getAgent('');
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['booking_date']?.value != null && resp['table_config']['booking_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['booking_date']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            if (filterData['table_config']['booking_date']?.value != null && filterData['table_config']['booking_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+               this.agentList[i].id_by_value = this.agentList[i].agency_name;
+
             }
         })
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.accountService.getcommissionExpense(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -234,10 +160,6 @@ export class CommissionExpenseComponent
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
-    }
-
-    ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
     }
 
     viewData(record): void {
@@ -280,12 +202,12 @@ export class CommissionExpenseComponent
         filterReq['Take'] = this.totalRecords;
         this.accountService.getcommissionExpense(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.booking_date = DateTime.fromISO(dt.booking_date).toFormat('dd-MM-yyyy hh:mm a');
+                dt.booking_date = dt.booking_date ? DateTime.fromISO(dt.booking_date).toFormat('dd-MM-yyyy hh:mm a') : '';
             }
             Excel.export(
                 'Commission Expense',
                 [
-                    { header: 'Booking Date', property: 'booking_date'},
+                    { header: 'Booking Date', property: 'booking_date' },
                     { header: 'Booking Ref. No.', property: 'booking_ref_no' },
                     { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agency Name', property: 'agency_name' },
@@ -301,5 +223,14 @@ export class CommissionExpenseComponent
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]
             );
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, agentPermissions, messages, module_name, partnerPurchaseProductPermissions } from 'app/security';
+import { Security, agentPermissions, filter_module_name, messages, module_name, partnerPurchaseProductPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
@@ -33,17 +33,13 @@ import { Linq } from 'app/utils/linq';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-partners',
     templateUrl: './partners.component.html',
-    styles: [
-        `
-        .tbl-grid {
-            grid-template-columns: 40px 60px 90px 90px 300px 120px 120px 145px;
-        }
-    `,
-    ],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -78,147 +74,98 @@ import { AgentService } from 'app/services/agent.service';
     ]
 })
 export class PartnersComponent extends BaseListingComponent{
-    @Input() isFilterShowPartners: boolean
+    @Input() isFilterShowPartners: boolean;
+    @Output() isFilterShowPartnersChange = new EventEmitter<boolean>();
     @Input() dropdownListObj:{};
+    @ViewChild('tabGroup') tabGroup;
+    @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
+    @ViewChild(MatSort) public _sortArchive: MatSort;
 
+    Mainmodule: any;
+    module_name = module_name.crmagent;
+    filter_table_name = filter_module_name.agents_partners;
+    private settingsUpdatedSubscription: Subscription;
     cols = [];
     total = 0;
-
-    columns = [
-        {
-            key: 'callCount',
-            name: 'Calls',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-            callAction: true
-        },
-        {
-            key: 'status',
-            name: 'Status',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-            toColor: true
-        },
-        {
-            key: 'acCode',
-            name: 'AC Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agencyName',
-            name: 'Agency',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        // {
-        //     key: 'callPurpose',
-        //     name: 'Purpose',
-        //     is_date: false,
-        //     date_formate: '',
-        //     is_sortable: true,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: '',
-        //     indicator: false,
-        //     tooltip: true,
-        // },
-        {
-            key: 'createdDate',
-            name: 'Created Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'latestDate',
-            name: 'Last Login',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-            lastLogin: true
-        },
-        {
-            key: 'lastTransaction',
-            name: 'Last Transaction',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-    ]
     dataList: any;
     appConfig = AppConfig;
     isLoading: any;
     searchInputControlpartners = new FormControl('');
-    @ViewChild('tabGroup') tabGroup;
-    @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
-    @ViewChild(MatSort) public _sortArchive: MatSort;
     statusList = [ 'New', 'Active', 'Inactive', 'Dormant'];
 
-    Mainmodule: any;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
     agentList: any[] = [];
-    selectedAgent!: string;
-    module_name = module_name.crmagent
+    selectedAgent: any = {};
     data: any
     filter: any = {}
 
-    ngOnInit(): void {
-        // this.searchInputControlpartners.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginatorArchive);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
+    constructor(
+        private crmService: CrmService,
+        private matDialog: MatDialog,
+        private agentService: AgentService,
+        private conformationService: FuseConfirmationService,
+        public _filterService: CommonFilterService
+    ) {
+        super(module_name.crmagent);
+        this.key = this.module_name;
+        this.sortColumn = 'createdDate';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
+    }
 
-        this.searchInputControlpartners.valueChanges
-        .subscribe(() => {
-          // GridUtils.resetPaginator(this._paginatorPending);
-        //   this.refreshItems();
+    ngOnInit(): void {
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if(!match) {
+               this.agentList.push(this.selectedAgent);
+            }
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['createdDate'].value) {
+                resp['table_config']['createdDate'].value = new Date(resp['table_config']['createdDate'].value);
+            }
+            if (resp['table_config']['lastTransaction'].value) {
+                resp['table_config']['lastTransaction'].value = new Date(resp['table_config']['lastTransaction'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowPartners = true;
+            this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
+            this.primengTable._filter();
         });
-       
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowPartners = true;
+            this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agencyName']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
+            if (filterData['table_config']['createdDate'].value) {
+                filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
+            }
+            if (filterData['table_config']['lastTransaction'].value) {
+                filterData['table_config']['lastTransaction'].value = new Date(filterData['table_config']['lastTransaction'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     ngOnChanges(){
@@ -226,11 +173,12 @@ export class PartnersComponent extends BaseListingComponent{
     }
 
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
             }
         })
     }
@@ -249,20 +197,6 @@ export class PartnersComponent extends BaseListingComponent{
         }
     }
 
-    constructor(
-        private crmService: CrmService,
-        private matDialog: MatDialog,
-        private agentService: AgentService,
-        private conformationService: FuseConfirmationService,
-    ) {
-        super(module_name.crmagent);
-        this.cols = this.columns.map(x => x.key);
-        this.key = this.module_name;
-        this.sortColumn = 'createdDate';
-        this.sortDirection = 'desc';
-        this.Mainmodule = this;
-    }
-
     getNodataText(): string {
         if (this.isLoading)
             return 'Loading...';
@@ -270,7 +204,6 @@ export class PartnersComponent extends BaseListingComponent{
             return `no search results found for \'${this.searchInputControlpartners.value}\'.`;
         else return 'No data to display';
     }
-
 
     getPriorityIndicatorClass(priority: string): string {
         if (priority == 'High') {
@@ -286,17 +219,11 @@ export class PartnersComponent extends BaseListingComponent{
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlpartners.value;
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginatorArchive,
-        //     this._sortArchive,
-        //     this.searchInputControlpartners.value
-        // );
         this.crmService.getPartnerAgentList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
                 this.totalRecords = data.total;
-                // this._paginatorArchive.length = data.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -476,5 +403,13 @@ export class PartnersComponent extends BaseListingComponent{
                     });
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

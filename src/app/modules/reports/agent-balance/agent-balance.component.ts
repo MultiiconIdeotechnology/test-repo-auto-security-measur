@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { Excel } from 'app/utils/export/excel';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
@@ -28,17 +28,14 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { AgentBalanceService } from 'app/services/agent-balance.service';
 import { RefferralService } from 'app/services/referral.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 
 @Component({
     selector: 'app-agent-balance',
     templateUrl: './agent-balance.component.html',
     styleUrls: ['./agent-balance.component.scss'],
-    styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 240px 100px 110px 110px 180px 130px 200px 180px;
-  }
-  `],
     standalone: true,
     imports: [
         NgIf,
@@ -72,54 +69,106 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
     dataList = [];
     total = 0;
     module_name = module_name.agentBalance;
+    filter_table_name = filter_module_name.agent_balance_register;
+    private settingsUpdatedSubscription: Subscription;
     isFilterShow: boolean = false;
     agentList: any[] = [];
     employeeList: any[] = [];
-    selectedRM!: string;
+    selectedRM: any;
+    selectedAgent: any;
 
     constructor(
         private agentBalanceService: AgentBalanceService,
         private agentService: AgentService,
         private refferralService: RefferralService,
+        public _filterService: CommonFilterService
         // private clipboard: Clipboard
     ) {
         super(module_name.agentBalance)
-        // this.cols = this.columns.map(x => x.key);
         this.key = 'payment_request_date';
         this.sortColumn = 'last_top_up';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
         this.getAgent('');
-        this.getEmployeeList("")
+        this.getEmployeeList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agent_name']?.value;
+            this.selectedRM = resp['table_config']['rm']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['last_top_up'].value) {
+                this._filterService.rangeDateConvert(resp['table_config']['last_top_up']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            this.selectedRM = filterData['table_config']['rm']?.value;
+
+            if (filterData['table_config']['last_top_up'].value) {
+                this._filterService.rangeDateConvert(filterData['table_config']['last_top_up']);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     // Api to get the Employee list data
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
+
+            for (let i in this.employeeList) {
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+            }
         });
     }
 
-    columns = [
-        { key: 'agent_name', name: 'Agent', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true, isview: true },
-        { key: 'balance', name: 'Balance', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, iscolor: false, isFix: true },
-        { key: 'credit', name: 'Credit', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true, isFix: true },
-        { key: 'rm', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'mobile', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-        { key: 'email', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'last_top_up', name: 'Last Top-up', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
-    // cols = [];
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+            this.agentList = data;
+
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
+            }
+        })
+    }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
         this.agentBalanceService.getWalletReportList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.dataList = data.data;
-                // this.total = data.total;
                 this.totalRecords = data.total;
                 this.isLoading = false;
             }, error: (err) => {
@@ -127,16 +176,6 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
                 this.isLoading = false
             }
         });
-    }
-
-    getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
-            this.agentList = data;
-
-          for(let i in this.agentList){
-            this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
-          }
-        })
     }
 
     getNodataText(): string {
@@ -168,7 +207,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
 
         this.agentBalanceService.getWalletReportList(req).subscribe(data => {
             for (var dt of data.data) {
-                dt.last_top_up = DateTime.fromISO(dt.last_top_up).toFormat('dd-MM-yyyy hh:mm a')
+                dt.last_top_up = dt.last_top_up ? DateTime.fromISO(dt.last_top_up).toFormat('dd-MM-yyyy hh:mm a') : '';
                 dt.balance = dt.currency + ' ' + dt.balance
             }
             Excel.export(
@@ -184,6 +223,14 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
                 ],
                 data.data, "Agent Balance Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 
 }

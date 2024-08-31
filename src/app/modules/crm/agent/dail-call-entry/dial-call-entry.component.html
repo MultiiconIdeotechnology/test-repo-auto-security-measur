@@ -251,7 +251,7 @@
 
                     <div class="px-[10px] pt-3" *ngIf="this.formGroup.get('is_call_rescheduled').value == true">
                         <div class="flex flex-row w-full">
-                            <mat-form-field class="w-[340px]">
+                            <!-- <mat-form-field class="w-[340px]">
                                 <mat-label
                                     class="text-base text-secondary font-medium dark:text-[#687798]">Assign</mat-label>
                                 <mat-select formControlName="call_assign_to">
@@ -268,7 +268,28 @@
                                         </div>
                                     </mat-option>
                                 </mat-select>
+                            </mat-form-field> -->
+
+                            <mat-form-field class="w-[340px]">
+                                <mat-label
+                                    class="text-base text-secondary font-medium dark:text-[#687798]">Assign</mat-label>
+                                    <mat-label class="text-base font-medium dark:text-[#687798]">Assign</mat-label>
+                                    <mat-select formControlName="call_assign_to">
+                                        <mat-option>
+                                            <ngx-mat-select-search placeholderLabel="Search"
+                                                noEntriesFoundLabel="'no matching agent found'"
+                                                [formControlName]="'assignfilter'">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option *ngFor="let lt of dataList" [value]="lt.id">
+                                            <span>{{ lt.employee_name }}</span>
+                                            <div class="-mt-2">
+                                                <span class="text-secondary text-sm">{{lt.company_email}}</span>
+                                            </div>
+                                        </mat-option>
+                                    </mat-select>
                             </mat-form-field>
+
                             <mat-form-field class="flex-grow w-[180px] pl-2">
                                 <mat-label
                                     class="text-base text-secondary font-medium dark:text-[#687798]">Priority</mat-label>

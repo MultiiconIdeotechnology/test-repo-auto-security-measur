@@ -28,8 +28,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -37,6 +39,12 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -56,10 +64,10 @@
             </button>
 
             <!--- Modal filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="">Filter</span>
-            </button>
+            </button> -->
 
             <!------ Export Excel ------->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
@@ -88,24 +96,26 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[110px] text-center dark:bg-[#1e293b]"  pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.index" [ngClass]="{'left-0': !frozenObj?.index}">
+                    <!-- <th class="min-w-[110px] text-center dark:bg-[#1e293b]" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.index" [ngClass]="{'left-0': !frozenObj?.index}">
                         Invoice
                         <span class="float-right" (click)="isFrozenColumn('index');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.index" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.index" class="pi pi-lock icon-size-3"></i>
                         </span>
-                    </th>
-                    <th class="min-w-[145px]"  pResizableColumn alignFrozen="left" pFrozenColumn
+                    </th> -->
+                    <!-- <th class="min-w-[145px]" pResizableColumn alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.payment_attachment" [ngClass]="{'left-0': !frozenObj?.payment_attachment}">
                         Attachments
-                        <span class="float-right" (click)="isFrozenColumn('payment_attachment');$event.stopPropagation()">
+                        <span class="float-right"
+                            (click)="isFrozenColumn('payment_attachment');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.payment_attachment" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.payment_attachment" class="pi pi-lock icon-size-3"></i>
                         </span>
-                    </th>
-                    <th class="min-w-[145px]" pSortableColumn="receipt_ref_no"  pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.receipt_ref_no" [ngClass]="{'left-0': !frozenObj?.receipt_ref_no}">
+                    </th> -->
+                    <th class="min-w-[145px]" pSortableColumn="receipt_ref_no" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.receipt_ref_no"
+                        [ngClass]="{'left-0': !frozenObj?.receipt_ref_no}">
                         Reference No. <p-sortIcon field="receipt_ref_no" />
                         <span class="float-right" (click)="isFrozenColumn('receipt_ref_no');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.receipt_ref_no" class="pi pi-lock-open icon-size-3"></i>
@@ -155,51 +165,47 @@
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.index"></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_attachment"></th>
+                    <!-- <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.index"></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_attachment"></th> -->
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
-                        <p-columnFilter type="text" matchMode="contains" field="receipt_ref_no" placeholder="Search by Reference No."
-                            ariaLabel="Filter Reference No." />
+                        <p-columnFilter type="text" matchMode="contains" field="receipt_ref_no"
+                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
                     </th>
                     <th>
                         <p-columnFilter field="receipt_status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                        [ngModel]="value"
-                                        [options]="statusList"
-                                        (onChange)="filter($event.value)"
-                                        placeholder="Select Receipt Status"
-                                        [showClear]="true"
-                                        appendTo="body">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Receipt Status"
+                                    [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <p [value]="option.value" >{{option.value}}</p>
+                                        <p [value]="option.value">{{option.value}}</p>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="service_for" placeholder="Search by Receipt For"
-                            ariaLabel="Filter Receipt For" />
+                        <p-columnFilter type="text" matchMode="contains" field="service_for"
+                            placeholder="Search by Receipt For" ariaLabel="Filter Receipt For" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="transaction_ref_no" placeholder="Search by Booking Ref. No"
-                            ariaLabel="Filter Booking Ref. No" />
+                        <p-columnFilter type="text" matchMode="contains" field="transaction_ref_no"
+                            placeholder="Search by Booking Ref. No" ariaLabel="Filter Booking Ref. No" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="payment_currency" placeholder="Search by Currency"
-                            ariaLabel="Filter Currency" />
+                        <p-columnFilter type="text" matchMode="contains" field="payment_currency"
+                            placeholder="Search by Currency" ariaLabel="Filter Currency" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="payment_amount" placeholder="Search by Amount"
                             ariaLabel="Filter Amount" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
+                        <p-columnFilter type="numeric" field="roe" placeholder="Search by ROE" ariaLabel="Filter ROE" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment" placeholder="Search by MOP"
-                            ariaLabel="Filter MOP" />
+                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment"
+                            placeholder="Search by MOP" ariaLabel="Filter MOP" />
                     </th>
                     <th>
                         <!-- <p-columnFilter field="receipt_request_date" type="date">
@@ -211,14 +217,9 @@
                         </p-columnFilter> -->
                         <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar
-                                        selectionMode="range"
-                                        [ngModel]="value"
-                                        (ngModelChange)="onDateRangeChange($event, filter)"
-                                        [readonlyInput]="true"
-                                        dateFormat="dd-mm-yy"
-                                        appendTo="body"
-                                        placeholder="Search by Date Range">
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -226,8 +227,8 @@
                     <th>
                         <p-columnFilter field="audit_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Audited">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Audited">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -240,15 +241,13 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -256,8 +255,14 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th></th>
-                    <th></th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pg_name" placeholder="Search by PG"
+                            ariaLabel="Filter PG" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pg_payment_ref_no"
+                            placeholder="Search by PG Ref. No" ariaLabel="Filter PG Ref. No" />
+                    </th>
                     <!-- <th *ngFor="let col of columns">
                     </th> -->
                 </tr>
@@ -276,7 +281,7 @@
                                 <span style="font-weight: 600">Info</span>
                             </button>
                             <button mat-menu-item (click)="AuditUnaudit(element)"
-                                *ngIf="element['receipt_status'] !== 'Confirmed'">
+                                *ngIf="element['receipt_status'] !== 'Confirmed' && element['receipt_status'] !== 'Rejected'">
                                 <mat-icon class="mat-18">{{
                                     element.is_audited
                                     ? "highlight_off"
@@ -289,7 +294,7 @@
                                     }}</span> -->
                             </button>
                             <button mat-menu-item (click)="Reject(element)"
-                                *ngIf="element['receipt_status'] !== 'Rejected'">
+                                *ngIf="element['receipt_status'] !== 'Confirmed' && element['receipt_status'] !== 'Rejected'">
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600">Reject</span>
                             </button>
@@ -299,9 +304,39 @@
                                     <span style="font-weight: 600">Product</span>
                                 </button>
                             </ng-container>
+                            <button mat-menu-item
+                                (click)="element['isInvoice'] && element['receipt_status'] === 'Confirmed' ? downloadInvoice(element['id']) : null"
+                                [ngClass]="{'text-blue-600 cursor-pointer': element['isInvoice'] && element['receipt_status'] === 'Confirmed',
+                                            'text-blue-500 cursor-not-allowed opacity-20': (!element['isInvoice'] || element['isInvoice'] && element['receipt_status'] !== 'Confirmed')}">
+                                <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
+                                    class="rounded-full cursor-pointer text-blue-600 p-0.5" [matTooltip]="'Download'">
+                                </mat-icon>
+                                <span style="font-weight: 600">Invoice</span>
+                            </button>
+
+                            <button mat-menu-item  [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 
+                                'cursor-not-allowed text-blue-400 opacity-20': !element['proof_attachment']}"
+                                (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])">
+                                <mat-icon [svgIcon]="'attach_file'" class=" mat-18 min-h-[20px] h-[20px] rounded-full"
+                                    [matTooltip]="'Proof Attachment'"
+                                    [attr.disabled]="!element['proof_attachment'] ? true : null">
+                                </mat-icon>
+                                <span style="font-weight: 600">Proof Attachment</span>
+                            </button>
+
+                            <button mat-menu-item
+                                [ngClass]="{'cursor-pointer text-yellow-600': element['payment_attachment'],
+                                 'cursor-not-allowed text-yellow-400 opacity-20': !element['payment_attachment']}"
+                                (click)="!element['payment_attachment'] ? null : downloadProoffile(element['payment_attachment'])">
+                                <mat-icon [svgIcon]="'attach_file'" class="mat-18 min-h-[20px] h-[20px] rounded-full"
+                                    [matTooltip]="'Receipt Attachment'"
+                                    [attr.disabled]="!element['payment_attachment'] ? true : null">
+                                </mat-icon>
+                                <span style="font-weight: 600">Receipt Attachment</span>
+                            </button>
                         </mat-menu>
                     </td>
-                    <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.index">
+                    <!-- <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.index">
                         <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                             class="rounded-full cursor-pointer text-blue-600 p-0.5"
                             [ngClass]="{'text-blue-600 cursor-pointer': element['isInvoice'] && element['receipt_status'] === 'Confirmed',
@@ -309,8 +344,8 @@
                             [matTooltip]="'Download'"
                             (click)="element['isInvoice'] && element['receipt_status'] === 'Confirmed' ? downloadInvoice(element['id']) : null">
                         </mat-icon>
-                    </td>
-                    <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_attachment">
+                    </td> -->
+                    <!-- <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_attachment">
                         <mat-icon [svgIcon]="'attach_file'"
                             [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 'cursor-not-allowed text-blue-400': !element['proof_attachment']}"
                             (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])"
@@ -324,7 +359,7 @@
                             class="w-[6px] h-[6px] rounded-full icon-size-4" [matTooltip]="'Receipt Attachment'"
                             [attr.disabled]="!element['payment_attachment'] ? true : null">
                         </mat-icon>
-                    </td>
+                    </td> -->
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
                         <span [matTooltip]="element['receipt_status']"
                             class="w-2 h-2 inline-block rounded-full mr-[6px]"
@@ -342,7 +377,7 @@
                     <td>
                         {{element.service_for || "-"}}
                     </td>
-                    <td >
+                    <td>
                         <span class="cursor-pointer border-b border-gray-500 " (click)="viewData(element)">
                             {{element.transaction_ref_no || "-"}}
                         </span>
@@ -351,7 +386,8 @@
                         {{element.payment_currency || "-"}}
                     </td>
                     <td class="text-right">
-                        {{(element.payment_amount.toFixed(2) || 0) |  currency: element.payment_currency : 'symbol' : '1.2-2'}}
+                        {{(element.payment_amount.toFixed(2) || 0) | currency: element.payment_currency : 'symbol' :
+                        '1.2-2'}}
                     </td>
                     <td class="text-right">
                         {{element.roe.toFixed(2) || "-"}}

@@ -1,13 +1,12 @@
 import { CdkDropList, CdkDrag, CdkDragPreview, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,32 +21,23 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
-import { FuseConfig, FuseConfigService, Themes } from '@fuse/services/config';
 import { Routes } from 'app/common/const';
+import { JsonFile } from 'app/common/jsonFile';
 import { UserService } from 'app/core/user/user.service';
 import { CityService } from 'app/services/city.service';
 import { CrmService } from 'app/services/crm.service';
 import { DesignationService } from 'app/services/designation.service';
 import { EntityService } from 'app/services/entity.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { DocValidationDTO, CommonUtils } from 'app/utils/commonutils';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { Subject, takeUntil, ReplaySubject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'purchase-product-entry-settings',
     templateUrl: './purchase-product-entry-settings.component.html',
-    styles: [
-        `
-            purchase-product-settings {
-                position: static;
-                display: block;
-                flex: none;
-                width: auto;
-            }
-        `,
-    ],
     standalone: true,
     imports: [
         NgIf,
@@ -80,6 +70,7 @@ import { Subject, takeUntil, ReplaySubject } from 'rxjs';
         FuseDrawerComponent,
         MatDividerModule,
         NgFor,
+        CommonModule,
         MatDatepickerModule,
         MatMenuModule,
         NgxMatSelectSearchModule,
@@ -89,6 +80,8 @@ import { Subject, takeUntil, ReplaySubject } from 'rxjs';
 export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy {
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+    @ViewChild(MatPaginator) public _paginator: MatPaginator;
+    @ViewChild(MatSort) public _sort: MatSort;
 
     readonly: boolean = false;
     record: any = {};
@@ -103,25 +96,17 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     selectedProductList: any;
     installmentsArray = [];
     todayDateTime = new Date();
+    dateBeforeAllow: Date;
     installmentList: number[] = [];
     selectedMaxInstallment: any;
     user: any;
     dataList = [];
-    @ViewChild(MatPaginator) public _paginator: MatPaginator;
-    @ViewChild(MatSort) public _sort: MatSort;
     searchInputControl = new FormControl('');
     productDetail: any;
     productPurchaseMasterId: any;
     productId: any;
     productList: any[] = [];
     isProductInitialChanged: boolean = false;
-
-    config: FuseConfig;
-    layout: string;
-    scheme: 'dark' | 'light';
-    theme: string;
-    themes: Themes;
-
     fieldList: {};
     isEditFlag: any = {};
     editLeadId: any;
@@ -129,6 +114,32 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     editAgentId: any;
     addFlag: any;
     editFlag: any;
+    productPrice: any;
+    proofAttachment: any = false;
+    editproofAttachmentSelectedFile: any;
+    proofAttachmentSelectedFile: any = File;
+    proofAttachjFile: JsonFile;
+    proofAttachmentFlag: boolean = false;
+
+    ngOnInit(): void {
+        this.formGroup = this.builder.group({
+            product: ['', Validators.required],
+            rm_remark: [''],
+            id: [''],
+            price: ['', Validators.required],
+            installments: ['', Validators.required],
+            // installmentsArray: this.formBuilder.array([])
+            installmentsArray: [[]],
+            proofAttachment: ['']
+        });
+
+
+        this._userService.user$
+            .pipe((takeUntil(this._unsubscribeAll)))
+            .subscribe((user: any) => {
+                this.user = user;
+            });
+    }
 
     constructor(
         public builder: FormBuilder,
@@ -140,32 +151,19 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         public entityService: EntityService,
         public alertService: ToasterService,
         private _userService: UserService,
-        private _fuseConfigService: FuseConfigService,
         // @Inject(MAT_DIALOG_DATA) public data: any = {},
         // @Inject(MAT_DIALOG_DATA) public editFlag: any = {}
     ) {
+        this.dateBeforeAllow = this.calculateDateBeforeDays(10);
         // this.isEditFlag = this.isEditFlag?.editFlag;
         // this.record = data?.data ?? {}
         this.entityService.onproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
+                this.settingsDrawer?.toggle()
                 if (item) {
-                    this.settingsDrawer.toggle()
                     if (item?.addFlag) {
                         this.addAgentId = item?.data.agentid;
                         this.addFlag = item?.addFlag;
-                    }
-
-                    if (item?.editFlag) {
-                        this.editAgentId = item?.editData?.agentid;
-                        this.editRecord = item?.editData ?? {}
-                    }
-
-                    this.record = item ?? {}
-                    if (!item?.editFlag) {
-                        this.getProducts();
-                    }
-                    else {
-                        this.getProductDetail();
                     }
 
                     // pending installmentsArray
@@ -177,15 +175,38 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                         installments: "",
                     });
                     this.installmentsArray = [];
+
+                    this.proofAttachmentSelectedFile = {};
+                    this.editproofAttachmentSelectedFile = "";
+
+                    this.proofAttachment = false;
+                    if (item?.editFlag) {
+                        if (item?.editData?.proof_attachment) {
+                            this.proofAttachment = true;
+                        }
+                        this.editAgentId = item?.editData?.agentid;
+                        this.editRecord = item?.editData ?? {}
+
+                        this.editproofAttachmentSelectedFile = this.editRecord?.proof_attachment_file;
+                    }
+
+                    this.record = item ?? {}
+                    if (!item?.editFlag) {
+                        this.proofAttachment = false;
+                        this.getProducts();
+                    }
+                    else {
+                        this.getProductDetail();
+                    }
                 }
             }
         })
+    }
 
-        this._fuseConfigService.config$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((config: FuseConfig) => {
-                this.config = config;
-            });
+    calculateDateBeforeDays(days: number): Date {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        return date;
     }
 
     onDateChange(index: number): void {
@@ -195,24 +216,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         }
     }
 
-    ngOnInit(): void {
-        this.formGroup = this.builder.group({
-            product: ['', Validators.required],
-            rm_remark: [''],
-            id: [''],
-            price: ['', Validators.required],
-            installments: ['', Validators.required],
-            // installmentsArray: this.formBuilder.array([])
-            installmentsArray: [[]]
-        });
-
-
-        this._userService.user$
-            .pipe((takeUntil(this._unsubscribeAll)))
-            .subscribe((user: any) => {
-                this.user = user;
-            });
-    }
 
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
@@ -244,15 +247,61 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     }
 
     onProductSelectionChange(selectedProduct: any): void {
+        this.proofAttachment = false;
         this.productDetail = this.productList?.find(x => x.id == selectedProduct);
         this.productId = this.productDetail?.id;
         this.formGroup.get('product').patchValue(this.productDetail?.id);
         this.formGroup.get('price').patchValue(this.productDetail?.one_time_cost);
+        this.productPrice = this.productDetail?.one_time_cost;
         this.formGroup.get('installments').patchValue(this.productDetail?.max_installment > 1 ? 1 : this.productDetail?.max_installment);
         this.selectedMaxInstallment = this.productDetail?.max_installment;
         this.isProductInitialChanged = true;
         if (this.isProductInitialChanged) {
             this.onInstallmentsChange(1)
+        }
+    }
+
+    onPriceChange(event: Event) {
+        const inputElement = event.target as HTMLInputElement;
+        const newValue = inputElement.value;
+        if (this.productPrice > newValue) {
+            this.proofAttachment = true;
+            // this.formGroup.get('proofAttachment').setValidators(Validators.required);
+            // this.formGroup.get('proofAttachment').updateValueAndValidity();
+        } else {
+            // this.formGroup.get('proofAttachment').clearValidators();
+            this.proofAttachment = false;
+        }
+    }
+
+    onProofAttachmentFile(event: any) {
+        const file = (event.target as HTMLInputElement).files[0];
+        const extantion: string[] = ["pdf", "jpg", "jpeg", "png"];
+        var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 2024, null);
+        if (!validator.valid) {
+            this.alertService.showToast('error', validator.alertMessage, 'top-right', true);
+            (event.target as HTMLInputElement).value = '';
+            return;
+        }
+        this.proofAttachmentSelectedFile = event.target.files[0];
+        CommonUtils.getJsonFile(file, (reader, jFile) => {
+            this.proofAttachjFile = jFile;
+            this.editproofAttachmentSelectedFile = false;
+        });
+        this.editproofAttachmentSelectedFile = false;
+        // this.alertService.showToast('success', 'Payment Attachment file successfully');
+        (event.target as HTMLInputElement).value = '';
+
+        if (file) {
+            this.proofAttachmentSelectedFile = file;
+            this.editproofAttachmentSelectedFile = false;
+            this.formGroup.get('proofAttachment').setValue(file);
+            this.proofAttachmentFlag = true;
+            if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
+                this.formGroup.get('proofAttachment').clearValidators();
+            }
+        } else {
+            this.proofAttachmentSelectedFile = null;
         }
     }
 
@@ -284,6 +333,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     }
 
     getProducts() {
+        this.productPurchaseMasterId = ""
         this.crmService.getProductNameList().subscribe({
             next: (data) => {
                 this.productList = data;
@@ -296,6 +346,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     if (this.record && this.record.installment) {
                         this.patchInstallments(this.record.installment);
                     }
+                    this.productPurchaseMasterId = "";
                     // this.productId = this.record?.product_id;
                     // this.productId = this.record?.id;
                     // this.productPurchaseMasterId = this.record?.id1;
@@ -327,9 +378,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.selectedMaxInstallment = res?.[0]?.max_installment;
                     this.installmentsArray = res?.[0]?.installment?.map(x => ({ installment_amount: x.installment_amount, installment_date: x.installment_date }));
                     this.productId = res?.[0]?.productid;
-                    this.productPurchaseMasterId = res?.[0]?.id1;
+                    this.productPurchaseMasterId = res?.[0]?.id;
                 }
-
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -357,7 +407,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             totalAmount += installment.installment_amount;
         });
 
-
         const price = parseFloat(this.formGroup.get("price").value);
         // if (price != 0 && totalAmount != 0 ) {
         if (totalAmount !== price) {
@@ -367,7 +416,32 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // }
 
         const json = this.formGroup.getRawValue();
+
         // agent_id: this.record?.agentid ? this.record?.agentid : this.record?.editData?.agentid,
+
+        // if (!json.proofAttachment) {
+        //     this.disableBtn = false;
+        //     this.alertService.showToast('error', 'Proof Attachment is required.')
+        //     return;
+        // }
+
+        if (!this.proofAttachjFile) {
+            json.proof_attachment = {
+                fileName: '',
+                fileType: '',
+                base64: '',
+            };
+        } else {
+            json.proof_attachment = this.proofAttachjFile
+        }
+
+        // if (!this.record) {
+        //     if (json.proof_attachment == null || !json.proof_attachment.fileName) {
+        //         this.disableBtn = false;
+        //         this.alertService.showToast('error', 'Proof Attachment is required.')
+        //         return;
+        //     }
+        // }
 
         const newJson = {
             agent_id: this.addFlag ? this.addAgentId : this.editAgentId,
@@ -376,16 +450,20 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             purchase_amount: json?.price,
             max_installment: json?.installments,
             installmentArr: this.installmentsArray,
-            rm_remark: json.rm_remark
+            rm_remark: json.rm_remark,
+            proof_attachment: json.proof_attachment
         };
 
-        if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {
+        // if (this.formGroup.get("price").value != "" && totalAmount != 0 && this.validateDates() == true) {
+        if (this.validateDates() == true) {
             this.crmService.createPurchaseProduct(newJson).subscribe({
                 next: () => {
                     this.router.navigate([this.leadListRoute]);
                     this.disableBtn = false;
                     this.entityService.raiserefreshproductPurchaseCall(true);
                     this.settingsDrawer.close();
+                    this.productPurchaseMasterId = ""
+                    this.formGroup.reset();
                     if (json.id) {
                         this.alertService.showToast('success', 'Record modified', 'top-right', true);
                     } else {
@@ -415,7 +493,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getMinDate(index: number): Date | null {
         if (index === 0) {
-            return this.todayDateTime;
+            return this.dateBeforeAllow;
+            // return this.todayDateTime;
         }
         const previousInstallmentDate = this.installmentsArray[index - 1]?.installment_date;
         if (!previousInstallmentDate) {
@@ -436,7 +515,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getMaxDate(index: number) {
         if (index == 0)
-            return this.todayDateTime
+            return this.dateBeforeAllow;
+        // return this.todayDateTime
         else {
             let maxDate = new Date(this.installmentsArray[index - 1].installment_date.toString())
             maxDate.setDate(maxDate.getDate() + 1)

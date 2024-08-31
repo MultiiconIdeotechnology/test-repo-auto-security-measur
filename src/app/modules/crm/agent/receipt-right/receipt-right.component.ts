@@ -121,6 +121,7 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
     paymentAttachjFile: JsonFile;
     proofAttachmentFlag: boolean = false;
     showProofAttachment: boolean = false;
+    paymentAttachmentFlag: boolean = false;
 
     constructor(
         private _router: Router,
@@ -165,6 +166,11 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
 
                         if (this.record?.mop == 'Wallet') {
                             this.showProofAttachment = true;
+                            this.paymentAttachmentFlag = false;
+                        }
+                        if (this.record?.mop == 'Online'){
+                            this.showProofAttachment = false;
+                            this.paymentAttachmentFlag = true;
                         }
                     }
                 }
@@ -196,9 +202,11 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
         const selectedMop = event.value;
         if (selectedMop === 'Wallet') {
             this.showProofAttachment = true;
+            this.paymentAttachmentFlag = false;
             this.formGroup.get('proofAttachment').setValidators([Validators.required]);
         } else {
             this.showProofAttachment = false;
+            this.paymentAttachmentFlag = true;
             this.formGroup.get('proofAttachment').clearValidators();
         }
         this.formGroup.get('proofAttachment').updateValueAndValidity();

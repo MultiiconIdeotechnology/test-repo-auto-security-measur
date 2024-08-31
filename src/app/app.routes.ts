@@ -93,7 +93,6 @@ export const appRoutes: Route[] = [
             {path: Routes.masters.supplier_path, loadChildren: () => import('app/modules/masters/supplier/supplier-list/supplier-list.routes')},
             {path: Routes.masters.item_path, loadChildren: () => import('app/modules/masters/item-master/item-list/item-list.routes')},
             {path: Routes.masters.product_path, loadChildren: () => import('app/modules/masters/product-master/product-list/product-list.routes')},
-            {path: Routes.masters.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes')},
 
             // Customers
             {path: Routes.customers.lead_path, loadChildren: () => import('app/modules/masters/lead/main-list/lead.routes')},
@@ -119,6 +118,7 @@ export const appRoutes: Route[] = [
              {path: Routes.account.wallet_credit_path, loadChildren: () => import('app/modules/account/wallet-credit/walletcredit-list/wallet-credit.routes')},
              {path: Routes.account.withdraw_path, loadChildren: () => import('app/modules/account/withdraw/withdraw.routes')},
              {path: Routes.account.payment_path, loadChildren: () => import('app/modules/reports/account/payment-list/payment.routes')},
+             {path: Routes.account.payment_link_path, loadChildren: () => import('app/modules/account/payment-link-list/payment-link.routes')},
              {path: Routes.account.receipt_path, loadChildren: () => import('app/modules/reports/account/receipt-list/receipt.routes')},
              {path: Routes.account.agent_balance_path, loadChildren: () => import('app/modules/reports/agent-balance/agent-balance.routes')},
              {path: Routes.account.sale_path, loadChildren: () => import('app/modules/reports/sale-book/sale-book/sale.routes')},
@@ -169,6 +169,7 @@ export const appRoutes: Route[] = [
             {path: Routes.settings.messagetemplates_path, loadChildren: () => import('app/modules/settings/message-templates/message-templates.routes')},
             {path: Routes.settings.supplierapi_path, loadChildren: () => import('app/modules/settings/supplier-api/supplier-api.routes')},
             {path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes')},
+            {path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes')},
         ]
     },
 ];

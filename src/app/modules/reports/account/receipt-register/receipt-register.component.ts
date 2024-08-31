@@ -1,4 +1,4 @@
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -21,6 +21,9 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { Excel } from 'app/utils/export/excel';
 import { AgentService } from 'app/services/agent.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-receipt-register',
@@ -42,13 +45,16 @@ import { PspSettingService } from 'app/services/psp-setting.service';
         MatDialogModule,
         MatDividerModule,
         FormsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        MatTooltipModule
     ],
 })
 export class ReceiptRegisterComponent
     extends BaseListingComponent
     implements OnDestroy {
     module_name = module_name.receiptRegister;
+    filter_table_name = filter_module_name.receipt_register;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
     user: any;
@@ -60,78 +66,43 @@ export class ReceiptRegisterComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    selectedAgent!:string;
+    selectedAgent: any;
+    selectedCompany: any;
 
-    columns = [
-        {
-            key: 'receipt_ref_no',
-            name: 'Receipt No.',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'receipt_request_date',
-            name: 'Date',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'agent_Code',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agent_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        }
+    cols: Column[] = [
+        { field: 'receipt_ref_no', header: 'Receipt No.' },
+        { field: 'receipt_request_date', header: 'Date' },
+        { field: 'agent_Code', header: 'Agent Code' },
+        { field: 'agent_name', header: 'Agency Name' },
+        { field: 'service', header: 'Service' },
+        { field: 'booking_ref_no', header: 'Booking Ref. No.' },
+        { field: 'pnr', header: 'PNR' },
+        { field: 'mode_of_payment', header: 'MOP' },
+        { field: 'currency', header: 'Currency' },
+        { field: 'wallet_amount', header: 'Wallet Amount' },
+        { field: 'pg_amount', header: 'PG Amount' },
+        { field: 'pg_name', header: 'PSP' },
+        { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
+        { field: 'company', header: 'Company' }
     ];
 
-    cols: Column[];
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     companyList: any[] = [];
-    selectedCompany!: string;
 
     constructor(
         private accountService: AccountService,
         private matDialog: MatDialog,
         private pspsettingService: PspSettingService,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
     ) {
         super(module_name.city);
-        // this.cols = this.columns.map((x) => x.key);
         this.key = this.module_name;
         this.sortColumn = 'receipt_request_date';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
-
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.currentFilter = {
             status: '',
@@ -146,23 +117,6 @@ export class ReceiptRegisterComponent
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'receipt_ref_no', header: 'Receipt No.' },
-            { field: 'receipt_request_date', header: 'Date' },
-            { field: 'agent_Code', header: 'Agent Code' },
-            { field: 'agent_name', header: 'Agency Name' },
-            { field: 'service', header: 'Service' },
-            { field: 'booking_ref_no', header: 'Booking Ref. No.' },
-            { field: 'pnr', header: 'PNR' },
-            { field: 'mode_of_payment', header: 'MOP' },
-            { field: 'currency', header: 'Currency' },
-            { field: 'wallet_amount', header: 'Wallet Amount' },
-            { field: 'pg_amount', header: 'PG Amount' },
-            { field: 'pg_name', header: 'PSP' },
-            { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
-            { field: 'company', header: 'Company' }
-        ];
-
         this.currentFilter = {
             status: '',
             payment_gateway: 'All',
@@ -176,20 +130,71 @@ export class ReceiptRegisterComponent
 
         this.getAgent('');
         this.getCompanyList("");
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this.selectedAgent = resp['table_config']['agent_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedCompany = resp['table_config']['company']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            this.selectedCompany = filterData['table_config']['company']?.value;
+            if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
     }
 
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
             this.companyList = data;
+
+            for (let i in this.companyList) {
+                this.companyList[i].id_by_value = this.companyList[i].company_name;
+            }
         })
     }
 
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -256,7 +261,7 @@ export class ReceiptRegisterComponent
 
         this.accountService.getReceiptRegister(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.receipt_request_date = DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a');
+                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a') : '';
             }
             Excel.export(
                 'Receipt Register',
@@ -322,7 +327,13 @@ export class ReceiptRegisterComponent
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -353,6 +364,10 @@ export class ReceiptRegisterComponent
     }
 
     ngOnDestroy(): void {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
         // this.masterService.setData(this.key, this);
     }
 }

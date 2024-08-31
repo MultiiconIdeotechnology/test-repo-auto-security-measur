@@ -20,7 +20,7 @@ export default [
         path: 'details/:id',
         component: HotelBookingDetailsComponent,
         canActivate: [AuthGuard],
-        data: { module: 'Bookings - Hotel', group: 'Detail', operation: 'Modify', category: 'Entry' }
+        data: { module: 'Bookings - Hotel', group: 'Listing', operation: 'View Detail', category: 'View Detail' }
     }
 ] as Routes
 

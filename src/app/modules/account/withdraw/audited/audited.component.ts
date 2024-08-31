@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -9,7 +9,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -20,29 +19,22 @@ import { RouterModule } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { MasterService } from 'app/services/master.service';
-import { ToasterService } from 'app/services/toaster.service';
 import { WithdrawService } from 'app/services/withdraw.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
-import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { takeUntil, debounceTime, Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
 import { EntityService } from 'app/services/entity.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-waudited',
   templateUrl: './audited.component.html',
   styleUrls: ['./audited.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 170px 140px 110px 204px 210px;
-  }
-  `],
   standalone: true,
   imports: [
     NgIf,
@@ -67,23 +59,19 @@ import { AgentService } from 'app/services/agent.service';
     MatTooltipModule,
     MatMenuModule,
     MatTabsModule,
-    MatPaginatorModule,
     MatSortModule,
     InfoWithdrawComponent,
     PrimeNgImportsModule,
   ],
 })
-export class WAuditedComponent extends BaseListingComponent {
+export class WAuditedComponent extends BaseListingComponent implements OnChanges {
 
-  @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowAudit: boolean;
-  @Input() agentData:any;
+  @Input() filterApiData: any;
+  @Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
 
-
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlAudit = new FormControl('');
-
+  public withdrawAuitedSubscription: Subscription;
   Mainmodule: any;
   isLoading = false;
   public _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -91,22 +79,21 @@ export class WAuditedComponent extends BaseListingComponent {
   public sortColumn: any;
   public sortDirection: any;
 
-  module_name = module_name.wallet
+  module_name = module_name.wallet;
+  filter_table_name = filter_module_name.withdraw_audited;
+
   dataList = [];
   total = 0;
   appConfig = AppConfig;
   data: any
   filter: any = {};
   agentList: any[] = [];
+  selectedEmployee: any;
+  withdrawList = [
+    { label: 'Deduction', value: 'Deduction' },
+    { label: 'Bank Withdraw', value: 'Bank Withdraw' },
+  ];
 
-  columns = [
-    { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: false },
-    { key: 'withdraw_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_Code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: 'max-w-48 min-w-48', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'account_number', name: 'Bank', is_date: false, is_info: true, date_formate: '', is_sortable: true, class: 'truncate', is_sticky: false, align: '', indicator: true, tooltip: true },
-
-  ]
   cols = [];
 
   protected masterService: MasterService;
@@ -118,14 +105,14 @@ export class WAuditedComponent extends BaseListingComponent {
     private matDialog: MatDialog,
     public agentService: AgentService,
     private entityService: EntityService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.withdraw)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
-    this.sortColumn = 'agent_name';
+    this.sortColumn = 'entry_date_time';
     this.sortDirection = 'asc';
-    this.Mainmodule = this
-
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
     this.filter = {
       agent_id: 'all',
       FromDate: new Date(),
@@ -137,29 +124,68 @@ export class WAuditedComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    // this.entityService.onWithdrawAuditedCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-    //   next: (item) => {
-    //     this.refreshItemsAudited();
-    //   }
-    // })
-    this.searchInputControlAudit.valueChanges
-      .subscribe(() => {
-        // GridUtils.resetPaginator(this._paginatorPending);
-        // this.refreshItemsAudited();
-      });
+    setTimeout(() => {
+      this.agentList = this.filterApiData.agentData;
+    }, 1000);
+
+    this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
+      if (this.selectedEmployee && this.selectedEmployee.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+        if (!match) {
+          this.agentList.push(this.selectedEmployee);
+        }
+      }
+      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShowAudit = true;
+      this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
+      this.primengTable._filter();
+    });
+
+  }
+
+  ngAfterViewInit(): void {
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      setTimeout(() => {
+        this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
+        if (this.selectedEmployee && this.selectedEmployee.id) {
+          const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+          if (!match) {
+            this.agentList.push(this.selectedEmployee);
+          }
+        }
+      }, 1000);
+      this.isFilterShowAudit = true;
+      this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
+      if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+      }
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      this.primengTable['filters'] = filterData['table_config'];
+    }
+
   }
 
   ngOnChanges() {
-    this.agentList = this.agentData;
-    // if (this.isFilterShowAudit) {
-    //   this.getAgentList('');
-    // }
+    
   }
 
   getAgentList(value: string) {
-      this.agentService.getAgentCombo(value).subscribe((data) => {
-        this.agentList = data;
-      })
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.agentList = data;
+
+      for(let i in this.agentList){
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+      }
+    })
   }
 
   view(record) {
@@ -229,16 +255,14 @@ export class WAuditedComponent extends BaseListingComponent {
 
   refreshItemsAudited(event?: any) {
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlAudit.value, "entry_date_time", 1
-    // );
+
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlAudit.value;
     filterReq['status'] = 'audited';
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd')
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd')
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd')
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd')
+    filterReq['FromDate'] = "";
+    filterReq['ToDate'] = "";
     filterReq['agent_id'] = this.filter?.agent_id == 'all' ? '' : this.filter?.agent_id;
     this.withdrawService.getWalletWithdrawList(filterReq).subscribe(
       {
@@ -254,7 +278,6 @@ export class WAuditedComponent extends BaseListingComponent {
           this.totalRecords = data.total;
         }, error: err => {
           this.alertService.showToast('error', err);
-
           this.isLoading = false;
         }
       }
@@ -269,9 +292,11 @@ export class WAuditedComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
-  // ngOnDestroy(): void {
-  //   this._unsubscribeAll.next(null);
-  //   this._unsubscribeAll.complete();
-  // }
+  ngOnDestroy() {
+    if (this.withdrawAuitedSubscription) {
+      this.withdrawAuitedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
+  }
 
 }

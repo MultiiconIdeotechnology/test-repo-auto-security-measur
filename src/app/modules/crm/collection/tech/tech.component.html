@@ -10,8 +10,8 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                <th pSortableColumn="calls" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn class="dark:bg-[#1e293b]"
-                    [frozen]="frozenObj?.calls" [ngClass]="{'left-0': !frozenObj?.calls}">
+                <th pSortableColumn="calls" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+                    class="dark:bg-[#1e293b]" [frozen]="frozenObj?.calls" [ngClass]="{'left-0': !frozenObj?.calls}">
                     Calls <p-sortIcon field="calls" />
                     <span class="float-right" (click)="isFrozenColumn('calls');$event.stopPropagation()">
                         <i *ngIf="!frozenObj?.calls" class="pi pi-lock-open icon-size-3"></i>
@@ -58,15 +58,13 @@
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                 [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select Agent">
                                 <ng-template let-agent pTemplate="item">
                                     <div class="flex align-items-center gap-1">
-                                        <div [value]="agent.id">
-                                            <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
-                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                            </div>
+                                        <div class="m-0">
+                                            {{agent.code}} - {{agent.agency_name}}
+                                            <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                         </div>
                                     </div>
                                 </ng-template>
@@ -154,7 +152,8 @@
                     {{element.product || '-'}}
                 </td>
                 <td class="text-right">
-                    {{element.amount || '-'}}
+                    <!-- {{element.amount || '-'}} -->
+                    {{ element?.amount != null ? (element?.amount | currency: (element.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
                 </td>
                 <td>
                     {{(element.installmentDate | date: 'dd-MM-yyyy') || "-"}}

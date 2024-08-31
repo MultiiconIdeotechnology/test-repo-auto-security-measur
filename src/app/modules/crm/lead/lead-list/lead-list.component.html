@@ -6,7 +6,7 @@
         </div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            
+
             <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <ng-container *ngIf="tabNameStr == 'Inbox'">
@@ -19,20 +19,22 @@
                 </ng-container>
             </mat-form-field> -->
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Inbox'">
-                <input matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="inboxRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="inboxRefresh()"></mat-icon>
+                <input #inboxRef matInput [formControl]="searchInputControlInbox" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="inboxRefresh(inboxRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="inboxRefresh(inboxRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Archive'">
-                <input matInput [formControl]="searchInputControlArchive" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="archiveRefresh()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="archiveRefresh()"></mat-icon>
+                <input #archiveRef matInput [formControl]="searchInputControlArchive" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="archiveRefresh(archiveRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="archiveRefresh(archiveRef.value)"></mat-icon>
             </div>
-
-          
 
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading" (click)="isFilterShowInbox = !isFilterShowInbox">
+                matTooltip="Advanced Filter" (click)="isFilterShowInbox = !isFilterShowInbox">
                 <img *ngIf="!isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
                 <img *ngIf="isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
@@ -40,7 +42,7 @@
             </button>
 
             <button *ngIf="this.tabNameStr == 'Archive'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="isLoading"
+                matTooltip="Advanced Filter"
                 (click)="isFilterShowArchive  = !isFilterShowArchive ">
                 <img *ngIf="!isFilterShowArchive" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -48,17 +50,25 @@
                     alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
+                matTooltip="Saved Filter" >
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <!-- Refreshitems -->
             <ng-container *ngIf="tabNameStr == 'Inbox'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Inbox')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Inbox')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Archive'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Archive')">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Archive')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
 
+            <!-- Add -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createInternal()"
                 *ngIf="tabNameStr == 'Inbox'">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
@@ -69,12 +79,14 @@
 
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
-            <app-inbox #inbox [isFilterShowInbox]="isFilterShowInbox"></app-inbox>
+            <ng-container *ngIf="tabNameStr == 'Inbox'">
+                <app-inbox #inbox [(isFilterShowInbox)]="isFilterShowInbox"></app-inbox>
+            </ng-container>
         </mat-tab>
 
         <mat-tab label="Archive" [aria-label]="'Archive'" *ngIf="getTabsPermission('archive')">
             <ng-container *ngIf="tabNameStr == 'Archive'">
-                <app-archive #archive [isFilterShowArchive]="isFilterShowArchive"></app-archive>
+                <app-archive #archive [(isFilterShowArchive)]="isFilterShowArchive"></app-archive>
             </ng-container>
         </mat-tab>
     </mat-tab-group>

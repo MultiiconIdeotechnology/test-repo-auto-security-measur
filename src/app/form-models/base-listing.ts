@@ -22,6 +22,7 @@ import { ToasterService } from "app/services/toaster.service";
 import { Security, messages } from "app/security";
 import { LazyLoadEvent } from "primeng/api";
 import { Table } from "primeng/table";
+import { CommonFilterService } from "app/core/common-filter/common-filter.service";
 
 export interface Column {
     field: string;
@@ -66,6 +67,7 @@ export abstract class BaseListingComponent implements OnInit {
     protected masterService: MasterService;
     protected alertService: ToasterService;
     protected authService: AuthService;
+    protected commonFilterService: CommonFilterService;
     searchInputControl = new FormControl('');
 
     protected dataColumns: IDataColumn[];
@@ -83,6 +85,8 @@ export abstract class BaseListingComponent implements OnInit {
         this.authService = ReflectionInjector.get(AuthService);
         this.masterService = ReflectionInjector.get(MasterService);
         this.alertService = ReflectionInjector.get(ToasterService);
+        this.commonFilterService = ReflectionInjector.get(CommonFilterService);
+        
         this.updateScrollHeight();
     }
 
@@ -92,7 +96,7 @@ export abstract class BaseListingComponent implements OnInit {
 
     @HostListener('window:resize', ['$event'])
     onResize(event: any) {
-      this.updateScrollHeight();
+        this.updateScrollHeight();
     }
 
     updateScrollHeight() {
@@ -101,7 +105,7 @@ export abstract class BaseListingComponent implements OnInit {
         const headerTabHeight = 58;
         const availableHeight = window.innerHeight - headerHeight - paginatorHeight - 80; // Adjust the 100px padding as necessary
         this.scrollHeight = availableHeight + 'px';
-        this.scrollHeightWTab = (availableHeight - headerTabHeight)  + 'px';
+        this.scrollHeightWTab = (availableHeight - headerTabHeight) + 'px';
     }
 
     ngAfterViewInit(): void {
@@ -109,7 +113,7 @@ export abstract class BaseListingComponent implements OnInit {
 
             const qw = this.masterService.getData(this.key, this.Mainmodule);
             if (!qw) {
-                if(this._sort) {
+                if (this._sort) {
                     this._sort.sort({
                         id: this.sortColumn,
                         start: this.sortDirection,
@@ -151,8 +155,11 @@ export abstract class BaseListingComponent implements OnInit {
 
     }
 
-    //#region Protected Methods
+    resetPrimengTable(){
+        this.primengTable?.reset();
+    }
 
+    //#region Protected Methods
     protected handleDialogRef<T>(dialogRef: MatDialogRef<T>): void {
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
@@ -165,16 +172,20 @@ export abstract class BaseListingComponent implements OnInit {
 
 
     // Table Frozen Column
-    isFrozenColumn(key: any, opetion?: any) {
-        if(key) {
-            if(this.frozenObj && this.frozenObj[key]) {
+    isFrozenColumn(key: any, opetion?: any, noData?: any) {
+        if (key) {
+            if (this.frozenObj && this.frozenObj[key]) {
                 this.frozenObj[key] = !this.frozenObj[key];
             } else {
                 this.frozenObj[key] = true;
             }
         }
-        if(opetion && opetion.length) {
-            opetion.every((field: any) => this.frozenObj[field] = true);
+        if (opetion && opetion.length) {
+            if (noData) {
+                opetion.filter((field: any) => this.frozenObj[field] = false);
+            } else {
+                opetion.every((field: any) => this.frozenObj[field] = true);
+            }
         }
     }
     // ###
@@ -215,6 +226,7 @@ export abstract class BaseListingComponent implements OnInit {
         const filterReq = GridUtils.GetPrimeNGFilterReq(
             event,
             this.primengTable,
+            (this.commonFilterService?.activeFiltData || {}),
             this.searchInputControl.value,
             this.sortColumn,
             (this.sortDirection === 'desc' ? 1 : 0)
@@ -369,16 +381,19 @@ export abstract class BaseListingComponent implements OnInit {
     // Primeng Date Range Change
     onDateRangeChange(dates: Date[], filter: Function) {
         if (dates && dates.length === 2 && dates[0] && dates[1]) {
-          const [startDate, endDate] = dates;
+            const [startDate, endDate] = dates;
 
-          // Adjust end date to include the entire day
-          const adjustedEndDate = new Date(endDate);
-          adjustedEndDate.setHours(23, 59, 59, 999);
-          filter([startDate, adjustedEndDate]);
+            const adjustedStartDate = new Date(startDate);
+            adjustedStartDate.setHours(0, 0, 0, 0);
+
+            const adjustedEndDate = new Date(endDate);
+            adjustedEndDate.setHours(23, 59, 59, 999);
+
+            filter([adjustedStartDate, adjustedEndDate]);
+        } else {
+            filter(null);
         }
     }
-    // #endregion
-
 }
 
 export interface IDataColumn {

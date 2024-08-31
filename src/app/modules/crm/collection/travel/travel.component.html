@@ -27,7 +27,7 @@
                 <th pSortableColumn="mobile" pResizableColumn>
                     Mobile <p-sortIcon field="mobile" />
                 </th>
-                <th pSortableColumn="creditLimit" pResizableColumn>
+                <th class="text-right" pSortableColumn="creditLimit" pResizableColumn>
                     Credit Limit <p-sortIcon field="creditLimit" />
                 </th>
                 <th pSortableColumn="policy" pResizableColumn>
@@ -61,7 +61,7 @@
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                 [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                 [showClear]="true" appendTo="body" placeholder="Select Agent">
                                 <ng-template let-agent pTemplate="item">
                                     <div class="flex align-items-center gap-1">
@@ -157,14 +157,16 @@
                 <td>
                     {{element.mobile || '-'}}
                 </td>
-                <td>
-                    {{element.creditLimit || '-'}}
+                <td class="text-right">
+                    <!-- {{element.creditLimit || '-'}} -->
+                    {{ element?.creditLimit != null ? (element?.creditLimit | currency: (element.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
                 </td>
                 <td>
                     {{element.policy || '-'}}
                 </td>
                 <td class="text-right">
-                    {{element.amount || '-'}}
+                    <!-- {{element.amount || '-'}} -->
+                    {{ element?.amount != null ? (element?.amount | currency: (element.currency || 'INR') : 'symbol' : '1.2-2') : '-' }}
                 </td>
                 <td>
                     {{(element.dueDate | date: 'dd-MM-yyyy') || "-"}}

@@ -46,17 +46,27 @@
                                     <mat-icon class="mat-18">info</mat-icon>
                                     <span style="font-weight: 600">Info</span>
                                 </button>
-                                <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.receipt_status !== 'Confirmed'">
-                                    <mat-icon class="mat-18">delete</mat-icon>
-                                    <span style="font-weight: 600">Delete</span>
-                                </button>
-                                <button mat-menu-item (click)="editProduct(ListItem)">
+                                <button mat-menu-item (click)="editProduct(ListItem)" *ngIf="ListItem.product_status == 'Pending'">
                                     <mat-icon class="mat-18">edit</mat-icon>
                                     <span style="font-weight: 600">Modify</span>
                                 </button>
-                                <button mat-menu-item (click)="cancelProduct(ListItem)" *ngIf="ListItem.receipt_status == 'Confirmed'">
+                                <!--*ngIf="ListItem.receipt_status !== 'Confirmed'"   for delete-->
+                                <button mat-menu-item (click)="deleteProduct(ListItem)" *ngIf="ListItem.product_status == 'Pending'">
+                                    <mat-icon class="mat-18">delete</mat-icon>
+                                    <span style="font-weight: 600">Delete</span>
+                                </button>
+                                <!-- *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && (ListItem.product_status !== 'Pending' || ListItem.product_status !== 'Sales Return'))" -->
+                                <button mat-menu-item (click)="cancelProduct(ListItem)" *ngIf="ListItem.product_status == 'Delivered'">
                                     <mat-icon class="mat-18">close</mat-icon>
                                     <span style="font-weight: 600">Cancel</span>
+                                </button>
+                                <button mat-menu-item (click)="salesReturnProduct(ListItem)" *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && ListItem.product_status !== 'Pending')">
+                                    <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
+                                    <span style="font-weight: 600">Sales Return</span>
+                                </button>
+                                <button mat-menu-item (click)="expiryProduct(ListItem)" *ngIf="((ListItem.receipt_status == 'Confirmed' && ListItem.product_status == 'Delivered') && ListItem.product_status !== 'Pending')">
+                                    <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
+                                    <span style="font-weight: 600">Expiry</span>
                                 </button>
                                 <!-- <button mat-menu-item (click)="paymentProduct(ListItem)">
                                     <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
@@ -65,7 +75,7 @@
                             </mat-menu>
                             <ng-container *ngFor="let col of columns">
                                 <div [class]="'flex flex-row items-center space-x-2 truncate pl-0' + col.class"
-                                    [ngClass]="{ 'justify-center': col.align === 'center' }">
+                                     [ngClass]="col.align === 'center' ? 'justify-center' : col.align === 'right' ? 'justify-end' : ''">
                                     <span *ngIf="col.toColor && col.key === 'product_status'">
                                         <span *ngIf="col.name == 'Status'"
                                             [ngClass]="getStatusColor(ListItem[col.key])">{{ ListItem[col.key] }}
@@ -91,10 +101,24 @@
                                         <span class="">{{ ListItem[col.key] == true ? 'Yes' : 'No' }}</span>
                                     </span>
 
+                                    <!-- {{ ListItem['purchase_amount'] || '-' }} -->
+                                    <span *ngIf="col.price">
+                                        <span class=" pr-[10px]">
+                                            {{ ListItem['purchase_amount'] != null ? (ListItem['purchase_amount'] | currency: (ListItem['currency'] || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                        </span>
+                                    </span>
+
+                                    <!-- {{ ListItem['due_Amount'] || '-' }} -->
+                                    <span *ngIf="col.dueAmount">
+                                        <span class=" pr-[10px]">
+                                            {{ ListItem['due_Amount'] != null ? (ListItem['due_Amount'] | currency: (ListItem['currency'] || 'INR') : 'symbol' : '1.2-2') : '-' }}
+                                        </span>
+                                    </span>
+
                                     <div
-                                        [class]="'flex flex-col truncate'+ (col.class == 'header-right-view' || col.class == 'header-center-view'? 'pr-4' : '') ">
+                                        [class]="'flex flex-col truncate'+ (col.class == 'header-right-view' || col.class == 'header-center-view'? '' : '') ">
                                         <span class="truncate"
-                                            *ngIf="!col.toColor && !col.payment && !col.startIntegration && !col.applied && !col.toProduct"
+                                            *ngIf="!col.toColor && !col.payment && !col.startIntegration && !col.applied && !col.toProduct && !col.price && !col.dueAmount"
                                             [matTooltip]="col.tooltip ? ListItem[col.key] : ''">
                                             {{ col.is_date ? (ListItem[col.key] | date: col.date_formate) ||
                                             " - " : ListItem[col.key] || " - " }}
@@ -122,3 +146,4 @@
     </mat-paginator>
 </div>
 <purchase-product-entry-settings></purchase-product-entry-settings>
+<app-crm-sales-return-right></app-crm-sales-return-right>

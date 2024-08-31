@@ -16,7 +16,7 @@
             </div>
         </div> -->
         <div class="px-8 py-4 flex flex-wrap bg-card rounded-2xl overflow-hidden ">
-            <div class="flex flex-col mb-3" *ngFor="let filed of fieldList" [ngClass]="filed.name == 'Agent' ? 'w-full break-word' : 'w-1/4'">
+            <div class="flex flex-col mb-3" *ngFor="let filed of fieldList" [ngClass]="filed.name == 'Agent' || filed.name == 'Remark' || filed.name == 'Reject Reason' ? 'w-full break-word' : 'w-1/4'">
                 <div class="flex flex-row space-x-2" >
                     <span class=" text-md font-semibold text-secondary">{{filed.name}}</span>
                     <mat-icon *ngIf="filed.name === 'Reference No.' || filed.name === 'Booking Ref. No.'" class="icon-size-3 relative top-[2px] ursor-pointer ml-1 cursor-pointer" [matTooltip]="'Copy Link'" (click)="copyLink(filed.value)">content_copy</mat-icon>

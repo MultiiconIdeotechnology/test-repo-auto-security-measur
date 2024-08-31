@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Component } from '@angular/core';
-import { Security, messages, module_name, permissionProfilePermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, permissionProfilePermissions } from 'app/security';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent } from 'app/form-models/base-listing';
@@ -20,6 +20,8 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 interface Column {
     field: string;
@@ -51,6 +53,8 @@ interface Column {
 })
 export class PermissionProfileListComponent extends BaseListingComponent {
     module_name = module_name.permissionProfile;
+    filter_table_name = filter_module_name.permission_profile;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
 
@@ -88,7 +92,7 @@ export class PermissionProfileListComponent extends BaseListingComponent {
             name: 'Applied On',
             is_date: false,
             date_formate: '',
-            is_sortable: true,
+            is_sortable: false,
             class: '',
             is_sticky: false,
             align: '',
@@ -133,6 +137,7 @@ export class PermissionProfileListComponent extends BaseListingComponent {
     constructor(
         private conformationService: FuseConfirmationService,
         private permissionProfileService: PermissionProfileService,
+        public _filterService: CommonFilterService,
         private router: Router,
         private matDialog: MatDialog,
         private toasterService: ToasterService
@@ -143,6 +148,28 @@ export class PermissionProfileListComponent extends BaseListingComponent {
         this.sortColumn = 'profile_name';
         this.sortDirection = 'asc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
+    }
+
+    ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     refreshItems(event?: any): void {
@@ -283,5 +310,9 @@ export class PermissionProfileListComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         // this.masterService.setData(this.key, this);
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

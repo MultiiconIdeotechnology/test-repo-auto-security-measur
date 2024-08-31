@@ -7,14 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router, RouterLink } from '@angular/router';
 import { UserService } from 'app/core/user/user.service';
-import { User } from 'app/core/user/user.types';
 import { Subject, takeUntil } from 'rxjs';
 import { FuseConfig, FuseConfigService, Scheme, Theme, Themes } from '@fuse/services/config';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordComponent } from './change-password/change-password.component';
-
+import { GlobalSearchComponent } from '../global_search/global-search.component';
 
 @Component({
     selector: 'user',
@@ -90,6 +89,18 @@ export class UserComponent implements OnInit, OnDestroy {
         // })
     }
 
+    openGlobalSearchDialog(): void {
+        this._matdialog.open(GlobalSearchComponent, {
+            data: {},
+            backdropClass: 'ctm-back',
+            panelClass: 'ctm-bg',
+            width: 'w-full',
+            height: 'w-full',
+            minWidth: 'w-full',
+            maxWidth: 'w-full',
+        });
+    }
+
     /**
      * On destroy
      */
@@ -141,8 +152,8 @@ export class UserComponent implements OnInit, OnDestroy {
 
         // Update PrimeNg Themes
         let themeLink = this.document.getElementById('primeng-theme-css') as HTMLLinkElement;
-        if (themeLink) {
-            let themeName = scheme == 'light' ? "lara-light-blue": "md-dark-indigo";
+        if (themeLink){
+            let themeName = scheme == 'light' ? "lara-light-blue" : "md-dark-indigo";
             themeLink.href = `assets/primeng-themes/${themeName}/theme.css`;
         }
 

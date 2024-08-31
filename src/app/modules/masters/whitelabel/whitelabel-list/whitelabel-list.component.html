@@ -8,16 +8,18 @@
         </div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-              <!------Global Search------>
+            <!------Global Search------>
             <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
                 <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
-            
+
             <!------Global filter------>
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
@@ -25,7 +27,14 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-           <!-- Select Columns Button and Select Box Code -->
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <!-- Select Columns Button and Select Box Code -->
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
                 <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
@@ -42,7 +51,7 @@
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="create()">
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
@@ -51,20 +60,20 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true" columnResizeMode="expand"
-            [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize"
-            [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['agency_name', 'email_address', 'mobile_number', 'wl_activation_date', 'wl_expiry_date', 'is_b2b_wl', 'is_b2c_wl', 'is_android_wl', 'is_ios_wl', '']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="w-[30px] text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="dark:bg-[#1e293b]" pSortableColumn="agency_name" pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name" 
-                        [ngClass]="{'left-0': !frozenObj?.agency_name}">
+                    <th class="dark:bg-[#1e293b]" pSortableColumn="agency_name" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.agency_name" [ngClass]="{'left-0': !frozenObj?.agency_name}">
                         Agent Name <p-sortIcon field="agency_name" />
                         <span class="float-right" (click)="isFrozenColumn('agency_name');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.agency_name" class="pi pi-lock-open icon-size-3"></i>
@@ -103,11 +112,12 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">
-                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
+                            [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
@@ -124,18 +134,18 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="email_address" placeholder="Search by Email"
-                            ariaLabel="Filter Email" />
+                        <p-columnFilter type="text" matchMode="contains" field="email_address"
+                            placeholder="Search by Email" ariaLabel="Filter Email" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mobile_number" placeholder="Search by Mobile"
-                            ariaLabel="Filter Mobile" />
+                        <p-columnFilter type="text" matchMode="contains" field="mobile_number"
+                            placeholder="Search by Mobile" ariaLabel="Filter Mobile" />
                     </th>
                     <th>
                         <p-columnFilter field="wl_activation_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body" 
-                                    placeholder="Search by Activation Date">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Activation Date">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -143,8 +153,8 @@
                     <th>
                         <p-columnFilter field="wl_expiry_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body" 
-                                    placeholder="Search by Expiry Date">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Expiry Date">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -160,7 +170,7 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <!-- [ngClass]="!element.is_enabled ? 'opacity-38' : ''" -->
-                <tr >
+                <tr>
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
@@ -226,7 +236,7 @@
                         <mat-icon class="text-green-600" *ngIf="element.is_ios_wl">done</mat-icon>
                         <mat-icon class="text-red-600" *ngIf="!element.is_ios_wl">clear</mat-icon>
                     </td>
-                    
+
                     <td *ngFor="let col of columns" [ngClass]="{'text-center': col.isBoolean}">
                         <ng-container *ngIf="!col.isBoolean">
                             {{element[col.field] || "-"}}

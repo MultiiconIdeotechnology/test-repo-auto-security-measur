@@ -1,5 +1,5 @@
 import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -17,8 +17,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { ToasterService } from 'app/services/toaster.service';
-import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
-import { ClassyLayoutComponent } from 'app/layout/layouts/vertical/classy/classy.component';
+import { FuseNavigationService } from '@fuse/components/navigation';
 import { MatDialog } from '@angular/material/dialog';
 import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { AmendmentInfoComponent } from '../amendment-info/amendment-info.component';
@@ -34,6 +33,8 @@ import { AmendmentRequestComponent } from '../amendment-request/amendment-reques
 import { LogsComponent } from '../logs/logs.component';
 import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/compact.component';
 import { PaxComponent } from '../pax/pax.component';
+import { FuseAlertComponent } from '@fuse/components/alert';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-booking-details',
@@ -60,7 +61,9 @@ import { PaxComponent } from '../pax/pax.component';
     NgxMatSelectSearchModule,
     NgClass,
     AccountDetailsComponent,
-    ClipboardModule
+    ClipboardModule,
+    FuseAlertComponent,
+    PrimeNgImportsModule
   ]
 })
 export class BookingDetailsComponent {
@@ -241,6 +244,10 @@ export class BookingDetailsComponent {
           // this.refreshData()
         }
       });
+  }
+
+  viewData(record: any): void {
+    Linq.recirect('/booking/flight/details/' + record.another_flight_code);
   }
 
   segmentChange(model, status): void {

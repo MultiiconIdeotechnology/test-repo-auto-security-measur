@@ -15,13 +15,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AppConfig } from 'app/config/app-config';
-import { Security, module_name, techDashPermissions } from 'app/security';
+import { Security, filter_module_name, module_name, techDashPermissions } from 'app/security';
 import { takeUntil, debounceTime, Subject } from 'rxjs';
 import { TechDashboardPendingComponent } from '../pending/pending.component';
 import { TechDashboardCompletedComponent } from '../completed/completed.component';
 import { TechDashboardExpiredComponent } from '../expired/expired.component';
 import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-list',
@@ -53,13 +54,14 @@ import { AgentService } from 'app/services/agent.service';
     ],
 })
 export class CRMTechDashboardListComponent implements OnDestroy {
-    module_name = module_name.techDashboard;
     @ViewChild('pending') pending: TechDashboardPendingComponent;
     @ViewChild('completed') completed: TechDashboardCompletedComponent;
     @ViewChild('expired') expired: TechDashboardExpiredComponent;
     @ViewChild('blocked') blocked: TechDashboardBlockedComponent;
 
-    dropdownFirstCallObj:any = {};
+    module_name = module_name.techDashboard;
+    filter_table_name = filter_module_name;
+    dropdownFirstCallObj: any = {};
     public apiCalls: any = {};
     tabName: any
     tabNameStr: any = 'Pending'
@@ -74,12 +76,14 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     searchInputControlCompleted = new FormControl('');
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
-
     dataList = [];
     dataListArchive = [];
     total = 0;
 
-    constructor(private agentService: AgentService) { }
+    constructor(
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
+    ) { }
 
     public getTabsPermission(tab: string): boolean {
         if (tab == 'pending') {
@@ -97,44 +101,17 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     }
 
     ngOnInit(): void {
-        this.searchInputControlPending.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.pending.searchInputControlPending.patchValue(value);
-            });
+        // this.searchInputControlPending.valueChanges
+        //     .pipe(
+        //         takeUntil(this._unsubscribeAll),
+        //         debounceTime(AppConfig.searchDelay)
+        //     )
+        //     .subscribe((value) => {
+        //         this.pending.searchInputControlPending.patchValue(value);
+        //     });
 
-        this.searchInputControlCompleted.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.completed.searchInputControlCompleted.patchValue(value);
-            });
-
-        this.searchInputControlExpired.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.expired.searchInputControlExpired.patchValue(value);
-            });
-
-        this.searchInputControlBlocked.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(AppConfig.searchDelay)
-            )
-            .subscribe((value) => {
-                this.blocked.searchInputControlBlocked.patchValue(value);
-            });
-
-            // calling agent Api for first time on dropdown
-            this.getAgent("");
+        // calling agent Api for first time on dropdown
+        this.getAgent("");
     }
 
     public tabChanged(event: any): void {
@@ -150,27 +127,39 @@ export class CRMTechDashboardListComponent implements OnDestroy {
 
             case 'Completed':
                 this.tab = 'completed';
-                if (this.isSecond) {
-                    this.completed?.refreshItems();
-                    this.isSecond = false;
-                }
+                // if (this.isSecond) {
+                this.completed?.refreshItems();
+                this.isSecond = false;
+                // }
                 break;
 
             case 'Blocked':
                 this.tab = 'blocked';
-                if (this.isThird) {
-                    this.blocked?.refreshItems();
-                    this.isThird = false;
-                }
+                // if (this.isThird) {
+                this.blocked?.refreshItems();
+                this.isThird = false;
+                // }
                 break;
 
             case 'Expired':
                 this.tab = 'expired';
-                if (this.isFourth) {
-                    this.expired?.refreshItems();
-                    this.isFourth = false;
-                }
+                // if (this.isFourth) {
+                this.expired?.refreshItems();
+                this.isFourth = false;
+                // }
                 break;
+        }
+    }
+
+    openTabFiterDrawer() {
+        if (this.tabNameStr == 'Pending') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_pending, this.pending.primengTable);
+        } else if (this.tabNameStr == 'Completed') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_completed, this.completed.primengTable);
+        } else if (this.tabNameStr == 'Blocked') {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_blocked, this.blocked.primengTable);
+        } else {
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_expired, this.expired.primengTable);
         }
     }
 
@@ -191,34 +180,35 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
     }
 
-    pendingRefresh() {
+    pendingRefresh(event:any) {
+        this.pending.searchInputControlPending.patchValue(event);
         this.pending?.refreshItems();
-
     }
 
-    completedRefresh() {
+    completedRefresh(event:any) {
+        this.completed.searchInputControlCompleted.patchValue(event);
         this.completed?.refreshItems();
-
     }
 
-    expiredRefresh() {
+    expiredRefresh(event:any) {
+        this.expired.searchInputControlExpired.patchValue(event);
         this.expired?.refreshItems();
-
     }
 
-    blockedRefresh() {
+    blockedRefresh(event:any) {
+        this.blocked.searchInputControlBlocked.patchValue(event);
         this.blocked?.refreshItems();
-
     }
 
     // Api call to Get Agent data
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.dropdownFirstCallObj['agentList'] = data;
 
-            for(let i in this.dropdownFirstCallObj['agentList']){
+            for (let i in this.dropdownFirstCallObj['agentList']) {
                 this.dropdownFirstCallObj['agentList'][i]['agent_info'] =
-                 `${this.dropdownFirstCallObj['agentList'][i].code}-${this.dropdownFirstCallObj['agentList'][i].agency_name}${this.dropdownFirstCallObj['agentList'][i].email_address}`
+                    `${this.dropdownFirstCallObj['agentList'][i].code}-${this.dropdownFirstCallObj['agentList'][i].agency_name}${this.dropdownFirstCallObj['agentList'][i].email_address}`;
+                this.dropdownFirstCallObj['agentList'][i].id_by_value = this.dropdownFirstCallObj['agentList'][i].agency_name;
             }
         })
     }

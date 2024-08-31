@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -18,12 +18,12 @@ import { RouterModule } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, messages, module_name, withdrawPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, withdrawPermissions } from 'app/security';
 import { WithdrawService } from 'app/services/withdraw.service';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { takeUntil, Subject } from 'rxjs';
+import { takeUntil, Subject, Subscription } from 'rxjs';
 import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
 import { EntityService } from 'app/services/entity.service';
 import { MasterService } from 'app/services/master.service';
@@ -32,6 +32,7 @@ import { RejectResonComponent } from '../reject-reson/reject-reson.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { MatMenuModule } from '@angular/material/menu';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-wpending',
@@ -64,15 +65,15 @@ import { AgentService } from 'app/services/agent.service';
     PrimeNgImportsModule,
   ],
 })
-export class WPendingComponent extends BaseListingComponent {
+export class WPendingComponent extends BaseListingComponent implements OnChanges {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowPending: boolean;
-  @Input() agentData:any;
+  @Output() isFilterShowPendingChange = new EventEmitter<boolean>();
+  @Input() filterApiData: any;
 
-  @ViewChild(MatPaginator) public _paginatorPending: MatPaginator;
-  @ViewChild(MatSort) public _sortPending: MatSort;
   searchInputControlPending = new FormControl('');
+  filter_table_name = filter_module_name.withdraw_pending;
 
   Mainmodule: any;
   isLoading = false;
@@ -80,6 +81,7 @@ export class WPendingComponent extends BaseListingComponent {
   public key: any;
   public sortColumn: any;
   public sortDirection: any;
+  public withdrawUpdatedSubscription: Subscription;
 
   module_name = module_name.wallet
   dataList = [];
@@ -88,15 +90,13 @@ export class WPendingComponent extends BaseListingComponent {
   data: any
   filter: any = {}
   agentList: any[] = [];
+  selectedEmployee:any;
 
+  withdrawList = [
+    { label: 'Deduction', value: 'Deduction' },
+    { label: 'Bank Withdraw', value: 'Bank Withdraw' },
+  ];
 
-  columns = [
-    { key: 'entry_date_time', name: 'Date', is_date: true, date_formate: 'dd-MM-yyyy HH:mm:ss', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false, tooltip: false },
-    { key: 'withdraw_amount', name: 'Amount', is_date: false, date_formate: '', is_sortable: true, class: 'header-right-view', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_Code', name: 'Agent Code', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, align: '', indicator: false },
-    { key: 'agent_name', name: 'Agency Name', is_date: false, date_formate: '', is_sortable: true, class: 'max-w-48 min-w-48', is_sticky: false, align: '', indicator: false, tooltip: true },
-    { key: 'account_number', name: 'Bank', is_date: false, is_info: true, date_formate: '', is_sortable: true, class: 'truncate', is_sticky: false, align: '', indicator: true, tooltip: true },
-  ]
   cols = [];
 
   protected masterService: MasterService;
@@ -107,14 +107,14 @@ export class WPendingComponent extends BaseListingComponent {
     private matDialog: MatDialog,
     public agentService: AgentService,
     private entityService: EntityService,
+    public _filterService: CommonFilterService
   ) {
     super(module_name.withdraw)
-    this.cols = this.columns.map(x => x.key);
     this.key = this.module_name;
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
-    this.Mainmodule = this
-
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
     this.masterService = ReflectionInjector.get(MasterService);
 
     this.filter = {
@@ -125,34 +125,78 @@ export class WPendingComponent extends BaseListingComponent {
 
     this.filter.FromDate.setDate(1);
     this.filter.FromDate.setMonth(this.filter.FromDate.getMonth());
-
+    this._filterService.applyDefaultFilter(this.filter_table_name);
     this.entityService.onrefreshbankDetailsCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
         this.refreshItemsPending()
       }
     })
-
   }
 
   ngOnInit(): void {
-    this.searchInputControlPending.valueChanges
-      .subscribe(() => {
-        // GridUtils.resetPaginator(this._paginatorPending);
-        // this.refreshItemsPending();
-      });
+
+    setTimeout(() => {
+      this.agentList = this.filterApiData.agentData;
+    }, 1000);
+
+    this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
+      if (this.selectedEmployee && this.selectedEmployee.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+        if (!match) {
+          this.agentList.push(this.selectedEmployee);
+        }
+      }
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShowPending = true;
+      this.isFilterShowPendingChange.emit(this.isFilterShowPending);
+      this.primengTable._filter();
+    });
+
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShowPending = true;
+      this.isFilterShowPendingChange.emit(this.isFilterShowPending);
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      setTimeout(() => {
+        this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
+        if (this.selectedEmployee && this.selectedEmployee.id) {
+          const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+          if (!match) {
+            this.agentList.push(this.selectedEmployee);
+          }
+        }
+      }, 1000);
+      if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+      }
+
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+      this.primengTable['filters'] = filterData['table_config'];
+    }
   }
 
   ngOnChanges() {
-    this.agentList = this.agentData;
-    // if (this.isFilterShowPending) {
-    //   this.getAgentList('');
-    // }
+    this.agentList = this.filterApiData.agentData;
   }
 
   getAgentList(value: string) {
-      this.agentService.getAgentCombo(value).subscribe((data) => {
-        this.agentList = data;
-      })
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.agentList = data;
+
+      for(let i in this.agentList){
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+      }
+    })
   }
 
   view(record) {
@@ -266,8 +310,10 @@ export class WPendingComponent extends BaseListingComponent {
     const filterReq = this.getNewFilterReq(event);
     filterReq['status'] = 'pending';
     filterReq['Filter'] = this.searchInputControlPending.value;
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd');
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd');
+    filterReq['FromDate'] = "";
+    filterReq['ToDate'] = "";
     filterReq['agent_id'] = this.filter?.agent_id == 'all' ? '' : this.filter?.agent_id;
     this.withdrawService.getWalletWithdrawList(filterReq).subscribe(
       {
@@ -298,4 +344,10 @@ export class WPendingComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
+  ngOnDestroy() {
+    if (this.withdrawUpdatedSubscription) {
+      this.withdrawUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
+  }
 }

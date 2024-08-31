@@ -1,11 +1,11 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,7 +19,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
 import { Security, module_name, partnerPurchaseProductPermissions } from 'app/security';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -29,10 +29,12 @@ import { ReceiptsInfoItemComponent } from '../receipts/receipts-info-installment
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { CrmService } from 'app/services/crm.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { EntityService } from 'app/services/entity.service';
 import { ReceiptRightComponent } from "../receipt-right/receipt-right.component";
 import { PaymentInfoWLSetttingLinkComponent } from '../wl-settings-link/payment-info-wl-settings-link.component';
+import { Linq } from 'app/utils/linq';
+import { PaymentInfoSalesReturnComponent } from "../sales-return/payment-info-sales-return.component";
 
 @Component({
     selector: 'app-product-info',
@@ -71,11 +73,12 @@ import { PaymentInfoWLSetttingLinkComponent } from '../wl-settings-link/payment-
     InstallmentsInfoItemComponent,
     ReceiptsInfoItemComponent,
     ReceiptRightComponent,
-    PaymentInfoWLSetttingLinkComponent
+    PaymentInfoWLSetttingLinkComponent,
+    PaymentInfoSalesReturnComponent
 ]
 })
 export class AgentProductInfoComponent {
-    dataList = [];
+    dataList: any = [];
     itemdataList = [];
     searchInputControl = new FormControl('');
     @ViewChild('tabGroup') tabGroup;
@@ -83,7 +86,7 @@ export class AgentProductInfoComponent {
     @ViewChild(MatSort) public _sort: MatSort;
     @ViewChild('receipts') receipts: ReceiptsInfoItemComponent;
     @ViewChild('wlsettinglinks') wlsettinglinks: ReceiptsInfoItemComponent;
-
+    @ViewChild('salesreturn') salesreturn: PaymentInfoSalesReturnComponent;
     @ViewChild('installments') installments: InstallmentsInfoItemComponent;
     @ViewChild('payments') payments: PaymentInfoItemComponent;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -120,6 +123,7 @@ export class AgentProductInfoComponent {
         @Inject(MAT_DIALOG_DATA) public purchase_reg: any,
         @Inject(MAT_DIALOG_DATA) public sales_product_reg: any,
         @Inject(MAT_DIALOG_DATA) public agent_info_reg: any,
+        private router: Router,
         private alertService: ToasterService
     ) {
         // super(module_name.crmagent)
@@ -194,7 +198,7 @@ export class AgentProductInfoComponent {
             return 'text-blue-600';
         } else if (status == 'Expired') {
             return 'text-red-600';
-        } else if (status == 'Cancelled' || status == 'Cancel' || status == 'Block') {
+        } else if (status == 'Cancelled' || status == 'Cancel' || status == 'Block' || status == 'Sales Return' || status == 'Cancelled') {
             return 'text-red-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
@@ -252,6 +256,16 @@ export class AgentProductInfoComponent {
             case 'WL-Setting Links':
                 this.tab = 'wlsettinglinks';
                 break;
+
+            case 'Sales Return':
+                this.tab = 'salesreturn';
+                break;
+        }
+    }
+
+    downloadfile(data: any) {
+        if(data){
+            window.open(data, '_blank')
         }
     }
 
@@ -270,6 +284,11 @@ export class AgentProductInfoComponent {
         // });
 
         this.entityService.raisereceiptCall({data: this.record});
+    }
+
+    agentDetail(listingId: any){
+        Linq.recirect('/customers/agent/entry/' + listingId + '/readonly');
+       // this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
     }
 
     refreshItemsNew() {

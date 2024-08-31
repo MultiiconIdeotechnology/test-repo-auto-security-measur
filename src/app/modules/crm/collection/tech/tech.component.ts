@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,28 +20,22 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name, partnerPurchaseProductPermissions, techCollectionPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, partnerPurchaseProductPermissions, techCollectionPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { PurchaseProductComponent } from '../../agent/purchase-product/purchase-product.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { DialTechCallListComponent } from '../tech-dial-call-list/tech-dial-call-list.component';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { EntityService } from 'app/services/entity.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-tech',
     templateUrl: './tech.component.html',
-    // styles: [
-    //     `
-    //         .tbl-grid {
-    //             grid-template-columns: 40px 60px 100px 245px 120px 190px 100px 150px 150px;
-    //         }
-    //     `,
-    // ],
+    // styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -74,128 +68,28 @@ import { AgentService } from 'app/services/agent.service';
         PrimeNgImportsModule
     ]
 })
-export class TechCollectionComponent extends BaseListingComponent{
+export class TechCollectionComponent extends BaseListingComponent {
     @Input() isFilterShowTech: boolean;
-    @Input() dropdownListObj:{};
-
-    agentList:any[] = [];
-    selectedAgent:string;
-
-    columns = [
-        {
-            key: 'calls',
-            name: 'Calls',
-            is_date: false,
-            date_formate: '',
-            is_sortable: false,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false
-        },
-        {
-            key: 'acCode',
-            name: 'A/C Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agencyName',
-            name: 'Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true,
-        },
-        {
-            key: 'mobile',
-            name: 'Mobile',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'product',
-            name: 'Product',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'amount',
-            name: 'Amount',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'installmentDate',
-            name: 'Installment Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'lastCallDate',
-            name: 'Last call date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        }
-    ];
-    cols = [];
-    dataList = [];
-    searchInputControlTech = new FormControl('');
-
+    @Input() dropdownListObj: {};
+    @Output() isFilterShowTechChange = new EventEmitter<boolean>();
     @ViewChild('tabGroup') tabGroup;
-
     @ViewChild(MatPaginator) public _paginatorTech: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
 
+    agentList: any[] = [];
+    selectedAgent: any = {};
+    public settingsTechSubscription: Subscription;
+    module_name = module_name.crmagent
+    filter_table_name = filter_module_name.collections_tech;
+    cols = [];
+    dataList = [];
+    searchInputControlTech = new FormControl('');
     Mainmodule: any;
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
-
-    module_name = module_name.crmagent
     total = 0;
     appConfig = AppConfig;
     data: any
@@ -206,33 +100,70 @@ export class TechCollectionComponent extends BaseListingComponent{
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
-        private entityService: EntityService,
-        private agentService: AgentService
+        private agentService: AgentService,
+        public _filterService: CommonFilterService,
     ) {
         super(module_name.techDashboard)
-        this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'installmentDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit(): void {
-        // this.searchInputControlTech.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginatorTech);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
+        this.settingsTechSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this.selectedAgent = resp['table_config']['agencyName']?.value;
+            const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+            if (!match) {
+                this.agentList.push(this.selectedAgent);
+            }
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp.table_config?.lastCallDate?.value != null) {
+                resp['table_config']['lastCallDate'].value = new Date(resp['table_config']['lastCallDate'].value);
+            }
+            if (resp.table_config?.installmentDate?.value != null) {
+                resp['table_config']['installmentDate'].value = new Date(resp['table_config']['installmentDate'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowTech = true;
+            this.primengTable._filter();
 
-        this.searchInputControlTech.valueChanges.subscribe(() => {
-        //   this.refreshItems();
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowTech = true;
+            this.isFilterShowTechChange.emit(this.isFilterShowTech);
+            this.primengTable._filter();
         });
-
     }
 
-    ngOnChanges(){
-        this.agentList = this.dropdownListObj['agentList'];
+    ngAfterViewInit() {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowTech = true;
+            this.isFilterShowTechChange.emit(this.isFilterShowTech);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agencyName']?.value;
+
+            if (this.selectedAgent && this.selectedAgent?.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+            if (filterData['table_config']['lastCallDate'].value) {
+                filterData['table_config']['lastCallDate'].value = new Date(filterData['table_config']['lastCallDate'].value);
+            }
+            if (filterData['table_config']['installmentDate'].value) {
+                filterData['table_config']['installmentDate'].value = new Date(filterData['table_config']['installmentDate'].value);
+            }
+
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
+        }
+    }
+
+    ngOnChanges() {
     }
 
 
@@ -241,25 +172,10 @@ export class TechCollectionComponent extends BaseListingComponent{
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlTech.value;
 
-        // filterReq['Filter'] = this.searchInputControlTech.value;
-        // filterReq['Skip'] = 0;
-        // filterReq['Take'] = this._paginator.length;
-        // filterReq['Take'] = this.totalRecords;
-
-        // filterReq['OrderBy'] = 'installmentDate';
-        // filterReq['OrderDirection'] = 1;
-
-        // this.isLoading = true;
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginatorTech,
-        //     this._sortInbox,
-        //     this.searchInputControlTech.value
-        // );
         this.crmService.getTechCollectionList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                // this._paginatorTech.length = data.total;
                 this.totalRecords = data.total;
             },
             error: (err) => {
@@ -271,11 +187,12 @@ export class TechCollectionComponent extends BaseListingComponent{
     }
 
     getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -315,17 +232,8 @@ export class TechCollectionComponent extends BaseListingComponent{
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        // this.matDialog.open(TechDialCallEntryComponent, {
-        //     data: { data: record, readonly: true },
-        //     disableClose: true,
-        // }).afterClosed().subscribe(res => {
-        //     if (res) {
-        //         this.refreshItems();
-        //     }
-        // })
-
         this.matDialog.open(DialTechCallListComponent, {
-            data: { data: record, readonly: true},
+            data: { data: record, readonly: true },
             disableClose: true
         }).afterClosed().subscribe({
             next: (res) => {
@@ -338,13 +246,9 @@ export class TechCollectionComponent extends BaseListingComponent{
         if (!Security.hasPermission(techCollectionPermissions.callHistoryPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        // this.matDialog.open(TechCallHistoryComponent, {
-        //     data: { data: record, readonly: true },
-        //     disableClose: true
-        // });
 
         this.matDialog.open(DialTechCallListComponent, {
-            data: { data: record, readonly: true, selectedTabIndex: 3},
+            data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true
         }).afterClosed().subscribe({
             next: (res) => {
@@ -366,13 +270,7 @@ export class TechCollectionComponent extends BaseListingComponent{
     }
 
     sendReminderEmail(record): void {
-        // if (!Security.hasPermission(agentPermissions.marketingMaterialPermissions)) {
-        //     return this.alertService.showToast('error', messages.permissionDenied);
-        // }
-        // this.matDialog.open(MarketingMaterialsComponent, {
-        //     data: { data: record, readonly: true },
-        //     disableClose: true
-        // });
+
         const label: string = 'Send Reminders WA/Email';
         this.conformationService
             .open({
@@ -417,5 +315,12 @@ export class TechCollectionComponent extends BaseListingComponent{
         //     data: { data: record, readonly: true },
         //     disableClose: true
         // });
+    }
+
+    ngOnDestroy() {
+        if (this.settingsTechSubscription) {
+            this.settingsTechSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

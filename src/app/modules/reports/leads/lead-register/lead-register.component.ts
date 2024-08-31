@@ -18,7 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, leadRegisterPermissions, messages, module_name } from 'app/security';
+import { Security, filter_module_name, leadRegisterPermissions, messages, module_name } from 'app/security';
 import { LeadsRegisterService } from 'app/services/leads-register.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { FilterComponent } from './filter/filter.component';
@@ -36,17 +36,14 @@ import { LeadStatusChangedLogComponent } from 'app/modules/crm/lead/lead-status-
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { EmployeeService } from 'app/services/employee.service';
 import { AgentService } from 'app/services/agent.service';
-
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-lead-register',
     templateUrl: './lead-register.component.html',
     styleUrls: ['./lead-register.component.scss'],
-    styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 50px 110px 80px 190px 160px 130px 110px 180px 210px 120px 130px 120px 130px 120px 120px;
-  }
-  `],
+    styles: [],
     standalone: true,
     imports: [
         NgIf,
@@ -76,76 +73,63 @@ import { AgentService } from 'app/services/agent.service';
     ],
 })
 export class LeadRegisterComponent extends BaseListingComponent implements OnDestroy {
-
     dataList = [];
     total = 0;
     module_name = module_name.leads_register
+    filter_table_name = filter_module_name.leads_register;
+    private settingsUpdatedSubscription: Subscription;
     leadFilter: any;
     deadLeadId: any;
     isFilterShow: boolean = false;
 
-    columns = [
-        { key: 'calls', name: 'Calls', callAction: true, tocalls: true, is_date: false, date_formate: '', is_sortable: false, class: '', is_sticky: false, indicator: true, is_boolean: false, tooltip: true },
-        { key: 'status', name: 'Status', toColor: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'priority_text', name: 'Priority', toColorP: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, iscolor: false },
-        { key: 'agency_name', name: 'Agency', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'rmName', name: 'RM', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'lead_type', name: 'Type', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false, isamount: true },
-        { key: 'lead_source', name: 'Source', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'contact_person_name', name: 'Contact Person', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'contact_person_email', name: 'Email', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'contact_person_mobile', name: 'Mobile', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'cityName', name: 'City', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'kycStarted', name: 'KYC Started', isLive: true, is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'lastCallFeedback', name: 'Last Feedback', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'lastCall', name: 'Last Call', isDate: true, is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'leadDate', name: 'Lead Date', is_date: true, date_formate: 'dd-MM-yyyy', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-    ]
-
-    selectedStatus:string;
-    selectedPriority:string;
-    selectedLeadType:string;
-    selectedLeadSource:string;
-    selectedKyc:string;
-    selectedAgent:string;
-    leadList:any[] = [];
-    employeeList:any[] = [];
-    agentList:any[] = [];
+    selectedStatus: any;
+    selectedPriority: any;
+    selectedLeadType: any;
+    selectedLeadSource: any;
+    selectedKyc: any;
+    leadList: any[] = [];
+    employeeList: any[] = [];
+    agentList: any[] = [];
+    selectedRm:any;
+    selectedLeadStatus:any;
 
     statusList: any[] = [
-        {label: 'New', value: 'New',  },
-        {label: 'Live', value: 'Live',  },
-        {label: 'Converted', value: 'Converted',  },
-        {label: 'Dead', value: 'Dead',  }
-      ];
+        { label: 'New', value: 'New', },
+        { label: 'Live', value: 'Live', },
+        { label: 'Converted', value: 'Converted', },
+        { label: 'Dead', value: 'Dead', }
+    ];
 
-      priorityText: any[] = [
+    priorityText: any[] = [
         { label: 'High', value: 'High' },
         { label: 'Medium', value: 'Medium' },
         { label: 'Low', value: 'Low' },
-      ];
+    ];
 
-      leadType: any[] = [
+    leadType: any[] = [
         { label: 'B2B Partner', value: 'B2B Partner' },
         { label: 'WL', value: 'WL' },
         { label: 'Corporate', value: 'Corporate' },
         { label: 'Supplier', value: 'Supplier' },
         { label: 'Boost My Brand', value: 'Boost My Brand' },
         { label: 'Build My Brand', value: 'Build My Brand' }
-      ];
+    ];
 
-      kycList: any[] = [
+    kycList: any[] = [
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'No' },
-      ]
+    ]
 
-    cols = [];
+    cols: Column[] = [
+        { field: 'contact_person_mobile_code', header: 'Contact Person Mobile Code' }
+    ];
     _selectedColumns: Column[];
-
+    leadStatus: any;
 
     constructor(
         private leadsRegisterService: LeadsRegisterService,
         private matDialog: MatDialog,
+        public _filterService: CommonFilterService,
         private conformationService: FuseConfirmationService,
         private employeeService: EmployeeService,
         private agentService: AgentService
@@ -168,14 +152,33 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             FromDate: null,
             ToDate: null
         };
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
     ngOnInit() {
-        this.cols = [
-            { field: 'contact_person_mobile_code', header: 'Contact Person Mobile Code' }
-        ];
+        this.getLeadStatus("");
+        this.getEmployee("");
 
-        this.getAgent("");
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedRm = resp['table_config']['rm_Id']?.value;
+            this.selectedLeadStatus = resp['table_config']['lead_source']?.value;
+
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if(resp['table_config']['supplier_name']){
+                this.leadStatus = resp['table_config'].supplier_name?.value;
+            }
+            if (resp['table_config']['lastCall'].value) {
+                resp['table_config']['lastCall'].value = new Date(resp['table_config']['lastCall'].value);
+            }
+            if (resp['table_config']['leadDate'].value) {
+                resp['table_config']['leadDate'].value = new Date(resp['table_config']['leadDate'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this._selectedColumns = resp['selectedColumns'] || [];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
     }
 
     get selectedColumns(): Column[] {
@@ -183,17 +186,42 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     }
 
     set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+        if (Array.isArray(val)) {
+            this._selectedColumns = this.cols.filter(col =>
+                val.some(selectedCol => selectedCol.field === col.field)
+            );
+        } else {
+            this._selectedColumns = [];
+        }
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+
+            this.selectedRm = filterData['table_config']['rm_Id']?.value;
+            this.selectedLeadStatus = filterData['table_config']['lead_source']?.value;
+
+            if(filterData['table_config']['supplier_name']){
+                this.leadStatus = filterData['table_config'].supplier_name?.value;
+            }
+            if (filterData['table_config']['lastCall'].value) {
+                filterData['table_config']['lastCall'].value = new Date(filterData['table_config']['lastCall'].value);
+            }
+            if (filterData['table_config']['leadDate'].value) {
+                filterData['table_config']['leadDate'].value = new Date(filterData['table_config']['leadDate'].value);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['filters'] = filterData['table_config'];
+            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.isFilterShow = true;
+        }
     }
 
     getFilter(): any {
         const filterReq = {};
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sort,
-        //     this.searchInputControl.value
-        // );
-
 
         filterReq['lead_type'] = this.leadFilter?.lead_type == 'All' ? '' : this.leadFilter?.lead_type;
         filterReq['priority_text'] = this.leadFilter?.priority_text == 'All' ? '' : this.leadFilter?.priority_text;
@@ -210,11 +238,11 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         return filterReq;
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         let extraModel = this.getFilter();
         let oldModel = this.getNewFilterReq(event)
-        let model = {...extraModel, ...oldModel};
+        let model = { ...extraModel, ...oldModel };
         this.leadsRegisterService.leadMasterRegisterList(model).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -228,41 +256,25 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         });
     }
 
-    // function to get the Agent list from api
-    getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
-            this.agentList = data;
-
-            for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
-            }
-        })
-    }
-
-    // on clicking on filter for table column
-    onFilter(){
-        this.isFilterShow = !this.isFilterShow;
-
-        // first time api called to get the lead status data
-        this.getLeadStatus("");
-        this.getEmployee("");
-    }
-
     // lead status data api to get data bind to dropdown on filter
-    getLeadStatus(val:string){
+    getLeadStatus(val: string) {
         this.leadsRegisterService.leadSouceCombo(val).subscribe({
             next: data => {
-              this.leadList = data;
+                this.leadList = data;
+
+                for (let i in this.leadList) {
+                    this.leadList[i].id_by_value = this.leadList[i].lead_source
+                }
             }
-          });
+        });
     }
 
-    getEmployee(value:string){
+    getEmployee(value: string) {
         this.employeeService.getemployeeCombo(value).subscribe({
             next: data => {
-              this.employeeList = data;
+                this.employeeList = data;
             }
-          });
+        });
     }
 
     filter() {
@@ -433,7 +445,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 if (dt.lastCallFeedback == null) {
                     dt.lastCall = dt.lastCallFeedback == null ? null : DateTime.fromISO(dt.lastCall).toFormat('dd-MM-yyyy')
                 }
-                dt.leadDate = DateTime.fromISO(dt.leadDate).toFormat('dd-MM-yyyy')
+                dt.leadDate = dt.leadDate ? DateTime.fromISO(dt.leadDate).toFormat('dd-MM-yyyy') : ''
                 // dt.lastCall = DateTime.fromISO(dt.lastCall).toFormat('dd-MM-yyyy')
                 dt.kycStarted = dt.kycStarted ? 'Yes' : 'No'
             }
@@ -504,4 +516,12 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             disableClose: true
         });
     }
+
+    ngOnDestroy() {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
+    }
 }
+

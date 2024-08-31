@@ -35,7 +35,7 @@ export class UserService
 
         // if(value.is_first) {
         //     setTimeout(() => {
-                
+
         //         this.matDialog.open(SetPasswordComponent, {
         //             data: value,
         //             disableClose: true

@@ -1374,6 +1374,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
 }
 .p-multiselect .p-multiselect-label.p-placeholder {
   color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
 }
 .p-multiselect.p-multiselect-chip .p-multiselect-label {
   gap: 0.5rem;
@@ -1383,6 +1384,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   background: rgba(100, 181, 246, 0.16);
   color: rgba(255, 255, 255, 0.87);
   border-radius: 3px;
+  font-size: 13px;
 }
 .p-multiselect.p-multiselect-chip .p-multiselect-token .p-multiselect-token-icon {
   margin-left: 0.5rem;
@@ -1407,7 +1409,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 .p-multiselect-panel .p-multiselect-header {
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.75rem;
   border-bottom: 0 none;
   color: rgba(255, 255, 255, 0.87);
   background: #0f172a;
@@ -1427,8 +1429,8 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
 }
 .p-multiselect-panel .p-multiselect-header .p-multiselect-close {
   margin-left: 0.5rem;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   color: rgba(255, 255, 255, 0.6);
   border: 0 none;
   background: transparent;
@@ -1446,7 +1448,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   box-shadow: 0 0 0 1px #93cbf9;
 }
 .p-multiselect-panel .p-multiselect-items {
-  padding: 0.5rem 0;
+  padding: 0.2rem 0;
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
   margin: 0;

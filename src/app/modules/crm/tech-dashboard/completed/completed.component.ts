@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { AppConfig } from 'app/config/app-config';
-import { Security, messages, module_name, techDashPermissions } from 'app/security';
+import { Security, filter_module_name, messages, module_name, techDashPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
@@ -32,6 +32,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-completed',
@@ -72,147 +74,104 @@ import { AgentService } from 'app/services/agent.service';
 })
 export class TechDashboardCompletedComponent extends BaseListingComponent {
     @Input() isFilterShowCompleted: boolean;
-    @Input() dropdownFirstCallObj:any;
-    cols = [];
-    total = 0;
-
-    columns = [
-        {
-            key: 'item_code',
-            name: 'Item Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: true,
-        },
-        {
-            key: 'item_name',
-            name: 'Item',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'product_name',
-            name: 'Product',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: false
-        },
-        {
-            key: 'agentCode',
-            name: 'Agent Code',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: false,
-            tooltip: false,
-        },
-        {
-            key: 'agency_name',
-            name: 'Agency Name',
-            is_date: false,
-            date_formate: '',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: '',
-            indicator: true,
-            tooltip: true
-        },
-        // {
-        //     key: 'integration_start_date_time',
-        //     name: 'Int. Start Date',
-        //     is_date: false,
-        //     date_formate: 'dd-MM-yyyy',
-        //     is_sortable: false,
-        //     class: '',
-        //     is_sticky: false,
-        //     align: 'center',
-        //     indicator: false,
-        //     tooltip: true
-        // },
-        {
-            key: 'activation_date_sub',
-            name: 'Activation Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-        {
-            key: 'expiry_date_sub',
-            name: 'Expiry Date',
-            is_date: true,
-            date_formate: 'dd-MM-yyyy',
-            is_sortable: true,
-            class: '',
-            is_sticky: false,
-            align: 'center',
-            indicator: false,
-            tooltip: false
-        },
-    ];
-
-    dataList: any;
-    appConfig = AppConfig;
-    isLoading: any;
-    getWLSettingList = [];
-
-    searchInputControlCompleted = new FormControl('');
+    @Output() isFilterShowCompletedChange = new EventEmitter<boolean>();
+    @Input() dropdownFirstCallObj: any;
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
 
     Mainmodule: any;
+    module_name = module_name.techDashboard;
+    filter_table_name = filter_module_name.tech_dashboard_completed;
+    private settingsUpdatedSubscription: Subscription;
+    cols = [];
+    total = 0;
+    dataList: any;
+    appConfig = AppConfig;
+    isLoading: any;
+    getWLSettingList = [];
+    searchInputControlCompleted = new FormControl('');
+    data: any;
+    selectedAgent: any;
+    agentList: any[] = [];
+    filter: any = {}
+
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
     public sortColumn: any;
     public sortDirection: any;
 
-    module_name = module_name.techDashboard
-    data: any;
-    selectedAgent:string;
-    agentList:any[] = [];
-    filter: any = {}
-
-    ngOnInit(): void {
-        // this.searchInputControlCompleted.valueChanges
-        //     .subscribe(() => {
-        //         GridUtils.resetPaginator(this._paginator);
-        //         this.refreshItems();
-        //     });
-        // this.refreshItems();
-
-        this.searchInputControlCompleted.valueChanges
-            .subscribe(() => {
-                // GridUtils.resetPaginator(this._paginatorPending);
-                // this.refreshItems();
-            });
+    constructor(
+        private crmService: CrmService,
+        private matDialog: MatDialog,
+        private conformationService: FuseConfirmationService,
+        private agentService: AgentService,
+        public _filterService: CommonFilterService
+    ) {
+        super(module_name.techDashboard);
+        this.key = this.module_name;
+        this.sortColumn = 'activation_date_sub';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
-    ngOnChanges(){
+    ngOnInit(): void {
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            // this.sortColumn = resp['sortColumn'];
+                this.selectedAgent = resp['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            this.selectedAgent = resp['table_config']['agency_name'].value;
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+            if (resp['table_config']['activation_date_sub'].value) {
+                resp['table_config']['activation_date_sub'].value = new Date(resp['table_config']['activation_date_sub'].value);
+            }
+            if (resp['table_config']['expiry_date_sub'].value) {
+                resp['table_config']['expiry_date_sub'].value = new Date(resp['table_config']['expiry_date_sub'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowCompleted = true;
+            this.isFilterShowCompletedChange.emit(this.isFilterShowCompleted);
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowCompleted = true;
+            this.isFilterShowCompletedChange.emit(this.isFilterShowCompleted);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            setTimeout(() => {
+                this.selectedAgent = filterData['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+    
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+            }, 1000);
+            if (filterData['table_config']['activation_date_sub'].value) {
+                filterData['table_config']['activation_date_sub'].value = new Date(filterData['table_config']['activation_date_sub'].value);
+            }
+            if (filterData['table_config']['expiry_date_sub'].value) {
+                filterData['table_config']['expiry_date_sub'].value = new Date(filterData['table_config']['expiry_date_sub'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
+    }
+
+    ngOnChanges() {
         this.agentList = this.dropdownFirstCallObj['agentList'];
     }
 
@@ -235,20 +194,6 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         }
     }
 
-    constructor(
-        private crmService: CrmService,
-        private matDialog: MatDialog,
-        private conformationService: FuseConfirmationService,
-        private agentService: AgentService
-    ) {
-        super(module_name.techDashboard);
-        this.cols = this.columns.map(x => x.key);
-        this.key = this.module_name;
-        this.sortColumn = 'activation_date_sub';
-        this.sortDirection = 'desc';
-        this.Mainmodule = this
-    }
-
     getNodataText(): string {
         if (this.isLoading)
             return 'Loading...';
@@ -261,17 +206,12 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlCompleted.value;
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sortArchive,
-        //     this.searchInputControlCompleted.value, ""
-        // );
+
         this.crmService.getTechCompletedProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
                 this.totalRecords = data.total;
-                // this._paginator.length = data?.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -280,13 +220,14 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         });
     }
 
-      // Api call to Get Agent data
-      getAgent(value: string) {
-        this.agentService.getAgentCombo(value).subscribe((data) => {
+   // Api call to Get Agent data
+   getAgent(value: string) {
+       this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            for (let i in this.agentList) {
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -388,7 +329,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                 inputBox: 'Date',
                 dateCustomShow: true,
                 customShow: false,
-                datepickerParameter: record?.activation_date_sub
+                datepickerParameter: record?.expiry_date_sub
             })
             .afterClosed()
             .subscribe((res) => {
@@ -420,6 +361,14 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                     });
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 
     // techDate(record): void {

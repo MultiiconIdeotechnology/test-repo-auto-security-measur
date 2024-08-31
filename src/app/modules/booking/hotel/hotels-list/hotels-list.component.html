@@ -12,8 +12,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,12 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -30,10 +38,10 @@
             </button>
 
             <!--- Modal filter -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
                 <mat-icon class="w-10 h-10">filter_alt</mat-icon>
                 <span class="mr-1">Filter</span>
-            </button>
+            </button> -->
 
             <!------ Export Excel ------->
             <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
@@ -62,8 +70,8 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="booking_ref_no" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no"
+                    <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="booking_ref_no"
+                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no"
                         [ngClass]="{'left-0': !frozenObj?.booking_ref_no}">
                         Reference No. <p-sortIcon field="booking_ref_no" />
                         <span class="float-right" (click)="isFrozenColumn('booking_ref_no');$event.stopPropagation()">
@@ -71,8 +79,9 @@
                             <i *ngIf="frozenObj?.booking_ref_no" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="status" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.status" [ngClass]="{'left-0': !frozenObj?.status}">
+                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="status" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status"
+                        [ngClass]="{'left-0': !frozenObj?.status}">
                         Status <p-sortIcon field="status" />
                         <span class="float-right" (click)="isFrozenColumn('status');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.status" class="pi pi-lock-open icon-size-3"></i>
@@ -100,8 +109,8 @@
                     <th pSortableColumn="from_city" pResizableColumn>
                         Destination <p-sortIcon field="from_city" />
                     </th>
-                    <th pSortableColumn="pax" pResizableColumn>
-                        Pax <p-sortIcon field="pax" />
+                    <th pResizableColumn>
+                        Pax
                     </th>
                     <th pSortableColumn="hotel_name" pResizableColumn>
                         Hotel <p-sortIcon field="hotel_name" />
@@ -138,8 +147,8 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no">
-                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no" placeholder="Search by Reference No."
-                            ariaLabel="Filter Reference No." />
+                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
+                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
                     </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status">
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
@@ -165,20 +174,18 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent" (onFilter)="getAgent($event?.filter)"
-                                    (onChange)="filter($event.value?.id)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Agent">
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                             <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -191,7 +198,8 @@
                             ariaLabel="Filter Type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mop" placeholder="Search by MOP" ariaLabel="Filter MOP" />
+                        <p-columnFilter type="text" matchMode="contains" field="mop" placeholder="Search by MOP"
+                            ariaLabel="Filter MOP" />
                     </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals"
@@ -199,8 +207,8 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierListAll"
                                     optionLabel="company_name" [(ngModel)]="selectedSupplier" [filter]="true"
-                                    filterBy="company_name" (onChange)="filter($event.value?.id)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Supplier">
+                                    filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Supplier">
                                     <ng-template let-currency pTemplate="item">
                                         <div class="flex align-items-center gap-2">
                                             <div>{{ currency.company_name }}</div>
@@ -234,23 +242,34 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter> -->
-                        <p-columnFilter type="text" matchMode="contains" field="from_city" placeholder="Search by Destination" ariaLabel="Filter Destination" />
+                        <p-columnFilter type="text" matchMode="contains" field="from_city"
+                            placeholder="Search by Destination" ariaLabel="Filter Destination" />
 
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" />
+                        <!-- <p-columnFilter type="numeric" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" /> -->
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="hotel_name" placeholder="Search by Hotel"
-                            ariaLabel="Filter Hotel" />
+                        <p-columnFilter type="text" matchMode="contains" field="hotel_name"
+                            placeholder="Search by Hotel" ariaLabel="Filter Hotel" />
                     </th>
                     <th>
-                        <p-columnFilter type="date" field="check_in_date" placeholder="Search by Check In"
-                            ariaLabel="Filter Check In" />
+                        <p-columnFilter field="check_in_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Check In">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="date" field="check_out_date" placeholder="Search by Check Out"
-                            ariaLabel="Filter Check Out" />
+                        <p-columnFilter field="check_out_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Check Out">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="no_of_rooms" placeholder="Search by Room"
@@ -265,17 +284,17 @@
                             ariaLabel="Filter Device" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="supplier_ref_no" placeholder="Search by Supplier Ref No"
-                            ariaLabel="Filter Supplier Ref No" />
+                        <p-columnFilter type="text" matchMode="contains" field="supplier_ref_no"
+                            placeholder="Search by Supplier Ref No" ariaLabel="Filter Supplier Ref No" />
                     </th>
 
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="payment_gateway_name" placeholder="Search by PG"
-                            ariaLabel="Filter PG" />
+                        <p-columnFilter type="text" matchMode="contains" field="payment_gateway_name"
+                            placeholder="Search by PG" ariaLabel="Filter PG" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="ip_address" placeholder="Search by IP Address"
-                            ariaLabel="Filter IP Address" />
+                        <p-columnFilter type="text" matchMode="contains" field="ip_address"
+                            placeholder="Search by IP Address" ariaLabel="Filter IP Address" />
                     </th>
 
                     <th *ngFor="let col of columns">
@@ -290,7 +309,7 @@
                             <mat-icon> more_vert </mat-icon>
                         </span>
                         <mat-menu #optionMenu>
-                            <button mat-menu-item (click)="view(element)">
+                            <button mat-menu-item (click)="viewData(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Info</span>
                             </button>

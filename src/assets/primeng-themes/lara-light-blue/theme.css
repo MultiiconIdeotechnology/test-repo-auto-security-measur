@@ -703,8 +703,8 @@ p-cascadeselect.p-cascadeselect-clearable .p-cascadeselect-clear-icon {
 .p-checkbox .p-checkbox-box {
   border: 2px solid #ced4da;
   background: #ffffff;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   color: #495057;
   border-radius: 6px;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
@@ -1375,6 +1375,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
 }
 .p-multiselect .p-multiselect-label.p-placeholder {
   color: #6c757d;
+  font-size: 14px;
 }
 .p-multiselect.p-multiselect-chip .p-multiselect-label {
   gap: 0.5rem;
@@ -1384,6 +1385,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   background: #EFF6FF;
   color: #1D4ED8;
   border-radius: 6px;
+  font-size: 13px;
 }
 .p-multiselect.p-multiselect-chip .p-multiselect-token .p-multiselect-token-icon {
   margin-left: 0.5rem;
@@ -1408,7 +1410,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 .p-multiselect-panel .p-multiselect-header {
-  padding: 0.75rem 1.25rem;
+  padding: 0.4rem .75rem;
   border-bottom: 1px solid #dee2e6;
   color: #343a40;
   background: #f8f9fa;
@@ -1428,8 +1430,8 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
 }
 .p-multiselect-panel .p-multiselect-header .p-multiselect-close {
   margin-left: 0.5rem;
-  width: 2rem;
-  height: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   color: #6c757d;
   border: 0 none;
   background: transparent;
@@ -1447,7 +1449,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   box-shadow: 0 0 0 0.2rem #BFDBFE;
 }
 .p-multiselect-panel .p-multiselect-items {
-  padding: 0.75rem 0;
+  padding: 0.2rem 0;
 }
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
   margin: 0;

@@ -25,6 +25,13 @@
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                 (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                 matTooltip="Saved Filter" [disabled]="isLoading">
+                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+             </button>
+
             <!-- Select Columns Button and Select Box Code -->
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
@@ -78,8 +85,8 @@
                     <th pSortableColumn="supplier_name" pResizableColumn>
                         Supplier Name <p-sortIcon field="supplier_name" />
                     </th>
-                    <th pSortableColumn="enable_for" pResizableColumn>
-                        Enable For <p-sortIcon field="enable_for" />
+                    <th  pResizableColumn>
+                        Enable For
                     </th>
                     <!-- <th class="w-full min-w-[200px]" pSortableColumn="inventory_for" pResizableColumn>
                         Inventory Type <p-sortIcon field="inventory_for" />
@@ -89,9 +96,9 @@
                         {{col.header}} <p-sortIcon [field]="col.field" />
                     </th> -->
 
-                    <th class="min-w-[200px]" pSortableColumn="inventory_for" pResizableColumn
+                    <th class="min-w-[200px]" pResizableColumn
                         [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
-                        Inventory Type <p-sortIcon field="inventory_for" />
+                        Inventory Type
                     </th>
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
                         [ngClass]="{'w-full': isLast }">
@@ -132,7 +139,7 @@
                                     [(ngModel)]="selectedSupplier"
                                     [filter]="true"
                                     filterBy="company_name"
-                                    (onChange)="filter($event.value?.company_name)"
+                                    (onChange)="filter($event.value)"
                                     [showClear]="true"
                                     appendTo="body"
                                     placeholder="Select Supplier">
@@ -158,12 +165,12 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter> -->
-                        <p-columnFilter type="text" matchMode="contains" field="enable_for" placeholder="Search by Enable For"
-                            ariaLabel="Filter Enable For" />
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="enable_for" placeholder="Search by Enable For"
+                            ariaLabel="Filter Enable For" /> -->
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="inventory_for" placeholder="Search by Inventory For"
-                        ariaLabel="Filter Inventory For" />
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="inventory_for" placeholder="Search by Inventory For"
+                        ariaLabel="Filter Inventory For" /> -->
                     </th>
                     <th *ngFor="let col of columns">
                         <p-columnFilter type="text" matchMode="contains" field="api_for" placeholder="Search by Api For"

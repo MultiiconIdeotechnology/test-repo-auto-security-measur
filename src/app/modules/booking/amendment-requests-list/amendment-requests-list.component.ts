@@ -13,7 +13,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, amendmentRequestsPermissions, messages, module_name } from 'app/security';
+import { Security, amendmentRequestsPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { AmendmentRequestsService } from 'app/services/amendment-requests.service';
 import { UpdateChargeComponent } from './update-charge/update-charge.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -33,6 +33,8 @@ import { EntityService } from 'app/services/entity.service';
 import { takeUntil } from 'rxjs';
 import { Linq } from 'app/utils/linq';
 import { StatusInfoComponent } from './status-info/status-info.component';
+import { Subscription } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -66,15 +68,16 @@ export class AmendmentRequestsListComponent
     extends BaseListingComponent {
     isFilterShow: boolean = false;
     module_name = module_name.amendmentRequests;
+    filter_table_name = filter_module_name.amendment_requests_booking;
+    private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
 
     AmendmentFilter: any;
     _selectedColumns: Column[];
-
     cols = [];
-    selectedAgent!: string;
-    selectedSupplier!: string;
+    selectedAgent:any
+    selectedSupplier:any;
     agentList: any[] = [];
     supplierList: any[] = [];
 
@@ -116,12 +119,14 @@ export class AmendmentRequestsListComponent
         private kycDocumentService: KycDocumentService,
         private confirmationService: FuseConfirmationService,
         private entityService: EntityService
+        public _filterService: CommonFilterService
     ) {
         super(module_name.amendmentRequests);
         this.key = this.module_name;
         this.sortColumn = 'amendment_request_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.AmendmentFilter = {
             agent_id: '',
@@ -162,6 +167,51 @@ export class AmendmentRequestsListComponent
 
     get selectedColumns(): Column[] {
         return this._selectedColumns;
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedSupplier = resp['table_config']['company_name']?.value;
+            // this.sortColumn = resp['sortColumn'];
+            // this.primengTable['_sortField'] = resp['sortColumn'];
+
+            if (resp?.['table_config']?.['amendment_request_time']?.value != null && resp['table_config']['amendment_request_time'].value.length) {
+                this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
+            }
+
+            if (resp['table_config']['travel_date']?.value != null) {
+              resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            this.selectedSupplier = filterData['table_config']['company_name']?.value;
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+            if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
+                this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
+            }
+
+            if (filterData['table_config']['travel_date']?.value != null) {
+              filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+        }
     }
 
     set selectedColumns(val: Column[]) {
@@ -176,8 +226,10 @@ export class AmendmentRequestsListComponent
             this.searchInputControl.value
         );
 
-        filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = '';
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.AmendmentFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.AmendmentFilter.ToDate).toFormat('yyyy-MM-dd');
         filterReq['agent_id'] = this.AmendmentFilter?.agent_id?.id || '';
         filterReq['supplier_id'] = this.AmendmentFilter?.supplier_id?.id || '';
         filterReq['status'] = this.AmendmentFilter?.status == 'All' ? '' : this.AmendmentFilter?.status;
@@ -190,8 +242,15 @@ export class AmendmentRequestsListComponent
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
 
-            for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            for(let i in this.agentList){
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
             }
         });
     }
@@ -200,6 +259,10 @@ export class AmendmentRequestsListComponent
     getSupplier(value: string, bool: boolean = true) {
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
+
+            for(let i in this.supplierList){
+               this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+            }
         });
     }
 
@@ -390,8 +453,8 @@ export class AmendmentRequestsListComponent
 
         this.amendmentrequestsService.getAirAmendmentList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
-                dt.travel_date = DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy HH:mm:ss')
+                dt.amendment_request_time = dt.amendment_request_time ? DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.travel_date = dt.travel_date ? DateTime.fromISO(dt.travel_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
             }
             Excel.export(
                 'Amendment Booking',
@@ -411,5 +474,14 @@ export class AmendmentRequestsListComponent
                 ],
                 data.data, "Amendment Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]);
         });
+    }
+
+    ngOnDestroy(): void {
+        // this.masterService.setData(this.key, this);
+
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

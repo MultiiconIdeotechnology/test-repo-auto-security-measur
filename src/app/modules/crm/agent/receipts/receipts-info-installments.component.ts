@@ -39,41 +39,41 @@ import { EntityService } from 'app/services/entity.service';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 40px 70px 150px 100px 150px;
+            grid-template-columns: 40px 190px 110px 120px 64px 300px;
         }
     `,
     ],
     standalone: true,
     imports: [
-    NgIf,
-    NgFor,
-    NgClass,
-    DatePipe,
-    AsyncPipe,
-    FormsModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatSlideToggleModule,
-    NgxMatSelectSearchModule,
-    MatTooltipModule,
-    MatAutocompleteModule,
-    RouterOutlet,
-    MatOptionModule,
-    MatDividerModule,
-    MatSortModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatMenuModule,
-    MatDialogModule,
-    CommonModule,
-    MatTabsModule,
-    MatProgressBarModule,
-]
+        NgIf,
+        NgFor,
+        NgClass,
+        DatePipe,
+        AsyncPipe,
+        FormsModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatIconModule,
+        MatSnackBarModule,
+        MatSlideToggleModule,
+        NgxMatSelectSearchModule,
+        MatTooltipModule,
+        MatAutocompleteModule,
+        RouterOutlet,
+        MatOptionModule,
+        MatDividerModule,
+        MatSortModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatMenuModule,
+        MatDialogModule,
+        CommonModule,
+        MatTabsModule,
+        MatProgressBarModule,
+    ]
 })
 export class ReceiptsInfoItemComponent {
     cols = [];
@@ -109,18 +109,36 @@ export class ReceiptsInfoItemComponent {
     }
 
     columns = [
+        // {
+        //     key: 'index',
+        //     name: 'Invoice',
+        //     is_date: false,
+        //     date_formate: '',
+        //     is_sortable: false,
+        //     class: '',
+        //     is_sticky: false,
+        //     align: '',
+        //     indicator: false,
+        //     tooltip: false,
+        //     isicon: true,
+        //     isprice: false,
+        //     reject_reason: false
+        // },
         {
-            key: 'index',
-            name: 'Invoice',
+            key: 'receipt_ref_no',
+            name: 'Reference Number',
             is_date: false,
             date_formate: '',
-            is_sortable: false,
+            is_sortable: true,
             class: '',
             is_sticky: false,
             align: '',
             indicator: false,
             tooltip: false,
-            isicon: true
+            isicon: false,
+            isprice: false,
+            reject_reason: false,
+            reference_number: true
         },
         {
             key: 'receipt_date',
@@ -134,7 +152,10 @@ export class ReceiptsInfoItemComponent {
             indicator: true,
             tooltip: false,
             is_amount: true,
-            isicon: false
+            isicon: false,
+            isprice: false,
+            reject_reason: false,
+            reference_number: false
         },
         {
             key: 'payment_amount',
@@ -147,7 +168,10 @@ export class ReceiptsInfoItemComponent {
             align: '',
             indicator: false,
             tooltip: false,
-            isicon: false
+            isicon: false,
+            isprice: true,
+            reject_reason: false,
+            reference_number: false
         },
         {
             key: 'mop',
@@ -160,7 +184,26 @@ export class ReceiptsInfoItemComponent {
             align: '',
             indicator: false,
             tooltip: false,
-            isicon: false
+            isicon: false,
+            isprice: false,
+            reject_reason: false,
+            reference_number: false
+        },
+        {
+            key: 'receipt_reject_reason',
+            name: 'Reject Reason',
+            is_date: false,
+            date_formate: '',
+            is_sortable: true,
+            class: '',
+            is_sticky: false,
+            align: '',
+            indicator: false,
+            tooltip: false,
+            isicon: false,
+            isprice: false,
+            reject_reason: true,
+            reference_number: false
         }
     ]
 
@@ -193,13 +236,23 @@ export class ReceiptsInfoItemComponent {
 
     getStatusIndicatorClass(status: string): string {
         if (status == 'Pending') {
-            return 'bg-red-600';
+            return 'bg-yellow-600';
         } else if (status == 'Confirmed') {
             return 'bg-green-600';
         } else if (status == 'Rejected') {
             return 'bg-red-600';
         } else {
             return 'bullet-pink';
+        }
+    }
+
+    getReceiptStatusClass(status: any): any {
+        if (status == true) {
+            return 'bg-green-600';
+        } else if (status == false) {
+            return 'bg-red-600';
+        } else {
+            return '';
         }
     }
 
@@ -330,10 +383,14 @@ export class ReceiptsInfoItemComponent {
     }
 
     proofAttachment(data: any) {
-        window.open(data, '_blank')
+        if (data) {
+            window.open(data, '_blank')
+        }
     }
 
     paymentAttachment(data: any) {
-        window.open(data, '_blank')
+        if (data) {
+            window.open(data, '_blank')
+        }
     }
 }

@@ -14,8 +14,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -23,6 +25,13 @@
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
@@ -63,8 +72,9 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="document_group" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.document_group" [ngClass]="{'left-0': !frozenObj?.document_group}">
+                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="document_group" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.document_group"
+                        [ngClass]="{'left-0': !frozenObj?.document_group}">
                         Group <p-sortIcon field="document_group" />
                         <span class="float-right" (click)="isFrozenColumn('document_group');$event.stopPropagation()">
                             <i *ngIf="frozenObj?.document_group" class="pi pi-lock icon-size-3"></i>
@@ -89,45 +99,45 @@
                     </th> -->
 
                     <th class="min-w-[200px]" pSortableColumn="entry_date_time" pResizableColumn
-                    [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
-                    Entry <p-sortIcon field="entry_date_time" />
-                </th>
-                <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
-                    [ngClass]="{'w-full': isLast }">
-                    {{col.header}} <p-sortIcon [field]="col.field" />
-                </th>
+                        [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
+                        Entry <p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                        [ngClass]="{'w-full': isLast }">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.document_group">
-                        <p-columnFilter type="text" matchMode="contains" field="document_group" placeholder="Search by Group"
-                            ariaLabel="Filter Group" />
+                        <p-columnFilter type="text" matchMode="contains" field="document_group"
+                            placeholder="Search by Group" ariaLabel="Filter Group" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="document_name" placeholder="Search by Document"
-                            ariaLabel="Filter Document" />
+                        <p-columnFilter type="text" matchMode="contains" field="document_name"
+                            placeholder="Search by Document" ariaLabel="Filter Document" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="maximum_size" placeholder="Search by Max File Size [KB]"
                             ariaLabel="Filter Max File Size [KB]" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="file_extentions" placeholder="Search by File Extention"
-                            ariaLabel="Filter File Extention" />
+                        <p-columnFilter type="text" matchMode="contains" field="file_extentions"
+                            placeholder="Search by File Extention" ariaLabel="Filter File Extention" />
                     </th>
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Entry">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
                     </th>
                     <th *ngFor="let col of columns">
-                        <p-columnFilter type="text" matchMode="contains" [field]="col.field" [placeholder]="'Search '+ col.header"
-                            [ariaLabel]="'Filter '+ col.header" />
+                        <p-columnFilter type="text" matchMode="contains" [field]="col.field"
+                            [placeholder]="'Search '+ col.header" [ariaLabel]="'Filter '+ col.header" />
                     </th>
                 </tr>
             </ng-template>

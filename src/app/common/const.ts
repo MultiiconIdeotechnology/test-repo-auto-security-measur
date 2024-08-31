@@ -163,9 +163,6 @@ export const Routes = {
 
         product_path: 'masters/products',
         product_route: '/masters/products',
-
-        caching_parameters_path: 'masters/caching_parameters',
-        caching_parameters_route: '/masters/caching_parameters',
     },
 
     hr:{
@@ -229,6 +226,9 @@ export const Routes = {
 
         payment_path: 'account/payment',
         payment_route: 'account/payment',
+
+        payment_link_path: 'account/payment_link',
+        payment_link_route: 'account/payment_link',
 
         receipt_path: 'account/receipt',
         receipt_route: 'account/receipt',
@@ -393,5 +393,7 @@ export const Routes = {
         pspsetting_path: 'settings/psp',
         pspsetting_route: '/settings/psp',
 
+        caching_parameters_path: 'settings/caching_parameters',
+        caching_parameters_route: '/settings/caching_parameters',
     }
 }

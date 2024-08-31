@@ -15,7 +15,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationConfig } from '@fuse/services/confirmation/confirmation.types';
+import { UserService } from 'app/core/user/user.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'fuse-confirmation-dialog',
@@ -65,8 +67,10 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 export class FuseConfirmationDialogComponent {
     formGroup: FormGroup;
     formGroupDate: FormGroup;
+    user: any = {};
+    userFlag: boolean = false;
+    public _unsubscribeAll: Subject<any> = new Subject<any>();
     minDate = this.data.datepickerParameter;
-
     confirmData: any;
     disableBtn: boolean = false;
 
@@ -76,7 +80,18 @@ export class FuseConfirmationDialogComponent {
     constructor(
         public formBuilder: FormBuilder,
         public dialogRef: MatDialogRef<FuseConfirmationDialogComponent>,
+        private userService: UserService,
         @Inject(MAT_DIALOG_DATA) public data: FuseConfirmationConfig) {
+        this.userService.user$
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((user: any) => {
+                this.user = user;
+                this.userFlag = false;
+                if (this.user?.user_name == 'tech2.multiicon@gmail.com') {
+                    this.userFlag = true;
+                }
+            });
+
     }
 
     ngOnInit() {
@@ -87,6 +102,8 @@ export class FuseConfirmationDialogComponent {
         this.formGroupDate = this.formBuilder.group({
             date: ['', Validators.required]
         })
+        if (this.data && this.data?.datepickerParameter)
+            this.formGroupDate.get('date').patchValue(this.data?.datepickerParameter)
     }
 
     updateConfirmData() {
