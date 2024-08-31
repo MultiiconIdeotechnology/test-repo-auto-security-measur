@@ -118,7 +118,7 @@ export class AmendmentRequestsListComponent
         private agentService: AgentService,
         private kycDocumentService: KycDocumentService,
         private confirmationService: FuseConfirmationService,
-        private entityService: EntityService
+        private entityService: EntityService,
         public _filterService: CommonFilterService
     ) {
         super(module_name.amendmentRequests);

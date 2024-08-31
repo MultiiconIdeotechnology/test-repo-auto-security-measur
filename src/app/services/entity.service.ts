@@ -73,7 +73,6 @@ export class EntityService {
         this.installmentCall.next(item);
     }
 
-    private appliedOnCall = new ReplaySubject<any>();
     private amendmentStatusInfo = new ReplaySubject<any>();
     public onInstallmentCall(): Observable<any> {
         return this.installmentCall.asObservable();
@@ -152,9 +151,6 @@ export class EntityService {
         this.refreshreferralEntityCall.next(item);
     }
 
-  public onleadEntityCall(): Observable<any> {
-    return this.leadEntityCall.asObservable();
-  }
   
   // Amendment Update Charge Drawer
   public raiseUpdateChargeCall(item: any): void {

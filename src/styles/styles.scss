@@ -39,7 +39,6 @@ th .ng-star-inserted {
     border-color: #2ab9a3ba !important;
 }
 
-.mat-mdc-radio-button .mdc-radio .mdc-radio__native-control:enabled + .mdc-radio__background .mdc-radio__inner-circle {
     .mat-mdc-radio-button
     .mdc-radio
     .mdc-radio__native-control:enabled
@@ -870,5 +869,4 @@ div:where(.swal2-container) button:where(.swal2-close){
 .tooltip:hover::before {
     opacity: 1;
     z-index: 999;
-
 }
