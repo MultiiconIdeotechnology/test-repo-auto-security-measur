@@ -147,15 +147,20 @@ export class GridUtils {
     // Date Range convert in String
     static convertArrayToString(dates: any): any {
         console.log("dates", dates);
-        if(dates && dates.length && typeof dates[0] == 'object') {
-            return dates.map((dateStr: any) => {
-                const date = new Date(dateStr);
-                return date.toISOString().slice(0, -1);
-            }).join(','); 
-        } else if(dates && dates.length && typeof dates[0] == 'string') {
-            return dates.join(",");
-        } else {
-            return dates
+        if(dates && dates.length){
+            if( dates[0] instanceof Date) {
+                return dates.map((dateStr: any) => {
+                    const date = new Date(dateStr);
+                    return date.toISOString().slice(0, -1);
+                }).join(','); 
+            } else if( typeof dates[0] == 'string') {
+                return dates.join(",");
+            } else if( typeof dates[0] == 'object' && !(dates[0] instanceof Date)) {
+                console.log("dates supplier", dates)
+                let result = dates.map((item:any) => item.id_by_value || item.id).join(',');
+                return result;
+            }
+
         }
     }
     

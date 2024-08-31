@@ -204,7 +204,7 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
+                        <!-- <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList"
@@ -222,12 +222,12 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
 
-                        <!-- <p-columnFilter field="company_name" matchMode="in" [showMenu]="false">
+                        <p-columnFilter field="company_name" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="statusList" optionLabel="company_name"
-                                    placeholder="Select Supplier" (onChange)="filter($event.value)" display="chip"
+                                <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
+                                    placeholder="Select Supplier" (onChange)="filter($event.value)"
                                     appendTo="body">
                                     <ng-template let-agent pTemplate="item">
                                         <div>
@@ -236,7 +236,7 @@
                                     </ng-template>
                                 </p-multiSelect>
                             </ng-template>
-                        </p-columnFilter> -->
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
