@@ -118,21 +118,23 @@ export class GridUtils {
                             matchMode : filter[key].matchMode
                         };
                     } else {
-                        if(filter[key] && filter[key].value && typeof filter[key].value === 'object') {
-                            if(filter[key].value?.id || filter[key].value?.id_by_value) {
-                                let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
-                                validFilter[key] = {
-                                    value : id_by_value,
-                                    matchMode : filter[key].matchMode
-                                };
+                        if(!Array.isArray(filter[key].value)) {
+                            if(filter[key] && filter[key].value && typeof filter[key].value === 'object') {
+                                if(filter[key].value?.id || filter[key].value?.id_by_value) {
+                                    let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
+                                    validFilter[key] = {
+                                        value : id_by_value,
+                                        matchMode : filter[key].matchMode
+                                    };
+                                } else {
+                                    validFilter[key] = {
+                                        value : this.convertArrayToString(filter[key].value),
+                                        matchMode : filter[key].matchMode
+                                    };
+                                }
                             } else {
-                                validFilter[key] = {
-                                    value : this.convertArrayToString(filter[key].value),
-                                    matchMode : filter[key].matchMode
-                                };
+                                validFilter[key] = filter[key];
                             }
-                        } else {
-                            validFilter[key] = filter[key];
                         }
                     }
                 }
@@ -144,6 +146,7 @@ export class GridUtils {
 
     // Date Range convert in String
     static convertArrayToString(dates: any): any {
+        console.log("dates", dates);
         if(dates && dates.length && typeof dates[0] == 'object') {
             return dates.map((dateStr: any) => {
                 const date = new Date(dateStr);
