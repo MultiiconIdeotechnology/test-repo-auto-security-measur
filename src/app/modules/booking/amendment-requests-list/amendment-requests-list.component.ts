@@ -80,7 +80,7 @@ export class AmendmentRequestsListComponent
     supplierList: any[] = [];
     isMenuOpen: boolean = false;
 
-    statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Expired'];
+    statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Account Audit', 'Expired'];
     typeList = [ 'Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
 
     constructor(
