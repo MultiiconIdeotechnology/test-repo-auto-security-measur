@@ -119,7 +119,7 @@
                     <th pSortableColumn="amendment_request_time" pResizableColumn>
                         Requested On <p-sortIcon field="amendment_request_time" />
                     </th>
-                    <th pSortableColumn="travel_date" pResizableColumn>
+                    <th class="min-w-[200px]" pSortableColumn="travel_date" pResizableColumn>
                         Travel Date <p-sortIcon field="travel_date" />
                     </th>
                     <th pSortableColumn="amendment_confirmation_time" pResizableColumn>
@@ -172,12 +172,12 @@
                             </ng-template>
                         </p-columnFilter> -->
 
-                        <p-columnFilter field="amendment_status" matchMode="in" [showMenu]="false">
+                        <p-columnFilter  field="amendment_status" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="statusList" placeholder="Select Status"
-                                    (onChange)="filter($event.value)" appendTo="body">
+                                <p-multiSelect class="multi-checkbox-filter status-filter" [ngModel]="value" [options]="statusList" optionLabel="label" placeholder="Select Status"
+                                    (onChange)="filter($event.value)" [filter]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <p>{{option}}</p>
+                                        <p>{{option.label}}</p>
                                     </ng-template>
                                 </p-multiSelect>
                             </ng-template>

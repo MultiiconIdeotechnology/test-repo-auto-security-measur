@@ -80,7 +80,20 @@ export class AmendmentRequestsListComponent
     supplierList: any[] = [];
     isMenuOpen: boolean = false;
 
-    statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Account Audit', 'Expired'];
+    // statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Account Audit', 'Expired'];
+     statusList = [
+        { label: 'Pending', value: 'Pending' },
+        { label: 'Inprocess', value: 'Inprocess' },
+        { label: 'Cancelled', value: 'Cancelled' },
+        { label: 'Confirm', value: 'Confirm' },
+        { label: 'Rejected', value: 'Rejected' },
+        { label: 'Completed', value: 'Completed' },
+        { label: 'Quotation Sent', value: 'Quotation Sent' },
+        { label: 'Partial Cancellation Pending', value: 'Partial Cancellation Pending' },
+        { label: 'Account Audit', value: 'Account Audit' },
+        { label: 'Expired', value: 'Expired' }
+    ];
+    
     typeList = [ 'Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
 
     constructor(
