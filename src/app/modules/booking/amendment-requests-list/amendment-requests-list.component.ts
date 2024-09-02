@@ -35,6 +35,7 @@ import { Linq } from 'app/utils/linq';
 import { StatusInfoComponent } from './status-info/status-info.component';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -61,7 +62,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         PrimeNgImportsModule,
         UpdateChargeComponent,
         AmendmentRequestEntryComponent,
-        StatusInfoComponent
+        StatusInfoComponent,
+        MultiSelectModule
     ],
 })
 export class AmendmentRequestsListComponent
@@ -78,27 +80,31 @@ export class AmendmentRequestsListComponent
     cols = [];
     selectedAgent:any
     selectedSupplier:any;
+    selectedStatus:any;
     agentList: any[] = [];
     supplierList: any[] = [];
 
+    isMenuOpen: boolean = false;
+
     typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
     statusList = [
-        "Request Sent to Supplier",
-        "Request to Supplier Failed",
-        "Quotation Sent",
-        "Quotation Confirmed By TA",
-        "Quotation Rejected By TA",
-        "Confirmation Sent To Supplier",
-        "Payment Completed",
-        "Refund Process",
-        "Refund Completed",
-        "Completed",
-        "Rejected",
-        "Cancelled",
-        "Partial Payment Completed",
-        "Account Rejected",
-        "Account Audit"
+       { label:  "Request Sent to Supplier", value: 'Request Sent to Supplier' },
+       { label:  "Request to Supplier Failed", value: 'Request to Supplier Failed' },
+       { label:  "Quotation Sent", value: 'Quotation Sent' },
+       { label:  "Quotation Confirmed By TA", value: 'Quotation Confirmed By TA' },
+       { label:  "Quotation Rejected By TA", value: 'Quotation Rejected By TA' },
+       { label:  "Confirmation Sent To Supplier", value: 'Confirmation Sent To Supplier' },
+       { label:  "Payment Completed", value: 'Payment Completed' },
+       { label:  "Refund Process", value: 'Refund Process' },
+       { label:  "Refund Completed", value: 'Refund Completed' },
+       { label:  "Completed", value: 'Completed' },
+       { label:  "Rejected", value: 'Rejected' },
+       { label:  "Cancelled", value: 'Cancelled' },
+       { label:  "Partial Payment Completed", value: 'Partial Payment Completed' },
+       { label:  "Account Rejected", value: 'Account Rejected' },
+       { label:  "Account Audit" , value: 'Account Audit' }
     ];
+    
     statusListForAgent = [
         "Request Sent",
         "Quotation Received",

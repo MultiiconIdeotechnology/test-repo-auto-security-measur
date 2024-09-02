@@ -271,26 +271,7 @@
                             </div>
                         </div>
                         <div class="pb-2 pt-2 overflow-hidden w-full flex-row flex">
-                            <div class="flex flex-col w-full">
-                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Remark</span>
-                                <span *ngIf="purchase_reg?.purchase_product" class="text-base dark:text-white text-black">{{record?.rm_remark ?
-                                    record?.rm_remark : " -"}}</span>
-
-                                <span *ngIf="receipt_reg?.receipt_register" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
-                                    dataList?.rm_remark : " -"}}</span>
-
-                                <span *ngIf="account_reg?.account_receipt" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
-                                    dataList?.rm_remark : " -"}}</span>
-
-                                <span *ngIf="sales_product_reg?.sales_product" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
-                                    dataList?.rm_remark : " -"}}</span>
-
-                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
-                                    dataList?.rm_remark : " -"}}</span>
-                            </div>
-                        </div>
-                        <div class="pb-2 pt-2 overflow-hidden w-full flex-row flex">
-                            <div class="flex flex-col w-full">
+                            <div class="flex flex-col w-[40%]">
                                 <span class="text-base font-medium text-secondary dark:text-[#687798]">
                                     Proof Attachment
                                 </span>
@@ -325,7 +306,65 @@
                                     </mat-icon>
                                 </span>
                             </div>
+
+                            <div class="flex flex-col w-[40%]" *ngIf="dataList?.product_status == 'Cancelled'">
+                                <span class="text-md font-medium text-secondary dark:text-[#687798]">Cancel Date</span>
+                                <span *ngIf="purchase_reg?.purchase_product" class="text-base w-full dark:text-white text-black">{{ dataList?.cancel_date_time ?
+                                    (dataList?.cancel_date_time | date:'dd-MM-yyyy') : " -"}}</span>
+
+                                <span *ngIf="receipt_reg?.receipt_register" class="text-base w-full dark:text-white text-black">{{ dataList?.cancel_date_time ?
+                                    (dataList?.cancel_date_time | date:'dd-MM-yyyy') : " -"}}</span>
+
+                                <span *ngIf="account_reg?.account_receipt" class="text-base w-full dark:text-white text-black">{{ dataList?.cancel_date_time ?
+                                    (dataList?.cancel_date_time | date:'dd-MM-yyyy') : " -"}}</span>
+
+                                <span *ngIf="sales_product_reg?.sales_product" class="text-base w-full dark:text-white text-black">{{ dataList?.cancel_date_time ?
+                                    (dataList?.cancel_date_time | date:'dd-MM-yyyy') : " -"}}</span>
+
+                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base w-full dark:text-white text-black">{{ dataList?.cancel_date_time ?
+                                    (dataList?.cancel_date_time | date:'dd-MM-yyyy') : " -"}}</span>
+                            </div>
                         </div>
+                        <div class="pb-2 pt-2 overflow-hidden w-full flex-row flex" *ngIf="dataList?.product_status == 'Cancelled'">
+                            <div class="flex flex-col w-full">
+                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Cancel Remark</span>
+                                <span *ngIf="purchase_reg?.purchase_product" class="text-base dark:text-white text-black">{{dataList?.cancel_remark ?
+                                    dataList?.cancel_remark : " - "}}</span>
+
+                                <span *ngIf="receipt_reg?.receipt_register" class="text-base dark:text-white text-black">{{dataList?.cancel_remark ?
+                                    dataList?.cancel_remark : " - "}}</span>
+
+                                <span *ngIf="account_reg?.account_receipt" class="text-base dark:text-white text-black">{{dataList?.cancel_remark ?
+                                    dataList?.cancel_remark : " -"}}</span>
+
+                                <span *ngIf="sales_product_reg?.sales_product" class="text-base dark:text-white text-black">{{dataList?.cancel_remark ?
+                                    dataList?.cancel_remark : " -"}}</span>
+
+                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base dark:text-white text-black">{{dataList?.cancel_remark ?
+                                    dataList?.cancel_remark : " -"}}</span>
+                            </div>
+                        </div>
+
+                        <div class="pb-2 pt-2 overflow-hidden w-full flex-row flex">
+                            <div class="flex flex-col w-full">
+                                <span class="text-base font-medium text-secondary dark:text-[#687798]">Remark</span>
+                                <span *ngIf="purchase_reg?.purchase_product" class="text-base dark:text-white text-black">{{record?.rm_remark ?
+                                    record?.rm_remark : " -"}}</span>
+
+                                <span *ngIf="receipt_reg?.receipt_register" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
+                                    dataList?.rm_remark : " -"}}</span>
+
+                                <span *ngIf="account_reg?.account_receipt" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
+                                    dataList?.rm_remark : " -"}}</span>
+
+                                <span *ngIf="sales_product_reg?.sales_product" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
+                                    dataList?.rm_remark : " -"}}</span>
+
+                                <span *ngIf="agent_info_reg?.agentInfo" class="text-base dark:text-white text-black">{{dataList?.rm_remark ?
+                                    dataList?.rm_remark : " -"}}</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </mat-tab>

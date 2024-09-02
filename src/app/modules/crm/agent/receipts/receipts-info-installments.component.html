@@ -50,7 +50,7 @@
                                     (click)="paymentAttachment(ListItem['proof_attachment'])">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                         class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
-                                    <span style="font-weight: 600">Proof Attachment</span>
+                                    <span style="font-weight: 600" class="dark:text-white">Proof Attachment</span>
                                 </button>
 
                                 <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['payment_attachment'],
@@ -58,16 +58,17 @@
                                     (click)="paymentAttachment(ListItem['payment_attachment'])">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
                                         class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
-                                    <span style="font-weight: 600">Payment Attachment</span>
+                                    <span style="font-weight: 600" class="dark:text-white">Payment Attachment</span>
                                 </button>
 
-                                <button mat-menu-item
-                                    [ngClass]="{'cursor-pointer text-blue-600': ListItem['isInvoice'], 'cursor-not-allowed text-blue-100': !ListItem['isInvoice']}"
-                                    (click)="downloadInvoice(ListItem['receiptid'])"
-                                    [attr.disabled]="!ListItem['isInvoice'] ? true : null">
+                                <button mat-menu-item [ngClass]="{
+                                  'cursor-pointer text-blue-600': ListItem['receipt_Status'] === 'Confirmed',
+                                  'cursor-not-allowed text-blue-100': ListItem['receipt_Status'] !== 'Confirmed' }"
+                                   [disabled]="ListItem['receipt_Status'] !== 'Confirmed'"
+                                    (click)="ListItem['receipt_Status'] === 'Confirmed' ? downloadInvoice(ListItem['receiptid']) : null">
                                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray"
-                                        class="rounded-full cursor-pointer text-blue-600 p-0.5"></mat-icon>
-                                    <span style="font-weight: 600">Invoice</span>
+                                        class="rounded-full p-0.5 cursor-pointer text-blue-600"></mat-icon>
+                                    <span style="font-weight: 600" class="dark:text-white">Invoice</span>
                                 </button>
 
                             </mat-menu>

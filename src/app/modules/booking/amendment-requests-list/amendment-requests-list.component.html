@@ -33,10 +33,10 @@
 
            <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                 (click)="_filterService.openDrawer(filter_table_name, primengTable)"
-                 matTooltip="Saved Filter" [disabled]="isLoading">
-                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
-             </button>
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
 
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
@@ -124,6 +124,7 @@
 
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns;">
                         {{col.header}} <p-sortIcon [field]="col.field" />
+
                     </th>
                 </tr>
 
@@ -148,15 +149,26 @@
                         </p-columnFilter>
                     </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.amendment_status">
-                        <p-columnFilter field="amendment_status" matchMode="equals" [showMenu]="false">
+                        <!-- <p-columnFilter field="amendment_status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
-                                    appendTo="body">
+                                (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter> -->
+
+                        <p-columnFilter  field="amendment_status" matchMode="in" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect class="multi-checkbox-filter status-filter" [ngModel]="value" [options]="statusList" optionLabel="label" placeholder="Select Status"
+                                    (onChange)="filter($event.value)" [filter]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <p>{{option}}</p>
+                                        <p>{{option.label}}</p>
                                     </ng-template>
-                                </p-dropdown>
+                                </p-multiSelect>
                             </ng-template>
                         </p-columnFilter>
                     </th>
@@ -182,15 +194,13 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="company_name" placeholder="Search by Supplier"
-                            ariaLabel="Filter Supplier" /> -->
-                        <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
+                        <!-- <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="supplierList" [(ngModel)]="selectedSupplier" optionLabel="company_name"
-                                    [filter]="true" filterBy="company_name"
-                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Supplier">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList"
+                                    [(ngModel)]="selectedSupplier" optionLabel="company_name" [filter]="true"
+                                    filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
                                             <div [value]="agent.company_name">
@@ -201,6 +211,20 @@
                                         </div>
                                     </ng-template>
                                 </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter> -->
+
+                        <p-columnFilter field="company_name" matchMode="in" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
+                                    placeholder="Select Supplier" (onChange)="filter($event.value)"
+                                    appendTo="body">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div>
+                                            {{agent.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
                             </ng-template>
                         </p-columnFilter>
                     </th>
@@ -410,3 +434,4 @@
 <app-update-charge></app-update-charge>
 <app-amendment-request-entry></app-amendment-request-entry>
 <app-status-info></app-status-info>
+

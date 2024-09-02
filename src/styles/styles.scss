@@ -489,9 +489,9 @@ th {
         padding: 0.25rem 0.55rem !important;
     }
 
-    .p-multiselect .p-multiselect-label {
-        padding: 0.25rem 0.45rem !important;
-    }
+    // .p-multiselect .p-multiselect-label {
+    //     padding: 0.25rem 0.45rem !important;
+    // }
 
     .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
         padding: 0.35rem 0.75rem !important;
@@ -547,7 +547,7 @@ th {
 }
 
 // primeNg dropdown filter
-.filter-dropdown .p-dropdown {
+.filter-dropdown .p-dropdown,.p-multiselect-trigger  {
     height: 32px;
 
     svg {
@@ -870,3 +870,18 @@ div:where(.swal2-container) button:where(.swal2-close){
     opacity: 1;
     z-index: 999;
 }
+
+//multiple checkbox filter hide all checkbox
+// .multi-checkbox-filter {
+//     .p-multiselect-header{
+//         .p-checkbox{
+//             display: none !important;
+//         }
+//     }
+// }
+
+
+
+
+
+

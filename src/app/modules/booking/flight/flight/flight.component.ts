@@ -103,6 +103,7 @@ export class FlightComponent extends BaseListingComponent {
         { label: 'Hold', value: 'Hold' },
         { label: 'Payment Completed', value: 'Payment Completed' },
         { label: 'Partial Payment Completed', value: 'Partial Payment Completed' },
+        { label: 'Assign To Refund', value: 'Assign To Refund' },
     ];
 
     bookingFromList: any = [

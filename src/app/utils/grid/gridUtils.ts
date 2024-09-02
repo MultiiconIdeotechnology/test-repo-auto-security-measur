@@ -31,7 +31,7 @@ export class GridUtils {
 
         return filterReq;
     }
-   
+
 
     public static resetPaginator(paginator: MatPaginator): void {
         if (paginator)
@@ -78,7 +78,7 @@ export class GridUtils {
             sortOrder = event.sortOrder === 1 ? 0 : 1; // PrimeNG uses 1 for asc and -1 for desc
         }
 
-        if(primengTable && primengTable._sortField) {
+        if (primengTable && primengTable._sortField) {
             sort = primengTable._sortField || event.sortField;
             sortOrder = primengTable._sortOrder === 1 ? 0 : 1;
         }
@@ -94,14 +94,14 @@ export class GridUtils {
 
         return filterReq;
     }
-    
-    
+
+
 
     // Column Filter Data
     private static validateFilter(filter: any, activeFiltData: any): any {
         const validFilter: any = {};
-        
-        if(filter) {
+
+        if (filter) {
             if (Object.keys(filter).length === 0) {
                 // Default save filter applied first time
                 if (activeFiltData && activeFiltData.grid_config) {
@@ -112,27 +112,29 @@ export class GridUtils {
 
             Object.keys(filter).forEach(key => {
                 if (filter[key].value !== null && filter[key].value !== undefined && filter[key].value !== '') {
-                    if(filter[key].value && filter[key].value.length && Array.isArray(filter[key].value)) {
+                    if (filter[key].value && filter[key].value.length && Array.isArray(filter[key].value)) {
                         validFilter[key] = {
-                            value : this.convertArrayToString(filter[key].value),
-                            matchMode : filter[key].matchMode
+                            value: this.convertArrayToString(filter[key].value),
+                            matchMode: filter[key].matchMode
                         };
                     } else {
-                        if(filter[key] && filter[key].value && typeof filter[key].value === 'object') {
-                            if(filter[key].value?.id || filter[key].value?.id_by_value) {
-                                let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
-                                validFilter[key] = {
-                                    value : id_by_value,
-                                    matchMode : filter[key].matchMode
-                                };
+                        if (!Array.isArray(filter[key].value)) {
+                            if (filter[key] && filter[key].value && typeof filter[key].value === 'object') {
+                                if (filter[key].value?.id || filter[key].value?.id_by_value) {
+                                    let id_by_value = filter[key].value?.id_by_value ? filter[key].value?.id_by_value : filter[key].value?.id;
+                                    validFilter[key] = {
+                                        value: id_by_value,
+                                        matchMode: filter[key].matchMode
+                                    };
+                                } else {
+                                    validFilter[key] = {
+                                        value: this.convertArrayToString(filter[key].value),
+                                        matchMode: filter[key].matchMode
+                                    };
+                                }
                             } else {
-                                validFilter[key] = {
-                                    value : this.convertArrayToString(filter[key].value),
-                                    matchMode : filter[key].matchMode
-                                };
+                                validFilter[key] = filter[key];
                             }
-                        } else {
-                            validFilter[key] = filter[key];
                         }
                     }
                 }
@@ -144,14 +146,19 @@ export class GridUtils {
 
     // Date Range convert in String
     static convertArrayToString(dates: any): any {
-        if(dates && dates.length) {
-            return dates.map((dateStr: any) => {
-                const date = new Date(dateStr);
-                return date.toISOString().slice(0, -1);
-            }).join(','); 
+        if (dates && dates.length) {
+            if (dates[0] instanceof Date) {
+                return dates.map((dateStr: any) => {
+                    const date = new Date(dateStr);
+                    return date.toISOString().slice(0, -1);
+                }).join(',');
+            } else {
+                let result = dates.map((item: any) => item.id_by_value || item.id || item.label).join(',');
+                return result;
+            }
         } else {
-            return dates;
+            return dates
         }
     }
-    
+
 }

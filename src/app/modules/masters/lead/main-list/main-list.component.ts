@@ -125,7 +125,6 @@ export class MainListComponent extends BaseListingComponent {
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
         this.selectedRm = resp['table_config']['relation_manager']?.value;
-        console.log("resp['table_config']", resp['table_config'])
         // this.sortColumn = resp['sortColumn'];
         // this.primengTable['_sortField'] = resp['sortColumn'];
         if(resp['table_config']['entry_date_time'].value){

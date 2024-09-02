@@ -63,7 +63,7 @@
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]="['agent_name', 'supplier_name','booking_status', 'pnr','departure_date']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
@@ -90,10 +90,10 @@
                     <th pSortableColumn="pnr" pResizableColumn>
                         PNR <p-sortIcon field="pnr" />
                     </th>
-                    <th pSortableColumn="departure_date" pResizableColumn>
+                    <th class="min-w-[200px]" pSortableColumn="departure_date" pResizableColumn>
                         Departure Date <p-sortIcon field="departure_date" />
                     </th>
-                    <th pSortableColumn="arrival_date" pResizableColumn>
+                    <th class="min-w-[200px]" pSortableColumn="arrival_date" pResizableColumn>
                         Arrival Date <p-sortIcon field="arrival_date" />
                     </th>
                     <th pSortableColumn="trip_type" pResizableColumn>
@@ -135,9 +135,7 @@
                             </p-columnFilter>
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="supplier_name" placeholder="Search by Supplier"
-                            ariaLabel="Filter Supplier" /> -->
-                        <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals" [showMenu]="false">
+                        <!-- <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="supplierList" [(ngModel)]="selectedSupplier" optionLabel="company_name"
                                     [filter]="true" filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
@@ -153,13 +151,24 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
+                        </p-columnFilter> -->
+
+                        <p-columnFilter field="supplier_name" matchMode="in" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
+                                    placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
+                                    <ng-template let-supplier pTemplate="item">
+                                        <div>
+                                            {{supplier.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
                         </p-columnFilter>
                     </th>
 
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="booking_status" placeholder="Search by Status"
-                            ariaLabel="Filter Status" /> -->
-                        <p-columnFilter field="booking_status" matchMode="equals" [showMenu]="false">
+                        <!-- <p-columnFilter field="booking_status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
                                     (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
@@ -168,6 +177,17 @@
                                         <p>{{option}}</p>
                                     </ng-template>
                                 </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter> -->
+
+                        <p-columnFilter field="booking_status" matchMode="in" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="statusList" optionLabel="label" placeholder="Select Status"
+                                    (onChange)="filter($event.value)" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
+                                    </ng-template>
+                                </p-multiSelect>
                             </ng-template>
                         </p-columnFilter>
                     </th>
