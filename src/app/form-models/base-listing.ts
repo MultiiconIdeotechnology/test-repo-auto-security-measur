@@ -390,9 +390,7 @@ export abstract class BaseListingComponent implements OnInit {
             adjustedEndDate.setHours(23, 59, 59, 999);
 
             filter([adjustedStartDate, adjustedEndDate]);
-        } else {
-            filter(null);
-        }
+        } 
     }
 }
 

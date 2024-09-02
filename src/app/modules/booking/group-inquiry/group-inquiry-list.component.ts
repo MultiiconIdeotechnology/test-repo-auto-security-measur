@@ -65,7 +65,18 @@ export class GroupInquiryListComponent
     selectedSupplier:any;
     agentList:any[] = [];
     supplierList:any[]= [];
-    statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Expired'];
+    statusList = [
+        { label: 'Pending', value: 'Pending' },
+        { label: 'Inprocess', value: 'Inprocess' },
+        { label: 'Cancelled', value: 'Cancelled' },
+        { label: 'Confirm', value: 'Confirm' },
+        { label: 'Rejected', value: 'Rejected' },
+        { label: 'Completed', value: 'Completed' },
+        { label: 'Quotation Sent', value: 'Quotation Sent' },
+        { label: 'Partial Cancellation Pending', value: 'Partial Cancellation Pending' },
+        { label: 'Expired', value: 'Expired' }
+    ];
+    
     cols = [];
 
     constructor(
