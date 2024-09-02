@@ -1404,7 +1404,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
 }
 
 .p-multiselect-panel {
-  background: #0f172a;
+  background: #1e293b;
   color: rgba(255, 255, 255, 0.87);
   border: 1px solid #2a3243;
   border-radius: 3px;
@@ -1443,7 +1443,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
 .p-multiselect-panel .p-multiselect-header .p-multiselect-close:enabled:hover {
   color: rgba(255, 255, 255, 0.87);
   border-color: transparent;
-  background: rgb(0 0 0 / 3%);
+  background: rgb(19, 18, 18);
 }
 .p-multiselect-panel .p-multiselect-header .p-multiselect-close:focus {
   outline: 0 none;
