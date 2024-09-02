@@ -1358,7 +1358,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   background: #ffffff;
   border: 1px solid #ced4da;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-  border-radius: 3px;
+  border-radius: 6px;
 }
 .p-multiselect:not(.p-disabled):hover {
   border-color: #3B82F6;

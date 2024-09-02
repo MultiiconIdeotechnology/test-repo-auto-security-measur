@@ -824,7 +824,7 @@ p-chips.p-chips-clearable .p-chips-clear-icon {
   background: #0f172a;
   border: 1px solid #2a3243;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-  border-radius: 3px;
+  border-radius: 6px;
 }
 .p-dropdown:not(.p-disabled):hover {
   border-color: #64B5F6;
@@ -1191,7 +1191,7 @@ p-inputswitch.ng-dirty.ng-invalid > .p-inputswitch {
   border: 1px solid #2a3243;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   appearance: none;
-  border-radius: 3px;
+  border-radius: 6px;
 }
 .p-inputtext:enabled:hover {
   border-color: #64B5F6;
@@ -1357,7 +1357,7 @@ p-listbox.ng-dirty.ng-invalid > .p-listbox {
   background: #0f172a;
   border: 1px solid #2a3243;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-  border-radius: 3px;
+  border-radius: 6px;
   height: 32px;
 }
 .p-multiselect:not(.p-disabled):hover {
