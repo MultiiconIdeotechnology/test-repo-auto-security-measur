@@ -705,7 +705,7 @@ p-cascadeselect.p-cascadeselect-clearable .p-cascadeselect-clear-icon {
   width: 18px;
   height: 18px;
   color: rgba(255, 255, 255, 0.87);
-  border-radius: 3px;
+  border-radius: 5px;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 .p-checkbox .p-checkbox-box .p-checkbox-icon {

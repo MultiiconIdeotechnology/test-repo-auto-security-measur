@@ -119,7 +119,6 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
 
   ngOnInit() {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      console.log("resp", resp);
       this.selectedKycProfile = resp['table_config']['kyc_profile_id_filters']?.value;
       this.selectedRm = resp['table_config']['relation_manager']?.value;
       // this.sortColumn = resp['sortColumn'];

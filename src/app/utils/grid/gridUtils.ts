@@ -146,7 +146,6 @@ export class GridUtils {
 
     // Date Range convert in String
     static convertArrayToString(dates: any): any {
-        console.log("dates", dates)
         if (dates && dates.length) {
             if (dates[0] instanceof Date) {
                 return dates.map((dateStr: any) => {
