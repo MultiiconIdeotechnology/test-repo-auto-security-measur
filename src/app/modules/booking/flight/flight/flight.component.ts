@@ -404,6 +404,9 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     statusUpdate(data) {
+        if (!Security.hasPermission(bookingsFlightPermissions.statusUpdatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
         this.matDialog
             .open(StatusUpdateComponent, {
                 data: data,
