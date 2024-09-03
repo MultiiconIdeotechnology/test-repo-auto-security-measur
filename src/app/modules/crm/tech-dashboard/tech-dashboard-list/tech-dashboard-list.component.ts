@@ -23,6 +23,8 @@ import { TechDashboardExpiredComponent } from '../expired/expired.component';
 import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ItemService } from 'app/services/item.service';
+import { GlobalSearchService } from 'app/services/global-search.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-list',
@@ -76,13 +78,14 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     searchInputControlCompleted = new FormControl('');
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
-    dataList = [];
+    itemList = [];
     dataListArchive = [];
     total = 0;
 
     constructor(
         private agentService: AgentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private globalSearchService: GlobalSearchService
     ) { }
 
     public getTabsPermission(tab: string): boolean {
@@ -112,7 +115,11 @@ export class CRMTechDashboardListComponent implements OnDestroy {
 
         // calling agent Api for first time on dropdown
         this.getAgent("");
+        this.globalSearchService.getItemList();
+        this.globalSearchService.getProductList();
     }
+
+  
 
     public tabChanged(event: any): void {
         const tabName = event?.tab?.ariaLabel;

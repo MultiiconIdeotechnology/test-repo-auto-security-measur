@@ -34,6 +34,7 @@ import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { GlobalSearchService } from 'app/services/global-search.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-completed',
@@ -106,7 +107,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         private matDialog: MatDialog,
         private conformationService: FuseConfirmationService,
         private agentService: AgentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        public globalSearchService: GlobalSearchService
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;

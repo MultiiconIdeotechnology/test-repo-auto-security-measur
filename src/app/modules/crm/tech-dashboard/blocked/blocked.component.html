@@ -44,12 +44,38 @@
                     <p-columnFilter field="item_code" type="text" placeholder="Search by Item code" ariaLabel="Filter Item code"></p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="item_name" placeholder="Search by Item"
-                        ariaLabel="Filter Item" />
+                    <!-- <p-columnFilter type="text" matchMode="contains" field="item_name" placeholder="Search by Name"
+                        ariaLabel="Filter Item" /> -->
+                    <p-columnFilter field="item_name" matchMode="in" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-multiSelect [ngModel]="value" [options]="globalSearchService.itemList"
+                                optionLabel="itemInfo" placeholder="Search by Name" (onChange)="filter($event.value)"
+                                appendTo="body">
+                                <ng-template let-item pTemplate="item">
+                                    <div>
+                                        {{item.itemInfo}}
+                                    </div>
+                                </ng-template>
+                            </p-multiSelect>
+                        </ng-template>
+                    </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="product_name" placeholder="Search by Product"
-                        ariaLabel="Filter Product" />
+                    <!-- <p-columnFilter type="text" matchMode="contains" field="product_name"
+                        placeholder="Search by Product" ariaLabel="Filter Product" /> -->
+                    <p-columnFilter field="product_name" matchMode="in" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-multiSelect [ngModel]="value" [options]="globalSearchService.productList"
+                                optionLabel="productInfo" placeholder="Search by Name" (onChange)="filter($event.value)"
+                                appendTo="body">
+                                <ng-template let-product pTemplate="item">
+                                    <div>
+                                        {{product.productInfo}}
+                                    </div>
+                                </ng-template>
+                            </p-multiSelect>
+                        </ng-template>
+                    </p-columnFilter>
                 </th>
                 <th>
                     <p-columnFilter type="numeric" field="agentCode" placeholder="Search by Agent Code"

@@ -35,7 +35,6 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
-
 @Component({
     selector: 'app-flight',
     templateUrl: './flight.component.html',
@@ -89,6 +88,7 @@ export class FlightComponent extends BaseListingComponent {
     selectedFromAirport: any;
     selectedSupplier: any;
     selectedAgent: any;
+    selectionDateDropdown: any;
     statusList = [
         { label: 'Pending', value: 'Pending' },
         { label: 'Rejected', value: 'Rejected' },
@@ -110,6 +110,17 @@ export class FlightComponent extends BaseListingComponent {
         { label: 'Online', value: false },
         { label: 'Import', value: true }
     ]
+
+    // dateRangeList: any[] = [
+    //     { label: 'Today', value: 'today' },
+    //     { label: 'Last 3 Days', value: 'Last 3 Days' },
+    //     { label: 'This Week', value: 'This Week' },
+    //     { label: 'This Month', value: 'This Month' },
+    //     { label: 'Last 3 Months', value: 'Last 3 Months' },
+    //     { label: 'Last 6 Months', value: 'Last 6 Months' },
+    //     { label: 'Custom Date Range', value: 'Custom Date Range' }
+    // ];
+    dateRangeValue: Date[];
     // clipboard: any;
     // toastr: any;
 
@@ -238,6 +249,55 @@ export class FlightComponent extends BaseListingComponent {
         this.clipboard.copy(link);
         this.toastr.showToast('success', 'Copied');
     }
+    
+    // onOptionClick(option: any) {
+    //     this.selectionDateDropdown = option.value;
+    //     const today = new Date();
+    //     let startDate = new Date(today);
+    //     let endDate = new Date(today);
+    
+    //     switch (option.label) {
+    //         case 'Today':
+    //             break;
+    //         case 'Last 3 Days':
+    //             startDate.setDate(today.getDate() - 3);
+    //             break;
+    //         case 'This Week':
+    //             startDate.setDate(today.getDate() - today.getDay());
+    //             break;
+    //         case 'This Month':
+    //             startDate.setDate(1); 
+    //             break;
+    //         case 'Last 3 Months':
+    //             startDate.setMonth(today.getMonth() - 3);
+    //             startDate.setDate(1); 
+    //             break;
+    //         case 'Last 6 Months':
+    //             startDate.setMonth(today.getMonth() - 6);
+    //             startDate.setDate(1); 
+    //             break;
+    //         case 'Custom Date Range':
+    //             startDate.setHours(0, 0, 0, 0);
+    //             endDate.setHours(23, 59, 59, 999);
+    //             this.dateRangeValue = [startDate, endDate];
+    //             const customRange = [startDate.toISOString(), endDate.toISOString()].join(",");
+    //             this.primengTable.filter(customRange, 'bookingDate', 'custom');
+    //             return;
+    //         default:
+    //             return;
+    //     }
+    
+    //     startDate.setHours(0, 0, 0, 0);
+    //     endDate.setHours(23, 59, 59, 999);
+    
+    //     const range = [startDate.toISOString(), endDate.toISOString()].join(",");
+    //     this.primengTable.filter(range, 'bookingDate', 'custom');
+    // }
+    
+
+    // onDateRangeCancel() {
+    //     this.selectionDateDropdown = 'today'
+    // }
 
     getFilter(): any {
         const filterReq = {};
