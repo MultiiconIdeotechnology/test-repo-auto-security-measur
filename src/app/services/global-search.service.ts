@@ -30,7 +30,7 @@ export class GlobalSearchService {
 
               for(let i in this.itemList){
                  this.itemList[i]['itemInfo'] = `${this.itemList[i].item_code} (${this.itemList[i].item_name})`;
-                 this.itemList[i].id_by_value = this.itemList[i].item_code;
+                 this.itemList[i].id_by_value = this.itemList[i].item_name;
               }
             }, error: err => {
                 console.log("err", err)
