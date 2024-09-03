@@ -273,6 +273,10 @@ export class CommonFilterComponent implements OnInit {
                                 this._filterService.setLocalFilterData(data.data);
                                 this.alertService.showToast('success', `${item.filter_name} has been deleted successfully.`, "top-right", true);
                                 this.isEditable = this.checkIsEditable();
+                            } else if (data && !data.status && data.msg && data?.data.length ) {
+                                this._filterService.setLocalFilterData(data.data);
+                                this.alertService.showToast('success', `${item.filter_name} has been deleted successfully.`, "top-right", true);
+                                this.isEditable = this.checkIsEditable();
                             }
                         }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
                     });

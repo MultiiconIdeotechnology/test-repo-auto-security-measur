@@ -464,6 +464,9 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     statusUpdate(data) {
+        if (!Security.hasPermission(bookingsFlightPermissions.statusUpdatePermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
         this.matDialog
             .open(StatusUpdateComponent, {
                 data: data,
@@ -485,7 +488,7 @@ export class FlightComponent extends BaseListingComponent {
             return 'text-yellow-600';
         } else if (status == 'Confirmed') {
             return 'text-green-600';
-        } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected') {
+        } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected' || status == 'Hold Failed') {
             return 'text-red-600';
         } else if (status == 'Hold') {
             return 'text-blue-600';

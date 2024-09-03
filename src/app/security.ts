@@ -583,6 +583,7 @@ export const documentPermissions = {
 export const bookingsFlightPermissions = {
     importPNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Import PNR', category_name: category_name.entry },
     offlinePNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Offline PNR', category_name: category_name.entry },
+    statusUpdatePermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Status Update', category_name: category_name.action },
 }
 
 export const amendmentRequestsPermissions = {
