@@ -286,6 +286,7 @@ export const module_name = {
     campaign_summary: 'Campaign Summary',
     agent_ledger: 'Agent Ledger',
     products: 'Products',
+    agentSummary: 'Agent Summary'
 };
 
 export const filter_module_name = {
@@ -362,6 +363,7 @@ export const filter_module_name = {
     report_rm_wise_agents: "report_rm_wise_agents",
     airline_report: "airline_report",
     campaign_summary: "campaign_summary",
+    report_sales_agent_summary: "report_sales_agent_summary",
 
     //Inventory
     activity: "activity",

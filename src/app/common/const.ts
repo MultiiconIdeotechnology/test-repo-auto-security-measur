@@ -361,9 +361,10 @@ export const Routes = {
 
         products_path: 'reports/products',
         products_route: 'reports/products',
+
+        agent_summary_path: 'reports/agent_summary',
+        agent_summary_route: 'reports/agent_summary'
     },
-
-
 
     settings: {
         erpsettings_path: 'settings/erp',

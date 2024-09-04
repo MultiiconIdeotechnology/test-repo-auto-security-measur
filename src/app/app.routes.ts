@@ -151,6 +151,7 @@ export const appRoutes: Route[] = [
             {path: Routes.reports.campaign_summary_path, loadChildren: () => import('app/modules/reports/campaign/campaign-summary/campaign-summary/campaign-summary.routes')},
             {path: Routes.reports.leads_rmwise_path, loadChildren: () => import('app/modules/reports/leads/lead-rmwise/lead-rmwise.routes')},
             {path: Routes.reports.products_path, loadChildren: () => import('app/modules/reports/sales/product/sales-product/sales-product.routes')},
+            {path: Routes.reports.agent_summary_path, loadChildren: () => import('app/modules/reports/sales/agent-summaries/agent-summary/agent-summary.routes')},
 
             // MY BOOKINGS
             {path: Routes.booking.flight_path, loadChildren: () => import('app/modules/booking/flight/flight/flights.routes')},

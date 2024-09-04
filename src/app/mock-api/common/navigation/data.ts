@@ -496,6 +496,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         pid:'SALES-REPORTS_PRODUCTS_VIEW',
                         icon: '',
                         link: Routes.reports.products_route
+                    },
+                    {
+                        id: 'reports.agentsummary',
+                        title: 'Agent Summary',
+                        type: 'basic',
+                        pid:'SALES-REPORTS_AGENTSUMMARY_VIEW',
+                        icon: '',
+                        link: Routes.reports.agent_summary_route
                     }
                 ]
             },
