@@ -75,14 +75,18 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="agent" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent"
-                        [ngClass]="{'left-0': !frozenObj?.agent}">
-                        Agency Name <p-sortIcon field="agent" />
-                        <span class="float-right" (click)="isFrozenColumn('agent');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.agent" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.agent" class="pi pi-lock icon-size-3"></i>
+                    <th class="min-w-[75px] dark:bg-[#1e293b]" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link"
+                        [ngClass]="{'left-0': !frozenObj?.payment_link}"> Link
+                        <span class="float-right" (click)="isFrozenColumn('payment_link');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.payment_link" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.payment_link" class="pi pi-lock icon-size-3"></i>
                         </span>
+                    </th>
+
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="agent" pResizableColumn
+                        alignFrozen="left" >
+                        Agency Name <p-sortIcon field="agent" />
                     </th>
                     <th pSortableColumn="service_for" pResizableColumn>
                         Service For <p-sortIcon field="service_for" />
@@ -118,6 +122,7 @@
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
+                    <th></th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="agent" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -225,7 +230,11 @@
                             </button>
                         </mat-menu>
                     </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent">
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link" class="text-center">
+                        <!-- {{element.payment_link || "-"}} -->
+                        <mat-icon class="icon-size-3 relative top-[2px] ml-1 cursor-pointer" (click)="copyLink(element.payment_link)">content_copy</mat-icon>
+                    </td>
+                    <td alignFrozen="left" >
                         {{element.agent || "-"}}
                     </td>
                     <td>{{element.service_for || "-"}}</td>

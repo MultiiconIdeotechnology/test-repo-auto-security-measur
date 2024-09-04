@@ -137,6 +137,18 @@
                     </mat-form-field>
 
                     <mat-form-field class="w-full">
+                        <mat-label>MOP</mat-label>
+                        <mat-select required formControlName="mop">
+                            <mat-option *ngFor="let s of mopType" [value]="s.value">
+                                {{ s.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="formGroup.get('mop').hasError('required')">
+                            Mode of Payment is required
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full">
                         <mat-label>Service Reference No.</mat-label>
                         <input matInput required formControlName="service_ref_no" class="uppercase-input"/>
                         <mat-error *ngIf="formGroup.get('service_ref_no').hasError('required')">
@@ -163,6 +175,9 @@
                         <input matInput [matDatepicker]="picker1" formControlName="expiry_date" [min]="todayDateTime"/>
                         <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                         <mat-datepicker #picker1></mat-datepicker>
+                        <mat-error *ngIf="formGroup.get('expiry_date').hasError('required')">
+                            Expiry date is required
+                        </mat-error>
                     </mat-form-field>
                 </form>
             </div>

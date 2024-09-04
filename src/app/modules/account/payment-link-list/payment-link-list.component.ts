@@ -115,6 +115,11 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
         this.getAgent("");
     }
 
+    copyLink(link: string): void {
+        this.clipboard.copy(link);
+        this.alertService.showToast('success', 'Copied');
+    }
+
     createPaymentLink(): void {
         if (!Security.hasNewEntryPermission(module_name.paymentLink)) {
             return this.alertService.showToast('error', messages.permissionDenied);
