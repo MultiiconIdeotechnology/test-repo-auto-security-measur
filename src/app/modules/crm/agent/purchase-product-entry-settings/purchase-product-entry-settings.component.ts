@@ -401,6 +401,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             this.router.navigate([this.leadListRoute]);
             return;
         }
+        this.disableBtn = true;
 
         let totalAmount = 0;
         this.installmentsArray.forEach(installment => {

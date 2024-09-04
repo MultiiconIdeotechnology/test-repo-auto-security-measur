@@ -174,6 +174,7 @@ export class InstallmentRightComponent implements OnInit, OnDestroy {
             installment_date: json?.installment_date ? json?.installment_date : ""
         }
 
+        this.disableBtn = true;
         this.crmService.updateInstallment(newJson).subscribe({
             next: () => {
                 this.router.navigate([this.leadListRoute]);

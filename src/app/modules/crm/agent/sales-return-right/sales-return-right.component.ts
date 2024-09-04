@@ -123,6 +123,7 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
             return;
         }
 
+        this.disableBtn = true;
         if (this.readonly) {
             this.router.navigate([this.leadListRoute]);
             return;

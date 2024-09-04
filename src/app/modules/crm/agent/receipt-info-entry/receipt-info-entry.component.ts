@@ -228,7 +228,7 @@ export class ReceiptInfoEntryComponent {
             return;
         }
         const json = this.formGroup.getRawValue();
-
+        this.disableBtn = true;
         if (!this.proofAttachjFile) {
             json.proof_attachment = {
                 fileName: '',
