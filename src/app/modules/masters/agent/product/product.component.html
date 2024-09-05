@@ -26,22 +26,22 @@
                             </button>
                             <!--*ngIf="element.receipt_status !== 'Confirmed'"   for delete-->
                             <button mat-menu-item (click)="deleteProduct(element)"
-                                *ngIf="element.product_status == 'Pending'">
+                            *ngIf="(element.product_status.purchase_amount > 0 && element.receipt_status !== 'Confirmed' && element.product_status !== 'Delivered') || (element.product_status.purchase_amount == 0 && element.product_status !== 'Delivered')">
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600">Delete</span>
                             </button>
 
                             <!-- *ngIf="((element.receipt_status == 'Confirmed' && element.product_status == 'Delivered') && (element.product_status !== 'Pending' || element.product_status !== 'Sales Return'))" -->
                             <button mat-menu-item (click)="cancelProduct(element)"
-                                *ngIf="element.product_status == 'Delivered'">
+                            *ngIf="element.product_status == 'Delivered' || element.receipt_status == 'Confirmed'">
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600">Cancel</span>
                             </button>
-                            <button mat-menu-item (click)="salesReturnProduct(element)" *ngIf="((element.receipt_status == 'Confirmed' && element.product_status == 'Delivered') && element.product_status !== 'Pending')">
+                            <button mat-menu-item (click)="salesReturnProduct(element)" *ngIf="element.receipt_status == 'Confirmed'">
                                 <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                 <span style="font-weight: 600">Sales Return</span>
                             </button>
-                            <button mat-menu-item (click)="expiryProduct(element)" *ngIf="((element.receipt_status == 'Confirmed' && element.product_status == 'Delivered') && element.product_status !== 'Pending')">
+                            <button mat-menu-item (click)="expiryProduct(element)" *ngIf="element.product_status == 'Delivered'">
                                 <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
                                 <span style="font-weight: 600">Expiry</span>
                             </button>
