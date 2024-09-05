@@ -135,6 +135,7 @@ export class VisaComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
+            this._filterService.selectionDateDropdown = '';
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -146,6 +147,7 @@ export class VisaComponent extends BaseListingComponent {
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
             if (resp['table_config']['travel_date']?.value != null) {
@@ -170,6 +172,7 @@ export class VisaComponent extends BaseListingComponent {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
             if (filterData['table_config']['travel_date']?.value != null) {

@@ -88,7 +88,6 @@ export class FlightComponent extends BaseListingComponent {
     selectedFromAirport: any;
     selectedSupplier: any;
     selectedAgent: any;
-    selectionDateDropdown: any;
     statusList = [
         { label: 'Pending', value: 'Pending' },
         { label: 'Rejected', value: 'Rejected' },
@@ -111,16 +110,6 @@ export class FlightComponent extends BaseListingComponent {
         { label: 'Import', value: true }
     ]
 
-    // dateRangeList: any[] = [
-    //     { label: 'Today', value: 'today' },
-    //     { label: 'Last 3 Days', value: 'Last 3 Days' },
-    //     { label: 'This Week', value: 'This Week' },
-    //     { label: 'This Month', value: 'This Month' },
-    //     { label: 'Last 3 Months', value: 'Last 3 Months' },
-    //     { label: 'Last 6 Months', value: 'Last 6 Months' },
-    //     { label: 'Custom Date Range', value: 'Custom Date Range' }
-    // ];
-    dateRangeValue: Date[];
     // clipboard: any;
     // toastr: any;
 
@@ -167,7 +156,7 @@ export class FlightComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this.selectionDateDropdown = '';
+            this._filterService.selectionDateDropdown = '';
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
@@ -198,7 +187,7 @@ export class FlightComponent extends BaseListingComponent {
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
-                this.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
             }
             if (resp['table_config']['travelDate']?.value != null) {
@@ -222,6 +211,7 @@ export class FlightComponent extends BaseListingComponent {
             this.selectedToAirport = filterData['table_config']['to_id_filtres']?.value;
 
             if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
             }
             if (filterData['table_config']['travelDate'].value) {
@@ -233,69 +223,11 @@ export class FlightComponent extends BaseListingComponent {
         }
     }
 
-    // get selectedColumns(): Column[] {
-    //     return this._selectedColumns;
-    // }
-
-    // set selectedColumns(val: Column[]) {
-    //     if (Array.isArray(val)) {
-    //       this._selectedColumns = this.cols.filter(col =>
-    //         val.some(selectedCol => selectedCol.field === col.field)
-    //       );
-    //     } else {
-    //       this._selectedColumns = [];
-    //     }
-    //   }
-
-    copy(link) {
+    copy(link:any) {
         this.clipboard.copy(link);
         this.toastr.showToast('success', 'Copied');
     }
     
-    onOptionClick(option: any) {
-        this.selectionDateDropdown = option.value;
-        const today = new Date();
-        let startDate = new Date(today);
-        let endDate = new Date(today);
-
-        switch (option.label) {
-            case 'Today':
-                break;
-            case 'Last 3 Days':
-                startDate.setDate(today.getDate() - 2);
-                break;
-            case 'This Week':
-                startDate.setDate(today.getDate() - today.getDay());
-                break;
-            case 'This Month':
-                startDate.setDate(1);
-                break;
-            case 'Last 3 Months':
-                startDate.setMonth(today.getMonth() - 3);
-                startDate.setDate(1);
-                break;
-            case 'Last 6 Months':
-                startDate.setMonth(today.getMonth() - 6);
-                startDate.setDate(1);
-                break;
-            case 'Custom Date Range':
-           
-            default:
-                return;
-        }
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(23, 59, 59, 999);
-        let dateArr = [startDate, endDate];
-        const range = [startDate.toISOString(), endDate.toISOString()].join(",");
-        this.primengTable.filter(range, 'bookingDate', 'custom');
-        this.primengTable.filters['bookingDate']['value'] = dateArr;
-        this.primengTable.filters['bookingDate']['matchMode'] = 'custom';
-    }
-    
-    onDateRangeCancel() {
-        this.selectionDateDropdown = ''
-    }
-
     getFilter(): any {
         const filterReq = {};
         filterReq['FromDate'] = '';

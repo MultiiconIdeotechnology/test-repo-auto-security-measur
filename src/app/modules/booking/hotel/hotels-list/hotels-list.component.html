@@ -88,7 +88,7 @@
                             <i *ngIf="frozenObj?.status" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th pSortableColumn="bookingDate" pResizableColumn>
+                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="bookingDate" pResizableColumn>
                         Date <p-sortIcon field="bookingDate" />
                     </th>
                     <th class="" pSortableColumn="agent_name" pResizableColumn>
@@ -164,14 +164,33 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter field="bookingDate" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="bookingDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar selectionMode="range" [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
+                                    optionLabel="label" placeholder="Select Option" 
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'bookingDate')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                            <div class="relative inline-block">
+                                <p-columnFilter field="bookingDate" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"

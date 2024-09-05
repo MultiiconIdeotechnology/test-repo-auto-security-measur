@@ -69,9 +69,7 @@ export class ReceiptRegisterComponent
     agentList: any[] = [];
     selectedAgent: any;
     selectedCompany: any;
-    selectionDateDropdown: any;
     dateRangeValue: any = [];
-
 
     cols: Column[] = [
         { field: 'receipt_ref_no', header: 'Receipt No.' },
@@ -88,16 +86,6 @@ export class ReceiptRegisterComponent
         { field: 'pg_name', header: 'PSP' },
         { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
         { field: 'company', header: 'Company' }
-    ];
-
-    dateRangeList: any[] = [
-        { label: 'Today', value: 'today' },
-        { label: 'Last 3 Days', value: 'Last 3 Days' },
-        { label: 'This Week', value: 'This Week' },
-        { label: 'This Month', value: 'This Month' },
-        { label: 'Last 3 Months', value: 'Last 3 Months' },
-        { label: 'Last 6 Months', value: 'Last 6 Months' },
-        { label: 'Custom Date Range', value: 'Custom Date Range' }
     ];
 
     _selectedColumns: Column[];
@@ -147,7 +135,7 @@ export class ReceiptRegisterComponent
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this.selectionDateDropdown = '';
+            this._filterService.selectionDateDropdown = '';
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -155,12 +143,12 @@ export class ReceiptRegisterComponent
                     this.agentList.push(this.selectedAgent);
                 }
             }
-            
+
             this.selectedCompany = resp['table_config']['company']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
-                this.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 // this.dateRangeValue = resp['table_config']['receipt_request_date'].value;
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
@@ -178,7 +166,7 @@ export class ReceiptRegisterComponent
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedCompany = filterData['table_config']['company']?.value;
             if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
-                this.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -216,56 +204,6 @@ export class ReceiptRegisterComponent
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
-    }
-
-    // swith case for date dropdown options
-    onOptionClick(option: any) {
-        this.selectionDateDropdown = option.value;
-        const today = new Date();
-        let startDate = new Date(today);
-        let endDate = new Date(today);
-
-        switch (option.label) {
-            case 'Today':
-                break;
-            case 'Last 3 Days':
-                startDate.setDate(today.getDate() - 2);
-                break;
-            case 'This Week':
-                startDate.setDate(today.getDate() - today.getDay());
-                break;
-            case 'This Month':
-                startDate.setDate(1);
-                break;
-            case 'Last 3 Months':
-                startDate.setMonth(today.getMonth() - 3);
-                startDate.setDate(1);
-                break;
-            case 'Last 6 Months':
-                startDate.setMonth(today.getMonth() - 6);
-                startDate.setDate(1);
-                break;
-            case 'Custom Date Range':
-            // startDate.setHours(0, 0, 0, 0);
-            // endDate.setHours(23, 59, 59, 999);
-            // this.dateRangeValue = [startDate, endDate];
-            // const customRange = [startDate.toISOString(), endDate.toISOString()].join(",");
-            // this.primengTable.filter(customRange, 'receipt_request_date', 'custom');
-            // return;
-            default:
-                return;
-        }
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(23, 59, 59, 999);
-        let dateArr = [startDate, endDate];
-        const range = [startDate.toISOString(), endDate.toISOString()].join(",");
-        this.primengTable.filter(range, 'receipt_request_date', 'custom');
-        this.primengTable.filters['receipt_request_date']['value'] = dateArr;
-        this.primengTable.filters['receipt_request_date']['matchMode'] = 'custom';
-    }
-
-    onDateRangeCancel() {
-        this.selectionDateDropdown = ''
     }
 
     viewData(record): void {

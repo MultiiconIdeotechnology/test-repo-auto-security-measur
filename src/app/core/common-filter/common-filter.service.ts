@@ -22,6 +22,7 @@ export class CommonFilterService {
     fliterTableConfig: any;
     activeFiltData: any = {};
     selectedColumns: any = [];
+    selectionDateDropdown:any;
 
     // array from dropdown date range filter
     dateRangeList: any[] = [
@@ -121,5 +122,46 @@ export class CommonFilterService {
     // Close Filter Drawer
     closeDrawer() {
         this.filterDrawerVisible = false;
+    }
+
+    // Date Range dropdown onselect 
+    onOptionClick(option: any, primengTable:any, field:any) {
+        this.selectionDateDropdown = option.value;
+        const today = new Date();
+        let startDate = new Date(today);
+        let endDate = new Date(today);
+
+        switch (option.label) {
+            case 'Today':
+                break;
+            case 'Last 3 Days':
+                startDate.setDate(today.getDate() - 2);
+                break;
+            case 'This Week':
+                startDate.setDate(today.getDate() - today.getDay());
+                break;
+            case 'This Month':
+                startDate.setDate(1);
+                break;
+            case 'Last 3 Months':
+                startDate.setMonth(today.getMonth() - 3);
+                startDate.setDate(1);
+                break;
+            case 'Last 6 Months':
+                startDate.setMonth(today.getMonth() - 6);
+                startDate.setDate(1);
+                break;
+            case 'Custom Date Range':
+           
+            default:
+                return;
+        }
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        let dateArr = [startDate, endDate];
+        const range = [startDate.toISOString(), endDate.toISOString()].join(",");
+        primengTable.filter(range, field, 'custom');
+        primengTable.filters[field]['value'] = dateArr;
+        primengTable.filters[field]['matchMode'] = 'custom';
     }
 }

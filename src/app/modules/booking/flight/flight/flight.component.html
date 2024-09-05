@@ -111,7 +111,7 @@
                             <i *ngIf="frozenObj?.status" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th [ngClass]="selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="bookingDate" pResizableColumn>
+                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="bookingDate" pResizableColumn>
                         Date<p-sortIcon field="bookingDate" />
                     </th>
                     <th pSortableColumn="pnr" pResizableColumn>
@@ -183,18 +183,6 @@
                             placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
                     </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status">
-                        <!-- <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
-                                    appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <div>{{ option.label }}</div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter> -->
-
                         <p-columnFilter field="status" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-multiSelect [ngModel]="value" [options]="statusList" optionLabel="label"
@@ -216,13 +204,13 @@
                             </ng-template>
                         </p-columnFilter> -->
 
-                        <p-columnFilter *ngIf="selectionDateDropdown != 'Custom Date Range'" field="bookingDate" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="bookingDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
                                     optionLabel="label" placeholder="Select Option" 
                                     appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <div (click)="onOptionClick(option, $event)">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'bookingDate')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
@@ -230,7 +218,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="selectionDateDropdown == 'Custom Date Range'" >
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
                             <div class="relative inline-block">
                                 <p-columnFilter field="bookingDate" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -240,7 +228,7 @@
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="onDateRangeCancel()">cancel</mat-icon>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>
@@ -253,22 +241,6 @@
                             ariaLabel="Filter GDS PNR" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
-                                    [(ngModel)]="selectedSupplier" [filter]="true" filterBy="company_name"
-                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Supplier">
-                                    <ng-template let-option pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div>{{option.company_name}}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter> -->
-
                         <p-columnFilter field="supplier_name" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"

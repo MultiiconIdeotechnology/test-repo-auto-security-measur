@@ -99,7 +99,7 @@
                             <i *ngIf="frozenObj?.visa_status" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th pSortableColumn="entry_date_time" pResizableColumn>
+                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="entry_date_time" pResizableColumn>
                         Date <p-sortIcon field="entry_date_time" />
                     </th>
                     <th pSortableColumn="operation_person" pResizableColumn>
@@ -157,22 +157,33 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <!-- <p-columnFilter field="entry_date_time" type="date">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="entry_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Entry Date">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter> -->
-
-                        <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar selectionMode="range" [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
+                                    optionLabel="label" placeholder="Select Option" 
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'entry_date_time')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                            <div class="relative inline-block">
+                                <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="operation_person_fliteres"

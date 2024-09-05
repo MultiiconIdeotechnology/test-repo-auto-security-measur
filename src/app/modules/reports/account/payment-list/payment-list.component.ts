@@ -124,7 +124,6 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
 
   ngOnInit() {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      // console.log("resp['table_config']['payment_request_date']", resp['table_config']['payment_request_date'] );
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['payment_request_date']?.value != null && resp['table_config']['payment_request_date'].value.length) {
