@@ -231,7 +231,6 @@ export abstract class BaseListingComponent implements OnInit {
             this.sortColumn,
             (this.sortDirection === 'desc' ? 1 : 0)
         );
-
         return filterReq;
     }
 

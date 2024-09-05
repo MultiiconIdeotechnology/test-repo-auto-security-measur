@@ -269,11 +269,11 @@ export class CommonFilterComponent implements OnInit {
                 if (res === 'confirmed') {
                     this._filterService.deleteFiter(item.id).subscribe({
                         next: (data) => {
-                            if (data && data.status && data?.data.length) {
+                            if (data && data.status) {
                                 this._filterService.setLocalFilterData(data.data);
                                 this.alertService.showToast('success', `${item.filter_name} has been deleted successfully.`, "top-right", true);
                                 this.isEditable = this.checkIsEditable();
-                            } else if (data && !data.status && data.msg && data?.data.length ) {
+                            } else if (data && !data.status && data.msg) {
                                 this._filterService.setLocalFilterData(data.data);
                                 this.alertService.showToast('success', `${item.filter_name} has been deleted successfully.`, "top-right", true);
                                 this.isEditable = this.checkIsEditable();

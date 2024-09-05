@@ -865,6 +865,11 @@ div:where(.swal2-container) button:where(.swal2-close){
 
 }
 
+.min-max-width{
+    min-width: 250px !important;
+    max-width: 300px !important;
+}
+
 //multiple checkbox filter hide all checkbox
 // .multi-checkbox-filter {
 //     .p-multiselect-header{

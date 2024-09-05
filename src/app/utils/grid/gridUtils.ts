@@ -114,7 +114,7 @@ export class GridUtils {
                 if (filter[key].value !== null && filter[key].value !== undefined && filter[key].value !== '') {
                     if (filter[key].value && filter[key].value.length && Array.isArray(filter[key].value)) {
                         validFilter[key] = {
-                            value: this.convertArrayToString(filter[key].value),
+                            value: this.convertArrayToString(filter[key]),
                             matchMode: filter[key].matchMode
                         };
                     } else {
@@ -128,7 +128,7 @@ export class GridUtils {
                                     };
                                 } else {
                                     validFilter[key] = {
-                                        value: this.convertArrayToString(filter[key].value),
+                                        value: this.convertArrayToString(filter[key]),
                                         matchMode: filter[key].matchMode
                                     };
                                 }
@@ -145,7 +145,8 @@ export class GridUtils {
     }
 
     // Date Range convert in String
-    static convertArrayToString(dates: any): any {
+    static convertArrayToString(convData: any): any {
+        let dates = convData.value;
         if (dates && dates.length) {
             if (dates[0] instanceof Date) {
                 return dates.map((dateStr: any) => {
@@ -153,7 +154,12 @@ export class GridUtils {
                     return date.toISOString().slice(0, -1);
                 }).join(',');
             } else {
-                let result = dates.map((item: any) => item.id_by_value || item.id || item.label).join(',');
+                let result:any;
+                if (convData.matchMode == 'in') {
+                    result = dates.map((item: any) => item.id_by_value || item.id || item.label).join(',');
+                } else {
+                    result = dates.join(',');
+                }
                 return result;
             }
         } else {

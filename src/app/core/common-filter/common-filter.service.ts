@@ -23,6 +23,17 @@ export class CommonFilterService {
     activeFiltData: any = {};
     selectedColumns: any = [];
 
+    // array from dropdown date range filter
+    dateRangeList: any[] = [
+        { label: 'Today', value: 'today' },
+        { label: 'Last 3 Days', value: 'Last 3 Days' },
+        { label: 'This Week', value: 'This Week' },
+        { label: 'This Month', value: 'This Month' },
+        { label: 'Last 3 Months', value: 'Last 3 Months' },
+        { label: 'Last 6 Months', value: 'Last 6 Months' },
+        { label: 'Custom Date Range', value: 'Custom Date Range' }
+    ];
+
     constructor(private http: HttpClient) { }
 
     // Create new Filter
@@ -47,6 +58,9 @@ export class CommonFilterService {
             let filter = data.find((item: any) => item.grid_name == this.filter_table_name);
             this.filter_grid_data = (filter || {});
             this.setActiveData(this.filter_grid_data);
+        } else {
+            this.activeFiltData = {};
+            this.filter_grid_data = {};
         }
     }
 

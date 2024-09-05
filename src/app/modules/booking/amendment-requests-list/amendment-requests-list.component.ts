@@ -79,6 +79,7 @@ export class AmendmentRequestsListComponent
     agentList: any[] = [];
     supplierList: any[] = [];
     isMenuOpen: boolean = false;
+    selectionDateDropdown:any;
 
     // statusList = [ 'Pending', 'Inprocess', 'Cancelled','Confirm', 'Rejected', 'Completed', 'Quotation Sent','Partial Cancellation Pending', 'Account Audit', 'Expired'];
      statusList = [
@@ -132,6 +133,7 @@ export class AmendmentRequestsListComponent
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this.selectionDateDropdown = '';
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -145,6 +147,7 @@ export class AmendmentRequestsListComponent
             // this.primengTable['_sortField'] = resp['sortColumn'];
 
             if (resp?.['table_config']?.['amendment_request_time']?.value != null && resp['table_config']['amendment_request_time'].value.length) {
+                this.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
             }
 
@@ -167,6 +170,7 @@ export class AmendmentRequestsListComponent
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
+                this.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }
 
@@ -220,6 +224,50 @@ export class AmendmentRequestsListComponent
                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
             }
         });
+    }
+
+    onOptionClick(option: any) {
+        this.selectionDateDropdown = option.value;
+        const today = new Date();
+        let startDate = new Date(today);
+        let endDate = new Date(today);
+
+        switch (option.label) {
+            case 'Today':
+                break;
+            case 'Last 3 Days':
+                startDate.setDate(today.getDate() - 2);
+                break;
+            case 'This Week':
+                startDate.setDate(today.getDate() - today.getDay());
+                break;
+            case 'This Month':
+                startDate.setDate(1);
+                break;
+            case 'Last 3 Months':
+                startDate.setMonth(today.getMonth() - 3);
+                startDate.setDate(1);
+                break;
+            case 'Last 6 Months':
+                startDate.setMonth(today.getMonth() - 6);
+                startDate.setDate(1);
+                break;
+            case 'Custom Date Range':
+           
+            default:
+                return;
+        }
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        let dateArr = [startDate, endDate];
+        const range = [startDate.toISOString(), endDate.toISOString()].join(",");
+        this.primengTable.filter(range, 'amendment_request_time', 'custom');
+        this.primengTable.filters['amendment_request_time']['value'] = dateArr;
+        this.primengTable.filters['amendment_request_time']['matchMode'] = 'custom';
+    }
+    
+    onDateRangeCancel() {
+        this.selectionDateDropdown = ''
     }
 
     refreshItems(event?: any): void {
