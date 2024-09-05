@@ -139,6 +139,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
       this.agentList = this.filterApiData.agentData;
     }, 1000);
 
+    this._filterService.selectionDateDropdown = "";
     this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedEmployee && this.selectedEmployee.id) {
@@ -150,6 +151,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -176,6 +178,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
         }
       }, 1000);
       if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
 

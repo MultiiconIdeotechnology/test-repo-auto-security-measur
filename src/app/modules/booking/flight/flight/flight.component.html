@@ -195,15 +195,6 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <!-- <p-columnFilter field="bookingDate" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar selectionMode="range" [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter> -->
-
                         <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="bookingDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
@@ -224,7 +215,7 @@
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
                                             (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>

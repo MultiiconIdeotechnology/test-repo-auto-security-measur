@@ -238,7 +238,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                     { header: 'Last Transaction Date', property: 'last_trancation_date' },
                     { header: 'Last Status Change Date', property: 'statuschange_date' }
                 ],
-                data.data, "Agent Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
+                data.data, "Agent Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 15 } }]);
         });
     }
 

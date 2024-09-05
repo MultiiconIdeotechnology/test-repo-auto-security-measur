@@ -95,6 +95,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -107,6 +108,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['due_date']?.value != null && resp['table_config']['due_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['due_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -123,6 +125,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedRM = filterData['table_config']['employee_name']?.value;
             if (filterData['table_config']['due_date']?.value != null && filterData['table_config']['due_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];

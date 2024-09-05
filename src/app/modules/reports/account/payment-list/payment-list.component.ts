@@ -124,9 +124,11 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
 
   ngOnInit() {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+      this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['payment_request_date']?.value != null && resp['table_config']['payment_request_date'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['payment_request_date']);
       }
       if (resp['table_config']['audit_date_time']?.value != null) {
@@ -144,6 +146,7 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       if (filterData['table_config']['payment_request_date']?.value != null && filterData['table_config']['payment_request_date'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['payment_request_date']);
       }
       if (filterData['table_config']['audit_date_time']?.value != null) {

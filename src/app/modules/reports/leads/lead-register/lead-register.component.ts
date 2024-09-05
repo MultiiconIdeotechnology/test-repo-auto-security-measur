@@ -160,6 +160,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         this.getEmployee("");
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this._filterService.selectionDateDropdown = "";
             this.selectedRm = resp['table_config']['rm_Id']?.value;
             this.selectedLeadStatus = resp['table_config']['lead_source']?.value;
 
@@ -171,8 +172,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (resp['table_config']['lastCall'].value) {
                 resp['table_config']['lastCall'].value = new Date(resp['table_config']['lastCall'].value);
             }
-            if (resp['table_config']['leadDate'].value) {
-                resp['table_config']['leadDate'].value = new Date(resp['table_config']['leadDate'].value);
+            if (resp['table_config']['leadDate']?.value != null && resp['table_config']['leadDate'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.rangeDateConvert(resp['table_config']['leadDate']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this._selectedColumns = resp['selectedColumns'] || [];
@@ -209,8 +211,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['lastCall'].value) {
                 filterData['table_config']['lastCall'].value = new Date(filterData['table_config']['lastCall'].value);
             }
-            if (filterData['table_config']['leadDate'].value) {
-                filterData['table_config']['leadDate'].value = new Date(filterData['table_config']['leadDate'].value);
+            if (filterData['table_config']['leadDate']?.value != null && filterData['table_config']['leadDate'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.rangeDateConvert(filterData['table_config']['leadDate']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];

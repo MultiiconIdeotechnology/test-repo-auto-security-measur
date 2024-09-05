@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -94,7 +94,6 @@ export class PendingComponent extends BaseListingComponent {
 		public agentService: AgentService,
 		private entityService: EntityService,
 		public _filterService: CommonFilterService,
-		private elementRef: ElementRef
 	) {
 		super(module_name.wallet)
 		this.key = this.module_name;
@@ -122,7 +121,8 @@ export class PendingComponent extends BaseListingComponent {
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
-
+		
+		this._filterService.selectionDateDropdown = "";
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
 			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
@@ -148,6 +148,7 @@ export class PendingComponent extends BaseListingComponent {
 				}
 			}
 			if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
+				this._filterService.selectionDateDropdown = 'Custom Date Range';
 				this._filterService.rangeDateConvert(resp.table_config.request_date_time);
 			}
 			this.isFilterShowPending = true;
@@ -190,6 +191,7 @@ export class PendingComponent extends BaseListingComponent {
 				}
 			}, 1000);
 			if (filterData?.table_config?.request_date_time?.value != null && filterData.table_config.request_date_time.value.length) {
+				this._filterService.selectionDateDropdown = 'Custom Date Range';
 				this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
 			}
 			this.primengTable['filters'] = filterData['table_config'];

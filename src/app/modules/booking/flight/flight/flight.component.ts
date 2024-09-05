@@ -156,7 +156,7 @@ export class FlightComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.selectionDateDropdown = '';
+            this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
@@ -202,6 +202,7 @@ export class FlightComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        // this._filterService.selectionDateDropdown = "";
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);

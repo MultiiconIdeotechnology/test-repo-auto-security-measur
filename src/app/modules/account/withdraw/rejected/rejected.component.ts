@@ -39,11 +39,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   selector: 'app-wrejected',
   templateUrl: './rejected.component.html',
   styleUrls: ['./rejected.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 170px 140px 110px 204px 210px;
-  }
-  `],
   standalone: true,
   imports: [
     NgIf,
@@ -141,8 +136,8 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
 			this.agentList = this.filterApiData.agentData;
 		}, 1000);
 
+    this._filterService.selectionDateDropdown = "";
     this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
@@ -153,6 +148,7 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         }
       }
       if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
    
@@ -178,6 +174,7 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
           }
         }, 1000);
         if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+          this._filterService.selectionDateDropdown = 'Custom Date Range';
           this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
         }
 

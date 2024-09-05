@@ -128,6 +128,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
       this.agentList = this.filterApiData.agentData;
     }, 1000);
 
+    this._filterService.selectionDateDropdown = "";
     this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
@@ -139,6 +140,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
         }
       }
       if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -165,6 +167,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
       this.isFilterShowAudit = true;
       this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
       if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];

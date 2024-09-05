@@ -122,7 +122,7 @@ export class AuditedComponent extends BaseListingComponent {
       this.mopList = this.filterApiData.mopData;
       this.pspList = this.filterApiData.pspData;
     }, 1000);
-
+    this._filterService.selectionDateDropdown = "";
     this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPsp = resp['table_config']['psp_name']?.value;
@@ -146,6 +146,7 @@ export class AuditedComponent extends BaseListingComponent {
         }
       }
         if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
+          this._filterService.selectionDateDropdown = 'Custom Date Range';
           this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
         }
         if (resp?.['table_config']?.['audited_date_time']?.value != null) {
@@ -190,6 +191,7 @@ export class AuditedComponent extends BaseListingComponent {
 				}
 			}, 1000);
       if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
       }
       if (filterData['table_config']['audited_date_time']?.value != null) {

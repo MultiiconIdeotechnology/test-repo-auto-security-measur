@@ -98,6 +98,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             this.selectedRM = resp['table_config']['rm']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -109,7 +110,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
 
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['last_top_up'].value) {
+            if (resp['table_config']['last_top_up'].value && resp['table_config']['last_top_up'].value?.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['last_top_up']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -126,7 +128,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
 
-            if (filterData['table_config']['last_top_up'].value) {
+            if (filterData['table_config']['last_top_up'].value && filterData['table_config']['last_top_up'].value?.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['last_top_up']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];

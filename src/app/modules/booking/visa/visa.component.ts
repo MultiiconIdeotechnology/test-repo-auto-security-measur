@@ -135,7 +135,7 @@ export class VisaComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
-            this._filterService.selectionDateDropdown = '';
+           this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
