@@ -217,6 +217,10 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/CancelProduct', model);
     }
 
+    salesReturnDownloadInvoice(bookingId: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/printInvoice', { invoiceId: bookingId });
+    }
+
 
     // getBusinessAnalyticsApiData(payload: any): Observable<any> {
     //     const apiData: any = {
