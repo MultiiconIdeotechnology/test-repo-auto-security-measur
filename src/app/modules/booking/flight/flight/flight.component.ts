@@ -153,6 +153,7 @@ export class FlightComponent extends BaseListingComponent {
         this.getAirportFromList("");
         this.getAirportToList("");
         this.getSupplierList();
+        this._filterService.selectionDateDropdown = "";
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {

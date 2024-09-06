@@ -84,6 +84,7 @@ export class CommissionIncomeComponent
         this.getSupplier("", true);
 
          // common filter
+         this._filterService.selectionDateDropdown = "";
          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.selectionDateDropdown = "";
             this.selectedSupplier = resp['table_config']['supplier']?.value;

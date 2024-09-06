@@ -130,6 +130,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
 
     this._filterService.selectionDateDropdown = "";
     this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;

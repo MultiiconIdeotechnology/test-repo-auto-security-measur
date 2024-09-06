@@ -123,6 +123,7 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   }
 
   ngOnInit() {
+    this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];

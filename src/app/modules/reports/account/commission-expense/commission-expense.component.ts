@@ -86,6 +86,7 @@ export class CommissionExpenseComponent
         this.getAgent('');
 
         // common filter
+        this._filterService.selectionDateDropdown = "";
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agency_name']?.value;

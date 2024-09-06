@@ -76,7 +76,6 @@ export class CommonFilterService {
         } else {
             this.activeFiltData = {};
         }
-        // console.log("activeFiltData", this.activeFiltData);
     }
 
     // Common Filter Drawer

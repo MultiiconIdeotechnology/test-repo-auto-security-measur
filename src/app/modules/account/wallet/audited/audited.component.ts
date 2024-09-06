@@ -124,6 +124,7 @@ export class AuditedComponent extends BaseListingComponent {
     }, 1000);
     this._filterService.selectionDateDropdown = "";
     this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+      this._filterService.selectionDateDropdown = "";
       this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPsp = resp['table_config']['psp_name']?.value;
       this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;

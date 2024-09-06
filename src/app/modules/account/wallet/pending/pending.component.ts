@@ -124,6 +124,7 @@ export class PendingComponent extends BaseListingComponent {
 		
 		this._filterService.selectionDateDropdown = "";
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+		this._filterService.selectionDateDropdown = "";
 			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPSP = resp['table_config']['psp_name']?.value;

@@ -105,8 +105,24 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                     this.agentList.push(this.selectedAgent);
                 }
             }
-
             this.selectedRM = resp['table_config']['rm']?.value;
+
+            if (resp['table_config']['last_call_date']?.value) {
+                resp['table_config']['last_call_date'].value = new Date(resp['table_config']['last_call_date'].value);
+            }
+            if (resp['table_config']['create_date']?.value) {
+                resp['table_config']['create_date'].value = new Date(resp['table_config']['create_date'].value);
+            }
+            if (resp['table_config']['last_login_time']?.value) {
+                resp['table_config']['last_login_time'].value = new Date(resp['table_config']['last_login_time'].value);
+            }
+            if (resp['table_config']['last_trancation_date']?.value) {
+                resp['table_config']['last_trancation_date'].value = new Date(resp['table_config']['last_trancation_date'].value);
+            }
+            if (resp['table_config']['statuschange_date']?.value) {
+                resp['table_config']['statuschange_date'].value = new Date(resp['table_config']['statuschange_date'].value);
+            }
+
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
             this.primengTable['filters'] = resp['table_config'];
@@ -129,8 +145,23 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
+            if (filterData['table_config']['last_call_date']?.value) {
+                filterData['table_config']['last_call_date'].value = new Date(filterData['table_config']['last_call_date'].value);
+            }
+            if (filterData['table_config']['create_date']?.value) {
+                filterData['table_config']['create_date'].value = new Date(filterData['table_config']['create_date'].value);
+            }
+            if (filterData['table_config']['last_login_time']?.value) {
+                filterData['table_config']['last_login_time'].value = new Date(filterData['table_config']['last_login_time'].value);
+            }
+            if (filterData['table_config']['last_trancation_date']?.value) {
+                filterData['table_config']['last_trancation_date'].value = new Date(filterData['table_config']['last_trancation_date'].value);
+            }
+            if (filterData['table_config']['statuschange_date']?.value) {
+                filterData['table_config']['statuschange_date'].value = new Date(filterData['table_config']['statuschange_date'].value);
+            }
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
