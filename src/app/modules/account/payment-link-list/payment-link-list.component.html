@@ -13,7 +13,7 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4 max-sm:mt-2 max-sm:justify-between">
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4 max-sm:mt-2 max-sm:justify-between gap-3">
 
             <!------Global Search------>
             <div class="flex ctm_search">
@@ -24,14 +24,21 @@
             </div>
 
             <!------Global filter------>
-            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+            <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
@@ -43,8 +50,7 @@
             </button> -->
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Add New Record"
-                (click)="createPaymentLink()">
+            <button mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="createPaymentLink()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
@@ -75,9 +81,8 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[75px] dark:bg-[#1e293b]" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link"
-                        [ngClass]="{'left-0': !frozenObj?.payment_link}"> Link
+                    <th class="min-w-[75px] dark:bg-[#1e293b]" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.payment_link" [ngClass]="{'left-0': !frozenObj?.payment_link}"> Link
                         <span class="float-right" (click)="isFrozenColumn('payment_link');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.payment_link" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.payment_link" class="pi pi-lock icon-size-3"></i>
@@ -85,7 +90,7 @@
                     </th>
 
                     <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="agent" pResizableColumn
-                        alignFrozen="left" >
+                        alignFrozen="left">
                         Agency Name <p-sortIcon field="agent" />
                     </th>
                     <th pSortableColumn="service_for" pResizableColumn>
@@ -128,15 +133,13 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -232,9 +235,10 @@
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link" class="text-center">
                         <!-- {{element.payment_link || "-"}} -->
-                        <mat-icon class="icon-size-3 relative top-[2px] ml-1 cursor-pointer" (click)="copyLink(element.payment_link)">content_copy</mat-icon>
+                        <mat-icon class="icon-size-3 relative top-[2px] ml-1 cursor-pointer"
+                            (click)="copyLink(element.payment_link)">content_copy</mat-icon>
                     </td>
-                    <td alignFrozen="left" >
+                    <td alignFrozen="left">
                         {{element.agent || "-"}}
                     </td>
                     <td>{{element.service_for || "-"}}</td>

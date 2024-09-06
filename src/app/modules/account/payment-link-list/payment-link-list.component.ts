@@ -20,7 +20,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { Security, messages, module_name } from 'app/security';
+import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
@@ -29,7 +29,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { EntityService } from 'app/services/entity.service';
 import { PaymentLinkComponent } from "./payment-link-entry/payment-link-entry.component";
 import { AgentService } from 'app/services/agent.service';
-import { takeUntil } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
     selector: 'app-payment-link-list',
@@ -66,6 +67,8 @@ import { takeUntil } from 'rxjs';
 
 export class PaymentLinkListComponent extends BaseListingComponent implements OnDestroy {
     module_name = module_name.paymentLink;
+    filter_table_name = filter_module_name.payment_link;
+    private settingsUpdatedSubscription: Subscription;
     isLoading = false;
     flashMessage: 'success' | 'error' | null = null;
     dataList = [];
@@ -77,19 +80,22 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
     settings: any;
     currentFilter: any;
     agentList: any[] = [];
+    selectedAgent:any;
 
     constructor(
         private accountService: AccountService,
         private confirmService: FuseConfirmationService,
         private agentService: AgentService,
         private clipboard: Clipboard,
-        private entityService: EntityService
+        private entityService: EntityService,
+        public _filterService:CommonFilterService
     ) {
         super(module_name.payment)
         this.key = 'entry_date_time';
         this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
+        this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.entityService.onRefreshPaymentLinkEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -113,6 +119,61 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
 
     ngOnInit() {
         this.getAgent("");
+
+        this._filterService.selectionDateDropdown = "";
+
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.selectionDateDropdown = "";
+            this.selectedAgent = resp['table_config']['agent']?.value;
+            // this.selectedSupplier = resp['table_config']['supplier_name']?.value;
+            // this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
+            // this.selectedToAirport = resp['table_config']['to_id_filtres']?.value;
+
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            if (resp['table_config']['entry_date_time']?.value != null) {
+                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            }
+            if (resp['table_config']['payment_date_time']?.value != null) {
+                resp['table_config']['payment_date_time'].value = new Date(resp['table_config']['payment_date_time'].value);
+            }
+            if (resp['table_config']['expiry_date']?.value != null) {
+                resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
+            }
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+
+    }
+
+    ngAfterViewInit() {
+        // Defult Active filter show
+        // this._filterService.selectionDateDropdown = "";
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShow = true;
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.selectedAgent = filterData['table_config']['agent']?.value;
+
+            if (filterData['table_config']['entry_date_time']?.value != null) {
+                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            if (filterData['table_config']['payment_date_time']?.value != null) {
+                filterData['table_config']['payment_date_time'].value = new Date(filterData['table_config']['payment_date_time'].value);
+            }
+            if (filterData['table_config']['expiry_date']?.value != null) {
+                filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
+            }
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     copyLink(link: string): void {
@@ -167,8 +228,16 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -241,5 +310,12 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
+    }
+
+    ngOnDestroy(): void {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
+        }
     }
 }

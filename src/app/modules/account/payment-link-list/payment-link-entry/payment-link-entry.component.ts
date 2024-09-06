@@ -132,7 +132,8 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
 
                                 this.formGroup.get("agent_id").patchValue(this.agentList[0]?.id);
                                 this.formGroup.get("service_for").patchValue("Wallet");
-                                this.formGroup.get("mop").patchValue("Both");
+                                // let mopPatchValue = ""
+                                this.formGroup.get("mop").patchValue("Online");
                             }
                         }
                     });
@@ -158,10 +159,8 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
     btnLabel = 'Submit';
 
     mopType: any[] = [
-        { value: 'Both', viewValue: 'Both' },
-        { value: 'Wallet', viewValue: 'Wallet' },
         { value: 'Online', viewValue: 'Online' },
-      ];
+    ];
 
     ngOnInit(): void {
         this._fuseConfigService.config$
@@ -202,10 +201,26 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
         });
     }
 
+    onServiceFor(val:string){
+        if(val == 'Wallet'){
+            this. mopType = [
+                { value: 'Online', viewValue: 'Online' },
+              ];
+              this.formGroup.get("mop").patchValue("Online");
+        } else {
+            this.mopType = [
+                { value: 'Both', viewValue: 'Both' },
+                { value: 'Wallet', viewValue: 'Wallet' },
+                { value: 'Online', viewValue: 'Online' },
+              ];
+            this.formGroup.get("mop").patchValue("Both");
+        }
+    }
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
     }
+
 
     submit(): void {
         if (!this.formGroup.valid) {

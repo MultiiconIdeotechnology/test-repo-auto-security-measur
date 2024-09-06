@@ -123,7 +123,7 @@
                     <!-- Service for combo pending-->
                     <mat-form-field class="w-full">
                         <mat-label>Service For</mat-label>
-                        <mat-select formControlName="service_for">
+                        <mat-select formControlName="service_for" (valueChange)="onServiceFor($event)">
                             <!-- <mat-option>
                                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching rm found'"
                                         [formControlName]="'rmfilter'">
