@@ -81,7 +81,7 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
         public formBuilder: FormBuilder,
         public router: Router,
         public alertService: ToasterService,
-        private crmService: CrmService,
+        private crmService: CrmService
     ) {
         this.entityService.onCRMSalesReturnCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {

@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, Input, OnChanges } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { module_name } from 'app/security';
+import { AccountService } from 'app/services/account.service';
+import { CrmService } from 'app/services/crm.service';
+import { ToasterService } from 'app/services/toaster.service';
+import { CommonUtils } from 'app/utils/commonutils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
 
@@ -81,8 +85,20 @@ export class PaymentInfoSalesReturnComponent{
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any = {},
+        private alertService: ToasterService,
+        private crmService: CrmService
     ) {
         this.record = data?.data ?? {}
         this.key = this.module_name;
+    }
+
+    downloadInvoice(bookingId: any) {
+        this.crmService.salesReturnDownloadInvoice(bookingId).subscribe({
+            next: (res) => {
+                CommonUtils.downloadPdf(res?.data, 'Credit Note.pdf');
+            }, error: (err) => {
+                this.alertService.showToast('error', err);
+            }
+        })
     }
 }
