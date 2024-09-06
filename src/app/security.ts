@@ -330,6 +330,7 @@ export const filter_module_name = {
     withdraw_rejected: "withdraw_rejected",
     account_payments: "account_payments",
     account_receipts: "account_receipts",
+    payment_link:"payment_link",
 
     //KYC
     kyc_agent: "kyc_agent",
