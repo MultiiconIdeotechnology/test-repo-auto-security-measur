@@ -50,8 +50,7 @@
             </button> -->
 
             <!------Create------->
-            <button mat-flat-button [color]="'primary'" matTooltip="Add New Record"
-                (click)="createPaymentLink()">
+            <button mat-flat-button [color]="'primary'" matTooltip="Add New Record" (click)="createPaymentLink()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
@@ -82,9 +81,8 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[75px] dark:bg-[#1e293b]" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link"
-                        [ngClass]="{'left-0': !frozenObj?.payment_link}"> Link
+                    <th class="min-w-[75px] dark:bg-[#1e293b]" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.payment_link" [ngClass]="{'left-0': !frozenObj?.payment_link}"> Link
                         <span class="float-right" (click)="isFrozenColumn('payment_link');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.payment_link" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.payment_link" class="pi pi-lock icon-size-3"></i>
@@ -92,7 +90,7 @@
                     </th>
 
                     <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="agent" pResizableColumn
-                        alignFrozen="left" >
+                        alignFrozen="left">
                         Agency Name <p-sortIcon field="agent" />
                     </th>
                     <th pSortableColumn="service_for" pResizableColumn>
@@ -135,15 +133,13 @@
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
                                     [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.agency_name)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -239,9 +235,10 @@
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link" class="text-center">
                         <!-- {{element.payment_link || "-"}} -->
-                        <mat-icon class="icon-size-3 relative top-[2px] ml-1 cursor-pointer" (click)="copyLink(element.payment_link)">content_copy</mat-icon>
+                        <mat-icon class="icon-size-3 relative top-[2px] ml-1 cursor-pointer"
+                            (click)="copyLink(element.payment_link)">content_copy</mat-icon>
                     </td>
-                    <td alignFrozen="left" >
+                    <td alignFrozen="left">
                         {{element.agent || "-"}}
                     </td>
                     <td>{{element.service_for || "-"}}</td>

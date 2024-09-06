@@ -130,7 +130,6 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
             // this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
             // this.selectedToAirport = resp['table_config']['to_id_filtres']?.value;
 
-
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
