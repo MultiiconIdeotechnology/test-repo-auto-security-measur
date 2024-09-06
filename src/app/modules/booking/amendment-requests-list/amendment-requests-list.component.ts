@@ -127,7 +127,7 @@ export class AmendmentRequestsListComponent
 
     ngOnInit() {
         this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
-        this.getAgent("", true);
+        this.getAgent("");
         this.getSupplier("", true);
 
         // common filter
@@ -199,8 +199,8 @@ export class AmendmentRequestsListComponent
         return filterReq;
     }
 
-    getAgent(value: string, bool: boolean = true) {
-        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
             if(this.selectedAgent && this.selectedAgent.id) {

@@ -145,6 +145,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
+
             if (filterData['table_config']['last_call_date']?.value) {
                 filterData['table_config']['last_call_date'].value = new Date(filterData['table_config']['last_call_date'].value);
             }
@@ -199,7 +200,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
 
     // function to get the Agent list from api
     getAgent(value: string) {
-        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+        this.agentService.getAgentComboMaster(value, false).subscribe((data) => {
             this.agentList = data;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
