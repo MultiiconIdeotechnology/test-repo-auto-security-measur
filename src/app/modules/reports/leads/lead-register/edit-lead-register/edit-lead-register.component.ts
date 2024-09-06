@@ -106,7 +106,6 @@ export class EditLeadRegisterComponent {
 
         this.cityService.getMobileCodeCombo().subscribe((res: any) => {
             this.MobileCodeList.next(res);
-            this.formGroup.get('mobile_code').patchValue('91');
         });
 
         if (this.record?.id) {
@@ -116,7 +115,11 @@ export class EditLeadRegisterComponent {
             this.formGroup.get('cityfilter').patchValue(this.record?.cityName);
             this.formGroup.get("city_id").patchValue(this.record?.city_id_enc);
             this.formGroup.get('mobile_number').patchValue(this.record?.contact_person_mobile);
-        }
+            this.formGroup.get('mobile_code').patchValue(this.record?.contact_person_mobile_code);
+        } 
+        //else {
+            // this.formGroup.get('mobile_code').patchValue('91');
+        //}
     }
 
 
