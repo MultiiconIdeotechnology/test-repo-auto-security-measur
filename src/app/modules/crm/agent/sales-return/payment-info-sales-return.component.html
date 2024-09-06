@@ -15,25 +15,13 @@
                     : '1.2-2') : '-' }}
                 </span>
             </div>
-            <!-- <div class="flex flex-col w-full pl-3 pt-1">
-                <span class="text-base font-medium text-secondary dark:text-[#687798]">Credit Note</span>
-                <span class="text-base dark:text-white text-black ml-3">
-                    <span
-                        [disabled]="salesReturnDetail['is_sales_return'] == false"
-                        >
-                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray" [matTooltip]="'Download'"
-                            class="rounded-full p-0.5 cursor-pointer text-blue-600"></mat-icon>
-                    </span>
-                </span>
-            </div> -->
 
             <div class="flex flex-col w-full pl-3 pt-1">
                 <span class="text-base font-medium text-secondary dark:text-[#687798]">Credit Note</span>
-                <span class="text-base dark:text-white text-black ml-3">
+                <span class="text-base dark:text-white text-black ml-7">
                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="rounded-full cursor-pointer text-blue-600 p-0.5"
                     [attr.disabled]="!salesReturnDetail?.is_sales_return ? true : null"
                     (click)="salesReturnDetail['is_sales_return'] == true ? downloadInvoice(salesReturnDetail['creditNote']) : null" [matTooltip]="'Download'">
-
                     <mat-icon svgIcon="heroicons_outline:arrow-down-tray" [matTooltip]="'Download'"
                     class="rounded-full p-0.5 cursor-pointer text-blue-600"></mat-icon>
                 </mat-icon>
