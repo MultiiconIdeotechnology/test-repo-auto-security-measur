@@ -180,8 +180,19 @@
                             ariaLabel="Filter Volume" />
                     </th>
                     <th alignFrozen="left">
-                        <p-columnFilter type="text" field="tec_product" placeholder="Search by Tech Product"
-                            ariaLabel="Filter Tech Product" />
+                        <!-- <p-columnFilter type="text" field="tec_product" placeholder="Search by Tech Product"
+                            ariaLabel="Filter Tech Product" /> -->
+                            <p-columnFilter field="tec_product" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="techProductList"
+                                        (onChange)="filter($event.value)" placeholder="Select Product" [showClear]="true"
+                                        appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option.label}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
                     </th>
                     <th alignFrozen="left">
                         <p-columnFilter type="numeric" field="tech_gp" placeholder="Search by Tech GP"
@@ -267,7 +278,13 @@
                     </td>
 
                     <td class="text-right">{{element.tech_gp ? element.tech_gp.toFixed(2) : '0'}}</td>
-                    <td class="text-center">{{element.followup ? element.followup : '0'}}</td>
+                    <!-- <td class="text-center">{{element.followup ? element.followup : '0'}}</td> -->
+
+                    <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup">
+                        <span class="inline-block cursor-pointer border-b border-gray-500"
+                            (click)="callHistory(element)">{{(element.followup) || 0}}</span>
+                    </td>
+
                     <td>
                         {{(element.last_call_date | date: 'dd-MM-yyyy') || "-"}}
                     </td>

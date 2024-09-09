@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { messages, module_name, Security, saleProductPermissions, filter_module_name } from 'app/security';
+import { messages, module_name, Security, saleProductPermissions, filter_module_name, agentPermissions } from 'app/security';
 import { SalesProductsService } from 'app/services/slaes-products.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -28,6 +28,9 @@ import { DateTime } from 'luxon';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Linq } from 'app/utils/linq';
 import { Routes } from 'app/common/const';
+import { DialAgentCallListComponent } from 'app/modules/crm/agent/dial-call-list/dial-call-list.component';
+import { MatDialog } from '@angular/material/dialog';
+import { AgentSummaryCallHistoryComponent } from '../agent-summary-call-history/agent-summary-call-history.component';
 
 @Component({
     selector: 'app-agent-summary',
@@ -77,7 +80,8 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
         private _userService: UserService,
         private agentService: AgentService,
         private refferralService: RefferralService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private matDialog: MatDialog
     ) {
         super(module_name.agentSummary)
         this.key = 'volume';
@@ -138,6 +142,11 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
         { label: 'Dormant', value: 'Dormant' }
     ];
 
+    techProductList = [
+        { label: 'Yes', value: 'Yes' },
+        { label: 'No', value: 'No' }
+    ];
+
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
@@ -166,6 +175,17 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
+
+    callHistory(record): void {
+        if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        this.matDialog.open(AgentSummaryCallHistoryComponent, {
+            data: { data: record, readonly: true, agencyName: record?.agent_name },
+            disableClose: true,
+        });
+    }
+
 
     getFilter(): any {
         const filterReq = GridUtils.GetFilterReq(
