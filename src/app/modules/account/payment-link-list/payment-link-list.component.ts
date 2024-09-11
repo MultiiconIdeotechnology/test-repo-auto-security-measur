@@ -176,9 +176,11 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
         }
     }
 
-    copyLink(link: string): void {
-        this.clipboard.copy(link);
-        this.alertService.showToast('success', 'Copied');
+    copyLink(link: string, status:any): void {
+        if(status == "Pending"){
+            this.clipboard.copy(link);
+            this.alertService.showToast('success', 'Copied');
+        }
     }
 
     createPaymentLink(): void {
