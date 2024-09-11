@@ -223,11 +223,11 @@
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Info</span>
                             </button>
-                            <button mat-menu-item (click)="editPaymentLink(element)">
+                            <button mat-menu-item (click)="editPaymentLink(element)" *ngIf="element.payment_status == 'Pending'">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Edit</span>
                             </button>
-                            <button mat-menu-item (click)="deletePaymentLink(element, i)">
+                            <button mat-menu-item (click)="deletePaymentLink(element, i)" *ngIf="element.payment_status =='Pending'">
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600">Delete</span>
                             </button>
@@ -236,7 +236,7 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link" class="text-center">
                         <!-- {{element.payment_link || "-"}} -->
                         <mat-icon class="icon-size-3 relative top-[2px] ml-1"
-                            (click)="copyLink(element.payment_link, element.payment_status)" 
+                            (click)="copyLink(element.payment_link, element.payment_status)"
                             [ngClass]="element.payment_status == 'Pending' ? 'text-blue-600 cursor-pointer':'text-slate-300 cursor-not-allowed' ">content_copy</mat-icon>
                     </td>
                     <td alignFrozen="left">
