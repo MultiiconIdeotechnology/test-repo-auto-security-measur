@@ -10,7 +10,7 @@
 
         <ng-template pTemplate="header">
             <tr>
-                <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                <th class="text-center left-[-1px]" pFrozenColumn>#</th>
                 <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn
                     pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number"
                     [ngClass]="{'left-0': !frozenObj?.reference_number}">
@@ -59,7 +59,7 @@
                     <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="request_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
-                                optionLabel="label" placeholder="Select Option" 
+                                optionLabel="label" placeholder="Select Option"
                                 appendTo="body">
                                 <ng-template let-option pTemplate="item">
                                     <div (click)="_filterService.onOptionClick(option, primengTable, 'request_date_time')">
@@ -180,6 +180,16 @@
                             <mat-icon class="mat-18">close</mat-icon>
                             <span style="font-weight: 600;">Reject</span>
                         </button>
+                        <button mat-menu-item *ngIf="!element.paymentlink"
+                            (click)="generatePaymentLink(element)">
+                            <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                            <span style="font-weight: 600;">Generate Payment Link</span>
+                        </button>
+                        <button mat-menu-item *ngIf="element.paymentlink"
+                            (click)="copyLink(element)">
+                            <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                            <span style="font-weight: 600;">Copy Payment Link</span>
+                    </button>
                     </mat-menu>
                 </td>
                 <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">

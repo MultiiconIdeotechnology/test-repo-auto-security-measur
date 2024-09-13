@@ -31,7 +31,6 @@ import {
 } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PaymentFilterComponent } from '../payment-filter/payment-filter.component';
@@ -39,16 +38,15 @@ import { PaymentInfoComponent } from '../payment-list/payment-info/payment-info.
 import { TimelineAgentProductInfoComponent } from 'app/modules/crm/timeline/product-info/product-info.component';
 import { Linq } from 'app/utils/linq';
 import { Routes } from 'app/common/const';
-import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 import { KycDocumentService } from 'app/services/kyc-document.service';
-import { Observable } from 'rxjs';
 import { CommonUtils } from 'app/utils/commonutils';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { WalletService } from 'app/services/wallet.service';
 
 @Component({
     selector: 'app-receipt-list',
@@ -110,7 +108,8 @@ export class ReceiptListComponent
         private conformationService: FuseConfirmationService,
         private toasterService: ToasterService,
         private kycdocService: KycDocumentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+		private walletService: WalletService
     ) {
         super(module_name.receipts);
 
@@ -475,9 +474,44 @@ export class ReceiptListComponent
         else this.buttonName = 'Show';
     }
 
-    copyLink(link: string): void {
-        this.clipboard.copy(link);
-        this.alertService.showToast('success', 'Copied');
+    copyLink(element: any): void {
+        if(element){
+            this.clipboard.copy(element?.paymentLink);
+            this.alertService.showToast('success', 'Copied');
+        }
+    }
+
+    generatePaymentLink(data: any){
+        let newMessage: any;
+        const label: string = 'Generate Payment Link'
+        newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
+		this.conformationService.open({
+			title: label,
+			message: newMessage
+        }).afterClosed().subscribe({
+			next: (res) => {
+				if (res === 'confirmed') {
+                    let json = {
+                        reference_table_id: data?.id ? data?.id : "",
+                        service_for: "Receipt",
+                        mop: data?.mop ? data?.mop : ""
+                    }
+					this.walletService.generatePaymentLink(json).subscribe({
+						next: (res) => {
+                            // paymentLink = res.url;
+                            // paymentLink = "https://sandbox.partner.bontonholidays.com//payment-link/Py8oKMeAJxzDrz3hLS31aKuLM1wuDYR0cvLAQ5r8thpfoE2H079eHFAlaA0$R87LaA0$dy"
+                            // this.matDialog.open(PaymentLinkCopyComponent, {
+                            //     panelClass: 'full-dialog',
+                            //     data: paymentLink,
+                            //     disableClose: true
+                            // });
+							this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
+							this.refreshItems();
+						}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+					});
+				}
+			}
+		})
     }
 
     exportExcel(): void {
