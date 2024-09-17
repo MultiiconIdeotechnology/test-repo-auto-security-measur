@@ -57,7 +57,10 @@
                         <div class="flex flex-row pb-4" (click)="fileInput1.click()" *ngIf="proofAttachment">
                             <div class="flex-grow">
                                 <mat-label class="text-base font-medium">Proof Attachment</mat-label>
-                                <div
+                                <div  [ngClass]="{
+                                    'border-[#64748b]': !lowPriceFlag,
+                                    'border-red-500': lowPriceFlag
+                                }"
                                     class="w-full border border-[#64748b] rounded-md h-[48px] mt-[6px] px-[16px] relative flex">
                                     <input type="file" accept="application/pdf, image/*" #fileInput1 class="hidden"
                                         (change)="onProofAttachmentFile($event)" readonly />
@@ -136,7 +139,7 @@
         <div *ngIf="!readonly"
             class="flex items-center justify-end mt-4 sm:mt-1 py-3 space-x-3 h-16 bottom-0 absolute w-full pr-5 dark:bg-[#1e293b] bg-white border-t m-auto">
             <button mat-stroked-button (click)="settingsDrawer.close()"> Close </button>
-            <button *ngIf="!readonly" mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid || disableBtn">
+            <button *ngIf="!readonly" mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid">
                 {{btnLabel}}
             </button>
         </div>
