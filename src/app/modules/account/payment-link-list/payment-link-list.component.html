@@ -247,7 +247,7 @@
                     <td>{{element.mop || "-"}}</td>
                     <td [ngClass]="{
                             'text-green-600': element.payment_status === 'Success' || element.payment_status === 'Confirmed',
-                            'text-red-600': element.payment_status === 'Failed',
+                            'text-red-600': element.payment_status === 'Failed' || element.payment_status === 'Rejected',
                             'text-blue-600': element.payment_status === 'Pending',
                             'text-white-600': element.payment_status !== 'Success' && element.payment_status !== 'Confirmed' && element.payment_status !== 'Failed' && element.payment_status !== 'Pending'
                         }">
