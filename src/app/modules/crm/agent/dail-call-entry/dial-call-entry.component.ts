@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -175,8 +175,6 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
         public designationService: DesignationService,
         public alertService: ToasterService,
         private crmService: CrmService,
-        // @Inject(MAT_DIALOG_DATA) public data: any = {},
-        // @Inject(MAT_DIALOG_DATA) public agentDialCallFlag: any = {}
     ) {
         super(module_name.dialCall);
         setTimeout(() => {
@@ -185,12 +183,6 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
                 this.recordAgentDialCallFlag = this.basicDetails?.agentDialCallFlag ?? {}
             }
         }, 1000);
-        // this.record = data?.data ?? {}
-        // this.recordAgentDialCallFlag = data?.agentDialCallFlag ?? {}
-        // if(this.basicDetails){
-        //     this.record = this.basicDetails?.data ?? {}
-        //     this.recordAgentDialCallFlag = this.basicDetails?.agentDialCallFlag ?? {}
-        // }
     }
 
     ngOnInit(): void {
@@ -218,7 +210,6 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
             this.formGroup.get('schedule_time').clearValidators();
             this.formGroup.get('call_purpose').clearValidators();
             this.formGroup.get('reschedule_remark').clearValidators();
-            // this.formGroup.get('preferred_language').clearValidators();
             this.formGroup.get('priority').clearValidators();
 
             this.formGroup.get('schedule_date').updateValueAndValidity();
@@ -232,37 +223,21 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
             this.formGroup.get('call_purpose').clearValidators();
             this.formGroup.get('reschedule_remark').clearValidators();
             this.formGroup.get('feedback').clearValidators();
-            // this.formGroup.get('preferred_language').clearValidators();
-            // this.formGroup.get('reactive_reason').clearValidators();
             this.formGroup.get('reactive_status').clearValidators();
 
             this.formGroup.get('priority').clearValidators();
-            // this.formGroup.get('service_offered_by_ta').clearValidators();
-
-            // this.record.status = 'New';
             if (this.record?.status == 'New') {
-                // this.formGroup.get('reactive_reason').clearValidators();
                 this.formGroup.get('reactive_status').clearValidators();
                 this.formGroup.get('feedback').setValidators(Validators.required);
-                // this.formGroup.get('preferred_language').setValidators(Validators.required);
-                // this.formGroup.get('service_offered_by_ta').setValidators(Validators.required);
             }
 
-            // this.record.status = 'Active';
             if (this.record?.status == 'Active') {
-                // this.formGroup.get('preferred_language').clearValidators();
                 this.formGroup.get('reactive_status').clearValidators();
-                // this.formGroup.get('reactive_reason').clearValidators();
-                // this.formGroup.get('service_offered_by_ta').clearValidators();
                 this.formGroup.get('feedback').setValidators(Validators.required);
             }
 
-            // this.record.status = 'Inactive';
             if (this.record?.status == 'Inactive') {
                 this.formGroup.get('feedback').clearValidators();
-                // this.formGroup.get('service_offered_by_ta').clearValidators();
-                // this.formGroup.get('preferred_language').clearValidators();
-                // this.formGroup.get('reactive_reason').setValidators(Validators.required);
                 this.formGroup.get('reactive_status').setValidators(Validators.required);
             }
         }
@@ -275,9 +250,7 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
                 this.formGroup.get('call_purpose').clearValidators();
                 this.formGroup.get('reschedule_remark').clearValidators();
                 this.formGroup.get('feedback').clearValidators();
-                // this.formGroup.get('preferred_language').clearValidators();
                 this.formGroup.get('priority').clearValidators();
-                // this.formGroup.get('reactive_reason').clearValidators();
                 this.formGroup.get('reactive_status').clearValidators();
             } else {
                 this.formGroup.get('schedule_date').setValidators(Validators.required);
@@ -285,7 +258,6 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
                 this.formGroup.get('call_purpose').setValidators(Validators.required);
                 this.formGroup.get('reschedule_remark').setValidators(Validators.required);
                 this.formGroup.get('priority').setValidators(Validators.required);
-                // this.formGroup.get('service_offered_by_ta').setValidators(Validators.required);
             }
             this.formGroup.get('schedule_date').updateValueAndValidity();
             this.formGroup.get('schedule_time').updateValueAndValidity();
@@ -293,30 +265,19 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
             this.formGroup.get('reschedule_remark').updateValueAndValidity();
             this.formGroup.get('priority').updateValueAndValidity();
 
-            // this.record.status = 'New';
             if (this.record?.status == 'New') {
-                // this.formGroup.get('reactive_reason').clearValidators();
                 this.formGroup.get('reactive_status').clearValidators();
                 this.formGroup.get('feedback').setValidators(Validators.required);
-                // this.formGroup.get('preferred_language').setValidators(Validators.required);
-                // this.formGroup.get('service_offered_by_ta').setValidators(Validators.required);
             }
 
-            // this.record.status = 'Active';
             if (this.record?.status == 'Active') {
-                // this.formGroup.get('service_offered_by_ta').clearValidators();
-                // this.formGroup.get('preferred_language').clearValidators();
                 this.formGroup.get('reactive_status').clearValidators();
-                // this.formGroup.get('reactive_reason').clearValidators();
                 this.formGroup.get('feedback').setValidators(Validators.required);
             }
 
-            // this.record.status = 'Inactive';
             if (this.record?.status == 'Inactive') {
+                this.reActive(this.formGroup.get('reactive_status'))
                 this.formGroup.get('feedback').clearValidators();
-                // this.formGroup.get('service_offered_by_ta').clearValidators();
-                // this.formGroup.get('preferred_language').clearValidators();
-                // this.formGroup.get('reactive_reason').setValidators(Validators.required);
                 this.formGroup.get('reactive_status').setValidators(Validators.required);
             }
         });
@@ -482,7 +443,9 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
         const newJson = {
             master_call_purpose: this.masterCallPurpose,
             preferred_language: json?.preferred_language ? (json?.preferred_language) : "",
-            feedback: json?.feedback ? (json?.feedback) : "",
+            // feedback: json?.feedback ? json?.feedback : "",
+            feedback: (json?.reactive_status == 'Yes' || json?.reactive_status == 'No' || json?.reactive_status == 'No Answer')
+          ? (json?.feedback ? json?.feedback : json?.reactive_status) : json?.feedback,
             service_offered_by_ta: json.service_offered_by_ta ? (json.service_offered_by_ta) : [],
             master_for: "agent_signup",
             master_id: this.record?.masterID ? this.record?.masterID : "",
@@ -494,7 +457,8 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
             reschedule_remark: (json?.reschedule_remark && json.is_call_rescheduled) ? json?.reschedule_remark : "",
             call_purpose: (json?.call_purpose && json?.is_call_rescheduled) ? json?.call_purpose : "",
             call_assign_to: (json?.call_assign_to && json?.is_call_rescheduled) ? json?.call_assign_to : "",
-            reschedule_date_time: (json?.schedule_date && json?.is_call_rescheduled) ? DateTime.fromJSDate(new Date(json.schedule_date)).toFormat('yyyy-MM-dd') + 'T' + json.schedule_time : ""
+            reschedule_date_time: (json?.schedule_date && json?.is_call_rescheduled) ? DateTime.fromJSDate(new Date(json.schedule_date)).toFormat('yyyy-MM-dd') + 'T' + json.schedule_time : "",
+            crmId: this.record?.crmId ? this.record?.crmId : ""
         }
 
         this.crmService.createDialCall(newJson).subscribe({
