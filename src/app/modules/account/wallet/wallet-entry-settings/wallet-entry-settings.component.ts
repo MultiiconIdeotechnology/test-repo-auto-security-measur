@@ -108,6 +108,7 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
             user_remark: [''],
             transaction_number: [''],
             request_from: ['Web'],
+            gst_reimbursement: ['']
         });
 
         this.formGroup.get('mop').patchValue('NEFT')
