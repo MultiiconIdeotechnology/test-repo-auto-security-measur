@@ -262,6 +262,7 @@ export const module_name = {
     bookingsBus: 'Bookings - BUS',
     bookingsHotel: 'Bookings - Hotel',
     bookingsVisa: 'Bookings - Visa',
+    bookingsInsurance: 'Bookings - Visa',
     inventoryHoliday: 'Inventory - Holiday',
     inventoryHotel: 'Inventory - Hotel',
     inventoryVisa: 'Inventory - Visa',
@@ -286,7 +287,8 @@ export const module_name = {
     campaign_summary: 'Campaign Summary',
     agent_ledger: 'Agent Ledger',
     products: 'Products',
-    agentSummary: 'Agent Summary'
+    agentSummary: 'Agent Summary',
+    insurance: 'Insurance'
 };
 
 export const filter_module_name = {
@@ -330,7 +332,7 @@ export const filter_module_name = {
     withdraw_rejected: "withdraw_rejected",
     account_payments: "account_payments",
     account_receipts: "account_receipts",
-    payment_link:"payment_link",
+    payment_link: "payment_link",
 
     //KYC
     kyc_agent: "kyc_agent",
@@ -345,6 +347,7 @@ export const filter_module_name = {
     bus_booking: "bus_booking",
     hotel_booking: "hotel_booking",
     visa_booking: "visa_booking",
+    insurance_booking: "insurance_booking",
     offline_service_booking: "offline_service_booking",
 
     //Report
@@ -628,6 +631,10 @@ export const bookingsVisaPermissions = {
     rejectVisaPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Reject Visa', category_name: category_name.action },
     viewDocumentsPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'View Documents', category_name: category_name.view },
     viewOnlyAssignedPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+}
+
+export const bookingsInsurancePermissions = {
+    modifyPermissions: { module_name: module_name.bookingsInsurance, group_name: group_name.listingPage, operation_type: 'View All Data', category_name: category_name.view },
 }
 
 export const offlineServicePermissions = {
