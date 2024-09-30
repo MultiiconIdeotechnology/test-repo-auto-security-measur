@@ -118,7 +118,7 @@ export class WalletEntryComponent {
       .subscribe({
         next: data => {
           this.agentList = data
-          this.formGroup.get("recharge_for_id").patchValue(this.agentList[0].id);
+          this.formGroup.get("recharge_for_id").patchValue(this.agentList[0]?.id || '');
         }
       });
 
