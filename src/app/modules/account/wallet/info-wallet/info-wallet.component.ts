@@ -83,7 +83,6 @@ export class InfoWalletComponent {
             { name: 'Reject Reason', value: data.reject_reason},
             { name: 'User Remark', value: data.user_remark},
             { name: 'Request From', value: data.request_from},
-            { name: 'GST Reimbursement', value: data.gst_reimbursement ? data.gst_reimbursement : '--'},
           ];
         },
         error: (err) => {

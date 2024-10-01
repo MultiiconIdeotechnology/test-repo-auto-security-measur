@@ -52,13 +52,8 @@
             <mat-form-field class="w-full">
                 <mat-label class="text-md">Mode Of Payment</mat-label>
                 <mat-select formControlName="mop" required>
-                    <mat-option *ngFor="let ct of mopList" [value]="ct">{{ ct }}</mat-option>
+                    <mat-option *ngFor="let ct of mopList" [value]="ct.mop">{{ ct.mop }}</mat-option>
                 </mat-select>
-            </mat-form-field>
-
-            <mat-form-field class="w-full">
-                <mat-label class="text-md">GST Reimbursement</mat-label>
-                <input matInput formControlName="gst_reimbursement" type="text" />
             </mat-form-field>
 
             <mat-form-field class="w-full">

@@ -70,7 +70,7 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
     agentList: any[] = [];
     CurrencyList: any[] = [];
     CurrencyListTemp: any[] = [];
-    mopList: any[] = ['NEFT', 'RTGS', 'IMPS', 'UPI', 'CASH', 'Digital Payment'];
+    mopList: any = [];
     selectedFile: File;
     jFile: JsonFile;
     formGroup: FormGroup;
@@ -89,6 +89,7 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
             next: (item) => {
                 this.settingsDrawer.toggle()
                 this.create = item?.create;
+                this.mopList = item?.mopData;
                 if (this.create) {
                     this.title = "Wallet Recharge"
                 }
@@ -108,7 +109,6 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
             user_remark: [''],
             transaction_number: [''],
             request_from: ['Web'],
-            gst_reimbursement: ['']
         });
 
         this.formGroup.get('mop').patchValue('NEFT')
@@ -128,7 +128,7 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: data => {
                     this.agentList = data
-                    this.formGroup.get("recharge_for_id").patchValue(this.agentList[0].id);
+                    this.formGroup.get("recharge_for_id").patchValue(this.agentList[0]?.id || '');
                 }
             });
 

@@ -111,13 +111,17 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
     this.filterData.FromDate.setMonth(this.filterData.FromDate.getMonth());
 
     this.entityService.onrefreshrefreshWalletRechargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-        next: (item) => {
-            if(item){
-                  this.pending.refreshItemsPending()
-                  this.audited.refreshItemsAudited()
-                  this.rejected.refreshItemsRejected()
-            }
+      next: (item) => {
+        if (item) {
+          if (this.tab == 'Pending') {
+            this.pending.refreshItemsPending();
+          } else if (this.tab == 'Audited') {
+            this.audited.refreshItemsAudited();
+          } else {
+            this.rejected.refreshItemsRejected()
+          }
         }
+      }
     })
   }
 
@@ -232,21 +236,29 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
             'top-right',
             true
           );
-          this.pending.refreshItemsPending()
-          this.audited.refreshItemsAudited()
-          this.rejected.refreshItemsRejected()
+          if (this.tab == 'Pending') {
+            this.pending.refreshItemsPending();
+          } else if (this.tab == 'Audited') {
+            this.audited.refreshItemsAudited();
+          } else {
+            this.rejected.refreshItemsRejected()
+          }
         }
       });
   }
 
   createWallet(): void {
-    this.entityService.raisewalletRechargeCall({create: true})
+    this.entityService.raisewalletRechargeCall({create: true, mopData: this.filterApiData.mopData})
 }
 
-  ngAfterViewInit(): void {
-    this.audited.auditListFilter = this.filterData;
-    this.rejected.rejectFilter = this.filterData;
-    this.pending.pendingFilter = this.filterData;
+  ngAfterViewInit(): void {    
+    if(this.tab = 'Pending') {
+      this.pending.pendingFilter = this.filterData;
+    } else if(this.tab = 'Audited') {
+      this.audited.auditListFilter = this.filterData;
+    } else {
+      this.rejected.rejectFilter = this.filterData;
+    }
 
     this.apiCalls = {
       Pending: false,

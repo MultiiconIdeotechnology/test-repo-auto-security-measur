@@ -276,6 +276,10 @@ export const Routes = {
         bus_path: 'booking/bus',
         bus_route: '/booking/bus',
         bus_details_route: '/booking/bus/details',
+        
+        insurance_path: 'booking/insurance',
+        insurance_route: '/booking/insurance',
+        insurance_details_route: '/booking/insurance/details',
 
         hotel_path: 'booking/hotel',
         hotel_route: '/booking/hotel',

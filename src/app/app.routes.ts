@@ -158,6 +158,7 @@ export const appRoutes: Route[] = [
             {path: Routes.booking.amendment_requests_path, loadChildren: () => import('app/modules/booking/amendment-requests-list/amendment-requests-list.routes')},
             {path: Routes.booking.group_inquiry_path, loadChildren: () => import('app/modules/booking/group-inquiry/group-inquiry-list.routes')},
             {path: Routes.booking.bus_path, loadChildren: () => import('app/modules/booking/bus/bus.routes')},
+            {path: Routes.booking.insurance_path, loadChildren: () => import('app/modules/booking/insurance/insurance/insurance.routes')},
             {path: Routes.booking.hotel_path, loadChildren: () => import('app/modules/booking/hotel/hotels-list/hotel.routes')},
             {path: Routes.booking.visa_path, loadChildren: () => import('app/modules/booking/visa/visa.routes')},
             {path: Routes.booking.offline_service_path, loadChildren: () => import('app/modules/booking/offline-service/offline-list/offline.routes')},
