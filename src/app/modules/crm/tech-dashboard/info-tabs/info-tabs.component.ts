@@ -131,7 +131,7 @@ export class TechInfoTabsComponent {
                 {
                     name: 'Status', value: this.record?.product_status,
                     class: this.record?.product_status === 'Pending' ? 'text-red-600 font-semibold text-base' :
-                        this.record?.product_status === 'Inprocess' ? 'text-yellow-600 font-semibold' :
+                        this.record?.product_status === 'Inprocess' || this.record?.product_status == 'Google Closed Testing' ? 'text-yellow-600 font-semibold' :
                             this.record?.product_status === 'Delivered' ? 'text-green-600 font-semibold' :
                                 this.record?.product_status === 'Waiting for Customer Update' ? 'text-blue-600 font-semibold' :
                                     this.record?.product_status === 'Waiting for Account Activation' ? 'text-blue-600 font-semibold' :
@@ -197,7 +197,7 @@ export class TechInfoTabsComponent {
     getStatusColor(status: string): string {
         if (status == 'Pending') {
             return 'text-red-600';
-        } else if (status == 'Inprocess') {
+        } else if (status == 'Inprocess' || status == 'Google Closed Testing') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';

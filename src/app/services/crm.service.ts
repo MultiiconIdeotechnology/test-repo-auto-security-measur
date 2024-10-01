@@ -147,6 +147,10 @@ export class CrmService {
     startIntegration(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/startIntegration', model);
     }
+    
+    googleClosedTesting(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/googleClosedTesting', model);
+    }
 
     blocked(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/BlockProduct', model);

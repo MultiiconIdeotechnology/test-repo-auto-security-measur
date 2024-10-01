@@ -127,13 +127,13 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
-                if (this.selectedAgent && this.selectedAgent.id) {
-    
-                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                    if (!match) {
-                        this.agentList.push(this.selectedAgent);
-                    }
+            if (this.selectedAgent && this.selectedAgent.id) {
+
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
                 }
+            }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['integration_start_date_time'].value) {
@@ -223,7 +223,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     getStatusColor(status: string): string {
         if (status == 'Sales Return' || status == 'Cancelled') {
             return 'text-red-600';
-        } else if (status == 'Inprocess') {
+        } else if (status == 'Inprocess' || status == 'Google Closed Testing') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
@@ -415,6 +415,35 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 this.isLoading = false;
             },
         });
+    }
+
+    googleClosedTesting(record: any) {
+        const label: string = 'Google Closed Testing';
+        this.conformationService
+            .open({
+                title: label,
+                message:
+                    'Do you want to set status as google closed testing?'
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    let newJson = {
+                        id: record.id,
+                    }
+                    this.crmService.googleClosedTesting(newJson).subscribe({
+                        next: (res) => {
+                            this.alertService.showToast('success', 'Google closed testing successfully!');
+                            if (res) {
+                                this.refreshItems();
+                            }
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err);
+                        },
+                    });
+                }
+            });
     }
 
     ngOnDestroy(): void {

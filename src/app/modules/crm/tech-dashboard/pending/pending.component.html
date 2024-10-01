@@ -173,10 +173,15 @@
                             <mat-icon class="mat-18">schedule</mat-icon>
                             <span style="font-weight: 600">WL Settings</span>
                         </button>
-                        <button mat-menu-item (click)="activate(element, i)"
-                            *ngIf="element.is_integration_started == true">
+                        <button mat-menu-item (click)="activate(element, i)" *ngIf="(element.is_integration_started == true && (element.item_code != '003' &&
+                             element.item_code != '004' && element.item_code != '006' && element.item_code != '007')) || element.product_status.toLowerCase() == 'google closed testing'">
                             <mat-icon class="mat-18">history</mat-icon>
                             <span style="font-weight: 600">Activate</span>
+                        </button>
+                        <button mat-menu-item (click)="googleClosedTesting(element)" *ngIf="element.product_status.toLowerCase() == 'inprocess' && (element.item_code == '003' ||
+                             element.item_code == '004' || element.item_code == '006' || element.item_code == '007')">
+                            <mat-icon svgIcon="heroicons_outline:clipboard-document-check"></mat-icon>
+                            <span style="font-weight: 600">Google Closed Testing</span>
                         </button>
                         <!-- <button mat-menu-item (click)="link(ListItem)">
                             <mat-icon class="mat-18">how_to_reg</mat-icon>
