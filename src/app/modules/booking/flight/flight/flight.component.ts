@@ -150,8 +150,7 @@ export class FlightComponent extends BaseListingComponent {
     ngOnInit() {
 
         this.getAgentList("", true);
-        this.getAirportFromList("");
-        this.getAirportToList("");
+        this.getAirportList("");
         this.getSupplierList();
         this._filterService.selectionDateDropdown = "";
 
@@ -295,6 +294,28 @@ export class FlightComponent extends BaseListingComponent {
         });
     }
 
+    // Airport From , To Data List
+    getAirportList(value: any) {
+        this.flighttabService.getAirportMstCombo(value).subscribe((data: any) => {
+            this.airportFromList = data;
+            this.airportToList = data;
+
+            if (this.selectedFromAirport && this.selectedFromAirport.id) {
+                const match = this.airportFromList.find((item: any) => item.id == this.selectedFromAirport?.id);
+                if (!match) {
+                    this.airportFromList.push(this.selectedFromAirport);
+                }
+            }
+
+            if (this.selectedToAirport && this.selectedToAirport.id) {
+                const match = this.airportToList.find((item: any) => item.id == this.selectedToAirport?.id);
+                if (!match) {
+                    this.airportToList.push(this.selectedToAirport);
+                }
+            }
+        });
+    }
+  
     // Api to get the Airportlist Data (from)
     getAirportFromList(value: any) {
         this.flighttabService.getAirportMstCombo(value).subscribe((data: any) => {
@@ -306,11 +327,7 @@ export class FlightComponent extends BaseListingComponent {
                     this.airportFromList.push(this.selectedFromAirport);
                 }
             }
-
-            // if (!value) {
-            //     this.airportToList = data;
-            // }
-        })
+        });
     }
 
     // Api to get the Airportlist Data (To)
@@ -324,7 +341,7 @@ export class FlightComponent extends BaseListingComponent {
                     this.airportToList.push(this.selectedToAirport);
                 }
             }
-        })
+        });
     }
 
     // Api to get the Supplier List

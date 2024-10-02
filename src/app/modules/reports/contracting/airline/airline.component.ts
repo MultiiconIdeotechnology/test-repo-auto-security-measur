@@ -322,8 +322,6 @@ export class AirlineComponent {
     }
 
     refreshItems(): void {
-        // console.log("refreshItems");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
@@ -339,8 +337,6 @@ export class AirlineComponent {
     }
 
     refreshItems1(): void {
-        // console.log("refreshItems1");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
@@ -355,8 +351,6 @@ export class AirlineComponent {
     }
 
     refreshItems2(): void {
-        // console.log("refreshItems2");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
@@ -372,8 +366,6 @@ export class AirlineComponent {
     }
 
     refreshItems3(): void {
-        // console.log("refreshItems3");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {

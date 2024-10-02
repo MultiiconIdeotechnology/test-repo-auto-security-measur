@@ -50,7 +50,6 @@ export class TravellerInfoComponent {
     @Inject(MAT_DIALOG_DATA) public data: any[] = []
   ) {
     this.record = data || {};
-    console.log("this.record", this.record);
   }
 
 }
