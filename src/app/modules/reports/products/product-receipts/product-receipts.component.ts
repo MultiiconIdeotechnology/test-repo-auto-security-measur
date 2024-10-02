@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-receipts',
+  selector: 'app-product-receipts',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './receipts.component.html',
+  templateUrl: './product-receipts.component.html',
 })
-export class ReceiptsComponent {
+
+export class ProductReceiptsComponent {
 
 }

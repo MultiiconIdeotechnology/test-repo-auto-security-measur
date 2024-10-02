@@ -152,8 +152,8 @@ export const appRoutes: Route[] = [
             {path: Routes.reports.leads_rmwise_path, loadChildren: () => import('app/modules/reports/leads/lead-rmwise/lead-rmwise.routes')},
             {path: Routes.reports.products_path, loadChildren: () => import('app/modules/reports/sales/product/sales-product/sales-product.routes')},
             {path: Routes.reports.agent_summary_path, loadChildren: () => import('app/modules/reports/sales/agent-summaries/agent-summary/agent-summary.routes')},
-            {path: Routes.reports.products_collection_path, loadChildren: () => import('app/modules/reports/products/collection/collection.routes')},
-            {path: Routes.reports.products_receipts_path, loadChildren: () => import('app/modules/reports/products/receipts/receipts.routes')},
+            {path: Routes.reports.products_collection_path, loadChildren: () => import('app/modules/reports/products/product-collection/product-collection.routes')},
+            {path: Routes.reports.products_receipts_path, loadChildren: () => import('app/modules/reports/products/product-receipts/product-receipts.routes')},
 
 
             // MY BOOKINGS
