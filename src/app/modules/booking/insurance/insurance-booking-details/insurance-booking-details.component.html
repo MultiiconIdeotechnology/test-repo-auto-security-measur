@@ -61,7 +61,7 @@
                                     <mat-icon class="secondary-text text-2xl">watch_later</mat-icon>
                                     <span class="text-md font-semibold ml-2 leading-none theme-black-text">Your Insurance Process is Pending</span>
                                 </div>
-                                <div *ngIf="Status === 'Payment Failed' || Status === 'Booking Failed' || Status === 'Cancelled'"
+                                <div *ngIf="Status === 'Payment Failed' || Status === 'Booking Failed' || Status === 'Failed' || Status === 'Cancelled'"
                                     class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
                                     <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
                                     <span class="text-md font-semibold ml-2 leading-none">Your Insurance is Failed</span>
@@ -299,9 +299,9 @@
                                     <span class="text-base truncate"
                                         [ngClass]="paymentBy?.pg_status == 'Confirm' ? 'text-green-500' : 'text-red-500'"
                                         [matTooltip]="paymentBy?.pg_status">{{paymentBy?.pg_status || ' - '}}</span>
-                                    <img *ngIf="mainDataAll?.payment_method == 'Online' || mainDataAll?.payment_method == 'Partial'"
+                                    <!-- <img *ngIf="mainDataAll?.payment_method == 'Online' || mainDataAll?.payment_method == 'Partial'"
                                         (click)="checkStatus()" class="w-5 cursor-pointer"
-                                        src="assets/icons/refresh.svg" alt="" matTooltip="Check Status">
+                                        src="assets/icons/refresh.svg" alt="" matTooltip="Check Status"> -->
                                 </div>
                             </div>
                             <div class="flex flex-col ">
