@@ -363,7 +363,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'reports.account',
                 title: 'Accounts',
                 type: 'collapsable',
-                pid:'REPORTS_ACCOUNTS-REPORT_VIEW',
+                pid: 'REPORTS_ACCOUNTS-REPORT_VIEW',
                 icon: 'heroicons_outline:building-library',
                 // link: Routes.reports.account_route
                 children: [
@@ -371,7 +371,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.balance_register',
                         title: 'Agent Balance Register',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_AGENT-BALANCE_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_AGENT-BALANCE_VIEW',
                         icon: '',
                         link: Routes.account.agent_balance_path_route
                     },
@@ -379,7 +379,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.commission_expense',
                         title: 'Commission Expense',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_COMMISSIONEXPENSE_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_COMMISSIONEXPENSE_VIEW',
                         icon: '',
                         link: Routes.account.commission_expense_route
                     },
@@ -387,7 +387,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.commission_income',
                         title: 'Commission Income',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_COMMISSIONINCOME_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_COMMISSIONINCOME_VIEW',
                         icon: '',
                         link: Routes.account.commission_income_route
                     },
@@ -395,7 +395,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.first_transaction',
                         title: 'First Transaction',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_FIRSTTRANSACTION_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_FIRSTTRANSACTION_VIEW',
                         icon: '',
                         link: Routes.account.first_transaction_route
                     },
@@ -403,7 +403,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.ledger',
                         title: 'Ledger',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_LEDGER_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_LEDGER_VIEW',
                         icon: '',
                         link: Routes.reports.ledger_route
                     },
@@ -411,7 +411,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.purchase_register',
                         title: 'Purchase Register',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_PURCHASEREGISTER_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_PURCHASEREGISTER_VIEW',
                         icon: '',
                         link: Routes.account.purchase_register_route
                     },
@@ -419,7 +419,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.receipt_register',
                         title: 'Receipt Register',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_RECEIPTREGISTER_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_RECEIPTREGISTER_VIEW',
                         icon: '',
                         link: Routes.account.receipt_register_route
                     },
@@ -427,7 +427,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.sale_book',
                         title: 'Sale Book',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_SALEBOOK_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_SALEBOOK_VIEW',
                         icon: '',
                         link: Routes.account.sale_route
                     },
@@ -435,7 +435,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.sales_return',
                         title: 'Sales Return',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_SALESRETURN_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_SALESRETURN_VIEW',
                         icon: '',
                         link: Routes.account.sales_return_route
                     },
@@ -443,7 +443,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.wallet_outstanding',
                         title: 'Wallet Outstanding',
                         type: 'basic',
-                        pid:'REPORTS-ACCOUNTS_WALLET-OUTSTANDING_VIEW',
+                        pid: 'REPORTS-ACCOUNTS_WALLET-OUTSTANDING_VIEW',
                         icon: '',
                         link: Routes.account.wallet_outstanding_route
                     }
@@ -469,14 +469,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'reports.leads',
                 title: 'Leads',
                 type: 'collapsable',
-                pid:'REPORTS_LEADS-REPORTS_VIEW',
+                pid: 'REPORTS_LEADS-REPORTS_VIEW',
                 icon: 'heroicons_outline:adjustments-vertical',
                 children: [
                     {
                         id: 'reports.ledger',
                         title: 'Register',
                         type: 'basic',
-                        pid:'LEADS-REPORTS_REGISTER_VIEW',
+                        pid: 'LEADS-REPORTS_REGISTER_VIEW',
                         icon: '',
                         link: Routes.leads.leads_register_route
                     },
@@ -484,7 +484,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.leadsrep',
                         title: 'RM Wise Leads',
                         type: 'basic',
-                        pid:'LEADS-REPORTS_RMWISELEADS_VIEW',
+                        pid: 'LEADS-REPORTS_RMWISELEADS_VIEW',
                         icon: '',
                         link: Routes.reports.leads_rmwise_route
                     },
@@ -494,14 +494,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'reports.sales',
                 title: 'Sales',
                 type: 'collapsable',
-                pid:'REPORTS_SALES-REPORTS_VIEW',
+                pid: 'REPORTS_SALES-REPORTS_VIEW',
                 icon: 'heroicons_outline:cube',
                 children: [
                     {
                         id: 'reports.products',
                         title: 'Products',
                         type: 'basic',
-                        pid:'SALES-REPORTS_PRODUCTS_VIEW',
+                        pid: 'SALES-REPORTS_PRODUCTS_VIEW',
                         icon: '',
                         link: Routes.reports.products_route
                     },
@@ -509,7 +509,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.agentsummary',
                         title: 'Agent Summary',
                         type: 'basic',
-                        pid:'SALES-REPORTS_AGENTSUMMARY_VIEW',
+                        pid: 'SALES-REPORTS_AGENTSUMMARY_VIEW',
                         icon: '',
                         link: Routes.reports.agent_summary_route
                     }
@@ -519,14 +519,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'reports.agentsrep',
                 title: 'Agents',
                 type: 'collapsable',
-                pid:'REPORTS_AGENTS-REPORTS_VIEW',
+                pid: 'REPORTS_AGENTS-REPORTS_VIEW',
                 icon: 'heroicons_outline:square-3-stack-3d',
                 children: [
                     {
                         id: 'reports.agentrmwise',
                         title: 'RM Wise Agents',
                         type: 'basic',
-                        pid:'AGENTS-REPORTS_RMWISEAGENTS_VIEW',
+                        pid: 'AGENTS-REPORTS_RMWISEAGENTS_VIEW',
                         icon: '',
                         link: Routes.reports.agents_rmwise_agents_route
                     }
@@ -536,14 +536,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'reports.contracting',
                 title: 'Contracting',
                 type: 'collapsable',
-                pid:'REPORTS_CONTRACTING-REPORTS_VIEW',
+                pid: 'REPORTS_CONTRACTING-REPORTS_VIEW',
                 icon: 'heroicons_outline:chart-bar-square',
                 children: [
                     {
                         id: 'reports.airline',
                         title: 'Airline',
                         type: 'basic',
-                        pid:'CONTRACTING-REPORTS_AIRLINE_VIEW',
+                        pid: 'CONTRACTING-REPORTS_AIRLINE_VIEW',
                         icon: '',
                         link: Routes.reports.airline_route
                     },
@@ -569,18 +569,43 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'reports.campaign',
                 title: 'Campaign',
                 type: 'collapsable',
-                pid:'REPORTS_CAMPAIGN-REPORTS_VIEW',
+                pid: 'REPORTS_CAMPAIGN-REPORTS_VIEW',
                 icon: 'mat_outline:campaign',
                 children: [
                     {
                         id: 'reports.campaignsummary',
                         title: 'Campaign Summary',
                         type: 'basic',
-                        pid:'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
+                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
                         icon: '',
                         link: Routes.reports.campaign_summary_path_route
                     },
                 ]
+            },
+            {
+                id: 'reports.products',
+                title: 'Products',
+                type: 'collapsable',
+                pid: 'REPORTS_PRODUCTS-REPORTS_VIEW',
+                icon: 'heroicons_outline:building-library',
+                // link: Routes.reports.account_route
+                children: [
+                    {
+                        id: 'reports.collection',
+                        title: 'Collection',
+                        type: 'basic',
+                        pid: 'REPORTS_PRODUCTS_COLLECTION_VIEW',
+                        icon: '',
+                        link: Routes.reports.products_collection_route
+                    },
+                    {
+                        id: 'reports.receipts',
+                        title: 'Receipts',
+                        type: 'basic',
+                        pid: 'REPORTS_PRODUCTS_RECEIPTS_VIEW',
+                        icon: '',
+                        link: Routes.reports.products_receipts_route
+                    },]
             }
         ],
 
@@ -596,7 +621,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'inventory.activity',
                 title: 'Activity',
                 type: 'basic',
-                pid:'INVENTORY_ACTIVITY_VIEW',
+                pid: 'INVENTORY_ACTIVITY_VIEW',
                 icon: 'mat_outline:rowing',
                 link: Routes.inventory.activity_route
             },
@@ -604,7 +629,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'inventory.transfer',
                 title: 'Transfers',
                 type: 'basic',
-                pid:'INVENTORY_TRANSFERS_VIEW',
+                pid: 'INVENTORY_TRANSFERS_VIEW',
                 icon: 'mat_outline:transfer_within_a_station',
                 link: Routes.inventory.transfer_route
             },
@@ -612,7 +637,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'inventory.holiday',
                 title: 'Holiday Products',
                 type: 'basic',
-                pid:'INVENTORY_HOLIDAYPRODUCTS_VIEW',
+                pid: 'INVENTORY_HOLIDAYPRODUCTS_VIEW',
                 icon: 'mat_outline:holiday_village',
                 link: Routes.inventory.holiday_route
             },
@@ -620,7 +645,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'inventory.vehicle',
                 title: 'Vehicle',
                 type: 'basic',
-                pid:'INVENTORY_VEHICLE_VIEW',
+                pid: 'INVENTORY_VEHICLE_VIEW',
                 icon: 'mat_outline:local_taxi',
                 link: Routes.inventory.vehicle_route
             },
@@ -628,7 +653,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'inventory.hotel',
                 title: 'Hotel',
                 type: 'basic',
-                pid:'INVENTORY_HOTEL_VIEW',
+                pid: 'INVENTORY_HOTEL_VIEW',
                 icon: 'heroicons_outline:building-office-2',
                 link: Routes.inventory.hotel_route
             },
@@ -636,7 +661,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'inventory.visa',
                 title: 'Visa',
                 type: 'basic',
-                pid:'INVENTORY_VISA_VIEW',
+                pid: 'INVENTORY_VISA_VIEW',
                 icon: 'heroicons_outline:newspaper',
                 link: Routes.inventory.visa_route
             },
@@ -723,7 +748,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'settings.erp',
                 title: 'ERP Settings',
                 type: 'basic',
-                pid:'SETTINGS_ERPSETTINGS_VIEW',
+                pid: 'SETTINGS_ERPSETTINGS_VIEW',
                 icon: 'mat_outline:settings',
                 link: Routes.settings.erpsettings_route
             },
@@ -731,7 +756,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'settings.markupprofile',
                 title: 'Markup Profile',
                 type: 'basic',
-                pid:'SETTINGS_MARKUPPROFILE_VIEW',
+                pid: 'SETTINGS_MARKUPPROFILE_VIEW',
                 icon: 'mat_outline:payments',
                 link: Routes.settings.markupprofile_route
             },
@@ -739,7 +764,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'settings.emailsetup',
                 title: 'Email Setup',
                 type: 'basic',
-                pid:'SETTINGS_EMAILSETUP_VIEW',
+                pid: 'SETTINGS_EMAILSETUP_VIEW',
                 icon: 'mat_outline:mail',
                 link: Routes.settings.emailsetup_route
             },
@@ -747,7 +772,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'settings.messageevents',
                 title: 'Message Events',
                 type: 'basic',
-                pid:'SETTINGS_MESSAGEEVENTS_VIEW',
+                pid: 'SETTINGS_MESSAGEEVENTS_VIEW',
                 icon: 'mat_outline:speaker_notes',
                 link: Routes.settings.messageevents_route
             },
@@ -755,7 +780,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'settings.messagetemplates',
                 title: 'Message Templates',
                 type: 'basic',
-                pid:'SETTINGS_MESSAGETEMPLATES_VIEW',
+                pid: 'SETTINGS_MESSAGETEMPLATES_VIEW',
                 icon: 'mat_outline:drafts',
                 link: Routes.settings.messagetemplates_route
             },
@@ -763,7 +788,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'settings.supplierapi',
                 title: 'Supplier API',
                 type: 'basic',
-                pid:'SETTINGS_SUPPLIERAPI_VIEW',
+                pid: 'SETTINGS_SUPPLIERAPI_VIEW',
                 icon: 'mat_outline:perm_contact_calendar',
                 link: Routes.settings.supplierapi_route
             },
@@ -771,7 +796,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'settings.erp',
                 title: 'PSP',
                 type: 'basic',
-                pid:'SETTINGS_PSP_VIEW',
+                pid: 'SETTINGS_PSP_VIEW',
                 icon: 'mat_outline:settings',
                 link: Routes.settings.pspsetting_route
             },

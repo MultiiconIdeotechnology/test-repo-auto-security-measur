@@ -288,7 +288,9 @@ export const module_name = {
     agent_ledger: 'Agent Ledger',
     products: 'Products',
     agentSummary: 'Agent Summary',
-    insurance: 'Insurance'
+    insurance: 'Insurance',
+    products_collection: 'products_collection',
+    products_receipts: 'products_receipts'
 };
 
 export const filter_module_name = {
@@ -368,6 +370,8 @@ export const filter_module_name = {
     airline_report: "airline_report",
     campaign_summary: "campaign_summary",
     report_sales_agent_summary: "report_sales_agent_summary",
+    products_collection: 'products_collection',
+    products_receipts: 'products_receipts',
 
     //Inventory
     activity: "activity",
