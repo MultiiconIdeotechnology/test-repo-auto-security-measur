@@ -7,6 +7,6 @@ export default [
         path: '',
         component: ReceiptsComponent,
         canActivate: [AuthGuard],
-        data: { module: 'BO Menu Links', group: 'Reports - Products', operation: 'Receipts', category: 'View' }
+        data: { module: 'BO Menu Links', group: 'Reports-Products', operation: 'Receipts', category: 'View' }
     },
 ] as Routes

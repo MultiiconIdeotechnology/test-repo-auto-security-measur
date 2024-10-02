@@ -7,6 +7,6 @@ export default [
         path: '',
         component: CollectionComponent,
         canActivate: [AuthGuard],
-        data: { module: 'BO Menu Links', group: 'Reports - Products', operation: 'Collection', category: 'View' }
+        data: { module: 'BO Menu Links', group: 'Reports-Products', operation: 'Collection', category: 'View' }
     },
 ] as Routes

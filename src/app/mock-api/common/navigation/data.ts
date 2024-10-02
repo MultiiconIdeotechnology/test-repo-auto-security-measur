@@ -583,26 +583,26 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 ]
             },
             {
-                id: 'reports.products',
+                id: 'reports.products_reports',
                 title: 'Products',
                 type: 'collapsable',
-                pid: 'REPORTS_PRODUCTS-REPORTS_VIEW',
+                pid: 'REPORTS_REPORTS-PRODUCTS_VIEW',
                 icon: 'heroicons_outline:building-library',
                 // link: Routes.reports.account_route
                 children: [
                     {
-                        id: 'reports.collection',
+                        id: 'reports.collection_reports',
                         title: 'Collection',
                         type: 'basic',
-                        pid: 'REPORTS_PRODUCTS_COLLECTION_VIEW',
+                        pid: 'REPORTS-PRODUCTS_COLLECTION_VIEW',
                         icon: '',
                         link: Routes.reports.products_collection_route
                     },
                     {
-                        id: 'reports.receipts',
+                        id: 'reports.receipts_reports',
                         title: 'Receipts',
                         type: 'basic',
-                        pid: 'REPORTS_PRODUCTS_RECEIPTS_VIEW',
+                        pid: 'REPORTS-PRODUCTS_RECEIPTS_VIEW',
                         icon: '',
                         link: Routes.reports.products_receipts_route
                     },]
