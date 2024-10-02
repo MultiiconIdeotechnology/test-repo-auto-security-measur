@@ -289,8 +289,8 @@ export const module_name = {
     products: 'Products',
     agentSummary: 'Agent Summary',
     insurance: 'Insurance',
-    products_collection: 'products_collection',
-    products_receipts: 'products_receipts'
+    products_collection: 'Collection',
+    products_receipts: 'Receipts'
 };
 
 export const filter_module_name = {

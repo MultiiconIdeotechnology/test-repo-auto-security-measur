@@ -80,9 +80,7 @@ import { WalletService } from 'app/services/wallet.service';
     ],
 })
 
-export class ReceiptListComponent
-    extends BaseListingComponent
-    implements OnDestroy {
+export class ReceiptListComponent extends BaseListingComponent implements OnDestroy {
     module_name = module_name.receipts;
     filter_table_name = filter_module_name.account_receipts;
     private settingsUpdatedSubscription: Subscription;
