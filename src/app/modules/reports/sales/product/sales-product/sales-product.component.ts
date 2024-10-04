@@ -28,6 +28,7 @@ import { Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ProductTabComponent } from '../product-tab/product-tab.component';
 
 @Component({
     selector: 'app-sales-product',
@@ -53,7 +54,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         NgxMatSelectSearchModule,
         MatTabsModule,
         PrimeNgImportsModule,
-        DatePipe
+        DatePipe,
+        ProductTabComponent
     ],
     templateUrl: './sales-product.component.html',
     styleUrls: ['./sales-product.component.scss']
@@ -101,13 +103,13 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.getAgent("");
         this.getEmployeeList("");
 
-         // common filter
-         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
 
@@ -166,12 +168,12 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
-            } 
+            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
@@ -190,9 +192,9 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
             this.employeeList = data;
 
-            for(let i in this.employeeList){
+            for (let i in this.employeeList) {
                 this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
-             }
+            }
         });
     }
 
@@ -254,10 +256,10 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
 
             Excel.export(
                 'Products',
-                 exportHeaderArr,
-                 productData,
-                 "Products",
-                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 20 } }]
+                exportHeaderArr,
+                productData,
+                "Products",
+                [{ s: { r: 0, c: 0 }, e: { r: 0, c: 20 } }]
             );
         });
     }

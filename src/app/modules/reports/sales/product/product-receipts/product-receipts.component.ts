@@ -14,7 +14,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { AppConfig } from 'app/config/app-config';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import {
     Security,
@@ -34,6 +33,7 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ProductTabComponent } from '../product-tab/product-tab.component';
 
 @Component({
     selector: 'app-product-receipts',
@@ -60,6 +60,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatSelectModule,
         NgxMatSelectSearchModule,
         MatTabsModule,
+        ProductTabComponent,
         PrimeNgImportsModule
     ],
 })
@@ -239,7 +240,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 this.isLoading = false;
                 if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
-                        this.isFrozenColumn('', ['index', 'payment_attachment', 'receipt_ref_no']);
+                        this.isFrozenColumn('', ['receipt_ref_no']);
                     }, 200);
                 }
             },
@@ -269,17 +270,17 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a') : '';
                 dt.agent_name = dt.agent_Code + ' ' + dt.agent_name;
             }
-            ['receipt_ref_no', 'receipt_status', 'payment_amount', 'receipt_request_date', 'agent_name', 'rm_name', 'product_name']
+            ['receipt_ref_no', 'agent_name', 'rm_name', 'product_name' , 'payment_amount', 'receipt_status' , 'receipt_request_date']
             Excel.export(
                 'Receipt',
                 [
                     { header: 'Reference No.', property: 'receipt_ref_no' },
-                    { header: 'Status', property: 'receipt_status' },
-                    { header: 'Amount', property: 'payment_amount' },
-                    { header: 'Request', property: 'receipt_request_date' },
                     { header: 'Agent', property: 'agent_name' },
                     { header: 'RM', property: 'rm_name' },
                     { header: 'Product name', property: 'product_name' },
+                    { header: 'Amount', property: 'payment_amount' },
+                    { header: 'Status', property: 'receipt_status' },
+                    { header: 'Request', property: 'receipt_request_date' },
                 ],
                 data.data,
                 'Receipt',

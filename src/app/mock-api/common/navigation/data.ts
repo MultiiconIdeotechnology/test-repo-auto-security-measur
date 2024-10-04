@@ -581,31 +581,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         link: Routes.reports.campaign_summary_path_route
                     },
                 ]
-            },
-            {
-                id: 'reports.products_reports',
-                title: 'Products',
-                type: 'collapsable',
-                pid: 'REPORTS_REPORTS-PRODUCTS_VIEW',
-                icon: 'heroicons_outline:building-library',
-                // link: Routes.reports.account_route
-                children: [
-                    {
-                        id: 'reports.collection_reports',
-                        title: 'Collection',
-                        type: 'basic',
-                        pid: 'REPORTS-PRODUCTS_COLLECTION_VIEW',
-                        icon: '',
-                        link: Routes.reports.products_collection_route
-                    },
-                    {
-                        id: 'reports.receipts_reports',
-                        title: 'Receipts',
-                        type: 'basic',
-                        pid: 'REPORTS-PRODUCTS_RECEIPTS_VIEW',
-                        icon: '',
-                        link: Routes.reports.products_receipts_route
-                    },]
             }
         ],
 

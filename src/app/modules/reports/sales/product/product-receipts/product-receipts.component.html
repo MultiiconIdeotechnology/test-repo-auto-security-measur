@@ -54,15 +54,17 @@
         </div>
     </div>
 
+    <app-product-tab [activeTab]="2"></app-product-tab>
+
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['index', 'payment_attachment', 'receipt_ref_no', 'receipt_status', 'payment_amount', 'receipt_request_date', 'agent_name', 'rm_name', 'product_name']"
+            [globalFilterFields]="['receipt_ref_no', 'agent_name', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
@@ -76,27 +78,30 @@
                             <i *ngIf="frozenObj?.receipt_ref_no" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th pSortableColumn="receipt_status" pResizableColumn>
-                        Status <p-sortIcon field="receipt_status" />
+                    
+                    <th pSortableColumn="agent_name" pResizableColumn>
+                        Agent <p-sortIcon field="agent_name" />
+                    </th>
+
+                    <th pSortableColumn="rm_name" pResizableColumn>
+                        RM <p-sortIcon field="rm_name" />
+                    </th>
+
+                    <th pSortableColumn="product_name" pResizableColumn>
+                        Product name <p-sortIcon field="product_name" />
                     </th>
 
                     <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
                         Amount <p-sortIcon field="payment_amount" />
                     </th>
+                    
+                    <th pSortableColumn="receipt_status" pResizableColumn>
+                        Status <p-sortIcon field="receipt_status" />
+                    </th>
 
                     <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'"
                         pSortableColumn="receipt_request_date" pResizableColumn>
                         Date <p-sortIcon field="receipt_request_date" />
-                    </th>
-
-                    <th pSortableColumn="agent_name" pResizableColumn>
-                        Agent <p-sortIcon field="agent_name" />
-                    </th>
-                    <th pSortableColumn="rm_name" pResizableColumn>
-                        RM <p-sortIcon field="rm_name" />
-                    </th>
-                    <th pSortableColumn="product_name" pResizableColumn>
-                        Product name <p-sortIcon field="product_name" />
                     </th>
                 </tr>
 
@@ -105,6 +110,43 @@
                         <p-columnFilter type="text" matchMode="contains" field="receipt_ref_no"
                             placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
                     </th>
+                    
+
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" field="rm_name" placeholder="Search by RM" ariaLabel="Filter RM" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" field="product_name" placeholder="Search by Product name"
+                            ariaLabel="Filter product name" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" field="payment_amount" placeholder="Search by Amount"
+                            ariaLabel="Filter Amount" />
+                    </th>
+
                     <th>
                         <p-columnFilter field="receipt_status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -117,11 +159,6 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" field="payment_amount" placeholder="Search by Amount"
-                            ariaLabel="Filter Amount" />
                     </th>
 
                     <th>
@@ -157,36 +194,6 @@
                             </div>
                         </ng-container>
                     </th>
-
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
-                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" field="rm_name" placeholder="Search by RM"
-                            ariaLabel="Filter RM" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" field="product_name" placeholder="Search by Product name"
-                            ariaLabel="Filter product name" />
-                    </th>
-                    
                 </tr>
             </ng-template>
 
@@ -197,10 +204,21 @@
                             {{element.receipt_ref_no || "-"}}
                         </span>
                     </td>
+                  
                     <td>
-                        <span class="text-center justify-left"
-                            [ngClass]="element.receipt_status == 'Confirmed' ? 'text-green-600' : element.receipt_status == 'Pending' ? 'text-blue-600' :'text-red-600'">
-                            {{element.receipt_status || "-"}}
+                        <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
+                            (click)="viewAgentData(element)">
+                            {{element.agent_Code}} <span *ngIf="element.agent_name">-</span> {{element.agent_name}}
+                        </a>
+                    </td>
+
+                    <td>
+                        {{element.rm_name || "-"}}
+                    </td>
+
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
+                            {{element.product_name || "-"}}
                         </span>
                     </td>
 
@@ -210,22 +228,16 @@
                     </td>
 
                     <td>
-                        {{(element.receipt_request_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td>
-                        <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
-                            (click)="viewAgentData(element)">
-                            {{element.agent_Code}} <span *ngIf="element.agent_name">-</span> {{element.agent_name}}
-                        </a>
-                    </td>
-                    <td>
-                        {{element.rm_name || "-"}}
-                    </td>
-                    <td>
-                        <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
-                            {{element.product_name || "-"}}
+                        <span class="text-center justify-left"
+                            [ngClass]="element.receipt_status == 'Confirmed' ? 'text-green-600' : element.receipt_status == 'Pending' ? 'text-blue-600' :'text-red-600'">
+                            {{element.receipt_status || "-"}}
                         </span>
                     </td>
+                    
+                    <td>
+                        {{(element.receipt_request_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                    
                 </tr>
             </ng-template>
 
@@ -233,11 +245,11 @@
                 <tr>
                     <td></td>
                     <td></td>
+                    <td></td>
+                    <td></td>
                     <td class="text-right">
                         {{total_amount.toFixed(2)}}
                     </td>
-                    <td></td>
-                    <td></td>
                     <td></td>
                     <td></td>
                 </tr>

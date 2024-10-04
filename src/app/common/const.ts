@@ -368,12 +368,7 @@ export const Routes = {
 
         agent_summary_path: 'reports/agent_summary',
         agent_summary_route: 'reports/agent_summary',
-        
-        products_collection_path: 'reports/prod-collection',
-        products_collection_route: 'reports/prod-collection',
-
-        products_receipts_path: 'reports/prod-receipts',
-        products_receipts_route: 'reports/prod-receipts'
+    
     },
 
     settings: {
