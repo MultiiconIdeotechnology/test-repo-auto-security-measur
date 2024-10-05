@@ -112,6 +112,10 @@ export class TechCollectionComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
+        setTimeout(() => {
+            this.agentList = this.dropdownListObj['agentList'];
+        }, 1000);
+
         this.settingsTechSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
