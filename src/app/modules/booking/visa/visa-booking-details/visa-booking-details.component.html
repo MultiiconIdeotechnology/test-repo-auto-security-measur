@@ -41,9 +41,9 @@
                                 </div>
                             </div>
                             <div class="flex">
-                                <button (click)="refund()" *ngIf="bookingDetail.is_display_refund_btn" class="mr-2" mat-flat-button [color]="'primary'">
+                                <!-- <button (click)="refund()" *ngIf="bookingDetail.is_display_refund_btn" class="mr-2" mat-flat-button [color]="'primary'">
                                     Refund
-                                </button>
+                                </button> -->
                                 <button *ngIf="bookingDetail.status == 'Payment Confirmed'" mat-flat-button [color]="'primary'" (click)="startProcess(ListItem)">
                                     Start Process
                                 </button>
@@ -346,8 +346,13 @@
         <div class="w-full">
             <div class="flex flex-col mt-5 mb-6 overflow-x-hidden overflow-y-auto border rounded-2xl"
                 *ngIf="travellerDataList.length > 0" style="max-height: 40% !important">
-                <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center dark:bg-card bg-gray-200 sticky top-0 text-lg px-4"> 
-                    Travellers Details
+                <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center dark:bg-card bg-gray-200 sticky top-0 text-lg px-4 justify-between"> 
+                    <div>
+                        Travellers Details
+                    </div>
+                    <button (click)="refund()" class="rounded-md text-md font-normal dark:bg-primary bg-gray-200 pt-1 pb-0.5 w-18 " matRipple [color]="'primary'">
+                        Refund
+                    </button>
                 </div>
                 <table mat-table [dataSource]="travellers" class="overflow-x-auto" class="dark:bg-transparent  bg-white">
                     <ng-container matColumnDef="action">

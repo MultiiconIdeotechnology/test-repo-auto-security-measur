@@ -33,6 +33,7 @@ import { Security, bookingsVisaPermissions, messages } from 'app/security';
 import { CommonUtils } from 'app/utils/commonutils';
 import { Linq } from 'app/utils/linq';
 import { FlightTabService } from 'app/services/flight-tab.service';
+import { MatRippleModule } from '@angular/material/core';
 
 @Component({
     selector: 'app-visa-booking-details',
@@ -62,6 +63,7 @@ import { FlightTabService } from 'app/services/flight-tab.service';
         MatTableModule,
         MatSliderModule,
         JsonPipe,
+        MatRippleModule,
         AccountDetailsComponent
     ]
 })
@@ -169,35 +171,31 @@ export class VisaBookingDetailsComponent {
         });
     }
 
-    refund(){
-        this.route.paramMap.subscribe(params => {
-          const id = params.get('id');
+    refund() {
         const label: string = 'Refund';
         this.conformationService
-          .open({
-            title: label,
-            message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-          })
-          .afterClosed()
-          .subscribe((res) => {
-            if (res === 'confirmed') {
-              const json = {
-                id: id,
-                service: 'Visa'
-              }
-              this.flighttabService.generateRevertPayment(json).subscribe({
-                next: (res:any) => {
-                  this.toastr.showToast('success', 'Refund is initiated!', 'top-right', true);
-                },
-                error: (err) => {
-                  this.toastr.showToast('error', err, 'top-right', true);
-
-                },
-              });
-            }
-          });
-        })
-      }
+            .open({
+                title: label,
+                message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
+                    const json = {
+                        id: this.Id,
+                        service: 'Visa'
+                    }
+                    this.flighttabService.visaAmendment(json).subscribe({
+                        next: (res: any) => {
+                            this.toastr.showToast('success', 'Refund is initiated!', 'top-right', true);
+                        },
+                        error: (err) => {
+                            this.toastr.showToast('error', err, 'top-right', true);
+                        },
+                    });
+                }
+            });
+    }
 
     getVisaBookingRecord() {
         this.visaService.getVisaBookingRecord(this.Id).subscribe({
@@ -322,35 +320,35 @@ export class VisaBookingDetailsComponent {
             });
     }
 
-    checkStatus(){
+    checkStatus() {
         this.route.paramMap.subscribe(params => {
-          const id = params.get('id');
-        const label: string = 'Check Status';
-        this.conformationService
-          .open({
-            title: label,
-            message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-          })
-          .afterClosed()
-          .subscribe((res) => {
-            if (res === 'confirmed') {
-              const json = {
-                id: id,
-                service: 'Visa'
-              }
-              this.flighttabService.checkPaymentStatus(json).subscribe({
-                next: (res:any) => {
-                  this.toastr.showToast('success', res.status, 'top-right', true);
-                },
-                error: (err) => {
-                  this.toastr.showToast('error', err, 'top-right', true);
+            const id = params.get('id');
+            const label: string = 'Check Status';
+            this.conformationService
+                .open({
+                    title: label,
+                    message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+                })
+                .afterClosed()
+                .subscribe((res) => {
+                    if (res === 'confirmed') {
+                        const json = {
+                            id: id,
+                            service: 'Visa'
+                        }
+                        this.flighttabService.checkPaymentStatus(json).subscribe({
+                            next: (res: any) => {
+                                this.toastr.showToast('success', res.status, 'top-right', true);
+                            },
+                            error: (err) => {
+                                this.toastr.showToast('error', err, 'top-right', true);
 
-                },
-              });
-            }
-          });
+                            },
+                        });
+                    }
+                });
         })
-      }
+    }
 
     rejectAction(record) {
         if (!Security.hasPermission(bookingsVisaPermissions.rejectVisaPermissions)) {
