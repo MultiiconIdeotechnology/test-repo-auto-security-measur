@@ -34,6 +34,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { ProductTabComponent } from '../product-tab/product-tab.component';
+import { RefferralService } from 'app/services/referral.service';
 
 @Component({
     selector: 'app-product-receipts',
@@ -75,6 +76,8 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     isFilterShow: boolean = false;
     selectedAgent: any;
     agentList: any[] = [];
+    selectedRM: any;
+    employeeList: any = [];
 
     statusList: any[] = [
         { label: 'Confirmed', value: 'Confirmed' },
@@ -87,6 +90,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         private agentService: AgentService,
         private matDialog: MatDialog,
         public _filterService: CommonFilterService,
+        private refferralService: RefferralService,
     ) {
         super(module_name.products_receipts);
 
@@ -97,6 +101,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
 
     ngOnInit(): void {
         this.getAgent('');
+        this.getEmployeeList("");
 
         // common filter
         this._filterService.selectionDateDropdown = "";
@@ -109,6 +114,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                     this.agentList.push(this.selectedAgent);
                 }
             }
+            this.selectedRM = resp['table_config']['rm']?.value;
 
             if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
@@ -127,6 +133,8 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            this.selectedRM = filterData['table_config']['rm']?.value;
+
             if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
@@ -153,6 +161,17 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
+    }
+
+    // Api to get the Employee list data
+    getEmployeeList(value: string) {
+        this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
+            this.employeeList = data;
+
+            for (let i in this.employeeList) {
+                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
+            }
+        });
     }
 
     product(record: any): void {

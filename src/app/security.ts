@@ -290,7 +290,12 @@ export const module_name = {
     agentSummary: 'Agent Summary',
     insurance: 'Insurance',
     products_collection: 'Collection',
-    products_receipts: 'Receipts'
+    products_receipts: 'Receipts',
+    airline_summary: 'Airline Summary',
+    airline_offline: 'Airline Offline TAT Analysis',
+    airline_monthly: 'Ailine Monthly Analysis',
+    airline_rejection: 'Airline Rejection Analysis',
+    airline_career: 'Airline Career Wise Analysis',
 };
 
 export const filter_module_name = {
@@ -372,6 +377,11 @@ export const filter_module_name = {
     report_sales_agent_summary: "report_sales_agent_summary",
     products_collection: 'products_collection',
     products_receipts: 'products_receipts',
+    airline_summary: 'airline_summary',
+    airline_offline: 'airline_offline_tat_Analysis',
+    airline_monthly: 'Airline Monthly Analysis',
+    airline_rejection: 'Airline Rejection Analysis',
+    airline_career: 'Airline Career Wise Analysis',
 
     //Inventory
     activity: "activity",

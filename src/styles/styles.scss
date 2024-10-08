@@ -462,6 +462,14 @@ th {
     padding: 4px;
 }
 
+.supplier_info .paginator-bottom .p-paginator{
+    position: relative;
+}
+
+.monthly_combo .mat-mdc-form-field-subscript-wrapper{
+    display: none;
+}
+
 .table-content {
     overflow-y: auto;
     padding-bottom: 50px;
@@ -879,7 +887,18 @@ div:where(.swal2-container) button:where(.swal2-close){
 //     }
 // }
 
-
+.carrier-row {
+    font-weight: bold;
+  }
+  
+  .domestic-row {
+    background-color: rgb(126 126 126 / 23%) !important;
+  }
+  
+  .international-row {
+    background-color: rgb(126 126 126 / 23%) !important;
+  }
+  
 
 
 

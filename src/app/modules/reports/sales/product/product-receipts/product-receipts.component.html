@@ -134,7 +134,20 @@
                     </th>
 
                     <th>
-                        <p-columnFilter type="text" field="rm_name" placeholder="Search by RM" ariaLabel="Filter RM" />
+                        <p-columnFilter class="searchableDropdown" field="rm_name" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="selectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+
+                        <!-- <p-columnFilter type="text" field="rm_name" placeholder="Search by RM" ariaLabel="Filter RM" /> -->
                     </th>
 
                     <th>
