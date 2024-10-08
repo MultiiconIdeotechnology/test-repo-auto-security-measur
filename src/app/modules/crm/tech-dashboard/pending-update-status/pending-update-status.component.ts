@@ -56,6 +56,7 @@ export class PendingUpdateStatusComponent {
         { value: 'Waiting for Customer Update', viewValue: 'Waiting for Customer Update' },
         { value: 'Waiting for Account Activation', viewValue: 'Waiting for Account Activation' },
         { value: 'Inprocess', viewValue: 'Inprocess' },
+        { value: 'Google Closed Testing', viewValue: 'Google Closed Testing' },
         { value: 'Rejected from Store', viewValue: 'Rejected from Store' }
     ];
 

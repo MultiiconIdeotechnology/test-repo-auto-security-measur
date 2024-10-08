@@ -116,5 +116,8 @@ export class FlightTabService {
     return this.http.post<any>(this.baseUrl + "AirBooking/getAirBookngStatus", {});
   }
 
+  getBookingFileLog(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "AirBooking/getBookingFileLog", { id: id });
+  }
 
 }

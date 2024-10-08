@@ -35,6 +35,7 @@ import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/comp
 import { PaxComponent } from '../pax/pax.component';
 import { FuseAlertComponent } from '@fuse/components/alert';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { FileLogsComponent } from '../file-logs/file-logs.component';
 
 @Component({
   selector: 'app-booking-details',
@@ -106,64 +107,64 @@ export class BookingDetailsComponent {
     })
   }
 
-  checkStatus(){
+  checkStatus() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-    const label: string = 'Check Status';
-    this.conformationService
-      .open({
-        title: label,
-        message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res === 'confirmed') {
-          const json = {
-            id: id,
-            service: 'Airline'
-          }
-          this.flighttabService.checkPaymentStatus(json).subscribe({
-            next: (res:any) => {
-              this.toastr.showToast('success', res.status, 'top-right', true);
-              this.refreshData();
-            },
-            error: (err) => {
-              this.toastr.showToast('error', err, 'top-right', true);
+      const label: string = 'Check Status';
+      this.conformationService
+        .open({
+          title: label,
+          message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res === 'confirmed') {
+            const json = {
+              id: id,
+              service: 'Airline'
+            }
+            this.flighttabService.checkPaymentStatus(json).subscribe({
+              next: (res: any) => {
+                this.toastr.showToast('success', res.status, 'top-right', true);
+                this.refreshData();
+              },
+              error: (err) => {
+                this.toastr.showToast('error', err, 'top-right', true);
 
-            },
-          });
-        }
-      });
+              },
+            });
+          }
+        });
     })
   }
 
-  refund(){
+  refund() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-    const label: string = 'Refund';
-    this.conformationService
-      .open({
-        title: label,
-        message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res === 'confirmed') {
-          const json = {
-            id: id,
-            service: 'Airline'
-          }
-          this.flighttabService.generateRevertPayment(json).subscribe({
-            next: (res:any) => {
-              this.toastr.showToast('success', 'Refund is initiated!', 'top-right', true);
-            },
-            error: (err) => {
-              this.toastr.showToast('error', err, 'top-right', true);
+      const label: string = 'Refund';
+      this.conformationService
+        .open({
+          title: label,
+          message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res === 'confirmed') {
+            const json = {
+              id: id,
+              service: 'Airline'
+            }
+            this.flighttabService.generateRevertPayment(json).subscribe({
+              next: (res: any) => {
+                this.toastr.showToast('success', 'Refund is initiated!', 'top-right', true);
+              },
+              error: (err) => {
+                this.toastr.showToast('error', err, 'top-right', true);
 
-            },
-          });
-        }
-      });
+              },
+            });
+          }
+        });
     })
   }
 
@@ -178,8 +179,8 @@ export class BookingDetailsComponent {
 
   agentInfo(data): void {
     if (data.master_agent_id) {
-    //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
-    Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+      //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+      Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
     }
     else {
       this.B2BPartnerInfo();
@@ -190,11 +191,11 @@ export class BookingDetailsComponent {
     }
   }
 
-  B2BPartnerInfo(){
+  B2BPartnerInfo() {
     this.matDialog.open(SubAgentInfoComponent, {
-          data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
-          disableClose: true
-        })
+      data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
+      disableClose: true
+    })
   }
 
   pnr(model, status): void {
@@ -204,8 +205,8 @@ export class BookingDetailsComponent {
     })
       .afterClosed()
       .subscribe((res) => {
-        if(res)
-        this.refreshData()
+        if (res)
+          this.refreshData()
       });
   }
 
@@ -222,12 +223,12 @@ export class BookingDetailsComponent {
 
   pax(model): void {
     this.matDialog.open(PaxComponent, {
-      data:  model ,
+      data: model,
       disableClose: true,
     })
       .afterClosed()
       .subscribe((res) => {
-        if(res){
+        if (res) {
           this.refreshData()
         }
       });
@@ -235,12 +236,12 @@ export class BookingDetailsComponent {
 
   info(model): void {
     this.matDialog.open(PaxComponent, {
-      data:  {data:model, readonly: true,} ,
+      data: { data: model, readonly: true, },
       disableClose: true,
     })
       .afterClosed()
       .subscribe((res) => {
-        if(res){
+        if (res) {
           // this.refreshData()
         }
       });
@@ -257,7 +258,7 @@ export class BookingDetailsComponent {
     })
       .afterClosed()
       .subscribe((res) => {
-        if(res){
+        if (res) {
           this.refreshData()
         }
       });
@@ -296,7 +297,7 @@ export class BookingDetailsComponent {
     })
       .afterClosed()
       .subscribe((res) => {
-        if(res){
+        if (res) {
           this.refreshData()
         }
       });
@@ -390,7 +391,17 @@ export class BookingDetailsComponent {
 
   logs(): void {
     this.matDialog.open(LogsComponent, {
-      data: {data:this.mainData[0].id, service:'Airline'},
+      data: { data: this.mainData[0].id, service: 'Airline' },
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      // if(res)
+      // this.refreshItems();
+    })
+  }
+
+  fileLogs() {
+    this.matDialog.open(FileLogsComponent, {
+      data: this.mainData[0].id,
       disableClose: true
     }).afterClosed().subscribe(res => {
       // if(res)

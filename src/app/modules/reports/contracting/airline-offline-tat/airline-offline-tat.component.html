@@ -1,0 +1,272 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+            <span class="text-3xl">{{module_name}}</span>
+            <span class="hidden max-sm:flex">
+                <!-- <button class="ml-4" mat-flat-button style="background-color: #5046E5;" (click)="create()">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                    <span class="ml-2 mr-1">Add</span>
+                </button> -->
+            </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
+
+            <!------Global Search------>
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Refresh------>
+            <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+
+            <!---Excel--->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['ticketingTime', 'bookingNo', 'supplierRefNo', 'supplier', 'bookingStatus', 'startDate', 'endDate', 'tat', 'type']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="ticketingTime" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime"
+                        [ngClass]="{'left-0': !frozenObj?.ticketingTime}">
+                        Ticketing Time <p-sortIcon field="ticketingTime" />
+                        <span class="float-right" (click)="isFrozenColumn('ticketingTime');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.ticketingTime" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.ticketingTime" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="bookingNo" pResizableColumn>
+                        Bonton Booking No <p-sortIcon field="bookingNo" />
+                    </th>
+                    <th class="min-w-[120px]" pSortableColumn="supplierRefNo" pResizableColumn>
+                        Supplier Ref. No. <p-sortIcon field="supplierRefNo" />
+                    </th>
+                    <th class="min-w-[150px]" pSortableColumn="supplier" pResizableColumn>
+                        Supplier <p-sortIcon field="supplier" />
+                    </th>
+                    <th pSortableColumn="bookingStatus" pResizableColumn>
+                        Status <p-sortIcon field="bookingStatus" />
+                    </th>
+                    <th pSortableColumn="startDate" pResizableColumn>
+                        Start Date <p-sortIcon field="startDate" />
+                    </th>
+                    <th pSortableColumn="endDate" pResizableColumn>
+                        End Date <p-sortIcon field="endDate" />
+                    </th>
+                    <th pSortableColumn="tat" pResizableColumn>
+                        TAT (In Min.) <p-sortIcon field="tat" />
+                    </th>
+                    <th pSortableColumn="type" pResizableColumn>
+                        Type <p-sortIcon field="type" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime">
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="ticketingTime"
+                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" /> -->
+
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'"
+                            field="ticketingTime" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'ticketingTime')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="ticketingTime" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
+
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="bookingNo"
+                            placeholder="Search by Booking No" ariaLabel="Filter Booking No" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="supplierRefNo"
+                            placeholder="Search by Supplier Ref No" ariaLabel="Filter Supplier Ref No" />
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="text" matchMode="contains" field="supplier" placeholder="Search by supplier"
+                            ariaLabel="Filter RM" /> -->
+
+                            <p-columnFilter field="supplier" matchMode="in" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
+                                        placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
+                                        <ng-template let-agent pTemplate="item">
+                                            <div>
+                                                {{agent.company_name}}
+                                            </div>
+                                        </ng-template>
+                                    </p-multiSelect>
+                                </ng-template>
+                            </p-columnFilter>
+                    </th>
+
+                    <!-- <th>
+                        <p-columnFilter type="numeric" field="bookingStatus" placeholder="Search by bookingStatus"
+                            ariaLabel="Filter bookingStatus" />
+                    </th> -->
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.bookingStatus">
+                        <p-columnFilter field="bookingStatus" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="numeric" field="startDate" placeholder="Search by Start Date"
+                            ariaLabel="Filter Signup" /> -->
+                            <p-columnFilter field="startDate" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                        appendTo="body" placeholder="Search by Start Date">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                    </th>
+                    <th>
+                        <!-- <p-columnFilter type="numeric" field="endDate" placeholder="Search by End Date"
+                            ariaLabel="Filter endDate" /> -->
+                            <p-columnFilter field="endDate" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                        appendTo="body" placeholder="Search by End Date">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                    </th>
+
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.tat">
+                        <p-columnFilter field="tat" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="tatList"
+                                    (onChange)="filter($event.value)" placeholder="Select TAT" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.type">
+                        <p-columnFilter field="type" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="typeList"
+                                    (onChange)="filter($event.value)" placeholder="Select Type" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                </tr>
+
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime">
+                        {{(element.ticketingTime | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                    <td>{{element.bookingNo || "-"}}</td>
+                    <td>{{element.supplierRefNo || "-"}}</td>
+                    <td>{{element.supplier || "-" }}</td>
+                    <td>{{element.bookingStatus}}</td>
+                    <td>{{element.startDate| date: 'dd-MM-yyyy'}}</td>
+                    <td>
+                        {{element.endDate | date: 'dd-MM-yyyy'}}
+                    </td>
+                    <td>
+                        {{element.tat || "0"}}
+                    </td>
+                    <td>
+                        {{element.type || "-"}}
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="10" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>

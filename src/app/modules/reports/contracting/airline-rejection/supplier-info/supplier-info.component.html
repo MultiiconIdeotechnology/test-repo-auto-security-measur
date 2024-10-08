@@ -1,0 +1,73 @@
+<div class="flex flex-col max-w-240 md:min-w-256 max-h-screen -m-6 supplier_info">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{title}}</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+     <!----------------Table----------------->
+     <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+            <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
+
+            <ng-template pTemplate="header">
+
+                <tr>
+                    <th pSortableColumn="carrier" pResizableColumn rowspan="2">Careers <p-sortIcon field="carrier" /></th>
+                    <th colspan="2">Total</th>
+                    <th colspan="2">Domestic</th>
+                    <th colspan="2">International</th>
+                </tr>
+                <tr>
+                    <!-- Total Columns -->
+                    <th pSortableColumn="confirmed_Percentage" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage" /></th>
+                    <th pSortableColumn="failed_Percentage" pResizableColumn>Failed <p-sortIcon field="failed_Percentage" /></th>
+
+                    <!-- Domestic Columns -->
+                    <th pSortableColumn="confirmed_Percentage_Domestic" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage_Domestic" /></th>
+                    <th pSortableColumn="failed_Percentage_Domestic" pResizableColumn>Failed <p-sortIcon field="failed_Percentage_Domestic" /></th>
+
+                    <!-- International Columns -->
+                    <th pSortableColumn="confirmed_Percentage_International" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage_International" /></th>
+                    <th pSortableColumn="failed_Percentage_International" pResizableColumn>Failed <p-sortIcon field="failed_Percentage_International" /></th>
+                </tr>
+                <!-- </ng-template> -->
+            </ng-template>
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td>{{ element.carrier }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="cursor-pointer" (click)="supplierInfo(element, 'confirmed_Percentage')">{{ element.confirmed_Percentage }}%</td>
+                    <td class="cursor-pointer" (click)="supplierInfo(element, 'failed_Percentage')">{{ element.failed_Percentage }}%</td>
+
+                    <!-- Domestic Columns -->
+                    <td class="cursor-pointer" (click)="supplierInfo(element, 'confirmed_Percentage_Domestic')">{{ element.confirmed_Percentage_Domestic }}%</td>
+                    <td class="cursor-pointer" (click)="supplierInfo(element, 'failed_Percentage_Domestic')">{{ element.failed_Percentage_Domestic }}%</td>
+
+                    <!-- International Columns -->
+                    <td class="cursor-pointer" (click)="supplierInfo(element, 'confirmed_Percentage_International')">{{ element.confirmed_Percentage_International }}%</td>
+                    <td class="cursor-pointer" (click)="supplierInfo(element, 'failed_Percentage_International')">{{ element.failed_Percentage_International }}%</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="15" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>
