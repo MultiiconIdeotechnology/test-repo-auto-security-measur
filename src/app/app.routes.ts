@@ -145,6 +145,11 @@ export const appRoutes: Route[] = [
             // REPORTS
             {path: Routes.reports.ledger_path, loadChildren: () => import('app/modules/reports/ledger/ledger-list/ledger-list.routes')},
             {path: Routes.reports.airline_path, loadChildren: () => import('app/modules/reports/contracting/airline/airline.routes')},
+            {path: Routes.reports.airline_summary_path, loadChildren: () => import('app/modules/reports/contracting/airline-summary/airline-summary.component.routes')},
+            {path: Routes.reports.airline_career_path, loadChildren: () => import('app/modules/reports/contracting/airline-career-wise/airline-career-wise.component.routes')},
+            {path: Routes.reports.airline_monthly_path, loadChildren: () => import('app/modules/reports/contracting/airline-monthly/airline-monthly.component.routes')},
+            {path: Routes.reports.airline_offline_path, loadChildren: () => import('app/modules/reports/contracting/airline-offline-tat/airline-offline-tat.component.routes')},
+            {path: Routes.reports.airline_rejection_path, loadChildren: () => import('app/modules/reports/contracting/airline-rejection/airline-rejection.component.routes')},
             {path: Routes.reports.hotel_path, loadChildren: () => import('app/modules/reports/contracting/hotel/hotel.routes')},
             {path: Routes.reports.bus_path, loadChildren: () => import('app/modules/reports/contracting/bus/bus.routes')},
             {path: Routes.reports.agents_rmwise_agents_path, loadChildren: () => import('app/modules/reports/agents/agent-rmwise/agent-rmwise.routes')},

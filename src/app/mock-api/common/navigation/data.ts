@@ -547,6 +547,46 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.reports.airline_route
                     },
+                    {
+                        id: 'reports.airline_summary',
+                        title: 'Airline Summary',
+                        type: 'basic',
+                        pid: 'CONTRACTING-REPORTS_AIRLINESUMMARY_VIEW',
+                        icon: '',
+                        link: Routes.reports.airline_summary_route
+                    }, 
+                    {
+                        id: 'reports.airline_career',
+                        title: 'Airline Career Wise Analysis',
+                        type: 'basic',
+                        pid: 'CONTRACTING-REPORTS_AIRLINECAREER_VIEW',
+                        icon: '',
+                        link: Routes.reports.airline_career_route
+                    },
+                    {
+                        id: 'reports.airline_monthly',
+                        title: 'Ailine Monthly Analysis',
+                        type: 'basic',
+                        pid: 'CONTRACTING-REPORTS_AIRLINEMONTHLY_VIEW',
+                        icon: '',
+                        link: Routes.reports.airline_monthly_route
+                    },
+                    {
+                        id: 'reports.airline_offline',
+                        title: 'Airline Offline TAT Analysis',
+                        type: 'basic',
+                        pid: 'CONTRACTING-REPORTS_AIRLINEOFFLINE_VIEW',
+                        icon: '',
+                        link: Routes.reports.airline_offline_route
+                    },
+                    {
+                        id: 'reports.airline_rejection',
+                        title: 'Airline Rejection Analysis',
+                        type: 'basic',
+                        pid: 'CONTRACTING-REPORTS_AIRLINEREJECTION_VIEW',
+                        icon: '',
+                        link: Routes.reports.airline_rejection_route
+                    },
                     // {
                     //     id: 'reports.hotel',
                     //     title: 'Hotel',

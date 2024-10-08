@@ -472,14 +472,18 @@ export class FlightComponent extends BaseListingComponent {
         // req.take = this.totalRecords;
         const filterReq = this.getNewFilterReq({});
 
-        filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
+        
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = '';
         filterReq['agent_for'] = this.flightFilter?.agent_for;
         filterReq['agent_id'] = this.flightFilter?.agent_id?.id || '';
         filterReq['fromCity'] = this.flightFilter?.fromCity?.id || '';
         filterReq['toCity'] = this.flightFilter?.toCity?.id || '';
         filterReq['supplier_id'] = this.flightFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? '' : this.flightFilter?.supplier_id?.map(x => x.id).join(',');
-        filterReq['status'] = this.flightFilter?.status.join(',');
+        //filterReq['status'] = this.flightFilter?.status.join(',');
+        filterReq['status'] = '';
         filterReq['Filter'] = this.searchInputControl.value;
         filterReq['Take'] = this.totalRecords;
 

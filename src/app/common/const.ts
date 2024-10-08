@@ -347,6 +347,21 @@ export const Routes = {
 
         airline_path: 'reports/airline',
         airline_route: 'reports/airline',
+        
+        airline_summary_path: 'reports/airline_summary',
+        airline_summary_route: 'reports/airline_summary',
+        
+        airline_career_path: 'reports/airline_career',
+        airline_career_route: 'reports/airline_career',
+        
+        airline_monthly_path: 'reports/airline_monthly',
+        airline_monthly_route: 'reports/airline_monthly',
+        
+        airline_offline_path: 'reports/airline_offline',
+        airline_offline_route: 'reports/airline_offline',
+
+        airline_rejection_path: 'reports/airline_rejection',
+        airline_rejection_route: 'reports/airline_rejection',
 
         campaign_summary_path: 'reports/campaign-summary',
         campaign_summary_path_route: 'reports/campaign-summary',

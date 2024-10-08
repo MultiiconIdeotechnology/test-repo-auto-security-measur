@@ -126,9 +126,6 @@ export class VisaComponent extends BaseListingComponent {
             .subscribe((user: any) => {
                 this.user = user;
             });
-
-        this.visaFilter.FromDate.setDate(1);
-        this.visaFilter.FromDate.setMonth(this.visaFilter.FromDate.getMonth());
     }
 
     ngOnInit() {
