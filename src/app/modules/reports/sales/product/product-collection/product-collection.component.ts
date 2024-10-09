@@ -75,9 +75,9 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     employeeList: any = [];
 
     statusList: any[] = [
-        { label: 'Confirmed', value: 'Confirmed' },
+        { label: 'Delivered', value: 'Delivered' },
         { label: 'Pending', value: 'Pending' },
-        { label: 'Rejected', value: 'Rejected' },
+        { label: 'Inprocess', value: 'Inprocess' }
     ];
 
     constructor(
@@ -257,23 +257,23 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
 
         this.accountService.getCollectionList(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.installment_date = dt.installment_date ? DateTime.fromISO(dt.installment_date).toFormat('dd-MM-yyyy hh:mm a') : '';
-                dt.agency_name = dt.agent_code + ' ' + dt.agency_name;
+                dt.installment_date = dt.installment_date ? DateTime.fromISO(dt.installment_date).toFormat('dd-MM-yyyy') : '';
             }
-            ['receipt_ref_no', 'status', 'installment_amount', 'installment_date', 'agency_name', 'rm', 'product']
+            ['agent_code', 'agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']
             Excel.export(
-                'Receipt',
+                'Collection',
                 [
+                    { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agent', property: 'agency_name' },
-                    { header: 'Reference No.', property: 'receipt_ref_no' },
-                    { header: 'Status', property: 'status' },
-                    { header: 'Amount', property: 'installment_amount' },
-                    { header: 'Request', property: 'installment_date' },
                     { header: 'RM', property: 'rm' },
                     { header: 'Product name', property: 'product' },
+                    { header: 'Status', property: 'status' },
+                    { header: 'Amount', property: 'installment_amount' },
+                    { header: 'Due Amount', property: 'due_Amount' },
+                    { header: 'Installment Date', property: 'installment_date' },
                 ],
                 data.data,
-                'Receipt',
+                'Collection',
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
             );
         });

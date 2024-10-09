@@ -64,11 +64,15 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']"
+            [globalFilterFields]="['agent_code', 'agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
+                    <th pSortableColumn="agent_code" pResizableColumn>
+                        Agent Code <p-sortIcon field="agent_code" />
+                    </th>
+                   
                     <th pSortableColumn="agency_name" pResizableColumn>
                         Agent <p-sortIcon field="agency_name" />
                     </th>
@@ -99,6 +103,11 @@
 
                 <tr *ngIf="isFilterShow">
                     <th>
+                        <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
+                            ariaLabel="Filter Agent Code" />
+                    </th>
+
+                    <th>
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -109,7 +118,7 @@
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
                                             <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
+                                                {{agent.agency_name}}
                                                 <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
@@ -140,7 +149,7 @@
                         <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Receipt Status"
+                                    (onChange)="filter($event.value)" placeholder="Select Status"
                                     [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p [value]="option.value">{{option.value}}</p>
@@ -154,7 +163,7 @@
                         <p-columnFilter type="numeric" field="installment_amount" placeholder="Search by Amount"
                             ariaLabel="Filter Amount" />
                     </th>
-
+                    
                     <th>
                         <p-columnFilter type="numeric" field="due_Amount" placeholder="Search by Due Amount"
                             ariaLabel="Filter Due Amount" />
@@ -200,9 +209,12 @@
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
                     <td>
+                        {{element.agent_code || "-"}}
+                    </td>
+                    <td>
                         <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
                             (click)="viewAgentData(element)">
-                            {{element.agent_code}} <span *ngIf="element.agency_name">-</span> {{element.agency_name}}
+                            {{element.agency_name}}
                         </a>
                     </td>
                     <td>
@@ -231,13 +243,14 @@
                     </td>
 
                     <td>
-                        {{(element.installment_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
+                        {{(element.installment_date | date: 'dd-MM-yyyy') || "-"}}
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="footer">
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -254,7 +267,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="6" class="text-center font-semibold text-lg">
+                    <td colspan="8" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
