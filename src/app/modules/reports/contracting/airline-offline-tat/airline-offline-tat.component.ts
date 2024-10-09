@@ -68,9 +68,9 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
   private settingsUpdatedSubscription: Subscription;
   isFilterShow: boolean = false;
 
-  tatList = [ 'In Time', 'Delayer'];
+  // tatList = [ 'In Time', 'Delayer'];
   statusList = ['Confirmed', 'Assign To Refund', 'Cancelled', 'Partially Cancelled', 'Booking Failed', 'Rejected'];
-  typeList = [ 'All', 'Domestic','Internation', 'Offshore'];
+  typeList = ['Domestic','Internation', 'Offshore'];
 
   constructor(
     private confirmService: FuseConfirmationService,

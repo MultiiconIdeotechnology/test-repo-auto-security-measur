@@ -25,6 +25,7 @@ import { DateTime } from 'luxon';
 import { dateRange } from 'app/common/const';
 import { CommonUtils } from 'app/utils/commonutils';
 import { Excel } from 'app/utils/export/excel';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-airline-summary',
@@ -70,6 +71,9 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
   module_name = module_name.airline_summary
   filter_table_name = filter_module_name.airline_summary;
 
+  private settingsUpdatedSubscription: Subscription;
+  isFilterShow: boolean = false;
+
   constructor(
     private confirmService: FuseConfirmationService,
     private router: Router,
@@ -89,8 +93,14 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
   }
 
   ngOnInit(): void {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShow = true;
+      this.primengTable._filter();
+    });
   }
-
   refreshItems(event?: any): void {
     this.isLoading = true;
 

@@ -55,11 +55,11 @@
             </div>
 
             <!------Global filter------>
-            <!-- <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
-            </button> -->
+            </button>
 
             <!------Common Filter------->
             <!-- <button mat-flat-button [color]="'primary'"
@@ -125,6 +125,70 @@
                     <th pSortableColumn="international_Volume" pResizableColumn>Volume <p-sortIcon field="international_Volume" /></th>
                     <th pSortableColumn="international_Weightage" pResizableColumn>Weightage (%) <p-sortIcon field="international_Weightage" /></th>
                     <th pSortableColumn="international_Ratio" pResizableColumn>Ratio (%) <p-sortIcon field="international_Ratio" /></th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th></th>
+                    
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="pax"
+                            placeholder="Search by Pax" ariaLabel="Filter Pax" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="pnr"
+                            placeholder="Search by PNR" ariaLabel="Filter PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="volume"
+                            placeholder="Search by Volume" ariaLabel="Filter Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="weightage"
+                            placeholder="Search by Weightage" ariaLabel="Filter Weightage" />
+                    </th>
+                    
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="domestic_Pax"
+                            placeholder="Search by Domestic Pax" ariaLabel="Filter Domestic Pax" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="domestic_PNR"
+                            placeholder="Search by Domestic PNR" ariaLabel="Filter Domestic PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="domestic_Volume"
+                            placeholder="Search by Domestic Volume" ariaLabel="Filter Domestic Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="domestic_Weightage"
+                            placeholder="Search by Domestic Weightage" ariaLabel="Filter Domestic Weightage" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="domestic_Ratio"
+                            placeholder="Search by Domestic Ratio" ariaLabel="Filter Domestic Ratio" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="international_Pax"
+                            placeholder="Search by International Pax" ariaLabel="Filter International Pax" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="international_PNR"
+                            placeholder="Search by International PNR" ariaLabel="Filter International PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="international_Volume"
+                            placeholder="Search by International Volume" ariaLabel="Filter International Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="international_Weightage"
+                            placeholder="Search by International Weightage" ariaLabel="Filter International Weightage" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="equals" field="international_Ratio"
+                            placeholder="Search by International Ratio" ariaLabel="Filter International Ratio" />
+                    </th>
+
                 </tr>
                 <!-- </ng-template> -->
             </ng-template>
