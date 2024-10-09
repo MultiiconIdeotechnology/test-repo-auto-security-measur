@@ -62,6 +62,9 @@ export class AirlineCareerWiseComponent extends BaseListingComponent implements 
   supplierColumns: any[] = []; // Array to hold supplier columns dynamically
   displayData: any[] = []; // Data for the table display (flattened for Carrier, Domestic, International rows)
 
+  searchInputControl = new FormControl('');
+
+
   DR = dateRange;
   public startDate = new FormControl();
   public endDate = new FormControl();
@@ -97,9 +100,10 @@ export class AirlineCareerWiseComponent extends BaseListingComponent implements 
   refreshItems(event?: any): void {
     this.isLoading = true;
 
-    const request = this.getNewFilterReq(event);
+    const request = {};
     request['From_Date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
     request['To_Date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+    request['Filter'] = this.searchInputControl.value
 
     this.airlineSummaryService.airlineCarrierSummary(request).subscribe({
       next: (data) => {
