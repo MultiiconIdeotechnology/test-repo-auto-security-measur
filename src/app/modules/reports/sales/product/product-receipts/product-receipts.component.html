@@ -64,7 +64,7 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['receipt_ref_no', 'agent_name', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']"
+            [globalFilterFields]="['receipt_ref_no', 'agent_Code', 'agent_name', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
@@ -77,6 +77,10 @@
                             <i *ngIf="!frozenObj?.receipt_ref_no" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.receipt_ref_no" class="pi pi-lock icon-size-3"></i>
                         </span>
+                    </th>
+                    
+                    <th pSortableColumn="agent_Code" pResizableColumn>
+                        Agent Code <p-sortIcon field="agent_Code" />
                     </th>
                     
                     <th pSortableColumn="agent_name" pResizableColumn>
@@ -111,6 +115,10 @@
                             placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
                     </th>
                     
+                    <th>
+                        <p-columnFilter type="numeric" field="agent_Code" placeholder="Search by Agent Code"
+                            ariaLabel="Filter Agent Code" />
+                    </th>
 
                     <th>
                         <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
@@ -123,7 +131,7 @@
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
                                             <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
+                                                {{agent.agency_name}}
                                                 <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
@@ -164,7 +172,7 @@
                         <p-columnFilter field="receipt_status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Receipt Status"
+                                    (onChange)="filter($event.value)" placeholder="Select Status"
                                     [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p [value]="option.value">{{option.value}}</p>
@@ -217,14 +225,18 @@
                             {{element.receipt_ref_no || "-"}}
                         </span>
                     </td>
+                    <td>
+                        {{element.agent_Code || "-"}}
+                    </td>
                   
                     <td>
                         <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
                             (click)="viewAgentData(element)">
-                            {{element.agent_Code}} <span *ngIf="element.agent_name">-</span> {{element.agent_name}}
+                            {{element.agent_name}}
                         </a>
                     </td>
 
+                    
                     <td>
                         {{element.rm_name || "-"}}
                     </td>
@@ -248,7 +260,7 @@
                     </td>
                     
                     <td>
-                        {{(element.receipt_request_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
+                        {{(element.receipt_request_date | date: 'dd-MM-yyyy') || "-"}}
                     </td>
                     
                 </tr>
@@ -256,6 +268,7 @@
 
             <ng-template pTemplate="footer">
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -270,7 +283,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="7" class="text-center font-semibold text-lg">
+                    <td colspan="8" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
