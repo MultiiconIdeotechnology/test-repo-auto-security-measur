@@ -2,7 +2,7 @@
     <div
         class="flex px-5 pt-4 pb-3 z-10 items-center bg-primary justify-between flex-row text-xl sticky font-semibold border-b-2">
         <span class="text-white">{{datas.first_name}} {{datas.last_name}}</span>
-        <mat-icon svgIcon="close" class="cursor-pointer text-white" (click)="matDialogRef.close()"></mat-icon>
+        <mat-icon svgIcon="close" class="cursor-pointer text-white" (click)="matDialogRef.close(isApiCall)"></mat-icon>
     </div>
     <div class="dark:bg-[#0f172a] ">
         <div class="px-5 font-semibold pt-3  text-lg"></div>
