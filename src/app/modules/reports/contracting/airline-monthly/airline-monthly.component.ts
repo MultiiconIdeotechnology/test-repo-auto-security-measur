@@ -67,7 +67,7 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
   monthsBack: number = 0;
   totalRecords: number = 0;
   isLoading: boolean = false;
-
+  
   currentMonthIndex: number;
   availableMonths: { name: string, value: number }[] = [];
   selectedMonth: number = 1;
@@ -202,7 +202,9 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
         console.log("item", item);
         acc[`month${index + 1}_Volume`] = item.volume;
         acc[`month${index + 1}_Growth`] = item.growth + '%';
+        acc[`month${index + 1}_Volume_Dom`] = item.volume_Domestic;
         acc[`month${index + 1}_Growth_Dom`] = item.growth_Domestic + '%';
+        acc[`month${index + 1}_Volume_Int`] = item.volume_International;
         acc[`month${index + 1}_Growth_Int`] = item.growth_International + '%';
         console.log("acc", acc);
         return acc;
@@ -230,7 +232,9 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
       ...latestMonthNames.map((name, index) => ([
         { header: `${name} Volume (INR)`, property: `month${index + 1}_Volume` },
         { header: `${name} Growth (%)`, property: `month${index + 1}_Growth` },
+        { header: `${name} Volume Dom (INR)`, property: `month${index + 1}_Volume_Dom` },
         { header: `${name} Growth Dom. (%)`, property: `month${index + 1}_Growth_Dom` },
+        { header: `${name} Volume Int. (INR)`, property: `month${index + 1}_Volume_Int` },
         { header: `${name} Growth Int. (%)`, property: `month${index + 1}_Growth_Int` }
       ])).flat() // Flatten the array of arrays into a single array
     ];

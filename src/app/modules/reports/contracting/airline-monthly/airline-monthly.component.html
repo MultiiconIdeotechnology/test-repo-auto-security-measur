@@ -79,7 +79,7 @@
                     <th rowspan="2">Supplier</th>
                     <th class="text-center" colspan="6">Average</th>
                     <ng-container *ngFor="let month of latestMonths">
-                        <th class="text-center" colspan="4">{{ monthsName(month) }}</th>
+                        <th class="text-center" colspan="6">{{ monthsName(month) }}</th>
                     </ng-container>
                 </tr>
                 <tr>
@@ -95,7 +95,9 @@
                     <ng-container *ngFor="let month of latestMonths">
                         <th>Volume (INR)</th>
                         <th>Growth (%)</th>
+                        <th>Volume Domestic (INR)</th>
                         <th>Growth (%) Domestic</th>
+                        <th>Volume International (INR)</th>
                         <th>Growth (%) International</th>
                     </ng-container>
                 </tr>
@@ -149,7 +151,9 @@
                             <ng-container *ngIf="monthData.month === month">
                                 <td>{{ monthData.volume }}</td>
                                 <td>{{ monthData.growth }}%</td>
+                                <td>{{ monthData.volume_Domestic }}</td>
                                 <td>{{ monthData.growth_Domestic }}%</td>
+                                <td>{{ monthData.volume_International }}</td>
                                 <td>{{ monthData.growth_International }}%</td>
                             </ng-container>
                         </ng-container>
