@@ -59,6 +59,7 @@ import { Subscription } from 'rxjs';
 export class AirlineSummaryComponent extends BaseListingComponent implements OnDestroy {
 
   dataList = [];
+  dataListTotals = [];
 
   DR = dateRange;
   public startDate = new FormControl();
@@ -83,7 +84,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
   ) {
     super(module_name.airline_summary)
     this.key = 'supplier';
-    this.sortColumn = 'supplier';
+    this.sortColumn = 'volume';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this.dateRanges = CommonUtils.valuesArray(dateRange);
@@ -110,6 +111,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
 
     this.airlineSummaryService.airlineSummary(request).subscribe({
       next: (data) => {
+        this.dataListTotals = data;
         this.dataList = data.data;
         this.totalRecords = data.total;
         this.isLoading = false;

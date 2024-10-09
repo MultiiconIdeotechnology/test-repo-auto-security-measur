@@ -556,14 +556,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         link: Routes.reports.airline_summary_route
                     }, 
                     {
-                        id: 'reports.airline_career',
-                        title: 'Airline Career Wise Analysis',
-                        type: 'basic',
-                        pid: 'CONTRACTING-REPORTS_AIRLINECAREER_VIEW',
-                        icon: '',
-                        link: Routes.reports.airline_career_route
-                    },
-                    {
                         id: 'reports.airline_monthly',
                         title: 'Ailine Monthly Analysis',
                         type: 'basic',
@@ -571,6 +563,15 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.reports.airline_monthly_route
                     },
+                    {
+                        id: 'reports.airline_career',
+                        title: 'Airline Career Wise Analysis',
+                        type: 'basic',
+                        pid: 'CONTRACTING-REPORTS_AIRLINECAREER_VIEW',
+                        icon: '',
+                        link: Routes.reports.airline_career_route
+                    },
+                   
                     {
                         id: 'reports.airline_offline',
                         title: 'Airline Offline TAT Analysis',
