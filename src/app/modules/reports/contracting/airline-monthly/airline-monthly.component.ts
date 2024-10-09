@@ -126,14 +126,6 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
     });
   }
 
-  // getNewFilterReq(event: any): any {
-  //   // Create a new request based on the event or other filters
-  //   const request = {
-  //     // Add other filter parameters as necessary
-  //   };
-  //   return request;
-  // }
-
   processData(data: any[]) {
     // Extract distinct suppliers
     const groupedData = data.reduce((acc, item) => {
