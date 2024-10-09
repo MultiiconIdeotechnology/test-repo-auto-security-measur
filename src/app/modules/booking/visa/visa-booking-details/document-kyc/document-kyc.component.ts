@@ -47,6 +47,7 @@ export class DocumentKycComponent {
 
   docs: any = {};
   isLoading = false;
+  isApiCall = false;
   documentId: any;
   rejectReason: any;
   dataLocal: any;
@@ -103,7 +104,7 @@ export class DocumentKycComponent {
 
   Audit(data: any): void {
     if (this.datas.status == 'Payment Confirmed') {
-        return this.alertService.showToast('error', "Please ensure to start process before taking any action.");;
+      return this.alertService.showToast('error', "Please ensure to start process before taking any action.");;
     }
 
     const label: string = 'Audit Kyc Document'
@@ -114,8 +115,8 @@ export class DocumentKycComponent {
       next: (res) => {
         if (res === 'confirmed') {
           this.visaService.audit(data.id).subscribe({
-            next: (res:any) => {
-              if(res.status){
+            next: (res: any) => {
+              if (res.status) {
                 data.is_document_audited = true
                 data.is_document_rejected = false
                 this.alertService.showToast('success', "Document Audited", "top-right", true);
@@ -129,7 +130,7 @@ export class DocumentKycComponent {
 
   Reject(doc) {
     if (this.datas.status == 'Payment Confirmed') {
-        return this.alertService.showToast('error', "Please ensure to start process before taking any action.");;
+      return this.alertService.showToast('error', "Please ensure to start process before taking any action.");;
     }
 
     this.matDialog.open(RejectVisaPaxDialogComponent, {
@@ -146,12 +147,14 @@ export class DocumentKycComponent {
             }
 
             this.visaService.rejectVisaPaxDocument(json).subscribe({
-              next: (res:any) => {
+              next: (res: any) => {
                 if (res) {
-                  if(res.status){
+                  if (res.status) {
+                    if(!this.isApiCall)
+                    this.isApiCall = !this.docs.some(x => x.is_document_rejected);
                     doc.is_document_rejected = true
                     doc.is_document_audited = false
-                    doc.reject_reason = this.rejectReason 
+                    doc.reject_reason = this.rejectReason
                     this.alertService.showToast('success', 'Document Reject Successfully!');
                   }
                 }

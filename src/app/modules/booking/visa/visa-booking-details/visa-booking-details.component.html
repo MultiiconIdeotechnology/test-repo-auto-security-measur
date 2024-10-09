@@ -24,9 +24,11 @@
                     <div class="flex relative flex-col mb-3">
                         <div class="flex justify-between">
                             <div class="flex space-x-3">
-                                <div *ngIf="bookingDetail.invoice_id" class="px-2 py-1 border rounded-lg flex items-center primary-text  cursor-pointer" (click)="printInvoice()">
+                                <div *ngIf="bookingDetail.invoice_id"
+                                    class="px-2 py-1 border rounded-lg flex items-center primary-text  cursor-pointer"
+                                    (click)="printInvoice()">
                                     <mat-icon
-                                        class="material-symbols-outlined secondary-text pr-1 text-xl" >print</mat-icon>
+                                        class="material-symbols-outlined secondary-text pr-1 text-xl">print</mat-icon>
                                     <span class="text-md leading-none  text-default font-normal">Print Invoice</span>
                                 </div>
 
@@ -34,9 +36,12 @@
                                     <mat-icon class="material-symbols-outlined secondary-text pr-1 text-xl">description</mat-icon>
                                     <span class="text-md leading-none  text-default font-normal">Generate Invoice</span>
                                 </div> -->
-                                
-                                <div *ngIf="bookingDetail.is_display_generate_invoice_btn" class="px-2 py-1 border rounded-lg flex items-center primary-text cursor-pointer" (click)="generateInvoice()">
-                                    <mat-icon class="material-symbols-outlined secondary-text pr-1 text-xl">description</mat-icon>
+
+                                <div *ngIf="bookingDetail.is_display_generate_invoice_btn"
+                                    class="px-2 py-1 border rounded-lg flex items-center primary-text cursor-pointer"
+                                    (click)="generateInvoice()">
+                                    <mat-icon
+                                        class="material-symbols-outlined secondary-text pr-1 text-xl">description</mat-icon>
                                     <span class="text-md leading-none  text-default font-normal">Generate Invoice</span>
                                 </div>
                             </div>
@@ -44,7 +49,8 @@
                                 <!-- <button (click)="refund()" *ngIf="bookingDetail.is_display_refund_btn" class="mr-2" mat-flat-button [color]="'primary'">
                                     Refund
                                 </button> -->
-                                <button *ngIf="bookingDetail.status == 'Payment Confirmed'" mat-flat-button [color]="'primary'" (click)="startProcess(ListItem)">
+                                <button *ngIf="bookingDetail.status == 'Payment Confirmed'" mat-flat-button
+                                    [color]="'primary'" (click)="startProcess(ListItem)">
                                     Start Process
                                 </button>
                                 <div *ngIf="bookingDetail.status === 'Success'"
@@ -72,113 +78,137 @@
                     </div>
                 </div>
 
-               <!--Booking By--->
-               <div class="border rounded-2xl overflow-hidden mb-5">
-                <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Booking By</div>
-                <div class="grid p-5 xl:grid-cols-3 grid-cols-2 gap-4 overflow-hidden  ">
+                <!--Booking By--->
+                <div class="border rounded-2xl overflow-hidden mb-5">
+                    <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Booking By</div>
+                    <div class="grid p-5 xl:grid-cols-3 grid-cols-2 gap-4 overflow-hidden  ">
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Agent Name</span>
                             <div class="truncate">
-                                <span class="text-base truncate cursor-pointer border-b border-gray-500" (click)="agentInfo(mainDataAll)" [matTooltip]="bookingBy?.agent_name">{{bookingBy?.agent_name || ' - '}}</span>
+                                <span class="text-base truncate cursor-pointer border-b border-gray-500"
+                                    (click)="agentInfo(mainDataAll)"
+                                    [matTooltip]="bookingBy?.agent_name">{{bookingBy?.agent_name || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Type</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="bookingBy?.type">{{bookingBy?.type || ' - '}}</span>
+                                <span class="text-base truncate" [matTooltip]="bookingBy?.type"> 
+                                    {{bookingBy?.type || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Agent Contact Number</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="bookingBy?.agent_contact">{{bookingBy?.agent_contact || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="bookingBy?.agent_contact">{{bookingBy?.agent_contact || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Agent Email</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="bookingBy?.agent_email">{{bookingBy?.agent_email || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="bookingBy?.agent_email">{{bookingBy?.agent_email || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">RM</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="bookingBy?.rm">{{bookingBy?.rm || ' - '}}</span>
+                                <span class="text-base truncate" [matTooltip]="bookingBy?.rm">
+                                    {{bookingBy?.rm || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">B2B Partner</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="bookingBy?.b2b_partner">{{bookingBy?.b2b_partner || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="bookingBy?.b2b_partner">{{bookingBy?.b2b_partner || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">B2C Customer</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="bookingBy?.b2c_customer">{{bookingBy?.b2c_customer || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="bookingBy?.b2c_customer">{{bookingBy?.b2c_customer || ' - '}}</span>
                             </div>
                         </div>
+                    </div>
                 </div>
-            </div>
 
-             <!--Booking Details--->
-             <div class="border rounded-2xl overflow-hidden mb-5">
-                <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Booking Details</div>
-                <div class="flex px-5 pt-5">
-                    <div class="w-1/2">
-                        <span class="text-md font-semibold text-secondary">Reference Number</span>
-                        <div class="truncate">
-                            <span class="text-base truncate" [matTooltip]="mainDataAll?.booking_ref_no">{{mainDataAll?.booking_ref_no || ' - '}}</span>
+                <!--Booking Details--->
+                <div class="border rounded-2xl overflow-hidden mb-5">
+                    <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Booking Details</div>
+                    <div class="flex px-5 pt-5">
+                        <div class="w-1/2">
+                            <span class="text-md font-semibold text-secondary">Reference Number</span>
+                            <div class="truncate">
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.booking_ref_no">
+                                    {{mainDataAll?.booking_ref_no || ' - '}}</span>
+                            </div>
+                        </div>
+                        <div class="w-1/2">
+                            <span class="text-md font-semibold text-secondary">Booking Date</span>
+                            <div class="truncate flex gap-2">
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.booking_date">{{(mainDataAll?.booking_date |
+                                    date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="w-1/2">
-                        <span class="text-md font-semibold text-secondary">Booking Date</span>
-                        <div class="truncate flex gap-2" >
-                            <span class="text-base truncate" [matTooltip]="mainDataAll?.booking_date">{{(mainDataAll?.booking_date | date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="grid p-5 xl:grid-cols-3 grid-cols-2 gap-4 overflow-hidden  ">
+                    <div class="grid p-5 xl:grid-cols-3 grid-cols-2 gap-4 overflow-hidden  ">
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Destination</span>
                             <div class="truncate flex gap-2">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.destination_country">{{mainDataAll?.destination_country || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.destination_country">{{mainDataAll?.destination_country
+                                    || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Visa Type</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.visa_type">{{mainDataAll?.visa_type || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.visa_type">{{mainDataAll?.visa_type || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Travel Date</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.travel_date">{{(mainDataAll?.travel_date | date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.travel_date">{{(mainDataAll?.travel_date |
+                                    date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Entry</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.entry">{{mainDataAll?.entry || ' - '}}</span>
+                                <span class="text-base truncate" [matTooltip]="mainDataAll?.entry">{{mainDataAll?.entry
+                                    || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Validity</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.validity_period">{{mainDataAll?.validity_period || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.validity_period">
+                                    {{mainDataAll?.validity_period || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Processing Time</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.processing_time">{{mainDataAll?.processing_time || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.processing_time">
+                                    {{mainDataAll?.processing_time || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Length of Stay</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.length_of_stay">{{mainDataAll?.length_of_stay || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.length_of_stay">
+                                    {{mainDataAll?.length_of_stay || ' - '}}</span>
                             </div>
                         </div>
                         <!-- <div class="flex flex-col ">
@@ -190,7 +220,8 @@
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Pax</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.pax">{{mainDataAll?.pax || ' - '}}</span>
+                                <span class="text-base truncate" [matTooltip]="mainDataAll?.pax">{{mainDataAll?.pax || '
+                                    - '}}</span>
                             </div>
                         </div>
                         <!-- <div class="flex flex-col ">
@@ -202,119 +233,147 @@
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">IP Address</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="mainDataAll?.ipAddress">{{mainDataAll?.ipAddress || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="mainDataAll?.ipAddress">{{mainDataAll?.ipAddress || ' - '}}</span>
                             </div>
                         </div>
+                    </div>
                 </div>
-            </div>
 
-            <!--Payment--->
-            <div class="border rounded-2xl overflow-hidden">
-                <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Payment</div>
-                <div class="grid p-5 xl:grid-cols-3 grid-cols-2 gap-4 overflow-hidden ">
+                <!--Payment--->
+                <div class="border rounded-2xl overflow-hidden">
+                    <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Payment</div>
+                    <div class="grid p-5 xl:grid-cols-3 grid-cols-2 gap-4 overflow-hidden ">
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">MOP</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.mop">{{paymentBy?.mop || ' - '}}</span>
+                                <span class="text-base truncate" [matTooltip]="paymentBy?.mop">
+                                    {{paymentBy?.mop || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Wallet</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.wallet">{{paymentBy?.wallet || ' 0 '}}</span>
+                                <span class="text-base truncate" [matTooltip]="paymentBy?.wallet">{{paymentBy?.wallet ||
+                                    ' 0 '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Amount</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_amount">{{paymentBy?.pg_amount || ' 0 '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.pg_amount">{{paymentBy?.pg_amount || ' 0 '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Charges</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_charge">{{paymentBy?.pg_charge ? paymentBy?.pg_charge.toFixed(2) : ' 0 '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.pg_charge">{{paymentBy?.pg_charge ?
+                                    paymentBy?.pg_charge.toFixed(2) : ' 0 '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Settlement</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_settlement">{{paymentBy?.pg_settlement ? paymentBy?.pg_settlement.toFixed(2) : ' 0 '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.pg_settlement">{{paymentBy?.pg_settlement ?
+                                    paymentBy?.pg_settlement.toFixed(2) : ' 0 '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Name</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_name">{{paymentBy?.pg_name || ' - '}}</span>
+                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_name">{{paymentBy?.pg_name
+                                    || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Ref.No</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_ref_no">{{paymentBy?.pg_ref_no || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.pg_ref_no">{{paymentBy?.pg_ref_no || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Payment Method</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_payment">{{paymentBy?.pg_payment || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.pg_payment">{{paymentBy?.pg_payment || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Status</span>
                             <div class="truncate flex gap-2">
-                                <span class="text-base truncate" [ngClass]="paymentBy?.pg_status == 'Confirm' ? 'text-green-500' : 'text-red-500'" [matTooltip]="paymentBy?.pg_status">{{paymentBy?.pg_status || ' - '}}</span>
-                                <img *ngIf="mainDataAll?.payment_method == 'Online' || mainDataAll?.payment_method == 'Partial'" (click)="checkStatus()" class="w-5 cursor-pointer" src="assets/icons/refresh.svg"alt="" matTooltip="Check Status" >
+                                <span class="text-base truncate"
+                                    [ngClass]="paymentBy?.pg_status == 'Confirm' ? 'text-green-500' : 'text-red-500'"
+                                    [matTooltip]="paymentBy?.pg_status">{{paymentBy?.pg_status || ' - '}}</span>
+                                <img *ngIf="mainDataAll?.payment_method == 'Online' || mainDataAll?.payment_method == 'Partial'"
+                                    (click)="checkStatus()" class="w-5 cursor-pointer" src="assets/icons/refresh.svg"
+                                    alt="" matTooltip="Check Status">
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">PG Error</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.pg_error">{{paymentBy?.pg_error || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.pg_error">{{paymentBy?.pg_error || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Refund Status</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.refund_status">{{paymentBy?.refund_status || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.refund_status">{{paymentBy?.refund_status || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Refund Amount</span>
                             <div class="truncate">
-                                <span class="text-base truncate" >{{paymentBy?.refund_amount || ' 0 '}}</span>
+                                <span class="text-base truncate">{{paymentBy?.refund_amount || ' 0 '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Refund Date Time</span>
                             <div class="truncate">
-                                <span class="text-base truncate" >{{(paymentBy?.refund_datetime | date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
+                                <span class="text-base truncate">
+                                    {{(paymentBy?.refund_datetime | date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Refund Reason</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="paymentBy?.refund_reason">{{paymentBy?.refund_reason  || ' - '}}</span>
+                                <span class="text-base truncate"
+                                    [matTooltip]="paymentBy?.refund_reason">{{paymentBy?.refund_reason || ' - '}}</span>
                             </div>
                         </div>
+                    </div>
                 </div>
-            </div>
 
 
             </div>
 
             <div class=" rounded-2xl shadow overflow-hidden w-1/3 ml-3 h-fit">
 
-                <div class="pb-1 info relative flex flex-col mb-5 overflow-hidden rounded-2xl bg-card" *ngFor="let pdv of priceDetails; let i = index">
+                <div class="pb-1 info relative flex flex-col mb-5 overflow-hidden rounded-2xl bg-card"
+                    *ngFor="let pdv of priceDetails; let i = index">
                     <div *ngFor="let pd of pdv.value">
-                        <div *ngIf="pd.is_header" class="w-full text-lg font-medium px-4 py-3 dark:bg-primary bg-gray-200 border-b border-gray-border">{{pd.key}}</div>
+                        <div *ngIf="pd.is_header"
+                            class="w-full text-lg font-medium px-4 py-3 dark:bg-primary bg-gray-200 border-b border-gray-border">
+                            {{pd.key}}</div>
                         <div *ngIf="!pd.is_header">
-                            <div [ngClass]="{'text-default': pd.is_bold, 'text-default': pd.is_main, 'text-default': (!pd.is_bold && !pd.is_main)}" class="flex justify-between w-full px-4 py-2" *ngIf="pd.key != '---' && pd.key != 'Total Amount'">
-                                <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''" class="flex items-center">{{pd.key}}</span>
-                                <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''" class="relative top-[2px]">{{pd.value}}</span>
+                            <div [ngClass]="{'text-default': pd.is_bold, 'text-default': pd.is_main, 'text-default': (!pd.is_bold && !pd.is_main)}"
+                                class="flex justify-between w-full px-4 py-2"
+                                *ngIf="pd.key != '---' && pd.key != 'Total Amount'">
+                                <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''"
+                                    class="flex items-center">{{pd.key}}</span>
+                                <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''"
+                                    class="relative top-[2px]">{{pd.value}}</span>
                             </div>
-                            <span *ngIf="pd.key === '---'"  class="py-1 mx-4 block border-b border-dashed border-gray-border"></span>
-                            <div *ngIf="pd.key === 'Total Amount'" class="px-4 text-default py-4 mt-1 border-t border-gray-border flex justify-between  font-semibold text-xl">
+                            <span *ngIf="pd.key === '---'"
+                                class="py-1 mx-4 block border-b border-dashed border-gray-border"></span>
+                            <div *ngIf="pd.key === 'Total Amount'"
+                                class="px-4 text-default py-4 mt-1 border-t border-gray-border flex justify-between  font-semibold text-xl">
                                 <span>{{pd.key}}</span>
                                 <span>{{pd.value}}</span>
                             </div>
@@ -346,15 +405,19 @@
         <div class="w-full">
             <div class="flex flex-col mt-5 mb-6 overflow-x-hidden overflow-y-auto border rounded-2xl"
                 *ngIf="travellerDataList.length > 0" style="max-height: 40% !important">
-                <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center dark:bg-card bg-gray-200 sticky top-0 text-lg px-4 justify-between"> 
+                <div
+                    class="flex flex-row border-b-2 max-h-10 min-h-10 items-center dark:bg-card bg-gray-200 sticky top-0 text-lg px-4 justify-between">
                     <div>
                         Travellers Details
                     </div>
-                    <button (click)="refund()" class="rounded-md text-md font-normal dark:bg-primary bg-gray-200 pt-1 pb-0.5 w-18 " matRipple [color]="'primary'">
+                    <!-- <button (click)="refund()"
+                        class="rounded-md text-md font-normal dark:bg-primary bg-gray-200 pt-1 pb-0.5 w-18 " matRipple
+                        [color]="'primary'" *ngIf="isRefundBtnShow">
                         Refund
-                    </button>
+                    </button> -->
                 </div>
-                <table mat-table [dataSource]="travellers" class="overflow-x-auto" class="dark:bg-transparent  bg-white">
+                <table mat-table [dataSource]="travellers" class="overflow-x-auto"
+                    class="dark:bg-transparent  bg-white">
                     <ng-container matColumnDef="action">
                         <th mat-header-cell *matHeaderCellDef
                             class="text-secondary font-normal min-w-5 text-center bg-transparent">#</th>
@@ -370,17 +433,17 @@
                                 </button>
                                 <button mat-menu-item (click)="appliedAction(element)"
                                     [ngClass]="{'opacity-50': bookingDetail.status == 'Payment Confirmed'}"
-                                    *ngIf="element.status !== 'Applied' && element.status !== 'Success'">
+                                    *ngIf="element.status !== 'Applied' && element.status !== 'Success' && element.status?.toLowerCase() != 'refunded'">
                                     <mat-icon svgIcon="heroicons_outline:check"></mat-icon>
                                     <span style="font-weight: 600">Applied</span>
                                 </button>
                                 <button mat-menu-item (click)="successAction(element)"
-                                    *ngIf="element?.status == 'Applied'">
+                                    *ngIf="element?.status == 'Applied' && element.status?.toLowerCase() != 'refunded'">
                                     <mat-icon svgIcon="heroicons_outline:check"></mat-icon>
                                     <span style="font-weight: 600">Success</span>
                                 </button>
                                 <button mat-menu-item (click)="rejectAction(element)"
-                                    *ngIf="element?.status == 'Applied'">
+                                    *ngIf="element?.status == 'Applied' && element.status?.toLowerCase() != 'refunded'">
                                     <mat-icon svgIcon="heroicons_outline:x-mark"></mat-icon>
                                     <span style="font-weight: 600">Reject</span>
                                 </button>
@@ -450,7 +513,7 @@
                             class="text-secondary font-normal min-w-16 text-center bg-transparent">Document</th>
                         <td mat-cell *matCellDef="let element"
                             class="font-semibold min-w-16 text-center cursor-pointer underline text-default hover:text-blue-500 bg-transparent"
-                            (click)="showDoc(element)"> View </td>
+                            (click)="element.status?.toLowerCase() == 'refunded' ? null : showDoc(element)"> View </td>
                     </ng-container>
 
                     <ng-container matColumnDef="print">
