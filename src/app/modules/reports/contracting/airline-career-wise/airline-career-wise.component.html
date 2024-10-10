@@ -100,24 +100,29 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th>Carrier</th>
-                    <th>Total</th>
-        
+                    <th class="text-right">Total</th>
+
                     <!-- Dynamically generate supplier columns -->
-                    <th *ngFor="let col of supplierColumns">{{ col.header }}</th>
+                    <th class="text-right" *ngFor="let col of supplierColumns">{{ col.header }}</th>
                 </tr>
             </ng-template>
-        
+
             <ng-template pTemplate="body" let-rowData>
-                <tr [ngClass]="{'carrier-row': rowData.type === 'Carrier', 'domestic-row': rowData.type === 'Domestic', 'international-row': rowData.type === 'International'}">
+                <tr
+                    [ngClass]="{'carrier-row': rowData.type === 'Carrier', 'domestic-row': rowData.type === 'Domestic', 'international-row': rowData.type === 'International'}">
                     <td>{{ rowData.carrier }}</td>
-                    <td>{{ rowData.total }}</td>
-        
+                    <td class="text-right">{{ rowData.total }}</td>
+
                     <!-- Dynamically generate supplier columns -->
-                    <td *ngFor="let col of supplierColumns">{{ rowData[col.field] }}</td>
+                    <!-- [ngClass]="isMaxValue(rowData,rowData[col.field]) ? 'bg-red-500' : ''" -->
+                    <!--  -->
+                    <td class="text-right"
+                    [ngClass]="isMaxValue(rowData,rowData[col.field]) ? 'bg-green-500' : isMinValue(rowData,rowData[col.field]) ? 'bg-red-500' : ''"
+                        *ngFor="let col of supplierColumns">{{ rowData[col.field] }}</td>
                 </tr>
             </ng-template>
-            
+
         </p-table>
     </div>
-    
+
 </div>

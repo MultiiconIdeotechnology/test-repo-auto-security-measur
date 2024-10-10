@@ -67,7 +67,7 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
   monthsBack: number = 0;
   totalRecords: number = 0;
   isLoading: boolean = false;
-  
+
   currentMonthIndex: number;
   availableMonths: { name: string, value: number }[] = [];
   selectedMonth: number = 1;

@@ -27,6 +27,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { FlightTabService } from 'app/services/flight-tab.service';
+import { Linq } from 'app/utils/linq';
 
 @Component({
   selector: 'app-airline-offline-tat',
@@ -84,8 +85,8 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
   ) {
     super(module_name.airline_offline)
     // this.cols = this.columns.map(x => x.key);
-    this.key = 'ticketingTime';
-    this.sortColumn = 'ticketingTime';
+    this.key = 'tat';
+    this.sortColumn = 'tat';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -101,7 +102,15 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
       this.primengTable._filter();
     });
     }
-  
+
+    viewData(record): void {
+        console.log(record);
+        if (!Security.hasViewDetailPermission(module_name.airline_offline)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+        Linq.recirect('/booking/flight/details/' + record.id);
+    }
+
     ngAfterViewInit(){
       // Defult Active filter show
       if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
@@ -149,7 +158,7 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
     else return 'No data to display';
   }
 
-  
+
    exportExcel(): void {
     if (!Security.hasExportDataPermission(module_name.airline_offline)) {
         return this.alertService.showToast('error', messages.permissionDenied);

@@ -247,7 +247,9 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime">
                         {{(element.ticketingTime | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
-                    <td>{{element.bookingNo || "-"}}</td>
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">{{element.bookingNo || "-"}}</span>
+                    </td>
                     <td>{{element.supplierRefNo || "-"}}</td>
                     <td>{{element.supplier || "-" }}</td>
                     <td>{{element.bookingStatus}}</td>
