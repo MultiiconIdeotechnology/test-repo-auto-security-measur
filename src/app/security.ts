@@ -295,7 +295,7 @@ export const module_name = {
     airline_offline: 'Airline Offline TAT Analysis',
     airline_monthly: 'Ailine Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
-    airline_career: 'Airline Career Wise Analysis',
+    airline_career: 'Airline Carrier Wise Analysis',
 };
 
 export const filter_module_name = {
@@ -381,7 +381,7 @@ export const filter_module_name = {
     airline_offline: 'airline_offline_tat_Analysis',
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
-    airline_career: 'Airline Career Wise Analysis',
+    airline_career: 'Airline Carrier Wise Analysis',
 
     //Inventory
     activity: "activity",

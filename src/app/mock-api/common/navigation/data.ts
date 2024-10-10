@@ -565,7 +565,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     },
                     {
                         id: 'reports.airline_career',
-                        title: 'Airline Career Wise Analysis',
+                        title: 'Airline Carrier Wise Analysis',
                         type: 'basic',
                         pid: 'CONTRACTING-REPORTS_AIRLINECAREER_VIEW',
                         icon: '',
