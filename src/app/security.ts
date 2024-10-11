@@ -293,7 +293,7 @@ export const module_name = {
     products_receipts: 'Receipts',
     airline_summary: 'Airline Summary',
     airline_offline: 'Airline Offline TAT Analysis',
-    airline_monthly: 'Ailine Monthly Analysis',
+    airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
 };

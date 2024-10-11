@@ -557,7 +557,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     }, 
                     {
                         id: 'reports.airline_monthly',
-                        title: 'Ailine Monthly Analysis',
+                        title: 'Airline Monthly Analysis',
                         type: 'basic',
                         pid: 'CONTRACTING-REPORTS_AIRLINEMONTHLY_VIEW',
                         icon: '',
