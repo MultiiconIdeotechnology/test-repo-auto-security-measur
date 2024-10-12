@@ -501,6 +501,10 @@ export const leadsPermissions = {
     setKYCProfilePermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Set KYC Profile', category_name: category_name.entry },
 }
 
+export const poductCollectionPermissions = {
+    viewOnlyAssignedPermissions: { module_name: module_name.products_collection, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view }
+}
+
 export const agentsPermissions = {
     relationshipManagerPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Relationship Manager', category_name: category_name.entry },
     relationshipManagerLogsPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Relationship Manager Logs', category_name: category_name.view },
