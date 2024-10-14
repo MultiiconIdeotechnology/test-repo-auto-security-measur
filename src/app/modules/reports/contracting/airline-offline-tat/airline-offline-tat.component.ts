@@ -71,7 +71,7 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
 
   // tatList = [ 'In Time', 'Delayer'];
   statusList = ['Confirmed', 'Assign To Refund', 'Cancelled', 'Partially Cancelled', 'Booking Failed', 'Rejected'];
-  typeList = ['Domestic','Internation', 'Offshore'];
+  typeList = ['Domestic','International', 'Offshore'];
 
   constructor(
     private confirmService: FuseConfirmationService,
