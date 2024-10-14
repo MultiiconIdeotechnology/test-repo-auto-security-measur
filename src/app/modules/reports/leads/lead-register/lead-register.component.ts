@@ -467,6 +467,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                     { header: 'Email', property: 'contact_person_email' },
                     { header: 'Mobile', property: 'contact_person_mobile' },
                     { header: 'City', property: 'cityName' },
+                    { header: 'Country', property: 'country_name' },
                     { header: 'KYC Started', property: 'kycStarted' },
                     { header: 'Last Feedback', property: 'lastCallFeedback' },
                     { header: 'Last Call', property: 'lastCall' },

@@ -90,7 +90,7 @@
             [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['calls', 'status', 'priority_text', 'agency_name', 'rmName', 'lead_type', 'lead_source', 'contact_person_name', 'contact_person_email', 'contact_person_mobile', 'cityName', 'kycStarted', 'lastCallFeedback', 'lastCall', 'leadDate']"
+            [globalFilterFields]="['calls', 'status', 'priority_text', 'agency_name', 'rmName', 'lead_type', 'lead_source', 'contact_person_name', 'contact_person_email', 'contact_person_mobile', 'cityName', 'country_name ', 'kycStarted', 'lastCallFeedback', 'lastCall', 'leadDate']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
@@ -134,6 +134,9 @@
                     </th>
                     <th pSortableColumn="cityName" pResizableColumn>
                         City <p-sortIcon field="cityName" />
+                    </th>
+                     <th pSortableColumn="country_name" pResizableColumn>
+                        Country <p-sortIcon field="country_name" />
                     </th>
                     <th pSortableColumn="kycStarted" pResizableColumn>
                         KYC Started <p-sortIcon field="kycStarted" />
@@ -246,6 +249,10 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="cityName" placeholder="Search by City"
                             ariaLabel="Filter City" />
+                    </th> 
+                     <th>
+                        <p-columnFilter type="text" matchMode="contains" field="country_name" placeholder="Search by Country"
+                            ariaLabel="Filter Country" />
                     </th>
                     <th>
                         <p-columnFilter field="KYCStarted_filter" matchMode="equals" [showMenu]="false">
@@ -374,6 +381,9 @@
                     </td>
                     <td>
                         {{element.cityName || "-"}}
+                    </td> 
+                    <td>
+                        {{element.country_name  || "-"}}
                     </td>
                     <td>
                         {{element.kycStarted ? 'Yes' : 'No'}}

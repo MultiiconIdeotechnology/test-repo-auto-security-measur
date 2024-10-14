@@ -909,5 +909,10 @@ div:where(.swal2-container) button:where(.swal2-close){
     color: white;
   }
 
+  .contracting_rep .p-datatable .p-datatable-tfoot > tr > td,
+  .contracting_rep .p-datatable .p-datatable-tbody > tr > td, th,
+  .contracting_rep .p-datatable .p-datatable-thead > tr > th{
+    font-size: 12px;
+  }
 
 

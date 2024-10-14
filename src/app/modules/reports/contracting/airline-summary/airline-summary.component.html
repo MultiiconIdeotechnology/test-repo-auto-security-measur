@@ -39,8 +39,8 @@
 
                 <div *ngIf="date.value === DR.setCustomDate" class="w-full flex flex-row items-center space-x-1">
                     <mat-form-field class="w-full bottom_none">
-                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()">
-                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly
+                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()" >
+                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly  
                                 #dateRangeStart />
                             <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
                                 (dateInput)="
@@ -94,7 +94,7 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            styleClass="p-datatable-gridlines p-datatable-sm">
+            styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
             <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
 
             <ng-template pTemplate="header">
@@ -220,7 +220,7 @@
 
             <ng-template pTemplate="footer">
                 <tr>
-                    <td></td>
+                    <td>Total</td>
                     <td class="text-right">{{dataListTotals?.total_pax ? dataListTotals?.total_pax.toFixed(2) : 0}}</td>
                     <td class="text-right">{{dataListTotals?.total_pnr ? dataListTotals?.total_pnr.toFixed(2) : 0}}</td>
                     <td class="text-right">{{dataListTotals?.total_volume ? dataListTotals?.total_volume.toFixed(2) : 0}}</td>
