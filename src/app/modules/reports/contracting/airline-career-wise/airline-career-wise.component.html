@@ -113,7 +113,7 @@
                     <td>{{ rowData.total }}</td>
         
                     <!-- Dynamically generate supplier columns -->
-                    <td *ngFor="let col of supplierColumns">{{ rowData[col.field] }}</td>
+                    <td [ngClass]="maxValue(rowData) ? 'bg-green-500' : ''" *ngFor="let col of supplierColumns">{{ rowData[col.field] }}</td>
                 </tr>
             </ng-template>
             

@@ -29,10 +29,10 @@
             </div>
 
             <!-- Date Combo -->
-            <mat-form-field appearance="fill" class="monthly_combo w-36">
-                <mat-select [(value)]="selectedMonth" (selectionChange)="onMonthSelectionChange($event)">
-                    <mat-option *ngFor="let month of availableMonths" [value]="month.value">
-                        {{ month.name }}
+            <mat-form-field appearance="fill" class="monthly_combo w-20">
+                <mat-select [formControl]="monthsBack" (selectionChange)="refreshItems($event)">
+                    <mat-option *ngFor="let month of monthDataList" [value]="month">
+                        {{ month}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

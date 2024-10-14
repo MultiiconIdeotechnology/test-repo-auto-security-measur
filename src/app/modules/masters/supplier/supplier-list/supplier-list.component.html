@@ -29,7 +29,8 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)" matTooltip="Saved Filter" [disabled]="isLoading">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
@@ -65,12 +66,12 @@
             [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['company_name', 'email_address', 'mobile_number', 'billing_company', 'city_name', 'entry_date_time', 'priority']"
+            [globalFilterFields]="['company_name', 'email_address', 'mobile_number', 'contact_person_name', 'is_kyc_completed', 'entry_date_time', 'wallet_Balance']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
                     <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="company_name" pResizableColumn
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name"
                         [ngClass]="{'left-0': !frozenObj?.company_name}">
@@ -86,14 +87,17 @@
                     <th pSortableColumn="mobile_number" pResizableColumn>
                         Mobile <p-sortIcon field="mobile_number" />
                     </th>
-                    <th pSortableColumn="billing_company" pResizableColumn>
-                        Billing Company <p-sortIcon field="billing_company" />
+                    <th pSortableColumn="contact_person_name" pResizableColumn>
+                        Contact Person <p-sortIcon field="contact_person_name" />
                     </th>
-                    <th pSortableColumn="city_name" pResizableColumn>
-                        City <p-sortIcon field="city_name" />
+                    <th pSortableColumn="is_kyc_completed" pResizableColumn>
+                        KYC <p-sortIcon field="is_kyc_completed" />
                     </th>
-                    <th class="min-w-[200px] w-full" pSortableColumn="entry_date_time" pResizableColumn>
+                    <th pSortableColumn="entry_date_time" pResizableColumn>
                         Entry <p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th pSortableColumn="wallet_Balance" pResizableColumn>
+                        Wallet Balance <p-sortIcon field="wallet_Balance" />
                     </th>
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
                         {{col.header}} <p-sortIcon [field]="col.field" />
@@ -115,7 +119,9 @@
                             placeholder="Search by Mobile" ariaLabel="Filter Mobile Number" />
                     </th>
                     <th>
-                        <p-columnFilter field="billing_company" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter type="text" matchMode="contains" field="contact_person_name"
+                            placeholder="Search by Contact Person" ariaLabel="Filter Contact Person" />
+                        <!-- <p-columnFilter field="billing_company" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="companyListName" filterBy="company_name"
                                     [ngModel]="value" (onChange)="filter($event.value)" [showClear]="true"
@@ -125,12 +131,27 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
+                        </p-columnFilter> -->
+                    </th>
+                    <!-- <th>
+                        <p-columnFilter type="text" matchMode="contains" field="is_kyc_completed"
+                            placeholder="Search by Mobile" ariaLabel="Filter Mobile Number" />
+                    </th> -->
+
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.is_kyc_completed">
+                        <p-columnFilter field="is_kyc_completed" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="kycList"
+                                    (onChange)="filter($event.value)" placeholder="Select KYC" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="city_name" placeholder="Search by City"
-                            ariaLabel="Filter City" />
-                    </th>
+
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -140,6 +161,12 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="contains" field="wallet_Balance"
+                            placeholder="Search by Wallet Balance" ariaLabel="Filter Wallet Balance" />
+                    </th>
+
                     <th *ngFor="let col of columns">
                         <p-columnFilter [type]="col.type" [field]="col.field" [placeholder]="'Search by '+ col.header"
                             [ariaLabel]="'Filter ' + col.header" />
@@ -161,7 +188,7 @@
                             </button>
                             <button mat-menu-item (click)="edit(element)">
                                 <mat-icon class="mat-18">edit</mat-icon>
-                                <span style="font-weight: 600">Edit</span>
+                                <span style="font-weight: 600">Modify</span>
                             </button>
                             <button mat-menu-item (click)="delete(element)">
                                 <mat-icon class="mat-18">delete</mat-icon>
@@ -170,7 +197,11 @@
                             <mat-divider></mat-divider>
                             <button mat-menu-item (click)="setKYCVerify(element)">
                                 <mat-icon class="mat-18">fingerprint</mat-icon>
-                                <span style="font-weight: 600">View KYC</span>
+                                <span style="font-weight: 600">KYC</span>
+                            </button>
+                            <button mat-menu-item>
+                                <mat-icon svgIcon="heroicons_outline:cog"></mat-icon>
+                                <span style="font-weight: 600">Service</span>
                             </button>
                             <button mat-menu-item (click)="blockUnblock(element)">
                                 <mat-icon class="mat-18">block</mat-icon>
@@ -178,30 +209,43 @@
                                     {{ element.is_block ? "Unblock" : "Block" }}
                                 </span>
                             </button>
-                            <button mat-menu-item (click)="verifyKYC(element)">
+                            <button mat-menu-item>
+                                <mat-icon class="mat-18">login</mat-icon>
+                                <span style="font-weight: 600">Auto Login</span>
+                            </button>
+                            <button mat-menu-item>
+                                <mat-icon class="mat-18">lock</mat-icon>
+                                <span style="font-weight: 600">Reset Password</span>
+                            </button>
+                            <button mat-menu-item>
+                                <mat-icon svgIcon="heroicons_outline:user"></mat-icon>
+                                <span style="font-weight: 600">Users</span>
+                            </button>
+                            <!-- <button mat-menu-item (click)="verifyKYC(element)">
                                 <mat-icon class="mat-18">fingerprint</mat-icon>
                                 <span style="font-weight: 600">
                                     {{ element.is_kyc_completed ? "Unaudit" : "Audit" }} KYC
                                 </span>
-                            </button>
-                            <button mat-menu-item (click)="kycProfile(element)">
+                            </button>-->
+                             <button mat-menu-item (click)="kycProfile(element)">
                                 <mat-icon class="mat-18">beenhere</mat-icon>
                                 <span style="font-weight: 600">Assign KYC Profile</span>
-                            </button>
+                            </button>  
                         </mat-menu>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name">
-                        <span [matTooltip]="element['is_kyc_completed'] ? 'KYC Audit': 'KYC Pending'"
+                        <span [matTooltip]="element['is_block'] ? 'Block': 'UnBlock'"
                             class="w-2 h-2 inline-block me-1 rounded-full"
-                            [ngClass]="element['is_kyc_completed']? 'bg-green-500': 'bg-orange-500'">
+                            [ngClass]="element['is_block']? 'bg-red-500' : 'bg-green-500'">
                         </span>
-                        {{element.company_name}}
+                        {{element.company_name || "-"}}
                     </td>
-                    <td>{{element.email_address}}</td>
+                    <td>{{element.email_address || "-"}}</td>
                     <td>{{element.mobile_code }} {{element.mobile_number}}</td>
-                    <td>{{element.billing_company}}</td>
-                    <td>{{element.city_name}}</td>
+                    <td>{{element.contact_person_name || "-" }}</td>
+                    <td>{{(element.is_kyc_completed ? 'Yes' : 'No') || "-" }}</td>
                     <td>{{element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss' || "-"}}</td>
+                    <td>{{element.wallet_Balance || '0'}}</td>
                     <td *ngFor="let col of columns" [ngClass]="col.field == 'priority' ? 'text-center' : ''">
                         {{element[col.field]}}
                     </td>
@@ -219,3 +263,4 @@
     </div>
 
 </div>
+<app-supplier-entry-right></app-supplier-entry-right>

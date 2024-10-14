@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -64,13 +64,16 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
   private settingsUpdatedSubscription: Subscription;
   isFilterShow: boolean = false;
 
-  monthsBack: number = 0;
+  // monthsBack: number = 0;
   totalRecords: number = 0;
   isLoading: boolean = false;
 
   currentMonthIndex: number;
   availableMonths: { name: string, value: number }[] = [];
   selectedMonth: number = 1;
+  monthDataList = [2,3,4,5,6,]
+  public monthsBack = new FormControl(this.monthDataList[0]);
+
 
   constructor(
     private confirmService: FuseConfirmationService,
@@ -95,7 +98,7 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
     this.setupMonths();
 
     this.selectedMonth = 1; // Default to September
-    this.monthsBack = 1; // Set monthsBack to September
+    // this.monthsBack = 1; // Set monthsBack to September
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.primengTable['filters'] = resp['table_config'];
@@ -110,7 +113,7 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
 
     const request = this.getNewFilterReq(event);
     console.log("request", request);
-    request['monthsBack'] = this.monthsBack;
+    request['monthsBack'] = this.monthsBack.value;
     console.log("object, request", request);
 
     this.airlineSummaryService.airlineMonthlyAnalysis(request).subscribe({
@@ -150,7 +153,7 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
     console.log("this.dataList", this.dataList);
 
     // Extract the latest 3 months based on data provided
-    this.latestMonths = [...new Set(data.map(item => item.month))].sort((a, b) => b - a).slice(0, this.monthsBack);
+    this.latestMonths = [...new Set(data.map(item => item.month))].sort((a, b) => b - a).slice(0, this.monthsBack.value);
     console.log("this.latestMonths", this.latestMonths);
   }
 

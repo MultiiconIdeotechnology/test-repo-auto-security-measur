@@ -38,7 +38,18 @@ export class EntityService {
     private refreshWalletRechargeCall = new ReplaySubject<any>();
     private walletRechargeCall = new ReplaySubject<any>();
 
+    private supplierEntityCall = new ReplaySubject<any>();
+
     constructor() { }
+
+    /********Supplier***********/
+    public onsupplierEntityCall(): Observable<any> {
+        return this.supplierEntityCall.asObservable();
+    }
+
+    public raisesupplierEntityCall(item): void {
+        this.supplierEntityCall.next(item);
+    }
 
     /********Receipt***********/
     public raiserefreshReceiptCall(item): void {

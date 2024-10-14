@@ -22,6 +22,8 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { SupplierEntryRightComponent } from '../supplier-entry-right/supplier-entry-right.component';
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
     selector: 'app-supplier-list',
@@ -46,7 +48,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatButtonModule,
         MatTooltipModule,
         MatDividerModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        SupplierEntryRightComponent,
     ],
 })
 
@@ -59,22 +62,28 @@ export class SupplierListComponent extends BaseListingComponent {
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     cols: any = [
-        { field: 'currency', header: 'Currency', type: 'text' },
-        { field: 'priority', header: 'Priority', type:'numeric'}
+        { field: 'city_name', header: 'City', type: 'text' },
+        { field: 'currency', header: 'Base Currency', type:'text'},
+        { field: 'gst_Number', header: 'GST Number', type:'text'},
+        { field: 'pan_Number', header: 'PAN Number', type:'text'},
     ];
     companyList: any[] = [];
     companyListName:any[] = [];
+
+    kycList = [ 'Yes', 'No'];
 
     constructor(
         private supplierService: SupplierService,
         private conformationService: FuseConfirmationService,
         private pspsettingService: PspSettingService,
         private matDialog: MatDialog,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private entityService: EntityService,
     ) {
         super(module_name.supplier);
         this.key = this.module_name;
         this.sortColumn = 'entry_date_time';
+        this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
     }
@@ -148,38 +157,45 @@ export class SupplierListComponent extends BaseListingComponent {
     }
 
     createInternal(model): void {
-        this.matDialog
-            .open(SupplierEntryComponent, {
-                data: { data: null, iscreate: true },
-                disableClose: true,
-            })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res) 
-               { this.alertService.showToast('success', "New record added", "top-right", true);
-                this.refreshItems();}
-            });
+        this.entityService.raisesupplierEntityCall({ create: true })
+
+
+        // this.matDialog
+        //     .open(SupplierEntryComponent, {
+        //         data: { data: null, iscreate: true },
+        //         disableClose: true,
+        //     })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) 
+        //        { this.alertService.showToast('success', "New record added", "top-right", true);
+        //         this.refreshItems();}
+        //     });
     }
 
     editInternal(record): void {
-        this.matDialog
-            .open(SupplierEntryComponent, {
-                data: { data: record, readonly: false, iscreate: false },
-                disableClose: true,
-            })
-            .afterClosed()
-            .subscribe((res) => {
-                if (res) 
-              {  this.alertService.showToast('success', "Record modified", "top-right", true);
-                this.refreshItems();}
-            });
+        this.entityService.raisesupplierEntityCall({ data: record, edit: true })
+
+        // this.matDialog
+        //     .open(SupplierEntryComponent, {
+        //         data: { data: record, readonly: false, iscreate: false },
+        //         disableClose: true,
+        //     })
+        //     .afterClosed()
+        //     .subscribe((res) => {
+        //         if (res) 
+        //       {  this.alertService.showToast('success', "Record modified", "top-right", true);
+        //         this.refreshItems();}
+        //     });
     }
 
     viewInternal(record): void {
-        this.matDialog.open(SupplierEntryComponent, {
-            data: { data: record, readonly: true, iscreate: false },
-            disableClose: true,
-        });
+        this.entityService.raisesupplierEntityCall({ data: record, info: true })
+
+        // this.matDialog.open(SupplierEntryComponent, {
+        //     data: { data: record, readonly: true, iscreate: false },
+        //     disableClose: true,
+        // });
     }
 
     deleteInternal(record): void {

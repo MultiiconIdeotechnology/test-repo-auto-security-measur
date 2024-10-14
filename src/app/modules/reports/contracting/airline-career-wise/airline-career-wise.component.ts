@@ -174,6 +174,10 @@ export class AirlineCareerWiseComponent extends BaseListingComponent implements 
     });
   }
 
+  maxValue(data:any){
+    // console.log("data", data);
+  }
+
 
   getNodataText(): string {
     if (this.isLoading)

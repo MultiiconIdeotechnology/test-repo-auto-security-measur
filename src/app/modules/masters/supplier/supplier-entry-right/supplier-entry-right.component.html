@@ -1,0 +1,177 @@
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="flex flex-col w-full overflow-auto bg-card">
+
+        <div class="flex flex-row items-center px-6 h-13 min-h-13 dark:text-white">
+            <div class="text-lg font-medium tracking-tight">{{title}}</div>
+            <button class="ml-auto" mat-icon-button (click)="settingsDrawer.close()">
+                <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+
+        <form *ngIf="!info" class="flex flex-col flex-auto px-6 pt-6 overflow-y-auto" [formGroup]="formGroup"
+            style="max-height: calc(100vh - 116px);">
+
+            <mat-form-field class="  ">
+                <mat-label>Company Name</mat-label>
+                <input matInput type="text" required formControlName="company_name">
+            </mat-form-field>
+
+            <mat-form-field class="  ">
+                <mat-label>Contact Person Name</mat-label>
+                <input matInput type="text" required formControlName="company_person_name">
+            </mat-form-field>
+
+            <mat-form-field class="  ">
+                <mat-label>Email</mat-label>
+                <input type="text" matInput required formControlName="email_address"
+                    pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+                <mat-error
+                    *ngIf="this.formGroup.get('email_address').value && !isValidEmail(this.formGroup.get('email_address').value)">
+                    Please enter a valid email address.
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="  ">
+                <mat-label>Mobile</mat-label>
+                <input matInput type="number" required formControlName="mobile_number">
+            </mat-form-field>
+
+            <mat-form-field class="  ">
+                <mat-label>City</mat-label>
+                <mat-select formControlName="city_id" required>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching city found'"
+                            [formControlName]="'cityfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of cityList" [value]="ct.id">{{ct.display_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="  ">
+                <mat-label>Address</mat-label>
+                <input matInput type="number" required formControlName="address">
+            </mat-form-field>
+
+            <mat-form-field class="  ">
+                <mat-label>Base currency</mat-label>
+                <mat-select required formControlName="transaction_currency_id">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching currency found'" [formControlName]="'currencyfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of CurrencyList" [value]="ct.id">{{ct.currency_short_code}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="">
+                <mat-label>GST Number</mat-label>
+                <input matInput type="text" required formControlName="gst_number">
+            </mat-form-field>
+
+            <mat-form-field class="">
+                <mat-label>PAN Number</mat-label>
+                <input matInput type="text" required formControlName="pan_number">
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label>KYC Profile</mat-label>
+                <mat-select formControlName="kyc_profile_id" required>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching KYC Profile found'"
+                            [formControlName]="'kycfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of profileList" [value]="ct.id">{{ct.profile_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-slide-toggle class="ml-1" formControlName="is_send">
+                <span class="pl-1">Is Auto Search</span>
+            </mat-slide-toggle>
+        </form>
+
+        <div *ngIf="info" class="p-6">
+            <div class="mb-5">
+                <div class="text-md font-semibold text-secondary">Company Name</div>
+                <div class="text-base">{{infoData.company_name || "-"}}</div>
+            </div>
+            <div class="mb-5">
+                <div class="text-md font-semibold text-secondary">Company Person Name</div>
+                <div class="text-base">{{infoData.contact_person_name || "-"}}</div>
+            </div>
+            <div class="mb-5">
+                <div class="text-md font-semibold text-secondary">Email</div>
+                <div class="text-base">{{infoData.email_address || "-"}}</div>
+            </div>
+            <div class="mb-5">
+                <div class="text-md font-semibold text-secondary">Mobile</div>
+                <div class="text-base">{{infoData.mobile_number || "-"}}</div>
+            </div>
+            <div class="mb-5">
+                <div class="text-md font-semibold text-secondary">City</div>
+                <div class="text-base">{{infoData.city_name || "-"}}</div>
+            </div>
+            <div class="mb-5 w-full break-words">
+                <div class="text-md font-semibold text-secondary">Address</div>
+                <div class="text-base">{{infoData.address || "-"}}</div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Base Currency</div>
+                    <div class="text-base">{{infoData.currency || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Wallet Balance</div>
+                    <div class="text-base">{{infoData.wallet_Balance || "0"}}</div>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">GST Number</div>
+                    <div class="text-base">{{infoData.gst_Number || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">PAN Number</div>
+                    <div class="text-base">{{infoData.pan_Number || "-"}}</div>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">KYC Profile</div>
+                    <div class="text-base">{{infoData.profile_name || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Entry Date</div>
+                    <div class="text-base">{{(infoData.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}</div>
+                </div>
+            </div>
+            <div class="flex">
+                <div *ngIf="infoData.is_block" class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Blocked By</div>
+                    <div class="text-base">{{infoData.block_by || "-"}}</div>
+                </div>
+                <div *ngIf="infoData.is_block" class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Block Date</div>
+                    <div class="text-base">{{infoData.block_date_time | date: 'dd-MM-yyyy HH:mm:ss' || "-"}}</div>
+                </div>
+            </div>
+            <div *ngIf="infoData.is_block" class="mb-5 w-full break-words">
+                <div class="text-md font-semibold text-secondary">Block Remark</div>
+                <div class="text-base">{{infoData.block_reason || "-"}}</div>
+            </div>
+        </div>
+
+        <div *ngIf="!info"
+            class="h-16 flex items-center justify-end pt-4 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-5 dark:bg-[#1e293b] bg-white border-t m-auto">
+            <button mat-stroked-button (click)="settingsDrawer.close()">Close</button>
+            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid || disableBtn">
+                {{ btnLabel }}
+            </button>
+        </div>
+    </div>
+</fuse-drawer>
