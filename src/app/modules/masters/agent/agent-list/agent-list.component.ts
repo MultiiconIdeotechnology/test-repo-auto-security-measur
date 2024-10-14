@@ -767,6 +767,10 @@ export class AgentListComponent extends BaseListingComponent {
         filterReq['Skip'] = 0;
         filterReq['Take'] = this.totalRecords;
 
+        if (Security.hasPermission(agentsPermissions.viewOnlyAssignedPermissions)) {
+            filterReq["relationmanagerId"] = this.user.id
+        }
+
         this.agentService.getAgentList(filterReq).subscribe(data => {
             for (var dt of data.data) {
                 // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')

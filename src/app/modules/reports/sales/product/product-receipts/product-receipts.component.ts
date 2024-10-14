@@ -286,20 +286,20 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
 
         this.accountService.getReceiptList(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a') : '';
-                dt.agent_name = dt.agent_Code + ' ' + dt.agent_name;
+                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy') : '';
             }
-            ['receipt_ref_no', 'agent_name', 'rm_name', 'product_name' , 'payment_amount', 'receipt_status' , 'receipt_request_date']
+            ['receipt_ref_no','agent_Code',  'agent_name', 'rm_name', 'product_name' , 'payment_amount', 'receipt_status' , 'receipt_request_date']
             Excel.export(
                 'Receipt',
                 [
                     { header: 'Reference No.', property: 'receipt_ref_no' },
+                    { header: 'Agent Code', property: 'agent_Code' },
                     { header: 'Agent', property: 'agent_name' },
                     { header: 'RM', property: 'rm_name' },
                     { header: 'Product name', property: 'product_name' },
                     { header: 'Amount', property: 'payment_amount' },
                     { header: 'Status', property: 'receipt_status' },
-                    { header: 'Request', property: 'receipt_request_date' },
+                    { header: 'Date', property: 'receipt_request_date' },
                 ],
                 data.data,
                 'Receipt',

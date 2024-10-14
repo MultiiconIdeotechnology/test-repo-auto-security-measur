@@ -207,8 +207,12 @@
                             </p-columnFilter>
                     </th>
 
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.tat">
-                        <p-columnFilter field="tat" matchMode="equals" [showMenu]="false">
+                    <th>
+                        <p-columnFilter type="numeric" field="tat"
+                            placeholder="Search by TAT" ariaLabel="Filter TAT" />
+
+
+                        <!-- <p-columnFilter field="tat" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="tatList"
                                     (onChange)="filter($event.value)" placeholder="Select TAT" [showClear]="true"
@@ -218,7 +222,7 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
                     </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.type">
                         <p-columnFilter field="type" matchMode="equals" [showMenu]="false">
@@ -243,7 +247,9 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime">
                         {{(element.ticketingTime | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
-                    <td>{{element.bookingNo || "-"}}</td>
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">{{element.bookingNo || "-"}}</span>
+                    </td>
                     <td>{{element.supplierRefNo || "-"}}</td>
                     <td>{{element.supplier || "-" }}</td>
                     <td>{{element.bookingStatus}}</td>

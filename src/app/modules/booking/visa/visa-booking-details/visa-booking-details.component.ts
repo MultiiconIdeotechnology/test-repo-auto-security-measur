@@ -81,6 +81,7 @@ export class VisaBookingDetailsComponent {
     bookingDetail: any;
     accountDatail: any;
     printBase64URL: any;
+    isRefundBtnShow: boolean = false;
 
 
     bookingBy: any;
@@ -188,6 +189,7 @@ export class VisaBookingDetailsComponent {
                     this.flighttabService.visaAmendment(json).subscribe({
                         next: (res: any) => {
                             this.toastr.showToast('success', 'Refund is initiated!', 'top-right', true);
+                            this.getVisaBookingRecord();
                         },
                         error: (err) => {
                             this.toastr.showToast('error', err, 'top-right', true);
@@ -212,6 +214,7 @@ export class VisaBookingDetailsComponent {
                 //   this.accountDatail = res.account;
                 this.travellerDataList = res?.travellers;
                 this.travellers = res?.travellers;
+                this.isRefundBtnShow = res?.travellers?.some(x => !x.is_refunded && x.status?.toLowerCase() == "documents rejected");
             }, error: err => {
                 this.toastr.showToast('error', err)
             }
@@ -219,8 +222,8 @@ export class VisaBookingDetailsComponent {
     }
 
     getColor(dataRecord: string): string {
-        if (dataRecord === 'Pending')
-            return 'bg-yellow-400';
+        if (dataRecord === 'Pending' || dataRecord === 'Refunded')
+            return 'bg-yellow-500';
         else if (dataRecord === 'Payment Confirmed' || dataRecord === 'Success')
             return 'bg-green-500';
         else if (dataRecord === 'Payment Failed' || dataRecord === 'Documents Rejected' || dataRecord === 'Rejected')
@@ -243,6 +246,9 @@ export class VisaBookingDetailsComponent {
         this.matDialog.open(DocumentKycComponent, {
             data: val,
             disableClose: true
+        }).afterClosed().subscribe(res => {
+            if (res)
+                this.getVisaBookingRecord();
         })
     }
 

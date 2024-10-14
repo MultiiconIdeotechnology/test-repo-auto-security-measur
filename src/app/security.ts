@@ -293,9 +293,9 @@ export const module_name = {
     products_receipts: 'Receipts',
     airline_summary: 'Airline Summary',
     airline_offline: 'Airline Offline TAT Analysis',
-    airline_monthly: 'Ailine Monthly Analysis',
+    airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
-    airline_career: 'Airline Career Wise Analysis',
+    airline_career: 'Airline Carrier Wise Analysis',
 };
 
 export const filter_module_name = {
@@ -381,7 +381,7 @@ export const filter_module_name = {
     airline_offline: 'airline_offline_tat_Analysis',
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
-    airline_career: 'Airline Career Wise Analysis',
+    airline_career: 'Airline Carrier Wise Analysis',
 
     //Inventory
     activity: "activity",
@@ -499,6 +499,10 @@ export const leadsPermissions = {
     viewOnlyAssignedPermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
     setMarkupProfilePermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Set Markup Profile', category_name: category_name.entry },
     setKYCProfilePermissions: { module_name: module_name.newSignup, group_name: group_name.listingPage, operation_type: 'Set KYC Profile', category_name: category_name.entry },
+}
+
+export const poductCollectionPermissions = {
+    viewOnlyAssignedPermissions: { module_name: module_name.products_collection, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view }
 }
 
 export const agentsPermissions = {

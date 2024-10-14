@@ -890,16 +890,24 @@ div:where(.swal2-container) button:where(.swal2-close){
 .carrier-row {
     font-weight: bold;
   }
-  
+
   .domestic-row {
     background-color: rgb(126 126 126 / 23%) !important;
   }
-  
+
   .international-row {
     background-color: rgb(126 126 126 / 23%) !important;
   }
-  
 
+  .highest-value {
+    background-color: green;
+    color: white;
+  }
+
+  .lowest-value {
+    background-color: red;
+    color: white;
+  }
 
 
 

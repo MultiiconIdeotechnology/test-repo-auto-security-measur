@@ -107,42 +107,42 @@
                 </tr>
                 <tr>
                     <!-- Total Columns -->
-                    <th pSortableColumn="confirmed_Percentage" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage" /></th>
-                    <th pSortableColumn="failed_Percentage" pResizableColumn>Failed <p-sortIcon field="failed_Percentage" /></th>
+                    <th class="text-right" pSortableColumn="confirmed_Percentage" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage" /></th>
+                    <th class="text-right" pSortableColumn="failed_Percentage" pResizableColumn>Failed <p-sortIcon field="failed_Percentage" /></th>
 
                     <!-- Domestic Columns -->
-                    <th pSortableColumn="confirmed_Percentage_Domestic" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage_Domestic" /></th>
-                    <th pSortableColumn="failed_Percentage_Domestic" pResizableColumn>Failed <p-sortIcon field="failed_Percentage_Domestic" /></th>
+                    <th class="text-right" pSortableColumn="confirmed_Percentage_Domestic" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage_Domestic" /></th>
+                    <th class="text-right" pSortableColumn="failed_Percentage_Domestic" pResizableColumn>Failed <p-sortIcon field="failed_Percentage_Domestic" /></th>
 
                     <!-- International Columns -->
-                    <th pSortableColumn="confirmed_Percentage_International" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage_International" /></th>
-                    <th pSortableColumn="failed_Percentage_International" pResizableColumn>Failed <p-sortIcon field="failed_Percentage_International" /></th>
+                    <th class="text-right" pSortableColumn="confirmed_Percentage_International" pResizableColumn>Confirmed <p-sortIcon field="confirmed_Percentage_International" /></th>
+                    <th class="text-right" pSortableColumn="failed_Percentage_International" pResizableColumn>Failed <p-sortIcon field="failed_Percentage_International" /></th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th></th>
                     <th>
-                        <p-columnFilter type="text" matchMode="equals" field="confirmed_Percentage"
+                        <p-columnFilter type="numeric" matchMode="equals" field="confirmed_Percentage"
                             placeholder="Search by Confirmed" ariaLabel="Filter Confirmed" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="equals" field="failed_Percentage"
+                        <p-columnFilter type="numeric" matchMode="equals" field="failed_Percentage"
                             placeholder="Search by Failed" ariaLabel="Filter Failed" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="equals" field="confirmed_Percentage_Domestic"
+                        <p-columnFilter type="numeric" matchMode="equals" field="confirmed_Percentage_Domestic"
                             placeholder="Search by Confirmed" ariaLabel="Filter Confirmed" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="equals" field="failed_Percentage_Domestic"
+                        <p-columnFilter type="numeric" matchMode="equals" field="failed_Percentage_Domestic"
                             placeholder="Search by Failed" ariaLabel="Filter Failed" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="equals" field="confirmed_Percentage_International"
+                        <p-columnFilter type="numeric" matchMode="equals" field="confirmed_Percentage_International"
                             placeholder="Search by Confirmed" ariaLabel="Filter Confirmed" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="equals" field="failed_Percentage_International"
+                        <p-columnFilter type="numeric" matchMode="equals" field="failed_Percentage_International"
                             placeholder="Search by Failed" ariaLabel="Filter Failed" />
                     </th>
                 </tr>
@@ -152,16 +152,16 @@
                     <td class="cursor-pointer" (click)="supplierInfo(element.supplier)">{{ element.supplier }}</td>
 
                     <!-- Total Columns -->
-                    <td>{{ element.confirmed_Percentage }}%</td>
-                    <td>{{ element.failed_Percentage }}%</td>
+                    <td class="text-right">{{ element.confirmed_Percentage }}%</td>
+                    <td class="text-right">{{ element.failed_Percentage }}%</td>
 
                     <!-- Domestic Columns -->
-                    <td>{{ element.confirmed_Percentage_Domestic }}%</td>
-                    <td>{{ element.failed_Percentage_Domestic }}%</td>
+                    <td class="text-right">{{ element.confirmed_Percentage_Domestic }}%</td>
+                    <td class="text-right">{{ element.failed_Percentage_Domestic }}%</td>
 
                     <!-- International Columns -->
-                    <td>{{ element.confirmed_Percentage_International }}%</td>
-                    <td>{{ element.failed_Percentage_International }}%</td>
+                    <td class="text-right">{{ element.confirmed_Percentage_International }}%</td>
+                    <td class="text-right">{{ element.failed_Percentage_International }}%</td>
                 </tr>
             </ng-template>
 
