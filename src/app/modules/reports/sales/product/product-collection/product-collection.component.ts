@@ -15,7 +15,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { Security, filter_module_name, module_name } from 'app/security';
+import { Security, filter_module_name, module_name, poductCollectionPermissions } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
@@ -26,10 +26,11 @@ import { Routes } from 'app/common/const';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { AgentService } from 'app/services/agent.service';
-import { Subscription } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { ProductTabComponent } from '../product-tab/product-tab.component';
 import { RefferralService } from 'app/services/referral.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-product-collection',
@@ -73,6 +74,7 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     agentList: any[] = [];
     selectedRM: any;
     employeeList: any = [];
+    user: any = {};
 
     statusList: any[] = [
         { label: 'Delivered', value: 'Delivered' },
@@ -86,12 +88,19 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
         private matDialog: MatDialog,
         private refferralService: RefferralService,
         public _filterService: CommonFilterService,
+        public userService: UserService,
     ) {
-        super(module_name.products_receipts);
+        super(module_name.products_collection);
 
         this.sortColumn = 'installment_date';
         this.sortDirection = 'desc';
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.userService.user$
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((user: any) => {
+            this.user = user;
+        });
     }
 
     ngOnInit(): void {
@@ -223,6 +232,11 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
         this.isLoading = true;
 
         let newModel = this.getNewFilterReq(event);
+
+        if (Security.hasPermission(poductCollectionPermissions.viewOnlyAssignedPermissions)) {
+            newModel["relationmanagerId"] = this.user.id
+        }
+
         this.accountService.getCollectionList(newModel).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -254,6 +268,10 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
 
         filterReq['Filter'] = this.searchInputControl.value;
         filterReq['Take'] = this.totalRecords;
+
+        if (Security.hasPermission(poductCollectionPermissions.viewOnlyAssignedPermissions)) {
+            filterReq["relationmanagerId"] = this.user.id
+        }
 
         this.accountService.getCollectionList(filterReq).subscribe((data) => {
             for (var dt of data.data) {
