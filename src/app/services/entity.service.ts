@@ -39,6 +39,11 @@ export class EntityService {
     private walletRechargeCall = new ReplaySubject<any>();
 
     private supplierEntityCall = new ReplaySubject<any>();
+    private refreshSupplierEntityCall = new ReplaySubject<any>();
+
+    private userSupplierEntityCall = new ReplaySubject<any>();
+    private refreshUserSupplierEntityCall = new ReplaySubject<any>();
+
 
     constructor() { }
 
@@ -49,6 +54,34 @@ export class EntityService {
 
     public raisesupplierEntityCall(item): void {
         this.supplierEntityCall.next(item);
+    }
+
+    public raiserefreshSupplierEntityCall(item): void {
+        this.refreshSupplierEntityCall.next(item);
+    }
+
+    public onrefreshSupplierEntityCall(): Observable<any> {
+        return this.refreshSupplierEntityCall.asObservable();
+    }
+
+    /***********User Supplier********** */
+
+    /***edit***/
+    public raiseUsersupplierEntityCall(item): void {
+        this.userSupplierEntityCall.next(item);
+    }
+
+    /***record***/
+    public onUsersupplierEntityCall(): Observable<any> {
+        return this.userSupplierEntityCall.asObservable();
+    }
+
+    public raiserefreshuserSupplierEntityCall(item): void {
+        this.refreshUserSupplierEntityCall.next(item);
+    }
+
+    public onrefreshUserSupplierEntityCall(): Observable<any> {
+        return this.refreshUserSupplierEntityCall.asObservable();
     }
 
     /********Receipt***********/

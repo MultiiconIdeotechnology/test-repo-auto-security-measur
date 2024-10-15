@@ -1,0 +1,138 @@
+<div class="flex flex-col max-w-240 md:min-w-180 max-h-screen -m-6 supplier_info">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">{{module_name}}</div>
+        <div class="flex gap-3">
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['user_name', 'email_address', 'mobile_number', 'entry_date_time']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="user_name" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.user_name"
+                        [ngClass]="{'left-0': !frozenObj?.user_name}">
+                        User <p-sortIcon field="user_name" />
+                        <span class="float-right" (click)="isFrozenColumn('user_name');$event.stopPropagation()">
+                            <i *ngIf="frozenObj?.user_name" class="pi pi-lock icon-size-3"></i>
+                            <i *ngIf="!frozenObj?.user_name" class="pi pi-lock-open icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="email_address" pResizableColumn>
+                        Email <p-sortIcon field="email_address" />
+                    </th>
+                    <th pSortableColumn="mobile_number" pResizableColumn>
+                        Mobile <p-sortIcon field="mobile_number" />
+                    </th>
+                    <th pSortableColumn="entry_date_time" pResizableColumn>
+                        Entry <p-sortIcon field="entry_date_time" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th class=" left-[-1px]"></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.user_name">
+                        <p-columnFilter type="text" matchMode="contains" field="user_name" placeholder="Search by User"
+                            ariaLabel="Filter User" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="email_address"
+                            placeholder="Search by Email" ariaLabel="Filter Email Address" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="mobile_number"
+                            placeholder="Search by Mobile" ariaLabel="Filter Mobile Number" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="edit(element)">
+                                <mat-icon class="mat-18">edit</mat-icon>
+                                <span style="font-weight: 600">Modify</span>
+                            </button>
+                            <button mat-menu-item (click)="delete(element)">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                                <span style="font-weight: 600">Delete</span>
+                            </button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item (click)="resetPassword(element)">
+                                <mat-icon class="mat-18">lock</mat-icon>
+                                <span style="font-weight: 600">Reset Password</span>
+                            </button>
+                            <button mat-menu-item (click)="blockUnblock(element)">
+                                <mat-icon class="mat-18">block</mat-icon>
+                                <span style="font-weight: 600">
+                                    {{ element.is_blocked ? "Unblock" : "Block" }}
+                                </span>
+                            </button>
+                            <button mat-menu-item>
+                                <mat-icon class="mat-18">login</mat-icon>
+                                <span style="font-weight: 600">Auto Login</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.user_name">
+                        <span [matTooltip]="element['is_blocked'] ? 'Block': 'UnBlock'"
+                            class="w-2 h-2 inline-block me-1 rounded-full"
+                            [ngClass]="element['is_blocked']? 'bg-red-500' : 'bg-green-500'">
+                        </span>
+                        {{element.user_name || "-"}}
+                    </td>
+                    <td>{{element.email_address || "-"}}</td>
+                    <td>{{element.mobile_number || "-"}}</td>
+                    <td>{{element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss' || "-"}}</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="9" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>
+<app-user-modify></app-user-modify>

@@ -109,7 +109,7 @@ export class SupplierEntryRightComponent {
         this.settingsDrawer.toggle()
         this.create = item?.create;
         this.info = item?.info;
-        if(this.info){
+        if (this.info) {
           this.infoData = item?.data;
           this.title = "Supplier Info"
           console.log("this.infoData", this.infoData);
@@ -133,7 +133,7 @@ export class SupplierEntryRightComponent {
           currencyfilter: "",
           is_send: "",
           address: "",
-          company_person_name: "",
+          contact_person_name: "",
         })
 
         if (this.create) {
@@ -157,7 +157,12 @@ export class SupplierEntryRightComponent {
           if (this.record?.id) {
             this.formGroup.get('cityfilter').patchValue(this.record?.city_name);
             this.formGroup.get('city_id').patchValue(this.record?.city_id);
-          } 
+          }
+
+          if (this.record?.id) {
+            this.formGroup.get('kycfilter').patchValue(this.record?.profile_name);
+            this.formGroup.get('kyc_profile_id').patchValue(this.record?.kyc_profile_id);
+          }
         }
       }
     })
@@ -186,7 +191,7 @@ export class SupplierEntryRightComponent {
       pan_number: [''],
       gst_number: [''],
       address: [''],
-      company_person_name: [''],
+      contact_person_name: [''],
       kycfilter: [''],
       kyc_profile_id: [''],
       is_send: [false],
@@ -196,10 +201,10 @@ export class SupplierEntryRightComponent {
       this.formGroup.get('email_address').patchValue(text.toLowerCase(), { emitEvent: false });
     })
 
-   
+
   }
 
-  getCurrencyCombo(){
+  getCurrencyCombo() {
     this.currencyService.getcurrencyCombo().subscribe({
       next: res => {
         this.CurrencyList = res;
@@ -218,17 +223,18 @@ export class SupplierEntryRightComponent {
     })
   }
 
-  getKycCombo(){
-    this, this.kycService.getkycprofileCombo("employee").subscribe(data => {
+  getKycCombo() {
+    this, this.kycService.getkycprofileCombo("supplier").subscribe(data => {
       this.profileList = data;
       this.AllprofileList = data;
+      if(!this.record?.id)
       this.formGroup.get('kyc_profile_id').patchValue(this.profileList[0].id);
     })
 
     this.formGroup.get('kycfilter').valueChanges
-    .subscribe(data => {
-      this.profileList = this.AllprofileList.filter(x => x.profile_name.toLowerCase().includes(data.toLowerCase()));
-    });
+      .subscribe(data => {
+        this.profileList = this.AllprofileList.filter(x => x.profile_name.toLowerCase().includes(data.toLowerCase()));
+      });
   }
 
 
@@ -268,7 +274,28 @@ export class SupplierEntryRightComponent {
   }
 
   submit(): void {
+    if (!this.formGroup.valid) {
+      this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
+      this.formGroup.markAllAsTouched();
+      return;
+    }
 
+    this.disableBtn = true;
+    const json = this.formGroup.getRawValue();
+    console.log("json", json);
+    this.supplierService.create(json).subscribe({
+      next: () => {
+        this.disableBtn = false;
+        this.alertService.showToast('success', this.edit ? "Supplier has been Updated!" : "Supplier has been Created!", "top-right", true);
+        this.entityService.raiserefreshSupplierEntityCall(true);
+        this.settingsDrawer.close();
+
+      }, error: (err) => {
+        this.disableBtn = false;
+        this.alertService.showToast('error', err, "top-right", true);
+
+      }
+    })
   }
 
 }

@@ -20,10 +20,12 @@ import { AssignKycDialogComponent } from '../assign-kyc-dialog/assign-kyc-dialog
 import { KycInfoComponent } from '../../agent/kyc-info/kyc-info.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { PspSettingService } from 'app/services/psp-setting.service';
-import { Subscription } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SupplierEntryRightComponent } from '../supplier-entry-right/supplier-entry-right.component';
 import { EntityService } from 'app/services/entity.service';
+import { UserSupplierComponent } from '../user-supplier/user-supplier.component';
+import { UserModifyComponent } from '../user-modify/user-modify.component';
 
 @Component({
     selector: 'app-supplier-list',
@@ -50,6 +52,7 @@ import { EntityService } from 'app/services/entity.service';
         MatDividerModule,
         PrimeNgImportsModule,
         SupplierEntryRightComponent,
+        UserModifyComponent
     ],
 })
 
@@ -63,14 +66,14 @@ export class SupplierListComponent extends BaseListingComponent {
     isFilterShow: boolean = false;
     cols: any = [
         { field: 'city_name', header: 'City', type: 'text' },
-        { field: 'currency', header: 'Base Currency', type:'text'},
-        { field: 'gst_Number', header: 'GST Number', type:'text'},
-        { field: 'pan_Number', header: 'PAN Number', type:'text'},
+        { field: 'currency', header: 'Base Currency', type: 'text' },
+        { field: 'gst_Number', header: 'GST Number', type: 'text' },
+        { field: 'pan_Number', header: 'PAN Number', type: 'text' },
     ];
     companyList: any[] = [];
-    companyListName:any[] = [];
+    companyListName: any[] = [];
 
-    kycList = [ 'Yes', 'No'];
+    kycList = ['Yes', 'No'];
 
     constructor(
         private supplierService: SupplierService,
@@ -86,6 +89,14 @@ export class SupplierListComponent extends BaseListingComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.entityService.onrefreshSupplierEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if (item) {
+                    this.refreshItems();
+                }
+            }
+        })
     }
 
     ngOnInit(): void {
@@ -95,7 +106,7 @@ export class SupplierListComponent extends BaseListingComponent {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if( resp['table_config']['entry_date_time'] && resp['table_config']['entry_date_time'].value ){
+            if (resp['table_config']['entry_date_time'] && resp['table_config']['entry_date_time'].value) {
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -105,27 +116,27 @@ export class SupplierListComponent extends BaseListingComponent {
         });
     }
 
-    ngAfterViewInit(){
+    ngAfterViewInit() {
         // Defult Active filter show
-        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            if(filterData['table_config']['entry_date_time'].value ){
+            if (filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
         }
-      }
+    }
 
     getCompanyList() {
         this.pspsettingService.getCompanyCombo("").subscribe((data) => {
-          this.companyList = data;
-          for(let el of data){
-              this.companyListName.push(el.company_name);
-          }
+            this.companyList = data;
+            for (let el of data) {
+                this.companyListName.push(el.company_name);
+            }
         })
-      }
+    }
 
     get selectedColumns(): Column[] {
         return this._selectedColumns;
@@ -141,7 +152,7 @@ export class SupplierListComponent extends BaseListingComponent {
         }
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         this.supplierService.getSupplierList(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
@@ -220,7 +231,7 @@ export class SupplierListComponent extends BaseListingComponent {
                         },
                         error(err) {
                             this.alertService.showToast('error', err, "top-right", true);
-                            
+
                         },
                     });
                 }
@@ -246,13 +257,13 @@ export class SupplierListComponent extends BaseListingComponent {
                             .subscribe({
                                 next: () => {
                                     record.is_block = !record.is_block;
-                                    if(record.is_block){
+                                    if (record.is_block) {
                                         this.alertService.showToast('success', "Supplier has been blocked!", "top-right", true);
-                                      }
+                                    }
                                 },
                                 error(err) {
                                     this.alertService.showToast('error', err, "top-right", true);
-                                    
+
                                 },
                             });
                     }
@@ -277,13 +288,13 @@ export class SupplierListComponent extends BaseListingComponent {
                             .subscribe({
                                 next: () => {
                                     record.is_block = !record.is_block;
-                                    if(!record.is_block){
+                                    if (!record.is_block) {
                                         this.alertService.showToast('success', "Supplier has been Unblocked!", "top-right", true);
-                                      }
+                                    }
                                 },
                                 error(err) {
                                     this.alertService.showToast('error', err, "top-right", true);
-                                    
+
                                 },
                             });
                     }
@@ -295,14 +306,23 @@ export class SupplierListComponent extends BaseListingComponent {
         if (!Security.hasPermission(supplierPermissions.viewKYCPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        
+
         this.matDialog.open(KycInfoComponent, {
-          data: {record:record,supplier:true,isLead : 'Supplier'},
-          disableClose: true
+            data: { record: record, supplier: true, isLead: 'Supplier' },
+            disableClose: true
         }).afterClosed().subscribe(res => {
-         
+
         })
-      }
+    }
+
+    userSupplier(record) {
+        this.matDialog.open(UserSupplierComponent, {
+            data: record,
+            disableClose: true
+        }).afterClosed().subscribe(res => {
+
+        })
+    }
 
     verifyKYC(record): void {
         if (!Security.hasPermission(supplierPermissions.auditUnauditKYCPermissions)) {
@@ -346,36 +366,50 @@ export class SupplierListComponent extends BaseListingComponent {
                         },
                         error(err) {
                             this.alertService.showToast('error', err, "top-right", true);
-                            
+
                         },
                     });
                 }
             });
     }
 
-    kycProfile(record):void {
+    kycProfile(record): void {
         if (!Security.hasPermission(supplierPermissions.assignKYCProfile)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
         this.matDialog.open(AssignKycDialogComponent, {
-          data: record,
-          disableClose: true
+            data: record,
+            disableClose: true
         }).afterClosed().subscribe(res => {
-          if (res) {
-            this.supplierService.assignKYCProfile(record.id,res.kyc_profile_id).subscribe({
-              next: () => {
-                this.alertService.showToast('success', "KYC Profile has been Added!", "top-right", true);
-                record.kyc_profile_id = res.kyc_profile_id;
-              },
-              error(err) {
-                this.alertService.showToast('error', err, "top-right", true);
-                
-            },
-            })
-          }
+            if (res) {
+                this.supplierService.assignKYCProfile(record.id, res.kyc_profile_id).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', "KYC Profile has been Added!", "top-right", true);
+                        record.kyc_profile_id = res.kyc_profile_id;
+                    },
+                    error(err) {
+                        this.alertService.showToast('error', err, "top-right", true);
+
+                    },
+                })
+            }
         })
-      }
+    }
+
+    autologin(record: any) {
+        // if (!Security.hasPermission(agentsPermissions.autoLoginPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        // this.agentService.autoLogin(record.id).subscribe({
+        //     next: data => {
+        //         window.open(data.url + 'sign-in/' + data.code);
+        //     }, error: err => {
+        //         this.alertService.showToast('error', err)
+        //     }
+        // })
+    }
 
     getNodataText(): string {
         if (this.isLoading) return 'Loading...';
@@ -390,6 +424,6 @@ export class SupplierListComponent extends BaseListingComponent {
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
-          }
+        }
     }
 }

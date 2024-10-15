@@ -96,7 +96,7 @@
                     <th pSortableColumn="entry_date_time" pResizableColumn>
                         Entry <p-sortIcon field="entry_date_time" />
                     </th>
-                    <th pSortableColumn="wallet_Balance" pResizableColumn>
+                    <th class="text-right" pSortableColumn="wallet_Balance" pResizableColumn>
                         Wallet Balance <p-sortIcon field="wallet_Balance" />
                     </th>
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
@@ -209,7 +209,7 @@
                                     {{ element.is_block ? "Unblock" : "Block" }}
                                 </span>
                             </button>
-                            <button mat-menu-item>
+                            <button mat-menu-item (click)="autologin(element)">
                                 <mat-icon class="mat-18">login</mat-icon>
                                 <span style="font-weight: 600">Auto Login</span>
                             </button>
@@ -217,7 +217,7 @@
                                 <mat-icon class="mat-18">lock</mat-icon>
                                 <span style="font-weight: 600">Reset Password</span>
                             </button>
-                            <button mat-menu-item>
+                            <button mat-menu-item (click)="userSupplier(element)">
                                 <mat-icon svgIcon="heroicons_outline:user"></mat-icon>
                                 <span style="font-weight: 600">Users</span>
                             </button>
@@ -245,7 +245,7 @@
                     <td>{{element.contact_person_name || "-" }}</td>
                     <td>{{(element.is_kyc_completed ? 'Yes' : 'No') || "-" }}</td>
                     <td>{{element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss' || "-"}}</td>
-                    <td>{{element.wallet_Balance || '0'}}</td>
+                    <td class="text-right">{{element.wallet_Balance || '0'}}</td>
                     <td *ngFor="let col of columns" [ngClass]="col.field == 'priority' ? 'text-center' : ''">
                         {{element[col.field]}}
                     </td>
@@ -264,3 +264,4 @@
 
 </div>
 <app-supplier-entry-right></app-supplier-entry-right>
+<!-- <app-user-modify></app-user-modify> -->

@@ -21,7 +21,7 @@
 
             <mat-form-field class="  ">
                 <mat-label>Contact Person Name</mat-label>
-                <input matInput type="text" required formControlName="company_person_name">
+                <input matInput type="text" required formControlName="contact_person_name">
             </mat-form-field>
 
             <mat-form-field class="  ">
@@ -39,6 +39,11 @@
                 <input matInput type="number" required formControlName="mobile_number">
             </mat-form-field>
 
+            <mat-form-field class="">
+                <mat-label>Priority</mat-label>
+                <input [readonly]="readonly" matInput type="number" required formControlName="priority">
+            </mat-form-field>
+
             <mat-form-field class="  ">
                 <mat-label>City</mat-label>
                 <mat-select formControlName="city_id" required>
@@ -53,7 +58,7 @@
 
             <mat-form-field class="  ">
                 <mat-label>Address</mat-label>
-                <input matInput type="number" required formControlName="address">
+                <input matInput type="text" required formControlName="address">
             </mat-form-field>
 
             <mat-form-field class="  ">
@@ -91,7 +96,7 @@
             </mat-form-field>
 
             <mat-slide-toggle class="ml-1" formControlName="is_send">
-                <span class="pl-1">Is Auto Search</span>
+                <span class="pl-1">Send Welcome Mail & Message</span>
             </mat-slide-toggle>
         </form>
 

@@ -48,14 +48,14 @@ export class SupplierEntryComponent {
   iscreate: boolean = true;
   record: any = {};
   first: boolean = true
-  cityList: any[] = []; 
+  cityList: any[] = [];
   // cityList: ReplaySubject<any[]> = new ReplaySubject<any[]>();
   MobileCodeList: ReplaySubject<any[]> = new ReplaySubject<any[]>();
   KycProfileList: ReplaySubject<any[]> = new ReplaySubject<any[]>();
   CurrencyList: any[] = [];
   CurrencyListAll: any[] = [];
   mobilecodelist: any[] = [];
-  transaction_currency_id:any;
+  transaction_currency_id: any;
   fieldList: {};
   selectedList: any[] = []
 
@@ -95,7 +95,7 @@ export class SupplierEntryComponent {
     this.formGroup = this.builder.group({
       id: [''],
       company_name: [''],
-      email_address: ['',Validators.email],
+      email_address: ['', Validators.email],
       mobile_code: [''],
       mobile_number: [''],
       city_id: [''],
@@ -111,13 +111,13 @@ export class SupplierEntryComponent {
       this.selectedList = selectedValues
     });
 
-  //   this.formGroup.get('company_name').valueChanges.subscribe(text => {
-  //     this.formGroup.get('company_name').patchValue(Linq.convertToTitleCase(text), { emitEvent: false });
-  //  }) 
+    //   this.formGroup.get('company_name').valueChanges.subscribe(text => {
+    //     this.formGroup.get('company_name').patchValue(Linq.convertToTitleCase(text), { emitEvent: false });
+    //  }) 
 
-   this.formGroup.get('email_address').valueChanges.subscribe(text => {
-    this.formGroup.get('email_address').patchValue(text.toLowerCase(), { emitEvent: false });
-  })
+    this.formGroup.get('email_address').valueChanges.subscribe(text => {
+      this.formGroup.get('email_address').patchValue(text.toLowerCase(), { emitEvent: false });
+    })
 
     this.currencyService.getcurrencyCombo().subscribe({
       next: res => {
@@ -125,21 +125,22 @@ export class SupplierEntryComponent {
         this.CurrencyListAll = res;
 
         // if ( this.first && !this.record.transaction_currency_id) {
-            // const defaultCurrency = this.CurrencyList.find((currency) => currency.currency_short_code === 'INR');
-          this.formGroup.get('transaction_currency_id').patchValue(this.CurrencyList.find(x => x.currency_short_code.includes("INR")).id);
-              // this.first = false
+        // const defaultCurrency = this.CurrencyList.find((currency) => currency.currency_short_code === 'INR');
+        this.formGroup.get('transaction_currency_id').patchValue(this.CurrencyList.find(x => x.currency_short_code.includes("INR")).id);
+        // this.first = false
         // }
-        
+
       }
     })
 
     this.formGroup.get('currencyfilter').valueChanges.subscribe(data => {
-      if(data.trim() == ''){
+      if (data.trim() == '') {
         this.CurrencyList = this.CurrencyListAll
       }
-      else{
-      this.CurrencyList = this.CurrencyListAll.filter(x => x.currency_short_code.toLowerCase().includes(data.toLowerCase()));
-    }})
+      else {
+        this.CurrencyList = this.CurrencyListAll.filter(x => x.currency_short_code.toLowerCase().includes(data.toLowerCase()));
+      }
+    })
 
     this.formGroup.get('cityfilter').valueChanges.pipe(
       filter(search => !!search),
@@ -149,16 +150,18 @@ export class SupplierEntryComponent {
       switchMap((value: any) => {
         return this.cityService.getCityCombo(value);
       })
-    ).subscribe({next:data => {
-      this.cityList = data;
-      
-      if(!this.record.city_id){
-        this.formGroup.get("city_id").patchValue(data[0].id);
-        this.first = false;
+    ).subscribe({
+      next: data => {
+        this.cityList = data;
+
+        if (!this.record.city_id) {
+          this.formGroup.get("city_id").patchValue(data[0].id);
+          this.first = false;
+        }
+
+
       }
-
-
-    }});
+    });
 
     // this.formGroup.get('mobileCodefilter').valueChanges.pipe(
     //   filter(search => !!search),
@@ -184,20 +187,20 @@ export class SupplierEntryComponent {
       if (this.readonly) {
 
         this.fieldList = [
-          { name: 'Compnay Name', value: this.record.company_name},
+          { name: 'Compnay Name', value: this.record.company_name },
           { name: 'E-Mail Address', value: this.record.email_address },
           { name: 'Priority', value: this.record.priority },
           { name: 'Services', value: this.record.api_for },
-          { name: 'Mobile Number', value: this.record.mobile_code + ' ' + this.record.mobile_number  },
+          { name: 'Mobile Number', value: this.record.mobile_code + ' ' + this.record.mobile_number },
           { name: 'City', value: this.record.city_name },
           { name: 'Base Currency', value: this.record.currency },
           { name: 'Profile Name', value: this.record.profile_name },
-          { name: 'Is Block', value: this.record.is_block? 'Yes' : 'No' },
-          { name: 'Block Date', value: this.record.block_date_time? DateTime.fromISO(this.record.block_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString():'' },
+          { name: 'Is Block', value: this.record.is_block ? 'Yes' : 'No' },
+          { name: 'Block Date', value: this.record.block_date_time ? DateTime.fromISO(this.record.block_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
           { name: 'Block Reason', value: this.record.block_reason },
-          { name: 'Unblock Date', value: this.record.unblock_date_time? DateTime.fromISO(this.record.unblock_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString():'' },
-          { name: 'Is KYC Completed', value: this.record.is_kyc_completed? 'Yes' : 'No' },
-          { name: 'KYC Complete Date', value: this.record.kyc_complete_date? DateTime.fromISO(this.record.kyc_complete_date).toFormat('dd-MM-yyyy HH:mm:ss').toString():'' },
+          { name: 'Unblock Date', value: this.record.unblock_date_time ? DateTime.fromISO(this.record.unblock_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+          { name: 'Is KYC Completed', value: this.record.is_kyc_completed ? 'Yes' : 'No' },
+          { name: 'KYC Complete Date', value: this.record.kyc_complete_date ? DateTime.fromISO(this.record.kyc_complete_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
         ]
 
         // this.formGroup.get('transaction_currency_id').patchValue(this.record.currency_short_code)
@@ -206,7 +209,7 @@ export class SupplierEntryComponent {
       } else {
         this.formGroup.get('cityfilter').patchValue(this.record.city_name)
       }
-      var modes = this.record.api_for.replaceAll(" ","").split(',');
+      var modes = this.record.api_for.replaceAll(" ", "").split(',');
       modes.forEach(element => {
         element = element.toString().trim();
       });
@@ -217,9 +220,9 @@ export class SupplierEntryComponent {
   }
 
   filterMobileCode(value: string) {
-    const Filter = this.mobilecodelist.filter(x => 
+    const Filter = this.mobilecodelist.filter(x =>
       (x.country_code.toLowerCase().includes(value.toLowerCase()) || x.mobile_code.toLowerCase().includes(value.toLowerCase()))
-      );
+    );
     this.MobileCodeList.next(Filter);
   }
 
@@ -229,11 +232,11 @@ export class SupplierEntryComponent {
   }
 
   submit(): void {
-    if(!this.formGroup.valid){
+    if (!this.formGroup.valid) {
       this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
       this.formGroup.markAllAsTouched();
       return;
-}
+    }
 
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
