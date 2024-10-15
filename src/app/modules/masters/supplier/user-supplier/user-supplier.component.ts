@@ -219,6 +219,20 @@ export class UserSupplierComponent extends BaseListingComponent {
     }
   }
 
+  autologin(record: any) {
+    // if (!Security.hasPermission(agentsPermissions.autoLoginPermissions)) {
+    //     return this.alertService.showToast('error', messages.permissionDenied);
+    // }
+
+    this.supplierService.autoLogin(record.id).subscribe({
+      next: data => {
+        window.open(data.url + 'sign-in/' + data.code);
+      }, error: err => {
+        this.alertService.showToast('error', err)
+      }
+    })
+  }
+
   getNodataText(): string {
     if (this.isLoading) return 'Loading...';
     else if (this.searchInputControl.value)

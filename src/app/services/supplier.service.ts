@@ -24,6 +24,10 @@ export class SupplierService {
     return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/getSupplierUserMasterList', model);
   }
 
+  autoLogin(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/autoLogin', {id});
+  }
+
   getSupplierList(model): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'Supplier/getSupplierList', model);
   }
