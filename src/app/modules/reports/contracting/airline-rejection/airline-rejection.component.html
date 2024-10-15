@@ -93,7 +93,7 @@
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep" 
             styleClass="p-datatable-gridlines p-datatable-sm">
             <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
 
@@ -149,19 +149,22 @@
             </ng-template>
             <ng-template pTemplate="body" let-element>
                 <tr>
-                    <td class="cursor-pointer" (click)="supplierInfo(element.supplier)">{{ element.supplier }}</td>
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500"
+                            (click)="supplierInfo(element.supplier)">{{element.supplier || "-"}}</span>
+                    </td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.confirmed_Percentage }}%</td>
-                    <td class="text-right">{{ element.failed_Percentage }}%</td>
+                    <td class="text-right">{{element.confirmed_Flights}} ({{ element.confirmed_Percentage }}%)</td>
+                    <td class="text-right">{{element.failed_Flights}} ({{ element.failed_Percentage }}%)</td>
 
                     <!-- Domestic Columns -->
-                    <td class="text-right">{{ element.confirmed_Percentage_Domestic }}%</td>
-                    <td class="text-right">{{ element.failed_Percentage_Domestic }}%</td>
+                    <td class="text-right">{{element.confirmed_Flights_Domestic}} ({{ element.confirmed_Percentage_Domestic }}%)</td>
+                    <td class="text-right">{{element.failed_Flights_Domestic}} ({{ element.failed_Percentage_Domestic }}%)</td>
 
                     <!-- International Columns -->
-                    <td class="text-right">{{ element.confirmed_Percentage_International }}%</td>
-                    <td class="text-right">{{ element.failed_Percentage_International }}%</td>
+                    <td class="text-right">{{element.confirmed_Flights_International}} ({{ element.confirmed_Percentage_International }}%)</td>
+                    <td class="text-right">{{element.failed_Flights_International}} ({{ element.failed_Percentage_International }}%)</td>
                 </tr>
             </ng-template>
 

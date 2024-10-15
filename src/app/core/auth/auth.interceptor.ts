@@ -41,6 +41,9 @@ export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn):
                 // Reload the app
                 location.reload();
             }
+            if (error.status === 0) {
+                return throwError(() => 'Updating... Please wait and try again');
+            }
             const applicationError = error.headers?.get('Application-Error');
             if (applicationError) {
                 return throwError(() => applicationError);

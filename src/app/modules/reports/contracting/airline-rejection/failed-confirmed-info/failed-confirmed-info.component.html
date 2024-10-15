@@ -1,45 +1,71 @@
 <div class="flex flex-col max-w-240 md:min-w-256 max-h-screen -m-6 supplier_info">
 
     <!-- Header -->
-    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+    <div class="flex flex-0 items-center justify-between h-14 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
         <div class="text-lg font-medium text-white">{{title}}</div>
-        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
-            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-        </button>
+
+        <div class="flex gap-3 items-center">
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!---Excel--->
+            <button mat-raised-button [matMenuTriggerFor]="menu" class="">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+            <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
     </div>
 
-     <!----------------Table----------------->
-     <div class="table-container paginator-bottom">
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep"
             styleClass="p-datatable-gridlines p-datatable-sm">
             <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th pSortableColumn="ticket_Date_Time" pResizableColumn>Ticket Date/Time <p-sortIcon field="ticket_Date_Time" /></th>
+                    <th pSortableColumn="ticket_Date_Time" pResizableColumn>Ticket Date/Time <p-sortIcon
+                            field="ticket_Date_Time" /></th>
                     <th pSortableColumn="booking_No" pResizableColumn>Booking No <p-sortIcon field="booking_No" /></th>
-                    <th pSortableColumn="supplier_Ref" pResizableColumn>Supplier Ref. <p-sortIcon field="supplier_Ref" /></th>
+                    <th pSortableColumn="supplier_Ref" pResizableColumn>Supplier Ref. <p-sortIcon
+                            field="supplier_Ref" /></th>
                     <th pSortableColumn="from" pResizableColumn>From <p-sortIcon field="from" /></th>
                     <th pSortableColumn="to" pResizableColumn>To <p-sortIcon field="to" /></th>
                     <th pSortableColumn="carrier" pResizableColumn>Career <p-sortIcon field="carrier" /></th>
-                    <th pSortableColumn="Status" pResizableColumn>Status <p-sortIcon field="Status" /></th>
-                    <th pSortableColumn="error_Description" pResizableColumn>Error Description <p-sortIcon field="error_Description" /></th>
+                    <th pSortableColumn="status" pResizableColumn>Status <p-sortIcon field="status" /></th>
+                    <th pSortableColumn="error_Description" pResizableColumn>Error Description <p-sortIcon
+                            field="error_Description" /></th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-element>
                 <tr>
                     <td>{{ (element.ticket_Date_Time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}</td>
-                    <td>{{ element.booking_No || '-' }}</td>
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500"
+                            (click)="viewData(element)">{{element.booking_No || "-"}}</span>
+                    </td>
                     <td>{{ element.supplier_Ref || '-' }}</td>
                     <td>{{ element.from || '-' }}</td>
                     <td>{{ element.to || '-' }}</td>
                     <td>{{ element.carrier || '-' }}</td>
-                    <td>{{ element.Status || '-' }}</td>
+                    <td>{{ element.status || '-' }}</td>
                     <td>{{ element.error_Description || '-' }}</td>
                 </tr>
             </ng-template>

@@ -77,9 +77,10 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     user: any = {};
 
     statusList: any[] = [
-        { label: 'Delivered', value: 'Delivered' },
+        { label: 'Inprocess', value: 'Inprocess' },
         { label: 'Pending', value: 'Pending' },
-        { label: 'Inprocess', value: 'Inprocess' }
+        { label: 'Blocked', value: 'Blocked' },
+        { label: 'Delivered', value: 'Delivered' },
     ];
 
     constructor(
@@ -255,6 +256,21 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
             },
         });
     }
+
+    // Status
+    getStatusColor(status: string): string {
+        if (status == 'Pending') {
+          return 'text-blue-600';
+        } else if (status == 'Inprocess') {
+          return 'text-yellow-600';
+        } else if (status == 'Delivered') {
+          return 'text-green-600';
+        } else if (status == 'Blocked') {
+          return 'text-red-600';
+        } else {
+          return '';
+        }
+      }
 
     exportExcel(): void {
         // if (!Security.hasExportDataPermission(this.module_name)) {

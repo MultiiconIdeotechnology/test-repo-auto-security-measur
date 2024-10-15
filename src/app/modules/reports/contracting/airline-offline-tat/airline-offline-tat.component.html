@@ -62,7 +62,7 @@
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep" 
             [globalFilterFields]="['ticketingTime', 'bookingNo', 'supplierRefNo', 'supplier', 'bookingStatus', 'startDate', 'endDate', 'tat', 'type']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
@@ -146,7 +146,7 @@
                             placeholder="Search by Booking No" ariaLabel="Filter Booking No" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="supplierRefNo"
+                        <p-columnFilter type="text" matchMode="equals" field="supplierRefNo"
                             placeholder="Search by Supplier Ref No" ariaLabel="Filter Supplier Ref No" />
                     </th>
                     <th>

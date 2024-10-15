@@ -19,8 +19,11 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { MatDialogRef, MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { module_name } from 'app/security';
+import { messages, module_name, Security } from 'app/security';
 import { AirlineSummaryService } from 'app/services/airline-summary.service';
+import { Linq } from 'app/utils/linq';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: 'app-failed-confirmed-info',
@@ -103,12 +106,52 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
     });
   }
 
+  viewData(record): void {
+    console.log(record);
+    if (!Security.hasViewDetailPermission(module_name.airline_rejection)) {
+        return this.alertService.showToast('error', messages.permissionDenied);
+    }
+    Linq.recirect('/booking/flight/details/' + record.id);
+}
+
   getNodataText(): string {
     if (this.isLoading)
       return 'Loading...';
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission(module_name.airline_rejection)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    const filterReq = this.getNewFilterReq({});
+    filterReq['Take'] = this.totalRecords;
+    filterReq['supplier'] = this.record.supplier;
+    filterReq['From_Date'] = this.record.From_Date;
+    filterReq['To_Date'] = this.record.To_Date;
+    filterReq['carrier'] = this.record.carrier;
+    filterReq['filterArea'] = this.record.filterArea;
+
+    this.airlineSummaryService.airlineRejectionBookingDetailsAnalysis(filterReq).subscribe(data => {
+      for (var dt of data.data) {
+        dt.ticket_Date_Time = dt.ticket_Date_Time ? DateTime.fromISO(dt.ticket_Date_Time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+      }
+      Excel.export(
+        this.title,
+        [
+          { header: 'Ticket Date/Time', property: 'ticket_Date_Time' },
+          { header: 'Booking No', property: 'booking_No' },
+          { header: 'Supplier Ref.', property: 'supplier_Ref' },
+          { header: 'From', property: 'from' },
+          { header: 'To', property: 'to' },
+          { header: 'Career', property: 'carrier' },
+          { header: 'Error Description', property: 'error_Description' },
+        ],
+        data.data, this.title, [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
+    });
   }
 
 }

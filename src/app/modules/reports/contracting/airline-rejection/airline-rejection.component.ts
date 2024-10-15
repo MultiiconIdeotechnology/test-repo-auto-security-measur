@@ -158,12 +158,12 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
     this.airlineSummaryService.airlineRejectionSupplierWiseAnalysis(filterReq).subscribe(data => {
       const formattedData = data.data.map(dt => ({
         supplier: dt.supplier,
-        totalConfirmed: dt.confirmed_Percentage,
-        totalFailed: dt.failed_Percentage,
-        domesticConfirmed: dt.confirmed_Percentage_Domestic,
-        domesticFailed: dt.failed_Percentage_Domestic,
-        internationalConfirmed: dt.confirmed_Percentage_International,
-        internationalfailed: dt.failed_Percentage_International,
+        totalConfirmed: dt.confirmed_Flights + '(' + dt.confirmed_Percentage + '%)',
+        totalFailed: dt.failed_Flights + '(' + dt.failed_Percentage + '%)',
+        domesticConfirmed: dt.confirmed_Flights_Domestic + '(' + dt.confirmed_Percentage_Domestic + '%)',
+        domesticFailed: dt.failed_Flights_Domestic + '(' + dt.failed_Percentage_Domestic + '%)',
+        internationalConfirmed: dt.confirmed_Flights_International + '(' + dt.confirmed_Percentage_International + '%)',
+        internationalfailed: dt.failed_Flights_International + '(' + dt.failed_Percentage_International + '%)',
       }));
 
       // Define the columns for the Excel export

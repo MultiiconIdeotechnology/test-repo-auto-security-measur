@@ -19,10 +19,11 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { module_name } from 'app/security';
+import { messages, module_name, Security } from 'app/security';
 import { AirlineSummaryService } from 'app/services/airline-summary.service';
 import { DateTime } from 'luxon';
 import { FailedConfirmedInfoComponent } from '../failed-confirmed-info/failed-confirmed-info.component';
+import { Excel } from 'app/utils/export/excel';
 
 @Component({
   selector: 'app-supplier-info',
@@ -130,6 +131,59 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission(module_name.airline_rejection)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+    const filterReq = this.getNewFilterReq({});
+    filterReq['supplier'] = this.record.supplier;
+    filterReq['From_Date'] = this.record.From_Date;
+    filterReq['To_Date'] = this.record.To_Date;
+    filterReq['Take'] = this.totalRecords;
+
+
+    this.airlineSummaryService.airlineRejectionCarrierWiseAnalysis(filterReq).subscribe(data => {
+      const formattedData = data.data.map(dt => ({
+        carrier: dt.carrier,
+
+        confirmed_Flights: dt.confirmed_Flights + '(' + dt.confirmed_Percentage + '%)',
+        failed_Flights: dt.failed_Flights + '(' + dt.failed_Percentage + '%)',
+        
+        confirmed_Flights_Domestic: dt.confirmed_Flights_Domestic + '(' + dt.confirmed_Percentage_Domestic + '%)',
+        failed_Flights_Domestic: dt.failed_Flights_Domestic + '(' + dt.failed_Percentage_Domestic + '%)',
+
+        confirmed_Flights_International: dt.confirmed_Flights_International + '(' + dt.confirmed_Percentage_International + '%)',
+        failed_Flights_International: dt.failed_Flights_International + '(' + dt.failed_Percentage_International + '%)',
+        
+      }));
+
+      // Define the columns for the Excel export
+      const columns = [
+        { header: 'Carrier', property: 'carrier' },
+
+        { header: 'Total Confirmed', property: 'confirmed_Flights' },
+        { header: 'Total Failed', property: 'failed_Flights' },
+        
+        { header: 'Domestic Confirmed', property: 'confirmed_Flights_Domestic' },
+        { header: 'Domestic Failed', property: 'failed_Flights_Domestic' },
+
+        { header: 'International Confirmed', property: 'confirmed_Flights_International' },
+        { header: 'International Failed', property: 'failed_Flights_International' },
+      ];
+
+      
+
+      // Export the data using the custom Excel utility
+      Excel.export(
+        this.title,  // File name
+        columns,            // Columns definition
+        formattedData,      // Data rows
+        this.title,  // Sheet name
+        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }] // Optional merge (if required)
+      );
+    });
   }
 
 }
