@@ -191,7 +191,7 @@ export class BasicDetailsComponent {
   viewKYC(): void {
 
     this.matDialog.open(KycInfoComponent, {
-      data: { record: this.records, agent: true },
+      data: { record: this.records, agent: true, from : "Agent" },
       disableClose: true
     }).afterClosed().subscribe(res => {
       if (res) {
