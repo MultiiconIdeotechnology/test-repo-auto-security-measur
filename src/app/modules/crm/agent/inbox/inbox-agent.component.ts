@@ -34,6 +34,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ScheduleCallRemarkComponent } from '../call-history/schedule-call-details/schedule-call-details.component';
 
 @Component({
     selector: 'inbox-agent',
@@ -286,7 +287,22 @@ export class InboxAgentComponent extends BaseListingComponent {
         })
     }
 
-    callHistory(record): void {
+    // Schedule Call Dialog
+    callSchedule(element: any) {
+        if (element?.is_call_rescheduled) {
+            element.call_purpose = element?.callPurpose || '';
+            this.matDialog.open(ScheduleCallRemarkComponent, {
+                data: element,
+                disableClose: true
+            }).afterClosed().subscribe(res => {
+                if (!res) {
+                    return
+                }
+            })
+        }
+    }
+
+    callHistory(record: any): void {
         if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }

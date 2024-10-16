@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatOptionModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -35,6 +35,8 @@ import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
 import { CrmService } from 'app/services/crm.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MY_DATE_FORMATS } from 'app/utils/commonutils';
+import { LuxonDateAdapterService } from 'app/services/LuxonDateAdapter.service';
 
 @Component({
     selector: 'app-crm-dial-call-entry',
@@ -73,7 +75,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         CommonModule,
         MatProgressSpinnerModule,
         RouterLink
-    ]
+    ],
+    providers: [
+        { provide: DateAdapter, useClass: LuxonDateAdapterService },
+        { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+      ]
 })
 export class CRMDialCallEntryComponent extends BaseListingComponent implements OnDestroy {
     latestLogin: Date | null;
@@ -472,31 +478,10 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
                 else {
                     this.alertService.showToast('success', 'New record added', 'top-right', true);
                 }
-                this.refreshItems();
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
                 this.disableBtn = false;
-            },
-        });
-    }
-
-    refreshItems(): void {
-        this.isLoading = true;
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginatorInbox,
-            this._sortInbox,
-            this.searchInputControlInbox.value
-        );
-        this.crmService.getInboxAgentList(filterReq).subscribe({
-            next: (data) => {
-                this.isLoading = false;
-                // this.dataList = data.data;
-                // this._paginatorInbox.length = data.total;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-                this.isLoading = false;
             },
         });
     }
