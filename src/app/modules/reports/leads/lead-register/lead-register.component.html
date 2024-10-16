@@ -205,7 +205,7 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter field="lead_type" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter field="lead_type" matchMode="contains" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="leadType"
                                     (onChange)="filter($event.value)" placeholder="Select Lead Type" [showClear]="true"

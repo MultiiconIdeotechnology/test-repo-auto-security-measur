@@ -75,6 +75,8 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
   monthDataList = [2,3,4,5,6,]
   public monthsBack = new FormControl(this.monthDataList[0]);
 
+  hideDomVolume: boolean = false;
+
   constructor(
     private confirmService: FuseConfirmationService,
     private router: Router,

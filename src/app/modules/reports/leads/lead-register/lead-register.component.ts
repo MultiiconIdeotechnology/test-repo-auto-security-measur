@@ -112,7 +112,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         { label: 'Corporate', value: 'Corporate' },
         { label: 'Supplier', value: 'Supplier' },
         { label: 'Boost My Brand', value: 'Boost My Brand' },
-        { label: 'Build My Brand', value: 'Build My Brand' }
+        { label: 'Build My Brand', value: 'Build My Brand' },
+        { label: 'IBCM', value: 'IBCM' }
     ];
 
     kycList: any[] = [
