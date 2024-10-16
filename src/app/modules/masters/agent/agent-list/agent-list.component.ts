@@ -95,6 +95,7 @@ export class AgentListComponent extends BaseListingComponent {
         { field: 'is_wl', header: 'WL' },
         { field: 'is_test', header: 'Read Only' },
         { field: 'subagent_count', header: 'Sub Agent Count' },
+        { field: 'city_name', header: 'City Name' },
     ];
 
     // statusList = ['All', 'New', 'Active','Inactive','Dormant',];

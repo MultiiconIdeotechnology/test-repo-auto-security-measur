@@ -184,7 +184,12 @@
                 </td>
 
                 <td>
-                    {{element.call_purpose || '-'}}
+                    <a (click)="callSchedule(element)" class="border-b border-gray-500 cursor-pointer" *ngIf="element.is_call_scheduled else others">
+                        {{element.call_purpose || '-'}}
+                    </a>
+                    <ng-template #others>
+                        {{element.call_purpose || '-'}}
+                    </ng-template>
                 </td>
 
                 <td>
