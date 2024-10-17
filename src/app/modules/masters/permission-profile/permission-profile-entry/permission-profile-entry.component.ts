@@ -48,6 +48,7 @@ export class PermissionProfileEntryComponent {
     {value: 'Employee', viewValue: 'Employee'},
     {value: 'Agent', viewValue: 'Agent'},
     {value: 'Sub Agent', viewValue: 'Sub Agent'},
+    {value: 'Supplier', viewValue: 'Supplier'},
   ];
 
   constructor(

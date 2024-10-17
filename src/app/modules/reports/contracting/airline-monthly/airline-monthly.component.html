@@ -30,10 +30,10 @@
                     (click)="refreshItems()"></mat-icon>
             </div>
 
-            <div class="column-visibility-checkboxes">
+            <div class="flex items-center">
+                <input type="checkbox" [(ngModel)]="hideDomVolume" class="w-5 h-5 mr-2"/>
                 <label>
-                    <input type="checkbox" [(ngModel)]="hideDomVolume" />
-                    Hide Dom. Int
+                    Hide Ext. Col.
                 </label>
             </div>
 

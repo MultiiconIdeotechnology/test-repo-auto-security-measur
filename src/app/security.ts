@@ -291,6 +291,7 @@ export const module_name = {
     insurance: 'Insurance',
     products_collection: 'Collection',
     products_receipts: 'Receipts',
+    supplier_kyc: 'Supplier',
     airline_summary: 'Airline Summary',
     airline_offline: 'Airline Offline TAT Analysis',
     airline_monthly: 'Airline Monthly Analysis',
