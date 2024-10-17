@@ -289,10 +289,11 @@ export class InboxAgentComponent extends BaseListingComponent {
 
     // Schedule Call Dialog
     callSchedule(element: any) {
-        if (element?.is_call_rescheduled) {
-            element.call_purpose = element?.callPurpose || '';
+        let dataObj = JSON.parse(JSON.stringify(element));
+        if (dataObj?.is_call_rescheduled) {
+            dataObj.call_purpose = dataObj?.reschedule_call_purpose || '';
             this.matDialog.open(ScheduleCallRemarkComponent, {
-                data: element,
+                data: dataObj,
                 disableClose: true
             }).afterClosed().subscribe(res => {
                 if (!res) {
