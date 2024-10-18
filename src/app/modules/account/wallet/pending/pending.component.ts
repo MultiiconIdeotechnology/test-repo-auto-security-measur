@@ -227,6 +227,10 @@ export class PendingComponent extends BaseListingComponent {
 	}
 
     generatePaymentLink(data: any){
+		if (!Security.hasPermission(walletRechargePermissions.generatePaymentLink)) {
+			return this.alertService.showToast('error', messages.permissionDenied);
+		}
+
         let newMessage: any;
         const label: string = 'Generate Payment Link'
         newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'

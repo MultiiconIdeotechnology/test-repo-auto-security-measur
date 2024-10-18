@@ -480,6 +480,10 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
     }
 
     generatePaymentLink(data: any){
+        if (!Security.hasPermission(receiptPermissions.generatePaymentLink)) {
+			return this.alertService.showToast('error', messages.permissionDenied);
+		}
+        
         let newMessage: any;
         const label: string = 'Generate Payment Link'
         newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'

@@ -420,7 +420,8 @@ export const bankPermissions = {
 
 export const receiptPermissions = {
     auditUnauditPermissions: { module_name: module_name.receipt, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
-    rejectPermissions: { module_name: module_name.receipt, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit }
+    rejectPermissions: { module_name: module_name.receipt, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit },
+    generatePaymentLink: { module_name: module_name.receipt, group_name: group_name.listingPage, operation_type: 'Generate Payment Link', category_name: category_name.action }
 }
 
 export const companyPermissions = {
@@ -554,6 +555,7 @@ export const walletRechargePermissions = {
     pendingTabPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Pending Tab', category_name: category_name.view },
     auditedTabPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Audited Tab', category_name: category_name.view },
     rejectedTabPermissions: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Rejected Tab', category_name: category_name.view },
+    generatePaymentLink: { module_name: module_name.wallet, group_name: group_name.listingPage, operation_type: 'Generate Payment Link', category_name: category_name.action },
 }
 
 export const partnerPurchaseProductPermissions = {
