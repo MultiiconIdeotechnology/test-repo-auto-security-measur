@@ -91,7 +91,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     getWLSettingList: any = [];
     searchInputControlPending = new FormControl('');
     deadLeadId: any;
-    statusList = ['Pending', 'Inprocess', 'Delivered', 'Waiting for Customer Update', 'Waiting for Account Activation', 'Rejected from Store'];
+    statusList = ['Pending', 'Inprocess', 'Delivered', 'Google Closed Testing', 'Waiting for Customer Update', 'Waiting for Account Activation', 'Rejected from Store',];
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
