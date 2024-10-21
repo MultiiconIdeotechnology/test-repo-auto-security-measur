@@ -210,7 +210,7 @@ export class TechCallHistoryComponent{
         );
 
         filterReq['MasterId'] = this.MasterId ? this.MasterId : ""
-        filterReq['MasterFor'] = "agent_master"
+        filterReq['MasterFor'] = "product_purchase"
         this.crmService.getCallHistoryList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
