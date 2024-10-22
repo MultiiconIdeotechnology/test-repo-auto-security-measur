@@ -115,7 +115,8 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
         From_Date: this.record.From_Date,
         To_Date: this.record.To_Date,
         filterArea: key,
-        carrier: data.carrier
+        carrier: data.carrier,
+        send:'Sub'
       },
        disableClose: true, })
       .afterClosed()

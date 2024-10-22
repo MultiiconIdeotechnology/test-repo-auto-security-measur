@@ -27,6 +27,7 @@ import { DateTime } from 'luxon';
 import { SupplierInfoComponent } from './supplier-info/supplier-info.component';
 import { Excel } from 'app/utils/export/excel';
 import { Subscription } from 'rxjs';
+import { FailedConfirmedInfoComponent } from './failed-confirmed-info/failed-confirmed-info.component';
 
 @Component({
   selector: 'app-airline-rejection',
@@ -135,6 +136,28 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       .subscribe((res) => {
           
       });
+  }
+
+  supplierFaildConfirmed(data: any, key: any){
+
+    console.log("106 key", key);
+    console.log("106 data", data, );
+
+    this.matDialog.open(FailedConfirmedInfoComponent,
+      { data: {
+        supplier: data.supplier,
+        From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
+        To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
+        filterArea: key,
+        carrier: '',
+        send:'Main'
+      },
+       disableClose: true, })
+      .afterClosed()
+      .subscribe((res) => {
+          
+      });
+
   }
 
   getNodataText(): string {

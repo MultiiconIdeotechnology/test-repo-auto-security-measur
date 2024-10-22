@@ -77,7 +77,11 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
     this.Mainmodule = this;
  
     this.record = data
-    this.title = this.record.carrier
+    if(this.record.send == 'Sub'){
+      this.title = this.record.carrier
+    }else{
+      this.title = this.record.supplier
+    }
     console.log("this.record", this.record);
   }
 
