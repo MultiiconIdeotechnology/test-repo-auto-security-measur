@@ -5,7 +5,7 @@ export const environment = {
     // apiUrl: 'http://localhost:48046/api/',
     // apiUrl: 'https://api.bontontech.com/api/',
     // apiUrl: 'https://sandbox.api.bontonholidays.com/api/',
-    apiUrl: 'https://7785-103-86-16-34.ngrok-free.app/api/',
+    apiUrl: 'https://c79c-103-86-16-34.ngrok-free.app/api/',
     
     stagingUrl: 'https://sandbox.partner.bontonholidays.com/',
     isEnvironment: 'staging'

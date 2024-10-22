@@ -65,7 +65,6 @@ export class SupplierListComponent extends BaseListingComponent {
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
     cols: any = [
-        { field: 'city_name', header: 'City', type: 'text' },
         { field: 'currency', header: 'Base Currency', type: 'text' },
         { field: 'gst_Number', header: 'GST Number', type: 'text' },
         { field: 'pan_Number', header: 'PAN Number', type: 'text' },
@@ -402,13 +401,13 @@ export class SupplierListComponent extends BaseListingComponent {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
 
-        // this.agentService.autoLogin(record.id).subscribe({
-        //     next: data => {
-        //         window.open(data.url + 'sign-in/' + data.code);
-        //     }, error: err => {
-        //         this.alertService.showToast('error', err)
-        //     }
-        // })
+        this.supplierService.autoLogin(record.id).subscribe({
+            next: data => {
+                window.open(data.url + 'sign-in/' + data.code);
+            }, error: err => {
+                this.alertService.showToast('error', err)
+            }
+        })
     }
 
     getNodataText(): string {
