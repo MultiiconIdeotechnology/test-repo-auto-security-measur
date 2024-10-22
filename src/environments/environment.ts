@@ -1,7 +1,7 @@
 export const environment = {
     production: false,
-    // apiUrl: 'https://boapi.bontontech.com/api/',
-    apiUrl: 'http://localhost:5042/api/',
+    apiUrl: 'https://boapi.bontontech.com/api/',
+    // apiUrl: 'http://localhost:5042/api/',
     //apiUrl: 'https://sandbox.api.bontonholidays.com/api/',
     stagingUrl: 'https://sandbox.partner.bontonholidays.com/',
     isEnvironment: 'staging'
