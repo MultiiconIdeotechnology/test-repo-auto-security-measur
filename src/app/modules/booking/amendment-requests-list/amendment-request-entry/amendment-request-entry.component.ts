@@ -117,6 +117,12 @@ export class AmendmentRequestEntryComponent {
 
     }
 
+    ngOnDestroy(): void
+    {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
+    }
+
     getData() {
         if (this.record && this.record.id) {
             this.amendmentRequestsService.getAirAmendmentRecord(this.record.id).subscribe({
