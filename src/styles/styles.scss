@@ -909,11 +909,14 @@ div:where(.swal2-container) button:where(.swal2-close){
     color: white;
   }
 
-  .contracting_rep .p-datatable .p-datatable-tfoot > tr > td,
-  .contracting_rep .p-datatable .p-datatable-tbody > tr > td, th,
-  .contracting_rep .p-datatable .p-datatable-thead > tr > th{
-    font-size: 12px;
-  }
+  .contracting_rep {
+      .p-datatable .p-datatable-tfoot > tr > td,
+      .p-datatable .p-datatable-tbody > tr > td, th,
+      .p-datatable .p-datatable-thead > tr > th {
+        font-size: 12px;
+      }
+} 
+
 
    
 //   /* Customize the checkbox */
@@ -949,4 +952,36 @@ div:where(.swal2-container) button:where(.swal2-close){
 //   .hide_chekbox input[type="checkbox"]:hover {
 //     border-color: #2980b9; /* Darken the border color on hover */
 //   }
+
+.green-tick {
+    position:relative;
+    color:#0d9488;
+}
+
+.green-tick::before {
+    content:'';
+    position:absolute;
+    height:2.65rem;
+    width: 2.8px;
+    background:#0d9488;
+    left:0;
+    top:50%;
+    transform: translatey(-50%);
+}
+
+.green-tick-long {
+    position:relative;
+    color:#0d9488;
+}
+
+.green-tick-long::before {
+    content:'';
+    position:absolute;
+    height:3.8rem;
+    width: 2.8px;
+    background:#0d9488;
+    left:0;
+    top:50%;
+    transform: translatey(-50%);
+}
   

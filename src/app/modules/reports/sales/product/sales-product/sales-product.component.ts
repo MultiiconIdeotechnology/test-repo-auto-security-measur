@@ -100,8 +100,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
 
 
     ngOnInit(): void {
-        this.getAgent("");
-        this.getEmployeeList("");
+        this.agentList = this._filterService.agentListByValue;
+        this.employeeList = this._filterService.rmListByValue;
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -129,6 +129,12 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
@@ -167,13 +173,6 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;

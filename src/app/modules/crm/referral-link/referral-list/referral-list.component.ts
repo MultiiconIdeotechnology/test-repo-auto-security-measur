@@ -98,7 +98,8 @@ export class ReferralListComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-        this.getEmployeeList("");
+        // this.getEmployeeList("");
+        this.employeeList = this._filterService.originalRmList;
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {

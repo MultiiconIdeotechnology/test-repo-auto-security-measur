@@ -24,7 +24,6 @@ import { PspSettingService } from 'app/services/psp-setting.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Calendar } from 'primeng/calendar';
 
 @Component({
     selector: 'app-receipt-register',
@@ -130,7 +129,7 @@ export class ReceiptRegisterComponent
             this.currentFilter.fromDate.getMonth()
         );
 
-        this.getAgent('');
+        this.agentList = this._filterService.agentListByValue;
         this.getCompanyList("");
 
         // common filter
@@ -166,6 +165,12 @@ export class ReceiptRegisterComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedCompany = filterData['table_config']['company']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
             if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
@@ -192,13 +197,6 @@ export class ReceiptRegisterComponent
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;

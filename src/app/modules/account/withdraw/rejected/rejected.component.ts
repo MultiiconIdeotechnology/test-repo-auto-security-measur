@@ -69,10 +69,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     PrimeNgImportsModule,
   ],
 })
-export class WRejectedComponent extends BaseListingComponent implements OnChanges {
-
+export class WRejectedComponent extends BaseListingComponent {
   @Input() isFilterShowReject: boolean;
-  @Input() filterApiData: any;
   @Output() isFilterShowRejectedChange = new EventEmitter<boolean>();
 
   searchInputControlRejected = new FormControl('');
@@ -132,9 +130,7 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-			this.agentList = this.filterApiData.agentData;
-		}, 1000);
+    this.agentList = this._filterService.agentListById;
 
     this._filterService.selectionDateDropdown = "";
     this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -183,10 +179,6 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         // this.primengTable['_sortField'] = filterData['sortColumn'];
         // this.sortColumn = filterData['sortColumn'];
       }
-  }
-
-  ngOnChanges() {
-			this.agentList = this.filterApiData.agentData;
   }
 
   getAgentList(value: string) {
@@ -269,17 +261,9 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
 
   refreshItemsRejected(event?: any) {
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlRejected.value, "entry_date_time", 1
-    // );
-
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['status'] = 'rejected';
-    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd')
-    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd')
     filterReq['FromDate'] = "";
     filterReq['ToDate'] = "";
     filterReq['agent_id'] = this.filter?.agent_id == 'all' ? '' : this.filter?.agent_id;

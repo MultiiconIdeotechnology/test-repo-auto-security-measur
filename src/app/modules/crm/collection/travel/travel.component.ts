@@ -67,7 +67,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 export class TravelCollectionComponent extends BaseListingComponent {
     filter_table_name = filter_module_name.collections_travel;
     @Input() isFilterShowTravel: boolean;
-    @Input() dropdownListObj: {};
     @Output() isFilterShowTravelChange = new EventEmitter<boolean>();
 
     public settingsTravelSubscription: Subscription;
@@ -107,9 +106,7 @@ export class TravelCollectionComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-        setTimeout(() => {
-            this.agentList = this.dropdownListObj['agentList'];
-        }, 1000);
+        this.agentList = this._filterService.agentListByValue;
 
         this.settingsTravelSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
@@ -159,10 +156,6 @@ export class TravelCollectionComponent extends BaseListingComponent {
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
         }
-    }
-
-    ngOnChanges() {
-        this.agentList = this.dropdownListObj['agentList'];
     }
 
     refreshItems(event?: any): void {

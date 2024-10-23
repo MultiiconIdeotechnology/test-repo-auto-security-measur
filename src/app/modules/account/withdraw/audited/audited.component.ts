@@ -64,10 +64,9 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     PrimeNgImportsModule,
   ],
 })
-export class WAuditedComponent extends BaseListingComponent implements OnChanges {
+export class WAuditedComponent extends BaseListingComponent {
 
   @Input() isFilterShowAudit: boolean;
-  @Input() filterApiData: any;
   @Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
 
   searchInputControlAudit = new FormControl('');
@@ -124,9 +123,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.agentList = this.filterApiData.agentData;
-    }, 1000);
+    this.agentList = this._filterService.agentListById;
 
     this._filterService.selectionDateDropdown = "";
     this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -176,10 +173,6 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
       this.primengTable['filters'] = filterData['table_config'];
     }
 
-  }
-
-  ngOnChanges() {
-    
   }
 
   getAgentList(value: string) {

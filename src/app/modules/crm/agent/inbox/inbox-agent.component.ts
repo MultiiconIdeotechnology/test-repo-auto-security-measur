@@ -74,7 +74,6 @@ import { ScheduleCallRemarkComponent } from '../call-history/schedule-call-detai
 export class InboxAgentComponent extends BaseListingComponent {
     @Input() isFilterShowInbox: boolean;
     @Output() isFilterShowInboxChange = new EventEmitter<boolean>();
-    @Input() dropdownListObj: {};
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
@@ -118,10 +117,9 @@ export class InboxAgentComponent extends BaseListingComponent {
         this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
+
     ngOnInit(): void {
-        setTimeout(() => {
-            this.agentList = this.dropdownListObj['agentList'];
-        }, 1000);
+        this.agentList = this._filterService.agentListByValue;
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -174,10 +172,6 @@ export class InboxAgentComponent extends BaseListingComponent {
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
         }
-    }
-
-    ngOnChanges() {
-        this.agentList = this.dropdownListObj['agentList'];
     }
 
     // Api function to get the agent List

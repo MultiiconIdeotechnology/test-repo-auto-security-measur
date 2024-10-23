@@ -126,20 +126,10 @@ export class WalletComponent extends BaseListingComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getAgentList("");
     this.getMopList("");
     this.getPspList("");
   }
 
-  getAgentList(value: string) {
-    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
-      this.filterApiData.agentData = data;
-
-      for (let i in this.filterApiData.agentData) {
-				this.filterApiData.agentData[i]['agent_info'] = `${this.filterApiData.agentData[i].code}-${this.filterApiData.agentData[i].agency_name}-${this.filterApiData.agentData[i].email_address}`
-			}
-    })
-  }
 
   getMopList(value: string) {
     this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {

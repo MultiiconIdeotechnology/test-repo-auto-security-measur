@@ -1,5 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AgentService } from 'app/services/agent.service';
+import { KycDocumentService } from 'app/services/kyc-document.service';
+import { RefferralService } from 'app/services/referral.service';
 import { environment } from 'environments/environment';
 import { Table } from 'primeng/table';
 import { Observable, Subject } from 'rxjs';
@@ -24,6 +27,15 @@ export class CommonFilterService {
     selectedColumns: any = [];
     selectionDateDropdown:any;
 
+    // agetcombo variable
+    originalAgentList:any[] = [];
+    agentListByValue:any[] = [];
+    agentListById:any[] = [];
+
+    // Rm combo variable
+    originalRmList:any[] = [];
+    rmListByValue:any[] =[]
+
     // array from dropdown date range filter
     dateRangeList: any[] = [
         { label: 'Today', value: 'today' },
@@ -35,7 +47,14 @@ export class CommonFilterService {
         { label: 'Custom Date Range', value: 'Custom Date Range' }
     ];
 
-    constructor(private http: HttpClient) { }
+    constructor(
+        private http: HttpClient,
+        private agentService: AgentService,
+        private refferralService: RefferralService,
+        private kycDocumentService: KycDocumentService,
+    ) { 
+
+    }
 
     // Create new Filter
     createNewFilter(filter: any): Observable<any[]> {
@@ -163,4 +182,36 @@ export class CommonFilterService {
         primengTable.filters[field]['value'] = dateArr;
         primengTable.filters[field]['matchMode'] = 'custom';
     }
+
+    // agent combo api call
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+            this.originalAgentList = data;
+            
+            // Process list for those who need `id_by_value`
+            this.agentListByValue = this.originalAgentList.map((agent) => ({
+                ...agent,
+                agent_info: `${agent.code}-${agent.agency_name}-${agent.email_address}`,
+                id_by_value: agent.agency_name,
+            }));
+            
+            // Process list for those who don't need `id_by_value`
+            this.agentListById = this.originalAgentList.map((agent) => ({
+                ...agent,
+                agent_info: `${agent.code}-${agent.agency_name}-${agent.email_address}`,
+            }));
+        })
+    }
+
+    getEmployeeList(value: string) {
+        this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
+            this.originalRmList = data;
+
+            this.rmListByValue = this.originalRmList.map((rm) => ({
+                ...rm,
+                id_by_value:rm.employee_name
+            }))
+        });
+    }
+
 }
