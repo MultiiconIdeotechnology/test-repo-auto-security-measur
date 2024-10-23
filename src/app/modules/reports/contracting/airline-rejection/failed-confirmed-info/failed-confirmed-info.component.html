@@ -65,7 +65,7 @@
                     <td>{{ element.from || '-' }}</td>
                     <td>{{ element.to || '-' }}</td>
                     <td>{{ element.carrier || '-' }}</td>
-                    <td>{{ element.status || '-' }}</td>
+                    <td><span [ngClass]="getStatusColor(element.status)">{{element.status}}</span></td>
                     <td>{{ element.error_Description || '-' }}</td>
                 </tr>
             </ng-template>

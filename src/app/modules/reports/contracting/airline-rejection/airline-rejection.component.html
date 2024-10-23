@@ -155,16 +155,16 @@
                     </td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{element.confirmed_Flights}} ({{ element.confirmed_Percentage }}%)</td>
-                    <td class="text-right">{{element.failed_Flights}} ({{ element.failed_Percentage }}%)</td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'confirmed_Percentage')"><span class="border-b border-gray-500">{{element.confirmed_Flights}} ({{ element.confirmed_Percentage }}%)</span></td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'failed_Percentage')"><span class="border-b border-gray-500">{{element.failed_Flights}} ({{ element.failed_Percentage }}%)</span></td>
 
                     <!-- Domestic Columns -->
-                    <td class="text-right">{{element.confirmed_Flights_Domestic}} ({{ element.confirmed_Percentage_Domestic }}%)</td>
-                    <td class="text-right">{{element.failed_Flights_Domestic}} ({{ element.failed_Percentage_Domestic }}%)</td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'confirmed_Percentage_Domestic')"><span class="border-b border-gray-500">{{element.confirmed_Flights_Domestic}} ({{ element.confirmed_Percentage_Domestic }}%)</span></td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'failed_Percentage_Domestic')"><span class="border-b border-gray-500">{{element.failed_Flights_Domestic}} ({{ element.failed_Percentage_Domestic }}%)</span></td>
 
                     <!-- International Columns -->
-                    <td class="text-right">{{element.confirmed_Flights_International}} ({{ element.confirmed_Percentage_International }}%)</td>
-                    <td class="text-right">{{element.failed_Flights_International}} ({{ element.failed_Percentage_International }}%)</td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'confirmed_Percentage_International')"><span class="border-b border-gray-500">{{element.confirmed_Flights_International}} ({{ element.confirmed_Percentage_International }}%)</span></td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'failed_Percentage_International')"><span class="border-b border-gray-500">{{element.failed_Flights_International}} ({{ element.failed_Percentage_International }}%)</span></td>
                 </tr>
             </ng-template>
 

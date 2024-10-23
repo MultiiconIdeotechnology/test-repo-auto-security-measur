@@ -252,7 +252,7 @@
                     </td>
                     <td>{{element.supplierRefNo || "-"}}</td>
                     <td>{{element.supplier || "-" }}</td>
-                    <td>{{element.bookingStatus}}</td>
+                    <td><span [ngClass]="getStatusColor(element.bookingStatus)">{{element.bookingStatus}}</span></td>
                     <td>{{element.startDate| date: 'dd-MM-yyyy'}}</td>
                     <td>
                         {{element.endDate | date: 'dd-MM-yyyy'}}
