@@ -969,19 +969,4 @@ div:where(.swal2-container) button:where(.swal2-close){
     transform: translatey(-50%);
 }
 
-.green-tick-long {
-    position:relative;
-    color:#0d9488;
-}
-
-.green-tick-long::before {
-    content:'';
-    position:absolute;
-    height:3.8rem;
-    width: 2.8px;
-    background:#0d9488;
-    left:0;
-    top:50%;
-    transform: translatey(-50%);
-}
   
