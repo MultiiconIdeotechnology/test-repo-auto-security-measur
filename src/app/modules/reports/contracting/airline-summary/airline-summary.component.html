@@ -101,30 +101,30 @@
 
                 <tr>
                     <th pSortableColumn="supplier" pResizableColumn rowspan="2">Supplier <p-sortIcon field="supplier" /></th>
-                    <th class="text-center" colspan="4">Total</th>
-                    <th class="text-center" colspan="5">Domestic</th>
-                    <th class="text-center" colspan="5">International</th>
+                    <th class="text-center bg-[#4c6793]" colspan="4">Total</th>
+                    <th class="text-center bg-[#ec9f48]" colspan="5">Domestic</th>
+                    <th class="text-center bg-[#5f9da2]" colspan="5">International</th>
                 </tr>
                 <tr>
                     <!-- Total Columns -->
                     <th class="text-right" pSortableColumn="pax" pResizableColumn>Pax <p-sortIcon field="pax" /></th>
                     <th class="text-right" pSortableColumn="pnr" pResizableColumn>PNR <p-sortIcon field="pnr" /></th>
                     <th class="text-right" pSortableColumn="volume" pResizableColumn>Volume <p-sortIcon field="volume" /></th>
-                    <th class="text-right" pSortableColumn="weightage" pResizableColumn>Weightage (%) <p-sortIcon field="weightage" /></th>
+                    <th class="text-right" pSortableColumn="weightage" pResizableColumn matTooltip="Weightage">We. <p-sortIcon field="weightage" /></th>
 
                     <!-- Domestic Columns -->
                     <th class="text-right" pSortableColumn="domestic_Pax" pResizableColumn>Pax <p-sortIcon field="domestic_Pax" /></th>
                     <th class="text-right" pSortableColumn="domestic_PNR" pResizableColumn>PNR <p-sortIcon field="domestic_PNR" /></th>
                     <th class="text-right" pSortableColumn="domestic_Volume" pResizableColumn>Volume <p-sortIcon field="domestic_Volume" /></th>
-                    <th class="text-right" pSortableColumn="domestic_Weightage" pResizableColumn>Weightage (%) <p-sortIcon field="domestic_Weightage" /></th>
-                    <th class="text-right" pSortableColumn="domestic_Ratio" pResizableColumn>Ratio (%) <p-sortIcon field="domestic_Ratio" /></th>
+                    <th class="text-right" pSortableColumn="domestic_Weightage" pResizableColumn matTooltip="Weightage">We. <p-sortIcon field="domestic_Weightage" /></th>
+                    <th class="text-right" pSortableColumn="domestic_Ratio" pResizableColumn>Ratio <p-sortIcon field="domestic_Ratio" /></th>
 
                     <!-- International Columns -->
                     <th class="text-right" pSortableColumn="international_Pax" pResizableColumn>Pax <p-sortIcon field="international_Pax" /></th>
                     <th class="text-right" pSortableColumn="international_PNR" pResizableColumn>PNR <p-sortIcon field="international_PNR" /></th>
                     <th class="text-right" pSortableColumn="international_Volume" pResizableColumn>Volume <p-sortIcon field="international_Volume" /></th>
-                    <th class="text-right" pSortableColumn="international_Weightage" pResizableColumn>Weightage (%) <p-sortIcon field="international_Weightage" /></th>
-                    <th class="text-right" pSortableColumn="international_Ratio" pResizableColumn>Ratio (%) <p-sortIcon field="international_Ratio" /></th>
+                    <th class="text-right" pSortableColumn="international_Weightage" pResizableColumn matTooltip="Weightage">We. <p-sortIcon field="international_Weightage" /></th>
+                    <th class="text-right" pSortableColumn="international_Ratio" pResizableColumn>Ratio <p-sortIcon field="international_Ratio" /></th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
