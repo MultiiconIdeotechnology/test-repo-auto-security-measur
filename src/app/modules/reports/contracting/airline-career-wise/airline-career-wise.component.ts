@@ -62,14 +62,15 @@ import { Excel } from 'app/utils/export/excel';
 })
 export class AirlineCareerWiseComponent
     extends BaseListingComponent
-    implements OnDestroy
-{
+    implements OnDestroy {
     dataList = [];
     airlinesData: any[] = []; // API response data
     supplierColumns: any[] = []; // Array to hold supplier columns dynamically
     displayData: any[] = []; // Data for the table display (flattened for Carrier, Domestic, International rows)
 
     searchInputControl = new FormControl('');
+    expandedRows: { [key: string]: boolean } = {};
+
 
     DR = dateRange;
     public startDate = new FormControl();
@@ -100,7 +101,7 @@ export class AirlineCareerWiseComponent
         this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void { }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -185,10 +186,10 @@ export class AirlineCareerWiseComponent
             });
         });
 
-        this.isMaxValue(this.displayData[0],10)
+        this.isMaxValue(this.displayData[0], 10)
     }
 
-    getTotal() {}
+    getTotal() { }
 
     isMaxValue(data: any, value: number): boolean {
         const list = [];
@@ -213,6 +214,13 @@ export class AirlineCareerWiseComponent
         var maxValue = Math.min(...list);
         return (maxValue.toFixed(0) == '0' ? false : (maxValue.toFixed(2) == value.toFixed(2)));
     }
+
+
+    toggleRow(carrier: string): void {
+        console.log("carrier", carrier);
+        this.expandedRows[carrier] = !this.expandedRows[carrier];
+    }
+
 
     getNodataText(): string {
         if (this.isLoading) return 'Loading...';
