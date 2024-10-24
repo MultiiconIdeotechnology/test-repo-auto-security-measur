@@ -74,8 +74,9 @@ export class UserSupplierComponent extends BaseListingComponent {
     this.sortColumn = 'user_name';
     this.sortDirection = 'asc';
     this.Mainmodule = this;
-
+    this.data = data
     this.record = data?.data ?? {}
+    console.log("this.record", data);
 
     this.entityService.onrefreshUserSupplierEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
@@ -88,7 +89,9 @@ export class UserSupplierComponent extends BaseListingComponent {
 
   refreshItems(event?: any): void {
     this.isLoading = true;
-    this.supplierService.getSupplierUserMasterList(this.getNewFilterReq(event)).subscribe({
+    const request = this.getNewFilterReq(event)
+    request['Id'] = this.data.id
+    this.supplierService.getSupplierUserMasterList(request).subscribe({
       next: (data) => {
         this.isLoading = false;
         this.dataList = data.data;
