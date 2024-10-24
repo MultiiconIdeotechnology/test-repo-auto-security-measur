@@ -168,6 +168,20 @@
                 </tr>
             </ng-template>
 
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td>Total</td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Confirmed', 'confirmed_Percentage')">{{dataListTotals?.total_confirmed ? dataListTotals?.total_confirmed.toFixed(2) : 0}}</span></td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Failed', 'failed_Percentage')">{{dataListTotals?.total_failed ? dataListTotals?.total_failed.toFixed(2) : 0}}</span></td>
+
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Domestic Confirmed', 'confirmed_Percentage_Domestic')">{{dataListTotals?.total_confirmed_dom ? dataListTotals?.total_confirmed_dom.toFixed(2) : 0}}</span></td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Domestic Failed', 'failed_Percentage_Domestic')">{{dataListTotals?.total_failed_dom ? dataListTotals?.total_failed_dom.toFixed(2) : 0}}</span></td>
+                    
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total International Confirmed', 'confirmed_Percentage_International')">{{dataListTotals?.total_confirmed_int ? dataListTotals?.total_confirmed_int.toFixed(2) : 0}}</span></td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total International Failed', 'failed_Percentage_International')">{{dataListTotals?.total_failed_int ? dataListTotals?.total_failed_int.toFixed(2) : 0}}</span></td>
+                </tr>
+            </ng-template>
+
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
                     <td colspan="15" class="text-center font-semibold text-lg">

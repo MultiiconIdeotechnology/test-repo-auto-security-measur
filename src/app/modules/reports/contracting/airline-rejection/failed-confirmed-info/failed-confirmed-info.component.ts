@@ -75,14 +75,15 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
     this.sortColumn = 'ticket_Date_Time';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
-
     this.record = data
+
     if (this.record.send == 'Sub') {
       this.title = this.record.carrier
-    } else {
+    } else if (this.record.send == 'Main') {
       this.title = this.record.supplier
+    } else {
+      this.title = this.record.titleName
     }
-    console.log("this.record", this.record);
   }
 
   ngOnInit(): void {

@@ -61,6 +61,8 @@ import { FailedConfirmedInfoComponent } from './failed-confirmed-info/failed-con
 export class AirlineRejectionComponent extends BaseListingComponent implements OnDestroy{
 
   dataList = [];
+  dataListTotals = [];
+
 
   private settingsUpdatedSubscription: Subscription;
   isFilterShow: boolean = false;
@@ -113,6 +115,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
 
     this.airlineSummaryService.airlineRejectionSupplierWiseAnalysis(request).subscribe({
       next: (data) => {
+        this.dataListTotals = data;
         this.dataList = data.data;
         this.totalRecords = data.total;
         this.isLoading = false;
@@ -140,9 +143,6 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
 
   supplierFaildConfirmed(data: any, key: any){
 
-    console.log("106 key", key);
-    console.log("106 data", data, );
-
     this.matDialog.open(FailedConfirmedInfoComponent,
       { data: {
         supplier: data.supplier,
@@ -155,10 +155,27 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
        disableClose: true, })
       .afterClosed()
       .subscribe((res) => {
-          
       });
-
   }
+
+  totalFaildConfirmed(name: any, key: any){
+
+    this.matDialog.open(FailedConfirmedInfoComponent,
+      { data: {
+        titleName: name,
+        supplier: '',
+        From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
+        To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
+        filterArea: key,
+        carrier: '',
+        send:'MainTotal'
+      },
+       disableClose: true, })
+      .afterClosed()
+      .subscribe((res) => {
+      });
+  }
+
 
   getNodataText(): string {
     if (this.isLoading)
