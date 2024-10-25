@@ -18,7 +18,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { MatDialog } from '@angular/material/dialog';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { dateRange } from 'app/common/const';
+import { dateRange, dateRangeContracting } from 'app/common/const';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import {
     module_name,
@@ -72,12 +72,12 @@ export class AirlineCareerWiseComponent
     expandedRows: { [key: string]: boolean } = {};
 
 
-    DR = dateRange;
+    DR = dateRangeContracting;
     public startDate = new FormControl();
     public endDate = new FormControl();
     public StartDate: any;
     public EndDate: any;
-    public dateRanges = [];
+    public dateRangeContractings = [];
     public date = new FormControl();
 
     module_name = module_name.airline_career;
@@ -95,9 +95,9 @@ export class AirlineCareerWiseComponent
         this.sortColumn = 'supplier';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
-        this.dateRanges = CommonUtils.valuesArray(dateRange);
-        this.date.patchValue(dateRange.lastWeek);
-        this.updateDate(dateRange.lastWeek, false);
+        this.dateRangeContractings = CommonUtils.valuesArray(dateRangeContracting);
+        this.date.patchValue(dateRangeContracting.lastWeek);
+        this.updateDate(dateRangeContracting.lastWeek, false);
         this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
@@ -259,19 +259,13 @@ export class AirlineCareerWiseComponent
     }
 
     public updateDate(event: any, isRefresh: boolean = true): void {
-        if (event === dateRange.today) {
+        if (event === dateRangeContracting.today) {
             this.StartDate = new Date();
             this.EndDate = new Date();
             this.StartDate.setDate(this.StartDate.getDate());
             this.startDate.patchValue(this.StartDate);
             this.endDate.patchValue(this.EndDate);
-        } else if (event === dateRange.last3Days) {
-            this.StartDate = new Date();
-            this.EndDate = new Date();
-            this.StartDate.setDate(this.StartDate.getDate() - 3);
-            this.startDate.patchValue(this.StartDate);
-            this.endDate.patchValue(this.EndDate);
-        } else if (event === dateRange.lastWeek) {
+        } else if (event === dateRangeContracting.lastWeek) {
             this.StartDate = new Date();
             this.EndDate = new Date();
             const dt = new Date(); // current date of week
@@ -288,28 +282,38 @@ export class AirlineCareerWiseComponent
             this.EndDate = new Date();
             this.startDate.patchValue(this.StartDate);
             this.endDate.patchValue(this.EndDate);
-        } else if (event === dateRange.lastMonth) {
+        } else if (event === dateRangeContracting.previousMonth) {
+            this.StartDate = new Date();
+            this.EndDate = new Date();
+            this.StartDate.setDate(1);
+            this.StartDate.setMonth(this.StartDate.getMonth() - 1);
+            this.startDate.patchValue(this.StartDate);
+            this.EndDate.setDate(1)
+            this.EndDate.setDate(this.EndDate.getDate() - 1)
+            this.endDate.patchValue(this.EndDate);
+
+        } else if (event === dateRangeContracting.lastMonth) {
             this.StartDate = new Date();
             this.EndDate = new Date();
             this.StartDate.setDate(1);
             this.StartDate.setMonth(this.StartDate.getMonth());
             this.startDate.patchValue(this.StartDate);
             this.endDate.patchValue(this.EndDate);
-        } else if (event === dateRange.last3Month) {
+        } else if (event === dateRangeContracting.last3Month) {
             this.StartDate = new Date();
             this.EndDate = new Date();
             this.StartDate.setDate(1);
             this.StartDate.setMonth(this.StartDate.getMonth() - 3);
             this.startDate.patchValue(this.StartDate);
             this.endDate.patchValue(this.EndDate);
-        } else if (event === dateRange.last6Month) {
+        } else if (event === dateRangeContracting.last6Month) {
             this.StartDate = new Date();
             this.EndDate = new Date();
             this.StartDate.setDate(1);
             this.StartDate.setMonth(this.StartDate.getMonth() - 6);
             this.startDate.patchValue(this.StartDate);
             this.endDate.patchValue(this.EndDate);
-        } else if (event === dateRange.setCustomDate) {
+        } else if (event === dateRangeContracting.setCustomDate) {
             this.StartDate = new Date();
             this.EndDate = new Date();
             this.startDate.patchValue(this.StartDate);
@@ -328,6 +332,6 @@ export class AirlineCareerWiseComponent
 
     cancleDate() {
         this.date.patchValue('Today');
-        this.updateDate(dateRange.today);
+        this.updateDate(dateRangeContracting.today);
     }
 }

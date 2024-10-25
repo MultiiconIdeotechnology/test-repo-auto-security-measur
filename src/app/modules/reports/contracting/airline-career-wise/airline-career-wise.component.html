@@ -28,7 +28,7 @@
                     <mat-form-field class="w-full bottom_none">
                         <mat-select name="date" [formControl]="date" #dateRange
                             (selectionChange)="updateDate($event.value)">
-                            <mat-option *ngFor="let dr of dateRanges" [value]="dr">{{
+                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
                                 dr
                                 }}</mat-option>
                         </mat-select>
