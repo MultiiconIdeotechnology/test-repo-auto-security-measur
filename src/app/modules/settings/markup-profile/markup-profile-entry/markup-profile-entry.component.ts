@@ -209,6 +209,8 @@ export class MarkupProfileEntryComponent {
             bus_val: [0, Validators.required],
             ins_type: ['Flat for Full Booking', Validators.required],
             ins_val: [0, Validators.required],
+            ins_can_type: ['Flat for Full Booking', Validators.required],
+            ins_can_val: [0, Validators.required],
             act_type: ['Flat for Full Booking', Validators.required],
             act_val: [0, Validators.required],
             air_can_type: ['Flat for Full Booking', Validators.required],
