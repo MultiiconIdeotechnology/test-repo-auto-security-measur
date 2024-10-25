@@ -16,7 +16,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { dateRange } from 'app/common/const';
+import { dateRangeContracting } from 'app/common/const';
 import { module_name, filter_module_name, Security, messages } from 'app/security';
 import { MatDialog } from '@angular/material/dialog';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -61,16 +61,18 @@ import { FailedConfirmedInfoComponent } from './failed-confirmed-info/failed-con
 export class AirlineRejectionComponent extends BaseListingComponent implements OnDestroy{
 
   dataList = [];
+  dataListTotals = [];
+
 
   private settingsUpdatedSubscription: Subscription;
   isFilterShow: boolean = false;
 
-  DR = dateRange;
+  DR = dateRangeContracting;
   public startDate = new FormControl();
   public endDate = new FormControl();
   public StartDate: any;
   public EndDate: any;
-  public dateRanges = [];
+  public dateRangeContractings = [];
   public date = new FormControl();
 
   module_name = module_name.airline_rejection
@@ -88,9 +90,9 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
     this.sortColumn = 'supplier';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
-    this.dateRanges = CommonUtils.valuesArray(dateRange);
-    this.date.patchValue(dateRange.lastWeek);
-    this.updateDate(dateRange.lastWeek,false)
+    this.dateRangeContractings = CommonUtils.valuesArray(dateRangeContracting);
+    this.date.patchValue(dateRangeContracting.lastWeek);
+    this.updateDate(dateRangeContracting.lastWeek,false)
     this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
@@ -113,6 +115,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
 
     this.airlineSummaryService.airlineRejectionSupplierWiseAnalysis(request).subscribe({
       next: (data) => {
+        this.dataListTotals = data;
         this.dataList = data.data;
         this.totalRecords = data.total;
         this.isLoading = false;
@@ -140,9 +143,6 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
 
   supplierFaildConfirmed(data: any, key: any){
 
-    console.log("106 key", key);
-    console.log("106 data", data, );
-
     this.matDialog.open(FailedConfirmedInfoComponent,
       { data: {
         supplier: data.supplier,
@@ -155,10 +155,27 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
        disableClose: true, })
       .afterClosed()
       .subscribe((res) => {
-          
       });
-
   }
+
+  totalFaildConfirmed(name: any, key: any){
+
+    this.matDialog.open(FailedConfirmedInfoComponent,
+      { data: {
+        titleName: name,
+        supplier: '',
+        From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
+        To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
+        filterArea: key,
+        carrier: '',
+        send:'MainTotal'
+      },
+       disableClose: true, })
+      .afterClosed()
+      .subscribe((res) => {
+      });
+  }
+
 
   getNodataText(): string {
     if (this.isLoading)
@@ -212,21 +229,15 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
   }
 
   public updateDate(event: any, isRefresh:boolean = true): void {
-    if (event === dateRange.today) {
+    if (event === dateRangeContracting.today) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(this.StartDate.getDate());
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.last3Days) {
-      this.StartDate = new Date();
-      this.EndDate = new Date();
-      this.StartDate.setDate(this.StartDate.getDate() - 3);
-      this.startDate.patchValue(this.StartDate);
-      this.endDate.patchValue(this.EndDate);
-    }
-    else if (event === dateRange.lastWeek) {
+   
+    else if (event === dateRangeContracting.lastWeek) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       const dt = new Date(); // current date of week
@@ -240,7 +251,18 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.lastMonth) {
+    else if (event === dateRangeContracting.previousMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 1);
+      this.startDate.patchValue(this.StartDate);
+      this.EndDate.setDate(1)
+      this.EndDate.setDate(this.EndDate.getDate() - 1)
+      this.endDate.patchValue(this.EndDate);
+
+  }
+    else if (event === dateRangeContracting.lastMonth) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(1);
@@ -248,7 +270,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.last3Month) {
+    else if (event === dateRangeContracting.last3Month) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(1);
@@ -256,7 +278,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.last6Month) {
+    else if (event === dateRangeContracting.last6Month) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(1);
@@ -264,7 +286,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.setCustomDate) {
+    else if (event === dateRangeContracting.setCustomDate) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.startDate.patchValue(this.StartDate);
@@ -274,7 +296,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
     this.refreshItems();
   }
 
-  dateRangeChange(start, end): void {
+  dateRangeContractingChange(start, end): void {
     if (start.value && end.value) {
       this.StartDate = start.value;
       this.EndDate = end.value;
@@ -284,7 +306,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
 
   cancleDate() {
     this.date.patchValue('Today');
-    this.updateDate(dateRange.today);
+    this.updateDate(dateRangeContracting.today);
   }
 
 }

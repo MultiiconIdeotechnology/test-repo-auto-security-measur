@@ -17,7 +17,7 @@ export class CommonFilterService {
     drawersUpdated$ = this.drawersUpdated.asObservable();
     private showFilterSubject = new Subject<void>();
     showFilter$ = this.showFilterSubject.asObservable();
- 
+
     private baseUrl = environment.apiUrl;
     filterDrawerVisible: boolean = false;
     filter_grid_data: any = {};
@@ -25,20 +25,21 @@ export class CommonFilterService {
     fliterTableConfig: any;
     activeFiltData: any = {};
     selectedColumns: any = [];
-    selectionDateDropdown:any;
+    selectionDateDropdown: any;
+    selectionDateDropdownContracting: any;
 
     // agetcombo variable
-    originalAgentList:any[] = [];
-    agentListByValue:any[] = [];
-    agentListById:any[] = [];
+    originalAgentList: any[] = [];
+    agentListByValue: any[] = [];
+    agentListById: any[] = [];
 
     // Rm combo variable
-    originalRmList:any[] = [];
-    rmListByValue:any[] =[]
+    originalRmList: any[] = [];
+    rmListByValue: any[] = []
 
     // array from dropdown date range filter
     dateRangeList: any[] = [
-        { label: 'Today', value: 'today' },
+        { label: 'Today', value: 'today', },
         { label: 'Last 3 Days', value: 'Last 3 Days' },
         { label: 'This Week', value: 'This Week' },
         { label: 'This Month', value: 'This Month' },
@@ -47,12 +48,22 @@ export class CommonFilterService {
         { label: 'Custom Date Range', value: 'Custom Date Range' }
     ];
 
+    dateRangeContractingList: any[] = [
+        { label: 'Today', value: 'today', },
+        { label: 'This Week', value: 'This Week' },
+        { label: 'This Month', value: 'This Month' },
+        { label: 'Previous Month', value: 'Previous Month' },
+        { label: 'Last 3 Months', value: 'Last 3 Months' },
+        { label: 'Last 6 Months', value: 'Last 6 Months' },
+        { label: 'Custom', value: 'Custom' }
+    ];
+
     constructor(
         private http: HttpClient,
         private agentService: AgentService,
         private refferralService: RefferralService,
         private kycDocumentService: KycDocumentService,
-    ) { 
+    ) {
 
     }
 
@@ -89,8 +100,8 @@ export class CommonFilterService {
         this.drawersUpdated.next(data);
     }
 
-    setActiveData(filerData: any){
-        if(filerData && filerData.filters) {
+    setActiveData(filerData: any) {
+        if (filerData && filerData.filters) {
             this.activeFiltData = filerData.filters.find((element: any) => element.is_default);
         } else {
             this.activeFiltData = {};
@@ -131,7 +142,7 @@ export class CommonFilterService {
     }
 
     // Range date convert to string format from array 
-    rangeDateConvert(dateArr:any){
+    rangeDateConvert(dateArr: any) {
         dateArr.value[0] = new Date(dateArr.value[0]);
         dateArr.value[1] = new Date(dateArr.value[1]);
         dateArr.value.join(",");
@@ -143,7 +154,7 @@ export class CommonFilterService {
     }
 
     // Date Range dropdown onselect 
-    onOptionClick(option: any, primengTable:any, field:any) {
+    onOptionClick(option: any, primengTable: any, field: any, key?: any) {
         this.selectionDateDropdown = option.value;
         const today = new Date();
         let startDate = new Date(today);
@@ -170,7 +181,53 @@ export class CommonFilterService {
                 startDate.setDate(1);
                 break;
             case 'Custom Date Range':
-           
+
+            default:
+                return;
+        }
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+        let dateArr = [startDate, endDate];
+        const range = [startDate.toISOString(), endDate.toISOString()].join(",");
+        primengTable.filter(range, field, 'custom');
+        primengTable.filters[field]['value'] = dateArr;
+        primengTable.filters[field]['matchMode'] = 'custom';
+    }
+
+    // Date Range dropdown onselect Contracting
+    onOptionClickContracting(option: any, primengTable: any, field: any, key?: any) {
+        this.selectionDateDropdownContracting = option.value;
+        const today = new Date();
+        let startDate = new Date(today);
+        let endDate = new Date(today);
+
+        switch (option.label) {
+            case 'Today':
+                break;
+            case 'This Week':
+                startDate.setDate(today.getDate() - today.getDay());
+                break;
+            case 'This Month':
+                startDate.setDate(1);
+                break;
+            case 'Previous Month':
+                 // Set startDate to the first day of the previous month
+            startDate.setMonth(today.getMonth() - 1);
+            startDate.setDate(1);
+
+            // Set endDate to the last day of the previous month
+            endDate.setDate(0); // 0th day of the current month is the last day of the previous month
+            break;
+            case 'Last 3 Months':
+                startDate.setMonth(today.getMonth() - 3);
+                startDate.setDate(1);
+                break;
+            case 'Last 6 Months':
+                startDate.setMonth(today.getMonth() - 6);
+                startDate.setDate(1);
+                break;
+            case 'Custom':
+
             default:
                 return;
         }
@@ -187,14 +244,14 @@ export class CommonFilterService {
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.originalAgentList = data;
-            
+
             // Process list for those who need `id_by_value`
             this.agentListByValue = this.originalAgentList.map((agent) => ({
                 ...agent,
                 agent_info: `${agent.code}-${agent.agency_name}-${agent.email_address}`,
                 id_by_value: agent.agency_name,
             }));
-            
+
             // Process list for those who don't need `id_by_value`
             this.agentListById = this.originalAgentList.map((agent) => ({
                 ...agent,
@@ -209,7 +266,7 @@ export class CommonFilterService {
 
             this.rmListByValue = this.originalRmList.map((rm) => ({
                 ...rm,
-                id_by_value:rm.employee_name
+                id_by_value: rm.employee_name
             }))
         });
     }
