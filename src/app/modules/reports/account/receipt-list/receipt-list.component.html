@@ -310,16 +310,21 @@
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600">Reject</span>
                             </button>
-                            <!-- <button mat-menu-item *ngIf="!element.paymentLink"
-                                (click)="generatePaymentLink(element)">
-                                <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
-                                <span style="font-weight: 600;">Generate Payment Link</span>
-                            </button> -->
-                            <button mat-menu-item *ngIf="element.paymentLink"
-                                (click)="copyLink(element)">
-                                <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
-                                <span style="font-weight: 600;">Copy Payment Link</span>
-                            </button>
+                            
+                            <!-- Generate Payment Link -->
+                            <!-- <ng-container *ngIf="element['receipt_status'] == 'Pending'">
+                                <button mat-menu-item *ngIf="!element.paymentLink"
+                                    (click)="generatePaymentLink(element)">
+                                    <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                                    <span style="font-weight: 600;">Generate Payment Link</span>
+                                </button>
+                                <button mat-menu-item *ngIf="element.paymentLink"
+                                    (click)="copyLink(element)">
+                                    <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                                    <span style="font-weight: 600;">Copy Payment Link</span>
+                                </button>
+                            </ng-container> -->
+                            
                             <ng-container *ngIf="element['service_for'] == 'Product purchase'">
                                 <button mat-menu-item (click)="product(element)">
                                     <mat-icon svgIcon="heroicons_outline:circle-stack" class="mat-18"></mat-icon>

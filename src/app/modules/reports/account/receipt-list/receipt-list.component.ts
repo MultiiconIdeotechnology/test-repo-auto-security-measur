@@ -207,24 +207,6 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         })
     }
 
-    getFilter(): any {
-        let filterReq = {};
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sort,
-        //     this.searchInputControl.value
-        // );
-        // const filter = this.currentFilter;
-        // filterReq['status'] = this.currentFilter.status;
-        // filterReq['payment_gateway'] = 'All';
-        // filterReq['fromDate'] = DateTime.fromJSDate(
-        //     this.currentFilter.fromDate
-        // ).toFormat('yyyy-MM-dd');
-        // filterReq['toDate'] = DateTime.fromJSDate(
-        //     this.currentFilter.toDate
-        // ).toFormat('yyyy-MM-dd');
-        return filterReq;
-    }
 
     filter(): void {
         this.matDialog
@@ -434,10 +416,8 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-        let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq(event);
-        let model = { ...extraModel, ...newModel }
-        this.accountService.getReceiptList(model).subscribe({
+        this.accountService.getReceiptList(newModel).subscribe({
             next: (data) => {
                 this.dataList = data.data;
                 // this.total = data.total;
@@ -494,7 +474,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 			next: (res) => {
 				if (res === 'confirmed') {
                     let json = {
-                        reference_table_id: data?.id ? data?.id : "",
+                        reference_table_id: data?.id || "",
                         service_for: "Receipt",
                         mop: data?.mop ? data?.mop : ""
                     }

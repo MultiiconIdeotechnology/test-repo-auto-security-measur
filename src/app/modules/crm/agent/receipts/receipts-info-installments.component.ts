@@ -32,6 +32,8 @@ import { AccountService } from 'app/services/account.service';
 import { CommonUtils } from 'app/utils/commonutils';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { EntityService } from 'app/services/entity.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { WalletService } from 'app/services/wallet.service';
 
 @Component({
     selector: 'app-receipts-info-items',
@@ -79,35 +81,27 @@ export class ReceiptsInfoItemComponent {
     cols = [];
     total = 0;
 
-    constructor(
-        @Inject(MAT_DIALOG_DATA) public data: any = {},
-        private alertService: ToasterService,
-        private matDialog: MatDialog,
-        private accountService: AccountService,
-        private conformationService: FuseConfirmationService,
-        private entityService: EntityService,
-        private crmService: CrmService
-    ) {
-        this.record = data?.data ?? {}
-        // this.dataList = this.record?.receipt;
-        this.cols = this.columns.map(x => x.key);
-        this.key = this.module_name;
-        this.sortColumn = '';
-        this.sortDirection = 'desc';
-        this.Mainmodule = this;
-        this.agentId = this.record?.agentid;
-        // this.productId = this.record?.product_id;
-        this.productId = this.record?.id;
+    dataList: any;
+    appConfig = AppConfig;
+    isLoading: any;
+    searchInputControl = new FormControl('');
+    @ViewChild('tabGroup') tabGroup;
+    @ViewChild(MatPaginator) public _paginator: MatPaginator;
+    @ViewChild(MatSort) public _sort: MatSort;
 
-        this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-            next: (item) => {
-                if (item) {
-                    this.refreshItemsNew();
-                }
-            }
-        })
-    }
+    Mainmodule: any;
+    public _unsubscribeAll: Subject<any> = new Subject<any>();
+    public key: any;
+    public sortColumn: any;
+    public sortDirection: any;
 
+    module_name = module_name.crmagent;
+    filter: any = {};
+    record: any;
+    agentId: any;
+    productId: any;
+
+    @Input() receiptDetail: any;
     columns = [
         // {
         //     key: 'index',
@@ -207,27 +201,37 @@ export class ReceiptsInfoItemComponent {
         }
     ]
 
-    dataList: any;
-    appConfig = AppConfig;
-    isLoading: any;
-    searchInputControl = new FormControl('');
-    @ViewChild('tabGroup') tabGroup;
-    @ViewChild(MatPaginator) public _paginator: MatPaginator;
-    @ViewChild(MatSort) public _sort: MatSort;
+    constructor(
+        @Inject(MAT_DIALOG_DATA) public data: any = {},
+        private alertService: ToasterService,
+        private matDialog: MatDialog,
+        private accountService: AccountService,
+        private conformationService: FuseConfirmationService,
+        private entityService: EntityService,
+        private clipboard: Clipboard,
+        private crmService: CrmService,
+		private walletService: WalletService
+    ) {
+        this.record = data?.data ?? {}
+        // this.dataList = this.record?.receipt;
+        this.cols = this.columns.map(x => x.key);
+        this.key = this.module_name;
+        this.sortColumn = '';
+        this.sortDirection = 'desc';
+        this.Mainmodule = this;
+        this.agentId = this.record?.agentid;
+        // this.productId = this.record?.product_id;
+        this.productId = this.record?.id;
 
-    Mainmodule: any;
-    public _unsubscribeAll: Subject<any> = new Subject<any>();
-    public key: any;
-    public sortColumn: any;
-    public sortDirection: any;
+        this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                if (item) {
+                    this.refreshItemsNew();
+                }
+            }
+        })
+    }
 
-    module_name = module_name.crmagent;
-    filter: any = {};
-    record: any;
-    agentId: any;
-    productId: any;
-
-    @Input() receiptDetail: any;
 
     ngOnInit(): void {
         // this.refreshItemsNew();
@@ -339,7 +343,7 @@ export class ReceiptsInfoItemComponent {
         //         }
         //     });
 
-        this.entityService.raisereceiptCall({data: record, edit: true});
+        this.entityService.raisereceiptCall({ data: record, edit: true });
         // this.entityService.onrefreshReceiptCalll().pipe(takeUntil(this._unsubscribeAll)).subscribe({
         //     next: (item) => {
         //         if (item) {
@@ -392,5 +396,44 @@ export class ReceiptsInfoItemComponent {
         if (data) {
             window.open(data, '_blank')
         }
+    }
+
+    copyLink(element: any): void {
+        if (element) {
+            this.clipboard.copy(element?.paymentLink);
+            this.alertService.showToast('success', 'Copied');
+        }
+    }
+
+    generatePaymentLink(data: any) {
+        // if (!Security.hasPermission(receiptPermissions.generatePaymentLink)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        let newMessage: any;
+        const label: string = 'Generate Payment Link'
+        newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
+        this.conformationService.open({
+            title: label,
+            message: newMessage
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    let json = {
+                        reference_table_id: data?.receiptid ? data?.receiptid : "",
+                        service_for: "Receipt",
+                        mop: data?.mop ? data?.mop : ""
+                    }
+                    this.walletService.generatePaymentLink(json).subscribe({
+                        next: (res) => {
+                            if(res) {
+                                this.refreshItemsNew();
+                                this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
+                            }
+                        }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+                    });
+                }
+            }
+        })
     }
 }
