@@ -28,7 +28,7 @@ export class KycDocumentService {
   }
 
   getemployeedocumentRecord(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'document/getdocumentRecord', { id: id,for:'employee' });
+    return this.http.post<any>(this.baseUrl + 'document/getdocumentRecord', { id: id, for: 'employee' });
   }
 
   delete(id: any): Observable<any> {
@@ -38,9 +38,9 @@ export class KycDocumentService {
   getAgentCombo(filter: string): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'Agent/getAgentCombo', { filter });
   }
-  
+
   getSupplierCombo(filter: string, type?: string): Observable<any[]> {
-    return this.http.post<any[]>(this.baseUrl + 'Supplier/getSupplierCombo', { filter: filter, type : type });
+    return this.http.post<any[]>(this.baseUrl + 'Supplier/getSupplierCombo', { filter: filter, type: type });
   }
 
   getkycprofileCombo(id: any): Observable<any> {
@@ -55,20 +55,20 @@ export class KycDocumentService {
     return this.http.post<any>(this.baseUrl + 'document/getKYCDisplay', { id: id });
   }
 
-  verify(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'document/verify', { id: id });
+  verify(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'document/verify', model);
   }
 
-  reject(id: any, note?:string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'document/reject', { id:id, note:note });
+  reject(id: any, note?: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'document/reject', { id: id, note: note });
   }
 
   getDocumentTypeCombo(filter: string): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'document/getDocumentTypeCombo', {
-        filter,
+      filter,
     });
   }
 
-  
+
 
 }
