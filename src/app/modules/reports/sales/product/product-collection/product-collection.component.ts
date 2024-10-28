@@ -105,8 +105,10 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     }
 
     ngOnInit(): void {
-        this.getAgent('');
-        this.getEmployeeList("");
+        // this.getAgent('');
+        this.agentList = this._filterService.agentListByValue;
+        this.employeeList = this._filterService.rmListByValue;
+        // this.getEmployeeList("");
 
         // common filter
         this._filterService.selectionDateDropdown = "";
@@ -140,6 +142,14 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
 
+            
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['installment_date']?.value != null && filterData['table_config']['installment_date'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
@@ -153,13 +163,6 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;

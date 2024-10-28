@@ -115,7 +115,7 @@ export class OfflineListComponent extends BaseListingComponent {
 
   ngOnInit(): void {
     this.getRelationManagerList("");
-    this.getAgent("");
+    this.agentList = this._filterService.agentListById;
 
     // common filter
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -146,6 +146,13 @@ export class OfflineListComponent extends BaseListingComponent {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['agency_name_agent_id']?.value;
       this.selectedEmployee = filterData['table_config']['sales_person_flitres']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
       if (filterData['table_config']['entry_date_time'].value) {
         filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
       }
@@ -193,13 +200,6 @@ export class OfflineListComponent extends BaseListingComponent {
   getAgent(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
-
-      if (this.selectedAgent && this.selectedAgent.id) {
-        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        if (!match) {
-          this.agentList.push(this.selectedAgent);
-        }
-      }
 
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`

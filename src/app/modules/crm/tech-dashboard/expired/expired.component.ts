@@ -77,7 +77,6 @@ import { GlobalSearchService } from 'app/services/global-search.service';
 })
 export class TechDashboardExpiredComponent extends BaseListingComponent{
     @Input() isFilterShowExpired: boolean;
-    @Input() dropdownFirstCallObj:any;
     @Output() isFilterShowExpiredChange = new EventEmitter<boolean>();
     cols = [];
     total = 0;
@@ -121,6 +120,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     }
 
     ngOnInit(): void {
+        this.agentList = this._filterService.agentListByValue;
+
          // common filter
          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
@@ -191,10 +192,6 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         else {
             return '';
         }
-    }
-
-    ngOnChanges(){
-        this.agentList = this.dropdownFirstCallObj['agentList'];
     }
 
     getNodataText(): string {

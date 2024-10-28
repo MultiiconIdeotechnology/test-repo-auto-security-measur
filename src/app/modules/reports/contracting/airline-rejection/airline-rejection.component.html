@@ -28,7 +28,7 @@
                     <mat-form-field class="w-full bottom_none">
                         <mat-select name="date" [formControl]="date" #dateRange
                             (selectionChange)="updateDate($event.value)">
-                            <mat-option *ngFor="let dr of dateRanges" [value]="dr">{{
+                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
                                 dr
                                 }}</mat-option>
                         </mat-select>
@@ -155,16 +155,30 @@
                     </td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{element.confirmed_Flights}} ({{ element.confirmed_Percentage }}%)</td>
-                    <td class="text-right">{{element.failed_Flights}} ({{ element.failed_Percentage }}%)</td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'confirmed_Percentage')"><span class="border-b border-gray-500">{{element.confirmed_Flights}} ({{ element.confirmed_Percentage }}%)</span></td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'failed_Percentage')"><span class="border-b border-gray-500">{{element.failed_Flights}} ({{ element.failed_Percentage }}%)</span></td>
 
                     <!-- Domestic Columns -->
-                    <td class="text-right">{{element.confirmed_Flights_Domestic}} ({{ element.confirmed_Percentage_Domestic }}%)</td>
-                    <td class="text-right">{{element.failed_Flights_Domestic}} ({{ element.failed_Percentage_Domestic }}%)</td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'confirmed_Percentage_Domestic')"><span class="border-b border-gray-500">{{element.confirmed_Flights_Domestic}} ({{ element.confirmed_Percentage_Domestic }}%)</span></td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'failed_Percentage_Domestic')"><span class="border-b border-gray-500">{{element.failed_Flights_Domestic}} ({{ element.failed_Percentage_Domestic }}%)</span></td>
 
                     <!-- International Columns -->
-                    <td class="text-right">{{element.confirmed_Flights_International}} ({{ element.confirmed_Percentage_International }}%)</td>
-                    <td class="text-right">{{element.failed_Flights_International}} ({{ element.failed_Percentage_International }}%)</td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'confirmed_Percentage_International')"><span class="border-b border-gray-500">{{element.confirmed_Flights_International}} ({{ element.confirmed_Percentage_International }}%)</span></td>
+                    <td class="text-right cursor-pointer" (click)="supplierFaildConfirmed(element, 'failed_Percentage_International')"><span class="border-b border-gray-500">{{element.failed_Flights_International}} ({{ element.failed_Percentage_International }}%)</span></td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td>Total</td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Confirmed', 'confirmed_Percentage')">{{dataListTotals?.total_confirmed ? dataListTotals?.total_confirmed.toFixed(2) : 0}} ({{dataListTotals?.all_confirmed_per ? dataListTotals?.all_confirmed_per.toFixed(2) : 0}}%)</span></td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Failed', 'failed_Percentage')">{{dataListTotals?.total_failed ? dataListTotals?.total_failed.toFixed(2) : 0}} ({{dataListTotals?.all_failed_per ? dataListTotals?.all_failed_per.toFixed(2) : 0}}%)</span></td>
+
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Domestic Confirmed', 'confirmed_Percentage_Domestic')">{{dataListTotals?.total_confirmed_dom ? dataListTotals?.total_confirmed_dom.toFixed(2) : 0}} ({{dataListTotals?.dom_confirmed_per ? dataListTotals?.dom_confirmed_per.toFixed(2) : 0}}%)</span></td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total Domestic Failed', 'failed_Percentage_Domestic')">{{dataListTotals?.total_failed_dom ? dataListTotals?.total_failed_dom.toFixed(2) : 0}} ({{dataListTotals?.dom_failed_per ? dataListTotals?.dom_failed_per.toFixed(2) : 0}}%)</span></td>
+                    
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total International Confirmed', 'confirmed_Percentage_International')">{{dataListTotals?.total_confirmed_int ? dataListTotals?.total_confirmed_int.toFixed(2) : 0}} ({{dataListTotals?.int_confirmed_per ? dataListTotals?.int_confirmed_per.toFixed(2) : 0}}%)</span></td>
+                    <td class="text-right cursor-pointer"><span class="border-b border-gray-500" (click)="totalFaildConfirmed('Total International Failed', 'failed_Percentage_International')">{{dataListTotals?.total_failed_int ? dataListTotals?.total_failed_int.toFixed(2) : 0}} ({{dataListTotals?.int_failed_per ? dataListTotals?.int_failed_per.toFixed(2) : 0}}%)</span></td>
                 </tr>
             </ng-template>
 

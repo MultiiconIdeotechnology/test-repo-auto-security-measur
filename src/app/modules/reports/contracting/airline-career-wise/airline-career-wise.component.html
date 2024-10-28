@@ -28,7 +28,7 @@
                     <mat-form-field class="w-full bottom_none">
                         <mat-select name="date" [formControl]="date" #dateRange
                             (selectionChange)="updateDate($event.value)">
-                            <mat-option *ngFor="let dr of dateRanges" [value]="dr">{{
+                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
                                 dr
                                 }}</mat-option>
                         </mat-select>
@@ -95,34 +95,53 @@
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep"
             styleClass="p-datatable-gridlines p-datatable-sm">
-            <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
-
+            
             <ng-template pTemplate="header">
                 <tr>
                     <th>Carrier</th>
                     <th class="text-right">Total</th>
-
-                    <!-- Dynamically generate supplier columns -->
                     <th class="text-right" *ngFor="let col of supplierColumns">{{ col.header }}</th>
                 </tr>
             </ng-template>
-
-            <ng-template pTemplate="body" let-rowData>
-                <tr
-                    [ngClass]="{'carrier-row': rowData.type === 'Carrier', 'domestic-row': rowData.type === 'Domestic', 'international-row': rowData.type === 'International'}">
-                    <td>{{ rowData.carrier }}</td>
+    
+            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                <!-- Carrier Row -->
+                <tr *ngIf="rowData.type === 'Carrier'" (click)="toggleRow(rowData.carrier)"
+                    [ngClass]="{'carrier-row': rowData.type === 'Carrier'}">
+                    <td class="flex justify-between items-center cursor-pointer">
+                        <span>{{ rowData.carrier }}</span>
+                        <mat-icon *ngIf="!expandedRows[rowData.carrier]" class="icon-size-5" svgIcon="heroicons_outline:chevron-down"></mat-icon>
+                        <mat-icon *ngIf="expandedRows[rowData.carrier]" class="icon-size-5" svgIcon="heroicons_outline:chevron-up"></mat-icon>
+                    </td>
                     <td class="text-right">{{ rowData.total }}</td>
-
-                    <!-- Dynamically generate supplier columns -->
-                    <!-- [ngClass]="isMaxValue(rowData,rowData[col.field]) ? 'bg-red-500' : ''" -->
-                    <!--  -->
                     <td class="text-right"
-                    [ngClass]="isMaxValue(rowData,rowData[col.field]) ? 'bg-green-500' : isMinValue(rowData,rowData[col.field]) ? 'bg-red-500' : ''"
+                        [ngClass]="isMaxValue(rowData,rowData[col.field]) ? 'bg-green-500' : isMinValue(rowData,rowData[col.field]) ? 'bg-red-500' : ''"
                         *ngFor="let col of supplierColumns">{{ rowData[col.field] }}</td>
                 </tr>
+    
+                <!-- Domestic Row -->
+                <tr *ngIf="expandedRows[rowData.carrier] && rowData.type === 'Carrier'"
+                    [ngClass]="{'domestic-row': true}">
+                    <td>Domestic</td>
+                    <td class="text-right">{{ displayData[rowIndex + 1]?.total }}</td>
+                    <td class="text-right"
+                        [ngClass]="isMaxValue(displayData[rowIndex + 1], displayData[rowIndex + 1][col.field]) ? 'bg-green-500' : isMinValue(displayData[rowIndex + 1], displayData[rowIndex + 1][col.field]) ? 'bg-red-500' : ''"
+                        *ngFor="let col of supplierColumns">{{ displayData[rowIndex + 1]?.[col.field] }}</td>
+                </tr>
+    
+                <!-- International Row -->
+                <tr *ngIf="expandedRows[rowData.carrier] && rowData.type === 'Carrier'"
+                    [ngClass]="{'international-row': true}">
+                    <td>International</td>
+                    <td class="text-right">{{ displayData[rowIndex + 2]?.total }}</td>
+                    <td class="text-right"
+                        [ngClass]="isMaxValue(displayData[rowIndex + 2], displayData[rowIndex + 2][col.field]) ? 'bg-green-500' : isMinValue(displayData[rowIndex + 2], displayData[rowIndex + 2][col.field]) ? 'bg-red-500' : ''"
+                        *ngFor="let col of supplierColumns">{{ displayData[rowIndex + 2]?.[col.field] }}</td>
+                </tr>
             </ng-template>
-
         </p-table>
     </div>
+    
+    
 
 </div>

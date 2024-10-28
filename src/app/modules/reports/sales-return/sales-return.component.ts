@@ -145,8 +145,8 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
 
     ngOnInit() {
         this.refreshItems();
-        this.getSupplier("", true)
-        this.getAgent('');
+        this.getSupplier("")
+        this.agentList = this._filterService.agentListByValue;
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -183,6 +183,14 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent']?.value;
             this.selectedSupplier = filterData['table_config']['supplier']?.value;
+            
+            if (this.selectedAgent && this.selectedAgent.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+				if (!match) {
+					this.agentList.push(this.selectedAgent);
+				}
+			}
+
             if (filterData['table_config']['complete_date_time'].value) {
                 filterData['table_config']['complete_date_time'].value = new Date(filterData['table_config']['complete_date_time'].value);
             }
@@ -198,16 +206,9 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         }
     }
 
-    getAgent(value: string, bool=true) {
-        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if (this.selectedAgent && this.selectedAgent.id) {
-				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-				if (!match) {
-					this.agentList.push(this.selectedAgent);
-				}
-			}
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
@@ -288,7 +289,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         });
     }
 
-    getSupplier(value: string, bool: boolean = true) {
+    getSupplier(value: string) {
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
         });

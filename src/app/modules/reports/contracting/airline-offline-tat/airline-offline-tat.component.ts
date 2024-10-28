@@ -58,7 +58,7 @@ import { Linq } from 'app/utils/linq';
   templateUrl: './airline-offline-tat.component.html',
   styleUrls: ['./airline-offline-tat.component.scss']
 })
-export class AirlineOfflineTatComponent extends BaseListingComponent implements OnDestroy{
+export class AirlineOfflineTatComponent extends BaseListingComponent implements OnDestroy {
 
   dataList = []
   supplierList: any[] = [];
@@ -71,7 +71,7 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
 
   // tatList = [ 'In Time', 'Delayer'];
   statusList = ['Confirmed', 'Assign To Refund', 'Cancelled', 'Partially Cancelled', 'Booking Failed', 'Rejected'];
-  typeList = ['Domestic','International', 'Offshore'];
+  typeList = ['Domestic', 'International', 'Offshore'];
 
   constructor(
     private confirmService: FuseConfirmationService,
@@ -101,26 +101,26 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
       this.isFilterShow = true;
       this.primengTable._filter();
     });
-    }
+  }
 
-    viewData(record): void {
-        console.log(record);
-        if (!Security.hasViewDetailPermission(module_name.airline_offline)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
-        Linq.recirect('/booking/flight/details/' + record.id);
+  viewData(record): void {
+    console.log(record);
+    if (!Security.hasViewDetailPermission(module_name.airline_offline)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
+    Linq.recirect('/booking/flight/details/' + record.id);
+  }
 
-    ngAfterViewInit(){
-      // Defult Active filter show
-      if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-          this.isFilterShow = true;
-          let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-          this.primengTable['filters'] = filterData['table_config'];
-      }
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.primengTable['filters'] = filterData['table_config'];
     }
+  }
 
-  refreshItems(event?:any): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
 
     const request = this.getNewFilterReq(event);
@@ -139,15 +139,15 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
     });
   }
 
-     // Api to get the Supplier List
-     getSupplierList() {
-      this.flighttabService.getSupplierBoCombo('Airline').subscribe((data: any) => {
-          this.supplierList = data;
+  // Api to get the Supplier List
+  getSupplierList() {
+    this.flighttabService.getSupplierBoCombo('Airline').subscribe((data: any) => {
+      this.supplierList = data;
 
-          for (let i in this.supplierList) {
-              this.supplierList[i].id_by_value = this.supplierList[i].company_name;
-          }
-      })
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      }
+    })
   }
 
   getNodataText(): string {
@@ -158,10 +158,26 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
     else return 'No data to display';
   }
 
+  getStatusColor(status: string): string {
+    if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending' || status == 'Partially Cancelled' || status == 'Hold Released') {
+      return 'text-orange-600';
+    } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed' || status == 'Assign To Refund' || status == 'Payment Completed') {
+      return 'text-yellow-600';
+    } else if (status == 'Confirmed') {
+      return 'text-green-600';
+    } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected' || status == 'Hold Failed') {
+      return 'text-red-600';
+    } else if (status == 'Hold') {
+      return 'text-blue-600';
+    } else {
+      return '';
+    }
+  }
 
-   exportExcel(): void {
+
+  exportExcel(): void {
     if (!Security.hasExportDataPermission(module_name.airline_offline)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
 
     const filterReq = this.getNewFilterReq({});

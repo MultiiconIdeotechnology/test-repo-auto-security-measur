@@ -76,7 +76,6 @@ import { GlobalSearchService } from 'app/services/global-search.service';
 export class TechDashboardBlockedComponent extends BaseListingComponent {
     @Input() isFilterShowBlocked: boolean;
     @Output() isFilterShowBlockedChange = new EventEmitter<boolean>();
-    @Input() dropdownFirstCallObj: any;
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
@@ -118,11 +117,12 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
+        this.agentList = this._filterService.agentListByValue;
+        
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
-
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
                     this.agentList.push(this.selectedAgent);
@@ -152,13 +152,13 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agency_name']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
-    
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
                         this.agentList.push(this.selectedAgent);
                     }
                 }
             }, 1000);
+
             if (filterData['table_config']['block_date_time'].value) {
                 filterData['table_config']['block_date_time'].value = new Date(filterData['table_config']['block_date_time'].value);
             }
@@ -188,10 +188,6 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
         else {
             return '';
         }
-    }
-
-    ngOnChanges() {
-        this.agentList = this.dropdownFirstCallObj['agentList'];
     }
 
     updateExpiryDate(record): void {

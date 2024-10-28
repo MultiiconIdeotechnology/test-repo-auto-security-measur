@@ -76,7 +76,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 export class PartnersComponent extends BaseListingComponent{
     @Input() isFilterShowPartners: boolean;
     @Output() isFilterShowPartnersChange = new EventEmitter<boolean>();
-    @Input() dropdownListObj:{};
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
@@ -118,6 +117,8 @@ export class PartnersComponent extends BaseListingComponent{
     }
 
     ngOnInit(): void {
+        this.agentList = this._filterService.agentListByValue;
+
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
@@ -166,10 +167,6 @@ export class PartnersComponent extends BaseListingComponent{
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
         }
-    }
-
-    ngOnChanges(){
-        this.agentList = this.dropdownListObj['agentList'];
     }
 
     getAgent(value: string) {

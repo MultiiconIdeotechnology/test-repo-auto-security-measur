@@ -129,8 +129,7 @@ export class VisaComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-
-        this.getAgent("", true);
+        this.agentList = this._filterService.agentListById;
 
         // common filter
         this._filterService.selectionDateDropdown = "";
@@ -171,6 +170,13 @@ export class VisaComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
@@ -226,16 +232,9 @@ export class VisaComponent extends BaseListingComponent {
         return filterReq;
     }
 
-    getAgent(value: string, bool: boolean = true) {
-        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`

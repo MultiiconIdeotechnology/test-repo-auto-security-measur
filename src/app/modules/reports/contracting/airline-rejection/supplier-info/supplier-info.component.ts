@@ -59,6 +59,8 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
   dataList = [];
   record: any = {};
   title: any;
+  dataListTotals = [];
+
 
   constructor(
     public matDialogRef: MatDialogRef<SupplierInfoComponent>,
@@ -94,6 +96,7 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
 
     this.airlineSummaryService.airlineRejectionCarrierWiseAnalysis(request).subscribe({
       next: (data) => {
+        this.dataListTotals = data;
         this.dataList = data.data;
         this.totalRecords = data.total;
         this.isLoading = false;
@@ -115,7 +118,8 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
         From_Date: this.record.From_Date,
         To_Date: this.record.To_Date,
         filterArea: key,
-        carrier: data.carrier
+        carrier: data.carrier,
+        send:'Sub'
       },
        disableClose: true, })
       .afterClosed()
@@ -124,6 +128,25 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
       });
 
   }
+
+  totalFaildConfirmed(name: any, key: any){
+
+    this.matDialog.open(FailedConfirmedInfoComponent,
+      { data: {
+        titleName: name,
+        supplier: this.record.supplier,
+        From_Date: this.record.From_Date,
+        To_Date: this.record.To_Date,
+        filterArea: key,
+        carrier: '',
+        send:'MainTotal'
+      },
+       disableClose: true, })
+      .afterClosed()
+      .subscribe((res) => {
+      });
+  }
+
 
   getNodataText(): string {
     if (this.isLoading)

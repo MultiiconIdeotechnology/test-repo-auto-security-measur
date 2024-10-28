@@ -78,7 +78,7 @@ export class MarkupProfileEntryComponent {
     Visa = "Add";
     Supplier = "Add";
     compnyList: any[] = [];
-
+    selectedDetailTab:string = "airline_wise_markup"
 
     markupprofileList: any[] = [
         "Company",
@@ -205,12 +205,12 @@ export class MarkupProfileEntryComponent {
             hot_dom_val: [0, Validators.required],
             hot_int_type: ['Flat for Full Booking', Validators.required],
             hot_int_val: [0, Validators.required],
-            visa_type: ['Flat for Full Booking', Validators.required],
-            visa_val: [0, Validators.required],
             bus_type: ['Flat for Full Booking', Validators.required],
             bus_val: [0, Validators.required],
             ins_type: ['Flat for Full Booking', Validators.required],
             ins_val: [0, Validators.required],
+            ins_can_type: ['Flat for Full Booking', Validators.required],
+            ins_can_val: [0, Validators.required],
             act_type: ['Flat for Full Booking', Validators.required],
             act_val: [0, Validators.required],
             air_can_type: ['Flat for Full Booking', Validators.required],
@@ -219,8 +219,6 @@ export class MarkupProfileEntryComponent {
             air_ins_can_val: [0, Validators.required],
             air_reissue_type: ['Flat for Full Booking', Validators.required],
             air_reissue_val: [0, Validators.required],
-            air_misc_type: ['Flat for Full Booking', Validators.required],
-            air_misc_val: [0, Validators.required],
             air_no_show_type: ['Flat for Full Booking', Validators.required],
             air_no_show_val: [0, Validators.required],
             air_void_type: ['Flat for Full Booking', Validators.required],
@@ -229,6 +227,26 @@ export class MarkupProfileEntryComponent {
             air_meal_val: [0, Validators.required],
             air_bag_type: ['Flat for Full Booking', Validators.required],
             air_bag_val: [0, Validators.required],
+            air_correction_type: ['Flat for Full Amendment', Validators.required],
+            air_correction_val: [0, Validators.required],
+            air_int_can_type: ['Flat for Full Amendment', Validators.required],
+            air_int_can_val: [0, Validators.required],
+            air_int_ins_can_type: ['Flat for Full Amendment', Validators.required],
+            air_int_ins_can_val: [0, Validators.required],
+            air_int_reissue_type: ['Flat for Full Amendment', Validators.required],
+            air_int_reissue_val: [0, Validators.required],
+            // air_misc_type: ['Flat for Full Amendment', Validators.required],
+            // air_misc_val: [0, Validators.required],
+            air_int_no_show_type: ['Flat for Full Amendment', Validators.required],
+            air_int_no_show_val: [0, Validators.required],
+            air_int_void_type: ['Flat for Full Amendment', Validators.required],
+            air_int_void_val: [0, Validators.required],
+            air_int_meal_type: ['Flat for Full Amendment', Validators.required],
+            air_int_meal_val: [0, Validators.required],
+            air_int_bag_type: ['Flat for Full Amendment', Validators.required],
+            air_int_bag_val: [0, Validators.required],
+            air_int_correction_val: [0, Validators.required],
+            air_int_correction_type: ['Flat for Full Amendment', Validators.required],
         });
 
         this.DetailFormGroupOne = this.builder.group({
@@ -333,6 +351,8 @@ export class MarkupProfileEntryComponent {
             markup_profile_id: [''],
             country: [''],
             cityfilter: [''],
+            visa_type: ['Flat for Full Booking', Validators.required],
+            visa_val: [0, Validators.required],
         });
 
         this.SupplierFormGroup = this.builder.group({
@@ -1011,6 +1031,10 @@ export class MarkupProfileEntryComponent {
 
     public compareWith(v1: any, v2: any) {
         return v1 && v2 && v1.id === v2.id;
+    }
+
+    onDetail(val:any){
+        this.selectedDetailTab = val;
     }
 
 }

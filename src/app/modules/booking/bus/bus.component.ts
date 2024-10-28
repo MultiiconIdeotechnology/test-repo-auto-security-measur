@@ -126,7 +126,7 @@ export class BusComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    this.getAgent("", true);
+    this.agentList = this._filterService.agentListById;
     this.getSupplier();
     this.getFromCity('');
     this.getToCity('');
@@ -182,6 +182,13 @@ export class BusComponent extends BaseListingComponent {
       this.selectedSupplier = filterData['table_config']['supplier']?.value;
       this.selectedFromCity = filterData['table_config']['from_id_filters']?.value;
       this.selectedToCity = filterData['table_config']['to_id_filters']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
       if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
         this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
@@ -197,16 +204,9 @@ export class BusComponent extends BaseListingComponent {
     this.toasterService.showToast('success', 'Copied');
   }
 
-  getAgent(value: string, bool: boolean = true) {
-    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+  getAgent(value: string) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
-
-      if (this.selectedAgent && this.selectedAgent.id) {
-        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        if (!match) {
-          this.agentList.push(this.selectedAgent);
-        }
-      }
 
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`

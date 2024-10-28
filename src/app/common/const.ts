@@ -24,6 +24,16 @@ export const dateRange = {
     setCustomDate: 'Set Custom Date',
 };
 
+export const dateRangeContracting = {
+    today: 'Today',
+    lastWeek: 'This Week',
+    lastMonth: 'This Month',
+    previousMonth: 'Previous Month',
+    last3Month: 'Last 3 Month',
+    last6Month: 'Last 6 Month',
+    setCustomDate: 'Custom',
+};
+
 export const dateRangeLeadRegister = {
     all: 'All',
     today: 'Today',

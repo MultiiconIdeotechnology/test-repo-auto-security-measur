@@ -108,13 +108,13 @@ export class RejectedComponent extends BaseListingComponent {
 	}
 
 	ngOnInit(): void {
+		this.agentList = this._filterService.agentListById;
 		setTimeout(() => {
-			this.agentList = this.filterApiData.agentData;
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
-		this._filterService.selectionDateDropdown = ""
 
+		this._filterService.selectionDateDropdown = ""
 		this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
 			this._filterService.selectionDateDropdown = "";
 			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
@@ -200,7 +200,6 @@ export class RejectedComponent extends BaseListingComponent {
 	}
 
 	ngOnChanges(changes: SimpleChanges) {
-		this.agentList = this.filterApiData.agentData;
 		this.mopList = this.filterApiData.mopData;
 		this.pspList = this.filterApiData.pspData;
 	}

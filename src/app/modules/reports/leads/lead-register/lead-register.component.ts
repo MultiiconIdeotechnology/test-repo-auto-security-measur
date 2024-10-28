@@ -159,6 +159,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     ngOnInit() {
         this.getLeadStatus("");
         this.getEmployee("");
+        // this.employeeList = this._filterService.originalRmList;
 
         this._filterService.selectionDateDropdown = "";
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
