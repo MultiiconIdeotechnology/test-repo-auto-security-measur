@@ -55,8 +55,8 @@ export class KycDocumentService {
     return this.http.post<any>(this.baseUrl + 'document/getKYCDisplay', { id: id });
   }
 
-  verify(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'document/verify', { id: id });
+  verify(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'document/verify', model);
   }
 
   reject(id: any, note?:string): Observable<any> {
