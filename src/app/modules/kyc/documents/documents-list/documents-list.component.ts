@@ -328,7 +328,7 @@ export class DocumentsListComponent
         }).afterClosed().subscribe({
             next: (res) => {
                 if (res === 'confirmed') {
-                    this.KycdocumentService.verify(data.id).subscribe({
+                    this.KycdocumentService.verify({id : data.id}).subscribe({
                         next: () => {
                             this.alertService.showToast('success', "Document Audited", "top-right", true);
                             this.refreshItems();
