@@ -58,7 +58,7 @@ import { FailedConfirmedInfoComponent } from './failed-confirmed-info/failed-con
   templateUrl: './airline-rejection.component.html',
   styleUrls: ['./airline-rejection.component.scss']
 })
-export class AirlineRejectionComponent extends BaseListingComponent implements OnDestroy{
+export class AirlineRejectionComponent extends BaseListingComponent implements OnDestroy {
 
   dataList = [];
   dataListTotals = [];
@@ -92,7 +92,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
     this.Mainmodule = this;
     this.dateRangeContractings = CommonUtils.valuesArray(dateRangeContracting);
     this.date.patchValue(dateRangeContracting.lastWeek);
-    this.updateDate(dateRangeContracting.lastWeek,false)
+    this.updateDate(dateRangeContracting.lastWeek, false)
     this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
@@ -106,7 +106,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
     });
   }
 
-  refreshItems(event?:any): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
 
     const request = this.getNewFilterReq(event);
@@ -126,51 +126,57 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
     });
   }
 
-  supplierInfo(data){
-    console.log("data",data);
+  supplierInfo(data) {
+    console.log("data", data);
 
     this.matDialog.open(SupplierInfoComponent,
-      { data: {
-        supplier: data,
-        From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
-        To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
-      }, disableClose: true, })
+      {
+        data: {
+          supplier: data,
+          From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
+          To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
+        }, disableClose: true,
+      })
       .afterClosed()
       .subscribe((res) => {
-          
+
       });
   }
 
-  supplierFaildConfirmed(data: any, key: any){
+  supplierFaildConfirmed(data: any, key: any) {
 
     this.matDialog.open(FailedConfirmedInfoComponent,
-      { data: {
-        supplier: data.supplier,
-        From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
-        To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
-        filterArea: key,
-        carrier: '',
-        send:'Main'
-      },
-       disableClose: true, })
+      {
+        data: {
+          supplier: data.supplier,
+          From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
+          To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
+          filterArea: key,
+          carrier: '',
+          send: 'Main'
+        },
+        disableClose: true,
+      })
       .afterClosed()
       .subscribe((res) => {
       });
   }
 
-  totalFaildConfirmed(name: any, key: any){
+  totalFaildConfirmed(name: any, key: any) {
 
     this.matDialog.open(FailedConfirmedInfoComponent,
-      { data: {
-        titleName: name,
-        supplier: '',
-        From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
-        To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
-        filterArea: key,
-        carrier: '',
-        send:'MainTotal'
-      },
-       disableClose: true, })
+      {
+        data: {
+          titleName: name,
+          supplier: '',
+          From_Date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
+          To_Date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
+          filterArea: key,
+          carrier: '',
+          send: 'MainTotal'
+        },
+        disableClose: true,
+      })
       .afterClosed()
       .subscribe((res) => {
       });
@@ -217,18 +223,25 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
         { header: 'International Faield', property: 'internationalfailed' },
       ];
 
+      // Create a shortened, dynamic sheet name
+      const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
+      const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
+      const sheetName = `Airline Rejection Analysis ${fromDate} to ${toDate}`.substring(0, 100);
+
       // Export the data using the custom Excel utility
       Excel.export(
         'Airline Rejection Analysis',  // File name
         columns,            // Columns definition
         formattedData,      // Data rows
-        'Airline Rejection Analysis',  // Sheet name
-        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }] // Optional merge (if required)
+        // 'Airline Rejection Analysis',  // Sheet name
+        sheetName,
+        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }], // Optional merge (if required)
+        false
       );
     });
   }
 
-  public updateDate(event: any, isRefresh:boolean = true): void {
+  public updateDate(event: any, isRefresh: boolean = true): void {
     if (event === dateRangeContracting.today) {
       this.StartDate = new Date();
       this.EndDate = new Date();
@@ -236,7 +249,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-   
+
     else if (event === dateRangeContracting.lastWeek) {
       this.StartDate = new Date();
       this.EndDate = new Date();
@@ -261,7 +274,7 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       this.EndDate.setDate(this.EndDate.getDate() - 1)
       this.endDate.patchValue(this.EndDate);
 
-  }
+    }
     else if (event === dateRangeContracting.lastMonth) {
       this.StartDate = new Date();
       this.EndDate = new Date();
@@ -292,8 +305,8 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    if(isRefresh)
-    this.refreshItems();
+    if (isRefresh)
+      this.refreshItems();
   }
 
   dateRangeContractingChange(start, end): void {

@@ -248,13 +248,20 @@ export class AirlineCareerWiseComponent
             })),
         ];
 
+        // Create a shortened, dynamic sheet name
+        const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
+        const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
+        const sheetName = `Airline Career Wise Analysis ${fromDate} to ${toDate}`.substring(0, 100);
+
         // Pass the display data to the Excel export method
         Excel.export(
             'Airline Career Wise Analysis',
             headers,
             this.displayData, // Data containing carrier, domestic, and international rows
-            'Airline Career Wise Analysis',
-            [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]
+            // 'Airline Career Wise Analysis',
+            sheetName,
+            [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }],
+            false
         );
     }
 
