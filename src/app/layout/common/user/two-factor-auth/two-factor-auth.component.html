@@ -1,1 +1,118 @@
-<p>two-factor-auth works!</p>
+ <!-- Two Factor Authentication -->
+ <div class="flex flex-col gap-4 " id="two-factor">
+    <div class="flex items-center justify-between border-b border-[#374252] pb-2 -mx-6 px-6">
+        <div class="flex items-center">
+            <h1 class="text-2xl font-semibold text-[#0B0D0E] font-Inter dark:text-white">Two-factor Authentication</h1>
+            <button class="bg-red-100 text-[#B45437] font-medium font-Inter py-1 px-3 ml-2 rounded-md text-sm">
+                DISABLE
+            </button>
+            <button *ngIf="false" class="white-bg primary-text font-medium font-Inter py-1 px-3 ml-2 rounded-md text-sm ">
+                ENABLED
+            </button>
+        </div>
+        <!-- <i class="material-icons cursor-pointer font-thin">close</i> -->
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-[#374252] dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+    <div class="body">
+        <p class="text-[#48505C] mb-6 font-normal text-lg dark:text-[#E5E1E1]">
+            Enable two-factor authentication to add an extra layer of security. A second login step can keep your
+            account secure, even if your password is compromised. To enable it, all you need is a smart phone.
+        </p>
+    
+        <div class="space-y-2">
+            <h1 class="text-xl font-medium text-[#0B0D0E] font-Inter mb-4 dark:text-white">Two-Factor Method</h1>
+    
+            <div class="flex items-center justify-between pt-2 pl-0 pr-4 pb-4 border-b"
+                *ngFor=" let method of twoFactorMethod; let i=index">
+                <div class="flex items-center space-x-4">
+                    <div class="text-blue-500 dark:text-[#687798]">
+                        <img [src]="method.iconDark" alt="Bonton Logo" class="mx-auto w-7 h-7">
+                        <!-- <i class="material-icons">{{method.icon}}</i> -->
+                    </div>
+                    <div>
+                        <h2 class="font-medium font-Inter text-xl text-[#24282E] dark:text-white">{{method.title}}</h2>
+                        <p class="text-base font-Inter font-normal text-[#24282E] dark:text-[#879FC1]">{{method.content}}</p>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <ng-container *ngIf="method.page != 'sms'">
+                        <button
+                            class="text-[#B43737] py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#F5D0D0]"
+                            (click)="authenticationDisabled()">Disable</button>
+    
+                        <button
+                            class="primary-text py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#E7EBEE] mt-2 dark:bg-[#0D9488] dark:rounded-2xl dark:text-white"
+                            (click)="authenticationEnabled()">Enable</button>
+                        <!-- <button
+                                            class="text-[#234977] py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#CDDAEA] mt-2"
+                                            (click)="authenticationSelect()">Selected</button> -->
+                    </ng-container>
+                    <ng-container *ngIf="method.page == 'sms'">
+                        <div class="bg-[#F5D0D0] font-Inter px-2.5 py-1 rounded">
+                            coming-soon
+                        </div>
+                    </ng-container>
+    
+                </div>
+            </div>
+    
+            <!-- <div class="flex items-center justify-between pt-2 pl-0 pr-4 pb-4 border-b">
+                <div class="flex items-center space-x-4">
+                    <div class="text-blue-500">
+                        <img src="assets/images/totp/auth-app.svg" alt="Bonton Logo" class="mx-auto w-7 h-7">
+                    </div>
+                    <div>
+                        <h2 class="font-medium font-Inter text-xl text-[#24282E]">Authenticator App</h2>
+                        <p class="text-base font-Inter font-normal text-[#24282E]">Use an authentication app or browser extension to get
+                            two-factor authentication codes when prompted.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    authFlag ::: {{authFlag | json}}
+                    <button class="text-[#B43737] py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#F5D0D0]" (click)="authenticationDisabled()" *ngIf="authFlag == 'auth'">Disable</button>
+    
+                    <button class="primary-text py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#E7EBEE] mt-2" (click)="authenticationEnabled()">Enable</button>
+    
+                    <button *ngIf="authFlag == 'auth'" class="text-[#234977] py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#CDDAEA] mt-2" (click)="authenticationSelect()">Selected</button>
+                </div>
+            </div> -->
+    
+            <!-- <div class="flex items-center justify-between pt-2 pl-0 pr-4 pb-4 border-b">
+                <div class="flex items-center space-x-4">
+                    <div class="text-blue-500">
+                        <img src="assets/images/totp/sms.svg" alt="Bonton Logo" class="mx-auto w-7 h-7">
+                    </div>
+                    <div>
+                        <h2 class="font-medium font-Inter text-xl text-[#24282E]">SMS/Text Message</h2>
+                        <p class="text-base font-Inter font-normal text-[#24282E]">Get one-time codes sent to your phone via SMS to complete
+                            authentication requests.</p>
+                    </div>
+                </div>
+                <button class="primary-text py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#E7EBEE]" (click)="smsText()">Enable</button>
+            </div>
+    
+            <div class="flex items-center justify-between pt-2 pl-0 pr-4 pb-4 border-b">
+                <div class="flex items-center space-x-4">
+                    <div class="text-blue-500">
+                        <img src="assets/images/totp/whatsapp.svg" alt="Bonton Logo" class="mx-auto w-7 h-7">
+                    </div>
+                    <div>
+                        <h2 class="font-medium font-Inter text-xl text-[#24282E]">WhatsApp Message</h2>
+                        <p class="text-base font-Inter font-normal text-[#24282E]">Get one-time codes sent to your phone via WhatsApp to complete
+                            authentication requests.</p>
+                    </div>
+                </div>
+                <button class="primary-text py-1 px-4 rounded-md font-Inter font-medium text-base bg-[#E7EBEE]" (click)="whatsup()">Enable</button>
+            </div> -->
+        </div>        
+    </div>
+
+    <!-- Note Section -->
+    <p class="text-sm">
+        <span class="font-Inter font-semibold text-lg dark:text-white">Note:</span> <span
+            class="font-Inter font-medium text-lg pl-2 dark:text-white">Activating two-factor authentication will sign you out of
+            all other sessions.</span>
+    </p>
+</div>

@@ -1,0 +1,33 @@
+<div class="flex flex-col gap-5">
+    <div>
+        <div class="flex justify-center items-center gap-8">
+            <ng-container *ngFor="let step of stepArr; let i = index">
+                <div class="flex items-center gap-3">
+                    <div *ngIf="!step.isCompleted" class="w-8 h-8 flex items-center justify-center rounded-full"
+                        [ngClass]="step.isActive ? 'dark:text-white dark:border dark:border-white':'dark:text-[#687798] dark:border dark:border-[#687798]'">
+                        {{i+1}}
+                    </div>
+                    <div *ngIf="step.isCompleted && !step.isActive"
+                        class="w-8 h-8 flex items-center justify-center rounded-full dark:text-[#0D9488] dark:border dark:border-[#0D9488]">
+                        <i class="material-icons">done</i>
+                    </div>
+                    <div [ngClass]="
+                            {'dark:text-white':step.isActive,
+                             'dark:text-[#687798]':!step.isActive && !step.isCompleted , 
+                             'dark:text-[#0D9488]':step.isCompleted}">
+                        {{step.label}}
+                    </div>
+                </div>
+                <div *ngIf="i != stepArr.length - 1" class="w-8 border" 
+                [ngClass]=" {'dark:border dark:border-white': step.isActive, 
+                            'dark:border dark:border-[#687798]': !step.isActive && !step.isCompleted,
+                            'dark:border dark:border-[#0D9488]':step.isCompleted
+                        }"></div>
+            </ng-container>
+        </div>
+    </div>
+
+    <app-step-one *ngIf="stepKey == 'setUp'"></app-step-one>
+    <app-step-two *ngIf="stepKey == 'connectMobile'"></app-step-two>
+    <app-step-three *ngIf="stepKey == 'savesCode'"></app-step-three>
+</div>
