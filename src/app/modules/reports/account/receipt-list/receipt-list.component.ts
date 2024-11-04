@@ -476,7 +476,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
                     let json = {
                         reference_table_id: data?.id || "",
                         service_for: "Receipt",
-                        mop: data?.mop ? data?.mop : ""
+                        mop: data?.mop || ""
                     }
 					this.walletService.generatePaymentLink(json).subscribe({
 						next: (res) => {

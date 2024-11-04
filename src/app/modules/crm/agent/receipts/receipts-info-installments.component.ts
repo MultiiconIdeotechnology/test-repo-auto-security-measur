@@ -420,9 +420,9 @@ export class ReceiptsInfoItemComponent {
             next: (res) => {
                 if (res === 'confirmed') {
                     let json = {
-                        reference_table_id: data?.receiptid ? data?.receiptid : "",
+                        reference_table_id: data?.receiptid || "",
                         service_for: "Receipt",
-                        mop: data?.mop ? data?.mop : ""
+                        mop: data?.mop || ""
                     }
                     this.walletService.generatePaymentLink(json).subscribe({
                         next: (res) => {
