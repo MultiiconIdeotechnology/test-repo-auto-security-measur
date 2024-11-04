@@ -178,13 +178,19 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
         { header: 'International Ratio (%)', property: 'internationalRatio' }
       ];
 
+      // Create a shortened, dynamic sheet name
+      const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
+      const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
+      const sheetName = `Airline Summary ${fromDate} to ${toDate}`.substring(0, 45);
+      
       // Export the data using the custom Excel utility
       Excel.export(
         'Airline Summary',  // File name
         columns,            // Columns definition
         formattedData,      // Data rows
-        'Airline Summary',  // Sheet name
-        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }] // Optional merge (if required)
+        sheetName,          // Sheet name (limited to 31 characters)
+        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }], // Optional merge (if required)
+        false
       );
     });
   }
@@ -223,7 +229,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
       this.EndDate.setDate(this.EndDate.getDate() - 1)
       this.endDate.patchValue(this.EndDate);
 
-  }
+    }
     else if (event === dateRangeContracting.lastMonth) {
       this.StartDate = new Date();
       this.EndDate = new Date();
