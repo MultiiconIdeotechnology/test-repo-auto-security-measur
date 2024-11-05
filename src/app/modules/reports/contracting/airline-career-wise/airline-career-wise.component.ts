@@ -135,7 +135,6 @@ export class AirlineCareerWiseComponent
                             field: key, // Key name (e.g., 'tbo_air', 'jck_air')
                             header: key, // Header display name (e.g., 'TBO', 'JCK')
                         }));
-                    console.log(this.supplierColumns);
                     // Generate display data by flattening the rows (carrier, domestic, international)
                     this.buildDisplayData();
                 }
@@ -217,7 +216,6 @@ export class AirlineCareerWiseComponent
 
 
     toggleRow(carrier: string): void {
-        console.log("carrier", carrier);
         this.expandedRows[carrier] = !this.expandedRows[carrier];
     }
 

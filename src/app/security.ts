@@ -159,6 +159,7 @@ export const category_name = {
     document: 'Document',
     applyPremission: 'Apply Premission',
     status: 'Status',
+    rejected:'Reject',
     audit_unaudit: 'Audit/Unaudit',
     publish_unpublish: 'Publish/Unpublish',
     online_offline: 'Online/Offline',
@@ -218,6 +219,7 @@ export const module_name = {
     holiday: 'Holiday Products',
     productpricing: 'Product Pricing',
     hotel: 'Hotel',
+    forex: 'Forex',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -261,6 +263,7 @@ export const module_name = {
     bookingsFlight: 'Bookings - Flight',
     bookingsBus: 'Bookings - BUS',
     bookingsHotel: 'Bookings - Hotel',
+    bookingsForex: 'Bookings - Forex',
     bookingsVisa: 'Bookings - Visa',
     bookingsInsurance: 'Bookings - Visa',
     inventoryHoliday: 'Inventory - Holiday',
@@ -354,9 +357,11 @@ export const filter_module_name = {
     group_inquiry_booking: "group_inquiry_booking",
     bus_booking: "bus_booking",
     hotel_booking: "hotel_booking",
+    forex_booking: "forex_booking",
     visa_booking: "visa_booking",
     insurance_booking: "insurance_booking",
     offline_service_booking: "offline_service_booking",
+
 
     //Report
     agent_balance_register: "agent_balance_register",
@@ -606,6 +611,13 @@ export const documentPermissions = {
     auditUnauditPermissions: { module_name: module_name.kycdocument, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
     rejectPermissions: { module_name: module_name.kycdocument, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit },
 }
+
+export const forexPermissions = {
+    rejectedPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.rejected },
+    statusPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Status', category_name: category_name.status },
+}
+
+
 
 export const bookingsFlightPermissions = {
     importPNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Import PNR', category_name: category_name.entry },

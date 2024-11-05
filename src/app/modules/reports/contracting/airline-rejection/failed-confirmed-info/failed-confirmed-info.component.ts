@@ -112,7 +112,6 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
   }
 
   viewData(record): void {
-    console.log(record);
     if (!Security.hasViewDetailPermission(module_name.airline_rejection)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }

@@ -310,4 +310,16 @@ export class EntityService {
     public onappliedOnCall(): Observable<any> {
         return this.appliedOnCall.asObservable();
     }
+
+    /******** Forex ***********/
+
+    private forexEntityCall = new ReplaySubject<any>();
+
+    public onForexEntityCall(): Observable<any> {
+        return this.forexEntityCall.asObservable();
+    }
+
+    public raiseForexEntityCall(item): void {
+        this.forexEntityCall.next(item);
+    }
 }

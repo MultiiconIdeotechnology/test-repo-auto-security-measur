@@ -1,0 +1,104 @@
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="flex flex-col w-full bg-card">
+
+        <div class="flex flex-row items-center px-6 h-13 min-h-13 dark:text-white">
+            <div class="text-lg font-medium tracking-tight">Forex Info</div>
+            <button class="ml-auto" mat-icon-button (click)="settingsDrawer.close()">
+                <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+
+
+        <div class="p-6 overflow-auto" style="height: calc(100vh - 100px)">
+            <div class="mb-5 w-full">
+                <div class="text-md font-semibold text-secondary">Reference No</div>
+                <div class="text-base">{{infoData?.reference_no || "-"}}</div>
+            </div>
+            <div class="mb-5 w-full">
+                <div class="text-md font-semibold text-secondary">Supplier Name</div>
+                <div class="text-base">{{infoData?.supplier_name || "-"}}</div>
+            </div>
+            <div class="mb-5 w-full">
+                <div class="text-md font-semibold text-secondary">agent</div>
+                <div class="text-base">{{infoData?.agent || "-"}}</div>
+            </div>
+            <div class="mb-5 w-full">
+                <div class="text-md font-semibold text-secondary">Customer Name</div>
+                <div class="text-base">{{infoData?.customer_name || "-"}}</div>
+            </div>
+            <div class="mb-5 w-full">
+                <div class="text-md font-semibold text-secondary">City</div>
+                <div class="text-base">{{infoData?.city_name || "-"}}</div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">From Currency</div>
+                    <div class="text-base">{{infoData?.from_currency || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">To Currency</div>
+                    <div class="text-base">{{infoData?.to_currency || "-"}}</div>
+                </div>
+            </div>
+
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Lead Name</div>
+                    <div class="text-base">{{infoData?.lead_name || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Lead Email</div>
+                    <div class="text-base">{{infoData?.lead_email || "-"}}</div>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Lead Mobile</div>
+                    <div class="text-base">{{infoData?.lead_mobile || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Lead Status</div>
+                    <div class="text-base">{{infoData?.lead_status || "-"}}</div>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Transaction Type</div>
+                    <div class="text-base">{{infoData?.transaction_type || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Forex Rate</div>
+                    <div class="text-base">{{infoData?.forex_rate || "0"}}</div>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Date</div>
+                    <div class="text-base">{{(infoData?.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}</div>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Reject By</div>
+                    <div class="text-base">{{(infoData?.reject_by | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}</div>
+                </div>
+                <div class="mb-5 w-1/2">
+                    <div class="text-md font-semibold text-secondary">Reject Date</div>
+                    <div class="text-base">{{(infoData?.reject_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}</div>
+                </div>
+            </div>
+            <div class="mb-5 w-full">
+                <div class="text-md font-semibold text-secondary">Reject Reason</div>
+                <div class="text-base">{{infoData?.reject_reason || "-"}}</div>
+            </div>
+        </div>
+
+        <div
+            class="h-16 flex items-center justify-end pt-4 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-5 dark:bg-[#1e293b] bg-white border-t m-auto">
+            <button mat-stroked-button (click)="settingsDrawer.close()">Close</button>
+        </div>
+    </div>
+</fuse-drawer>

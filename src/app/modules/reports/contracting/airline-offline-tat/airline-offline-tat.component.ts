@@ -104,7 +104,6 @@ export class AirlineOfflineTatComponent extends BaseListingComponent implements 
   }
 
   viewData(record): void {
-    console.log(record);
     if (!Security.hasViewDetailPermission(module_name.airline_offline)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
