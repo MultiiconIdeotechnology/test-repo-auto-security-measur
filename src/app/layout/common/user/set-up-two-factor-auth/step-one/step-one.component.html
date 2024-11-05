@@ -1,9 +1,11 @@
 <div>
     <h2 class="text-2xl font-semibold mb-4 font-Inter">Set-up for enable 2FA</h2>
-    <p class="mb-4 font-Inter font-normal text-lg text-[#000000] dark:text-[#879FC1]">Start by entering your password so that we
+    <p class="mb-4 font-Inter font-normal text-lg text-[#000000] dark:text-[#879FC1]">Start by entering your password so
+        that we
         know it's you. Then we'll walk through two more
         simple steps.</p>
-    <p class="mb-4 font-Inter font-normal text-lg text-[#000000] dark:text-[#879FC1]">When you enable two-step verification, we keep
+    <p class="mb-4 font-Inter font-normal text-lg text-[#000000] dark:text-[#879FC1]">When you enable two-step
+        verification, we keep
         you logged in to this device. We may
         log you out from your other devices, to log back in, enter your password and complete the second
         verification step.</p>
@@ -13,29 +15,29 @@
         </label>
         <form [formGroup]="twoFaFormGroup" novalidate>
             <!-- <div class="mt-1 flex flex-col text-xl"> -->
-                <mat-form-field class="w-full" [ngClass]="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched ?
+            <mat-form-field class="w-full" [ngClass]="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched ?
             'border-red-500' : 'border-[#CECECE]'">
-                    <input id="password" matInput type="password" required formControlName="enablePassword"
-                        class="" #passwordField>
-                    <button mat-icon-button class="" type="button"
-                        (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
-                        matSuffix>
-                        <mat-icon class="icon-size-5 text-[#324154]" *ngIf="passwordField.type === 'password'"
-                            [svgIcon]="'heroicons_solid:eye'"></mat-icon>
-                        <mat-icon class="icon-size-5 text-[#324154]" *ngIf="passwordField.type === 'text'"
-                            [svgIcon]="'heroicons_solid:eye-slash'"></mat-icon>
-                    </button>
-                </mat-form-field>
-                <mat-error class="pt-[6pex]"
-                    *ngIf="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched">
-                    <span class="text-red-600 text-sm">Password is required</span>
-                </mat-error>
+                <input id="password" matInput type="password" required formControlName="enablePassword" class=""
+                    #passwordField>
+                <button mat-icon-button class="" type="button"
+                    (click)="passwordField.type === 'password' ? passwordField.type = 'text' : passwordField.type = 'password'"
+                    matSuffix>
+                    <mat-icon class="icon-size-5 text-[#324154]" *ngIf="passwordField.type === 'password'"
+                        [svgIcon]="'heroicons_solid:eye'"></mat-icon>
+                    <mat-icon class="icon-size-5 text-[#324154]" *ngIf="passwordField.type === 'text'"
+                        [svgIcon]="'heroicons_solid:eye-slash'"></mat-icon>
+                </button>
+            </mat-form-field>
+            <mat-error class="pt-[6pex]"
+                *ngIf="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched">
+                <span class="text-red-600 text-sm">Password is required</span>
+            </mat-error>
             <!-- </div> -->
         </form>
     </div>
     <div class="text-end">
-        <button type="submit" (click)="matDialogRef.close()" class="border text-[15px] rounded-[18px] dark:border-[#324154] w-[140px] mr-3 py-2">Close</button>
+        <button type="submit" (click)="matDialogRef.close()"
+            class="border text-[15px] rounded-[18px] dark:border-[#324154] w-[140px] mr-3 py-2">Close</button>
         <button type="submit" class="text-[15px] py-2 rounded-[18px] dark:bg-[#0D9488] w-[140px]">Verify Now</button>
     </div>
 </div>
-

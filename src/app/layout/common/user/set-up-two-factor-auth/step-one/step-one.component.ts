@@ -24,16 +24,16 @@ import { SetUpTwoFactorAuthComponent } from '../set-up-two-factor-auth.component
   styleUrls: ['./step-one.component.scss']
 })
 export class StepOneComponent {
-  twoFaFormGroup:FormGroup;
+  twoFaFormGroup: FormGroup;
 
   constructor(
     private builder: FormBuilder,
     public matDialogRef: MatDialogRef<SetUpTwoFactorAuthComponent>,
-  ){
+  ) {
 
   }
 
-  ngOnInit():void {
+  ngOnInit(): void {
     this.twoFaFormGroup = this.builder.group({
       enablePassword: ['', Validators.required],
     });

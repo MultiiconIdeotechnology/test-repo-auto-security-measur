@@ -169,8 +169,8 @@ export class UserComponent implements OnInit, OnDestroy {
 
     openTF2AuthModal(){
         this._matdialog.open(TwoFactorAuthComponent, {
-            width:'825px',
-            disableClose: false,
+            width:'875px',
+            disableClose: true,
             data: {}
         })
     }

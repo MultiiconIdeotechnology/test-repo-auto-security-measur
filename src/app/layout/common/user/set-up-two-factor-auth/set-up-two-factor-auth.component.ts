@@ -15,35 +15,35 @@ import { StepTwoComponent } from './step-two/step-two.component';
 import { StepThreeComponent } from './step-three/step-three.component';
 
 @Component({
-  selector: 'app-set-up-two-factor-auth',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink, FuseAlertComponent, NgIf, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatProgressSpinnerModule,
-    StepOneComponent,
-    StepTwoComponent,
-    StepThreeComponent
-  ],
-  templateUrl: './set-up-two-factor-auth.component.html',
-  styleUrls: ['./set-up-two-factor-auth.component.scss']
+    selector: 'app-set-up-two-factor-auth',
+    standalone: true,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        RouterLink, FuseAlertComponent, NgIf, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatProgressSpinnerModule,
+        StepOneComponent,
+        StepTwoComponent,
+        StepThreeComponent
+    ],
+    templateUrl: './set-up-two-factor-auth.component.html',
+    styleUrls: ['./set-up-two-factor-auth.component.scss']
 })
 export class SetUpTwoFactorAuthComponent {
- stepKey = 'setUp'
+    stepKey = 'setUp'
 
-  stepArr:any[] = [
-    {step:1, key:'setUp', label:'SETUP', isActive:false, isCompleted:true},
-    {step:2, key:'connectMobile', label:'CONNECT MOBILE', isActive:true, isCompleted:false},
-    {step:3, key:'savesCode', label:'SAVES CODES', isActive:false, isCompleted:false},
-  ]
+    stepArr: any[] = [
+        { step: 1, key: 'setUp', label: 'SETUP', isActive: false, isCompleted: true },
+        { step: 2, key: 'connectMobile', label: 'CONNECT MOBILE', isActive: true, isCompleted: false },
+        { step: 3, key: 'savesCode', label: 'SAVES CODES', isActive: false, isCompleted: false },
+    ]
 
-  constructor(
-    public matDialogRef: MatDialogRef<SetUpTwoFactorAuthComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any = {},
-  ){}
+    constructor(
+        public matDialogRef: MatDialogRef<SetUpTwoFactorAuthComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: any = {},
+    ) { }
 
-  ngOnInit():void {
-      
-  }
+    ngOnInit(): void {
+
+    }
 
 }

@@ -18,8 +18,7 @@
                         {{step.label}}
                     </div>
                 </div>
-                <div *ngIf="i != stepArr.length - 1" class="w-8 border" 
-                [ngClass]=" {'dark:border dark:border-white': step.isActive, 
+                <div *ngIf="i != stepArr.length - 1" class="w-8 border" [ngClass]=" {'dark:border dark:border-white': step.isActive, 
                             'dark:border dark:border-[#687798]': !step.isActive && !step.isCompleted,
                             'dark:border dark:border-[#0D9488]':step.isCompleted
                         }"></div>
