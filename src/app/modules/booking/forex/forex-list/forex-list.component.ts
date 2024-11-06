@@ -236,7 +236,7 @@ export class ForexListComponent extends BaseListingComponent {
             Fdata['note'] = res,
             this.forexService.setLeadStatus(Fdata).subscribe({
               next: () => {
-                this.alertService.showToast('success', "Forex Rejected", "top-right", true);
+                this.alertService.showToast('success', "Forex Reject", "top-right", true);
                 this.refreshItems()
               },
               error: (err) => this.alertService.showToast('error', err, "top-right", true)
@@ -251,7 +251,7 @@ export class ForexListComponent extends BaseListingComponent {
         return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    const label: string = code == 1 ? 'Forex Confirmed' : 'Forex Cancelled';
+    const label: string = code == 1 ? 'Forex Confirm' : 'Forex Cancel';
     this.conformationService.open({
       title: label,
       message: 'Are you sure to ' + label.toLowerCase() + ' ?'
@@ -264,7 +264,7 @@ export class ForexListComponent extends BaseListingComponent {
           Fdata['note'] = '',
           this.forexService.setLeadStatus(Fdata).subscribe({
             next: () => {
-              this.alertService.showToast('success', code == 1 ? 'Forex Confirmed' : 'Forex Cancelled', "top-right", true);
+              this.alertService.showToast('success', code == 1 ? 'Forex Confirm' : 'Forex Cancel', "top-right", true);
               this.refreshItems();
             }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
           });
