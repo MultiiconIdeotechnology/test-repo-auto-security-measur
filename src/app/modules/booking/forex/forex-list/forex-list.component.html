@@ -316,15 +316,15 @@
                                 <span style="font-weight: 600">Info</span>
                             </button>
                             <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 1)">
-                                <mat-icon class="mat-18">info</mat-icon>
+                                <mat-icon svgIcon="heroicons_outline:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Confirmed</span>
                             </button>
                             <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 2)">
-                                <mat-icon class="mat-18">info</mat-icon>
+                                <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
                                 <span style="font-weight: 600">Cancelled</span>
                             </button>
                              <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="Rejected(element, 3)">
-                                <mat-icon class="mat-18">info</mat-icon>
+                                <mat-icon svgIcon="heroicons_outline:x-mark"></mat-icon>
                                 <span style="font-weight: 600">Rejected</span>
                             </button>
                         </mat-menu>
