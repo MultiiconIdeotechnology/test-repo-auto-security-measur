@@ -160,6 +160,7 @@ export class UserComponent implements OnInit, OnDestroy {
 
     }
 
+    // Change Password
     changePassword(){
         this._matdialog.open(ChangePasswordComponent, {
             disableClose: true,
@@ -167,13 +168,14 @@ export class UserComponent implements OnInit, OnDestroy {
         })
     }
 
+    // Two FactorAuth Dialog
     openTF2AuthModal(){
         this._matdialog.open(TwoFactorAuthComponent, {
-            width:'875px',
+            width:'900px',
+            autoFocus: true,
             disableClose: true,
             data: {}
         })
     }
-
 
 }
