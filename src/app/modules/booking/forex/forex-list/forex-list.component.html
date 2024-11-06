@@ -189,7 +189,7 @@
                     </th>
 
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="city_id_dec" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="city_id_filters" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="cityList" optionLabel="display_name"
@@ -269,7 +269,7 @@
                             ariaLabel="Filter Lead Email" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="lead_mobile" placeholder="Search by Lead Mobile"
+                        <p-columnFilter type="numeric" matchMode="equals" field="lead_mobile" placeholder="Search by Lead Number"
                             ariaLabel="Filter Lead Mobile" />
                     </th>
                     <th>
@@ -315,15 +315,15 @@
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Info</span>
                             </button>
-                            <button *ngIf="element.lead_status !== 'Confirmed' && element.lead_status == 'New'" mat-menu-item (click)="status(element, 1)">
+                            <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 1)">
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Confirmed</span>
                             </button>
-                            <button *ngIf="element.lead_status !== 'Cancelled' && element.lead_status == 'New'" mat-menu-item (click)="status(element, 2)">
+                            <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 2)">
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Cancelled</span>
                             </button>
-                             <button *ngIf="element.lead_status !== 'Rejected' && element.lead_status == 'New'" mat-menu-item (click)="Rejected(element, 3)">
+                             <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="Rejected(element, 3)">
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Rejected</span>
                             </button>

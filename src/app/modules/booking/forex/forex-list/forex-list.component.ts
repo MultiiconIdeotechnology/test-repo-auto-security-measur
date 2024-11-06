@@ -31,6 +31,8 @@ import { Subscription } from 'rxjs';
 import { ForexBookingDetailsComponent } from '../forex-booking-details/forex-booking-details.component';
 import { EntityService } from 'app/services/entity.service';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: 'app-forex-list',
@@ -271,9 +273,6 @@ export class ForexListComponent extends BaseListingComponent {
     })
   }
 
-
-
-
   getFilter(): any {
     let filterReq = {};
     filterReq['fromdate'] = '';
@@ -331,10 +330,6 @@ export class ForexListComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
-  exportExcel() {
-
-  }
-
   get selectedColumns(): Column[] {
     return this._selectedColumns;
   }
@@ -349,5 +344,40 @@ export class ForexListComponent extends BaseListingComponent {
     }
   }
 
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission(module_name.bookingsHotel)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    let extraModel = this.getFilter();
+    let newModel = this.getNewFilterReq({})
+    const filterReq = { ...extraModel, ...newModel };
+    filterReq['Take'] = this.totalRecords;
+
+    this.forexService.getLeadList(filterReq).subscribe(data => {
+      for (var dt of data.data) {
+        dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+      }
+      Excel.export(
+        'Forex',
+        [
+          { header: 'Ref. No.', property: 'reference_no' },
+          { header: 'Status', property: 'lead_status' },
+          { header: 'Supplier', property: 'supplier_name' },
+          { header: 'Agent', property: 'agent' },
+          { header: 'Rate For', property: 'rate_for' },
+          { header: 'City', property: 'city_name' },
+          { header: 'From Currency', property: 'from_currency' },
+          { header: 'To Currency', property: 'to_currency' },
+          { header: 'Transaction Type', property: 'transaction_type' },
+          { header: 'B2C Customer', property: 'customer_name' },
+          { header: 'Lead Name', property: 'lead_name' },
+          { header: 'Lead Email', property: 'lead_email' },
+          { header: 'Lead Number', property: 'lead_mobile' },
+          { header: 'Date', property: 'entry_date_time' },
+        ],
+        data.data, "Forex", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
+    });
+  }
 
 }
