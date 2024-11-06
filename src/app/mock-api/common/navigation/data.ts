@@ -343,6 +343,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.booking.insurance_route
             },
             {
+                id: 'booking.forex',
+                title: 'Forex',
+                type: 'basic',
+                pid: 'BOOKINGS_FOREX_VIEW',
+                icon: 'payments',
+                link: Routes.booking.forex_route
+            },
+            {
                 id: 'booking.offline_serivce',
                 title: 'Offline Service',
                 type: 'basic',

@@ -57,7 +57,6 @@ export class FileLogsComponent {
     this.flighttabService.getBookingFileLog(this.data).subscribe({
       next: (res) => {
         this.dataList = res
-        console.log("this.dataList", this.dataList.length);
       }, error: (err) => {
         this.alertService.showToast('error', err)
       }

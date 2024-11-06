@@ -127,7 +127,6 @@ export class AirlineRejectionComponent extends BaseListingComponent implements O
   }
 
   supplierInfo(data) {
-    console.log("data", data);
 
     this.matDialog.open(SupplierInfoComponent,
       {

@@ -294,6 +294,10 @@ export const Routes = {
         hotel_path: 'booking/hotel',
         hotel_route: '/booking/hotel',
         hotel_details_route: '/booking/hotel/details',
+        
+        forex_path: 'booking/forex',
+        forex_route: '/booking/forex',
+        forex_details_route: '/booking/forex/details',
 
         flight_path: 'booking/flight',
         flight_route: '/booking/flight',

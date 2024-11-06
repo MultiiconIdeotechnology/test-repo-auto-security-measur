@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDividerModule } from '@angular/material/divider';
@@ -10,19 +10,20 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { Subject, Subscription, takeUntil } from 'rxjs';
-import { MatSidenav } from '@angular/material/sidenav';
-import { FuseConfig } from '@fuse/services/config';
+import { FuseConfigService } from '@fuse/services/config';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { EntityService } from 'app/services/entity.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { Subject, takeUntil } from 'rxjs';
+import { ForexService } from 'app/services/forex.service';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
-  selector: 'app-supplier-kyc-info',
+  selector: 'app-forex-booking-details',
   standalone: true,
   imports: [
     NgIf,
@@ -36,42 +37,52 @@ import { ToasterService } from 'app/services/toaster.service';
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatSnackBarModule,
+    MatDatepickerModule,
     MatSlideToggleModule,
-    NgxMatSelectSearchModule,
     MatTooltipModule,
+    MatMenuModule,
+    NgxMatSelectSearchModule,
+    NgxMatTimepickerModule,
     FuseDrawerComponent,
     MatDividerModule,
-    MatDatepickerModule,
-    MatMenuModule,
-    NgxMatTimepickerModule
   ],
-  templateUrl: './supplier-kyc-info.component.html',
-  styleUrls: ['./supplier-kyc-info.component.scss']
+  styles: [
+    `
+        referral-settings {
+            position: static;
+            display: block;
+            flex: none;
+            width: auto;
+        }
+    `,
+  ],
+  templateUrl: './forex-booking-details.component.html',
+  styleUrls: ['./forex-booking-details.component.scss']
 })
-export class SupplierKycInfoComponent {
+export class ForexBookingDetailsComponent {
 
-  @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
-  config: FuseConfig;
+  infoData: any;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
-  record: any = {};
-  private settingsUpdatedSubscription: Subscription;
+  @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
 
   constructor(
-    public alertService: ToasterService,
+    private builder: FormBuilder,
+    private forexService: ForexService,
+    private conformationService: FuseConfirmationService,
     private entityService: EntityService,
+    private alertService: ToasterService,
+    private _fuseConfigService: FuseConfigService,
+
   ) {
-    this.settingsUpdatedSubscription = this.entityService.onsupplierKycInfo()
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe({
-        next: (item) => {
-          this.settingsDrawer?.toggle();
-          this.record = item.data;
-        },
-        error: (err) => {
-          this.alertService.showToast('error', err, 'top-right', true);
+    this.entityService.onForexEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+      next: (item) => {
+        if (item) {
+          this.settingsDrawer.toggle()
+          this.infoData = item?.data;
+          }
         }
-      });
+    })
   }
+
 
 }
