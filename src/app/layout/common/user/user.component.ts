@@ -14,7 +14,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GlobalSearchComponent } from '../global_search/global-search.component';
-import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
+import { TwoFactorAuthComponent } from './two-factor/two-factor-auth/two-factor-auth.component';
 
 @Component({
     selector: 'user',

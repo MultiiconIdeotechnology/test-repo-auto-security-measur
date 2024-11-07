@@ -37,12 +37,7 @@ export class SetUpTwoFactorAuthComponent {
     transformQr: any;
     recoveryCodes: any = [];
     authotp: any;
-    config: any = {
-        length: 6,
-        inputClass: 'ng-otp-input-box',
-        containerClass: 'ng-otp-container',
-        isPasswordInput: false,
-    };
+    
     stepArr: any[] = [
         { step: 1, label: 'SETUP', isActive: true, isCompleted: false },
         { step: 2, label: 'CONNECT MOBILE', isActive: false, isCompleted: false },
@@ -53,7 +48,7 @@ export class SetUpTwoFactorAuthComponent {
         private builder: FormBuilder,
         public matDialogRef: MatDialogRef<SetUpTwoFactorAuthComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any = {},
-        private twoFaAuthenticationService: TwoFaAuthenticationService,
+        public twoFaAuthenticationService: TwoFaAuthenticationService,
         private alertService: ToasterService,
         private sanitizer: DomSanitizer,
     ) { }
@@ -121,22 +116,7 @@ export class SetUpTwoFactorAuthComponent {
                 this.alertService.showToast('error', err, 'top-right', true);
             },
         });
-    }
-
-    // Whatsapp Otp Sent
-    whatsappOTPSent() {
-        this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "Whatsapp" }).subscribe({
-            next: (res) => {
-                console.log("res", res);
-                if (res && res.status) {
-                    // this.startCountdown();
-                }
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
-    }
+    } 
 
     // Authentication verification
     authConfigureNow(mode: any) {
@@ -152,7 +132,7 @@ export class SetUpTwoFactorAuthComponent {
                         let message = mode == 'AuthApp' ? 'Two factor' : mode;
                         this.alertService.showToast('success', `${message} authentication successfull!`, 'top-right', true);
 
-                        if (this.currentStep < 3) {
+                        if (this.currentStep < 3 && mode == 'AuthApp') {
                             this.currentStep++;
                             this.changeStep(this.currentStep);
                         }

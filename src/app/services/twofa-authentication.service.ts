@@ -7,6 +7,13 @@ import { Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class TwoFaAuthenticationService {
+    otpConfig: any = {
+        length: 6,
+        inputClass: 'ng-otp-input-box',
+        containerClass: 'ng-otp-container',
+        isPasswordInput: false,
+    };
+
     constructor(private http: HttpClient) { }
 
     verifyPassword(model: any): Observable<any> {
@@ -31,5 +38,9 @@ export class TwoFaAuthenticationService {
     
     changeAuthMode(model: any): Observable<any> {
         return this.http.post<any>(environment.apiUrl + 'TFAConfiguration/changeAuthMode', model);
+    }
+    
+    tfaConfigurationDetails(): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + 'employee/tfaConfigurationDetails', {});
     }
 }

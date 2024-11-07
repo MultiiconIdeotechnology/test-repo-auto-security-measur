@@ -1,0 +1,124 @@
+import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { TwoFactorAuthComponent } from '../two-factor-auth/two-factor-auth.component';
+import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { NgOtpInputModule } from 'ng-otp-input';
+import { ToasterService } from 'app/services/toaster.service';
+import { UserService } from 'app/core/user/user.service';
+import { Subject, takeUntil } from 'rxjs';
+
+@Component({
+    selector: 'app-whatsapp-auth',
+    standalone: true,
+    imports: [CommonModule, MatIconModule, MatButtonModule, NgOtpInputModule],
+    templateUrl: './whatsapp-auth.component.html'
+})
+export class WhatsappAuthComponent {
+    authotp: any;
+    disableBtn: boolean = false;
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    user: any = {};
+
+    constructor(
+        // private settingService:SettingsService,
+        public matDialogRef: MatDialogRef<TwoFactorAuthComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: any = {},
+        private _matdialog: MatDialog,
+        public twoFaAuthenticationService: TwoFaAuthenticationService,
+        private alertService: ToasterService,
+        public _userService: UserService
+    ) {
+        if (data && data.tfa_type == 'Whatsapp') {
+            // this.whatsappOTPSent();
+        }
+
+        this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
+            this.user = user;
+        });
+    }
+
+    // OTP On Change event
+    onOtpChange(event: any) {
+        this.authotp = event;
+    }
+
+    // Whatsapp Otp Sent
+    whatsappOTPSent() {
+        this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "Whatsapp" }).subscribe({
+            next: (res) => {
+                if (res && res.status) {
+                    // this.startCountdown();
+                }
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+            },
+        });
+    }
+
+
+    // Authentication verification
+    authConfigureNow(mode: any) {
+        if (this.authotp && this.authotp.length >= 6) {
+            let payload: any = {
+                Mode: mode,
+                Otp: this.authotp,
+            };
+            this.disableBtn = true;
+            this.twoFaAuthenticationService.twoFactoreCheck(payload).subscribe({
+                next: (res) => {
+                    if (res) {
+                        this.disableBtn = false;
+                        this.alertService.showToast('success', `${mode} authentication successfull!`, 'top-right', true);
+                        this.matDialogRef.close();
+                    }
+                },
+                error: (err) => {
+                    this.disableBtn = false;
+                    this.alertService.showToast('error', err, 'top-right', true);
+                },
+            });
+        } else {
+            this.alertService.showToast('error', 'Please enter valid otp', 'top-right', true);
+        }
+    }
+
+    // Auth Disabled
+    authVerifyDisabled(mode: any) {
+        if (this.authotp && this.authotp.length >= 6) {
+            let payload = {
+                Mode: mode,
+                Otp: this.authotp,
+            };
+            this.disableBtn = true;
+            this.twoFaAuthenticationService.disableTwoFactoreAuth(payload).subscribe({
+                next: (res) => {
+                    if (res && res.status) {
+                        this.disableBtn = false;
+                        let message = mode == 'AuthApp' ? 'Two-factor' : mode;
+                        this.alertService.showToast('success', `${message} authentication disabled successfully!`, 'top-right', true);
+                        this.matDialogRef.close();
+                    }
+                },
+                error: (err) => {
+                    this.disableBtn = false;
+                    this.alertService.showToast('error', err, 'top-right', true);
+                },
+            });
+        }
+    }
+
+    // Two FactorAuth Dialog
+    openTF2AuthModal() {
+        this.matDialogRef.close();
+        this._matdialog.open(TwoFactorAuthComponent, {
+            width: '900px',
+            autoFocus: true,
+            disableClose: true,
+            data: {}
+        })
+    }
+}

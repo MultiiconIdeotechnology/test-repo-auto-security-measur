@@ -1,0 +1,111 @@
+<!-- Authentication Disabled -->
+<div class="flex flex-col" id="two-factor" *ngIf="data && data.tfa_type == 'AuthApp'">
+    <div class="flex items-center justify-between -mx-6 px-6">
+        <div class="flex items-center">
+            <h1 class="text-3xl font-semibold text-[#0B0D0E] font-Inter dark:text-white">
+                Disable two-step verification
+            </h1>
+        </div>
+    </div>
+
+    <div class="body">
+        <div class="text-[#4f4f4f] dark:text-[#879FC1] text-lg pt-2">
+            By entering the six-digit code that is generate by your authenticator and proceed.
+        </div>
+
+        <div class="mt-4 mb-2 font-Inter text-xl">
+            Enter security code
+        </div>
+
+        <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)" [config]="twoFaAuthenticationService.otpConfig">
+        </ng-otp-input>
+
+        <div class="flex justify-end pt-4">
+            <button
+                class="px-7 dark:text-white rounded-full min-h-10 text-lg mr-4 border border-[#324154] font-Inter"
+                (click)="openTF2AuthModal()">
+                Close
+            </button>
+
+            <button [color]="'primary'" mat-flat-button
+                class="px-7 py-2 primary-bg text-white min-h-10 rounded-full text-lg font-Inter"
+                (click)="authVerifyDisabled('AuthApp')" [disabled]="authotp?.length < 6 || disableBtn">
+                Verify and Disable
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- SMS -->
+<div class="flex flex-col" id="two-factor" *ngIf="data && data.tfa_type == 'SMS'">
+    <div class="flex items-center text-center justify-center -mx-6 px-6">
+        <div class="flex items-center">
+            <h1 class="text-3xl font-medium text-[#0B0D0E] font-Inter dark:text-white">
+                SMS Authentication
+            </h1>
+        </div>
+    </div>
+
+    <div class="body">
+        <div class="text-lg text-[#4f4f4f] dark:text-[#E5E1E1] text-center font-Inter mt-2 pb-6">
+            Coming Soon. . .
+        </div>
+
+        <div class="flex justify-center pt-2">
+            <button [color]="'primary'" mat-flat-button
+                class="px-7 py-2 primary-bg text-white min-w-32 min-h-10 rounded-full text-lg font-Inter"
+                (click)="openTF2AuthModal()">
+                Back
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- WhatsApp Enable and Disabled -->
+<div class="flex flex-col" id="two-factor" *ngIf="data && data.tfa_type == 'Whatsapp'">
+    <div class="flex items-center justify-between -mx-6 px-6">
+        <div class="flex items-center">
+            <h1 class="text-3xl font-semibold text-[#0B0D0E] font-Inter dark:text-white">
+                {{data.key == 'whatsapp-disabled' ? 'Disabled' : ''}} WhatsApp Authentication
+            </h1>
+        </div>
+    </div>
+
+    <div class="body">
+        <div class="text-[#4f4f4f] dark:text-[#879FC1] text-lg pt-1 pb-4">
+            You will receive verification code on this registered contact number {{user?.company_number}}
+        </div>
+
+        <div class="text-center pt-1">
+            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
+                [config]="twoFaAuthenticationService.otpConfig">
+            </ng-otp-input>
+        </div>
+
+        <div class="flex justify-end pt-4">
+            <button
+                class="px-7 dark:text-white rounded-full min-h-10 text-lg mr-4 border border-[#324154] font-Inter"
+                (click)="openTF2AuthModal()">
+                Close
+            </button>
+
+            <ng-container *ngIf="data.key == 'Whatsapp'; else disableButton">
+                <button mat-flat-button [color]="'primary'"
+                    class="px-7 py-2 primary-bg text-white min-h-10 rounded-full text-lg font-Inter"
+                    (click)="authConfigureNow('Whatsapp')" [disabled]="authotp?.length < 6 || disableBtn">
+                    Verify
+                </button>
+            </ng-container>
+
+            <ng-template #disableButton>
+                <button [color]="'primary'" mat-flat-button
+                    class="px-7 py-2 primary-bg text-white min-h-10 rounded-full text-lg font-Inter"
+                    (click)="authVerifyDisabled('Whatsapp')" [disabled]="authotp?.length < 6 || disableBtn">
+                    Verify and Disable
+                </button>
+            </ng-template>
+
+        </div>
+    </div>
+</div>

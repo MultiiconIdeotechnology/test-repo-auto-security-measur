@@ -3,13 +3,13 @@
     <div class="flex items-center justify-between border-b border-[#374252] pb-4 -mx-6 px-6">
         <div class="flex items-center">
             <h1 class="text-3xl font-semibold text-[#0B0D0E] font-Inter dark:text-white">Two-factor Authentication</h1>
-            <button class="bg-red-100 text-[#B45437] font-medium font-Inter py-1 px-3 ml-2 rounded-md text-sm">
+            <!-- <button class="bg-red-100 text-[#B45437] font-medium font-Inter py-1 px-3 ml-2 rounded-md text-sm">
                 DISABLE
             </button>
             <button *ngIf="false"
                 class="white-bg primary-text font-medium font-Inter py-1 px-3 ml-2 rounded-md text-sm ">
                 ENABLED
-            </button>
+            </button> -->
         </div>
         <!-- <i class="material-icons cursor-pointer font-thin">close</i> -->
         <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
@@ -36,8 +36,8 @@
                         <h2 class="font-medium font-Inter text-xl text-[#24282E] dark:text-white">
                             {{ method.title }}
                             <button *ngIf="method.is_enabled"
-                                class="font-medium font-Inter py-1 px-3 ml-0.5 rounded-md text-sm text-[#509374] border border-[#B1E7CE] bg-[#F4FFFA] cursor-default">
-                                CONFIGURE
+                                class="font-Inter py-1 px-3 ml-0.5 rounded-md text-sm text-[#2AB775] border border-[#2AB775] cursor-default">
+                                CONFIGURED
                             </button>
                         </h2>
                         <p class="text-base font-Inter font-normal text-[#24282E] dark:text-[#879FC1] pt-1">
@@ -48,7 +48,8 @@
 
                 <div class="flex flex-col">
                     <ng-container *ngIf="!method.is_enabled; else disableButtons">
-                        <button class="px-7 min-w-24 min-h-8" mat-flat-button [color]="'primary'" (click)="authenticationEnabled(method.tfa_type)">
+                        <button class="px-8 min-w-26 min-h-8 font-semibold text-base" mat-flat-button
+                            [color]="'primary'" (click)="authenticationEnabled(method)">
                             Enable
                         </button>
 
@@ -59,23 +60,31 @@
                     </ng-container>
 
                     <ng-template #disableButtons>
-                        <button (click)="authenticationDisabled(method)"
-                            class="font-medium font-Inter py-1 px-3 ml-2 rounded-md text-base text-[#B43737] w-24 border bottom-2 border-[#F5D0D0] bg-[#FFEDED]">
+                        <button
+                            class="px-7 min-w-24 min-h-8 font-semibold text-base text-[#B43737] border border-[#B43737]  bg-[#FFEDED]"
+                            mat-flat-button (click)="authenticationDisabled(method)">
                             Disable
                         </button>
 
                         <button *ngIf="!method.is_selected" (click)="switchAuthentication(method)"
-                            class="font-medium font-Inter py-1 px-3 ml-2 mt-3 rounded-md text-base text-[#234977] w-24 border bottom-2 border-[#EBEFF2]">
+                            class="font-Inter font-semibold text-base p-1 mt-3 rounded-full text-[#000000] dark:text-[#ffffff] min-w-24 min-h-9 border border-[#0D9488]">
                             Selected
                         </button>
                     </ng-template>
 
                     <button *ngIf="method.is_selected"
-                        class="flex items-center font-medium font-Inter p-1 ml-2 mt-3 rounded-md text-base text-[#234977] w-24 border bottom-2 border-[#CDDAEA] bg-[#EBF4FF] cursor-default">
+                        class="flex items-center font-semibold text-base font-Inter p-1 px-2 mt-3 rounded-full text-[#0D9488] min-w-24 min-h-8 border border-[#0D9488] cursor-default">
+                        <mat-icon svgIcon="heroicons_solid:check-circle"
+                            class="icon-size-6 text-[#0D9488] pr-1"></mat-icon>
+                        Selected
+                    </button>
+
+                    <!-- <button *ngIf="method.is_selected"
+                        class="flex items-center font-medium font-Inter p-1 ml-2 mt-3 rounded-md text-base text-[#234977] w-24 border border-[#CDDAEA] bg-[#EBF4FF] cursor-default">
                         <mat-icon svgIcon="heroicons_solid:check-circle"
                             class="icon-size-6 text-[#234977] pr-1"></mat-icon>
                         Selected
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
