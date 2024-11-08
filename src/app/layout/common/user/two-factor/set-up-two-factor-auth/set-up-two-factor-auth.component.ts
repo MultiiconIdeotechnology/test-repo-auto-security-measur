@@ -15,6 +15,7 @@ import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.se
 import { ToasterService } from 'app/services/toaster.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgOtpInputModule } from 'ng-otp-input';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-set-up-two-factor-auth',
@@ -37,7 +38,8 @@ export class SetUpTwoFactorAuthComponent {
     transformQr: any;
     recoveryCodes: any = [];
     authotp: any;
-    
+    isCodeCopy: boolean = false;
+
     stepArr: any[] = [
         { step: 1, label: 'SETUP', isActive: true, isCompleted: false },
         { step: 2, label: 'CONNECT MOBILE', isActive: false, isCompleted: false },
@@ -51,6 +53,7 @@ export class SetUpTwoFactorAuthComponent {
         public twoFaAuthenticationService: TwoFaAuthenticationService,
         private alertService: ToasterService,
         private sanitizer: DomSanitizer,
+        private clipboard: Clipboard,
     ) { }
 
     ngOnInit(): void {
@@ -90,6 +93,8 @@ export class SetUpTwoFactorAuthComponent {
 
     // Auth two Factor Enabled
     twoFactorEnabled() {
+
+
         let body = {
             "tfa_type": "AuthApp"
             // "tfa_type": "Whatsapp"
@@ -116,7 +121,7 @@ export class SetUpTwoFactorAuthComponent {
                 this.alertService.showToast('error', err, 'top-right', true);
             },
         });
-    } 
+    }
 
     // Authentication verification
     authConfigureNow(mode: any) {
@@ -170,10 +175,17 @@ export class SetUpTwoFactorAuthComponent {
         });
     }
 
+    // two Factor Code Copy
+    twoFactorCopyLink(key: any) {
+        this.clipboard.copy(key);
+        this.alertService.showToast('success', 'Copied');
+    }
+
     // Copy Codes
     copyCodes() {
         const codesToCopy = this.recoveryCodes.join('\n');
         navigator.clipboard.writeText(codesToCopy).then(() => {
+            this.isCodeCopy = true;
             this.alertService.showToast('success', 'Recovery codes have been copied to the clipboard!', 'top-right', true);
         }).catch(err => {
             console.error('Could not copy text: ', err);

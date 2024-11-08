@@ -37,7 +37,8 @@
     <div [ngSwitch]="currentStep">
         <!-- Step 1 -->
         <div *ngSwitchCase="1">
-            <h2 class="text-2xl font-semibold mb-4 font-Inter">Set-up for enable 2FA</h2>
+            <!-- <h2 class="text-2xl font-semibold mb-4 font-Inter">Set-up for enable 2FA</h2> -->
+            <h2 class="text-3xl font-medium mb-3 mt-4 font-Inter">Set-up for enable 2FA</h2>
             <p class="mb-4 font-Inter font-normal text-lg text-[#000000] dark:text-[#879FC1]">Start by entering your
                 password so
                 that we
@@ -49,12 +50,11 @@
                 log you out from your other devices, to log back in, enter your password and complete the second
                 verification step.</p>
             <div class="mb-4 w-[280px]">
-                <label for="password" class="font-Inter text-lg text-[#8F8F8F] dark:text-[#E5E1E1]">
-                    Enter portal password<span class="text-red-500">*</span>
-                </label>
                 <form [formGroup]="twoFaFormGroup" novalidate>
-                    <!-- <div class="mt-1 flex flex-col text-xl"> -->
-                    <mat-form-field class="w-full" [ngClass]="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched ?
+                    <label for="password" class="font-Inter text-lg text-[#8F8F8F] dark:text-[#E5E1E1]">
+                        Enter portal password<span class="text-red-500">*</span>
+                    </label>
+                    <mat-form-field class="w-full mt-1" [ngClass]="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched ?
             'border-red-500' : 'border-[#CECECE]'">
                         <input id="password" matInput type="password" required formControlName="enablePassword" class=""
                             #passwordField>
@@ -66,21 +66,22 @@
                             <mat-icon class="icon-size-5 text-[#324154]" *ngIf="passwordField.type === 'text'"
                                 [svgIcon]="'heroicons_solid:eye-slash'"></mat-icon>
                         </button>
+
+                        <mat-error class="pt-[6pex]"
+                            *ngIf="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched">
+                            <span class="text-red-600 text-sm">Password is required</span>
+                        </mat-error>
                     </mat-form-field>
-                    <mat-error class="pt-[6pex]"
-                        *ngIf="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched">
-                        <span class="text-red-600 text-sm">Password is required</span>
-                    </mat-error>
-                    <!-- </div> -->
                 </form>
             </div>
             <div class="text-end">
                 <button type="button" (click)="matDialogRef.close()"
-                    class="border text-[15px] rounded-[18px] dark:border-[#324154] w-[140px] mr-3 py-2">
+                    class="border text-[15px] rounded-[18px] dark:border-[#324154] min-h-11 w-[140px] mr-3 py-2">
                     Close
                 </button>
-                <button type="submit" class="text-[15px] py-2 rounded-[18px] dark:bg-[#0D9488] w-[140px]"
-                    (click)="authEnableStep()" [disabled]="!twoFaFormGroup.get('enablePassword').value">
+                <button mat-flat-button [color]="'primary'"
+                    class="px-7 py-2 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                    (click)="authEnableStep()" [disabled]="!twoFaFormGroup.get('enablePassword').value || disableBtn">
                     Verify Now
                 </button>
             </div>
@@ -88,12 +89,12 @@
 
         <!-- Step 2 -->
         <div *ngSwitchCase="2">
-            <h2 class="text-3xl font-semibold mb-3 mt-6 font-Inter">Enable 2FA</h2>
-            <div class="flex flex-raw">
+            <h2 class="text-3xl font-medium mb-3 mt-4 font-Inter">Enable 2FA</h2>
+            <div class="flex flex-raw justify-between">
                 <ol class="list-decimal list-inside">
-                    <li class="mb-2 font-Inter font-medium text-xl">You will need an authenticator mobile ap to complete
-                        this process, such as,
-                        <div class="text-[#4A8ED2] font-Inter font-medium text-xl">
+                    <li class="mb-2 font-Inter font-normal text-lg">
+                        You will need an authenticator mobile ap to complete this process, such
+                        <div class="text-[#4A8ED2] font-Inter text-lg">
                             Microsoft Authenticator, Google Authenticator, Duo Mobile, Authenticator 7
                         </div>
                     </li>
@@ -102,35 +103,44 @@
                     <img [src]="transformQr" alt="QR Code" class="max-w-32" />
                 </div>
             </div>
-            <p class="mb-2 font-Inter font-medium text-xl">2. Scan the QR code with your authenticator</p>
-            <p class="mb-2 text-base font-Inter font-medium">If you can't scan the code, you can enter this secret key
-                into your authentication
-                app.</p>
-            <div class="mb-4 flex items-center">
-                <input type="text" [value]="twoFactorEnabledList?.key" class="flex-grow p-2 border rounded-l-md"
-                    readonly>
-                <button class="bg-gray-200 p-2 rounded-r-md h-[39px]">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        (click)="twoFactorCopyLink(twoFactorEnabledList?.key)" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
-                        </path>
-                    </svg>
-                </button>
+
+            <div class="w-[80%]">
+                <p class="mb-2 font-Inter font-normal text-lg">
+                    2. Unable to scan? You can use the to manually configure your authenticator app.
+                </p>
+
+                <div class="mb-4 flex items-center">
+                    <input type="text" [value]="twoFactorEnabledList?.key" class="flex-grow p-2 border rounded-l-md"
+                        readonly>
+                    <button class="border border-l-0 p-2 rounded-r-md h-[39px]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            (click)="twoFactorCopyLink(twoFactorEnabledList?.key)" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <p class="mb-2 font-Inter font-medium text-xl">3. After scanning the QR code above, enter the six-digit code
-                generated by your authenticator</p>
 
-            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)" [config]="twoFaAuthenticationService.otpConfig"></ng-otp-input>
+            <div class="pb-5 border-b border-stone-200 dark:border-[#374252]">
+                <p class="mb-2 font-Inter font-normal text-lg">
+                    3. After scanning the QR code above, enter the six-digit code generate by your authenticator
+                </p>
+                <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
+                    [config]="twoFaAuthenticationService.otpConfig"></ng-otp-input>
+            </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-end pt-5">
                 <button
-                    class="px-7 py-2 text-[#55595D] rounded-md text-xl mr-6 border-2 border-[#CECECE] font-Inter font-semibold"
+                    class="px-7 dark:text-white rounded-full min-w-[140px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
                     (click)="matDialogRef.close()">
                     Close
                 </button>
-                <button mat-flat-button class="px-7 py-2 primary-bg text-white rounded-md text-xl font-Inter font-semibold"
-                    (click)="authConfigureNow('AuthApp')" [disabled]="authotp?.length < 6">
+
+                <button mat-flat-button [color]="'primary'"
+                    class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                    (click)="authConfigureNow('AuthApp')" [disabled]="authotp?.length < 6 || disableBtn">
                     Configure now
                 </button>
             </div>
@@ -138,37 +148,45 @@
 
         <!-- Step 3 -->
         <div *ngSwitchCase="3">
-            <h2 class="text-3xl font-semibold mb-3 mt-6 font-Inter">Keep these recovery codes safe</h2>
-            <p class="mb-4 font-normal text-lg text-[#474747]">If you lose access to your authentication device, you can
-                use one of these backup codes to
-                log in your account. Each code can only be used once. Make a copy of these codes and keep it somewhere
-                safe.</p>
+            <h2 class="text-3xl font-medium mb-3 mt-4 font-Inter">Keep this recovery codes in safe</h2>
+            <p class="mb-4 font-normal text-lg text-[#474747] dark:text-[#879FC1] ">
+                If you lose access to your authentication device, you can use one of these backup codes to log in your
+                account. Each code can only br used once. Make a copy of these codes and keep it somewhere safe.
+            </p>
             <div class="grid grid-cols-4 gap-1 mb-4 max-w-[770px]">
                 <div *ngFor="let code of recoveryCodes; let i = index" class="p-2">
                     <div class="flex border-r" [ngClass]="{'border-r': (i + 1) % 4 !== 0}">
-                        <span class="font-Inter font-semibold text-xl text-[#182B41B2]">{{code}}</span>
-                        <mat-divider class="h-6 border-[#234977]"></mat-divider>
+                        <span
+                            class="font-Inter font-medium text-xl text-[#182B41B2] dark:text-[#0DF0DC] ">{{code}}</span>
+                        <mat-divider class="h-6 border-[#234977] dark:border-[#374252]"></mat-divider>
                     </div>
                 </div>
             </div>
             <mat-divider></mat-divider>
-            <div class="flex justify-end mb-4 mt-8">
-                <!-- <button
-                    class="px-4 py-2 bg-[#E8ECEF] primary-text rounded-md w-[150px] font-Inter font-semibold text-xl"
-                    (click)="printCodes()">
-                    Print Codes
+            <div class="flex justify-end mt-5">
+                <button mat-flat-button [color]="'primary'"
+                    class="px-7 py-2 mr-3 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                    (click)="matDialogRef.close()" [disabled]="!isCodeCopy">
+                    Yes i have save my code
+                </button>
+
+                <button mat-flat-button [color]="'primary'"
+                    class="px-7 py-2 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                    (click)="copyCodes()" [disabled]="isCodeCopy">
+                     {{isCodeCopy ? 'Copied' : 'Copy Codes' }}
+                </button>
+
+                <!-- <button type="button" [disabled]="!isCodeCopy" (click)="matDialogRef.close()"
+                    class="text-[15px] py-2 mr-4 rounded-full w-[208px] text-white min-h-[40px] bg-[#0D9488]">
+                    Yes i have save my code
                 </button> -->
-                <button
-                    class="px-4 py-2 bg-[#E8ECEF] primary-text rounded-md w-[150px] font-Inter font-semibold text-xl ml-6"
+
+                <!-- <button type="button" [disabled]="isCodeCopy"
+                    class="text-[15px] py-2 rounded-full w-[120px] min-h-[40px] text-white bg-[#0D9488]"
                     (click)="copyCodes()">
                     Copy Codes
-                </button>
+                </button> -->
             </div>
-            <!-- <span class="font-Inter text-2xl font-semibold text-[#000000]">Save this key? Then finish it!</span>
-            <button (click)="matDialogRef.close()"
-                class="mt-3 w-full px-4 py-3 font-Inter text-lg font-semibold primary-bg text-white rounded-md">
-                I have saved my codes
-            </button> -->
         </div>
     </div>
 

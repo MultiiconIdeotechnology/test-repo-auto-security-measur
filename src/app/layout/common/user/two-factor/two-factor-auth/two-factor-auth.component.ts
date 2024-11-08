@@ -68,7 +68,6 @@ export class TwoFactorAuthComponent {
     getEmployee() {
         this.twoFaAuthenticationService.tfaConfigurationDetails().subscribe({
             next: (resData) => {
-                console.log("res", resData);
                 if (resData) {
                     for (let i in resData) {
                         for (let j in this.twoFactorMethod) {
@@ -91,7 +90,7 @@ export class TwoFactorAuthComponent {
         this.matDialogRef.close();
         if (method.tfa_type == 'AuthApp') {
             this._matdialog.open(SetUpTwoFactorAuthComponent, {
-                width: '825px',
+                width: '900px',
                 autoFocus: true,
                 disableClose: true,
                 data: {}

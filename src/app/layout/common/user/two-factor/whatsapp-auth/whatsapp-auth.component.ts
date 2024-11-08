@@ -32,7 +32,7 @@ export class WhatsappAuthComponent {
         public _userService: UserService
     ) {
         if (data && data.tfa_type == 'Whatsapp') {
-            // this.whatsappOTPSent();
+            this.whatsappOTPSent();
         }
 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
