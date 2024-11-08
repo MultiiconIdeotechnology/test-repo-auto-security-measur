@@ -20,6 +20,11 @@ export class ForexService {
     return this.http.post<any[]>(this.baseUrl + 'city/getCityCombo', { filter });
   }
 
+  getSupplierForexCombo(filter: string): Observable<any[]> {
+    return this.http.post<any[]>(this.baseUrl + 'forexlead/getSupplierCombo', { filter });
+  }
+
+
   getcurrencyCombo(): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'currency/getcurrencyCombo', {});
   }

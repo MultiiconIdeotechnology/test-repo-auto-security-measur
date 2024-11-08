@@ -84,5 +84,17 @@ export class ForexBookingDetailsComponent {
     })
   }
 
+  getStatusColor(status: string): string {
+    if (status == 'New') {
+      return 'text-orange-600';
+    } else if (status == 'Confirmed') {
+      return 'text-green-600';
+    } else if (status == 'Cancelled' || status == 'Rejected') {
+      return 'text-red-600';
+    } else {
+      return '';
+    }
+  }
+
 
 }

@@ -80,10 +80,24 @@ export class ForexListComponent extends BaseListingComponent {
   _selectedColumns: any;
   isFilterShow: boolean;
   cols: any;
-  statusList = ['New', 'Confirmed', 'Rejected', 'Cancelled'];
+  statusList = [
+    { label: 'New', value: 'New' },
+    { label: 'Confirmed', value: 'Confirmed' },
+    { label: 'Rejected', value: 'Rejected' },
+    { label: 'Cancelled', value: 'Cancelled' },
+  ];
+
   rateList = ['BUY', 'SELL'];
+
+  // readList = ['Read', 'Unread'];
+  readList: any[] = [
+    { label: 'Read', value: true },
+    { label: 'Unread', value: false },
+  ]
+
   transactionList = ['Forex Card', 'Currency Note'];
   cityList: any[] = [];
+  supplierList: any[] = [];
   fromcurrencyListAll: any[] = [];
   tocurrencyListAll: any[] = [];
 
@@ -123,6 +137,7 @@ export class ForexListComponent extends BaseListingComponent {
 
   ngOnInit() {
     this.getCitytList('');
+    this.getSupplierList('');
     this.getCurrencyList();
     this.agentList = this._filterService.agentListById;
 
@@ -199,14 +214,24 @@ export class ForexListComponent extends BaseListingComponent {
     })
   }
 
-  // Api to get the Agent list data
+  // Api to get the City list data
   getCitytList(value: string, bool = true) {
     this.forexService.getCityCombo(value).subscribe((data: any) => {
       this.cityList = data;
     });
+  } 
+  
+  // Api to get the Supplier list data
+  getSupplierList(value: string, bool = true) {
+    this.forexService.getSupplierForexCombo(value).subscribe((data: any) => {
+      this.supplierList = data;
+    });
   }
 
   viewData(record) {
+    // if (!Security.hasViewDetailPermission(module_name.forex)) {
+    //   return this.alertService.showToast('error', messages.permissionDenied);
+    // }
     this.entityService.raiseForexEntityCall({ data: record })
   }
 
@@ -218,7 +243,7 @@ export class ForexListComponent extends BaseListingComponent {
     }
   }
 
-  Rejected(record: any, code:any): void {
+  Rejected(record: any, code: any): void {
     if (!Security.hasPermission(forexPermissions.rejectedPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
@@ -230,8 +255,8 @@ export class ForexListComponent extends BaseListingComponent {
     }).afterClosed().subscribe({
       next: (res) => {
         if (res) {
-            const Fdata = {}
-            Fdata['id'] = record.id,
+          const Fdata = {}
+          Fdata['id'] = record.id,
             Fdata['status_code'] = code,
             Fdata['note'] = res,
             this.forexService.setLeadStatus(Fdata).subscribe({
@@ -248,7 +273,7 @@ export class ForexListComponent extends BaseListingComponent {
 
   status(record: any, code: any): void {
     if (!Security.hasPermission(forexPermissions.statusPermissions)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
 
     const label: string = code == 1 ? 'Forex Confirm' : 'Forex Cancel';
@@ -260,14 +285,14 @@ export class ForexListComponent extends BaseListingComponent {
         if (res === 'confirmed') {
           const Fdata = {}
           Fdata['id'] = record.id,
-          Fdata['status_code'] = code,
-          Fdata['note'] = '',
-          this.forexService.setLeadStatus(Fdata).subscribe({
-            next: () => {
-              this.alertService.showToast('success', code == 1 ? 'Forex Confirm' : 'Forex Cancel', "top-right", true);
-              this.refreshItems();
-            }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-          });
+            Fdata['status_code'] = code,
+            Fdata['note'] = '',
+            this.forexService.setLeadStatus(Fdata).subscribe({
+              next: () => {
+                this.alertService.showToast('success', code == 1 ? 'Forex Confirm' : 'Forex Cancel', "top-right", true);
+                this.refreshItems();
+              }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+            });
         }
       }
     })
