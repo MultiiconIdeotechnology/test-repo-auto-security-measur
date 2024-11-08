@@ -66,8 +66,8 @@ export class SupplierListComponent extends BaseListingComponent {
     isFilterShow: boolean = false;
     cols: any = [
         { field: 'currency', header: 'Base Currency', type: 'text' },
-        { field: 'gst_Number', header: 'GST Number', type: 'text' },
-        { field: 'pan_Number', header: 'PAN Number', type: 'text' },
+        { field: 'gst_number', header: 'GST Number', type: 'text' },
+        { field: 'pan_number', header: 'PAN Number', type: 'text' },
     ];
     companyList: any[] = [];
     companyListName: any[] = [];
