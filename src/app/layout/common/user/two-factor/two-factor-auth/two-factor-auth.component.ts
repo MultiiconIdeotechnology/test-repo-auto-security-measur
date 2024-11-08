@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
 import { SetUpTwoFactorAuthComponent } from '../set-up-two-factor-auth/set-up-two-factor-auth.component';
 import { WhatsappAuthComponent } from '../whatsapp-auth/whatsapp-auth.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { ToasterService } from 'app/services/toaster.service';
 
 @Component({
     selector: 'app-two-factor-auth',
@@ -56,6 +58,8 @@ export class TwoFactorAuthComponent {
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         private _matdialog: MatDialog,
         private twoFaAuthenticationService: TwoFaAuthenticationService,
+        private confirmationService: FuseConfirmationService,
+        private alertService: ToasterService,
     ) {
 
     }
@@ -120,6 +124,38 @@ export class TwoFactorAuthComponent {
 
     // switch Authentication
     switchAuthentication(method: any) {
-
+        this.confirmationService.open({
+            title: 'Are you sure you want to switch the another method?',
+            message: '',
+            icon: {
+                show: true,
+                color: 'primary'
+            },
+            actions: {
+                confirm: {
+                    label: 'Yes, switch',
+                    color: 'accent'
+                },
+                cancel: {
+                    label: 'No',
+                },
+            },
+        }).afterClosed().subscribe((res) => {
+            console.log("res", res);
+            if (res == 'confirmed') {
+                this.twoFaAuthenticationService.changeAuthMode({ "Mode": method.tfa_type }).subscribe({
+                    next: (res) => {
+                        if (res && res.status) {
+                            this.twoFactorMethod.filter((field: any) => field.is_selected = false);
+                            method.is_selected = true;
+                            this.alertService.showToast('success', 'Authentication method has been successfully switched.', 'top-right', true);
+                        }
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                    },
+                });
+            }
+        });
     }
 }

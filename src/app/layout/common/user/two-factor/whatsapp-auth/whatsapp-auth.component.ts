@@ -9,6 +9,7 @@ import { NgOtpInputModule } from 'ng-otp-input';
 import { ToasterService } from 'app/services/toaster.service';
 import { UserService } from 'app/core/user/user.service';
 import { Subject, takeUntil } from 'rxjs';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'app-whatsapp-auth',
@@ -29,10 +30,11 @@ export class WhatsappAuthComponent {
         private _matdialog: MatDialog,
         public twoFaAuthenticationService: TwoFaAuthenticationService,
         private alertService: ToasterService,
-        public _userService: UserService
+        public _userService: UserService,
+        private confirmationService: FuseConfirmationService,
     ) {
-        if (data && data.tfa_type == 'Whatsapp') {
-            this.whatsappOTPSent();
+        if (data && data.tfa_type == 'whatsapp') {
+            this.whatsappOtpsent();
         }
 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
@@ -45,9 +47,9 @@ export class WhatsappAuthComponent {
         this.authotp = event;
     }
 
-    // Whatsapp Otp Sent
-    whatsappOTPSent() {
-        this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "Whatsapp" }).subscribe({
+    // whatsapp otp Sent
+    whatsappOtpsent() {
+        this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "whatsapp" }).subscribe({
             next: (res) => {
                 if (res && res.status) {
                     // this.startCountdown();
@@ -88,27 +90,49 @@ export class WhatsappAuthComponent {
 
     // Auth Disabled
     authVerifyDisabled(mode: any) {
-        if (this.authotp && this.authotp.length >= 6) {
-            let payload = {
-                Mode: mode,
-                Otp: this.authotp,
-            };
-            this.disableBtn = true;
-            this.twoFaAuthenticationService.disableTwoFactoreAuth(payload).subscribe({
-                next: (res) => {
-                    if (res && res.status) {
-                        this.disableBtn = false;
-                        let message = mode == 'AuthApp' ? 'Two-factor' : mode;
-                        this.alertService.showToast('success', `${message} authentication disabled successfully!`, 'top-right', true);
-                        this.matDialogRef.close();
-                    }
+        let message = mode == 'AuthApp' ? 'two-step verification?' : 'whatsapp authentication'
+        this.confirmationService.open({
+            title: `Are you sure you want to disable ${message}`,
+            message: '',
+            icon: {
+                show: true,
+                color: 'error'
+            },
+            actions: {
+                confirm: {
+                    label: 'Disable',
+                    color: 'warn'
                 },
-                error: (err) => {
-                    this.disableBtn = false;
-                    this.alertService.showToast('error', err, 'top-right', true);
+                cancel: {
+                    label: 'No',
                 },
-            });
-        }
+            },
+        }).afterClosed().subscribe((res) => {
+            if (res == 'confirmed') {
+                if (this.authotp && this.authotp.length >= 6) {
+                    let payload = {
+                        Mode: mode,
+                        Otp: this.authotp,
+                    };
+                    this.disableBtn = true;
+                    this.twoFaAuthenticationService.disableTwoFactoreAuth(payload).subscribe({
+                        next: (res) => {
+                            if (res && res.status) {
+                                this.disableBtn = false;
+                                let message = mode == 'AuthApp' ? 'Two-factor' : mode;
+                                this.alertService.showToast('success', `${message} authentication disabled successfully!`, 'top-right', true);
+                                this.matDialogRef.close();
+                            }
+                        },
+                        error: (err) => {
+                            this.disableBtn = false;
+                            this.alertService.showToast('error', err, 'top-right', true);
+                        },
+                    });
+                }
+            }
+        });
+
     }
 
     // Two FactorAuth Dialog

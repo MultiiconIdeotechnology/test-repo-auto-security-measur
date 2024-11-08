@@ -92,7 +92,7 @@
 
             <ng-container *ngIf="data.key == 'Whatsapp'; else disableButton">
                 <button mat-flat-button [color]="'primary'"
-                    class="px-7 py-2 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                    class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
                     (click)="authConfigureNow('Whatsapp')" [disabled]="authotp?.length < 6 || disableBtn">
                     Verify
                 </button>
@@ -100,7 +100,7 @@
 
             <ng-template #disableButton>
                 <button [color]="'primary'" mat-flat-button
-                    class="px-7 py-2 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                    class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
                     (click)="authVerifyDisabled('Whatsapp')" [disabled]="authotp?.length < 6 || disableBtn">
                     Verify and Disable
                 </button>
