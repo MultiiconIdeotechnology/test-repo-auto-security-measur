@@ -140,9 +140,11 @@ export class SupplierEntryRightComponent {
           this.title = "Create Supplier"
         }
 
-        this.getCityCombo();
-        this.getCurrencyCombo();
-        this.getKycCombo();
+        if (!this.info) {
+          this.getCityCombo();
+          this.getCurrencyCombo();
+          this.getKycCombo();
+        }
 
         this.edit = false;
         if (item?.edit) {
@@ -227,8 +229,8 @@ export class SupplierEntryRightComponent {
     this, this.kycService.getkycprofileCombo("supplier").subscribe(data => {
       this.profileList = data;
       this.AllprofileList = data;
-      if(!this.record?.id)
-      this.formGroup.get('kyc_profile_id').patchValue(this.profileList[0].id);
+      if (!this.record?.id)
+        this.formGroup.get('kyc_profile_id').patchValue(this.profileList[0].id);
     })
 
     this.formGroup.get('kycfilter').valueChanges
