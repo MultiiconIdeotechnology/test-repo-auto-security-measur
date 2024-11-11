@@ -92,7 +92,6 @@ export class GridUtils {
             columeFilters: validatedFilter,
         };
 
-        console.log("filterReq", filterReq);
         return filterReq;
     }
 
