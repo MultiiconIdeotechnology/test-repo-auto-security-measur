@@ -376,6 +376,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 // link: Routes.reports.account_route
                 children: [
                     {
+                        id: 'reports.agent_wise_service_wise',
+                        title: 'Agent Wise Service Wise',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_AGENTWISESERVICEWISE_VIEW',
+                        icon: '',
+                        link: Routes.account.agent_wise_service_wise_path_route
+                    }, 
+                    {
                         id: 'reports.balance_register',
                         title: 'Agent Balance Register',
                         type: 'basic',

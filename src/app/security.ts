@@ -296,6 +296,7 @@ export const module_name = {
     products_receipts: 'Receipts',
     supplier_kyc: 'Supplier',
     airline_summary: 'Airline Summary',
+    agent_wise_service_wise: 'Agent Wise Service Wise',
     airline_offline: 'Airline Offline TAT Analysis',
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
@@ -344,6 +345,7 @@ export const filter_module_name = {
     account_payments: "account_payments",
     account_receipts: "account_receipts",
     payment_link: "payment_link",
+    agent_wise_service_wise: "agent_wise_service_wise",
 
     //KYC
     kyc_agent: "kyc_agent",
