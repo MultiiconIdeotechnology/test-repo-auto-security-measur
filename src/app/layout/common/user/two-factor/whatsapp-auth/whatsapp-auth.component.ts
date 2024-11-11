@@ -33,7 +33,8 @@ export class WhatsappAuthComponent {
         public _userService: UserService,
         private confirmationService: FuseConfirmationService,
     ) {
-        if (data && data.tfa_type == 'whatsapp') {
+        
+        if (data && data.tfa_type == 'Whatsapp') {
             this.whatsappOtpsent();
         }
 
@@ -49,7 +50,7 @@ export class WhatsappAuthComponent {
 
     // whatsapp otp Sent
     whatsappOtpsent() {
-        this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "whatsapp" }).subscribe({
+        this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "Whatsapp" }).subscribe({
             next: (res) => {
                 if (res && res.status) {
                     // this.startCountdown();
