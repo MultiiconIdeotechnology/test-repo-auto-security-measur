@@ -66,7 +66,7 @@ export class GridUtils {
         defaultSortCol: string = null,
         defaultSortOrder: number = 0,
     ): FilterRequest {
-        const index = primengTable?._first || (event.first || 0);
+        const index = event?.first ?? primengTable?._first ?? 0;
         const size = (primengTable ? primengTable?._rows : (event.rows || AppConfig.pageSize));
         let sort = defaultSortCol;
         let sortOrder = defaultSortOrder;
@@ -92,6 +92,7 @@ export class GridUtils {
             columeFilters: validatedFilter,
         };
 
+        console.log("filterReq", filterReq);
         return filterReq;
     }
 
