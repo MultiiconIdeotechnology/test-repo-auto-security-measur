@@ -206,7 +206,7 @@ export class AgentWiseServiceWiseComponent extends BaseListingComponent implemen
       // Create a shortened, dynamic sheet name
       const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
       const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
-      const sheetName = `Airline Summary ${fromDate} to ${toDate}`.substring(0, 45);
+      const sheetName = `Agent Wise Service Wise ${fromDate} to ${toDate}`.substring(0, 400);
 
       // Export the data using the custom Excel utility
       Excel.export(
