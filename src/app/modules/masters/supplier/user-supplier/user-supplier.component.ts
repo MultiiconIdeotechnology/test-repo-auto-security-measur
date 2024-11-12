@@ -227,7 +227,11 @@ export class UserSupplierComponent extends BaseListingComponent {
     //     return this.alertService.showToast('error', messages.permissionDenied);
     // }
 
-    this.supplierService.autoLogin(record.id).subscribe({
+    const Fdata = {}
+    Fdata['id'] = record.id
+    Fdata['loginFrom'] = 'SupplierUser'
+
+    this.supplierService.autoLogin(Fdata).subscribe({
       next: data => {
         window.open(data.url + 'sign-in/' + data.code);
       }, error: err => {
