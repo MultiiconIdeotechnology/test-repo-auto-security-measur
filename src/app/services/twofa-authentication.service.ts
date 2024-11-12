@@ -43,4 +43,8 @@ export class TwoFaAuthenticationService {
     tfaConfigurationDetails(): Observable<any> {
         return this.http.post<any>(environment.apiUrl + 'employee/tfaConfigurationDetails', {});
     }
+
+    verifyOtp(model: any): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + 'TFAConfiguration/verifyOtp', model);
+    }
 }

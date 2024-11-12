@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from 'app/core/user/user.types';
 import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-password.component';
+import { VerificationDialogComponent } from 'app/layout/common/user/two-factor/verification-dialog/verification-dialog.component';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';
 
 @Injectable({providedIn: 'root'})
@@ -84,4 +85,16 @@ export class UserService
             }),
         );
     }
+
+    openVerifyDialog(
+        title: string,
+        width: string = '450px'
+      ): Observable<boolean> {
+        const dialogRef = this.matDialog.open(VerificationDialogComponent, {
+          width,
+          data: { title },
+        });
+    
+        return dialogRef.afterClosed();
+      }
 }

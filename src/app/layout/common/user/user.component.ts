@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GlobalSearchComponent } from '../global_search/global-search.component';
 import { TwoFactorAuthComponent } from './two-factor/two-factor-auth/two-factor-auth.component';
+import { VerificationDialogComponent } from './two-factor/verification-dialog/verification-dialog.component';
 
 @Component({
     selector: 'user',

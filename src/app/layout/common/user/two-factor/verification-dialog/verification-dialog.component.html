@@ -1,0 +1,49 @@
+<div class="flex flex-col" id="two-factor">
+    <div class="flex items-center justify-center -mx-6 px-6">
+        <div class="flex items-center">
+            <h1 class="text-3xl font-semibold text-[#0B0D0E] font-Inter dark:text-white">
+                {{data.title}} Verification
+            </h1>
+        </div>
+    </div>
+
+    <div class="body">
+        <div class="text-[#4f4f4f] text-center dark:text-[#879FC1] text-lg pt-1 pb-4">
+            You will receive verification code on this registered contact number {{user?.company_number}}
+        </div>
+
+        <div class="text-center flex justify-center pt-1">
+            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
+                [config]="twoFaAuthenticationService.otpConfig">
+            </ng-otp-input>
+        </div>
+
+        <div class="flex justify-center items-center pt-8">
+            <!-- <button mat-flat-button
+                class="px-7 dark:text-white rounded-full min-w-[140px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
+                (click)="matDialogRef.close()">
+                Close
+            </button> -->
+
+            <button mat-stroked-button class="px-7 rounded-full min-w-[140px] min-h-11 text-lg mr-4 font-Inter" (click)="matDialogRef.close()">
+                Close
+            </button>
+
+            <!-- <ng-container *ngIf="data.key == 'Whatsapp'; else disableButton"> -->
+                <button mat-flat-button [color]="'primary'"
+                    class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                    (click)="verifyOtp('Whatsapp')" [disabled]="authotp?.length < 6 || disableBtn">
+                    Verify
+                </button>
+            <!-- </ng-container> -->
+
+            <!-- <ng-template #disableButton>
+                <button [color]="'primary'" mat-flat-button
+                    class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter" [disabled]="authotp?.length < 6 || disableBtn">
+                    Verify and Disable
+                </button>
+            </ng-template> -->
+
+        </div>
+    </div>
+</div>
