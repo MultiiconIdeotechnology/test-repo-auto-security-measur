@@ -39,7 +39,7 @@ export class PaxInfoComponent {
             { name: 'Passport Issue Date', value: this.data?.passport_issue_date ? DateTime.fromISO(this.data?.passport_issue_date).toFormat('dd-MM-yyyy').toString():'' },
             { name: 'Passport Valid Till', value: this.data?.passport_valid_till ? DateTime.fromISO(this.data?.passport_valid_till).toFormat('dd-MM-yyyy').toString():'' },
             { name: 'Status', value: this.data?.status, class:
-            this.data?.status === 'Pending' ? 'text-yellow-600 font-semibold' :
+            this.data?.status === 'Pending' || this.data?.status === 'Refunded' ? 'text-yellow-600 font-semibold' :
             this.data?.status === 'Payment Confirmed' ? 'text-green-600 font-semibold' :
             this.data?.status === 'Payment Failed' ? 'text-red-600 font-semibold' :
             this.data?.status === 'Inprocess' ? 'text-blue-600 font-semibold' :

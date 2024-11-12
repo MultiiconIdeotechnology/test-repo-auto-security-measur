@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class KycService {
     private baseUrl = environment.apiUrl;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     getkycprofileCombo(Particular: string): Observable<any[]> {
         return this.http.post<any[]>(
@@ -44,17 +44,21 @@ export class KycService {
 
     setDefault(id: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'kycprofile/setDefault', { id: id });
-      }
+    }
 
-      documentdelete(id: any): Observable<any> {
+    documentdelete(id: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'kycprofiledocuments/delete', { id: id });
-      }
+    }
 
-      documentsCreate(model: any): Observable<any> {
+    documentsCreate(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'kycprofiledocuments/create', model);
     }
 
     kycProfileCopy(id: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'kycprofile/kycProfileCopy', { id: id });
-      }
+    }
+
+    getSupplierKycList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Supplier/getSupplierKycList', model);
+    }
 }

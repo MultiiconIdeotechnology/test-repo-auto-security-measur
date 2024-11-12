@@ -28,8 +28,10 @@
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
             </mat-form-field> -->
             <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="refreshItems()"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
             </div>
 
             <!------Global filter------>
@@ -41,10 +43,10 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                 (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
-                 matTooltip="Saved Filter" [disabled]="isLoading">
-                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
-             </button>
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
 
             <!-- Select Columns Button and Select Box Code -->
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
@@ -101,8 +103,9 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="transaction_ref_no" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.transaction_ref_no" [ngClass]="{'left-0': !frozenObj?.transaction_ref_no}">
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="transaction_ref_no" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.transaction_ref_no"
+                        [ngClass]="{'left-0': !frozenObj?.transaction_ref_no}">
                         Transaction ID <p-sortIcon field="transaction_ref_no" />
                         <span class="float-right"
                             (click)="isFrozenColumn('transaction_ref_no');$event.stopPropagation()">
@@ -128,7 +131,8 @@
                     <th pSortableColumn="mode_of_payment" pResizableColumn>
                         Mode of Payment <p-sortIcon field="mode_of_payment" />
                     </th>
-                    <th pSortableColumn="payment_request_date" pResizableColumn>
+                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'"
+                        pSortableColumn="payment_request_date" pResizableColumn>
                         Requested <p-sortIcon field="payment_request_date" />
                     </th>
                     <th class="w-full min-w-[200px]" pSortableColumn="audit_date_time" pResizableColumn>
@@ -142,18 +146,19 @@
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.transaction_ref_no">
-                        <p-columnFilter type="text" matchMode="contains" field="transaction_ref_no" placeholder="Search by Transaction ID"
-                            ariaLabel="Filter Transaction ID" />
+                        <p-columnFilter type="text" matchMode="contains" field="transaction_ref_no"
+                            placeholder="Search by Transaction ID" ariaLabel="Filter Transaction ID" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="payment_ref_no" placeholder="Search by Ref no"
-                            ariaLabel="Filter Ref no" />
+                        <p-columnFilter type="text" matchMode="contains" field="payment_ref_no"
+                            placeholder="Search by Ref no" ariaLabel="Filter Ref no" />
                     </th>
                     <th>
                         <p-columnFilter field="payment_status" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Payment Status" [showClear]="true" appendTo="body">
+                                    (onChange)="filter($event.value)" placeholder="Select Payment Status"
+                                    [showClear]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.value}}</p>
                                     </ng-template>
@@ -174,36 +179,47 @@
                             ariaLabel="Filter Display Amount" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment" placeholder="Search by Payment Mode"
-                            ariaLabel="Filter Payment Mode" />
+                        <p-columnFilter type="text" matchMode="contains" field="mode_of_payment"
+                            placeholder="Search by Payment Mode" ariaLabel="Filter Payment Mode" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter field="payment_request_date" type="date">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'"
+                            field="payment_request_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Requested">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter> -->
-                        <p-columnFilter field="payment_request_date" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar
-                                        selectionMode="range"
-                                        [ngModel]="value"
-                                        (ngModelChange)="onDateRangeChange($event, filter)"
-                                        [readonlyInput]="true"
-                                        dateFormat="dd-mm-yy"
-                                        appendTo="body"
-                                        placeholder="Search by Date Range">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'payment_request_date')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="payment_request_date" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
                     <th>
                         <p-columnFilter field="audit_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Audited">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Audited">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
@@ -221,8 +237,8 @@
                         </ng-container> -->
 
                         <!-- <ng-container *ngIf="col.field !== 'payment_date'"> -->
-                            <p-columnFilter  type="text" matchMode="contains" [field]="col.field" [placeholder]="'Search by '+ col.header"
-                            [ariaLabel]="'Filter '+ col.header" />
+                        <p-columnFilter type="text" matchMode="contains" [field]="col.field"
+                            [placeholder]="'Search by '+ col.header" [ariaLabel]="'Filter '+ col.header" />
                         <!-- </ng-container> -->
                     </th>
                 </tr>
@@ -246,13 +262,14 @@
                         {{element.transaction_ref_no || "-"}}
                     </td>
                     <td>{{element.payment_ref_no || "-"}}</td>
-                    <td [ngClass]="element.payment_status == 'Confirmed' ? 'text-green-600' : element.payment_status == 'Pending' ? 'text-blue-600' :'text-red-600'">
+                    <td
+                        [ngClass]="element.payment_status == 'Confirmed' ? 'text-green-600' : element.payment_status == 'Pending' ? 'text-blue-600' :  element.payment_status == 'Rejected' ? 'text-red-600' : 'text-red-600'">
                         {{element.payment_status || "-"}}
                     </td>
                     <td>{{element.payment_to || "-"}}</td>
                     <td>{{element.service_for || "-"}}</td>
                     <td class="text-right" *ngIf="element.payment_amount">
-                        {{element.payment_amount.toFixed(2) |  currency:element.payment_currency:'symbol':'1.2-2'}}
+                        {{element.payment_amount.toFixed(2) | currency:element.payment_currency:'symbol':'1.2-2'}}
                     </td>
                     <td>{{element.mode_of_payment || "-"}}</td>
                     <td>

@@ -71,7 +71,7 @@ export class MessageTemplatesEntryComponent implements OnInit {
   fieldList: {};
   TemplateList: any[] = ['Company', 'Agent']
   MessageList: any[] = ['Email', 'WhatsApp', 'SMS']
-  SendToList: any[] = ['Employee', 'Agent', 'Supplier', 'B2C', 'Individual','Master Agent','Sales Person','Operation Team','Group']
+  SendToList: any[] = ['Employee', 'Agent', 'Supplier', 'B2C', 'Individual','Master Agent','Sales Person','Operation Team','Group','Lead']
   isFirstemployee: boolean = false;
   isFirstAgent: boolean = false;
   isFirstemployeeadd: boolean = true;

@@ -102,6 +102,7 @@ ngAfterViewInit(){
 
   refreshItems(event?:any): void {
     this.isLoading = true;
+    
     this.itemService.getItemMasterList(this.getNewFilterReq(event)).subscribe({
       next: data => {
         this.isLoading = false;

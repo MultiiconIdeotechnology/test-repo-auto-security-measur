@@ -82,6 +82,7 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
                     agent_id: "",
                     agentfilter: "",
                     service_for: "",
+                    mop: "",
                     service_ref_no: "",
                     amount: "",
                     remark: "",
@@ -131,6 +132,8 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
 
                                 this.formGroup.get("agent_id").patchValue(this.agentList[0]?.id);
                                 this.formGroup.get("service_for").patchValue("Wallet");
+                                // let mopPatchValue = ""
+                                this.formGroup.get("mop").patchValue("Online");
                             }
                         }
                     });
@@ -155,6 +158,10 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
     title = 'Payment Link';
     btnLabel = 'Submit';
 
+    mopType: any[] = [
+        { value: 'Online', viewValue: 'Online' },
+    ];
+
     ngOnInit(): void {
         this._fuseConfigService.config$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -167,10 +174,11 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
             agent_id: [''],
             agentfilter: [''],
             service_for: ['', Validators.required],
+            mop: ['', Validators.required],
             service_ref_no: ['', Validators.required],
             amount: ['', Validators.required],
             remark: [''],
-            expiry_date: ['']
+            expiry_date: ['', Validators.required]
         });
         this.serviceCombo();
 
@@ -193,10 +201,26 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
         });
     }
 
+    onServiceFor(val:string){
+        if(val == 'Wallet'){
+            this. mopType = [
+                { value: 'Online', viewValue: 'Online' },
+              ];
+              this.formGroup.get("mop").patchValue("Online");
+        } else {
+            this.mopType = [
+                { value: 'Both', viewValue: 'Both' },
+                { value: 'Wallet', viewValue: 'Wallet' },
+                { value: 'Online', viewValue: 'Online' },
+              ];
+            this.formGroup.get("mop").patchValue("Both");
+        }
+    }
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
     }
+
 
     submit(): void {
         if (!this.formGroup.valid) {
@@ -215,6 +239,7 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
                 service_for: json.service_for ? json.service_for : "",
                 service_ref_no: json.service_ref_no ? json.service_ref_no : "",
                 amount: json.amount ? json.amount : "",
+                mop: json.mop ? json.mop : "Both",
                 remark: json.remark ? json.remark : "",
                 expiry_date: json.expiry_date ? DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd') : ""
             }
@@ -238,6 +263,7 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
                 agent_id: json.agent_id ? json.agent_id : "",
                 service_for: json.service_for ? json.service_for : "",
                 service_ref_no: json.service_ref_no ? json.service_ref_no : "",
+                mop: json.mop ? json.mop : "Both",
                 amount: json.amount ? json.amount : "",
                 remark: json.remark ? json.remark : "",
                 expiry_date: json.expiry_date ? DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd') : ""

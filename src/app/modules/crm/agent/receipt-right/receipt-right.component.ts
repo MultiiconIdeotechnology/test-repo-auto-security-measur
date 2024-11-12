@@ -299,6 +299,7 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
             return;
         }
 
+        this.disableBtn = true;
         // if (this.readonly) {
         //     this.router.navigate([this.leadListRoute]);
         //     return;

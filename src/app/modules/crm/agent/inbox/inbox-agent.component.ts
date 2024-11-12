@@ -34,6 +34,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ScheduleCallRemarkComponent } from '../call-history/schedule-call-details/schedule-call-details.component';
 
 @Component({
     selector: 'inbox-agent',
@@ -73,7 +74,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 export class InboxAgentComponent extends BaseListingComponent {
     @Input() isFilterShowInbox: boolean;
     @Output() isFilterShowInboxChange = new EventEmitter<boolean>();
-    @Input() dropdownListObj: {};
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
@@ -117,10 +117,9 @@ export class InboxAgentComponent extends BaseListingComponent {
         this._filterService.applyDefaultFilter(this.filter_table_name);
     }
 
+
     ngOnInit(): void {
-        setTimeout(() => {
-            this.agentList = this.dropdownListObj['agentList'];
-        }, 1000);
+        this.agentList = this._filterService.agentListByValue;
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -173,10 +172,6 @@ export class InboxAgentComponent extends BaseListingComponent {
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
         }
-    }
-
-    ngOnChanges() {
-        this.agentList = this.dropdownListObj['agentList'];
     }
 
     // Api function to get the agent List
@@ -286,7 +281,23 @@ export class InboxAgentComponent extends BaseListingComponent {
         })
     }
 
-    callHistory(record): void {
+    // Schedule Call Dialog
+    callSchedule(element: any) {
+        let dataObj = JSON.parse(JSON.stringify(element));
+        if (dataObj?.is_call_rescheduled) {
+            dataObj.call_purpose = dataObj?.reschedule_call_purpose || '';
+            this.matDialog.open(ScheduleCallRemarkComponent, {
+                data: dataObj,
+                disableClose: true
+            }).afterClosed().subscribe(res => {
+                if (!res) {
+                    return
+                }
+            })
+        }
+    }
+
+    callHistory(record: any): void {
         if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }

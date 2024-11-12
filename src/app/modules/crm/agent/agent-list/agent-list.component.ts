@@ -72,7 +72,6 @@ export class CRMAgentListComponent implements OnDestroy {
     dataList = [];
     dataListpartners = [];
     total = 0;
-    dropdownListObj:any = {};
     
     constructor(
         private agentService: AgentService,
@@ -86,26 +85,6 @@ export class CRMAgentListComponent implements OnDestroy {
         }
         if (tab == 'partners')
             return Security.hasPermission(crmLeadPermissions.partnersTabPermissions)
-    }
-
-
-    ngOnInit(): void {
-
-        // calling Api for defatult value for first time to get Agent list.
-        this.getAgent('');
-    }
-
-
-    // Function to get the agentList  from api
-    getAgent(value: string, bool=true) {
-        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
-            this.dropdownListObj['agentList'] = data;
-
-            for(let i in this.dropdownListObj['agentList']){
-                this.dropdownListObj['agentList'][i]['agent_info'] = `${this.dropdownListObj['agentList'][i].code}-${this.dropdownListObj['agentList'][i].agency_name}${this.dropdownListObj['agentList'][i].email_address}`
-                this.dropdownListObj['agentList'][i].id_by_value = this.dropdownListObj['agentList'][i].agency_name; 
-            }
-        })
     }
 
     public tabChanged(event: any): void {

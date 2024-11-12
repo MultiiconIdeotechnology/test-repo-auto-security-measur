@@ -122,12 +122,13 @@
                     <th pSortableColumn="currency" pResizableColumn>
                         Currency <p-sortIcon field="currency" />
                     </th>
-                    <th class="w-full min-w-[200px]" pSortableColumn="entry_date_time" pResizableColumn>
+                    <th class="min-w-[200px]" pSortableColumn="entry_date_time" pResizableColumn
+                        [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
                         Signup <p-sortIcon field="entry_date_time" />
                     </th>
 
-                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns"
-                        [ngClass]="col.field == 'balance' ? 'text-right' : '' ">
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                        [ngClass]="col.field === 'balance' ? 'text-right' : (isLast ? 'w-full' : '')">
                         {{col.header}} <p-sortIcon [field]="col.field" />
                     </th>
                 </tr>
@@ -335,6 +336,9 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <p-columnFilter *ngIf="col.field == 'city_name'" type="text" matchMode="contains" field="city_name"
+                            placeholder="Search by City Name" ariaLabel="Filter City Name" />
 
                     </th>
                 </tr>

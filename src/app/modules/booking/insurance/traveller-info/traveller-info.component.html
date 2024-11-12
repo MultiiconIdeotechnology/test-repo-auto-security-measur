@@ -1,0 +1,53 @@
+<div class="flex flex-col max-w-240 md:min-w-140 max-h-screen -m-6">
+
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+        <div class="text-lg font-medium text-white">Customer Info</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 p-5">
+        <div>
+            <div class="text-md font-semibold text-secondary">Name</div>
+            <span class="text-base truncate" [matTooltip]="record?.name">{{record.name || '-'}} </span>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Email</div>
+            <span class="text-base truncate" [matTooltip]="record?.email">{{record.email || '-'}} </span>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Mobile</div>
+            <div class="text-base truncate">{{record.mobile || '-'}} </div>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Date Of Birth</div>
+            <div class="text-base truncate">{{(record.dateOfBirth | date:'dd-MM-yyyy') || '-'}} </div>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Policy Number</div>
+            <span class="text-base truncate" [matTooltip]="record?.policyNumber">{{record.policyNumber || '-'}} </span>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Status</div>
+            <div class="text-base truncate">{{record.status || '-'}} </div>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Passport Number</div>
+            <span class="text-base truncate" [matTooltip]="record?.passport_number">{{record.passport_number || '-'}} </span>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">City</div>
+            <span class="text-base truncate" [matTooltip]="record?.city_name">{{record.city_name || '-'}} </span>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Pincode</div>
+            <span class="text-base truncate" [matTooltip]="record?.pincode">{{record.pincode || '-'}} </span>
+        </div>
+        <div>
+            <div class="text-md font-semibold text-secondary">Cancel By</div>
+            <div class="text-base truncate">{{record.cancel_by || '-'}} </div>
+        </div>
+    </div>
+</div>

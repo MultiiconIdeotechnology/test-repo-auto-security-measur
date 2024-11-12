@@ -1,0 +1,294 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <!-- Title -->
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+            <span class="text-3xl">{{module_name}}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4 max-sm:mt-2 max-sm:justify-between">
+            <!------Global Search------>
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!------ Export Excel ------->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <app-product-tab [activeTab]="2"></app-product-tab>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['receipt_ref_no', 'agent_Code', 'agent_name', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="min-w-[145px]" pSortableColumn="receipt_ref_no" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.receipt_ref_no"
+                        [ngClass]="{'left-0': !frozenObj?.receipt_ref_no}">
+                        Reference No. <p-sortIcon field="receipt_ref_no" />
+                        <span class="float-right" (click)="isFrozenColumn('receipt_ref_no');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.receipt_ref_no" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.receipt_ref_no" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    
+                    <th pSortableColumn="agent_Code" pResizableColumn>
+                        Agent Code <p-sortIcon field="agent_Code" />
+                    </th>
+                    
+                    <th pSortableColumn="agent_name" pResizableColumn>
+                        Agent <p-sortIcon field="agent_name" />
+                    </th>
+
+                    <th pSortableColumn="rm_name" pResizableColumn>
+                        RM <p-sortIcon field="rm_name" />
+                    </th>
+
+                    <th pSortableColumn="product_name" pResizableColumn>
+                        Product name <p-sortIcon field="product_name" />
+                    </th>
+
+                    <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
+                        Amount <p-sortIcon field="payment_amount" />
+                    </th>
+                    
+                    <th pSortableColumn="receipt_status" pResizableColumn>
+                        Status <p-sortIcon field="receipt_status" />
+                    </th>
+
+                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'"
+                        pSortableColumn="receipt_request_date" pResizableColumn>
+                        Date <p-sortIcon field="receipt_request_date" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
+                        <p-columnFilter type="text" matchMode="contains" field="receipt_ref_no"
+                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
+                    </th>
+                    
+                    <th>
+                        <p-columnFilter type="numeric" field="agent_Code" placeholder="Search by Agent Code"
+                            ariaLabel="Filter Agent Code" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div class="m-0">
+                                                {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="rm_name" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                    [(ngModel)]="selectedRM" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+
+                        <!-- <p-columnFilter type="text" field="rm_name" placeholder="Search by RM" ariaLabel="Filter RM" /> -->
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" field="product_name" placeholder="Search by Product name"
+                            ariaLabel="Filter product name" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" field="payment_amount" placeholder="Search by Amount"
+                            ariaLabel="Filter Amount" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter field="receipt_status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status"
+                                    [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p [value]="option.value">{{option.value}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'"
+                            field="receipt_request_date" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'receipt_request_date')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
+                        <span>
+                            {{element.receipt_ref_no || "-"}}
+                        </span>
+                    </td>
+                    <td>
+                        {{element.agent_Code || "-"}}
+                    </td>
+                  
+                    <td>
+                        <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
+                            (click)="viewAgentData(element)">
+                            {{element.agent_name}}
+                        </a>
+                    </td>
+
+                    
+                    <td>
+                        {{element.rm_name || "-"}}
+                    </td>
+
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
+                            {{element.product_name || "-"}}
+                        </span>
+                    </td>
+
+                    <td class="text-right">
+                        {{(element.payment_amount.toFixed(2) || 0) | currency: element.payment_currency : 'symbol' :
+                        '1.2-2'}}
+                    </td>
+
+                    <td>
+                        <span class="text-center justify-left"
+                            [ngClass]="element.receipt_status == 'Confirmed' ? 'text-green-600' : element.receipt_status == 'Pending' ? 'text-blue-600' :'text-red-600'">
+                            {{element.receipt_status || "-"}}
+                        </span>
+                    </td>
+                    
+                    <td>
+                        {{(element.receipt_request_date | date: 'dd-MM-yyyy') || "-"}}
+                    </td>
+                    
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">
+                        {{total_amount.toFixed(2)}}
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="8" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>

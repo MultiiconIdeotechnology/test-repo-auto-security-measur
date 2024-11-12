@@ -27,6 +27,9 @@ import { KycService } from 'app/services/kyc.service';
 import { EmployeeService } from 'app/services/employee.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { MainComponent } from '../main/main.component';
+import { EntityService } from 'app/services/entity.service';
+import { AgentKycInfoComponent } from './agent-kyc-info/agent-kyc-info.component';
 
 
 @Component({
@@ -60,7 +63,9 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    MainComponent,
+    AgentKycInfoComponent
   ]
 
 })
@@ -103,6 +108,7 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
   constructor(
     private kycDashboardService: KycDashboardService,
     private kycService: KycService,
+    private entityService: EntityService,
     private conformationService: FuseConfirmationService,
     private employeeService: EmployeeService,
     private matDialog: MatDialog,
@@ -179,10 +185,12 @@ export class AgentKycComponent extends BaseListingComponent implements OnDestroy
 
 
   viewInternal(record) {
-    this.matDialog.open(LeadEntryComponent, {
-      data: { data: record, title: 'Agent Info', readonly: true },
-      disableClose: true
-    })
+    this.entityService.raiseagentKycInfo({ data: record })
+
+    // this.matDialog.open(LeadEntryComponent, {
+    //   data: { data: record, title: 'Agent Info', readonly: true },
+    //   disableClose: true
+    // })
   }
 
   refreshItems(event?: any): void {

@@ -31,7 +31,6 @@ import {
 } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PaymentFilterComponent } from '../payment-filter/payment-filter.component';
@@ -39,16 +38,15 @@ import { PaymentInfoComponent } from '../payment-list/payment-info/payment-info.
 import { TimelineAgentProductInfoComponent } from 'app/modules/crm/timeline/product-info/product-info.component';
 import { Linq } from 'app/utils/linq';
 import { Routes } from 'app/common/const';
-import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 import { KycDocumentService } from 'app/services/kyc-document.service';
-import { Observable } from 'rxjs';
 import { CommonUtils } from 'app/utils/commonutils';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { WalletService } from 'app/services/wallet.service';
 
 @Component({
     selector: 'app-receipt-list',
@@ -82,9 +80,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     ],
 })
 
-export class ReceiptListComponent
-    extends BaseListingComponent
-    implements OnDestroy {
+export class ReceiptListComponent extends BaseListingComponent implements OnDestroy {
     module_name = module_name.receipts;
     filter_table_name = filter_module_name.account_receipts;
     private settingsUpdatedSubscription: Subscription;
@@ -110,7 +106,8 @@ export class ReceiptListComponent
         private conformationService: FuseConfirmationService,
         private toasterService: ToasterService,
         private kycdocService: KycDocumentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+		private walletService: WalletService
     ) {
         super(module_name.receipts);
 
@@ -144,10 +141,12 @@ export class ReceiptListComponent
     ];
 
     ngOnInit(): void {
-        this.getAgent('');
+        this.agentList = this._filterService.agentListByValue;
 
         // common filter
+        this._filterService.selectionDateDropdown = "";
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
               const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -158,6 +157,7 @@ export class ReceiptListComponent
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
             if (resp['table_config']['audit_date_time']?.value != null) {
@@ -175,7 +175,15 @@ export class ReceiptListComponent
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
             if (filterData['table_config']['audit_date_time']?.value != null) {
@@ -192,13 +200,6 @@ export class ReceiptListComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
-
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
@@ -206,24 +207,6 @@ export class ReceiptListComponent
         })
     }
 
-    getFilter(): any {
-        let filterReq = {};
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sort,
-        //     this.searchInputControl.value
-        // );
-        // const filter = this.currentFilter;
-        // filterReq['status'] = this.currentFilter.status;
-        // filterReq['payment_gateway'] = 'All';
-        // filterReq['fromDate'] = DateTime.fromJSDate(
-        //     this.currentFilter.fromDate
-        // ).toFormat('yyyy-MM-dd');
-        // filterReq['toDate'] = DateTime.fromJSDate(
-        //     this.currentFilter.toDate
-        // ).toFormat('yyyy-MM-dd');
-        return filterReq;
-    }
 
     filter(): void {
         this.matDialog
@@ -433,10 +416,8 @@ export class ReceiptListComponent
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-        let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq(event);
-        let model = { ...extraModel, ...newModel }
-        this.accountService.getReceiptList(model).subscribe({
+        this.accountService.getReceiptList(newModel).subscribe({
             next: (data) => {
                 this.dataList = data.data;
                 // this.total = data.total;
@@ -471,9 +452,48 @@ export class ReceiptListComponent
         else this.buttonName = 'Show';
     }
 
-    copyLink(link: string): void {
-        this.clipboard.copy(link);
-        this.alertService.showToast('success', 'Copied');
+    copyLink(element: any): void {
+        if(element){
+            this.clipboard.copy(element?.paymentLink);
+            this.alertService.showToast('success', 'Copied');
+        }
+    }
+
+    generatePaymentLink(data: any){
+        if (!Security.hasPermission(receiptPermissions.generatePaymentLink)) {
+			return this.alertService.showToast('error', messages.permissionDenied);
+		}
+        
+        let newMessage: any;
+        const label: string = 'Generate Payment Link'
+        newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
+		this.conformationService.open({
+			title: label,
+			message: newMessage
+        }).afterClosed().subscribe({
+			next: (res) => {
+				if (res === 'confirmed') {
+                    let json = {
+                        reference_table_id: data?.id || "",
+                        service_for: "Receipt",
+                        mop: data?.mop || ""
+                    }
+					this.walletService.generatePaymentLink(json).subscribe({
+						next: (res) => {
+                            // paymentLink = res.url;
+                            // paymentLink = "https://sandbox.partner.bontonholidays.com//payment-link/Py8oKMeAJxzDrz3hLS31aKuLM1wuDYR0cvLAQ5r8thpfoE2H079eHFAlaA0$R87LaA0$dy"
+                            // this.matDialog.open(PaymentLinkCopyComponent, {
+                            //     panelClass: 'full-dialog',
+                            //     data: paymentLink,
+                            //     disableClose: true
+                            // });
+							this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
+							this.refreshItems();
+						}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+					});
+				}
+			}
+		})
     }
 
     exportExcel(): void {

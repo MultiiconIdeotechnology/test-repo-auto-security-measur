@@ -1,0 +1,25 @@
+<div class="rounded-xl min-w[250px] max-w[250px] -m-6 py-[16px] px-[24px]">
+    <div class="flex white-bg justify-between text-xl font-semibold">
+        <div class="flex flex-col">
+            <span>Payment Link</span>
+        </div>
+        <mat-icon svgIcon="close" class="cursor-pointer icon-size-6" (click)="matDialogRef.close()"></mat-icon>
+    </div>
+    <mat-divider class="mt-[6px]"></mat-divider>
+
+    <div class="flex flex-row justify-center space-x-4 mt-[25px] mb-[15px]">
+        <button mat-stroked-button class="white-text space-x-[6px] rounded-md" (click)="openNewTab()">
+            <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="icon-size-5"></mat-icon>
+            <span>Open Link</span>
+        </button>
+
+        <button mat-stroked-button class="white-text space-x-[6px] rounded-md" (click)="getCopy()">
+            <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="icon-size-5"></mat-icon>
+            <span>Copy</span>
+        </button>
+        <!-- <button mat-flat-button class="rounded-lg space-x-2 white-text" (click)="getCopy()">
+            <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="icon-size-5"></mat-icon>
+            <span>Copy</span>
+        </button> -->
+    </div>
+</div>

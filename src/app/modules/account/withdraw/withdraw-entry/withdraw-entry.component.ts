@@ -94,7 +94,7 @@ export class WithdrawEntryComponent {
             agent_remark: [''],
             withdraw_type: [''],
         });
-
+        
         this.formGroup
             .get('agentfilter')
             .valueChanges.pipe(

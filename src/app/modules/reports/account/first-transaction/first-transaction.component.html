@@ -70,7 +70,7 @@
                     <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="first_transaction_date_time"
                         pResizableColumn alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.first_transaction_date_time"
-                        [ngClass]="{'left-0': !frozenObj?.first_transaction_date_time}">
+                        [ngClass]="{'left-0': !frozenObj?.first_transaction_date_time, 'min-max-width': _filterService.selectionDateDropdown == 'Custom Date Range', 'min-w-[200px]': _filterService.selectionDateDropdown !== 'Custom Date Range'}">
                         Transaction Date <p-sortIcon field="first_transaction_date_time" />
                         <span class="float-right"
                             (click)="isFrozenColumn('first_transaction_date_time');$event.stopPropagation()">
@@ -106,14 +106,33 @@
 
                 <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.first_transaction_date_time">
-                        <p-columnFilter field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar selectionMode="range" [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
+                                    optionLabel="label" placeholder="Select Option" 
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'first_transaction_date_time')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                            <div class="relative inline-block">
+                                <p-columnFilter field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
                     <th>
                         <p-columnFilter type="numeric" field="agent_Code" placeholder="Search by Agent Code"

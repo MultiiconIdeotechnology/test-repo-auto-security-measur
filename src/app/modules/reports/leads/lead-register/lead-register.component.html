@@ -90,7 +90,7 @@
             [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['calls', 'status', 'priority_text', 'agency_name', 'rmName', 'lead_type', 'lead_source', 'contact_person_name', 'contact_person_email', 'contact_person_mobile', 'cityName', 'kycStarted', 'lastCallFeedback', 'lastCall', 'leadDate']"
+            [globalFilterFields]="['calls', 'status', 'priority_text', 'agency_name', 'rmName', 'lead_type', 'lead_source', 'contact_person_name', 'contact_person_email', 'contact_person_mobile', 'cityName', 'country_name ', 'kycStarted', 'lastCallFeedback', 'lastCall', 'leadDate']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
@@ -135,6 +135,9 @@
                     <th pSortableColumn="cityName" pResizableColumn>
                         City <p-sortIcon field="cityName" />
                     </th>
+                     <th pSortableColumn="country_name" pResizableColumn>
+                        Country <p-sortIcon field="country_name" />
+                    </th>
                     <th pSortableColumn="kycStarted" pResizableColumn>
                         KYC Started <p-sortIcon field="kycStarted" />
                     </th>
@@ -144,7 +147,7 @@
                     <th pSortableColumn="lastCall" pResizableColumn>
                         Last Call <p-sortIcon field="lastCall" />
                     </th>
-                    <th pSortableColumn="leadDate" pResizableColumn>
+                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="leadDate" pResizableColumn>
                         Lead Date <p-sortIcon field="leadDate" />
                     </th>
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
@@ -202,7 +205,7 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter field="lead_type" matchMode="equals" [showMenu]="false">
+                        <p-columnFilter field="lead_type" matchMode="contains" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="leadType"
                                     (onChange)="filter($event.value)" placeholder="Select Lead Type" [showClear]="true"
@@ -246,6 +249,10 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="cityName" placeholder="Search by City"
                             ariaLabel="Filter City" />
+                    </th> 
+                     <th>
+                        <p-columnFilter type="text" matchMode="contains" field="country_name" placeholder="Search by Country"
+                            ariaLabel="Filter Country" />
                     </th>
                     <th>
                         <p-columnFilter field="KYCStarted_filter" matchMode="equals" [showMenu]="false">
@@ -274,21 +281,33 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <!-- <p-columnFilter field="leadDate" type="date">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="leadDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                    appendTo="body" placeholder="Search by Lead Date">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter> -->
-                        <p-columnFilter field="leadDate" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar selectionMode="range" [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
+                                    optionLabel="label" placeholder="Select Option" 
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'leadDate')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                            <div class="relative inline-block">
+                                <p-columnFilter field="leadDate" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
                     <th *ngFor="let col of columns">
                     </th>
@@ -362,6 +381,9 @@
                     </td>
                     <td>
                         {{element.cityName || "-"}}
+                    </td> 
+                    <td>
+                        {{element.country_name  || "-"}}
                     </td>
                     <td>
                         {{element.kycStarted ? 'Yes' : 'No'}}

@@ -104,6 +104,10 @@ export class FlightTabService {
     return this.http.post<any>(this.baseUrl + "Flight/generateRevertPayment", model);
   }
 
+  visaAmendment(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "VisaBookingPax/visaAmendment", model);
+  }
+
   changePaxDetails(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + "AirBooking/changePaxDetails", model);
   }
@@ -120,5 +124,8 @@ export class FlightTabService {
     return this.http.post<any>(this.baseUrl + "AirBooking/getAirBookngStatus", {});
   }
 
+  getBookingFileLog(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "AirBooking/getBookingFileLog", { id: id });
+  }
 
 }

@@ -91,15 +91,15 @@
     <mat-tab-group class="custom-tab wlt_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
 
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
-            <app-wpending *ngIf="tabNameStr == 'Pending'" #pending [(isFilterShowPending)]="isFilterShowPending" [filterApiData]="filterApiData"></app-wpending>
+            <app-wpending *ngIf="tabNameStr == 'Pending'" #pending [(isFilterShowPending)]="isFilterShowPending"></app-wpending>
         </mat-tab>
 
         <mat-tab label="Audited" [aria-label]="'Audited'" *ngIf="getTabsPermission('audited')">
-            <app-waudited *ngIf="tabNameStr == 'Audited'" #audited [(isFilterShowAudit)]="isFilterShowAudit" [filterApiData]="filterApiData"></app-waudited>
+            <app-waudited *ngIf="tabNameStr == 'Audited'" #audited [(isFilterShowAudit)]="isFilterShowAudit"></app-waudited>
         </mat-tab>
 
         <mat-tab label="Rejected" [aria-label]="'Rejected'" *ngIf="getTabsPermission('rejected')">
-            <app-wrejected *ngIf="tabNameStr == 'Rejected'" #rejected [(isFilterShowReject)]="isFilterShowReject" [filterApiData]="filterApiData"></app-wrejected>
+            <app-wrejected *ngIf="tabNameStr == 'Rejected'" #rejected [(isFilterShowReject)]="isFilterShowReject"></app-wrejected>
         </mat-tab>
 
     </mat-tab-group>

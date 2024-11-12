@@ -97,7 +97,6 @@ export class RejectedComponent extends BaseListingComponent {
 		private conformationService: FuseConfirmationService,
 		private matDialog: MatDialog,
 		public agentService: AgentService,
-		private entityService: EntityService,
 		public _filterService: CommonFilterService
 	) {
 		super(module_name.wallet)
@@ -109,13 +108,15 @@ export class RejectedComponent extends BaseListingComponent {
 	}
 
 	ngOnInit(): void {
+		this.agentList = this._filterService.agentListById;
 		setTimeout(() => {
-			this.agentList = this.filterApiData.agentData;
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
 
+		this._filterService.selectionDateDropdown = ""
 		this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+			this._filterService.selectionDateDropdown = "";
 			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPsp = resp['table_config']['psp_name']?.value;
@@ -138,10 +139,8 @@ export class RejectedComponent extends BaseListingComponent {
 					this.pspList.push(this.selectedPsp);
 				}
 			}
-			if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
-				this._filterService.rangeDateConvert(resp.table_config.request_date_time);
-			}
 			if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
+				this._filterService.selectionDateDropdown = 'Custom Date Range';
 				this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
 			}
 			if (resp?.['table_config']?.['rejected_date_time']?.value != null) {
@@ -163,10 +162,11 @@ export class RejectedComponent extends BaseListingComponent {
 			this.selectedMop = filterData['table_config']['mop']?.value;
 			this.selectedPsp = filterData['table_config']['psp_name']?.value;
 			if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
+				this._filterService.selectionDateDropdown = 'Custom Date Range';
 				this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
 			}
 
-			if (filterData?.['table_config']?.['rejected_date_time']?.value != null) {
+			if (filterData?.['table_config']?.['rejected_date_time'].value) {
 				filterData['table_config']['rejected_date_time'].value = new Date(filterData['table_config']['rejected_date_time'].value);
 			}
 			this.isFilterShowReject = true;
@@ -200,7 +200,6 @@ export class RejectedComponent extends BaseListingComponent {
 	}
 
 	ngOnChanges(changes: SimpleChanges) {
-		this.agentList = this.filterApiData.agentData;
 		this.mopList = this.filterApiData.mopData;
 		this.pspList = this.filterApiData.pspData;
 	}

@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -28,6 +28,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 
 @Component({
 	selector: 'app-pending',
@@ -55,6 +56,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 		CommonModule,
 		MatTabsModule,
 		PrimeNgImportsModule,
+        ClipboardModule
 	],
 })
 export class PendingComponent extends BaseListingComponent {
@@ -81,7 +83,7 @@ export class PendingComponent extends BaseListingComponent {
 	mopList: any[] = [];
 
 	selectedMop: any;
-	selectedEmployee: any;
+	selectedAgent: any;
 	selectedPSP: any;
 	public settingsUpdatedSubscription: Subscription;
 
@@ -91,10 +93,10 @@ export class PendingComponent extends BaseListingComponent {
 		private walletService: WalletService,
 		private conformationService: FuseConfirmationService,
 		private matDialog: MatDialog,
+        private clipboard: Clipboard,
 		public agentService: AgentService,
 		private entityService: EntityService,
 		public _filterService: CommonFilterService,
-		private elementRef: ElementRef
 	) {
 		super(module_name.wallet)
 		this.key = this.module_name;
@@ -117,21 +119,22 @@ export class PendingComponent extends BaseListingComponent {
 	}
 
 	ngOnInit(): void {
+		this.agentList = this._filterService.agentListById;
 		setTimeout(() => {
-			this.agentList = this.filterApiData.agentData;
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
-
+		this._filterService.selectionDateDropdown = "";
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
+		this._filterService.selectionDateDropdown = "";
+			this.selectedAgent = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPSP = resp['table_config']['psp_name']?.value;
 
-			if (this.selectedEmployee && this.selectedEmployee.id) {
-				const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+			if (this.selectedAgent && this.selectedAgent.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
 				if (!match) {
-					this.agentList.push(this.selectedEmployee);
+					this.agentList.push(this.selectedAgent);
 				}
 			}
 
@@ -148,6 +151,7 @@ export class PendingComponent extends BaseListingComponent {
 				}
 			}
 			if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
+				this._filterService.selectionDateDropdown = 'Custom Date Range';
 				this._filterService.rangeDateConvert(resp.table_config.request_date_time);
 			}
 			this.isFilterShowPending = true;
@@ -159,6 +163,13 @@ export class PendingComponent extends BaseListingComponent {
 		});
 	}
 
+    copyLink(element: any): void {
+        if(element){
+            this.clipboard.copy(element.paymentlink);
+            this.alertService.showToast('success', 'Copied');
+        }
+    }
+
 	ngAfterViewInit() {
 		// Defult Active filter show
 		if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
@@ -169,11 +180,11 @@ export class PendingComponent extends BaseListingComponent {
 			this.isFilterShowPendingChange.emit(this.isFilterShowPending);
 
 			setTimeout(() => {
-				this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
-				if (this.selectedEmployee && this.selectedEmployee.id) {
-					const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+				this.selectedAgent = filterData['table_config']['agent_code_filter']?.value;
+				if (this.selectedAgent && this.selectedAgent.id) {
+					const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
 					if (!match) {
-						this.agentList.push(this.selectedEmployee);
+						this.agentList.push(this.selectedAgent);
 					}
 				}
 				if (this.selectedMop && this.selectedMop.id) {
@@ -190,6 +201,7 @@ export class PendingComponent extends BaseListingComponent {
 				}
 			}, 1000);
 			if (filterData?.table_config?.request_date_time?.value != null && filterData.table_config.request_date_time.value.length) {
+				this._filterService.selectionDateDropdown = 'Custom Date Range';
 				this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
 			}
 			this.primengTable['filters'] = filterData['table_config'];
@@ -200,7 +212,6 @@ export class PendingComponent extends BaseListingComponent {
 	}
 
 	ngOnChanges() {
-		this.agentList = this.filterApiData.agentData;
 		this.mopList = this.filterApiData.mopData;
 		this.pspList = this.filterApiData.pspData;
 	}
@@ -213,6 +224,46 @@ export class PendingComponent extends BaseListingComponent {
 			}
 		})
 	}
+
+    generatePaymentLink(data: any){
+		if (!Security.hasPermission(walletRechargePermissions.generatePaymentLink)) {
+			return this.alertService.showToast('error', messages.permissionDenied);
+		}
+
+        let newMessage: any;
+        const label: string = 'Generate Payment Link'
+        newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
+		this.conformationService.open({
+			title: label,
+			message: newMessage
+		}).afterClosed().subscribe({
+			next: (res) => {
+				if (res === 'confirmed') {
+                    let json = {
+                        reference_table_id: data?.id ? data?.id : "",
+                        service_for: "Wallet",
+                        mop: data?.mop ? data?.mop : ""
+                    }
+					this.walletService.generatePaymentLink(json).subscribe({
+						next: (res) => {
+                            // let paymentLink: any;
+                            // // paymentLink = res.url;
+                            // paymentLink = "https://sandbox.partner.bontonholidays.com//payment-link/Py8oKMeAJxzDrz3hLS31aKuLM1wuDYR0cvLAQ5r8thpfoE2H079eHFAlaA0$R87LaA0$dy"
+                            // this.matDialog.open(PaymentLinkCopyComponent, {
+                            //     panelClass: 'full-dialog',
+                            //     data: paymentLink,
+                            //     disableClose: true
+                            // });
+
+							this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
+							this.refreshItemsPending();
+							this.entityService.raiseWalletAuditedCall(data.id);
+						}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+					});
+				}
+			}
+		})
+    }
 
 	getMopList(value: string) {
 		this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {

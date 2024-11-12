@@ -64,10 +64,9 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     PrimeNgImportsModule,
   ],
 })
-export class WAuditedComponent extends BaseListingComponent implements OnChanges {
+export class WAuditedComponent extends BaseListingComponent {
 
   @Input() isFilterShowAudit: boolean;
-  @Input() filterApiData: any;
   @Output() isFilterShowAuditedChange = new EventEmitter<boolean>();
 
   searchInputControlAudit = new FormControl('');
@@ -124,11 +123,11 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-      this.agentList = this.filterApiData.agentData;
-    }, 1000);
+    this.agentList = this._filterService.agentListById;
 
+    this._filterService.selectionDateDropdown = "";
     this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
@@ -139,6 +138,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
         }
       }
       if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -165,6 +165,7 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
       this.isFilterShowAudit = true;
       this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
       if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -172,10 +173,6 @@ export class WAuditedComponent extends BaseListingComponent implements OnChanges
       this.primengTable['filters'] = filterData['table_config'];
     }
 
-  }
-
-  ngOnChanges() {
-    
   }
 
   getAgentList(value: string) {

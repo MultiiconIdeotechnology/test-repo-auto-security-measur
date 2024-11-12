@@ -35,7 +35,6 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
-
 @Component({
     selector: 'app-flight',
     templateUrl: './flight.component.html',
@@ -110,6 +109,7 @@ export class FlightComponent extends BaseListingComponent {
         { label: 'Online', value: false },
         { label: 'Import', value: true }
     ]
+
     // clipboard: any;
     // toastr: any;
 
@@ -148,14 +148,14 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-
-        this.getAgentList("", true);
-        this.getAirportFromList("");
-        this.getAirportToList("");
+        this.agentList = this._filterService.agentListById;
+        this.getAirportList("");
         this.getSupplierList();
+        this._filterService.selectionDateDropdown = "";
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
@@ -186,6 +186,7 @@ export class FlightComponent extends BaseListingComponent {
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
             }
             if (resp['table_config']['travelDate']?.value != null) {
@@ -200,6 +201,7 @@ export class FlightComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        // this._filterService.selectionDateDropdown = "";
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
@@ -208,7 +210,15 @@ export class FlightComponent extends BaseListingComponent {
             this.selectedFromAirport = filterData['table_config']['from_id_filtres']?.value;
             this.selectedToAirport = filterData['table_config']['to_id_filtres']?.value;
 
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
             }
             if (filterData['table_config']['travelDate'].value) {
@@ -220,25 +230,11 @@ export class FlightComponent extends BaseListingComponent {
         }
     }
 
-    // get selectedColumns(): Column[] {
-    //     return this._selectedColumns;
-    // }
-
-    // set selectedColumns(val: Column[]) {
-    //     if (Array.isArray(val)) {
-    //       this._selectedColumns = this.cols.filter(col =>
-    //         val.some(selectedCol => selectedCol.field === col.field)
-    //       );
-    //     } else {
-    //       this._selectedColumns = [];
-    //     }
-    //   }
-
-    copy(link) {
+    copy(link:any) {
         this.clipboard.copy(link);
         this.toastr.showToast('success', 'Copied');
     }
-
+    
     getFilter(): any {
         const filterReq = {};
         filterReq['FromDate'] = '';
@@ -291,12 +287,7 @@ export class FlightComponent extends BaseListingComponent {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data: any) => {
             this.agentList = data;
 
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
+        
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
@@ -304,6 +295,28 @@ export class FlightComponent extends BaseListingComponent {
         });
     }
 
+    // Airport From , To Data List
+    getAirportList(value: any) {
+        this.flighttabService.getAirportMstCombo(value).subscribe((data: any) => {
+            this.airportFromList = data;
+            this.airportToList = data;
+
+            if (this.selectedFromAirport && this.selectedFromAirport.id) {
+                const match = this.airportFromList.find((item: any) => item.id == this.selectedFromAirport?.id);
+                if (!match) {
+                    this.airportFromList.push(this.selectedFromAirport);
+                }
+            }
+
+            if (this.selectedToAirport && this.selectedToAirport.id) {
+                const match = this.airportToList.find((item: any) => item.id == this.selectedToAirport?.id);
+                if (!match) {
+                    this.airportToList.push(this.selectedToAirport);
+                }
+            }
+        });
+    }
+  
     // Api to get the Airportlist Data (from)
     getAirportFromList(value: any) {
         this.flighttabService.getAirportMstCombo(value).subscribe((data: any) => {
@@ -315,11 +328,7 @@ export class FlightComponent extends BaseListingComponent {
                     this.airportFromList.push(this.selectedFromAirport);
                 }
             }
-
-            // if (!value) {
-            //     this.airportToList = data;
-            // }
-        })
+        });
     }
 
     // Api to get the Airportlist Data (To)
@@ -333,7 +342,7 @@ export class FlightComponent extends BaseListingComponent {
                     this.airportToList.push(this.selectedToAirport);
                 }
             }
-        })
+        });
     }
 
     // Api to get the Supplier List
@@ -428,7 +437,7 @@ export class FlightComponent extends BaseListingComponent {
             return 'text-yellow-600';
         } else if (status == 'Confirmed') {
             return 'text-green-600';
-        } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected') {
+        } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected' || status == 'Hold Failed') {
             return 'text-red-600';
         } else if (status == 'Hold') {
             return 'text-blue-600';
@@ -464,14 +473,18 @@ export class FlightComponent extends BaseListingComponent {
         // req.take = this.totalRecords;
         const filterReq = this.getNewFilterReq({});
 
-        filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
-        filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
+        // filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
+        // filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
+        
+        filterReq['FromDate'] = '';
+        filterReq['ToDate'] = '';
         filterReq['agent_for'] = this.flightFilter?.agent_for;
         filterReq['agent_id'] = this.flightFilter?.agent_id?.id || '';
         filterReq['fromCity'] = this.flightFilter?.fromCity?.id || '';
         filterReq['toCity'] = this.flightFilter?.toCity?.id || '';
         filterReq['supplier_id'] = this.flightFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? '' : this.flightFilter?.supplier_id?.map(x => x.id).join(',');
-        filterReq['status'] = this.flightFilter?.status.join(',');
+        //filterReq['status'] = this.flightFilter?.status.join(',');
+        filterReq['status'] = '';
         filterReq['Filter'] = this.searchInputControl.value;
         filterReq['Take'] = this.totalRecords;
 

@@ -24,6 +24,10 @@ export class WalletService {
     return this.http.post<any>(this.baseUrl + 'WalletRecharge/setRechargeAudit', { id: id });
   }
 
+  generatePaymentLink(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'paymentlink/commonPaymentlinkCreate', model);
+  }
+
   setRechargeReject(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'WalletRecharge/setRechargeReject', model);
   }
@@ -44,5 +48,5 @@ export class WalletService {
     return this.http.post<any[]>(this.baseUrl + 'WalletRecharge/offlineRecharge', model);
   }
 
-  
+
 }

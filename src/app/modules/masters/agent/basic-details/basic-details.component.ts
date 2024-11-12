@@ -79,9 +79,9 @@ export class BasicDetailsComponent {
   idUrl: any;
   records: any = {};
   profile_picture: any;
-  AgentList: {};
-  rmList: {};
-  accountList: {};
+  AgentList: any = [];
+  rmList: any = [];
+  accountList: any = [];
 
   columns = [
     'action',
@@ -185,13 +185,21 @@ export class BasicDetailsComponent {
         { name: 'KYC profile', value: this.basicDetails.kyc_profile_name
         },
       ]
+
+      if(this.basicDetails?.preferred_language) {
+        this.AgentList.push({ name: 'Preferred Language', value: this.basicDetails?.preferred_language },)
+      }
+
+      if(this.basicDetails?.service_offered_by_ta) {
+        this.AgentList.push({ name: 'Service Offered By TA', value: this.basicDetails?.service_offered_by_ta },)
+      }
     }
   }
 
   viewKYC(): void {
 
     this.matDialog.open(KycInfoComponent, {
-      data: { record: this.records, agent: true },
+      data: { record: this.records, agent: true, from : "Agent" },
       disableClose: true
     }).afterClosed().subscribe(res => {
       if (res) {

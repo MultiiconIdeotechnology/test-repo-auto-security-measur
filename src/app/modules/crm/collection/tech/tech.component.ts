@@ -70,7 +70,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 })
 export class TechCollectionComponent extends BaseListingComponent {
     @Input() isFilterShowTech: boolean;
-    @Input() dropdownListObj: {};
     @Output() isFilterShowTechChange = new EventEmitter<boolean>();
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorTech: MatPaginator;
@@ -112,6 +111,8 @@ export class TechCollectionComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
+        this.agentList = this._filterService.agentListByValue;
+
         this.settingsTechSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -162,10 +163,6 @@ export class TechCollectionComponent extends BaseListingComponent {
             this.sortColumn = filterData['sortColumn'];
         }
     }
-
-    ngOnChanges() {
-    }
-
 
     refreshItems(event?: any): void {
         this.isLoading = true;

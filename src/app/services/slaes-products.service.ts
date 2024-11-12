@@ -16,4 +16,7 @@ export class SalesProductsService {
         return this.http.post<any>(this.baseUrl + 'AccountReport/getProductReport', model);
     }
 
+    getAgentSummaryReport(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'AccountReport/getAgentSummaryReport', model);
+    }
 }

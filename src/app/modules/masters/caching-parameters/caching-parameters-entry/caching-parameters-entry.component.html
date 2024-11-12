@@ -96,18 +96,18 @@
                             <span class="text-[11px] dark:text-[#7a86a0]">(Ex. BOM-DEL)</span>
                         </div>
                         <mat-form-field class="flex-grow">
-                            <input matInput type="text" formControlName="sector" />
+                            <input matInput type="text" formControlName="sector"
+                            />
                             <mat-error *ngIf="formGroup.get('sector').hasError('required')">
                                 Sector is required
                             </mat-error>
-                            <mat-error *ngIf="formGroup.get('sector').hasError('minlength')">
+                            <mat-error *ngIf="formGroup.get('sector').hasError('invalidFormat')">
                                 Sector must be in the above format Ex. (BOM-DEL)
                             </mat-error>
-                            <mat-error *ngIf="formGroup.get('sector').hasError('maxlength')">
+                            <mat-error *ngIf="formGroup.get('sector').hasError('invalidLength')">
                                 Sector must be in the above format Ex. (BOM-DEL)
                             </mat-error>
                         </mat-form-field>
-
                         <div class="mb-1">Today Travel *
                             <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span>
                         </div>

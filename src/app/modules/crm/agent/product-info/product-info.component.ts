@@ -299,7 +299,7 @@ export class AgentProductInfoComponent {
             "",
         );
         // filterReq['agent_id'] = this.agentId ? this.agentId : ""
-        filterReq['Id'] = this.productId ? this.productId : this.service_for_id ? this.service_for_id : ""
+        filterReq['Id'] = this.productId ? this.productId : this.service_for_id;
         this.crmService.getProductInfoList(filterReq).subscribe({
             next: (res) => {
                 this.isLoading = false;

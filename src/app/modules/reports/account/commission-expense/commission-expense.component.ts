@@ -83,10 +83,12 @@ export class CommissionExpenseComponent
     }
 
     ngOnInit() {
-        this.getAgent('');
-
+        this.agentList = this._filterService.agentListByValue;
+        
         // common filter
+        this._filterService.selectionDateDropdown = "";
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -97,6 +99,7 @@ export class CommissionExpenseComponent
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['booking_date']?.value != null && resp['table_config']['booking_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(resp['table_config']['booking_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -111,7 +114,15 @@ export class CommissionExpenseComponent
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['booking_date']?.value != null && filterData['table_config']['booking_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['booking_date']);
             }
             this.primengTable['filters'] = filterData['table_config'];
@@ -123,13 +134,6 @@ export class CommissionExpenseComponent
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;

@@ -23,6 +23,8 @@ import { TechDashboardExpiredComponent } from '../expired/expired.component';
 import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ItemService } from 'app/services/item.service';
+import { GlobalSearchService } from 'app/services/global-search.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-list',
@@ -61,7 +63,6 @@ export class CRMTechDashboardListComponent implements OnDestroy {
 
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name;
-    dropdownFirstCallObj: any = {};
     public apiCalls: any = {};
     tabName: any
     tabNameStr: any = 'Pending'
@@ -76,13 +77,13 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     searchInputControlCompleted = new FormControl('');
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
-    dataList = [];
+    itemList = [];
     dataListArchive = [];
     total = 0;
 
     constructor(
-        private agentService: AgentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private globalSearchService: GlobalSearchService
     ) { }
 
     public getTabsPermission(tab: string): boolean {
@@ -101,17 +102,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     }
 
     ngOnInit(): void {
-        // this.searchInputControlPending.valueChanges
-        //     .pipe(
-        //         takeUntil(this._unsubscribeAll),
-        //         debounceTime(AppConfig.searchDelay)
-        //     )
-        //     .subscribe((value) => {
-        //         this.pending.searchInputControlPending.patchValue(value);
-        //     });
-
-        // calling agent Api for first time on dropdown
-        this.getAgent("");
+        this.globalSearchService.getItemList();
+        this.globalSearchService.getProductList();
     }
 
     public tabChanged(event: any): void {
@@ -198,19 +190,6 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     blockedRefresh(event:any) {
         this.blocked.searchInputControlBlocked.patchValue(event);
         this.blocked?.refreshItems();
-    }
-
-    // Api call to Get Agent data
-    getAgent(value: string) {
-        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
-            this.dropdownFirstCallObj['agentList'] = data;
-
-            for (let i in this.dropdownFirstCallObj['agentList']) {
-                this.dropdownFirstCallObj['agentList'][i]['agent_info'] =
-                    `${this.dropdownFirstCallObj['agentList'][i].code}-${this.dropdownFirstCallObj['agentList'][i].agency_name}${this.dropdownFirstCallObj['agentList'][i].email_address}`;
-                this.dropdownFirstCallObj['agentList'][i].id_by_value = this.dropdownFirstCallObj['agentList'][i].agency_name;
-            }
-        })
     }
 
     ngOnDestroy(): void {

@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatOptionModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -34,6 +34,8 @@ import { Security, module_name, crmLeadPermissions } from 'app/security';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
 import { CrmService } from 'app/services/crm.service';
+import { LuxonDateAdapterService } from 'app/services/LuxonDateAdapter.service';
+import { MY_DATE_FORMATS } from 'app/utils/commonutils';
 
 @Component({
     selector: 'app-crm-dial-call-entry',
@@ -70,6 +72,10 @@ import { CrmService } from 'app/services/crm.service';
         MatSortModule,
         MatDialogModule,
         CommonModule
+    ],
+    providers: [
+        { provide: DateAdapter, useClass: LuxonDateAdapterService },
+        { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
     ]
 })
 export class CRMDialCallEntryComponent extends BaseListingComponent implements OnDestroy {

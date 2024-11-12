@@ -10,7 +10,7 @@
 
         <ng-template pTemplate="header">
             <tr>
-                <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                <th class="text-center left-[-1px]" pFrozenColumn>#</th>
                 <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="reference_number" pResizableColumn
                     pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number"
                     [ngClass]="{'left-0': !frozenObj?.reference_number}">
@@ -20,7 +20,7 @@
                         <i *ngIf="frozenObj?.reference_number" class="pi pi-lock icon-size-3"></i>
                     </span>
                 </th>
-                <th class="min-w-[200px]" pSortableColumn="request_date_time" pResizableColumn>
+                <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="request_date_time" pResizableColumn>
                     Request <p-sortIcon field="request_date_time" />
                 </th>
                 <th pSortableColumn="agent_code" pResizableColumn>
@@ -56,14 +56,33 @@
                         placeholder="Search by Reference Number" ariaLabel="Filter Reference Number" />
                 </th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.request_date_time">
-                    <p-columnFilter field="request_date_time" matchMode="custom" [showMenu]="false">
+                    <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="request_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar selectionMode="range" [ngModel]="value"
-                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
-                            </p-calendar>
+                            <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
+                                optionLabel="label" placeholder="Select Option"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <div (click)="_filterService.onOptionClick(option, primengTable, 'request_date_time')">
+                                        <div>{{option.label}}</div>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
                         </ng-template>
                     </p-columnFilter>
+
+                    <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                        <div class="relative inline-block">
+                            <p-columnFilter field="request_date_time" matchMode="custom" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar selectionMode="range" [ngModel]="value"
+                                        (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                        dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                            <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                        </div>
+                    </ng-container>
                 </th>
                 <th>
                     <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
@@ -73,7 +92,7 @@
                     <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals"
                         [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
+                            <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedAgent"
                                 optionLabel="agent_info" [filter]="true" filterBy="agent_info"
                                 (onFilter)="getAgentList($event?.filter)"
                                 (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
@@ -161,6 +180,16 @@
                             <mat-icon class="mat-18">close</mat-icon>
                             <span style="font-weight: 600;">Reject</span>
                         </button>
+                        <button mat-menu-item *ngIf="!element.paymentlink"
+                            (click)="generatePaymentLink(element)">
+                            <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                            <span style="font-weight: 600;">Generate Payment Link</span>
+                        </button>
+                        <button mat-menu-item *ngIf="element.paymentlink"
+                            (click)="copyLink(element)">
+                            <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                            <span style="font-weight: 600;">Copy Payment Link</span>
+                    </button>
                     </mat-menu>
                 </td>
                 <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">

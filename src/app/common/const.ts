@@ -24,6 +24,16 @@ export const dateRange = {
     setCustomDate: 'Set Custom Date',
 };
 
+export const dateRangeContracting = {
+    today: 'Today',
+    lastWeek: 'This Week',
+    lastMonth: 'This Month',
+    previousMonth: 'Previous Month',
+    last3Month: 'Last 3 Month',
+    last6Month: 'Last 6 Month',
+    setCustomDate: 'Custom',
+};
+
 export const dateRangeLeadRegister = {
     all: 'All',
     today: 'Today',
@@ -235,6 +245,9 @@ export const Routes = {
 
         agent_balance_path: 'account/agent-balance',
         agent_balance_path_route: 'account/agent-balance',
+        
+        agent_wise_service_wise_path: 'account/agent-wise-service-wise',
+        agent_wise_service_wise_path_route: 'account/agent-wise-service-wise',
 
         sale_path: 'account/sale-book',
         sale_route: 'account/sale-book',
@@ -276,10 +289,18 @@ export const Routes = {
         bus_path: 'booking/bus',
         bus_route: '/booking/bus',
         bus_details_route: '/booking/bus/details',
+        
+        insurance_path: 'booking/insurance',
+        insurance_route: '/booking/insurance',
+        insurance_details_route: '/booking/insurance/details',
 
         hotel_path: 'booking/hotel',
         hotel_route: '/booking/hotel',
         hotel_details_route: '/booking/hotel/details',
+        
+        forex_path: 'booking/forex',
+        forex_route: '/booking/forex',
+        forex_details_route: '/booking/forex/details',
 
         flight_path: 'booking/flight',
         flight_route: '/booking/flight',
@@ -343,6 +364,21 @@ export const Routes = {
 
         airline_path: 'reports/airline',
         airline_route: 'reports/airline',
+        
+        airline_summary_path: 'reports/airline_summary',
+        airline_summary_route: 'reports/airline_summary',
+        
+        airline_career_path: 'reports/airline_career',
+        airline_career_route: 'reports/airline_career',
+        
+        airline_monthly_path: 'reports/airline_monthly',
+        airline_monthly_route: 'reports/airline_monthly',
+        
+        airline_offline_path: 'reports/airline_offline',
+        airline_offline_route: 'reports/airline_offline',
+
+        airline_rejection_path: 'reports/airline_rejection',
+        airline_rejection_route: 'reports/airline_rejection',
 
         campaign_summary_path: 'reports/campaign-summary',
         campaign_summary_path_route: 'reports/campaign-summary',
@@ -361,9 +397,11 @@ export const Routes = {
 
         products_path: 'reports/products',
         products_route: 'reports/products',
+
+        agent_summary_path: 'reports/agent_summary',
+        agent_summary_route: 'reports/agent_summary',
+    
     },
-
-
 
     settings: {
         erpsettings_path: 'settings/erp',

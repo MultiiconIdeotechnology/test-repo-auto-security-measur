@@ -39,11 +39,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   selector: 'app-wrejected',
   templateUrl: './rejected.component.html',
   styleUrls: ['./rejected.component.scss'],
-  styles: [`
-  .tbl-grid {
-    grid-template-columns: 40px 170px 140px 110px 204px 210px;
-  }
-  `],
   standalone: true,
   imports: [
     NgIf,
@@ -74,10 +69,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     PrimeNgImportsModule,
   ],
 })
-export class WRejectedComponent extends BaseListingComponent implements OnChanges {
-
+export class WRejectedComponent extends BaseListingComponent {
   @Input() isFilterShowReject: boolean;
-  @Input() filterApiData: any;
   @Output() isFilterShowRejectedChange = new EventEmitter<boolean>();
 
   searchInputControlRejected = new FormControl('');
@@ -137,12 +130,11 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
   }
 
   ngOnInit(): void {
-    setTimeout(() => {
-			this.agentList = this.filterApiData.agentData;
-		}, 1000);
+    this.agentList = this._filterService.agentListById;
 
+    this._filterService.selectionDateDropdown = "";
     this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-
+      this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
@@ -153,6 +145,7 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         }
       }
       if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
    
@@ -178,6 +171,7 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
           }
         }, 1000);
         if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+          this._filterService.selectionDateDropdown = 'Custom Date Range';
           this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
         }
 
@@ -185,10 +179,6 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
         // this.primengTable['_sortField'] = filterData['sortColumn'];
         // this.sortColumn = filterData['sortColumn'];
       }
-  }
-
-  ngOnChanges() {
-			this.agentList = this.filterApiData.agentData;
   }
 
   getAgentList(value: string) {
@@ -271,17 +261,9 @@ export class WRejectedComponent extends BaseListingComponent implements OnChange
 
   refreshItemsRejected(event?: any) {
     this.isLoading = true;
-    // const filterReq = GridUtils.GetFilterReq(
-    //   this._paginatorPending,
-    //   this._sortPending,
-    //   this.searchInputControlRejected.value, "entry_date_time", 1
-    // );
-
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlRejected.value;
     filterReq['status'] = 'rejected';
-    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.filter.FromDate)).toFormat('yyyy-MM-dd')
-    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.filter.ToDate)).toFormat('yyyy-MM-dd')
     filterReq['FromDate'] = "";
     filterReq['ToDate'] = "";
     filterReq['agent_id'] = this.filter?.agent_id == 'all' ? '' : this.filter?.agent_id;

@@ -36,6 +36,7 @@ import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { GlobalSearchService } from 'app/services/global-search.service';
 
 @Component({
     selector: 'app-crm-tech-dashboard-expired',
@@ -76,7 +77,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 })
 export class TechDashboardExpiredComponent extends BaseListingComponent{
     @Input() isFilterShowExpired: boolean;
-    @Input() dropdownFirstCallObj:any;
     @Output() isFilterShowExpiredChange = new EventEmitter<boolean>();
     cols = [];
     total = 0;
@@ -108,7 +108,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         private matDialog: MatDialog,
         private conformationService: FuseConfirmationService,
         private agentService: AgentService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        public globalSearchService: GlobalSearchService
     ) {
         super(module_name.techDashboard)
         this.key = this.module_name;
@@ -119,6 +120,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     }
 
     ngOnInit(): void {
+        this.agentList = this._filterService.agentListByValue;
+
          // common filter
          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
@@ -189,10 +192,6 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         else {
             return '';
         }
-    }
-
-    ngOnChanges(){
-        this.agentList = this.dropdownFirstCallObj['agentList'];
     }
 
     getNodataText(): string {

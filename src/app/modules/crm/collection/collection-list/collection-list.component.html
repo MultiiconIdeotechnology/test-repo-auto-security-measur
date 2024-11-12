@@ -73,8 +73,7 @@
 
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Tech" [aria-label]="'Tech'" *ngIf="getTabsPermission('tech')">
-            <app-tech *ngIf="tabNameStr == 'Tech'" #tech [(isFilterShowTech)]="isFilterShowTech"
-                [dropdownListObj]="dropdownListObj"></app-tech>
+            <app-tech *ngIf="tabNameStr == 'Tech'" #tech [(isFilterShowTech)]="isFilterShowTech"></app-tech>
         </mat-tab>
 
         <mat-tab label="Travel" [aria-label]="'Travel'" *ngIf="getTabsPermission('travel')">

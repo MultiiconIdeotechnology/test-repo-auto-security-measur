@@ -70,7 +70,7 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
     agentList: any[] = [];
     CurrencyList: any[] = [];
     CurrencyListTemp: any[] = [];
-    mopList: any[] = ['NEFT', 'RTGS', 'IMPS', 'UPI', 'CASH', 'Digital Payment'];
+    mopList: any = [];
     selectedFile: File;
     jFile: JsonFile;
     formGroup: FormGroup;
@@ -89,8 +89,17 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
             next: (item) => {
                 this.settingsDrawer.toggle()
                 this.create = item?.create;
+                this.mopList = item?.mopData;
                 if (this.create) {
                     this.title = "Wallet Recharge"
+                }
+                
+                // Only first time load both combo
+                if(this.agentList && !this.agentList.length) {
+                    this.getAgentCombo();
+                }
+                if(this.CurrencyList && !this.CurrencyList.length) {
+                    this.getCurrencyCombo();
                 }
             }
         })
@@ -112,26 +121,29 @@ export class WalletEnterySettingsComponent implements OnInit, OnDestroy {
 
         this.formGroup.get('mop').patchValue('NEFT')
 
-        /*************Agent combo**************/
-        this.formGroup
-            .get('agentfilter')
-            .valueChanges.pipe(
-                filter((search) => !!search),
-                startWith(''),
-                debounceTime(200),
-                distinctUntilChanged(),
-                switchMap((value: any) => {
-                    return this.pspsettingService.getAgentCombo(value, true);
-                })
-            )
+    }
+    
+    /*************Agent combo**************/
+    getAgentCombo() {
+        this.formGroup.get('agentfilter').valueChanges.pipe(
+            filter((search) => !!search),
+            startWith(''),
+            debounceTime(200),
+            distinctUntilChanged(),
+            switchMap((value: any) => {
+                return this.pspsettingService.getAgentCombo(value, true);
+            })
+        )
             .subscribe({
                 next: data => {
                     this.agentList = data
-                    this.formGroup.get("recharge_for_id").patchValue(this.agentList[0].id);
+                    this.formGroup.get("recharge_for_id").patchValue(this.agentList[0]?.id || '');
                 }
             });
+    }
 
-        /*************Currency combo**************/
+    /*************Currency combo**************/
+    getCurrencyCombo() {
         this.currencyRoeService.getcurrencyCombo().subscribe({
             next: res => {
                 this.CurrencyList = res;

@@ -1,4 +1,4 @@
-<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+<div class="sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden dark:bg-transparent">
 
     <!-- Header -->
     <div
@@ -69,7 +69,7 @@
             </button> -->
         </div>
     </div>
-
+    <app-main [activeTab]="0"></app-main>
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
@@ -273,3 +273,4 @@
     </div>
 
 </div>
+<app-agent-kyc-info></app-agent-kyc-info>

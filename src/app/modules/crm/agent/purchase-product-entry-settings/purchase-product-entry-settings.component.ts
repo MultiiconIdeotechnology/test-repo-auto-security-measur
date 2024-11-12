@@ -120,6 +120,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     proofAttachmentSelectedFile: any = File;
     proofAttachjFile: JsonFile;
     proofAttachmentFlag: boolean = false;
+    lowPriceFlag: boolean = false;
 
     ngOnInit(): void {
         this.formGroup = this.builder.group({
@@ -266,11 +267,17 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         const newValue = inputElement.value;
         if (this.productPrice > newValue) {
             this.proofAttachment = true;
+            if (this.proofAttachmentSelectedFile && this.proofAttachmentSelectedFile?.name) {
+                this.lowPriceFlag = false;
+            } else {
+                this.lowPriceFlag = true;
+            }
             // this.formGroup.get('proofAttachment').setValidators(Validators.required);
             // this.formGroup.get('proofAttachment').updateValueAndValidity();
         } else {
             // this.formGroup.get('proofAttachment').clearValidators();
             this.proofAttachment = false;
+            this.lowPriceFlag = false;
         }
     }
 
@@ -303,6 +310,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         } else {
             this.proofAttachmentSelectedFile = null;
         }
+        this.lowPriceFlag = false;
     }
 
     onInstallmentsChange(value: number): void {
@@ -401,6 +409,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             this.router.navigate([this.leadListRoute]);
             return;
         }
+        this.disableBtn = true;
 
         let totalAmount = 0;
         this.installmentsArray.forEach(installment => {
@@ -463,7 +472,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.entityService.raiserefreshproductPurchaseCall(true);
                     this.settingsDrawer.close();
                     this.productPurchaseMasterId = ""
-                    this.formGroup.reset();
                     if (json.id) {
                         this.alertService.showToast('success', 'Record modified', 'top-right', true);
                     } else {

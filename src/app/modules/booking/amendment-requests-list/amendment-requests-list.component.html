@@ -113,7 +113,6 @@
                     <th pSortableColumn="agent_code" pResizableColumn>
                         Agent Code <p-sortIcon field="agent_code" />
                     </th>
-                  
                     <th pSortableColumn="agency_name" pResizableColumn>
                         Agent <p-sortIcon field="agency_name" />
                     </th>
@@ -125,6 +124,14 @@
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns;">
                         {{col.header}} <p-sortIcon [field]="col.field" />
 
+                    <!-- <th  [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="amendment_request_time" pResizableColumn>
+                        Requested On <p-sortIcon field="amendment_request_time" />
+                    </th>
+                    <th class="min-w-[200px]" pSortableColumn="travel_date" pResizableColumn>
+                        Travel Date <p-sortIcon field="travel_date" />
+                    </th>
+                    <th class="min-w-[200px]" pSortableColumn="amendment_confirmation_time" pResizableColumn>
+                        Confirmed <p-sortIcon field="amendment_confirmation_time" /> -->
                     </th>
                 </tr>
 
@@ -275,6 +282,20 @@
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                            <div class="relative inline-block">
+                                <p-columnFilter field="amendment_request_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
 
                     <th *ngFor="let col of columns">

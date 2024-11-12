@@ -322,8 +322,6 @@ export class AirlineComponent {
     }
 
     refreshItems(): void {
-        // console.log("refreshItems");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
@@ -339,8 +337,6 @@ export class AirlineComponent {
     }
 
     refreshItems1(): void {
-        // console.log("refreshItems1");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
@@ -355,8 +351,6 @@ export class AirlineComponent {
     }
 
     refreshItems2(): void {
-        // console.log("refreshItems2");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
@@ -372,8 +366,6 @@ export class AirlineComponent {
     }
 
     refreshItems3(): void {
-        // console.log("refreshItems3");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {
@@ -389,7 +381,6 @@ export class AirlineComponent {
     }
 
     refreshItems4(): void {
-        // console.log("refreshItems4");
         this.loading = true;
         var json = this.getFilter()
         this.airlineService.getAirLineReport(json).subscribe({
@@ -457,7 +448,6 @@ export class AirlineComponent {
     }
 
     refreshItems5() {
-        // console.log("refreshItems5");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -481,7 +471,6 @@ export class AirlineComponent {
     }
 
     refreshItems6(): void {
-        // console.log("refreshItems6");
 
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
@@ -499,8 +488,6 @@ export class AirlineComponent {
 
 
     refreshItems7(): void {
-        // console.log("refreshItems7");
-
         this.loading = true;
         this.airlineService.getAirLineReport(this.getFilter()).subscribe({
             next: (res) => {

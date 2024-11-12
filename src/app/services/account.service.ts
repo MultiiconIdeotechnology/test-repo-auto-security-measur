@@ -39,6 +39,10 @@ export class AccountService {
   getReceiptList(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptList", model);
   }
+  
+  getCollectionList(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getProductCollectionReport", model);
+  }
 
   getPaymentRecord(id: string): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "Payment/getPaymentRecord", { id });
@@ -87,4 +91,10 @@ export class AccountService {
   getpurchaseRegister(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "AccountReport/PurchaseRegisterReport", model);
   }
+  
+  allServiceAnalysis(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "ContractReport/allServiceAnalysis", model);
+  }
+
+
 }

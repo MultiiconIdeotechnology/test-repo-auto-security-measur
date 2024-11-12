@@ -34,7 +34,7 @@ import { Subject } from 'rxjs';
     styles: [
         `
         .tbl-grid {
-            grid-template-columns: 120px 160px 290px;
+            grid-template-columns: 120px 180px 290px;
         }
     `,
     ],
@@ -159,7 +159,7 @@ export class tabStatusChangedLogComponent {
     getStatusColor(status: string): string {
         if (status == 'Sales Return' || status == 'Expiry Date updated') {
             return 'text-red-600';
-        } else if (status == 'Inprocess') {
+        } else if (status == 'Inprocess' || status == 'Google Closed Testing') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
@@ -195,7 +195,7 @@ export class tabStatusChangedLogComponent {
             this.searchInputControl.value
         );
         // filterReq['id']= this.record?.data.purchase_id;
-        filterReq['module_for'] ='Tec_dashboard_master',
+        filterReq['module_for'] ='Product_Purchase_master',
         filterReq['module_for_id'] = this.record?.data.purchase_id;
         this.crmService.getStatusChangeLogsList(filterReq).subscribe({
             next: (data) => {

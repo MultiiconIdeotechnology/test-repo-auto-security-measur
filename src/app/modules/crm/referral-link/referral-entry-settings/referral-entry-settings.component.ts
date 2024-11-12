@@ -102,28 +102,10 @@ export class ReferralSettingsComponent implements OnInit, OnDestroy {
 
                 if(this.create){
                     this.title = "Create Referral Link"
-                    this.formGroup.get('rmfilter').valueChanges.pipe(
-                        filter(search => !!search),
-                        startWith(''),
-                        debounceTime(400),
-                        distinctUntilChanged(),
-                        switchMap((value: any) => {
-                            return this.refferralService.getEmployeeLeadAssignCombo(value);
-                        })
-                    ).subscribe({
-                        next: data => {
-                            this.rmList = [];
-                            this.rmList.push({
-                                id: '',
-                                employee_name: 'Any',
-                            });
-                            this.rmList.push(...data);
+                }
 
-                            if (!this.record?.data) {
-                                this.formGroup.get('relationship_manager_id').patchValue(this.rmList[0]?.id);
-                            }
-                        }
-                    });
+                if(this.rmList && !this.rmList.length) {
+                    this.getEmployeeAssignCombo();
                 }
 
                 this.edit = false;
@@ -165,6 +147,18 @@ export class ReferralSettingsComponent implements OnInit, OnDestroy {
             start_date: new Date(),
         });
 
+        
+
+        if (this.record?.data?.id) {
+            this.formGroup.get('referral_link_for').patchValue(this.record?.data?.referral_link_for);
+            this.formGroup.get('relationship_manager_id').patchValue(this.record?.data?.relationship_manager_id);
+            // this.formGroup.get('rmfilter').patchValue(this.record?.data?.relationship_manager_name);
+            this.formGroup.get('referral_code').patchValue(this.record?.data?.referral_code);
+        }
+    }
+
+    // Get Employee Lead Assign Combo
+    getEmployeeAssignCombo() {
         this.formGroup.get('rmfilter').valueChanges.pipe(
             filter(search => !!search),
             startWith(''),
@@ -187,18 +181,6 @@ export class ReferralSettingsComponent implements OnInit, OnDestroy {
                 }
             }
         });
-
-        if (this.record?.data?.id) {
-            this.formGroup.get('referral_link_for').patchValue(this.record?.data?.referral_link_for);
-            this.formGroup.get('relationship_manager_id').patchValue(this.record?.data?.relationship_manager_id);
-            // this.formGroup.get('rmfilter').patchValue(this.record?.data?.relationship_manager_name);
-            this.formGroup.get('referral_code').patchValue(this.record?.data?.referral_code);
-        }
-    }
-
-    ngOnDestroy(): void {
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
     }
 
     submit(): void {
@@ -235,5 +217,10 @@ export class ReferralSettingsComponent implements OnInit, OnDestroy {
 
     public compareWith(v1: any, v2: any) {
         return v1 && v2 && v1.id === v2.id;
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
     }
 }

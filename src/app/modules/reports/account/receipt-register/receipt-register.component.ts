@@ -1,5 +1,5 @@
 import { Security, filter_module_name, messages, module_name } from 'app/security';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -68,6 +68,7 @@ export class ReceiptRegisterComponent
     agentList: any[] = [];
     selectedAgent: any;
     selectedCompany: any;
+    dateRangeValue: any = [];
 
     cols: Column[] = [
         { field: 'receipt_ref_no', header: 'Receipt No.' },
@@ -128,11 +129,13 @@ export class ReceiptRegisterComponent
             this.currentFilter.fromDate.getMonth()
         );
 
-        this.getAgent('');
+        this.agentList = this._filterService.agentListByValue;
         this.getCompanyList("");
 
         // common filter
+        this._filterService.selectionDateDropdown = "";
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+           this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -145,6 +148,8 @@ export class ReceiptRegisterComponent
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                // this.dateRangeValue = resp['table_config']['receipt_request_date'].value;
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -160,7 +165,14 @@ export class ReceiptRegisterComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedCompany = filterData['table_config']['company']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
             if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -168,6 +180,7 @@ export class ReceiptRegisterComponent
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
+            // this.primengTable._filter();
         }
     }
 
@@ -184,13 +197,6 @@ export class ReceiptRegisterComponent
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
@@ -341,7 +347,6 @@ export class ReceiptRegisterComponent
         let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq(event);
         let model = { ...extraModel, ...newModel }
-
         this.accountService.getReceiptRegister(model).subscribe({
             next: (data) => {
                 this.dataList = data.data;

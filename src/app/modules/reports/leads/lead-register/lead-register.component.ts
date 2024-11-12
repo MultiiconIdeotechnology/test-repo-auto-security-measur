@@ -112,7 +112,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         { label: 'Corporate', value: 'Corporate' },
         { label: 'Supplier', value: 'Supplier' },
         { label: 'Boost My Brand', value: 'Boost My Brand' },
-        { label: 'Build My Brand', value: 'Build My Brand' }
+        { label: 'Build My Brand', value: 'Build My Brand' },
+        { label: 'IBCM', value: 'IBCM' }
     ];
 
     kycList: any[] = [
@@ -158,8 +159,11 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     ngOnInit() {
         this.getLeadStatus("");
         this.getEmployee("");
+        // this.employeeList = this._filterService.originalRmList;
 
+        this._filterService.selectionDateDropdown = "";
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this._filterService.selectionDateDropdown = "";
             this.selectedRm = resp['table_config']['rm_Id']?.value;
             this.selectedLeadStatus = resp['table_config']['lead_source']?.value;
 
@@ -171,8 +175,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (resp['table_config']['lastCall'].value) {
                 resp['table_config']['lastCall'].value = new Date(resp['table_config']['lastCall'].value);
             }
-            if (resp['table_config']['leadDate'].value) {
-                resp['table_config']['leadDate'].value = new Date(resp['table_config']['leadDate'].value);
+            if (resp['table_config']['leadDate']?.value != null && resp['table_config']['leadDate'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.rangeDateConvert(resp['table_config']['leadDate']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this._selectedColumns = resp['selectedColumns'] || [];
@@ -209,8 +214,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['lastCall'].value) {
                 filterData['table_config']['lastCall'].value = new Date(filterData['table_config']['lastCall'].value);
             }
-            if (filterData['table_config']['leadDate'].value) {
-                filterData['table_config']['leadDate'].value = new Date(filterData['table_config']['leadDate'].value);
+            if (filterData['table_config']['leadDate']?.value != null && filterData['table_config']['leadDate'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.rangeDateConvert(filterData['table_config']['leadDate']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
@@ -463,6 +469,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                     { header: 'Email', property: 'contact_person_email' },
                     { header: 'Mobile', property: 'contact_person_mobile' },
                     { header: 'City', property: 'cityName' },
+                    { header: 'Country', property: 'country_name' },
                     { header: 'KYC Started', property: 'kycStarted' },
                     { header: 'Last Feedback', property: 'lastCallFeedback' },
                     { header: 'Last Call', property: 'lastCall' },

@@ -23,14 +23,12 @@ import { Security, filter_module_name, messages, module_name } from 'app/securit
 import { BusService } from 'app/services/bus.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { Linq } from 'app/utils/linq';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MarkuppriceInfoComponent } from '../flight/flight/markupprice-info/markupprice-info.component';
 import { BusFilterComponent } from './bus-filter/bus-filter.component';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
-import { StatusUpdateComponent } from '../flight/flight/status-update/status-update.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
@@ -128,13 +126,15 @@ export class BusComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    this.getAgent("", true);
+    this.agentList = this._filterService.agentListById;
     this.getSupplier();
     this.getFromCity('');
     this.getToCity('');
 
     // common filter
+    this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+      this._filterService.selectionDateDropdown = "";
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       this.selectedSupplier = resp['table_config']['supplier']?.value;
       this.selectedFromCity = resp['table_config']['from_id_filters']?.value;
@@ -164,6 +164,7 @@ export class BusComponent extends BaseListingComponent {
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -181,7 +182,15 @@ export class BusComponent extends BaseListingComponent {
       this.selectedSupplier = filterData['table_config']['supplier']?.value;
       this.selectedFromCity = filterData['table_config']['from_id_filters']?.value;
       this.selectedToCity = filterData['table_config']['to_id_filters']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
       if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -190,21 +199,14 @@ export class BusComponent extends BaseListingComponent {
     }
   }
 
-  copy(link) {
+  copy(link:any) {
     this.clipboard.copy(link);
     this.toasterService.showToast('success', 'Copied');
   }
 
-  getAgent(value: string, bool: boolean = true) {
-    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+  getAgent(value: string) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
-
-      if (this.selectedAgent && this.selectedAgent.id) {
-        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        if (!match) {
-          this.agentList.push(this.selectedAgent);
-        }
-      }
 
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`

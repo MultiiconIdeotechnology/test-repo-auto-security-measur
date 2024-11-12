@@ -143,7 +143,7 @@
                     <th pSortableColumn="mode_of_payment" pResizableColumn>
                         MOP <p-sortIcon field="mode_of_payment" />
                     </th>
-                    <th pSortableColumn="receipt_request_date" pResizableColumn>
+                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="receipt_request_date" pResizableColumn>
                         Request <p-sortIcon field="receipt_request_date" />
                     </th>
                     <th pSortableColumn="audit_date_time" pResizableColumn>
@@ -208,21 +208,33 @@
                             placeholder="Search by MOP" ariaLabel="Filter MOP" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter field="receipt_request_date" type="date">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="receipt_request_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
-                                    placeholder="Search by Request">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter> -->
-                        <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar selectionMode="range" [ngModel]="value"
-                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
+                                    optionLabel="label" placeholder="Select Option"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'receipt_request_date')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                            <div class="relative inline-block">
+                                <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
                     <th>
                         <p-columnFilter field="audit_date_time" type="date">
@@ -298,6 +310,21 @@
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600">Reject</span>
                             </button>
+                            
+                            <!-- Generate Payment Link -->
+                            <!-- <ng-container *ngIf="element['receipt_status'] == 'Pending'">
+                                <button mat-menu-item *ngIf="!element.paymentLink"
+                                    (click)="generatePaymentLink(element)">
+                                    <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                                    <span style="font-weight: 600;">Generate Payment Link</span>
+                                </button>
+                                <button mat-menu-item *ngIf="element.paymentLink"
+                                    (click)="copyLink(element)">
+                                    <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
+                                    <span style="font-weight: 600;">Copy Payment Link</span>
+                                </button>
+                            </ng-container> -->
+                            
                             <ng-container *ngIf="element['service_for'] == 'Product purchase'">
                                 <button mat-menu-item (click)="product(element)">
                                     <mat-icon svgIcon="heroicons_outline:circle-stack" class="mat-18"></mat-icon>
@@ -314,7 +341,7 @@
                                 <span style="font-weight: 600">Invoice</span>
                             </button>
 
-                            <button mat-menu-item  [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'], 
+                            <button mat-menu-item  [ngClass]="{'cursor-pointer text-blue-600': element['proof_attachment'],
                                 'cursor-not-allowed text-blue-400 opacity-20': !element['proof_attachment']}"
                                 (click)="!element['proof_attachment'] ? null : downloadProoffile(element['proof_attachment'])">
                                 <mat-icon [svgIcon]="'attach_file'" class=" mat-18 min-h-[20px] h-[20px] rounded-full"

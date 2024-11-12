@@ -1,6 +1,6 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
@@ -158,7 +158,7 @@ export class CachingParametersEntryComponent {
 
                     this.formGroup.get('travel_type').patchValue('Any');
                     this.formGroup.get('trip_type').patchValue('Any');
-                    // this.formGroup.get('supplier_id').patchValue(this.SupplierList[0]?.id);
+                    this.formGroup.get('sector').patchValue('Any');
                 }
 
                 if (item?.edit) {
@@ -192,7 +192,7 @@ export class CachingParametersEntryComponent {
             supplier_id: [''],
             supplierfilter: [''],
             travel_type: ['', Validators.required],
-            sector: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(7), this.sectorValidator]],
+            sector: ['', [Validators.required, this.sectorValidator()]],
             trip_type: ['', Validators.required],
             today_travel: ['', [Validators.required, this.greaterThanZeroValidator()]],
             one_week_travel: ['', [Validators.required, this.greaterThanZeroValidator()]],
@@ -201,10 +201,6 @@ export class CachingParametersEntryComponent {
         });
 
         this.formGroup.get('sector').valueChanges.subscribe(value => {
-            // if (this.formGroup.get('sector').valid) {
-            // } else {
-            //     this.alertService.showToast('error', 'Invalid sector format. Please enter format like: BOM-DEL', 'top-right', true);
-            // }
             this.formatSectorInput();
         });
     }
@@ -216,13 +212,21 @@ export class CachingParametersEntryComponent {
         };
     }
 
-    sectorValidator(control: AbstractControl): { [key: string]: boolean } | null {
-        const value = control.value as string;
-        const formatPattern = /^[A-Z]{3}-[A-Z]{3}$/;
-        if (value && !formatPattern.test(value)) {
-            return { 'invalidFormat': true };
-        }
-        return null;
+    sectorValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const value = control.value as string;
+            if(value !== 'ANY'){
+                if (value && value.length === 7) {
+                    const formatPattern = /^[A-Z]{3}-[A-Z]{3}$/;
+                    if (!formatPattern.test(value)) {
+                        return { 'invalidFormat': true };
+                    }
+                } else if (value && value.length !== 7) {
+                    return { 'invalidLength': true };
+                }
+            }
+            return null;
+        };
     }
 
     formatSectorInput() {
@@ -258,7 +262,7 @@ export class CachingParametersEntryComponent {
             supplier_id: json.supplier_id ? json.supplier_id : "",
             travel_type: json.travel_type ? json.travel_type : "",
             trip_type: json.trip_type ? json.trip_type : "",
-            sector: json.sector ? json.sector : "",
+            sector: json.sector == 'ANY' ? 'Any' : json.sector,
             today_travel: json.today_travel ? json.today_travel : 0,
             one_week_travel: json.one_week_travel ? json.one_week_travel : 0,
             one_month_travel: json.one_month_travel ? json.one_month_travel : 0,

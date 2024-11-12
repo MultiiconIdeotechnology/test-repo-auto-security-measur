@@ -65,12 +65,11 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     PrimeNgImportsModule,
   ],
 })
-export class WPendingComponent extends BaseListingComponent implements OnChanges {
+export class WPendingComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowPending: boolean;
   @Output() isFilterShowPendingChange = new EventEmitter<boolean>();
-  @Input() filterApiData: any;
 
   searchInputControlPending = new FormControl('');
   filter_table_name = filter_module_name.withdraw_pending;
@@ -134,12 +133,11 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnInit(): void {
+    this.agentList = this._filterService.agentListById;
 
-    setTimeout(() => {
-      this.agentList = this.filterApiData.agentData;
-    }, 1000);
-
+    this._filterService.selectionDateDropdown = "";
     this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this._filterService.selectionDateDropdown = "";
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedEmployee && this.selectedEmployee.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
@@ -150,6 +148,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -176,6 +175,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
         }
       }, 1000);
       if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
+        this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
 
@@ -183,10 +183,6 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
-  }
-
-  ngOnChanges() {
-    this.agentList = this.filterApiData.agentData;
   }
 
   getAgentList(value: string) {
