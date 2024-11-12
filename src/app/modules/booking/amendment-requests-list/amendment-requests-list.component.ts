@@ -167,8 +167,7 @@ export class AmendmentRequestsListComponent
         ];
 
         this.getAgent("", true);
-        this.getSupplier("", true);
-        this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
+        this.getSupplier("");
         this.agentList = this._filterService.agentListById;
         // this.getSupplier("");
 

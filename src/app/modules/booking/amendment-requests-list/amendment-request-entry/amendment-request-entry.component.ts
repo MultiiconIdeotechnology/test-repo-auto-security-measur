@@ -117,8 +117,7 @@ export class AmendmentRequestEntryComponent {
 
     }
 
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
     }
@@ -222,7 +221,7 @@ export class AmendmentRequestEntryComponent {
 
                         this.titleCharge = 'Quotation'
                         this.chargesList = [
-                            { name: "Cancellation Charge", value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` },
+                            { name: this.recordList.is_refundable ? "Cancellation Charge" : "Charge", value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` },
                             { name: "Bonton Markup", value: `${data.currency_symbol} ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
                             { name: name1, value: `${data.currency_symbol} ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
