@@ -81,7 +81,7 @@ export class FlightTabService {
   }
 
   CreateAmendment(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "AirAmendment/Create", model);
+    return this.http.post<any>(this.baseUrl + "AirAmendment/CreateV2", model);
   }
 
   getStatusLog(id: string, service: string): Observable<any> {

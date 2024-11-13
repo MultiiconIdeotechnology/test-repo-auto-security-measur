@@ -51,7 +51,7 @@
             <mat-card class="p-3 rounded-md shadow-lg">
                 <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
                     <!-- *ngIf="amendmentData && amendmentData.is_adult" -->
-                    <tr class="border border-blue-border">
+                    <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_adult">
                         <td class="border-l w-128">
                             <div class="flex flex-row gap-2 items-end">
                                 <span>
