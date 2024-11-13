@@ -550,11 +550,11 @@
                         </ng-container>
 
                         <ng-container *ngIf="col.field == 'first_transaction_date_time'">
-                            {{(element[col.field] | date : "dd-MM-yyyy, h:mm:ss a") || '-'}}
+                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
                         </ng-container>
 
                         <ng-container *ngIf="col.field == 'first_login_date_time'">
-                            {{(element[col.field] | date : "dd-MM-yyyy, h:mm:ss a") || '-'}}
+                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
                         </ng-container>
 
                         <ng-container
