@@ -45,7 +45,7 @@ export class SupplierService {
   }
   
   resetPasswordUser(id: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/resetPassword', { id });
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/regenerateNewPassword', { id });
   }
 
   getSupplierCombo(filter: string,OsbId?:string): Observable<any> {

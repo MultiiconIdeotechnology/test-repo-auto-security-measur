@@ -228,9 +228,8 @@ export class SupplierListComponent extends BaseListingComponent {
                             this.alertService.showToast('success', "Supplier has been deleted!", "top-right", true);
                             this.refreshItems();
                         },
-                        error(err) {
-                            this.alertService.showToast('error', err, "top-right", true);
-
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true );
                         },
                     });
                 }
