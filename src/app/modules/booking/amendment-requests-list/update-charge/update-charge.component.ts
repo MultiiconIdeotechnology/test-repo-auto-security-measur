@@ -158,10 +158,10 @@ export class UpdateChargeComponent implements OnInit {
             return;
         }
 
-        if (!this.formObj.quotation_proof) {
-            this.alertService.showToast('error', 'Quotation proof is required.', 'top-right', true);
-            return;
-        }
+        // if (!this.formObj.quotation_proof) {
+        //     this.alertService.showToast('error', 'Quotation proof is required.', 'top-right', true);
+        //     return;
+        // }
 
         this.conformationService.open({
             title: 'Send Quotation',

@@ -131,7 +131,7 @@ export class RefundInitiateComponent implements OnInit {
   }
 
   Confirm() {
-    if (!this.document && this.data.document_title) {
+    if (!this.document && this.data.document_title && this.data.required_document) {
       this.alertService.showToast('error', this.data.document_title + " is required")
       return;
     }

@@ -434,6 +434,7 @@ export class AmendmentRequestEntryComponent {
                 desc: "Do you want to reject this amendment?",
                 document: this.recordList.rejection_proof,
                 document_title: 'Rejection Proof',
+                required_document: false,
                 icon: 'heroicons_outline:exclamation-triangle',
                 color: 'warn',
                 remark: 'Please attach the supplier\'s mail screenshot.',
