@@ -397,7 +397,7 @@
                             class="w-2 h-2 inline-block me-1 rounded-full"
                             [ngClass]="element['is_read_by_supplier']? 'bg-green-500' : 'bg-red-500'">
                         </span> -->
-                        <span>
+                        <span (click)="viewData(element)" class="cursor-pointer border-b border-gray-500">
                             {{element.reference_no || "-"}}
                         </span>
                     </td>

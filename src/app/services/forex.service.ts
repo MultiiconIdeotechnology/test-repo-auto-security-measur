@@ -24,6 +24,9 @@ export class ForexService {
     return this.http.post<any[]>(this.baseUrl + 'forexlead/getSupplierCombo', { filter });
   }
 
+  getLeadRecord(id: string): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "forexlead/getLeadRecord", {id: id});
+  }
 
   getcurrencyCombo(): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'currency/getcurrencyCombo', {});

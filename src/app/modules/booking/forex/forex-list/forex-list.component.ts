@@ -232,7 +232,7 @@ export class ForexListComponent extends BaseListingComponent {
     // if (!Security.hasViewDetailPermission(module_name.forex)) {
     //   return this.alertService.showToast('error', messages.permissionDenied);
     // }
-    this.entityService.raiseForexEntityCall({ data: record })
+    this.entityService.raiseForexEntityCall({ data: record.id })
   }
 
   ngOnDestroy(): void {

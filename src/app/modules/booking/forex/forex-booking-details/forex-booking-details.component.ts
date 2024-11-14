@@ -18,7 +18,7 @@ import { EntityService } from 'app/services/entity.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ForexService } from 'app/services/forex.service';
 import { MatSidenav } from '@angular/material/sidenav';
 
@@ -64,6 +64,9 @@ export class ForexBookingDetailsComponent {
   infoData: any;
   private _unsubscribeAll: Subject<any> = new Subject<any>();
   @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+  record: any;
+  private settingsUpdatedSubscription: Subscription;
+
 
   constructor(
     private builder: FormBuilder,
@@ -74,14 +77,36 @@ export class ForexBookingDetailsComponent {
     private _fuseConfigService: FuseConfigService,
 
   ) {
-    this.entityService.onForexEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+    this.settingsUpdatedSubscription = this.entityService.onForexEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
+        console.log("item forex", item);
+
         if (item) {
           this.settingsDrawer.toggle()
-          this.infoData = item?.data;
-          }
+          this.record = item?.data;
+          if (!item.global_withdraw && this.record) {
+            this.refreshItem();
         }
+        if (item.global_withdraw) {
+            this.refreshItem();
+        }
+        }
+      }
     })
+  }
+
+  refreshItem() {
+    if (this.record) {
+      this.forexService.getLeadRecord(this.record).subscribe({
+        next: (data) => {
+          // this.record = data;
+          this.infoData = data;
+        },
+        error: (err) => {
+          this.alertService.showToast('error', err, 'top-right', true);
+        },
+      });
+    }
   }
 
   getStatusColor(status: string): string {
@@ -95,6 +120,8 @@ export class ForexBookingDetailsComponent {
       return '';
     }
   }
+
+ 
 
 
 }
