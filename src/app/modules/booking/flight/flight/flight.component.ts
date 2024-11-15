@@ -185,13 +185,23 @@ export class FlightComponent extends BaseListingComponent {
 
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
-                this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
-            }
+            if (resp['table_config']['bookingDate']?.value ) {
+                console.log("enter first", resp['table_config'].bookingDate?.value)
+                if(typeof resp['table_config']['bookingDate']?.value == 'string'){
+                    let obj = this._filterService.dateRangeList.find((item:any) => item.value == resp['table_config']['bookingDate'].value)
+                    resp['table_config']['bookingDate'].value = obj;
+
+                } else {
+                    console.log("enter", resp['table_config'].bookingDate)
+                    this._filterService.selectionDateDropdown = 'custom_date_range';
+                    this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+                }
+            } else
             if (resp['table_config']['travelDate']?.value != null) {
                 resp['table_config']['travelDate'].value = new Date(resp['table_config']['travelDate'].value);
             }
+
+            console.log("resp", resp['table_config'])
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -217,9 +227,14 @@ export class FlightComponent extends BaseListingComponent {
                 }
             }
 
-            if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
-                this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+            if (filterData['table_config']['bookingDate'].value && filterData['table_config']['bookingDate'].value != 'custom_date_range') {
+                if(typeof filterData['table_config']['bookingDate']?.value == 'string'){
+                    let obj = this._filterService.dateRangeList.find((item:any) => item.value == filterData['table_config']['bookingDate'].value)
+                    filterData['table_config']['bookingDate'].value = obj;
+                } else {
+                    this._filterService.selectionDateDropdown = 'custom_date_range';
+                    this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+                }
             }
             if (filterData['table_config']['travelDate'].value) {
                 filterData['table_config']['travelDate'].value = new Date(filterData['table_config']['travelDate'].value);

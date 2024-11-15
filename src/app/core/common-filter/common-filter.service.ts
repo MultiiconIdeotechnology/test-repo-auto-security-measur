@@ -193,7 +193,7 @@ export class CommonFilterService {
             primengTable.filter(option.value, field, 'custom');
             primengTable.filters[field]['value'] = option.value;
             primengTable.filters[field]['matchMode'] = 'custom';
-        }
+        } 
     }
 
     // Date Range dropdown onselect Contracting
