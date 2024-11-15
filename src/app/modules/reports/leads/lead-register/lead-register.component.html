@@ -281,7 +281,7 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="leadDate" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'" field="leadDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
                                     optionLabel="label" placeholder="Select Option" 
@@ -295,7 +295,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'" >
                             <div class="relative inline-block">
                                 <p-columnFilter field="leadDate" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">

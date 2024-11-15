@@ -106,7 +106,7 @@
 
                 <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.first_transaction_date_time">
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'" field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'" field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
                                     optionLabel="label" placeholder="Select Option" 
@@ -120,7 +120,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'" >
                             <div class="relative inline-block">
                                 <p-columnFilter field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">

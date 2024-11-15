@@ -40,12 +40,12 @@ export class CommonFilterService {
     // array from dropdown date range filter
     dateRangeList: any[] = [
         { label: 'Today', value: 'today', },
-        { label: 'Last 3 Days', value: 'Last 3 Days' },
-        { label: 'This Week', value: 'This Week' },
-        { label: 'This Month', value: 'This Month' },
-        { label: 'Last 3 Months', value: 'Last 3 Months' },
-        { label: 'Last 6 Months', value: 'Last 6 Months' },
-        { label: 'Custom Date Range', value: 'Custom Date Range' }
+        { label: 'Last 3 Days', value: 'last_3_days' },
+        { label: 'This Week', value: 'this_week' },
+        { label: 'This Month', value: 'this_month' },
+        { label: 'Last 3 Months', value: 'last_3_month' },
+        { label: 'Last 6 Months', value: 'last_6_month' },
+        { label: 'Custom Date Range', value: 'custom_date_range' }
     ];
 
     dateRangeContractingList: any[] = [
@@ -156,42 +156,44 @@ export class CommonFilterService {
     // Date Range dropdown onselect 
     onOptionClick(option: any, primengTable: any, field: any, key?: any) {
         this.selectionDateDropdown = option.value;
-        const today = new Date();
-        let startDate = new Date(today);
-        let endDate = new Date(today);
+        // const today = new Date();
+        // let startDate = new Date(today);
+        // let endDate = new Date(today);
 
-        switch (option.label) {
-            case 'Today':
-                break;
-            case 'Last 3 Days':
-                startDate.setDate(today.getDate() - 2);
-                break;
-            case 'This Week':
-                startDate.setDate(today.getDate() - today.getDay());
-                break;
-            case 'This Month':
-                startDate.setDate(1);
-                break;
-            case 'Last 3 Months':
-                startDate.setMonth(today.getMonth() - 3);
-                startDate.setDate(1);
-                break;
-            case 'Last 6 Months':
-                startDate.setMonth(today.getMonth() - 6);
-                startDate.setDate(1);
-                break;
-            case 'Custom Date Range':
+        // switch (option.label) {
+        //     case 'Today':
+        //         break;
+        //     case 'Last 3 Days':
+        //         startDate.setDate(today.getDate() - 2);
+        //         break;
+        //     case 'This Week':
+        //         startDate.setDate(today.getDate() - today.getDay());
+        //         break;
+        //     case 'This Month':
+        //         startDate.setDate(1);
+        //         break;
+        //     case 'Last 3 Months':
+        //         startDate.setMonth(today.getMonth() - 3);
+        //         startDate.setDate(1);
+        //         break;
+        //     case 'Last 6 Months':
+        //         startDate.setMonth(today.getMonth() - 6);
+        //         startDate.setDate(1);
+        //         break;
+        //     case 'Custom Date Range':
 
-            default:
-                return;
+        //     default:
+        //         return;
+        // }
+        // startDate.setHours(0, 0, 0, 0);
+        // endDate.setHours(23, 59, 59, 999);
+        // let dateArr = [startDate, endDate];
+        // const range = [startDate.toISOString(), endDate.toISOString()].join(",");
+        if(option.value != 'custom_date_range'){
+            primengTable.filter(option.value, field, 'custom');
+            primengTable.filters[field]['value'] = option.value;
+            primengTable.filters[field]['matchMode'] = 'custom';
         }
-        startDate.setHours(0, 0, 0, 0);
-        endDate.setHours(23, 59, 59, 999);
-        let dateArr = [startDate, endDate];
-        const range = [startDate.toISOString(), endDate.toISOString()].join(",");
-        primengTable.filter(range, field, 'custom');
-        primengTable.filters[field]['value'] = dateArr;
-        primengTable.filters[field]['matchMode'] = 'custom';
     }
 
     // Date Range dropdown onselect Contracting

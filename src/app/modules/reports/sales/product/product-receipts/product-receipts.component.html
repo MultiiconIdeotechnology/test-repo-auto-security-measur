@@ -183,7 +183,7 @@
                     </th>
 
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'"
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'"
                             field="receipt_request_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -199,7 +199,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
