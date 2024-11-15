@@ -25,63 +25,20 @@
                     <ng-template pTemplate>
                         <div class="ml-2 flex items-center font-semibold text-[14px] leading-5">
                             <mat-icon svgIcon="heroicons_outline:information-circle" class="pr-1"></mat-icon>
-                            This booking is associated with {{mainDataAll?.another_flight_sagement}} on {{mainDataAll?.another_flight_departure_date | date: 'dd-MM-yyyy HH:mm:ss'}} PNR : {{mainDataAll?.another_flight_pnr}}
+                            This booking is associated with {{mainDataAll?.another_flight_sagement}} on
+                            {{mainDataAll?.another_flight_departure_date | date: 'dd-MM-yyyy HH:mm:ss'}} PNR :
+                            {{mainDataAll?.another_flight_pnr}}
                         </div>
                         <button mat-raised-button (click)="viewData(mainDataAll)">View</button>
                     </ng-template>
                 </p-messages>
             </div>
-            
+
             <div class="mb-6 flex ">
                 <div class="w-2/3 bg-card rounded-2xl p-6 h-fit">
                     <div>
-                        <div class="flex justify-between mb-3">
-                            <div class="flex">
-
-                                <div *ngIf="mainDataAll?.is_print_button_show"
-                                    class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                    (click)="print('agent')">
-                                    <div>
-                                        <img src="assets/icons/voucher.svg" alt="">
-                                    </div>
-                                    <span class="text-md leading-none ml-2">Voucher</span>
-                                </div>
-
-                                <div *ngIf="mainDataAll?.is_invoice_button_show"
-                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                    (click)="invoice('print')">
-                                    <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
-                                    <span class="text-md leading-none ml-2">Invoice</span>
-                                </div>
-                                <!-- *ngIf="Status === 'Confirmed'" -->
-                                <div class="flex space-x-3 mr-2">
-                                    <div (click)="amendment()"
-                                        class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
-                                        <div>
-                                            <img src="assets/icons/amendment.svg" alt="">
-                                        </div>
-                                        <span class="text-md leading-none ml-2">Amendment</span>
-                                    </div>
-                                </div>
-
-                                <div class="px-2 py-1 mr-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
-                                    (click)="logs()">
-                                    <div>
-                                        <img src="assets/icons/logs.svg" alt="">
-                                    </div>
-                                    <span class="text-md leading-none ml-2">Logs</span>
-                                </div> 
-                                
-                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
-                                    (click)="fileLogs()">
-                                    <div>
-                                        <img src="assets/icons/logs.svg" alt="">
-                                    </div>
-                                    <span class="text-md leading-none ml-2">File Logs</span>
-                                </div>
-
-                            </div>
-                            <div class="flex gap-2">
+                        <div class="flex flex-col gap-2.5 mb-3 w-full">
+                            <div class="flex gap-2 justify-end w-full">
                                 <!-- <button *ngIf="mainData?.payment_method == 'Online' && mainData?.payment_method == 'Online'" class="text-default font-normal px-4 py-1 rounded-[14px] bg-[#0D9488]" (click)="checkStatus()">
                                     <span class="text-white">Check Status</span>
                                 </button> -->
@@ -126,6 +83,50 @@
                                     <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
                                         {{Status}}</span>
                                 </div> -->
+                            </div>
+                            <div class="flex">
+
+                                <div *ngIf="mainDataAll?.is_print_button_show"
+                                    class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    (click)="print('agent')">
+                                    <div>
+                                        <img src="assets/icons/voucher.svg" alt="">
+                                    </div>
+                                    <span class="text-md leading-none ml-2">Voucher</span>
+                                </div>
+
+                                <div *ngIf="mainDataAll?.is_invoice_button_show"
+                                    class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    (click)="invoice('print')">
+                                    <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
+                                    <span class="text-md leading-none ml-2">Invoice</span>
+                                </div>
+                                <!-- *ngIf="Status === 'Confirmed'" -->
+                                <div class="flex space-x-3 mr-2">
+                                    <div (click)="amendment()"
+                                        class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
+                                        <div>
+                                            <img src="assets/icons/amendment.svg" alt="">
+                                        </div>
+                                        <span class="text-md leading-none ml-2">Amendment</span>
+                                    </div>
+                                </div>
+
+                                <div class="px-2 py-1 mr-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
+                                    (click)="logs()">
+                                    <div>
+                                        <img src="assets/icons/logs.svg" alt="">
+                                    </div>
+                                    <span class="text-md leading-none ml-2">Logs</span>
+                                </div>
+
+                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
+                                    (click)="fileLogs()">
+                                    <div>
+                                        <img src="assets/icons/logs.svg" alt="">
+                                    </div>
+                                    <span class="text-md leading-none ml-2">File Logs</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -442,15 +443,14 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Date Time</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime | 
-                                    date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
+                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime |
+                                        date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Reason</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate"
-                                        [matTooltip]="paymentBy?.refund_reason">
+                                    <span class="text-base truncate" [matTooltip]="paymentBy?.refund_reason">
                                         {{paymentBy?.refund_reason || ' - '}}</span>
                                 </div>
                             </div>
@@ -769,7 +769,8 @@
                                     src="assets/icons/voucher.svg" alt="" (click)="invoice(data.invoice_id)">
                             </div>
                         </div> -->
-                        <div class="w-[20%] pr-4 truncate gap-3 underline hover:text-primary-200 cursor-pointer" (click)="view(data)">{{
+                        <div class="w-[20%] pr-4 truncate gap-3 underline hover:text-primary-200 cursor-pointer"
+                            (click)="view(data)">{{
                             data.ref_no || ' - ' }}</div>
                         <div class="w-[17%] pr-4">{{ data.amendment_type || ' - '}}</div>
                         <div class="w-[12%] pr-4">
