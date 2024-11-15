@@ -129,7 +129,7 @@ export class UserSupplierComponent extends BaseListingComponent {
               this.alertService.showToast('success', "User has been deleted!", "top-right", true);
               this.refreshItems();
             },
-            error(err) {
+            error:(err) => {
               this.alertService.showToast('error', err, "top-right", true);
 
             },
