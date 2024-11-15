@@ -27,6 +27,7 @@ import { amendmentRequestsPermissions, messages, Security } from 'app/security';
 import { MatDialog } from '@angular/material/dialog';
 import { RefundInitiateComponent } from '../refund-initiate/refund-initiate.component';
 import { CommonUtils } from 'app/utils/commonutils';
+import { StatusLogComponent } from '../status-log/status-log.component';
 
 @Component({
     selector: 'app-amendment-request-entry',
@@ -241,6 +242,17 @@ export class AmendmentRequestEntryComponent {
         }
     }
 
+    statusLogs(): void {
+        if (!Security.hasPermission(amendmentRequestsPermissions.statusLogsPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(StatusLogComponent, {
+            data: { id: this.record.id },
+            disableClose: true
+        })
+    }
+    
     cancelReq() {
         if (!Security.hasPermission(amendmentRequestsPermissions.cancelAmendmentPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);

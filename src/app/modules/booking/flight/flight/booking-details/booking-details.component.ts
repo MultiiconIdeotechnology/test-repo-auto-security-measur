@@ -379,7 +379,10 @@ export class BookingDetailsComponent {
 
   amendment(): void {
     this.matDialog.open(AmendmentRequestComponent, {
-      data: { booking_id: this.mainData[0].id, departuteDate: this.mainData[0].departuteDate },
+      data: {
+        booking_id: this.mainData[0].id, departuteDate: this.mainData[0].departuteDate,
+        isInternationalreturn: this.mainData[0]?.tripType?.toLowerCase() == "return" && this.mainData[0]?.travel_type?.toLowerCase() == "international"
+      },
       disableClose: true
     }).afterClosed().subscribe(res => {
       // if(res)
@@ -423,19 +426,19 @@ export class BookingDetailsComponent {
 
   getStatusColorForAgent(status: string): string {
     if (status == 'Request Sent' || status == 'Inprocess') {
-        return 'bg-orange-600';
+      return 'bg-orange-600';
     } else if (status == 'Partial Payment Completed') {
-        return 'bg-yellow-600';
+      return 'bg-yellow-600';
     } else if (status == 'Quotation Confirmed' || status == 'Completed') {
-        return 'bg-green-600';
+      return 'bg-green-600';
     } else if (status == 'Quotation Rejected' || status == 'Rejected' || status == 'Cancelled') {
-        return 'bg-red-600';
+      return 'bg-red-600';
     } else if (status == 'Quotation Received' || status == 'Payment Completed' || status == 'Refund Initiated') {
-        return 'bg-blue-600';
+      return 'bg-blue-600';
     } else {
-        return '';
+      return '';
     }
-}
+  }
 
 }
 

@@ -13,6 +13,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { Linq } from 'app/utils/linq';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
@@ -57,8 +58,10 @@ export class AmendmentRequestComponent {
   amendmentData: any;
   formDataList: any[] = [];
   segmentsData: any[] = [];
+  reissueQuotationList: any[] = [];
 
   showInfo: boolean = false;
+  isInternationalreturn: boolean = false;
   isRequestSent: boolean = false;
   duplicatedTravellers: any = [];
   old_date: any;
@@ -94,6 +97,7 @@ export class AmendmentRequestComponent {
   ) {
     this.data = datas.booking_id;
     this.departuteDate = datas.departuteDate;
+    this.isInternationalreturn = datas.isInternationalreturn;
   }
 
   ngOnInit(): void {
@@ -156,20 +160,33 @@ export class AmendmentRequestComponent {
 
       // IS Segment wise data dublict
       for (let i = 0; i < this.segmentsData.length; i++) {
+        var tempSegment = this.segmentsData[i];
+
         this.formDataList.forEach(traveller => {
           const duplicatedTraveller = {
             ...traveller,
-            destination: this.segmentsData[i].destination,
-            origin: this.segmentsData[i].origin,
-            isReturn: this.segmentsData[i].isReturn,
-            is_selected: this.segmentsData[i].is_selected,
-            segments_id: this.segmentsData[i].id,
+            destination: tempSegment.destination,
+            origin: tempSegment.origin,
+            isReturn: tempSegment.isReturn,
+            is_selected: tempSegment.is_selected,
+            segments_id: tempSegment.id,
             isPaxDisabled: false,
           };
-          this.duplicatedTravellers.push(duplicatedTraveller);
+          if (!traveller?.cancelledData?.some(x => x.segment_id == tempSegment.id))
+            this.duplicatedTravellers.push(duplicatedTraveller);
         });
       }
       this.formDataList = JSON.parse(JSON.stringify(this.duplicatedTravellers));
+      var tempFromList = Linq.groupBy(this.formDataList, x => x.segments_id)
+      this.reissueQuotationList = [];
+      tempFromList.forEach(element => {
+
+        var object = Object.assign({}, element.value[0], !element.value[0].isReturn ?
+          { new_date: res.data.booking_date, new_date_time: DateTime.fromISO(res.data.booking_date).toFormat('HH:mm').toString(), old_date: res.data.booking_date } :
+          { new_date: res.data.return_booking_date, new_date_time: DateTime.fromISO(res.data.return_booking_date).toFormat('HH:mm').toString(), old_date: res.data.return_booking_date }
+        )
+        this.reissueQuotationList.push(object)
+      });
       this.selectedType(this.TypesList[0]);
 
     }, error => {
@@ -186,10 +203,11 @@ export class AmendmentRequestComponent {
 
   selectedType(v: any): void {
     if (v === 'Correction Quotation') {
+      var data = Linq.groupBy(this.formDataList, x => x.id)
       this.formDataList = [];
-      for (let i = 0; i < this.amendmentData.traveller?.length; i++) {
-        this.formDataList.push(this.duplicatedTravellers[i]);
-      }
+      data.forEach(element => {
+        this.formDataList.push(element.value[0])
+      });
     } else {
       if (this.duplicatedTravellers && this.duplicatedTravellers.length) {
         this.formDataList = this.duplicatedTravellers;
@@ -259,8 +277,8 @@ export class AmendmentRequestComponent {
       agent_remark: this.note,
       is_partial_seg: false,
       is_manual_entry: this.is_manual_entry,
-      old_date: this.old_date,
-      new_date: this.concatenateTime(this.new_date, this.new_date_time),
+      // old_date: this.old_date,
+      // new_date: this.concatenateTime(this.new_date, this.new_date_time),
       trip_segments: [],
     }
 
@@ -273,9 +291,14 @@ export class AmendmentRequestComponent {
             return;
           }
         }
-
+        var dateSegment = this.reissueQuotationList.find(x => x.segments_id == fd.segments_id);
+        var oldDate = !this.isInternationalreturn ? this.old_date : dateSegment.old_date;
+        var newDate = !this.isInternationalreturn ? this.concatenateTime(this.new_date, this.new_date_time) : this.concatenateTime(dateSegment.new_date, dateSegment.new_date_time)
+      
         json.trip_segments.push({
           segment: fd.segments_id,
+          old_date: oldDate,
+          new_date: newDate,
           pax: {
             id: fd.id,
             old_name: fd.old_name,
@@ -319,7 +342,7 @@ export class AmendmentRequestComponent {
 
   // Is Pax changes
   isPaxChange(event: any) {
-    if (this.amendmentType === 'Reissue Quotation') {
+    if (this.amendmentType === 'Reissue Quotation' && !this.isInternationalreturn) {
       this.formDataList.forEach((element) => {
         if (element.segments_id === event.segments_id) {
           element.isPaxDisabled = false;

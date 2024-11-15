@@ -74,37 +74,58 @@
                 </tr>
             </table>
 
-            <div class="flex pt-2 w-full mt-3" *ngIf="amendmentType === 'Reissue Quotation'">
-                <div class="w-[35%] mr-[1%]">
-                    <div class="font-semibold">Old Date</div>
-                    <mat-form-field class="flex-grow w-full pt-1">
-                        <input matInput readonly required [ngModel]="old_date | date: 'MMMM d, y, h:mm:ss a'" readonly>
-                        <mat-datepicker-toggle matSuffix class="absolute right-[10px] gray-text"
-                            disabled></mat-datepicker-toggle>
-                    </mat-form-field>
-                </div>
+            <div *ngIf="amendmentType === 'Reissue Quotation'" class="pt-5 w-full">
+                <div class="flex flex-col w-full gap-2"
+                    *ngFor="let qua of (isInternationalreturn ? reissueQuotationList : [{}])">
+                    <div *ngIf="isInternationalreturn"
+                        class="dark:text-white text-black dark:bg-primary bg-gray-200 font-semibold flex flex-row w-full gap-2 h-[40px] items-center px-3 rounded-md">
+                        <span class="theme-black-text">{{qua.origin}}</span>
+                        <mat-icon class="text-lg mt-[2px] dark:text-white text-black rotate-90 z-10">flight</mat-icon>
+                        <span class="theme-black-text">{{qua.destination}} </span>
+                    </div>
+                    <div class="flex w-full">
 
-                <div class="w-[35%] mx-[1%]">
-                    <div class="font-semibold">New Date</div>
-                    <mat-form-field class="flex-grow w-full pt-1">
-                        <input matInput readonly [matDatepicker]="pickerone" [min]="todayDate" (click)="pickerone.open()"
-                            [(ngModel)]="new_date">
-                        <mat-datepicker-toggle matSuffix [for]="pickerone"
-                            class="absolute right-[10px] gray-text"></mat-datepicker-toggle>
-                        <mat-datepicker class="gray-text" #pickerone></mat-datepicker>
-                    </mat-form-field>
-                </div>
+                        <div class="w-[35%] mr-[1%]">
+                            <div class="font-semibold">Old Date</div>
+                            <mat-form-field class="flex-grow w-full pt-1">
+                                <input matInput readonly required
+                                    [ngModel]="qua.old_date | date: 'MMMM d, y, h:mm:ss a'"
+                                    *ngIf="isInternationalreturn" readonly>
+                                <input matInput readonly required [ngModel]="old_date | date: 'MMMM d, y, h:mm:ss a'"
+                                    *ngIf="!isInternationalreturn" readonly>
+                                <mat-datepicker-toggle matSuffix class="absolute right-[10px] gray-text"
+                                    disabled></mat-datepicker-toggle>
+                            </mat-form-field>
+                        </div>
 
-                <div class="w-[28%] ml-[1%]">
-                    <div class="font-semibold">New Time</div>
-                    <mat-form-field class="flex-grow w-full pt-1">
-                        <input matInput readonly name="new_date_time" format="24" [(ngModel)]="new_date_time"
-                            [ngxMatTimepicker]="pickerA" placeholder="16:00" />
-                        <mat-icon matSuffix (click)="pickerA.open()">
-                            watch_later
-                        </mat-icon>
-                    </mat-form-field>
-                    <ngx-mat-timepicker #pickerA dottedMinutesInGap enableKeyboardInput></ngx-mat-timepicker>
+                        <div class="w-[35%] mx-[1%]">
+                            <div class="font-semibold">New Date</div>
+                            <mat-form-field class="flex-grow w-full pt-1">
+                                <input matInput readonly [matDatepicker]="pickerone" [min]="todayDate"
+                                    (click)="pickerone.open()" [(ngModel)]="qua.new_date" *ngIf="isInternationalreturn">
+                                <input matInput readonly [matDatepicker]="pickerone" [min]="todayDate"
+                                    (click)="pickerone.open()" [(ngModel)]="new_date" *ngIf="!isInternationalreturn">
+                                <mat-datepicker-toggle matSuffix [for]="pickerone"
+                                    class="absolute right-[10px] gray-text"></mat-datepicker-toggle>
+                                <mat-datepicker class="gray-text" #pickerone></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="w-[28%] ml-[1%]">
+                            <div class="font-semibold">New Time</div>
+                            <mat-form-field class="flex-grow w-full pt-1">
+                                <input matInput readonly name="new_date_time" format="24"
+                                    [(ngModel)]="qua.new_date_time" *ngIf="isInternationalreturn"
+                                    [ngxMatTimepicker]="pickerA" placeholder="16:00" />
+                                <input matInput readonly name="new_date_time" format="24" [(ngModel)]="new_date_time"
+                                    *ngIf="!isInternationalreturn" [ngxMatTimepicker]="pickerA" placeholder="16:00" />
+                                <mat-icon matSuffix (click)="pickerA.open()">
+                                    watch_later
+                                </mat-icon>
+                            </mat-form-field>
+                            <ngx-mat-timepicker #pickerA dottedMinutesInGap enableKeyboardInput></ngx-mat-timepicker>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,7 +133,8 @@
         <!-- Selct Tyoe Correction Quotation  -->
         <div *ngIf="amendmentType == 'Correction Quotation'"
             class="rounded border gray-border mobile:overflow-auto mobile:max-w-full mobile:w-full overflow-hidden border-gray-bg">
-            <div class="border-gray-bg font-semibold px-5 mb-4 mobile:px-3 py-1 flex mobile:w-[800px] dark:text-white text-black dark:bg-primary bg-gray-200">
+            <div
+                class="border-gray-bg font-semibold px-5 mb-4 mobile:px-3 py-1 flex mobile:w-[800px] dark:text-white text-black dark:bg-primary bg-gray-200">
                 <div class="w-[10%]">Pax</div>
                 <div class="w-[30%]">
                     Ticket Issued Name
@@ -195,9 +217,9 @@
                     the field/s empty.</span>
                 <span *ngIf="amendmentType === 'Reissue Quotation'">Add updated dates if and for changes in previously
                     entered dates. In case no changes are needed, please leave such field/s as it is.</span>
-                <span *ngIf="amendmentType === 'Instant Cancellation'">By selecting <b class="ml-1">Instant
-                        Cancellation</b>, your ticket will be immediately canceled with the applicable refund
-                    amount.</span>
+                <span *ngIf="amendmentType === 'Instant Cancellation'">
+                    By selecting <b class="ml-1">Instant Cancellation</b>, your ticket will be instantly canceled.
+                    Please note that the relevant airline charges and service fees will be applied.</span>
             </div>
         </div>
 

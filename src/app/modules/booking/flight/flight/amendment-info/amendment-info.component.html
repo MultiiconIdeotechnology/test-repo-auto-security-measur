@@ -14,19 +14,19 @@
                         <th class="border-l max-w-80 font-normal">
                             Passenger Name
                         </th>
-                        <th class="border-l max-w-80 font-normal" *ngIf="data.amendment_type === 'Correction Quotation'">
-                            New Passenger Name
+                        <th class="border-l max-w-80 font-normal" *ngIf="record.amendment_type === 'Correction Quotation'">
+                            New Passenger Name 
                         </th>
                         <th class="border-l font-normal">
                             Travel Details
                         </th>
-                        <th class="border-l font-normal" *ngIf="data.amendment_type === 'Baggage Quotation'">
+                        <th class="border-l font-normal" *ngIf="record.amendment_type === 'Baggage Quotation'">
                             Extra Baggage
                         </th>
-                        <th class="border-l font-normal" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                        <th class="border-l font-normal" *ngIf="record.amendment_type === 'Reissue Quotation'">
                             Old Booking Date
                         </th>
-                        <th class="border-l font-normal" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                        <th class="border-l font-normal" *ngIf="record.amendment_type === 'Reissue Quotation'">
                             New Booking Date
                         </th>
                     </tr>
@@ -34,19 +34,19 @@
                         <td class="border-l max-w-80">
                             {{pi.passenger_name || ''}}
                         </td>
-                        <td class="border-l max-w-80" *ngIf="data.amendment_type === 'Correction Quotation'">
+                        <td class="border-l max-w-80" *ngIf="record.amendment_type === 'Correction Quotation'">
                             {{pi.new_passenger_name || ''}}
                         </td>
                         <td class="border-l">
                             {{pi.traveller_detail || '-'}}
                         </td>
-                        <td class="border-l" *ngIf="data.amendment_type === 'Baggage Quotation'">
+                        <td class="border-l" *ngIf="record.amendment_type === 'Baggage Quotation'">
                             {{pi.extra_baggage || '-'}}
                         </td>
-                        <td class="border-l" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                        <td class="border-l" *ngIf="record.amendment_type === 'Reissue Quotation'">
                             {{(pi.old_booking_date | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                         </td>
-                        <td class="border-l" *ngIf="data.amendment_type === 'Reissue Quotation'">
+                        <td class="border-l" *ngIf="record.amendment_type === 'Reissue Quotation'">
                             {{(pi.new_booking_date | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                         </td>
                     </tr>
