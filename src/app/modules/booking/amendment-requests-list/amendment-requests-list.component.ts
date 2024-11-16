@@ -146,8 +146,8 @@ export class AmendmentRequestsListComponent
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
 
-            if (resp?.['table_config']?.['amendment_request_time']?.value != null && resp['table_config']['amendment_request_time'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (resp['table_config']['amendment_request_time']?.value && Array.isArray(resp['table_config']['amendment_request_time']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
             }
 
@@ -173,8 +173,8 @@ export class AmendmentRequestsListComponent
                   this.agentList.push(this.selectedAgent);
                 }
             }
-            if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['amendment_request_time']?.value && Array.isArray(filterData['table_config']['amendment_request_time']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }
 

@@ -144,10 +144,10 @@ export class WRejectedComponent extends BaseListingComponent {
           this.agentList.push(this.selectedEmployee);
         }
       }
-      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
-        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-      }
+      if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
+				this._filterService.selectionDateDropdown = 'custom_date_range';
+				this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+			}
    
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowReject = true;
@@ -170,8 +170,8 @@ export class WRejectedComponent extends BaseListingComponent {
             }
           }
         }, 1000);
-        if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
-          this._filterService.selectionDateDropdown = 'Custom Date Range';
+        if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
+          this._filterService.selectionDateDropdown = 'custom_date_range';
           this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
         }
 

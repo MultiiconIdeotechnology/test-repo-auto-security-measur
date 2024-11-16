@@ -39,13 +39,13 @@ export class CommonFilterService {
 
     // array from dropdown date range filter
     dateRangeList: any[] = [
-        { label: 'Today', value: 'today', },
-        { label: 'Last 3 Days', value: 'last_3_days' },
-        { label: 'This Week', value: 'this_week' },
-        { label: 'This Month', value: 'this_month' },
-        { label: 'Last 3 Months', value: 'last_3_month' },
-        { label: 'Last 6 Months', value: 'last_6_month' },
-        { label: 'Custom Date Range', value: 'custom_date_range' }
+        { label: 'Today', id_by_value: 'today', },
+        { label: 'Last 3 Days', id_by_value: 'last_3_days' },
+        { label: 'This Week', id_by_value: 'this_week' },
+        { label: 'This Month', id_by_value: 'this_month' },
+        { label: 'Last 3 Months', id_by_value: 'last_3_month' },
+        { label: 'Last 6 Months', id_by_value: 'last_6_month' },
+        { label: 'Custom Date Range', id_by_value: 'custom_date_range' }
     ];
 
     dateRangeContractingList: any[] = [
@@ -155,7 +155,7 @@ export class CommonFilterService {
 
     // Date Range dropdown onselect 
     onOptionClick(option: any, primengTable: any, field: any, key?: any) {
-        this.selectionDateDropdown = option.value;
+        this.selectionDateDropdown = option.id_by_value;
         // const today = new Date();
         // let startDate = new Date(today);
         // let endDate = new Date(today);
@@ -189,10 +189,10 @@ export class CommonFilterService {
         // endDate.setHours(23, 59, 59, 999);
         // let dateArr = [startDate, endDate];
         // const range = [startDate.toISOString(), endDate.toISOString()].join(",");
-        if(option.value != 'custom_date_range'){
-            primengTable.filter(option.value, field, 'custom');
-            primengTable.filters[field]['value'] = option.value;
-            primengTable.filters[field]['matchMode'] = 'custom';
+        if(option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+            // primengTable.filters[field]['value'] = option.value;
+            // primengTable.filters[field]['matchMode'] = 'custom';
         } 
     }
 

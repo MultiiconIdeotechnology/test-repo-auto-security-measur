@@ -116,8 +116,8 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             }
             this.selectedRM = resp['table_config']['rm']?.value;
 
-            if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (resp['table_config']['receipt_request_date']?.value && Array.isArray(resp['table_config']['receipt_request_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
 
@@ -141,8 +141,8 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 }
             }
 
-            if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['receipt_request_date']?.value && Array.isArray(filterData['table_config']['receipt_request_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
 

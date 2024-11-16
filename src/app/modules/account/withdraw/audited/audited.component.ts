@@ -127,7 +127,7 @@ export class WAuditedComponent extends BaseListingComponent {
 
     this._filterService.selectionDateDropdown = "";
     this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-    this._filterService.selectionDateDropdown = "";
+      this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
@@ -137,8 +137,8 @@ export class WAuditedComponent extends BaseListingComponent {
           this.agentList.push(this.selectedEmployee);
         }
       }
-      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -151,7 +151,7 @@ export class WAuditedComponent extends BaseListingComponent {
 
   ngAfterViewInit(): void {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-      
+
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       setTimeout(() => {
         this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
@@ -164,8 +164,9 @@ export class WAuditedComponent extends BaseListingComponent {
       }, 1000);
       this.isFilterShowAudit = true;
       this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
-      if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+
+      if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -179,7 +180,7 @@ export class WAuditedComponent extends BaseListingComponent {
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
 
-      for(let i in this.agentList){
+      for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
       }
     })
