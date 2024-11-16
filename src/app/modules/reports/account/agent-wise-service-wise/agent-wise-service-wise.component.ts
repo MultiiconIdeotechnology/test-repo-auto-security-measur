@@ -112,7 +112,6 @@ export class AgentWiseServiceWiseComponent extends BaseListingComponent implemen
       next: (data) => {
         this.dataListTotals = data;
         this.dataList = data.data;
-        console.log("this.dataList", this.dataList);
         this.totalRecords = data.total;
         this.isLoading = false;
       }, error: (err) => {

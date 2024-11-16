@@ -127,7 +127,6 @@ export class HotelsListComponent extends BaseListingComponent {
     this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.selectionDateDropdown = "";
-      console.log("resp", resp)
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -171,9 +170,7 @@ export class HotelsListComponent extends BaseListingComponent {
           this.agentList.push(this.selectedAgent);
         }
       }
-      console.log("filterdata", filterData['table_config'])
       if (filterData['table_config']['bookingDate']?.value && Array.isArray(filterData['table_config']['bookingDate']?.value)) {
-        console.log(">>><<<", filterData['table_config']['bookingDate']?.value)
         this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
     }

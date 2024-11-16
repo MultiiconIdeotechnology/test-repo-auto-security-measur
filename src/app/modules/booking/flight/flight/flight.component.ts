@@ -194,7 +194,6 @@ export class FlightComponent extends BaseListingComponent {
                 resp['table_config']['travelDate'].value = new Date(resp['table_config']['travelDate'].value);
             }
 
-            console.log("resp", resp['table_config'])
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
