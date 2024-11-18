@@ -55,7 +55,7 @@ export class AssignKycDialogComponent {
 
   ngOnInit(): void {
 
-    this, this.kycService.getkycprofileCombo("employee").subscribe(data => {
+    this, this.kycService.getkycprofileCombo("supplier").subscribe(data => {
       this.profileList = data;
       this.AllprofileList = data;
     })
