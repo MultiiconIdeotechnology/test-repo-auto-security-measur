@@ -91,7 +91,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     getWLSettingList: any = [];
     searchInputControlPending = new FormControl('');
     deadLeadId: any;
-    statusList = ['Pending', 'Inprocess', 'Delivered', 'Waiting for Customer Update', 'Waiting for Account Activation', 'Rejected from Store'];
+    statusList = ['Pending', 'Inprocess', 'Delivered', 'Google Closed Testing', 'Waiting for Customer Update', 'Waiting for Account Activation', 'Rejected from Store',];
     isLoading = false;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
@@ -121,14 +121,11 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
-        setTimeout(() => {
-            this.agentList = this.dropdownFirstCallObj['agentList'];
-        }, 1000);
+        this.agentList = this._filterService.agentListByValue;
 
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
-
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
                     this.agentList.push(this.selectedAgent);
@@ -172,14 +169,9 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.agentList = this.dropdownFirstCallObj['agentList'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
         }
-    }
-
-    ngOnChanges() {
-        this.agentList = this.dropdownFirstCallObj['agentList'];
     }
 
     refreshItems(event?: any): void {

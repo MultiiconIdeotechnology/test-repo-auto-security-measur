@@ -100,7 +100,7 @@ export class AgentRMWiseComponent extends BaseListingComponent implements OnDest
     }
 
     ngOnInit(): void {
-        this.getEmployeeList("");
+        this.employeeList = this._filterService.rmListByValue;
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedRM = resp['table_config'].rm?.value;
             // this.sortColumn = resp['sortColumn'];

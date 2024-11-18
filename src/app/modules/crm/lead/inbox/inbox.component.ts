@@ -36,6 +36,7 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { ScheduleCallRemarkComponent } from '../call-history-tab/schedule-call-details/schedule-call-details.component';
 
 @Component({
     selector: 'app-inbox',
@@ -221,6 +222,22 @@ export class InboxComponent extends BaseListingComponent {
                 }
             }
         })
+    }
+
+    // Schedule Call Dialog
+    callSchedule(element: any) {
+        let dataObj = JSON.parse(JSON.stringify(element));
+        dataObj.call_purpose = element.reschedule_call_purpose;
+        if (element?.is_call_scheduled) {
+            this.matDialog.open(ScheduleCallRemarkComponent, {
+                data: dataObj,
+                disableClose: true
+            }).afterClosed().subscribe(res => {
+                if (!res) {
+                    return
+                }
+            });
+        }
     }
 
     callHistory(record): void {

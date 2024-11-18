@@ -1,0 +1,56 @@
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="w-full">
+        <div class="flex flex-col w-[100%] gap-2 m-auto">
+            <div class="flex flex-row justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+                <span class=" text-xl font-semibold">Supplier KYC Info</span>
+                <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                    (click)="settingsDrawer.close()"></mat-icon>
+            </div>
+        </div>
+
+        <div style="height: calc(100vh - 60px)" class="overflow-auto p-5">
+            <div class="flex flex-wrap bg-card overflow-hidden">
+
+                <div class="flex flex-col mb-4 w-full break-words">
+                    <span class="text-md font-semibold text-secondary">Supplier Name</span>
+                    <span class="text-base ">{{record?.company_name || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 truncate w-full">
+                    <span class="text-md font-semibold text-secondary">Email</span>
+                    <span class="text-base truncate">{{record?.email_address || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Mobile Number</span>
+                    <span class="text-base truncate">{{record?.mobile_number || '-'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">City</span>
+                    <span class="text-base truncate">{{record?.city_name || "-"}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 w-full break-words">
+                    <span class="text-md font-semibold text-secondary">Address</span>
+                    <span class="text-base ">{{record?.address || '-'}}</span>
+                </div>
+                
+                <div class="flex flex-col mb-4 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Is KYC Completed</span>
+                    <span class="text-base truncate" >{{record.is_kyc_completed ? 'Yes' : 'No'}}</span>
+                </div>
+
+                <div class="flex flex-col mb-4 truncate w-1/2">
+                    <span class="text-md font-semibold text-secondary">Status</span>
+                    <span class="text-base truncate" [ngClass]="record.is_rejected ? 'text-red-500' : 'text-yellow-500'">{{record?.is_rejected ? 'Rejected' : 'Pending'}}</span>
+                </div>
+
+               
+            </div>
+        </div>
+    </div>
+
+</fuse-drawer>

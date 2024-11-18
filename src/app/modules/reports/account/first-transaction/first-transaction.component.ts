@@ -64,7 +64,7 @@ export class FirstTransactionComponent
     agentList: any[] = [];
     cols: Column[];
     isFilterShow: boolean = false;
-    selectedAgent:any
+    selectedAgent: any
 
     constructor(
         private accountService: AccountService,
@@ -81,16 +81,16 @@ export class FirstTransactionComponent
     }
 
     ngOnInit() {
-        this.getAgent('');
+        this.agentList = this._filterService.agentListByValue;
 
-          // common filter
-          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-             this._filterService.selectionDateDropdown = ""
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.selectionDateDropdown = ""
             this.selectedAgent = resp['table_config']['agency_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
             // this.sortColumn = resp['sortColumn'];
@@ -110,7 +110,15 @@ export class FirstTransactionComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['first_transaction_date_time']?.value != null && filterData['table_config']['first_transaction_date_time'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['first_transaction_date_time']);
@@ -125,21 +133,14 @@ export class FirstTransactionComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
-
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.accountService.getFirstTransaction(this.getNewFilterReq(event)).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -182,7 +183,7 @@ export class FirstTransactionComponent
             Excel.export(
                 'First Transaction',
                 [
-                    { header: 'Transaction Date', property: 'first_transaction_date_time'},
+                    { header: 'Transaction Date', property: 'first_transaction_date_time' },
                     { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agency Name', property: 'agency_name' },
                     { header: 'GST/VAT No', property: 'gst_number' },
@@ -200,8 +201,6 @@ export class FirstTransactionComponent
     }
 
     ngOnDestroy(): void {
-        // this.masterService.setData(this.key, this);
-
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};

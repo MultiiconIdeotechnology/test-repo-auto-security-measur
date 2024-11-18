@@ -10,7 +10,7 @@ export interface IExportColumn {
 }
 
 export class Excel {
-    public static export(sheetName: string, columns: IExportColumn[], data: any[], innerSheetTitle?: string, joinRowCol?: [joinRowCol]): void {
+    public static export(sheetName: string, columns: IExportColumn[], data: any[], innerSheetTitle?: string, joinRowCol?: [joinRowCol], isSaveDate: boolean = true): void {
         const workBook: XLSX.WorkBook = XLSX.utils.book_new();
 
         const array = [];
@@ -21,7 +21,13 @@ export class Excel {
         }
 
         if (innerSheetTitle != null && innerSheetTitle) {
-            array.push([innerSheetTitle + " - " + DateTime.fromJSDate(new Date()).toFormat('d MMM yyyy')]);
+            var tital = ""
+            if (isSaveDate)
+                var tital = innerSheetTitle + " - " + DateTime.fromJSDate(new Date()).toFormat('d MMM yyyy');
+            else
+                var tital = innerSheetTitle;
+
+            array.push([tital]);
             array.push([]);
         }
 
@@ -47,7 +53,7 @@ export class Excel {
         if (joinRowCol != null && joinRowCol.length > 0) {
             workSheet["!merges"] = joinRowCol;
         }
-        
+
         XLSX.utils.book_append_sheet(workBook, workSheet, sheetName);
         XLSX.writeFile(workBook, sheetName + '.xlsx');
     }

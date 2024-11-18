@@ -22,7 +22,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { DateTime } from 'luxon';
-import { dateRange } from 'app/common/const';
+import { dateRangeContracting } from 'app/common/const';
 import { CommonUtils } from 'app/utils/commonutils';
 import { Excel } from 'app/utils/export/excel';
 import { Subscription } from 'rxjs';
@@ -61,12 +61,12 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
   dataList = [];
   dataListTotals = [];
 
-  DR = dateRange;
+  DR = dateRangeContracting;
   public startDate = new FormControl();
   public endDate = new FormControl();
   public StartDate: any;
   public EndDate: any;
-  public dateRanges = [];
+  public dateRangeContractings = [];
   public date = new FormControl();
 
   module_name = module_name.airline_summary
@@ -87,9 +87,9 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
     this.sortColumn = 'volume';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
-    this.dateRanges = CommonUtils.valuesArray(dateRange);
-    this.date.patchValue(dateRange.lastWeek);
-    this.updateDate(dateRange.lastWeek, false)
+    this.dateRangeContractings = CommonUtils.valuesArray(dateRangeContracting);
+    this.date.patchValue(dateRangeContracting.lastWeek);
+    this.updateDate(dateRangeContracting.lastWeek, false)
     this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
@@ -178,13 +178,19 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
         { header: 'International Ratio (%)', property: 'internationalRatio' }
       ];
 
+      // Create a shortened, dynamic sheet name
+      const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
+      const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
+      const sheetName = `Airline Summary ${fromDate} to ${toDate}`.substring(0, 45);
+      
       // Export the data using the custom Excel utility
       Excel.export(
         'Airline Summary',  // File name
         columns,            // Columns definition
         formattedData,      // Data rows
-        'Airline Summary',  // Sheet name
-        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }] // Optional merge (if required)
+        sheetName,          // Sheet name (limited to 31 characters)
+        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }], // Optional merge (if required)
+        false
       );
     });
   }
@@ -192,21 +198,14 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
 
 
   public updateDate(event: any, isRefresh: boolean = true): void {
-    if (event === dateRange.today) {
+    if (event === dateRangeContracting.today) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(this.StartDate.getDate());
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.last3Days) {
-      this.StartDate = new Date();
-      this.EndDate = new Date();
-      this.StartDate.setDate(this.StartDate.getDate() - 3);
-      this.startDate.patchValue(this.StartDate);
-      this.endDate.patchValue(this.EndDate);
-    }
-    else if (event === dateRange.lastWeek) {
+    else if (event === dateRangeContracting.lastWeek) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       const dt = new Date(); // current date of week
@@ -220,7 +219,18 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.lastMonth) {
+    else if (event === dateRangeContracting.previousMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 1);
+      this.startDate.patchValue(this.StartDate);
+      this.EndDate.setDate(1)
+      this.EndDate.setDate(this.EndDate.getDate() - 1)
+      this.endDate.patchValue(this.EndDate);
+
+    }
+    else if (event === dateRangeContracting.lastMonth) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(1);
@@ -228,7 +238,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.last3Month) {
+    else if (event === dateRangeContracting.last3Month) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(1);
@@ -236,7 +246,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.last6Month) {
+    else if (event === dateRangeContracting.last6Month) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.StartDate.setDate(1);
@@ -244,7 +254,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
       this.startDate.patchValue(this.StartDate);
       this.endDate.patchValue(this.EndDate);
     }
-    else if (event === dateRange.setCustomDate) {
+    else if (event === dateRangeContracting.setCustomDate) {
       this.StartDate = new Date();
       this.EndDate = new Date();
       this.startDate.patchValue(this.StartDate);
@@ -254,7 +264,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
       this.refreshItems();
   }
 
-  dateRangeChange(start, end): void {
+  dateRangeContractingChange(start, end): void {
     if (start.value && end.value) {
       this.StartDate = start.value;
       this.EndDate = end.value;
@@ -264,7 +274,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
 
   cancleDate() {
     this.date.patchValue('Today');
-    this.updateDate(dateRange.today);
+    this.updateDate(dateRangeContracting.today);
   }
 
 }

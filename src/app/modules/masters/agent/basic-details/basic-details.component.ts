@@ -79,9 +79,9 @@ export class BasicDetailsComponent {
   idUrl: any;
   records: any = {};
   profile_picture: any;
-  AgentList: {};
-  rmList: {};
-  accountList: {};
+  AgentList: any = [];
+  rmList: any = [];
+  accountList: any = [];
 
   columns = [
     'action',
@@ -152,6 +152,8 @@ export class BasicDetailsComponent {
         { name: 'Address', value: this.basicDetails.address_line1 },
         { name: 'KYC', value: '', isKyc: true },
         { name: 'Signup Date', value: this.basicDetails.sign_up_date ? DateTime.fromISO(this.basicDetails.sign_up_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+        { name: 'First Time Login', value: this.basicDetails.first_login_date_time ? DateTime.fromISO(this.basicDetails.first_login_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+        { name: 'First Time Transaction', value: this.basicDetails.first_transaction_date_time ? DateTime.fromISO(this.basicDetails.first_transaction_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
         { name: 'Last Login Web', value: this.basicDetails.web_last_login_time ? DateTime.fromISO(this.basicDetails.web_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
         { name: 'Last Login Android', value: this.basicDetails.android_last_login_time ? DateTime.fromISO(this.basicDetails.android_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
         { name: 'Last Login IOS', value: this.basicDetails.ios_last_login_time ? DateTime.fromISO(this.basicDetails.ios_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
@@ -185,13 +187,21 @@ export class BasicDetailsComponent {
         { name: 'KYC profile', value: this.basicDetails.kyc_profile_name
         },
       ]
+
+      if(this.basicDetails?.preferred_language) {
+        this.AgentList.push({ name: 'Preferred Language', value: this.basicDetails?.preferred_language },)
+      }
+
+      if(this.basicDetails?.service_offered_by_ta) {
+        this.AgentList.push({ name: 'Service Offered By TA', value: this.basicDetails?.service_offered_by_ta },)
+      }
     }
   }
 
   viewKYC(): void {
 
     this.matDialog.open(KycInfoComponent, {
-      data: { record: this.records, agent: true },
+      data: { record: this.records, agent: true, from : "Agent" },
       disableClose: true
     }).afterClosed().subscribe(res => {
       if (res) {

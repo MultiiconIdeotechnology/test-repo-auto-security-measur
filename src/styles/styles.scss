@@ -909,10 +909,64 @@ div:where(.swal2-container) button:where(.swal2-close){
     color: white;
   }
 
-  .contracting_rep .p-datatable .p-datatable-tfoot > tr > td,
-  .contracting_rep .p-datatable .p-datatable-tbody > tr > td, th,
-  .contracting_rep .p-datatable .p-datatable-thead > tr > th{
-    font-size: 12px;
-  }
+  .contracting_rep {
+      .p-datatable .p-datatable-tfoot > tr > td,
+      .p-datatable .p-datatable-tbody > tr > td, th,
+      .p-datatable .p-datatable-thead > tr > th {
+        font-size: 12px;
+      }
+} 
 
 
+   
+//   /* Customize the checkbox */
+//   .hide_chekbox input[type="checkbox"] {
+//     appearance: none; /* Remove default checkbox styling */
+//     width: 20px; /* Set width */
+//     height: 20px; /* Set height */
+//     background-color: #0f172a; /* Background color when unchecked */
+//     border: 2px solid #64748b; /* Border color */
+//     border-radius: 4px; /* Add rounded corners */
+//     cursor: pointer; /* Pointer cursor on hover */
+//     position: relative;
+//   }
+  
+//   /* Checkbox checked state */
+//   .hide_chekbox input[type="checkbox"]:checked {
+//     background-color: #0d9488; /* Background color when checked */
+//     border-color: #0d9488 /* Border color when checked */
+//   }
+  
+//   /* Style the checkmark (using pseudo-element) */
+//   .hide_chekbox input[type="checkbox"]:checked::before {
+//     content: "\2714"; /* Unicode checkmark */
+//     color: white; /* Checkmark color */
+//     font-size: 15px;
+//     position: absolute;
+//     top: 50%;
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+//   }
+  
+//   /* Optional: Add hover effect */
+//   .hide_chekbox input[type="checkbox"]:hover {
+//     border-color: #2980b9; /* Darken the border color on hover */
+//   }
+
+.green-tick {
+    position:relative;
+    color:#0d9488;
+}
+
+.green-tick::before {
+    content:'';
+    position:absolute;
+    height:2.65rem;
+    width: 2.8px;
+    background:#0d9488;
+    left:0;
+    top:50%;
+    transform: translatey(-50%);
+}
+
+  

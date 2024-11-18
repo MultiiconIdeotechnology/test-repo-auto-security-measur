@@ -100,8 +100,8 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     }
 
     ngOnInit(): void {
-        this.getAgent('');
-        this.getEmployeeList("");
+        this.agentList = this._filterService.agentListByValue;
+        this.employeeList = this._filterService.rmListByValue;
 
         // common filter
         this._filterService.selectionDateDropdown = "";
@@ -134,6 +134,12 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
 
             if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
@@ -148,13 +154,6 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
@@ -241,7 +240,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     }
 
     viewAgentData(data: any): void {
-        Linq.recirect([Routes.customers.agent_entry_route + '/' + data.receipt_to_id + '/readonly']);
+        Linq.recirect([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly']);
     }
 
     refreshItems(event?: any): void {

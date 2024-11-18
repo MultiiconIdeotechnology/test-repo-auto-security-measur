@@ -45,7 +45,7 @@ export class PermissionEntryComponent {
 
   login_areas: any[] = [
     {value: 'Employee', viewValue: 'Employee'},
-    {value: 'IB', viewValue: 'IB'},
+    {value: 'Supplier', viewValue: 'Supplier'},
     {value: 'Client', viewValue: 'Client'},
   ];
 

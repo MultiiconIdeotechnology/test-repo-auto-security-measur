@@ -213,6 +213,7 @@ export class CommonUtils {
 
         return value;
     }
+    
 }
 
 export class DocValidationDTO {
@@ -220,3 +221,15 @@ export class DocValidationDTO {
     alertType: | 'error' | 'warn' | 'success';
     alertMessage: string;
 }
+
+export const MY_DATE_FORMATS = {
+    parse: {
+        dateInput: 'DD MMM YY',
+    },
+    display: {
+        dateInput: 'DD MMM YY',
+        monthYearLabel: 'MMM YYYY',
+        dateA11yLabel: 'DD MMM YY',
+        monthYearA11yLabel: 'MMMM YYYY',
+    },
+};

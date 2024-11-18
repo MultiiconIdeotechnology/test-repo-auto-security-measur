@@ -81,7 +81,7 @@ export class AuditedComponent extends BaseListingComponent {
   mopList: any[] = [];
   selectedMop: any;
   selectedPsp: any;
-  selectedEmployee: any;
+  selectedAgent: any;
 
   cols = [];
 
@@ -113,25 +113,25 @@ export class AuditedComponent extends BaseListingComponent {
 
     this.auditListFilter.FromDate.setDate(1);
     this.auditListFilter.FromDate.setMonth(this.auditListFilter.FromDate.getMonth());
-
   }
 
   ngOnInit(): void {
+    this.agentList = this._filterService.agentListById;
     setTimeout(() => {
-      this.agentList = this.filterApiData.agentData;
       this.mopList = this.filterApiData.mopData;
       this.pspList = this.filterApiData.pspData;
     }, 1000);
+
     this._filterService.selectionDateDropdown = "";
     this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.selectionDateDropdown = "";
       this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPsp = resp['table_config']['psp_name']?.value;
-      this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
-      if (this.selectedEmployee && this.selectedEmployee.id) {
-        const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+      this.selectedAgent = resp['table_config']['agent_code_filter']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
         if (!match) {
-          this.agentList.push(this.selectedEmployee);
+          this.agentList.push(this.selectedAgent);
         }
       }
       if (this.selectedMop && this.selectedMop.id) {
@@ -159,7 +159,6 @@ export class AuditedComponent extends BaseListingComponent {
         // this.sortColumn = resp['sortColumn'];
         // this.primengTable['_sortField'] = resp['sortColumn'];
         this.primengTable['filters'] = resp['table_config'];
-
         this.primengTable._filter();
     });
   }
@@ -171,11 +170,11 @@ export class AuditedComponent extends BaseListingComponent {
       this.selectedMop = filterData['table_config']['mop']?.value;
 			this.selectedPsp = filterData['table_config']['psp_name']?.value;
       setTimeout(() => {
-        this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
-        if (this.selectedEmployee && this.selectedEmployee.id) {
-					const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+        this.selectedAgent = filterData['table_config']['agent_code_filter']?.value;
+        if (this.selectedAgent && this.selectedAgent.id) {
+					const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
 					if (!match) {
-						this.agentList.push(this.selectedEmployee);
+						this.agentList.push(this.selectedAgent);
 					}
 				}
 				if (this.selectedMop && this.selectedMop.id) {
@@ -209,7 +208,6 @@ export class AuditedComponent extends BaseListingComponent {
 
 
   ngOnChanges(changes: SimpleChanges) {
-    this.agentList = this.filterApiData?.agentData;
     this.mopList = this.filterApiData?.mopData;
     this.pspList = this.filterApiData?.pspData;
   }

@@ -24,6 +24,16 @@ export const dateRange = {
     setCustomDate: 'Set Custom Date',
 };
 
+export const dateRangeContracting = {
+    today: 'Today',
+    lastWeek: 'This Week',
+    lastMonth: 'This Month',
+    previousMonth: 'Previous Month',
+    last3Month: 'Last 3 Month',
+    last6Month: 'Last 6 Month',
+    setCustomDate: 'Custom',
+};
+
 export const dateRangeLeadRegister = {
     all: 'All',
     today: 'Today',
@@ -235,6 +245,9 @@ export const Routes = {
 
         agent_balance_path: 'account/agent-balance',
         agent_balance_path_route: 'account/agent-balance',
+        
+        agent_wise_service_wise_path: 'account/agent-wise-service-wise',
+        agent_wise_service_wise_path_route: 'account/agent-wise-service-wise',
 
         sale_path: 'account/sale-book',
         sale_route: 'account/sale-book',
@@ -284,6 +297,10 @@ export const Routes = {
         hotel_path: 'booking/hotel',
         hotel_route: '/booking/hotel',
         hotel_details_route: '/booking/hotel/details',
+        
+        forex_path: 'booking/forex',
+        forex_route: '/booking/forex',
+        forex_details_route: '/booking/forex/details',
 
         flight_path: 'booking/flight',
         flight_route: '/booking/flight',

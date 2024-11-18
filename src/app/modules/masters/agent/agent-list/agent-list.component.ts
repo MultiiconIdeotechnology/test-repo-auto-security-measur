@@ -95,6 +95,9 @@ export class AgentListComponent extends BaseListingComponent {
         { field: 'is_wl', header: 'WL' },
         { field: 'is_test', header: 'Read Only' },
         { field: 'subagent_count', header: 'Sub Agent Count' },
+        { field: 'city_name', header: 'City Name' },
+        { field: 'first_login_date_time', header: 'First Time Login'},
+        { field: 'first_transaction_date_time', header: 'First Time Transaction'},
     ];
 
     // statusList = ['All', 'New', 'Active','Inactive','Dormant',];
@@ -119,7 +122,7 @@ export class AgentListComponent extends BaseListingComponent {
     employeeList: any[] = [];
     markupList: any[] = [];
     selectedEmployee: any = {};
-    selectedKycProfile:any = {};
+    selectedKycProfile: any = {};
     selectedMarkup: any = {};
 
     constructor(
@@ -177,7 +180,7 @@ export class AgentListComponent extends BaseListingComponent {
             this.selectedMarkup = resp['table_config']['markup_id_filter']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if(resp['table_config']['entry_date_time'].value){
+            if (resp['table_config']['entry_date_time'].value) {
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -194,19 +197,19 @@ export class AgentListComponent extends BaseListingComponent {
         this.getMarkupProfileList("");
     }
 
-    ngAfterViewInit(){
+    ngAfterViewInit() {
         // Defult Active filter show
-        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
             this.selectedCurrency = filterData['table_config']['currency'].value || {};
             this.selectedKycProfile = filterData['table_config']['kyc_id_fliters']?.value || {};
             this.selectedMarkup = filterData['table_config']['markup_id_filter']?.value || {};
             const match = this.employeeList.find((item: any) => item.id == this.selectedEmployee.id);
-            if(!match) {
+            if (!match) {
                 this.employeeList.push(this.selectedEmployee);
             }
-            if(filterData['table_config']['entry_date_time'].value) {
+            if (filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
@@ -227,7 +230,7 @@ export class AgentListComponent extends BaseListingComponent {
         this.currencyService.getcurrencyCombo().subscribe((data) => {
             this.currencyListAll = data;
 
-            for(let i in this.currencyListAll){
+            for (let i in this.currencyListAll) {
                 this.currencyListAll[i].id_by_value = this.currencyListAll[i].currency_short_code;
             }
         })
@@ -568,7 +571,7 @@ export class AgentListComponent extends BaseListingComponent {
         }
 
         this.matDialog.open(KycInfoComponent, {
-            data: { record: record, agent: true },
+            data: { record: record, agent: true, from: "Agent" },
             disableClose: true
         }).afterClosed().subscribe(res => {
             if (res) {
@@ -774,7 +777,7 @@ export class AgentListComponent extends BaseListingComponent {
         this.agentService.getAgentList(filterReq).subscribe(data => {
             for (var dt of data.data) {
                 // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
-                dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '' ;
+                dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
                 dt.web_last_login_time = dt.web_last_login_time ? DateTime.fromISO(dt.web_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
             }
             Excel.export(

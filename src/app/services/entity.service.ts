@@ -27,6 +27,8 @@ export class EntityService {
     private changeEmailNumber = new ReplaySubject<any>();
     private refreshchangeEmailNumberCall = new ReplaySubject<any>();
     private infoWithdrawCall = new ReplaySubject<any>();
+    private supplierKycInfoCall = new ReplaySubject<any>();
+    private agentKycInfoCall = new ReplaySubject<any>();
     private appliedOnCall = new ReplaySubject<any>();
     private refreshInstallmentCall = new ReplaySubject<any>();
     private installmentCall = new ReplaySubject<any>();
@@ -288,6 +290,26 @@ export class EntityService {
         return this.infoWithdrawCall.asObservable();
     }
 
+    /********Info Supplier KYC***********/
+
+    public raisesupplierKycInfo(item): void {
+        this.supplierKycInfoCall.next(item);
+    }
+
+    public onsupplierKycInfo(): Observable<any> {
+        return this.supplierKycInfoCall.asObservable();
+    }
+
+    /********Info Agent KYC***********/
+
+    public raiseagentKycInfo(item): void {
+        this.agentKycInfoCall.next(item);
+    }
+
+    public onagentKycInfo(): Observable<any> {
+        return this.agentKycInfoCall.asObservable();
+    }
+
     /********Caching parameters***********/
     public raisecachingParametersCall(item): void {
         this.cachingParametersCall.next(item);
@@ -331,5 +353,17 @@ export class EntityService {
 
     public onappliedOnCall(): Observable<any> {
         return this.appliedOnCall.asObservable();
+    }
+
+    /******** Forex ***********/
+
+    private forexEntityCall = new ReplaySubject<any>();
+
+    public onForexEntityCall(): Observable<any> {
+        return this.forexEntityCall.asObservable();
+    }
+
+    public raiseForexEntityCall(item): void {
+        this.forexEntityCall.next(item);
     }
 }

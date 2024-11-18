@@ -343,6 +343,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.booking.insurance_route
             },
             {
+                id: 'booking.forex',
+                title: 'Forex',
+                type: 'basic',
+                pid: 'BOOKINGS_FOREX_VIEW',
+                icon: 'payments',
+                link: Routes.booking.forex_route
+            },
+            {
                 id: 'booking.offline_serivce',
                 title: 'Offline Service',
                 type: 'basic',
@@ -367,6 +375,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:building-library',
                 // link: Routes.reports.account_route
                 children: [
+                    {
+                        id: 'reports.agent_wise_service_wise',
+                        title: 'Agent Wise Service Wise',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_AGENTWISESERVICEWISE_VIEW',
+                        icon: '',
+                        link: Routes.account.agent_wise_service_wise_path_route
+                    }, 
                     {
                         id: 'reports.balance_register',
                         title: 'Agent Balance Register',

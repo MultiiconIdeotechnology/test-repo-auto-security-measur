@@ -100,6 +100,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   }
 
   ngOnInit() {
+    this.agentList = this._filterService.agentListByValue;
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.selectedAgent = resp['table_config']['master_agent_name']?.value;
@@ -124,8 +125,6 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       this.primengTable._filter();
     });
 
-    // To call Agent lis api on default data
-    this.getAgent("");
   }
 
   ngAfterViewInit() {
@@ -134,6 +133,12 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['master_agent_name']?.value;
+      if(this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
 
       if (filterData['table_config']['expiry_date'].value) {
         filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
@@ -181,12 +186,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   getAgent(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
-      if(this.selectedAgent && this.selectedAgent.id) {
-        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        if (!match) {
-          this.agentList.push(this.selectedAgent);
-        }
-      }
+  
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
         this.agentList[i].id_by_value = this.agentList[i].agency_name;

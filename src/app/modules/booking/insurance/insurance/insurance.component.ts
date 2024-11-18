@@ -19,14 +19,11 @@ import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { MatDialog } from '@angular/material/dialog';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { UserService } from 'app/core/user/user.service';
 import { bookingsInsurancePermissions, filter_module_name, messages, module_name, Security } from 'app/security';
 import { AgentService } from 'app/services/agent.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { VisaService } from 'app/services/visa.service';
 import { Subscription, takeUntil } from 'rxjs';
 import { InsuranceService } from 'app/services/insurance.service';
 import { Linq } from 'app/utils/linq';
@@ -88,11 +85,9 @@ export class InsuranceComponent extends BaseListingComponent {
 
 
   constructor(
-    private matDialog: MatDialog,
     private toasterService: ToasterService,
     private insuranceService: InsuranceService,
     private userService: UserService,
-    private conformationService: FuseConfirmationService,
     private agentService: AgentService,
     public _filterService: CommonFilterService
   ) {
@@ -122,11 +117,11 @@ export class InsuranceComponent extends BaseListingComponent {
         this.user = user;
       });
 
-    this.getAgent('')
-
   }
 
   ngOnInit() {
+    this.agentList = this._filterService.agentListByValue;
+    
     // common filter
     this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
@@ -162,6 +157,13 @@ export class InsuranceComponent extends BaseListingComponent {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['agent_name']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
+
       if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
         this._filterService.selectionDateDropdown = 'Custom Date Range';
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
@@ -244,13 +246,6 @@ export class InsuranceComponent extends BaseListingComponent {
   getAgent(value: string) {
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
-
-      if (this.selectedAgent && this.selectedAgent.id) {
-        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        if (!match) {
-          this.agentList.push(this.selectedAgent);
-        }
-      }
 
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;

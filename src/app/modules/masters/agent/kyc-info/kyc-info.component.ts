@@ -68,6 +68,7 @@ export class KycInfoComponent {
   isLeadeConvert: boolean = false;
   isKycViewDetailFlag: boolean = false;
   closeDialog = ''
+  from: string = ''
 
   constructor(
     public matDialogRef: MatDialogRef<KycInfoComponent>,
@@ -83,6 +84,8 @@ export class KycInfoComponent {
     this.data = datas.record;
     if (this.datas?.send)
       this.convertAgent = (this.datas.send == "agentKYC");
+
+    this.from = this.datas?.from;
 
     if (this.datas?.send)
       this.isAuditAvalable = !(this.datas.send == "leadMaster");
@@ -141,6 +144,7 @@ export class KycInfoComponent {
       Fdata['id'] = this.data.id
       Fdata['for'] = this.datas.isMaster === true || this.Agent === 'Sub Agent' ? 'Sub Agent' : this.Agent === 'Supplier' ? 'Supplier' : 'Agent';
       Fdata['is_lead'] = this.datas.isLead === 'Lead' ? true : false;
+      Fdata['from'] = this.from;
 
 
       this.kycdocService.getdocumentRecord(Fdata).subscribe(res => {
@@ -246,7 +250,8 @@ export class KycInfoComponent {
     }).afterClosed().subscribe({
       next: (res) => {
         if (res === 'confirmed') {
-          this.kycdocService.verify(data.document_of_id).subscribe({
+          var model = { is_lead: this.datas.isLead === 'Lead' ? true : false , id : data.document_of_id};
+          this.kycdocService.verify(model).subscribe({
             next: (res: any) => {
               data.is_audited = true
               data.is_rejected = false

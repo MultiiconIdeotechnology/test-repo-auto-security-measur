@@ -97,7 +97,7 @@ export class GroupInquiryListComponent
 
     ngOnInit(): void {
         this.getSupplier("");
-        this.getAgent("");
+        this.agentList = this._filterService.agentListById;
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -131,6 +131,12 @@ export class GroupInquiryListComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = filterData['table_config']['supplier_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
             if (filterData['table_config']['departure_date'].value) {
                 filterData['table_config']['departure_date'].value = new Date(filterData['table_config']['departure_date'].value);
             }
@@ -163,16 +169,9 @@ export class GroupInquiryListComponent
         })
     }
 
-    getAgent(value: string, bool: boolean = true) {
-        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`

@@ -83,7 +83,7 @@ export class PendingComponent extends BaseListingComponent {
 	mopList: any[] = [];
 
 	selectedMop: any;
-	selectedEmployee: any;
+	selectedAgent: any;
 	selectedPSP: any;
 	public settingsUpdatedSubscription: Subscription;
 
@@ -119,22 +119,22 @@ export class PendingComponent extends BaseListingComponent {
 	}
 
 	ngOnInit(): void {
+		this.agentList = this._filterService.agentListById;
 		setTimeout(() => {
-			this.agentList = this.filterApiData.agentData;
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
 		this._filterService.selectionDateDropdown = "";
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
 		this._filterService.selectionDateDropdown = "";
-			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
+			this.selectedAgent = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPSP = resp['table_config']['psp_name']?.value;
 
-			if (this.selectedEmployee && this.selectedEmployee.id) {
-				const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+			if (this.selectedAgent && this.selectedAgent.id) {
+				const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
 				if (!match) {
-					this.agentList.push(this.selectedEmployee);
+					this.agentList.push(this.selectedAgent);
 				}
 			}
 
@@ -180,11 +180,11 @@ export class PendingComponent extends BaseListingComponent {
 			this.isFilterShowPendingChange.emit(this.isFilterShowPending);
 
 			setTimeout(() => {
-				this.selectedEmployee = filterData['table_config']['agent_code_filter']?.value;
-				if (this.selectedEmployee && this.selectedEmployee.id) {
-					const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+				this.selectedAgent = filterData['table_config']['agent_code_filter']?.value;
+				if (this.selectedAgent && this.selectedAgent.id) {
+					const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
 					if (!match) {
-						this.agentList.push(this.selectedEmployee);
+						this.agentList.push(this.selectedAgent);
 					}
 				}
 				if (this.selectedMop && this.selectedMop.id) {
@@ -212,7 +212,6 @@ export class PendingComponent extends BaseListingComponent {
 	}
 
 	ngOnChanges() {
-		this.agentList = this.filterApiData.agentData;
 		this.mopList = this.filterApiData.mopData;
 		this.pspList = this.filterApiData.pspData;
 	}
@@ -227,6 +226,10 @@ export class PendingComponent extends BaseListingComponent {
 	}
 
     generatePaymentLink(data: any){
+		if (!Security.hasPermission(walletRechargePermissions.generatePaymentLink)) {
+			return this.alertService.showToast('error', messages.permissionDenied);
+		}
+
         let newMessage: any;
         const label: string = 'Generate Payment Link'
         newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'

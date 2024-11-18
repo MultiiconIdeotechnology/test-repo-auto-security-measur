@@ -175,7 +175,12 @@
                     {{element.agencyName || '-'}}
                 </td>
                 <td>
-                    {{element.callPurpose || '-'}}
+                    <a (click)="callSchedule(element)" class="border-b border-gray-500 cursor-pointer" *ngIf="element.is_call_rescheduled else others">
+                        {{element.callPurpose || '-'}}
+                    </a>
+                    <ng-template #others>
+                        {{element.callPurpose || '-'}}
+                    </ng-template>
                 </td>
                 <td>
                     {{(element.createdDate | date: 'dd-MM-yyyy') || "-"}}

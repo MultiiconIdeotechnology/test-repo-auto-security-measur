@@ -1,0 +1,321 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+            <span class="text-3xl">{{module_name}}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
+
+            <!------Global Search------>
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!-- Date Combo -->
+            <div class="justify-center items-center w-[245px]">
+                <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-select name="date" [formControl]="date" #dateRange
+                            (selectionChange)="updateDate($event.value)">
+                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
+                                dr
+                                }}</mat-option>
+                        </mat-select>
+                        <!-- <mat-icon svgIcon="heroicons_mini:chevron-down" (click)="dateRange.open()"
+                            class="cursor-pointer"></mat-icon> -->
+                    </mat-form-field>
+                </div>
+
+                <div *ngIf="date.value === DR.setCustomDate" class="w-full flex flex-row items-center space-x-1">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()">
+                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly
+                                #dateRangeStart />
+                            <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
+                                (dateInput)="
+                                        dateRangeChange(dateRangeStart, dateRangeEnd)
+                                    " />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                    <mat-icon class="icon-size-4 cursor-pointer" (click)="cancleDate()">cancel</mat-icon>
+                </div>
+            </div>
+
+            <!------Global filter------>
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Refresh------>
+            <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!---Excel--->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
+            <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
+
+            <ng-template pTemplate="header">
+
+                <tr>
+                    <th pSortableColumn="agent_name" pResizableColumn rowspan="2">Agent <p-sortIcon field="agent_name" />
+                    </th>
+                    <th pSortableColumn="agent_id" pResizableColumn rowspan="2">Agent Id<p-sortIcon field="agent_id" />
+                    </th>
+                    <th pSortableColumn="sales_person" pResizableColumn rowspan="2">Sales Person<p-sortIcon field="sales_person" /></th>
+                    <th class="text-center" colspan="3">Air</th>
+                    <th class="text-center" colspan="3">Hotel</th>
+                    <th class="text-center" colspan="3">Bus</th>
+                    <th class="text-center" colspan="3">Visa</th>
+                    <th class="text-center" colspan="3">Other Service</th>
+                    <th class="text-center" colspan="3">Tech Product</th>
+                    <th class="text-center" colspan="3">Total</th>
+                    <th pSortableColumn="whitelabel" pResizableColumn rowspan="2">Whitelabel<p-sortIcon
+                            field="whitelabel" /></th>
+                </tr>
+                <tr>
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="air_volume" pResizableColumn>Volume <p-sortIcon field="air_volume" /></th>
+                    <th class="text-right" pSortableColumn="air_profit" pResizableColumn>Profit <p-sortIcon field="air_profit" /></th>
+                    <th class="text-right" pSortableColumn="air_pax" pResizableColumn>Pax <p-sortIcon field="air_pax" />
+                    </th>
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="hotel_volume" pResizableColumn>Volume <p-sortIcon field="hotel_volume" /></th>
+                    <th class="text-right" pSortableColumn="hotel_profit" pResizableColumn>Profit <p-sortIcon field="hotel_profit" /></th>
+                    <th class="text-right" pSortableColumn="hotel_pax" pResizableColumn>Pax <p-sortIcon field="hotel_pax" />
+                    </th>
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="bus_volume" pResizableColumn>Volume <p-sortIcon field="bus_volume" /></th>
+                    <th class="text-right" pSortableColumn="bus_profit" pResizableColumn>Profit <p-sortIcon field="bus_profit" /></th>
+                    <th class="text-right" pSortableColumn="bus_pax" pResizableColumn>Pax <p-sortIcon field="bus_pax" />
+                    </th>
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="visa_volume" pResizableColumn>Volume <p-sortIcon field="visa_volume" /></th>
+                    <th class="text-right" pSortableColumn="visa_profit" pResizableColumn>Profit <p-sortIcon field="visa_profit" /></th>
+                    <th class="text-right" pSortableColumn="visa_pax" pResizableColumn>Pax <p-sortIcon field="visa_pax" />
+                    </th>
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="other_service_volume" pResizableColumn>Volume <p-sortIcon field="other_service_volume" /></th>
+                    <th class="text-right" pSortableColumn="other_service_profit" pResizableColumn>Profit <p-sortIcon field="other_service_profit" /></th>
+                    <th class="text-right" pSortableColumn="other_service_pax" pResizableColumn>Pax <p-sortIcon field="other_service_pax" />
+                    </th>
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="tech_product_volume" pResizableColumn>Volume <p-sortIcon field="tech_product_volume" /></th>
+                    <th class="text-right" pSortableColumn="tech_product_profit" pResizableColumn>Profit <p-sortIcon field="tech_product_profit" /></th>
+                    <th class="text-right" pSortableColumn="tech_product_pax" pResizableColumn>Pax <p-sortIcon field="tech_product_pax" />
+                    </th> 
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="total_volume" pResizableColumn>Volume <p-sortIcon field="total_volume" /></th>
+                    <th class="text-right" pSortableColumn="total_profit" pResizableColumn>Profit <p-sortIcon field="total_profit" /></th>
+                    <th class="text-right" pSortableColumn="total_pax" pResizableColumn>Pax <p-sortIcon field="total_pax" />
+                    </th>
+                 
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="agent_name"
+                            placeholder="Search by Agent" ariaLabel="Filter Agent" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="agent_id"
+                            placeholder="Search by Agent ID" ariaLabel="Filter Agent ID" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="sales_person"
+                            placeholder="Search by Sales Person" ariaLabel="Filter Sales Person" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="air_volume" placeholder="Search by Air Volume"
+                            ariaLabel="Filter Air Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="air_profit" placeholder="Search by Air Profit"
+                            ariaLabel="Filter Air Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="air_pax" placeholder="Search by Air Pax"
+                            ariaLabel="Filter Air Pax" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_volume" placeholder="Search by Hotel Volume"
+                            ariaLabel="Filter Hotel Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_profit" placeholder="Search by Hotel Profit"
+                            ariaLabel="Filter Hotel Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_pax" placeholder="Search by Hotel Pax"
+                            ariaLabel="Filter Hotel Pax" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="bus_volume" placeholder="Search by Bus Volume"
+                            ariaLabel="Filter Bus Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="bus_profit" placeholder="Search by Bus Profit"
+                            ariaLabel="Filter Bus Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="bus_pax" placeholder="Search by Bus Pax"
+                            ariaLabel="Filter Bus Pax" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="visa_volume" placeholder="Search by Visa Volume"
+                            ariaLabel="Filter Visa Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="visa_profit" placeholder="Search by Visa Profit"
+                            ariaLabel="Filter Visa Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="visa_pax" placeholder="Search by Visa Pax"
+                            ariaLabel="Filter Visa Pax" />
+                    </th>  
+                    
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_volume" placeholder="Search by Other Service Volume"
+                            ariaLabel="Filter Other Service Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_profit" placeholder="Search by Other Service Profit"
+                            ariaLabel="Filter Other Service Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_pax" placeholder="Search by Other Service Pax"
+                            ariaLabel="Filter Other Service Pax" />
+                    </th>
+                    
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_volume" placeholder="Search by Tech Product Volume"
+                            ariaLabel="Filter Tech Product Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_profit" placeholder="Search by Tech Product Profit"
+                            ariaLabel="Filter Tech Product Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_pax" placeholder="Search by Tech Product Pax"
+                            ariaLabel="Filter Tech Product Pax" />
+                    </th>
+                    
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="total_volume" placeholder="Search by Total Volume"
+                            ariaLabel="Filter Total Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="total_profit" placeholder="Search by Total Profit"
+                            ariaLabel="Filter Total Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="total_pax" placeholder="Search by Total Pax"
+                            ariaLabel="Filter Total Pax" />
+                    </th>
+                    
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="whitelabel" placeholder="Search by Whitelabel"
+                            ariaLabel="Filter Whitelabel" />
+                    </th>
+
+                </tr>
+
+                <!-- </ng-template> -->
+            </ng-template>
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td>{{ element.agent_name }}</td>
+                    <td>{{ element.agent_id }}</td>
+                    <td>{{ element.sales_person }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.air_volume }}</td>
+                    <td class="text-right">{{ element.air_profit }}</td>
+                    <td class="text-right">{{ element.air_pax }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.hotel_volume }}</td>
+                    <td class="text-right">{{ element.hotel_profit }}</td>
+                    <td class="text-right">{{ element.hotel_pax }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.bus_volume }}</td>
+                    <td class="text-right">{{ element.bus_profit }}</td>
+                    <td class="text-right">{{ element.bus_pax }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.visa_volume }}</td>
+                    <td class="text-right">{{ element.visa_profit }}</td>
+                    <td class="text-right">{{ element.visa_pax }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.other_service_volume }}</td>
+                    <td class="text-right">{{ element.other_service_profit }}</td>
+                    <td class="text-right">{{ element.other_service_pax }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.tech_product_volume }}</td>
+                    <td class="text-right">{{ element.tech_product_profit }}</td>
+                    <td class="text-right">{{ element.tech_product_pax }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.total_volume }}</td>
+                    <td class="text-right">{{ element.total_profit }}</td>
+                    <td class="text-right">{{ element.total_pax }}</td>
+
+                    <td>{{ element.whitelabel }}</td>
+
+                </tr>
+            </ng-template>
+
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-30">
+                    <td colspan="15" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

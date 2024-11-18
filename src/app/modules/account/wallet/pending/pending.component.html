@@ -92,7 +92,7 @@
                     <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals"
                         [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedEmployee"
+                            <p-dropdown class="filter-dropdown" [options]="agentList" [(ngModel)]="selectedAgent"
                                 optionLabel="agent_info" [filter]="true" filterBy="agent_info"
                                 (onFilter)="getAgentList($event?.filter)"
                                 (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
@@ -180,7 +180,7 @@
                             <mat-icon class="mat-18">close</mat-icon>
                             <span style="font-weight: 600;">Reject</span>
                         </button>
-                        <button mat-menu-item *ngIf="!element.paymentlink"
+                        <!-- <button mat-menu-item *ngIf="!element.paymentlink"
                             (click)="generatePaymentLink(element)">
                             <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
                             <span style="font-weight: 600;">Generate Payment Link</span>
@@ -189,7 +189,7 @@
                             (click)="copyLink(element)">
                             <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
                             <span style="font-weight: 600;">Copy Payment Link</span>
-                    </button>
+                    </button> -->
                     </mat-menu>
                 </td>
                 <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_number">

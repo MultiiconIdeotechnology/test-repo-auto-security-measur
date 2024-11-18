@@ -65,12 +65,11 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     PrimeNgImportsModule,
   ],
 })
-export class WPendingComponent extends BaseListingComponent implements OnChanges {
+export class WPendingComponent extends BaseListingComponent {
 
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowPending: boolean;
   @Output() isFilterShowPendingChange = new EventEmitter<boolean>();
-  @Input() filterApiData: any;
 
   searchInputControlPending = new FormControl('');
   filter_table_name = filter_module_name.withdraw_pending;
@@ -134,10 +133,7 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
   }
 
   ngOnInit(): void {
-
-    setTimeout(() => {
-      this.agentList = this.filterApiData.agentData;
-    }, 1000);
+    this.agentList = this._filterService.agentListById;
 
     this._filterService.selectionDateDropdown = "";
     this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -187,10 +183,6 @@ export class WPendingComponent extends BaseListingComponent implements OnChanges
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
-  }
-
-  ngOnChanges() {
-    this.agentList = this.filterApiData.agentData;
   }
 
   getAgentList(value: string) {

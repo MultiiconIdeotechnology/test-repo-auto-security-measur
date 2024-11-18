@@ -141,7 +141,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
     ];
 
     ngOnInit(): void {
-        this.getAgent('');
+        this.agentList = this._filterService.agentListByValue;
 
         // common filter
         this._filterService.selectionDateDropdown = "";
@@ -175,6 +175,13 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
@@ -193,13 +200,6 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
-
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
@@ -207,24 +207,6 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         })
     }
 
-    getFilter(): any {
-        let filterReq = {};
-        // const filterReq = GridUtils.GetFilterReq(
-        //     this._paginator,
-        //     this._sort,
-        //     this.searchInputControl.value
-        // );
-        // const filter = this.currentFilter;
-        // filterReq['status'] = this.currentFilter.status;
-        // filterReq['payment_gateway'] = 'All';
-        // filterReq['fromDate'] = DateTime.fromJSDate(
-        //     this.currentFilter.fromDate
-        // ).toFormat('yyyy-MM-dd');
-        // filterReq['toDate'] = DateTime.fromJSDate(
-        //     this.currentFilter.toDate
-        // ).toFormat('yyyy-MM-dd');
-        return filterReq;
-    }
 
     filter(): void {
         this.matDialog
@@ -434,10 +416,8 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-        let extraModel = this.getFilter();
         let newModel = this.getNewFilterReq(event);
-        let model = { ...extraModel, ...newModel }
-        this.accountService.getReceiptList(model).subscribe({
+        this.accountService.getReceiptList(newModel).subscribe({
             next: (data) => {
                 this.dataList = data.data;
                 // this.total = data.total;
@@ -480,6 +460,10 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
     }
 
     generatePaymentLink(data: any){
+        if (!Security.hasPermission(receiptPermissions.generatePaymentLink)) {
+			return this.alertService.showToast('error', messages.permissionDenied);
+		}
+        
         let newMessage: any;
         const label: string = 'Generate Payment Link'
         newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
@@ -490,9 +474,9 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 			next: (res) => {
 				if (res === 'confirmed') {
                     let json = {
-                        reference_table_id: data?.id ? data?.id : "",
+                        reference_table_id: data?.id || "",
                         service_for: "Receipt",
-                        mop: data?.mop ? data?.mop : ""
+                        mop: data?.mop || ""
                     }
 					this.walletService.generatePaymentLink(json).subscribe({
 						next: (res) => {

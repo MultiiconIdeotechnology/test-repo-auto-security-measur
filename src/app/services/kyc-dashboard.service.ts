@@ -18,6 +18,6 @@ export class KycDashboardService {
 
   leadConvert(id: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'AgentLead/leadConvert', { id: id });
-}
+  }
 
 }

@@ -112,7 +112,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         { label: 'Corporate', value: 'Corporate' },
         { label: 'Supplier', value: 'Supplier' },
         { label: 'Boost My Brand', value: 'Boost My Brand' },
-        { label: 'Build My Brand', value: 'Build My Brand' }
+        { label: 'Build My Brand', value: 'Build My Brand' },
+        { label: 'IBCM', value: 'IBCM' }
     ];
 
     kycList: any[] = [
@@ -158,6 +159,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     ngOnInit() {
         this.getLeadStatus("");
         this.getEmployee("");
+        // this.employeeList = this._filterService.originalRmList;
 
         this._filterService.selectionDateDropdown = "";
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {

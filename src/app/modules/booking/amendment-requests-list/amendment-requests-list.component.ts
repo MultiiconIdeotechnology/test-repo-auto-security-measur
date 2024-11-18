@@ -127,8 +127,8 @@ export class AmendmentRequestsListComponent
 
     ngOnInit() {
         this.isMenuOpen = Security.hasPermission(amendmentRequestsPermissions.manuDisplayPermissions);
-        this.getAgent("");
-        this.getSupplier("", true);
+        this.agentList = this._filterService.agentListById;
+        this.getSupplier("");
 
         // common filter
         this._filterService.selectionDateDropdown = "";
@@ -167,8 +167,12 @@ export class AmendmentRequestsListComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
             if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
@@ -203,20 +207,13 @@ export class AmendmentRequestsListComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
-
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
             }
         });
     }
 
-    getSupplier(value: string, bool: boolean = true) {
+    getSupplier(value: string) {
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
 

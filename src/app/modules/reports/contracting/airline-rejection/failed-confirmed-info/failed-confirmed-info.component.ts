@@ -54,7 +54,7 @@ import { DateTime } from 'luxon';
   templateUrl: './failed-confirmed-info.component.html',
   styleUrls: ['./failed-confirmed-info.component.scss']
 })
-export class FailedConfirmedInfoComponent extends BaseListingComponent implements OnDestroy{
+export class FailedConfirmedInfoComponent extends BaseListingComponent implements OnDestroy {
 
   dataList = [];
   record: any = {};
@@ -75,16 +75,21 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
     this.sortColumn = 'ticket_Date_Time';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
- 
     this.record = data
-    this.title = this.record.carrier
-    console.log("this.record", this.record);
+
+    if (this.record.send == 'Sub') {
+      this.title = this.record.carrier
+    } else if (this.record.send == 'Main') {
+      this.title = this.record.supplier
+    } else {
+      this.title = this.record.titleName
+    }
   }
 
   ngOnInit(): void {
   }
 
-  refreshItems(event?:any): void {
+  refreshItems(event?: any): void {
     this.isLoading = true;
 
     const request = this.getNewFilterReq(event);
@@ -107,12 +112,11 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
   }
 
   viewData(record): void {
-    console.log(record);
     if (!Security.hasViewDetailPermission(module_name.airline_rejection)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
     Linq.recirect('/booking/flight/details/' + record.id);
-}
+  }
 
   getNodataText(): string {
     if (this.isLoading)
@@ -120,6 +124,22 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
     else if (this.searchInputControl.value)
       return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
+  }
+
+  getStatusColor(status: string): string {
+    if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending' || status == 'Partially Cancelled' || status == 'Hold Released') {
+      return 'text-orange-600';
+    } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed' || status == 'Assign To Refund' || status == 'Payment Completed') {
+      return 'text-yellow-600';
+    } else if (status == 'Confirmed') {
+      return 'text-green-600';
+    } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected' || status == 'Hold Failed') {
+      return 'text-red-600';
+    } else if (status == 'Hold') {
+      return 'text-blue-600';
+    } else {
+      return '';
+    }
   }
 
   exportExcel(): void {

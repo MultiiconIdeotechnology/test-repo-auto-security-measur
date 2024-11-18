@@ -91,8 +91,8 @@ export class PurchaseRegisterComponent
     }
 
     ngOnInit() {
-        this.getAgent('');
-        this.getSupplier("", true);
+        this.getSupplier("");
+        this.agentList = this._filterService.agentListByValue;
         this.getCompanyList("");
 
         // common filter
@@ -129,6 +129,12 @@ export class PurchaseRegisterComponent
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
             this.selectedCompany = filterData['table_config']['company']?.value;
+            if(this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                  this.agentList.push(this.selectedAgent);
+                }
+            }
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time']?.value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
@@ -153,13 +159,6 @@ export class PurchaseRegisterComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
-
             for(let i in this.agentList){
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
@@ -167,7 +166,7 @@ export class PurchaseRegisterComponent
         })
     }
 
-    getSupplier(value: string, bool: boolean = true) {
+    getSupplier(value: string) {
         this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
             this.supplierList = data;
 

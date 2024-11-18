@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -20,6 +20,7 @@ import { KycInfoComponent } from 'app/modules/masters/agent/kyc-info/kyc-info.co
 import { Security, kycDashboardPermissions, module_name } from 'app/security';
 import { KycDashboardService } from 'app/services/kyc-dashboard.service';
 import { AgentKycComponent } from "../agent-kyc/agent-kyc.component";
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-main',
@@ -54,13 +55,28 @@ import { AgentKycComponent } from "../agent-kyc/agent-kyc.component";
 })
 export class MainComponent {
 
-  public getTabsPermission(tab: string): boolean {
-    if (tab == 'Agent')
-      return Security.hasPermission(kycDashboardPermissions.agentKYCTabPermissions)
-    if (tab == 'Supplier')
-      return Security.hasPermission(kycDashboardPermissions.supplierKYCTabPermissions)
-    if (tab == 'Employee')
-      return Security.hasPermission(kycDashboardPermissions.employeeKYCTabPermissions)
-  }
+  @Input() activeTab: any;
+  constructor(private router: Router) { }
+
+
+  // public getTabsPermission(tab: string): boolean {
+  //   if (tab == 'Agent')
+  //     return Security.hasPermission(kycDashboardPermissions.agentKYCTabPermissions)
+  //   if (tab == 'Supplier')
+  //     return Security.hasPermission(kycDashboardPermissions.supplierKYCTabPermissions)
+  //   if (tab == 'Employee')
+  //     return Security.hasPermission(kycDashboardPermissions.employeeKYCTabPermissions)
+  // }
+
+  public tabChanged(event: any): void {
+    if (event?.index == 0) {
+        this.router.navigateByUrl('/kyc/dashboard');
+    } else if (event?.index == 1) {
+        this.router.navigateByUrl('/kyc/dashboard/supplier');
+    } else {
+        this.router.navigateByUrl('/kyc/dashboard');
+    }
+}
+
   
 }

@@ -21,7 +21,6 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { Excel } from 'app/utils/export/excel';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
@@ -93,8 +92,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
     }
 
     ngOnInit(): void {
-        this.getAgent('');
-        this.getEmployeeList("");
+        this.agentList = this._filterService.agentListByValue;
+        this.employeeList = this._filterService.rmListByValue;
 
         // common filter
         this._filterService.selectionDateDropdown = "";
@@ -129,6 +128,13 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
 
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
             if (filterData['table_config']['last_top_up'].value && filterData['table_config']['last_top_up'].value?.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['last_top_up']);
@@ -139,27 +145,9 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         }
     }
 
-    // Api to get the Employee list data
-    getEmployeeList(value: string) {
-        this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
-            this.employeeList = data;
-
-            for (let i in this.employeeList) {
-                this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
-            }
-        });
-    }
-
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
-
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
 
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
@@ -200,15 +188,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
 
         req.skip = 0;
         req.take = this.totalRecords;
-        // const filterReq = {};
-        // filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
-        // filterReq['service'] = this.saleFilter?.service || 'All';
-        // filterReq['date'] = this.saleFilter.date || 'Last Month';
-        // filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-        // filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.id || 'All';
-        // filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
-        // filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
-
+        
         this.agentBalanceService.getWalletReportList(req).subscribe(data => {
             for (var dt of data.data) {
                 dt.last_top_up = dt.last_top_up ? DateTime.fromISO(dt.last_top_up).toFormat('dd-MM-yyyy hh:mm a') : '';
