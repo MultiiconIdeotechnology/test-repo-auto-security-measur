@@ -13,13 +13,13 @@ export class UserService {
     totpConfig = [
         "wallet_recharge_audit", 
         "wallet_recharge_reject" ,
-        // "wallet_recharge_generate_payment_link",
+        "wallet_recharge_generate_payment_link",
         "wallet_credit_add",
         "wallet_credit_disable",
         "wallet_credit_enable",
         "withdraw_audit",
         "withdraw_reject",
-        "receipt_audit",
+        "receipt_audit_unaudit",
         "receipt_reject",
         "supplier_api_add",
         "supplier_api_enable",
@@ -126,6 +126,8 @@ export class UserService {
             if (this.isOtpEnabled) { // need to dynamically
                 this.openVerifyDialog().subscribe(isVerified => {
                     if (isVerified) {
+                        console.log("success on otp verified");
+                        return;
                         onSuccess();
                     } else {
                         // Optionally handle failed verification
@@ -134,6 +136,8 @@ export class UserService {
                 });
             } else {
                 // Execute directly if OTP is not enabled
+                console.log("otp is not verfiend enter")
+                return
                 onSuccess();
             }
 

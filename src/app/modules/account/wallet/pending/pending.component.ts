@@ -241,11 +241,6 @@ export class PendingComponent extends BaseListingComponent {
 		}).afterClosed().subscribe({
 			next: (res) => {
 				if (res === 'confirmed') {
-					// Method to execute a function after verifying OTP if needed
-					this._userService.verifyAndExecute(
-						{title:'wallet_recharge_generate_payment_link'},
-						() => executeMethod()
-					);
 
 					const executeMethod = () => {
 						let json = {
@@ -270,6 +265,12 @@ export class PendingComponent extends BaseListingComponent {
 							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
 						});
 					}
+
+					// Method to execute a function after verifying OTP if needed
+					this._userService.verifyAndExecute(
+						{ title: 'wallet_recharge_generate_payment_link' },
+						() => executeMethod()
+					);
 				}
 			}
 		})
@@ -318,12 +319,6 @@ export class PendingComponent extends BaseListingComponent {
 		}).afterClosed().subscribe({
 			next: (res) => {
 				if (res === 'confirmed') {
-						// Method to execute a function after verifying OTP if needed
-						this._userService.verifyAndExecute(
-							{title:'wallet_recharge_audit'},
-						   () => executeMethod()
-					   );
-
 					const executeMethod = () => {
 						this.walletService.setRechargeAudit(data.id).subscribe({
 							next: () => {
@@ -333,6 +328,12 @@ export class PendingComponent extends BaseListingComponent {
 							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
 						});
 					}
+
+					// Method to execute a function after verifying OTP if needed
+					this._userService.verifyAndExecute(
+						{ title: 'wallet_recharge_audit' },
+						() => executeMethod()
+					);
 				}
 			}
 		})
@@ -379,12 +380,6 @@ export class PendingComponent extends BaseListingComponent {
 		}).afterClosed().subscribe({
 			next: (resone) => {
 				if (resone) {
-					// Method to execute a function after verifying OTP if needed
-					this._userService.verifyAndExecute(
-						 {title:'wallet_recharge_reject'},
-						() => executeMethod()
-					);
-
 					const executeMethod = () => {
 						this.walletService.setRechargeReject({ id: record.id, reject_reason: resone }).subscribe({
 							next: () => {
@@ -395,6 +390,12 @@ export class PendingComponent extends BaseListingComponent {
 							error: (err) => this.alertService.showToast('error', err, "top-right", true)
 						})
 					}
+
+					// Method to execute a function after verifying OTP if needed
+					this._userService.verifyAndExecute(
+						{ title: 'wallet_recharge_reject' },
+						() => executeMethod()
+					);
 				}
 			}
 		})

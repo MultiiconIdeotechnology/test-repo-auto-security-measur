@@ -204,13 +204,13 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-          this.alertService.showToast(
-            'success',
-            'New record added',
-            'top-right',
-            true
-          );
-          this.refreshItems();
+            this.alertService.showToast(
+              'success',
+              'New record added',
+              'top-right',
+              true
+            );
+            this.refreshItems();
         }
       });
   }
@@ -246,7 +246,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     }
 
     const label: string = record.is_enable ? 'Disable' : 'Enable';
-    let title = label == 'Disable' ? 'wallet_credit_disable':'wallet_credit_enable';
+    let title = label == 'Disable' ? 'wallet_credit_disable' : 'wallet_credit_enable';
     this.conformationService
       .open({
         title: label,
@@ -260,11 +260,6 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
-          // Method to execute a function after verifying OTP if needed
-          this._userService.verifyAndExecute(
-            { title: title },
-            () => executeMethod()
-          );
 
           const executeMethod = () => {
             this.walletService
@@ -291,8 +286,14 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
                   this.alertService.showToast('error', err);
                 }
               });
-
-          }
+              
+            }
+            
+          // Method to execute a function after verifying OTP if needed
+          this._userService.verifyAndExecute(
+            { title: title },
+            () => executeMethod()
+          );
         }
       });
   }
