@@ -10,6 +10,32 @@ import { map, Observable, ReplaySubject, tap } from 'rxjs';
 export class UserService {
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
     isOtpEnabled: boolean = true;
+    totpConfig = [
+        "wallet_recharge_audit", 
+        "wallet_recharge_reject" ,
+        // "wallet_recharge_generate_payment_link",
+        "wallet_credit_add",
+        "wallet_credit_disable",
+        "wallet_credit_enable",
+        "withdraw_audit",
+        "withdraw_reject",
+        "receipt_audit",
+        "receipt_reject",
+        "supplier_api_add",
+        "supplier_api_enable",
+        "supplier_api_disable",
+        "supplier_api_modify",
+        "supplier_api_delete",
+        "psp_modify",
+        "psp_delete",
+        "psp_deactive",
+        "psp_set_default",
+        "psp_add",
+        "markup_add",
+        "markup_modify",
+        "markup_delete",
+        "markup_set_default"
+      ]
     /**
      * Constructor
      */
@@ -79,11 +105,10 @@ export class UserService {
     }
 
     // Method to open dialog and verify OTP
-    openVerifyDialog(data: { title: string }): Observable<boolean> {
+    openVerifyDialog(): Observable<boolean> {
         const dialogRef = this.matDialog.open(VerificationDialogComponent, {
             width: '450px',
             data: "Whatsapp",
-            // data: data,
         });
 
         return dialogRef.afterClosed().pipe(
@@ -96,17 +121,25 @@ export class UserService {
         data: { title: string },
         onSuccess: () => void
     ): void {
-        if (this.isOtpEnabled) { // need to dynamically
-            this.openVerifyDialog(data).subscribe(isVerified => {
-                if (isVerified) {
-                    onSuccess();
-                } else {
-                    // Optionally handle failed verification
-                    console.log("OTP verification failed.");
-                }
-            });
+        if(this.totpConfig.includes(data.title)){
+            console.log("check array includes", data.title)
+            if (this.isOtpEnabled) { // need to dynamically
+                this.openVerifyDialog().subscribe(isVerified => {
+                    if (isVerified) {
+                        onSuccess();
+                    } else {
+                        // Optionally handle failed verification
+                        console.log("OTP verification failed.");
+                    }
+                });
+            } else {
+                // Execute directly if OTP is not enabled
+                onSuccess();
+            }
+
         } else {
-            // Execute directly if OTP is not enabled
+            console.log("direct on Success");
+            return;
             onSuccess();
         }
     }

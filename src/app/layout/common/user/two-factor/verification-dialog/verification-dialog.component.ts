@@ -36,7 +36,7 @@ export class VerificationDialogComponent {
     ) {
 
         // if (data && data.tfa_type == 'Whatsapp') {
-        this.whatsappOtpsent();
+        // this.whatsappOtpsent();
         // }
 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {

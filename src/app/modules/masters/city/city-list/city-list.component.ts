@@ -165,8 +165,9 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
 
 
     viewInternal(record: any): void {
+        // Method to execute a function after verifying OTP if needed
         this._userService.verifyAndExecute(
-            { title: "Whatsapp Verification" },
+            {title:'city_view'},
             () => executeMethod()
         );
 
