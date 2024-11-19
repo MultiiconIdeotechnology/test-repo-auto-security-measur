@@ -175,34 +175,6 @@ export class AmendmentRequestsListComponent
 
     get selectedColumns(): Column[] {
         return this._selectedColumns;
-        // common filter
-        this._filterService.selectionDateDropdown = "";
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.selectionDateDropdown = "";
-            this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                  this.agentList.push(this.selectedAgent);
-                }
-            }
-
-            this.selectedSupplier = resp['table_config']['company_name']?.value;
-            // this.sortColumn = resp['sortColumn'];
-            // this.primengTable['_sortField'] = resp['sortColumn'];
-
-            if (resp?.['table_config']?.['amendment_request_time']?.value != null && resp['table_config']['amendment_request_time'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
-                this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
-            }
-
-            if (resp['table_config']['travel_date']?.value != null) {
-              resp['table_config']['travel_date'].value = new Date(resp['table_config']['travel_date'].value);
-            }
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShow = true;
-            this.primengTable._filter();
-        });
     }
 
     ngAfterViewInit() {

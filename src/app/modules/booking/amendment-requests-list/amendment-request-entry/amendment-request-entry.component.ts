@@ -258,22 +258,37 @@ export class AmendmentRequestEntryComponent {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.conformationService.open({
-            title: 'Cancel Amendment',
-            message: 'Are you sure want to cancel amendment?',
+        this.matDialog.open(RefundInitiateComponent, {
+            autoFocus: false,
+            disableClose: false,
+            data: {
+                title: "Cancel Amendment",
+                desc: "Are you sure want to cancel amendment?",
+                icon: 'heroicons_outline:exclamation-triangle',
+                color: 'warn',
+                value1: {
+                    required: true,
+                    type: 'textarea',
+                    label: 'Reason',
+                },
+                isForm: true
+            },
+            panelClass: 'app-refund-initiate',
         }).afterClosed().subscribe(res => {
-            if (res == 'confirmed') {
-                this.amendmentRequestsService.amendmentCancel({ id: this.record.id }).subscribe({
-                    next: (r) => {
-                        this.alertService.showToast('success', "Amendment canceled successfully!", "top-right", true);
-                        this.amendmentInfoDrawer.close();
-                        this.entityService.raiserefreshUpdateChargeCall(true);
-                    }, error: (err) => {
-                        this.alertService.showToast('error', err);
-                    },
-                })
-            }
+            if (!res.status)
+                return;
+
+            this.amendmentRequestsService.amendmentCancel({ id: this.record.id, note: res.value1 }).subscribe({
+                next: (data) => {
+                    this.alertService.showToast('success', "Amendment canceled successfully!", "top-right", true);
+                    this.amendmentInfoDrawer.close();
+                    this.entityService.raiserefreshUpdateChargeCall(true);
+                }, error: (err) => {
+                    this.alertService.showToast("error", err);
+                },
+            })
         })
+
     }
 
     flightDetails() {

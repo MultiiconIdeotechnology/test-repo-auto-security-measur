@@ -75,7 +75,7 @@
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <!-- <th class="  text-center left-[-1px]" pFrozenColumn>#</th> -->
 
                     <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="reference_no"
                         pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
@@ -136,7 +136,7 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <!-- <th class="left-[-1px]" pFrozenColumn></th> -->
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
                         <p-columnFilter type="text" matchMode="contains" field="reference_no"
                             placeholder="Search by Ref. No" ariaLabel="Filter Ref. No" />
@@ -335,10 +335,7 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
-                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
-                            <mat-icon> more_vert </mat-icon>
-                        </span>
+                    <!-- <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <mat-menu #optionMenu>
                             <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
@@ -347,7 +344,7 @@
                             <button mat-menu-item *ngIf="showUpdateCharge(element)" (click)="updateCharge(element)">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Update Charge</span>
-                            </button>
+                            </button> -->
 
                             <!-- <button mat-menu-item
                                 *ngIf="element.amendment_status === 'Confirm' && element.amendment_status !== 'Quotation Sent'"
@@ -395,13 +392,13 @@
                                 <span style="font-weight: 600">Complete</span>
                             </button> -->
 
-                            <mat-divider></mat-divider>
+                            <!-- <mat-divider></mat-divider>
                             <button mat-menu-item (click)="statusLogs(element)">
                                 <mat-icon class="mat-18">text_snippet</mat-icon>
                                 <span style="font-weight: 600">Status Logs</span>
                             </button>
                         </mat-menu>
-                    </td>
+                    </td> -->
                     <td class="min-w-[175px] cursor-pointer underline hover:text-primary-200" alignFrozen="left"
                         pFrozenColumn [frozen]="frozenObj?.reference_no" (click)="view(element)">
                         {{element.reference_no || "-"}}
