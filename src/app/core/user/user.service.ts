@@ -6,11 +6,10 @@ import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-pa
 import { VerificationDialogComponent } from 'app/layout/common/user/two-factor/verification-dialog/verification-dialog.component';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';
 
-@Injectable({providedIn: 'root'})
-export class UserService
-{
+@Injectable({ providedIn: 'root' })
+export class UserService {
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
-
+    isOtpEnabled: boolean = true;
     /**
      * Constructor
      */
@@ -18,8 +17,7 @@ export class UserService
         private _httpClient: HttpClient,
         private matDialog: MatDialog,
 
-    )
-    {
+    ) {
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -31,8 +29,7 @@ export class UserService
      *
      * @param value
      */
-    set user(value: any)
-    {
+    set user(value: any) {
 
         // if(value.is_first) {
         //     setTimeout(() => {
@@ -49,8 +46,7 @@ export class UserService
         this._user.next(value);
     }
 
-    get user$(): Observable<any>
-    {
+    get user$(): Observable<any> {
         return this._user.asObservable();
     }
 
@@ -61,11 +57,9 @@ export class UserService
     /**
      * Get the current logged in user data
      */
-    get(): Observable<User>
-    {
+    get(): Observable<User> {
         return this._httpClient.get<User>('api/common/user').pipe(
-            tap((user) =>
-            {
+            tap((user) => {
                 this._user.next(user);
             }),
         );
@@ -76,25 +70,44 @@ export class UserService
      *
      * @param user
      */
-    update(user: User): Observable<any>
-    {
-        return this._httpClient.patch<User>('api/common/user', {user}).pipe(
-            map((response) =>
-            {
+    update(user: User): Observable<any> {
+        return this._httpClient.patch<User>('api/common/user', { user }).pipe(
+            map((response) => {
                 this._user.next(response);
             }),
         );
     }
 
-    openVerifyDialog(
-        title: string,
-        width: string = '450px'
-      ): Observable<boolean> {
+    // Method to open dialog and verify OTP
+    openVerifyDialog(data: { title: string }): Observable<boolean> {
         const dialogRef = this.matDialog.open(VerificationDialogComponent, {
-          width,
-          data: { title },
+            width: '450px',
+            data: "Whatsapp",
+            // data: data,
         });
-    
-        return dialogRef.afterClosed();
-      }
+
+        return dialogRef.afterClosed().pipe(
+            map(result => !!result) // Convert result to a boolean
+        );
+    }
+
+    // Method to execute a function after verifying OTP if needed
+    verifyAndExecute(
+        data: { title: string },
+        onSuccess: () => void
+    ): void {
+        if (this.isOtpEnabled) { // need to dynamically
+            this.openVerifyDialog(data).subscribe(isVerified => {
+                if (isVerified) {
+                    onSuccess();
+                } else {
+                    // Optionally handle failed verification
+                    console.log("OTP verification failed.");
+                }
+            });
+        } else {
+            // Execute directly if OTP is not enabled
+            onSuccess();
+        }
+    }
 }
