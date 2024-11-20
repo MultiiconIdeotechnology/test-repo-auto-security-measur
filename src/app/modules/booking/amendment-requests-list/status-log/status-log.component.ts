@@ -42,12 +42,16 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 })
 export class StatusLogComponent {
   record: any = {};
-  logList: any[] =[];
+  logList: any[] = [];
+  splitFormat = "<<split>>";
+  replaceFormat = "<<replace>>";
+  imageFormat = "<<image>>";
+  isLoading: boolean = false;
 
   constructor(
     public matDialogRef: MatDialogRef<StatusLogComponent>,
     public alertService: ToasterService,
-    public amendmentRequestsService:AmendmentRequestsService,
+    public amendmentRequestsService: AmendmentRequestsService,
     private matDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
@@ -60,18 +64,38 @@ export class StatusLogComponent {
 
 
   ngOnInit(): void {
-      if (this.record.id) {
-        this.amendmentRequestsService.getAmendmentStatusLog(this.record.id).subscribe({
-          next:(data)=> {
-            if(data) {
-              this.logList = data.data;
+    if (this.record.id) {
+      this.isLoading = true;
+      this.amendmentRequestsService.getAmendmentStatusLog(this.record.id).subscribe({
+        next: (data) => {
+          if (data) {
+            for (let str of data.data) {
+              var title = str.split(this.splitFormat)[0];
+              var desc = '';
+              var image = '';
+              if (str.split(this.splitFormat).length > 1)
+                desc = str.split(this.splitFormat)[1].replaceAll(this.replaceFormat, ' | ');
+
+              if (str.split(this.splitFormat).length > 2)
+                image = str.split(this.splitFormat)[2].replaceAll(this.replaceFormat, ' | ');
+
+              this.logList.push({ title, desc, image });
             }
-          },
-          error: (err) => {
-            this.alertService.showToast('error', err)
-                
-            },
-        });
-      }
+
+            // this.logList = data.data;
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.alertService.showToast('error', err)
+          this.isLoading = false;
+        },
+      });
     }
+  }
+
+  openImage(data: any) {
+    if (!data.image) return;
+    window.open(data.image, '_blank')
+  }
 }
