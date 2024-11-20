@@ -233,7 +233,7 @@ export class WalletCreditEntryComponent {
 
     // Method to execute a function after verifying OTP if needed
     this._userService.verifyAndExecute(
-      { title: 'wallet_credit_add' },
+      { title: 'account_wallet_credit_add' },
       () => executeMethod()
     );
 

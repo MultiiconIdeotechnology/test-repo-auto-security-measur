@@ -22,42 +22,13 @@ import { ToasterService } from 'app/services/toaster.service';
 })
 export class TwoFactorAuthComponent {
     settings: any = {};
-    twoFactorMethod: any = [
-        {
-            title: 'Authenticator App',
-            content: 'Use an authentication app or browser extension to get two-factor authentication codes when prompted.',
-            iconDark: 'assets/icons/smartphone-dark.svg',
-            icon: 'phone_iphone',
-            is_enabled: false,
-            is_selected: false,
-            tfa_type: 'AuthApp'
-        },
-        {
-            title: 'SMS/Text Message',
-            content: 'Get one-time codes sent to your phone via SMS to complete authentication requests.',
-            iconDark: 'assets/icons/messenger-dark.svg',
-            icon: 'messenger_outline',
-            is_enabled: false,
-            is_selected: false,
-            tfa_type: 'SMS'
-        },
-        {
-            title: 'WhatsApp Message',
-            content: 'Get one-time codes sent to your phone via WhatsApp to complete authentication requests.',
-            iconDark: 'assets/icons/whatsapp-dark.svg',
-            icon: 'whatsapp',
-            is_enabled: false,
-            is_selected: false,
-            tfa_type: 'Whatsapp'
-        },
-    ];
 
     constructor(
         // private settingService:SettingsService,
         public matDialogRef: MatDialogRef<TwoFactorAuthComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         private _matdialog: MatDialog,
-        private twoFaAuthenticationService: TwoFaAuthenticationService,
+        public twoFaAuthenticationService: TwoFaAuthenticationService,
         private confirmationService: FuseConfirmationService,
         private alertService: ToasterService,
     ) {
@@ -65,28 +36,6 @@ export class TwoFactorAuthComponent {
     }
 
     ngOnInit(): void {
-        this.getEmployee();
-    }
-
-    // GEt Employee TFA Configuration Details
-    getEmployee() {
-        this.twoFaAuthenticationService.tfaConfigurationDetails().subscribe({
-            next: (resData) => {
-                if (resData) {
-                    for (let i in resData) {
-                        for (let j in this.twoFactorMethod) {
-                            if (resData[i].tfa_type == this.twoFactorMethod[j].tfa_type) {
-                                this.twoFactorMethod[j].is_enabled = resData[i].is_enabled;
-                                this.twoFactorMethod[j].is_selected = resData[i].is_selected;
-                            }
-                        }
-                    }
-                }
-            },
-            error: (err) => {
-                console.log("err", err);
-            },
-        });
     }
 
     // authentication Enabled Dialog
@@ -146,7 +95,7 @@ export class TwoFactorAuthComponent {
                 this.twoFaAuthenticationService.changeAuthMode({ "Mode": method.tfa_type }).subscribe({
                     next: (res) => {
                         if (res && res.status) {
-                            this.twoFactorMethod.filter((field: any) => field.is_selected = false);
+                            // this.twoFaAuthenticationService.twoFactorMethod.filter((field: any) => field.is_selected = false);
                             method.is_selected = true;
                             this.alertService.showToast('success', 'Authentication method has been successfully switched.', 'top-right', true);
                         }

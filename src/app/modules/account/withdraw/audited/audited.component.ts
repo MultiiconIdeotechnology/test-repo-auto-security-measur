@@ -233,7 +233,7 @@ export class WAuditedComponent extends BaseListingComponent {
 
           // Method to execute a function after verifying OTP if needed
           this._userService.verifyAndExecute(
-            { title: 'withdraw_audit' },
+            { title: 'account_withdraw_audit' },
             () => executeMethod()
           );
         }
@@ -262,7 +262,7 @@ export class WAuditedComponent extends BaseListingComponent {
 
            // Method to execute a function after verifying OTP if needed
            this._userService.verifyAndExecute(
-            { title: 'withdraw_reject' },
+            { title: 'account_withdraw_reject' },
             () => executeMethod()
           );
         }

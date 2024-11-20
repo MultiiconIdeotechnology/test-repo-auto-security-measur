@@ -235,9 +235,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             );
         }
 
-        const label: string = record.is_audited
-            ? 'Unaudit Receipt'
-            : 'Audit Receipt';
+        const label: string = record.is_audited ? 'Unaudit Receipt' : 'Audit Receipt';
         this.conformationService
             .open({
                 title: label,
@@ -282,7 +280,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 
                     // Method to execute a function after verifying OTP if needed
                     this._userService.verifyAndExecute(
-                        { title: 'receipt_audit_unaudit' },
+                        { title: 'account_receipt_audit' },
                         () => executeMethod()
                     );
                 }
@@ -330,7 +328,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 
                         // Method to execute a function after verifying OTP if needed
                         this._userService.verifyAndExecute(
-                            { title: 'receipt_reject' },
+                            { title: 'account_receipt_reject' },
                             () => executeMethod()
                         );
                     }

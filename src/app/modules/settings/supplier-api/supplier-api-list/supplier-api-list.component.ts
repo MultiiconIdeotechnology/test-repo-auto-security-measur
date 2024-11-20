@@ -270,7 +270,7 @@ export class SupplierApiListComponent
 
                     // Method to execute a function after verifying OTP if needed
                     this._userService.verifyAndExecute(
-                        { title: 'supplier_api_delete' },
+                        { title: 'settings_supplier_api_delete' },
                         () => executeMethod()
                     );
                 }
@@ -285,7 +285,7 @@ export class SupplierApiListComponent
         }
 
         const label: string = record.is_disabled ? 'Enable Supplier API' : 'Disable Supplier API';
-        const title:string = record.is_disabled ? 'supplier_api_enable':'supplier_api_disable';
+        const title:string = record.is_disabled ? 'settings_supplier_api_enable':'settings_supplier_api_disable';
         this.conformationService
             .open({
                 title: label,

@@ -244,7 +244,7 @@ export class MarkupProfileComponent
 
                     // Method to execute a function after verifying OTP if needed
                     this._userService.verifyAndExecute(
-                        { title: 'markup_delete' },
+                        { title: 'settings_markup_delete' },
                         () => executeMethod()
                     );
                 }
@@ -308,7 +308,7 @@ export class MarkupProfileComponent
 
                     // Method to execute a function after verifying OTP if needed
                     this._userService.verifyAndExecute(
-                        { title: 'markup_set_default' },
+                        { title: 'settings_markup_set_default' },
                         () => executeMethod()
                     );
                 }

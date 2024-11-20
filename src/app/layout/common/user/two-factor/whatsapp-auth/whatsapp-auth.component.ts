@@ -74,6 +74,15 @@ export class WhatsappAuthComponent {
             this.twoFaAuthenticationService.twoFactoreCheck(payload).subscribe({
                 next: (res) => {
                     if (res) {
+                        for(let i in this.twoFaAuthenticationService.twoFactorMethod){
+                            if(this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode){
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = true;
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = true;
+                            } else {
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false; 
+                            }
+                        }
+                        // this.twoFaAuthenticationService.twoFactorMethodUpdate(res.data);
                         this.disableBtn = false;
                         this.alertService.showToast('success', `${mode} authentication successfull!`, 'top-right', true);
                         this.matDialogRef.close();
@@ -118,7 +127,15 @@ export class WhatsappAuthComponent {
                     this.disableBtn = true;
                     this.twoFaAuthenticationService.disableTwoFactoreAuth(payload).subscribe({
                         next: (res) => {
+                            console.log("disable res", res);
                             if (res && res.status) {
+                                for(let i in this.twoFaAuthenticationService.twoFactorMethod){
+                                    if(this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode){
+                                        console.log("tfa_type", this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type)
+                                    this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = false;
+                                    this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false;
+                                    }   
+                                }
                                 this.disableBtn = false;
                                 let message = mode == 'AuthApp' ? 'Two-factor' : mode;
                                 this.alertService.showToast('success', `${message} authentication disabled successfully!`, 'top-right', true);

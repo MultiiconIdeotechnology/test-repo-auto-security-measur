@@ -216,7 +216,7 @@ export class PspListComponent extends BaseListingComponent {
 
           // Method to execute a function after verifying OTP if needed
           this._userService.verifyAndExecute(
-            { title: 'psp_delete' },
+            { title: 'settings_psp_delete' },
             () => executeMethod()
           );
         }
@@ -261,7 +261,7 @@ export class PspListComponent extends BaseListingComponent {
 
           // Method to execute a function after verifying OTP if needed
           this._userService.verifyAndExecute(
-            { title: 'psp_set_default' },
+            { title: 'settings_psp_set_default' },
             () => executeMethod()
           );
 
@@ -310,7 +310,7 @@ export class PspListComponent extends BaseListingComponent {
       ? 'Deactive PSP'
       : 'Active PSP';
 
-    const title:string = record.is_active ? 'psp_deactive' : 'psp_active';
+    const title:string = record.is_active ? 'settings_psp_deactive' : 'settings_psp_active';
     this.conformationService
       .open({
         title: label,

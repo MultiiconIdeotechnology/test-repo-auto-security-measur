@@ -11,30 +11,30 @@ export class UserService {
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
     isOtpEnabled: boolean = true;
     totpConfig = [
-        "wallet_recharge_audit", 
-        "wallet_recharge_reject" ,
-        "wallet_recharge_generate_payment_link",
-        "wallet_credit_add",
-        "wallet_credit_disable",
-        "wallet_credit_enable",
-        "withdraw_audit",
-        "withdraw_reject",
-        "receipt_audit_unaudit",
-        "receipt_reject",
-        "supplier_api_add",
-        "supplier_api_enable",
-        "supplier_api_disable",
-        "supplier_api_modify",
-        "supplier_api_delete",
-        "psp_modify",
-        "psp_delete",
-        "psp_deactive",
-        "psp_set_default",
-        "psp_add",
-        "markup_add",
-        "markup_modify",
-        "markup_delete",
-        "markup_set_default"
+        "account_wallet_recharge_audit", 
+        "account_wallet_recharge_reject" ,
+        "account_wallet_recharge_generate_payment_link",
+        "account_wallet_credit_add",
+        "account_wallet_credit_disable",
+        "account_wallet_credit_enable",
+        "account_withdraw_audit",
+        "account_withdraw_reject",
+        "account_receipt_audit",
+        "account_receipt_reject",
+        "settings_supplier_api_add",
+        "settings_supplier_api_enable",
+        "settings_supplier_api_disable",
+        "settings_supplier_api_modify",
+        "settings_supplier_api_delete",
+        "settings_psp_modify",
+        "settings_psp_delete",
+        "settings_psp_deactive",
+        "settings_psp_set_default",
+        "settings_psp_add",
+        "settings_markup_add",
+        "settings_markup_modify",
+        "settings_markup_delete",
+        "settings_markup_set_default"
       ]
     /**
      * Constructor
@@ -127,7 +127,7 @@ export class UserService {
                 this.openVerifyDialog().subscribe(isVerified => {
                     if (isVerified) {
                         console.log("success on otp verified");
-                        return;
+                        // return;
                         onSuccess();
                     } else {
                         // Optionally handle failed verification
@@ -137,13 +137,12 @@ export class UserService {
             } else {
                 // Execute directly if OTP is not enabled
                 console.log("otp is not verfiend enter")
-                return
+                // return
                 onSuccess();
             }
 
         } else {
             console.log("direct on Success");
-            return;
             onSuccess();
         }
     }

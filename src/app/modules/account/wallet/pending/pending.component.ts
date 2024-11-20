@@ -268,7 +268,7 @@ export class PendingComponent extends BaseListingComponent {
 
 					// Method to execute a function after verifying OTP if needed
 					this._userService.verifyAndExecute(
-						{ title: 'wallet_recharge_generate_payment_link' },
+						{ title: 'account_wallet_recharge_generate_payment_link' },
 						() => executeMethod()
 					);
 				}
@@ -331,7 +331,7 @@ export class PendingComponent extends BaseListingComponent {
 
 					// Method to execute a function after verifying OTP if needed
 					this._userService.verifyAndExecute(
-						{ title: 'wallet_recharge_audit' },
+						{ title: 'account_wallet_recharge_audit' },
 						() => executeMethod()
 					);
 				}
@@ -393,7 +393,7 @@ export class PendingComponent extends BaseListingComponent {
 
 					// Method to execute a function after verifying OTP if needed
 					this._userService.verifyAndExecute(
-						{ title: 'wallet_recharge_reject' },
+						{ title: 'account_wallet_recharge_reject' },
 						() => executeMethod()
 					);
 				}

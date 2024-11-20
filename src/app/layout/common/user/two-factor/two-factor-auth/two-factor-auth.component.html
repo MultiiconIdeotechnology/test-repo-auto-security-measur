@@ -27,7 +27,7 @@
             <h1 class="text-xl font-medium text-[#0B0D0E] dark:text-white font-Inter mb-4">Two-Factor Method</h1>
 
             <div class="flex items-center justify-between pt-2 pl-0 pr-4 pb-4 border-b border-stone-200 dark:border-[#374252]"
-                *ngFor="let method of twoFactorMethod; let i = index">
+                *ngFor="let method of twoFaAuthenticationService.twoFactorMethod; let i = index">
                 <div class="flex space-x-3">
                     <div class="text-blue-500 dark:text-[#687798]">
                         <img [src]="method.iconDark" alt="Bonton Logo" class="mx-auto w-7 h-7 pt-1" />

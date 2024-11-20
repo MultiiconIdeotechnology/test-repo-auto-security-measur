@@ -133,6 +133,14 @@ export class SetUpTwoFactorAuthComponent {
             this.twoFaAuthenticationService.twoFactoreCheck(payload).subscribe({
                 next: (res) => {
                     if (res) {
+                        for(let i in this.twoFaAuthenticationService.twoFactorMethod){
+                            if(this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode){
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = true;
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = true;
+                            } else {
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false; 
+                            }
+                        }
                         this.disableBtn = false;
                         let message = mode == 'AuthApp' ? 'Two factor' : mode;
                         this.alertService.showToast('success', `${message} authentication successfull!`, 'top-right', true);

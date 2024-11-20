@@ -246,7 +246,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     }
 
     const label: string = record.is_enable ? 'Disable' : 'Enable';
-    let title = label == 'Disable' ? 'wallet_credit_disable' : 'wallet_credit_enable';
+    let title = label == 'Disable' ? 'account_wallet_credit_disable' : 'account_wallet_credit_enable';
     this.conformationService
       .open({
         title: label,
