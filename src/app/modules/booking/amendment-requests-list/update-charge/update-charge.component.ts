@@ -1,249 +1,279 @@
 // import { AmendmentRequestsService } from './../../../../services/amendment-requests.service';
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CurrencyRoeService } from 'app/services/currency-roe.service';
-import { CurrencyService } from 'app/services/currency.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { ReplaySubject, debounceTime, distinctUntilChanged, filter, startWith, switchMap } from 'rxjs';
 import { AmendmentRequestsService } from 'app/services/amendment-requests.service';
+import { MatCardModule } from '@angular/material/card';
+import { NumberDirective } from '@fuse/directives/numbers-only/numbers-only.directive';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import { FuseDrawerComponent } from '@fuse/components/drawer';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { Subject, takeUntil } from 'rxjs';
+import { EntityService } from 'app/services/entity.service';
+import { Linq } from 'app/utils/linq';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { CommonUtils, DocValidationDTO } from 'app/utils/commonutils';
+import { imgExtantions } from 'app/common/const';
 
 @Component({
-  selector: 'app-update-charge',
-  templateUrl: './update-charge.component.html',
-  standalone: true,
-  imports: [
-    NgIf,
-    NgFor,
-    NgClass,
-    DatePipe,
-    AsyncPipe,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-    CommonModule,
-    NgxMatSelectSearchModule,
-    MatTooltipModule,
-    MatDividerModule
-  ]
+    selector: 'app-update-charge',
+    templateUrl: './update-charge.component.html',
+    standalone: true,
+    styleUrls: ['./update-charge.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    imports: [
+        NgIf,
+        NgFor,
+        NgClass,
+        DatePipe,
+        AsyncPipe,
+        FormsModule,
+        MatCardModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatButtonModule,
+        MatIconModule,
+        MatSnackBarModule,
+        MatSlideToggleModule,
+        MatTooltipModule,
+        MatDividerModule,
+        MatSidenavModule,
+        FuseDrawerComponent,
+        NumberDirective,
+    ]
 })
-export class UpdateChargeComponent {
-  disableBtn: boolean = false
-  readonly: boolean = false;
-  record: any = {};
+export class UpdateChargeComponent implements OnInit {
+    @ViewChild('updateChargeDrawer') public updateChargeDrawer: MatSidenav;
 
-  gross_sales_return_per_person: number = 0;
-  gross_sales_return_total: number = 0;
-  net_sales_return_per_person: number = 0;
-  net_sales_return_total: number = 0;
-  sales_return_total: number = 0;
+    disableBtn: boolean = false
+    record: any = {};
+    amendmentData: any = {};
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
-  constructor(
-    public matDialogRef: MatDialogRef<UpdateChargeComponent>,
-    private builder: FormBuilder,
-    private matSnackBar: MatSnackBar,
-    private alertService: ToasterService,
-    private amendmentRequestsService: AmendmentRequestsService,
-    private currencyService: CurrencyRoeService,
-    @Inject(MAT_DIALOG_DATA) public data: any = {}
-  ) {
-    this.record = data?.data ?? {}
-  }
-
-  formGroup: FormGroup;
-  title = "Update Charge";
-  btnLabel = "Update";
-  CurrencyList: any[] = [];
-  CurrencyListAll: any[] = [];
-
-  ngOnInit(): void {
-    this.formGroup = this.builder.group({
-      air_booking_id: [''],
-      agent_name: [''],
-      agent_id: [''],
-      amendment_type: [''],
-      company_name: [''],
-      supplier_id: [''],
-      markup_type: [''],
-      markup_value: [''],
-      air_amt_tax_type: [''],
-      air_amt_tax_val: [''],
-      currency_id: [''],
-      roe: [0],
-      is_refund: [''],
-      pax: [''],
-      amendment_amount_per_person: [0],
-      is_segment_amount: [false],
-      currencyfilter: [''],
-      company_remark: [''],
-      amountType : [''],
-      base_amount:[''],
-      segmentAmount:['']
-    });
-
-
-    // this.currencyService.getCurrencyRoeCombo().subscribe({
-    //   next: res => {
-    //     this.CurrencyList = res;
-    //     this.CurrencyListAll = res;
-    //   }
-    // })
-
-    // this.formGroup.get('currencyfilter').valueChanges.pipe(
-    //   filter(search => !!search),
-    //   startWith(''),
-    //   debounceTime(400),
-    //   distinctUntilChanged(),
-    //   switchMap((value: any) => {
-    //     return this.currencyService.getCurrencyRoeCombo(value);
-    //   })
-    // ).subscribe((data:any) => {
-    //   this.CurrencyList = data
-    //   this.formGroup.get("currency_id").patchValue(data[0].id);
-    // })
-
-    // this.formGroup.get('base_amount').patchValue()
-
-    this.formGroup.get('currencyfilter').valueChanges.subscribe(data => {
-      this.CurrencyList = this.CurrencyListAll.filter(x => x.currency_short_code.toLowerCase().includes(data.toLowerCase()));
-    })
-
-    this.formGroup.get('currency_id').valueChanges.subscribe((value) => {
-      setTimeout(() => {
-        this.formGroup.get('roe').patchValue(value.sale_roe);
-      })
-    })
-    this.formGroup.get('amendment_amount_per_person').valueChanges.subscribe((value) => {
-      setTimeout(() => {
-        this.calculation()
-      })
-    });
-
-    this.amendmentRequestsService.initialAmendmentCharges(this.data.id).subscribe({
-      next: (res) => {
-        this.formGroup.patchValue(res)
-        this.formGroup.get('base_amount').patchValue(res.cancellation_charge);
-        this.calculation();
-      }, error: (err) => {
-        this.disableBtn = false;
-        this.alertService.showToast('error', err, "top-right", true);
-      }
-    })
-
-
-
-  }
-
-  calculation(): void {
-    const form = this.formGroup.value;
-    form.amendment_amount_per_person = form.amendment_amount_per_person || 0;
-    if (form.amendment_amount_per_person < 1 || !form.amendment_amount_per_person) {
-      this.gross_sales_return_per_person = 0;
-      this.gross_sales_return_total = 0;
-      this.net_sales_return_per_person = 0;
-      this.net_sales_return_total = 0;
-      return;
+    // New code 
+    formObj: any = {
+        adult_charge: 0,
+        child_charge: 0,
+        Infant_charge: 0,
+        bonton_markup_value: 0,
+        addon_markup_value: 0,
+        segment_amount: 0,
+        company_remark: ''
     }
 
-    this.sales_return_total = form.amendment_amount_per_person * form.pax;
-
-    const markup_value = form.markup_type.includes('%') ? (form.amendment_amount_per_person * form.markup_value) / 100 : form.markup_value;
-
-    switch (form.markup_type) {
-      case 'Flat for Full Amendment':
-        this.gross_sales_return_per_person = form.is_refund ? form.amendment_amount_per_person - (markup_value / form.pax) : form.amendment_amount_per_person + (markup_value / form.pax);
-        this.gross_sales_return_total = this.gross_sales_return_per_person * form.pax;
-        break;
-      case 'Flat Per Pax':
-        this.gross_sales_return_per_person = form.is_refund ? form.amendment_amount_per_person - (markup_value) : form.amendment_amount_per_person + (markup_value);
-        this.gross_sales_return_total = this.gross_sales_return_per_person * form.pax;
-        break;
-      case 'Percentage(%) for Full Amendment':
-        this.gross_sales_return_per_person = form.is_refund ? form.amendment_amount_per_person - (markup_value / form.pax) : form.amendment_amount_per_person + (markup_value / form.pax);
-        this.gross_sales_return_total = this.gross_sales_return_per_person * form.pax;
-        break;
-      case 'Percentage(%) Per Pax':
-        this.gross_sales_return_per_person = form.is_refund ? form.amendment_amount_per_person - (markup_value) : form.amendment_amount_per_person + (markup_value);
-        this.gross_sales_return_total = this.gross_sales_return_per_person * form.pax;
-        break;
+    // public matDialogRef: MatDialogRef<UpdateChargeComponent>,
+    constructor(
+        private alertService: ToasterService,
+        private amendmentRequestsService: AmendmentRequestsService,
+        private entityService: EntityService,
+        private conformationService: FuseConfirmationService,
+    ) {
+        this.entityService.onUpdateChargeCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (item) => {
+                this.record = item?.data;
+                this.formObj = {
+                    adult_charge: 0,
+                    child_charge: 0,
+                    Infant_charge: 0,
+                    bonton_markup_value: 0,
+                    addon_markup_value: 0,
+                    segment_amount: 0,
+                    company_remark: '',
+                    quotation_proof: ''
+                }
+                this.updateChargeDrawer.toggle();
+                this.getAmendment();
+            }
+        })
     }
 
-    this.gross_sales_return_per_person = Number(this.gross_sales_return_per_person.toFixed(2));
-    this.gross_sales_return_total = Number(this.gross_sales_return_total.toFixed(2));
 
+    ngOnInit(): void {
 
-    switch (form.air_amt_tax_type) {
-
-      case 'Tax On Sale Amount':
-        const tax_value = (this.gross_sales_return_total * form.air_amt_tax_val) / 100
-        this.net_sales_return_per_person = form.is_refund ? this.gross_sales_return_per_person - (tax_value / form.pax) : this.gross_sales_return_per_person + (tax_value / form.pax);
-        this.net_sales_return_total = this.net_sales_return_per_person * form.pax;
-        break;
-      case 'Tax On Commission':
-
-        const tax_value_com = (markup_value * form.air_amt_tax_val) / 100
-        this.net_sales_return_per_person = form.is_refund ? this.gross_sales_return_per_person - (tax_value_com / form.pax) : this.gross_sales_return_per_person + (tax_value_com / form.pax);
-        this.net_sales_return_total = this.net_sales_return_per_person * form.pax;
-        break;
     }
 
-    this.net_sales_return_per_person = Number(this.net_sales_return_per_person.toFixed(2));
-    this.net_sales_return_total = Number(this.net_sales_return_total.toFixed(2));
-
-  }
-
-  submit(): void {
-    if(!this.formGroup.valid){
-      this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
-      this.formGroup.markAllAsTouched();
-      return;
-}
-
-    this.disableBtn = true;
-    const values = this.formGroup.getRawValue();
-    const json = {
-      // amendment_amount_per_person: values.amendment_amount_per_person,
-      total_pax: values.pax,
-      currency_id: values.currency_id.currency_id,
-      amendment_id: this.data.id,
-      roe: values.roe,
-      company_remark:values.company_remark,
-      isRefundAMDT : values.is_refund,
-      amountType : values.amountType,
-
-      // base_amount : values.base_amount,
-      segmentAmount : values.segmentAmount ? values.segmentAmount : 0,
-      amendment_amount_per_person: values.base_amount,
-      
+    viewFlightData(): void {
+        Linq.recirect('/booking/flight/details/' + this.amendmentData?.air_booking_id);
     }
-    json['currency_id'] = this.data.supplier_currency_id
-    this.amendmentRequestsService.amendmentCharges(json).subscribe({
-      next: () => {
-        this.alertService.showToast('success', 'Amendment charges updated!', "top-right", true);
-        this.matDialogRef.close(true);
-        this.disableBtn = false;
-      }, error: (err) => {
-        this.disableBtn = false;
-        this.alertService.showToast('error', err, "top-right", true);
-      }
-    })
-  }
 
-  compareWith(v1, v2) {
-    return v1 && v2 && v1.id == v2.id
-  }
+    getAmendment() {
+        this.amendmentRequestsService.initialAmendmentCharges(this.record.id).subscribe({
+            next: (res) => {
+                if (res && res.pax) {
+                    this.amendmentData = JSON.parse(JSON.stringify(res));
+
+                    this.formObj.adult_charge = (this.amendmentData?.adult_price || 0);
+                    this.formObj.child_charge = (this.amendmentData?.child_price || 0);
+                    this.formObj.Infant_charge = (this.amendmentData?.infant_price || 0);
+                    this.formObj.company_remark = (this.amendmentData?.company_remark || '');
+                    this.formObj.addon_markup_value = (this.amendmentData?.addon_markup || 0);
+                    this.formObj.segment_amount = (this.amendmentData?.segment_amount || 0);
+                    // this.formObj.quotation_proof = (this.amendmentData?.quotation_proof || 0);
+                    this.calculation();
+                }
+            }, error: (err) => {
+                this.disableBtn = false;
+                this.alertService.showToast('error', err, "top-right", true);
+            }
+        })
+    }
+
+    // Calculation
+    calculation(): void {
+        switch (this.amendmentData.markup_type) {
+            case 'Flat for Full Amendment':
+                this.formObj.bonton_markup_value = this.amendmentData.markup_value || 0;
+                break;
+            case 'Flat Per Pax':
+                this.formObj.bonton_markup_value = ((this.amendmentData.markup_value || 0) * this.amendmentData.pax || 1);
+                break;
+            case 'Percentage(%) for Full Amendment':
+                let total_pax_amt = ((this.formObj.adult_charge || 0) + (this.formObj.child_charge || 0) + (this.formObj.Infant_charge || 0));
+                this.formObj.bonton_markup_value = (total_pax_amt * 5 / 100);
+                break;
+            case 'Percentage(%) Per Pax':
+                let total_pax_amount = ((this.formObj.adult_charge || 0) + (this.formObj.child_charge || 0) + (this.formObj.Infant_charge || 0));
+                let totlaCalc = ((total_pax_amount * this.amendmentData.pax) * 5) / 100;
+                this.formObj.bonton_markup_value = totlaCalc;
+                break;
+        }
+
+        this.formObj.bonton_markup_value = Number(this.formObj.bonton_markup_value.toFixed(2));
+    }
+
+    // Update Data
+    submit(form: any): void {
+
+        if (!form.valid) {
+            this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
+            form.markAllAsTouched();
+            return;
+        }
+
+        // if (!this.formObj.quotation_proof) {
+        //     this.alertService.showToast('error', 'Quotation proof is required.', 'top-right', true);
+        //     return;
+        // }
+
+        this.conformationService.open({
+            title: 'Send Quotation',
+            message: 'Are you sure want to Send Quotation ?'
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this.disableBtn = true;
+                    const json = {
+                        total_pax: this.amendmentData.pax,
+                        amendment_id: this.record.id,
+                        roe: this.amendmentData?.roe || '',
+                        company_remark: this.formObj.company_remark || '',
+                        isRefundAMDT: this.amendmentData.is_refund,
+                        amountType: this.amendmentData.amountType,
+                        addon_markup: this.formObj.addon_markup_value || 0,
+                        infant: this.formObj.Infant_charge || 0,
+                        child: this.formObj.child_charge || 0,
+                        adult: this.formObj.adult_charge || 0,
+                        segmentAmount: this.formObj.segment_amount || 0,
+                        quotation_proof: this.formObj.quotation_proof?.base64 ? this.formObj.quotation_proof : {
+                            base64: '',
+                            fileName: '',
+                            fileType: ''
+                        },
+                    }
+                    this.amendmentRequestsService.amendmentCharges(json).subscribe({
+                        next: () => {
+                            this.alertService.showToast('success', 'Amendment charges updated!', "top-right", true);
+                            this.disableBtn = false;
+                            this.entityService.raiserefreshUpdateChargeCall(true);
+                            this.updateChargeDrawer.close();
+                        }, error: (err) => {
+                            this.disableBtn = false;
+                            this.alertService.showToast('error', err, "top-right", true);
+                        }
+                    });
+                }
+            }
+        })
+    }
+
+    getTooltip(str: string): string {
+        var value = "";
+        if (str == 'Bonton Markup')
+            value = `Fix pre defined markup based on markup policy`;
+        else if (str == 'Addon Markup')
+            value = `Apply additional markup or discount based on amendment type.\n
+Note: to apply discount kindly enter value in negative ex. -50`;
+        else if (str == 'Segment Amount')
+            value = `Use this price when return segment on international flight.\n
+Ex. If ticket is for BOM-DXB and DXB-BOM, now if amendment raised for DXB-BOM at that time required DXB-BOM segment price to calculate cancellation/refund amount.`;
+        else if (str == 'Adult Per Pax Charge')
+            value = 'Enter per adult supplier charges.'
+        else if (str == 'Child Per Pax Charge')
+            value = 'Enter per child supplier charges.'
+        else if (str == 'Infant Per Pax Charge')
+            value = 'Enter per infant supplier charges.'
+
+        return value;
+    }
+
+    uploadDocument(event: any): void {
+        const file = (event.target as HTMLInputElement).files[0];
+
+        const extantion: string[] = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'pdf'];
+        var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 3036, null);
+        if (!validator.valid) {
+            this.alertService.showToast('error', validator.alertMessage);
+            (event.target as HTMLInputElement).value = '';
+            return;
+        }
+
+        CommonUtils.getJsonFile(file, (reader, jFile) => {
+            jFile["result"] = reader.result;
+            this.formObj.quotation_proof = jFile;
+
+            this.alertService.showToast('success', "Document Uploaded", "top-right", true);
+            (event.target as HTMLInputElement).value = '';
+        });
+    }
+
+    download(data: any): void {
+        if (data?.base64) {
+
+            const newTab = window.open('', '_blank');
+            if (newTab) {
+                newTab.document.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <title>Document Viewer</title>
+                    </head>
+                    <style>
+                        html, body, iframe {
+                            margin: 0;
+                            padding: 0;
+                            width: 100%;
+                            height: 100%;
+                            border: none;
+                        }
+                    </style>
+                    <body>
+                        <iframe src="${data?.result}"></iframe>
+                    </body>
+                </html>
+            `);
+                newTab.document.close();
+            } else {
+                alert('Please allow popups for this website');
+            }
+        } else
+            window.open(data, '_blank');
+    }
 }

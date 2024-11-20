@@ -226,7 +226,7 @@ export class EmployeeKycInfoComponent {
                 next: (res) => {
                     if (res === 'confirmed') {
                         this.kycdocService
-                            .verify({id : data.document_of_id})
+                            .verify({ id: data.document_of_id })
                             .subscribe({
                                 next: () => {
                                     this.alertService.showToast(
