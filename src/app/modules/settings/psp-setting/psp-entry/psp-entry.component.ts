@@ -19,6 +19,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { filter, startWith, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { J } from '@angular/cdk/keycodes';
+import { UserService } from 'app/core/user/user.service';
 
 
 @Component({
@@ -73,6 +74,7 @@ export class PspEntryComponent {
     public alertService: ToasterService,
     private pspsettingService: PspSettingService,
     private clipboard: Clipboard,
+    private _userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
     this.record = data?.data ?? {}
@@ -142,24 +144,24 @@ export class PspEntryComponent {
         }
       });
 
-      /*************Company combo**************/
+    /*************Company combo**************/
     this.formGroup
-    .get('companyfilter')
-    .valueChanges.pipe(
-      filter((search) => !!search),
-      startWith(''),
-      debounceTime(200),
-      distinctUntilChanged(),
-      switchMap((value: any) => {
-        return this.pspsettingService.getCompanyCombo(value);
-      })
-    )
-    .subscribe({
-      next: data => {
-        this.compnyList = data
-        this.formGroup.get("psp_for_company_id").patchValue(this.compnyList[0].company_id);
-      }
-    });
+      .get('companyfilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        startWith(''),
+        debounceTime(200),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          return this.pspsettingService.getCompanyCombo(value);
+        })
+      )
+      .subscribe({
+        next: data => {
+          this.compnyList = data
+          this.formGroup.get("psp_for_company_id").patchValue(this.compnyList[0].company_id);
+        }
+      });
 
 
     this.pspsettingService.getPaymentModes({ type: '' }).subscribe({
@@ -234,29 +236,41 @@ export class PspEntryComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-    this.disableBtn = true;
-    const json = this.formGroup.getRawValue();
 
-    if (json.psp_for == 'Company') {
-      json['psp_for_agent_id'] = ''
-    }
+    const title:string = this.record.id ? 'psp_modify':'psp_add';
 
-    if (json.psp_for == 'Agent') {
-      json['psp_for_company_id'] = ''
-    }
-
-    json['psp_for_id'] = json.psp_for == 'Company' ? json.psp_for_company_id : json.psp_for_agent_id
-    json['payment_modes'] = this.selectedList.join(',');
-
-    this.pspsettingService.create(json).subscribe({
-      next: () => {
-        this.matDialogRef.close(true);
-        this.disableBtn = false;
-      }, error: (err) => {
-        this.disableBtn = false;
-        this.alertService.showToast('error', err, "top-right", true);
+    const executeMethod = () => { 
+      this.disableBtn = true;
+      const json = this.formGroup.getRawValue();
+  
+      if (json.psp_for == 'Company') {
+        json['psp_for_agent_id'] = ''
       }
-    })
+  
+      if (json.psp_for == 'Agent') {
+        json['psp_for_company_id'] = ''
+      }
+  
+      json['psp_for_id'] = json.psp_for == 'Company' ? json.psp_for_company_id : json.psp_for_agent_id
+      json['payment_modes'] = this.selectedList.join(',');
+  
+      this.pspsettingService.create(json).subscribe({
+        next: () => {
+          this.matDialogRef.close(true);
+          this.disableBtn = false;
+        }, error: (err) => {
+          this.disableBtn = false;
+          this.alertService.showToast('error', err, "top-right", true);
+        }
+      })
+    }
+
+    // Method to execute a function after verifying OTP if needed
+    this._userService.verifyAndExecute(
+      { title: title },
+      () => executeMethod()
+    );
+  
   }
 
   public compareWith(v1: any, v2: any) {

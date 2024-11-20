@@ -20,6 +20,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Subscription } from 'rxjs';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-supplier-api-list',
@@ -80,7 +81,8 @@ export class SupplierApiListComponent
         private matDialog: MatDialog,
         public _filterService: CommonFilterService,
         private flighttabService: FlightTabService,
-        private toasterService: ToasterService
+        private toasterService: ToasterService,
+        private _userService: UserService,
     ) {
         super(module_name.supplierapi);
         this.key = this.module_name;
@@ -97,7 +99,7 @@ export class SupplierApiListComponent
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
 
-            if(resp['table_config']['supplier_name']){
+            if (resp['table_config']['supplier_name']) {
                 this.selectedSupplier = resp['table_config'].supplier_name?.value;
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -111,7 +113,7 @@ export class SupplierApiListComponent
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            if(filterData['table_config']['supplier_name']){
+            if (filterData['table_config']['supplier_name']) {
                 this.selectedSupplier = filterData['table_config'].supplier_name?.value;
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -247,21 +249,30 @@ export class SupplierApiListComponent
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
-                    this.supplierapiService.delete(record.id).subscribe({
-                        next: () => {
-                            this.toasterService.showToast(
-                                'success',
-                                'Supplier API has been Deleted!',
-                                'top-right',
-                                true
-                            );
-                            this.refreshItems();
-                        },
-                        error: (err) => {
-                            this.alertService.showToast('error', err)
 
-                        },
-                    });
+                    const executeMethod = () => {
+                        this.supplierapiService.delete(record.id).subscribe({
+                            next: () => {
+                                this.toasterService.showToast(
+                                    'success',
+                                    'Supplier API has been Deleted!',
+                                    'top-right',
+                                    true
+                                );
+                                this.refreshItems();
+                            },
+                            error: (err) => {
+                                this.alertService.showToast('error', err)
+
+                            },
+                        });
+                    }
+
+                    // Method to execute a function after verifying OTP if needed
+                    this._userService.verifyAndExecute(
+                        { title: 'supplier_api_delete' },
+                        () => executeMethod()
+                    );
                 }
             });
     }
@@ -273,9 +284,8 @@ export class SupplierApiListComponent
             return this.toasterService.showToast('error', messages.permissionDenied);
         }
 
-        const label: string = record.is_disabled
-            ? 'Enable Supplier API'
-            : 'Disable Supplier API';
+        const label: string = record.is_disabled ? 'Enable Supplier API' : 'Disable Supplier API';
+        const title:string = record.is_disabled ? 'supplier_api_enable':'supplier_api_disable';
         this.conformationService
             .open({
                 title: label,
@@ -289,7 +299,9 @@ export class SupplierApiListComponent
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
-                    this.supplierapiService
+
+                    const executeMethod = () => {
+                        this.supplierapiService
                         .setEnableDisable(record.id)
                         .subscribe({
                             next: () => {
@@ -315,6 +327,13 @@ export class SupplierApiListComponent
 
                             },
                         });
+                     }
+
+                    // Method to execute a function after verifying OTP if needed
+                    this._userService.verifyAndExecute(
+                        { title: title },
+                        () => executeMethod()
+                    );
                 }
             });
     }
