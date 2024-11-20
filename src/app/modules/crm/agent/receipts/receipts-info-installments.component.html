@@ -45,7 +45,7 @@
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
 
-                                <ng-container *ngIf="ListItem['receipt_Status'] == 'Pending'">
+                                <!-- <ng-container *ngIf="ListItem['receipt_Status'] == 'Pending'">
                                     <button mat-menu-item *ngIf="!ListItem.paymentLink"
                                         (click)="generatePaymentLink(ListItem)">
                                         <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
@@ -56,7 +56,7 @@
                                         <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
                                         <span style="font-weight: 600;">Copy Payment Link</span>
                                     </button>
-                                </ng-container>
+                                </ng-container> -->
 
                                 <button mat-menu-item [ngClass]="{'cursor-pointer text-blue-600': ListItem['proof_attachment'],
                                 'cursor-not-allowed text-blue-400 opacity-20': !ListItem['proof_attachment']}"

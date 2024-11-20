@@ -171,14 +171,14 @@ export class GlobalSearchComponent {
                         this.matDialog.closeAll();
                     }
 
-                    // else if (this.bookingRefKey == 'forex_lead') {
-                    //     // if (!Security.hasViewDetailPermission(module_name.wallet)) {
-                    //     //     return this.alertService.showToast('error', messages.permissionDenied);
-                    //     // }
-                    //     this.formGroup.get('searchfilter').patchValue("");
-                    //     this.entityService.raiseForexEntityCall({ data: this.bookingRefValue, global_withdraw: true })
-                    //     this.matDialog.closeAll();
-                    // }
+                    else if (this.bookingRefKey == 'forex_lead') {
+                        if (!Security.hasViewDetailPermission(module_name.bookingsForex)) {
+                            return this.alertService.showToast('error', messages.permissionDenied);
+                        }
+                        this.formGroup.get('searchfilter').patchValue("");
+                        this.entityService.raiseForexEntityCall({ data: this.bookingRefValue, global_withdraw: true })
+                        this.matDialog.closeAll();
+                    }
 
                     else if (this.bookingRefKey == 'air_group_inqury') {
                         if (!Security.hasViewDetailPermission(module_name.groupInquiry)) {

@@ -152,6 +152,8 @@ export class BasicDetailsComponent {
         { name: 'Address', value: this.basicDetails.address_line1 },
         { name: 'KYC', value: '', isKyc: true },
         { name: 'Signup Date', value: this.basicDetails.sign_up_date ? DateTime.fromISO(this.basicDetails.sign_up_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+        { name: 'First Time Login', value: this.basicDetails.first_login_date_time ? DateTime.fromISO(this.basicDetails.first_login_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+        { name: 'First Time Transaction', value: this.basicDetails.first_transaction_date_time ? DateTime.fromISO(this.basicDetails.first_transaction_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
         { name: 'Last Login Web', value: this.basicDetails.web_last_login_time ? DateTime.fromISO(this.basicDetails.web_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
         { name: 'Last Login Android', value: this.basicDetails.android_last_login_time ? DateTime.fromISO(this.basicDetails.android_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
         { name: 'Last Login IOS', value: this.basicDetails.ios_last_login_time ? DateTime.fromISO(this.basicDetails.ios_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },

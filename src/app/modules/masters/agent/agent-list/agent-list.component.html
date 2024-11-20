@@ -255,20 +255,19 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <p-columnFilter *ngIf="col.field == 'pan_number'" matchMode="contains" type="text" field="pan_number"
-                            placeholder="Search by PAN Number" ariaLabel="Filter PAN Number" />
+                        <p-columnFilter *ngIf="col.field == 'pan_number'" matchMode="contains" type="text"
+                            field="pan_number" placeholder="Search by PAN Number" ariaLabel="Filter PAN Number" />
 
-                        <p-columnFilter *ngIf="col.field == 'gst_number'" type="text" matchMode="contains" field="gst_number"
-                            placeholder="Search by GST Number" ariaLabel="Filter GST Number" />
+                        <p-columnFilter *ngIf="col.field == 'gst_number'" type="text" matchMode="contains"
+                            field="gst_number" placeholder="Search by GST Number" ariaLabel="Filter GST Number" />
 
                         <p-columnFilter class="searchableDropdown" *ngIf="col.field == 'markup_profile_name'"
                             field="markup_id_filter" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="markupList"
-                                    [(ngModel)]="selectedMarkup" optionLabel="profile_name" [filter]="true"
-                                    filterBy="profile_name" (onFilter)="getMarkupProfileList($event?.filter)"
-                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
-                                    placeholder="Select Markup Profile">
+                                <p-dropdown class="filter-dropdown" [options]="markupList" [(ngModel)]="selectedMarkup"
+                                    optionLabel="profile_name" [filter]="true" filterBy="profile_name"
+                                    (onFilter)="getMarkupProfileList($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Markup Profile">
                                     <ng-template let-employee pTemplate="item">
                                         <div class="flex align-items-center gap-2">
                                             <div [value]="employee.id">{{ employee.profile_name }}</div>
@@ -337,9 +336,26 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <p-columnFilter *ngIf="col.field == 'city_name'" type="text" matchMode="contains" field="city_name"
-                            placeholder="Search by City Name" ariaLabel="Filter City Name" />
+                        <p-columnFilter *ngIf="col.field == 'city_name'" type="text" matchMode="contains"
+                            field="city_name" placeholder="Search by City Name" ariaLabel="Filter City Name" />
 
+                        <p-columnFilter *ngIf="col.field == 'first_transaction_date_time'" field="first_transaction_date_time"
+                            type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by First Transaction">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+
+                        <p-columnFilter *ngIf="col.field == 'first_login_date_time'" field="first_login_date_time"
+                            type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by First Login">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                 </tr>
             </ng-template>
@@ -533,8 +549,16 @@
                             {{element[col.field] || '0'}}
                         </ng-container>
 
+                        <ng-container *ngIf="col.field == 'first_transaction_date_time'">
+                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+                        </ng-container>
+
+                        <ng-container *ngIf="col.field == 'first_login_date_time'">
+                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+                        </ng-container>
+
                         <ng-container
-                            *ngIf="col.field !== 'is_blocked' && col.field !== 'is_wl' && col.field !== 'is_test' && col.field !== 'balance' && col.field !== 'subagent_count' && col.field !== 'web_last_login_time'">
+                            *ngIf="col.field !== 'is_blocked' && col.field !== 'is_wl' && col.field !== 'is_test' && col.field !== 'balance' && col.field !== 'subagent_count' && col.field !== 'web_last_login_time' && col.field != 'first_transaction_date_time' && col.field !== 'first_login_date_time'">
                             {{element[col.field] ? element[col.field] : "-" }}
                         </ng-container>
                     </td>
