@@ -131,6 +131,7 @@ export class AuthSignInComponent implements OnInit {
                     if (res.code) {
                         this._authService.Login(res.code, json, true).subscribe({
                             next: res => {
+                                console.log("res in login", res)
                                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
 
                                 // Navigate to the redirect url

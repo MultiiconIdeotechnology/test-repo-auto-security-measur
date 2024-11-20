@@ -86,6 +86,8 @@ export class AuthService {
                 this.storeInfo(response, credentials.rememberMe)
                 // Store the user on the user service
                 const user = JSON.parse(this.decrypt(keys.permissionHash, response.user))
+                console.log("user>>>>", user);
+                
                 this._userService.user = user;
                 // Return a new observable with the response
                 return of(response);

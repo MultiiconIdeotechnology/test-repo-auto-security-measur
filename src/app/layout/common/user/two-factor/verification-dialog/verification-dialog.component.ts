@@ -41,7 +41,6 @@ export class VerificationDialogComponent {
 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
             this.user = user;
-            console.log("this.user", this.user);
         });
     }
 

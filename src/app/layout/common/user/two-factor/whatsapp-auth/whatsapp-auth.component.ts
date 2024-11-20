@@ -33,7 +33,7 @@ export class WhatsappAuthComponent {
         public _userService: UserService,
         private confirmationService: FuseConfirmationService,
     ) {
-        
+
         if (data && data.tfa_type == 'Whatsapp') {
             this.whatsappOtpsent();
         }
@@ -74,14 +74,17 @@ export class WhatsappAuthComponent {
             this.twoFaAuthenticationService.twoFactoreCheck(payload).subscribe({
                 next: (res) => {
                     if (res) {
-                        for(let i in this.twoFaAuthenticationService.twoFactorMethod){
-                            if(this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode){
+                        for (let i in this.twoFaAuthenticationService.twoFactorMethod) {
+                            if (this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode) {
                                 this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = true;
                                 this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = true;
                             } else {
-                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false; 
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false;
                             }
                         }
+                        // Update the user object in the service
+                        const updatedUser = { ...this._userService._currentUser, tfa_type: mode }; // Clone and update
+                        this._userService.update(updatedUser);
                         // this.twoFaAuthenticationService.twoFactorMethodUpdate(res.data);
                         this.disableBtn = false;
                         this.alertService.showToast('success', `${mode} authentication successfull!`, 'top-right', true);
@@ -129,12 +132,12 @@ export class WhatsappAuthComponent {
                         next: (res) => {
                             console.log("disable res", res);
                             if (res && res.status) {
-                                for(let i in this.twoFaAuthenticationService.twoFactorMethod){
-                                    if(this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode){
+                                for (let i in this.twoFaAuthenticationService.twoFactorMethod) {
+                                    if (this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode) {
                                         console.log("tfa_type", this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type)
-                                    this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = false;
-                                    this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false;
-                                    }   
+                                        this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = false;
+                                        this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false;
+                                    }
                                 }
                                 this.disableBtn = false;
                                 let message = mode == 'AuthApp' ? 'Two-factor' : mode;

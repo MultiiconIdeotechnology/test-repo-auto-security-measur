@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from 'app/core/user/user.types';
 import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-password.component';
+import { TwoFactorAuthComponent } from 'app/layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
 import { VerificationDialogComponent } from 'app/layout/common/user/two-factor/verification-dialog/verification-dialog.component';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
-    isOtpEnabled: boolean = true;
+    isOtpEnabled: boolean = false;
+    _currentUser:any = {};
     totpConfig = [
         "account_wallet_recharge_audit", 
         "account_wallet_recharge_reject" ,
@@ -44,6 +46,14 @@ export class UserService {
         private matDialog: MatDialog,
 
     ) {
+        this._user.subscribe((user) => {
+            this._currentUser = user;
+            // this.totpConfig = user.totpConfig;
+            console.log("currentUser", this._currentUser)
+            if(!this._currentUser.tfa_type){
+                this.openTF2AuthModal()
+            }
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -123,7 +133,7 @@ export class UserService {
     ): void {
         if(this.totpConfig.includes(data.title)){
             console.log("check array includes", data.title)
-            if (this.isOtpEnabled) { // need to dynamically
+            if (this._currentUser.tfa_type) { // need to dynamically
                 this.openVerifyDialog().subscribe(isVerified => {
                     if (isVerified) {
                         console.log("success on otp verified");
@@ -136,7 +146,7 @@ export class UserService {
                 });
             } else {
                 // Execute directly if OTP is not enabled
-                console.log("otp is not verfiend enter")
+                console.log("otp is not enabled enter")
                 // return
                 onSuccess();
             }
@@ -145,5 +155,15 @@ export class UserService {
             console.log("direct on Success");
             onSuccess();
         }
+    }
+
+      // Two FactorAuth Dialog
+      openTF2AuthModal(){
+        this.matDialog.open(TwoFactorAuthComponent, {
+            width:'900px',
+            autoFocus: true,
+            disableClose: true,
+            data: {}
+        })
     }
 }

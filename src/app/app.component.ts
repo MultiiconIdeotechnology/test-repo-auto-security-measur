@@ -87,6 +87,8 @@ export class AppComponent implements AfterViewInit {
                 this.user = user
                 this.is_first = user?.is_first;
 
+                console.log("user", user);
+
                 if(user){
                     // calling agentcombo api 
                     if(!this._filterService.originalAgentList?.length){

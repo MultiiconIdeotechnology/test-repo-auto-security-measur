@@ -8,6 +8,7 @@ import { SetUpTwoFactorAuthComponent } from '../set-up-two-factor-auth/set-up-tw
 import { WhatsappAuthComponent } from '../whatsapp-auth/whatsapp-auth.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { ToasterService } from 'app/services/toaster.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-two-factor-auth',
@@ -31,6 +32,7 @@ export class TwoFactorAuthComponent {
         public twoFaAuthenticationService: TwoFaAuthenticationService,
         private confirmationService: FuseConfirmationService,
         private alertService: ToasterService,
+        public _userService: UserService
     ) {
 
     }
@@ -95,7 +97,7 @@ export class TwoFactorAuthComponent {
                 this.twoFaAuthenticationService.changeAuthMode({ "Mode": method.tfa_type }).subscribe({
                     next: (res) => {
                         if (res && res.status) {
-                            // this.twoFaAuthenticationService.twoFactorMethod.filter((field: any) => field.is_selected = false);
+                            this.twoFaAuthenticationService.twoFactorMethod.forEach((field: any) => field.is_selected = false);;
                             method.is_selected = true;
                             this.alertService.showToast('success', 'Authentication method has been successfully switched.', 'top-right', true);
                         }
