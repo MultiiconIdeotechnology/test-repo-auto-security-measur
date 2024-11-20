@@ -40,6 +40,9 @@
                 <th pSortableColumn="lastTransaction" pResizableColumn>
                     Last Transaction <p-sortIcon field="lastTransaction" />
                 </th>
+                <th pSortableColumn="call_date_time" pResizableColumn>
+                    Call Date <p-sortIcon field="call_date_time" />
+                </th>
             </tr>
 
             <tr *ngIf="isFilterShowInbox">
@@ -121,6 +124,15 @@
                         </ng-template>
                     </p-columnFilter>
                 </th>
+                <th>
+                    <p-columnFilter field="call_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Last Transaction">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
             </tr>
         </ng-template>
 
@@ -190,8 +202,14 @@
                         {{ (getLastLogin(element) | date: 'dd-MM-yyyy') || ' - ' }}
                     </span>
                 </td>
-                <td class="w-full">
+                <td>
                     {{(element.lastTransaction | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+                <td class="w-full">
+                    <span class="cursor-pointer flex flex-col ">
+                        <p>{{element.call_date_time | date:'dd-MM-yyyy'}}</p>
+                        <p class="text-primary leading-3 text-xs">{{element.call_date_time | date:'HH:mm'}}</p>
+                    </span>
                 </td>
             </tr>
         </ng-template>

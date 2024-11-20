@@ -39,8 +39,11 @@
                 <th pSortableColumn="lead_source" pResizableColumn>
                     Source <p-sortIcon field="lead_source" />
                 </th>
-                <th pSortableColumn="entry_date_time" pResizableColumn class="min-w-[150px]">
+                <th pSortableColumn="entry_date_time" pResizableColumn>
                     Lead Date <p-sortIcon field="entry_date_time" />
+                </th>
+                <th pSortableColumn="call_date_time" pResizableColumn class="min-w-[150px]">
+                    Call Date <p-sortIcon field="call_date_time" />
                 </th>
             </tr>
 
@@ -103,6 +106,15 @@
                 </th>
                 <th>
                     <p-columnFilter field="entry_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Lead Date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="call_date_time" type="date">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
                                 [ngModel]="value" placeholder="Search by Lead Date">
@@ -204,11 +216,17 @@
                     {{element.lead_source || '-'}}
                 </td>
 
-                <td class="w-full">
+                <td>
                     <!-- {{(element.entry_date_time | date: 'dd-MM-yyyy') || "-"}} -->
                       <span class="cursor-pointer flex flex-col ">
                         <p>{{element.entry_date_time | date:'dd-MM-yyyy'}}</p>
                         <p class="text-primary leading-3 text-xs">{{element.entry_date_time | date:'HH:mm'}}</p>
+                    </span>
+                </td>
+                <td class="w-full">
+                      <span class="cursor-pointer flex flex-col ">
+                        <p>{{element.call_date_time | date:'dd-MM-yyyy'}}</p>
+                        <p class="text-primary leading-3 text-xs">{{element.call_date_time | date:'HH:mm'}}</p>
                     </span>
                 </td>
             </tr>
