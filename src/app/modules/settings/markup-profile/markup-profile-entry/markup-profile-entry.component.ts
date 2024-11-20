@@ -1004,6 +1004,7 @@ export class MarkupProfileEntryComponent {
         }
 
         const title:string = this.recordId ? 'markup_modify': 'markup_add';
+        
         const executeMethod = () => {
             this.disableBtn = true;
             const json = this.formGroup.getRawValue();
