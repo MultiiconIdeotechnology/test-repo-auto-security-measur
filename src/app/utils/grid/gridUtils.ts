@@ -59,7 +59,7 @@ export class GridUtils {
     // PrimeNG Table function
 
     public static GetPrimeNGFilterReq(
-        event: LazyLoadEvent = { first: 0, rows: AppConfig.pageSize, sortField: null, sortOrder: null },
+        event: LazyLoadEvent = { rows: AppConfig.pageSize, sortField: null, sortOrder: null },
         primengTable: Table,
         activeFiltData: any = {},
         filter: string = '',
