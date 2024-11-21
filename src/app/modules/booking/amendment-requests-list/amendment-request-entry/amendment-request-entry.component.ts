@@ -193,7 +193,7 @@ export class AmendmentRequestEntryComponent {
 
                         this.PGRefundList = [
                             { name: this.recordList.is_refundable ? 'Refund Mode' : 'Payment Mode', value: data.pgRefund.refund_mode },
-                            { name: this.recordList.is_refundable ? 'Refund Amount' : 'Payment Amount', value: `${data.currency_symbol} ${(data.pgRefund?.refund_amount?.toFixed(2) || '0.00')}` },
+                            { name: this.recordList.is_refundable ? 'Refund Amount' : 'Payment Amount', value: `INR ${(data.pgRefund?.refund_amount?.toFixed(2) || '0.00')}` },
                             { name: this.recordList.is_refundable ? 'Refund Date' : 'Payment Date', value: data.pgRefund?.refund_date ? DateTime.fromJSDate(new Date(data.pgRefund?.refund_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
                             { name: 'PSP Name', value: data.pgRefund?.psp_name || '-' },
                             { name: 'PSP Ref. No.', value: data.pgRefund?.psp_ref_no || '-' },
@@ -203,7 +203,7 @@ export class AmendmentRequestEntryComponent {
                         this.PGRefundList.push({ name: 'Debit Invoice', value: data.pgRefund.debit_invoice })
 
                         this.SupplierRefundDetailsList = [
-                            { name: this.recordList.is_refundable ? 'Refund Amount' : 'Payment Amount', value: `${data.currency_symbol} ${(data.supplier_refund_details?.refund_amount?.toFixed(2) || '0.00')}` },
+                            { name: this.recordList.is_refundable ? 'Refund Amount' : 'Payment Amount', value: `INR ${(data.supplier_refund_details?.refund_amount?.toFixed(2) || '0.00')}` },
                             { name: this.recordList.is_refundable ? 'Refund Date' : 'Payment Date', value: data.supplier_refund_details?.refund_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.refund_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
                             { name: 'Audit By', value: data.supplier_refund_details?.audit_by || '-' },
                             { name: 'Audit Date', value: data.supplier_refund_details?.audit_date ? DateTime.fromJSDate(new Date(data.supplier_refund_details?.audit_date)).toFormat('dd-MM-yyyy HH:mm:ss') : '-' },
@@ -222,11 +222,11 @@ export class AmendmentRequestEntryComponent {
 
                         this.titleCharge = 'Quotation'
                         this.chargesList = [
-                            { name: this.recordList.is_refundable ? "Cancellation Charge" : "Charge", value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` },
-                            { name: "Bonton Markup", value: `${data.currency_symbol} ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
-                            { name: name1, value: `${data.currency_symbol} ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
+                            { name: this.recordList.is_refundable ? "Cancellation Charge" : "Charge", value: `INR ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` },
+                            { name: "Bonton Markup", value: `INR ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
+                            { name: name1, value: `INR ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
-                            { name: name2, value: `${data.currency_symbol} ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
+                            { name: name2, value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
                         // // if (this.recordList.is_refundable) {
                         //     this.chargesList.unshift({ name: 'Cancellation Charge', value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` })
