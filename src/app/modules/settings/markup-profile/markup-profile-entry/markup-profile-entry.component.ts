@@ -1003,8 +1003,8 @@ export class MarkupProfileEntryComponent {
             return;
         }
 
-        const title:string = this.recordId ? 'markup_modify': 'markup_add';
-        
+        const title:string = this.recordId ? 'settings_markup_modify': 'settings_markup_add';
+
         const executeMethod = () => {
             this.disableBtn = true;
             const json = this.formGroup.getRawValue();

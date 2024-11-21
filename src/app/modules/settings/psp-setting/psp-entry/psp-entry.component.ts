@@ -237,7 +237,7 @@ export class PspEntryComponent {
       return;
     }
 
-    const title:string = this.record.id ? 'psp_modify':'psp_add';
+    const title:string = this.record.id ? 'settings_psp_modify':'settings_psp_add';
 
     const executeMethod = () => { 
       this.disableBtn = true;
