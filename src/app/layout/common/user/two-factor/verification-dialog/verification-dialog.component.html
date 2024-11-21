@@ -8,9 +8,21 @@
     </div>
 
     <div class="body">
-        <div class="text-[#4f4f4f] text-center dark:text-[#879FC1] text-lg pt-1 pb-4">
-            You will receive verification code on this registered contact number {{user?.company_number}}
+        <div [ngSwitch]="data.tfa_type" class="text-center text-lg text-gray-700 dark:text-blue-300 py-2">
+            <ng-container *ngSwitchCase="'AuthApp'">
+                Open your authenticator app to view your six-digit security code.
+            </ng-container>
+            <ng-container *ngSwitchCase="'Whatsapp'">
+                Enter the six-digit security code sent to your registered WhatsApp mobile number ({{user?.company_number }}).
+            </ng-container>
+            <ng-container *ngSwitchCase="'SMS'">
+                Enter the six-digit security code sent to your registered mobile number ({{ user?.company_number }}).
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+                Please select a valid two-factor authentication method.
+            </ng-container>
         </div>
+
 
         <div class="text-center flex justify-center pt-1">
             <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"

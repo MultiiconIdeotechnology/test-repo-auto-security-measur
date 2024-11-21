@@ -5,55 +5,28 @@ import { User } from 'app/core/user/user.types';
 import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-password.component';
 import { TwoFactorAuthComponent } from 'app/layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
 import { VerificationDialogComponent } from 'app/layout/common/user/two-factor/verification-dialog/verification-dialog.component';
+import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
     isOtpEnabled: boolean = false;
-    _currentUser:any = {};
-    totpConfig = [
-        "account_wallet_recharge_audit", 
-        "account_wallet_recharge_reject" ,
-        "account_wallet_recharge_generate_payment_link",
-        "account_wallet_credit_add",
-        "account_wallet_credit_disable",
-        "account_wallet_credit_enable",
-        "account_withdraw_audit",
-        "account_withdraw_reject",
-        "account_receipt_audit",
-        "account_receipt_reject",
-        "settings_supplier_api_add",
-        "settings_supplier_api_enable",
-        "settings_supplier_api_disable",
-        "settings_supplier_api_modify",
-        "settings_supplier_api_delete",
-        "settings_psp_modify",
-        "settings_psp_delete",
-        "settings_psp_deactive",
-        "settings_psp_set_default",
-        "settings_psp_add",
-        "settings_markup_add",
-        "settings_markup_modify",
-        "settings_markup_delete",
-        "settings_markup_set_default"
-      ]
+    // _currentUser:any = {};
+    totpConfig:any[] = [];
     /**
      * Constructor
      */
     constructor(
         private _httpClient: HttpClient,
         private matDialog: MatDialog,
+        private tf2AuthService:TwoFaAuthenticationService,
 
     ) {
         this._user.subscribe((user) => {
-            this._currentUser = user;
-            // this.totpConfig = user.totpConfig;
-            console.log("currentUser", this._currentUser)
-            if(!this._currentUser.tfa_type){
-                this.openTF2AuthModal()
-            }
+            this.totpConfig = (JSON.parse(user['totp_config'])).totpConfig;
         });
+
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -116,9 +89,10 @@ export class UserService {
 
     // Method to open dialog and verify OTP
     openVerifyDialog(): Observable<boolean> {
+        let selectedTf2Method = this.tf2AuthService.twoFactorMethod.find((item:any) => item.is_enabled && item.is_selected);
         const dialogRef = this.matDialog.open(VerificationDialogComponent, {
             width: '450px',
-            data: "Whatsapp",
+            data: selectedTf2Method,
         });
 
         return dialogRef.afterClosed().pipe(
@@ -132,11 +106,9 @@ export class UserService {
         onSuccess: () => void
     ): void {
         if(this.totpConfig.includes(data.title)){
-            console.log("check array includes", data.title)
-            if (this._currentUser.tfa_type) { // need to dynamically
+            if (this.tf2AuthService.isTfaEnabled) { // need to dynamically
                 this.openVerifyDialog().subscribe(isVerified => {
                     if (isVerified) {
-                        console.log("success on otp verified");
                         // return;
                         onSuccess();
                     } else {
@@ -147,7 +119,6 @@ export class UserService {
             } else {
                 // Execute directly if OTP is not enabled
                 console.log("otp is not enabled enter")
-                // return
                 onSuccess();
             }
 
@@ -157,13 +128,5 @@ export class UserService {
         }
     }
 
-      // Two FactorAuth Dialog
-      openTF2AuthModal(){
-        this.matDialog.open(TwoFactorAuthComponent, {
-            width:'900px',
-            autoFocus: true,
-            disableClose: true,
-            data: {}
-        })
-    }
+  
 }

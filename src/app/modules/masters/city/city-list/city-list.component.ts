@@ -165,18 +165,18 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
 
 
     viewInternal(record: any): void {
-        // Method to execute a function after verifying OTP if needed
-        this._userService.verifyAndExecute(
-            {title:'city_view'},
-            () => executeMethod()
-        );
-
+        
         const executeMethod = () => {
             this.matDialog.open(CitysEntryComponent, {
                 data: { data: record, readonly: true },
                 disableClose: true,
             });
         }
+        // Method to execute a function after verifying OTP if needed
+        this._userService.verifyAndExecute(
+            {title:'city_view'},
+            () => executeMethod()
+        );
     }
 
     deleteInternal(record: any): void {

@@ -15,6 +15,7 @@ import { SidebarModule } from 'primeng/sidebar';
 import { CommonFilterComponent } from './modules/settings/common-filter/common-filter.component';
 import { CommonFilterService } from './core/common-filter/common-filter.service';
 import { AuthService } from './core/auth/auth.service';
+import { TwoFaAuthenticationService } from './services/twofa-authentication.service';
 
 @Component({
     selector: 'app-root',
@@ -54,6 +55,7 @@ export class AppComponent implements AfterViewInit {
         private matDialog: MatDialog,
         public _userService: UserService,
         public _filterService: CommonFilterService,
+        private twoFaAuthenticationService: TwoFaAuthenticationService,
 
         @Inject(DOCUMENT) private document: Document
     ) {
@@ -87,8 +89,6 @@ export class AppComponent implements AfterViewInit {
                 this.user = user
                 this.is_first = user?.is_first;
 
-                console.log("user", user);
-
                 if(user){
                     // calling agentcombo api 
                     if(!this._filterService.originalAgentList?.length){
@@ -99,6 +99,9 @@ export class AppComponent implements AfterViewInit {
                         // calling the employee/rm list api
                         this._filterService.getEmployeeList("");
                     }
+
+                    // calling getTfaConfigList api
+                    this.twoFaAuthenticationService.getTfaConfigList()
                 }
 
                 if (this.is_first) {

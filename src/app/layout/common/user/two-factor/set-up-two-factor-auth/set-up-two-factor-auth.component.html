@@ -75,7 +75,7 @@
                 </form>
             </div>
             <div class="text-end">
-                <button type="button" (click)="matDialogRef.close()"
+                <button *ngIf="twoFaAuthenticationService.isTfaEnabled" type="button" (click)="matDialogRef.close()"
                     class="border text-[15px] rounded-full dark:border-[#324154] min-h-11 w-[140px] mr-3 py-2">
                     Close
                 </button>
@@ -132,7 +132,7 @@
             </div>
 
             <div class="flex justify-end pt-5">
-                <button
+                <button *ngIf="twoFaAuthenticationService.isTfaEnabled"
                     class="px-7 dark:text-white rounded-full min-w-[140px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
                     (click)="matDialogRef.close()">
                     Close

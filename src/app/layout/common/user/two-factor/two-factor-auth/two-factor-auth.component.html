@@ -12,7 +12,7 @@
             </button> -->
         </div>
         <!-- <i class="material-icons cursor-pointer font-thin">close</i> -->
-        <button *ngIf="_userService._currentUser.tfa_type" mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+        <button *ngIf="twoFaAuthenticationService.isTfaEnabled" mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
             <mat-icon class="text-current text-[#374252] dark:text-white"
                 [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>

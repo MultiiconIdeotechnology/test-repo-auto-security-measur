@@ -16,6 +16,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-set-up-two-factor-auth',
@@ -39,6 +40,7 @@ export class SetUpTwoFactorAuthComponent {
     recoveryCodes: any = [];
     authotp: any;
     isCodeCopy: boolean = false;
+    isTfaEnabled:boolean = false;
 
     stepArr: any[] = [
         { step: 1, label: 'SETUP', isActive: true, isCompleted: false },
@@ -54,12 +56,15 @@ export class SetUpTwoFactorAuthComponent {
         private alertService: ToasterService,
         private sanitizer: DomSanitizer,
         private clipboard: Clipboard,
+        private _userService: UserService,
     ) { }
 
     ngOnInit(): void {
         this.twoFaFormGroup = this.builder.group({
             enablePassword: ['', Validators.required],
         });
+
+        this.twoFaAuthenticationService.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item:any) => item.is_enabled) 
     }
 
     // Auth Password Verification
@@ -132,7 +137,7 @@ export class SetUpTwoFactorAuthComponent {
             };
             this.twoFaAuthenticationService.twoFactoreCheck(payload).subscribe({
                 next: (res) => {
-                    if (res) {
+                    if (res && res.status) {
                         for(let i in this.twoFaAuthenticationService.twoFactorMethod){
                             if(this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode){
                                 this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = true;
@@ -141,6 +146,8 @@ export class SetUpTwoFactorAuthComponent {
                                 this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false; 
                             }
                         }
+
+                        this.twoFaAuthenticationService.isTfaEnabled = true;
                         this.disableBtn = false;
                         let message = mode == 'AuthApp' ? 'Two factor' : mode;
                         this.alertService.showToast('success', `${message} authentication successfull!`, 'top-right', true);

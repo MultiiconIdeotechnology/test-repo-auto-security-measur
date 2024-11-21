@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { TwoFactorAuthComponent } from 'app/layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 
@@ -15,6 +17,7 @@ export class TwoFaAuthenticationService {
     };
 
     tfaConfigDetailsData: any[] = [];
+    isTfaEnabled:boolean = false;
     twoFactorMethod: any = [
         {
             title: 'Authenticator App',
@@ -46,10 +49,18 @@ export class TwoFaAuthenticationService {
     ];
 
 
-    constructor(private http: HttpClient) { 
-        if (this.tfaConfigDetailsData && !this.tfaConfigDetailsData?.length) {
-            this.getEmployee();
-        } 
+    constructor(private http: HttpClient,  private matDialog: MatDialog) { 
+        // if (this.tfaConfigDetailsData && !this.tfaConfigDetailsData?.length) {
+        //     this.getTfaConfigList();
+        // } else {
+        //     const isEnabled = this.tfaConfigDetailsData.some((item:any) => item.is_enabled )
+    
+        //     if(!isEnabled){
+        //         this.openTF2AuthModal()
+        //     }
+
+        // }
+
     }
 
     verifyPassword(model: any): Observable<any> {
@@ -85,11 +96,16 @@ export class TwoFaAuthenticationService {
     }
 
       // GEt Employee TFA Configuration Details
-      getEmployee() {
+      getTfaConfigList() {
         this.tfaConfigurationDetails().subscribe({
             next: (resData) => {
                 this.tfaConfigDetailsData = resData;
                 this.twoFactorMethodUpdate(this.tfaConfigDetailsData);
+                this.isTfaEnabled = this.tfaConfigDetailsData.some((item:any) => item.is_enabled )
+    
+                if(!this.isTfaEnabled){
+                    this.openTF2AuthModal()
+                }
             },
             error: (err) => {
                 console.log("err", err);
@@ -111,4 +127,14 @@ export class TwoFaAuthenticationService {
             }
         }
     }
+
+        // Two FactorAuth Dialog
+        openTF2AuthModal(){
+            this.matDialog.open(TwoFactorAuthComponent, {
+                width:'900px',
+                autoFocus: true,
+                disableClose: true,
+                data: {}
+            })
+        }
 }

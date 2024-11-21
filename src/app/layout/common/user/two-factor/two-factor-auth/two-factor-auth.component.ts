@@ -23,6 +23,8 @@ import { UserService } from 'app/core/user/user.service';
 })
 export class TwoFactorAuthComponent {
     settings: any = {};
+    currentUser:any = {};
+    isTfaEnabled:boolean = false;
 
     constructor(
         // private settingService:SettingsService,
@@ -38,6 +40,7 @@ export class TwoFactorAuthComponent {
     }
 
     ngOnInit(): void {
+        this.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item:any) => item.is_enabled) 
     }
 
     // authentication Enabled Dialog
@@ -92,7 +95,6 @@ export class TwoFactorAuthComponent {
                 },
             },
         }).afterClosed().subscribe((res) => {
-            console.log("res", res);
             if (res == 'confirmed') {
                 this.twoFaAuthenticationService.changeAuthMode({ "Mode": method.tfa_type }).subscribe({
                     next: (res) => {

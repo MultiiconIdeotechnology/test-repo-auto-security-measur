@@ -35,14 +35,20 @@ export class VerificationDialogComponent {
         public _userService: UserService,
     ) {
 
-        // if (data && data.tfa_type == 'Whatsapp') {
-        // this.whatsappOtpsent();
-        // }
+        if (data && data.tfa_type == 'Whatsapp') {
+            this.whatsappOtpsent();
+        }
 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
             this.user = user;
         });
     }
+
+    tfaMessages: any = {
+        AuthApp: 'Open your authenticator app to view your six-digit security code.',
+        Whatsapp: `Enter the six-digit security code sent to your registered WhatsApp mobile number (${this.user?.company_number})`,
+        SMS:''
+      };
 
     // whatsapp otp Sent
     whatsappOtpsent() {
