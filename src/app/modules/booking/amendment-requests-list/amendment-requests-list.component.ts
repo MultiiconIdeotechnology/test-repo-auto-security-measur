@@ -340,11 +340,11 @@ export class AmendmentRequestsListComponent
             return 'text-orange-600';
         } else if (status == 'Quotation Sent' || status == "Partial Payment Completed") {
             return 'text-yellow-600';
-        } else if (status == 'Quotation Confirmed By TA' || status == 'Completed' || status == 'Confirm' || status == 'Quotation Confirmed') {
+        } else if (status == 'Quotation Confirmed By TA' || status == 'Completed' || status == 'Confirm' || status == 'Quotation Confirmed' || status == "Payment Completed") {
             return 'text-green-600';
         } else if (status == 'Request to Supplier Failed' || status == "Quotation Rejected By TA" || status == "Rejected" || status == "Cancelled" || status == "Account Rejected") {
             return 'text-red-600';
-        } else if (status == 'Request Sent to Supplier' || status == "Confirmation Sent To Supplier" || status == "Payment Completed" || status == "Refund Completed") {
+        } else if (status == 'Request Sent to Supplier' || status == "Confirmation Sent To Supplier" || status == "Refund Completed") {
             return 'text-blue-600';
         } else {
             return '';
@@ -357,11 +357,11 @@ export class AmendmentRequestsListComponent
             return 'text-orange-600';
         } else if (status == 'Partial Payment Completed') {
             return 'text-yellow-600';
-        } else if (status == 'Quotation Confirmed' || status == 'Completed') {
+        } else if (status == 'Quotation Confirmed' || status == 'Completed' || status == 'Payment Completed') {
             return 'text-green-600';
         } else if (status == 'Quotation Rejected' || status == 'Rejected' || status == 'Cancelled') {
             return 'text-red-600';
-        } else if (status == 'Quotation Received' || status == 'Payment Completed' || status == 'Refund Initiated') {
+        } else if (status == 'Quotation Received' || status == 'Refund Initiated') {
             return 'text-blue-600';
         } else {
             return '';

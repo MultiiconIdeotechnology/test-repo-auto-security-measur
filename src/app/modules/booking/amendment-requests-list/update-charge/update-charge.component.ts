@@ -178,6 +178,7 @@ export class UpdateChargeComponent implements OnInit {
                         isRefundAMDT: this.amendmentData.is_refund,
                         amountType: this.amendmentData.amountType,
                         addon_markup: this.formObj.addon_markup_value || 0,
+                        bonton_markup_value: this.formObj?.bonton_markup_value || 0,
                         infant: this.formObj.Infant_charge || 0,
                         child: this.formObj.child_charge || 0,
                         adult: this.formObj.adult_charge || 0,
