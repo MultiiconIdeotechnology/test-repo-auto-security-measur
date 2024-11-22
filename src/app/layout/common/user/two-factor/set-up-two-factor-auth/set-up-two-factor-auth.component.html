@@ -49,7 +49,7 @@
                 you logged in to this device. We may
                 log you out from your other devices, to log back in, enter your password and complete the second
                 verification step.</p>
-            <form [formGroup]="twoFaFormGroup" novalidate (keydown)="onKeyPress($event)">
+            <form [formGroup]="twoFaFormGroup" novalidate (keydown)="onKeyPress($event, 'portal_password')">
                 <div class="mb-4 w-[280px]">
                     <label for="password" class="font-Inter text-lg text-[#8F8F8F] dark:text-[#E5E1E1]">
                         Enter portal password<span class="text-red-500">*</span>
@@ -90,7 +90,7 @@
         </div>
 
         <!-- Step 2 -->
-        <div *ngSwitchCase="2">
+        <div *ngSwitchCase="2" (keydown)="onKeyPress($event, 'enable_2fa')">
             <h2 class="text-3xl font-medium mb-3 mt-4 font-Inter">Enable 2FA</h2>
             <div class="flex flex-raw justify-between">
                 <ol class="list-decimal list-inside">

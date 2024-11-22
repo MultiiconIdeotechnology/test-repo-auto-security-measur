@@ -33,7 +33,7 @@ export class WhatsappAuthComponent {
         public _userService: UserService,
         private confirmationService: FuseConfirmationService,
     ) {
-
+        console.log("data", data)
         if (data && data.tfa_type == 'Whatsapp') {
             this.whatsappOtpsent();
         }
@@ -172,5 +172,15 @@ export class WhatsappAuthComponent {
             disableClose: true,
             data: {}
         })
+    }
+
+    onKeyPress(event:KeyboardEvent, key:string){
+        if(event.key == 'Enter' && this.authotp?.length == 6 ){
+            if(this.data.key == 'Whatsapp'){
+                this.authConfigureNow('Whatsapp');
+            } else {
+                this.authVerifyDisabled(key);
+            }
+        }
     }
 }

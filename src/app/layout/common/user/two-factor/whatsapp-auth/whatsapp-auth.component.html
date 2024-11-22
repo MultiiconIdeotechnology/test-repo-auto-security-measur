@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    <div class="body">
+    <div class="body" (keydown)="onKeyPress($event, 'AuthApp')">
         <div class="text-[#4f4f4f] dark:text-[#879FC1] text-lg pt-2">
             By entering the six-digit code that is generate by your authenticator and proceed.
         </div>
@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <div class="body">
+    <div class="body" (keydown)="onKeyPress($event, 'Whatsapp')">
         <div class="text-[#4f4f4f] dark:text-[#879FC1] text-lg pt-1 pb-4">
             You will receive verification code on this registered contact number {{user?.company_number}}
         </div>

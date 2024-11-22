@@ -41,7 +41,7 @@ export class SetUpTwoFactorAuthComponent {
     recoveryCodes: any = [];
     authotp: any;
     isCodeCopy: boolean = false;
-    isTfaEnabled:boolean = false;
+    isTfaEnabled: boolean = false;
 
     stepArr: any[] = [
         { step: 1, label: 'SETUP', isActive: true, isCompleted: false },
@@ -66,7 +66,7 @@ export class SetUpTwoFactorAuthComponent {
             enablePassword: ['', Validators.required],
         });
 
-        this.twoFaAuthenticationService.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item:any) => item.is_enabled) 
+        this.twoFaAuthenticationService.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item: any) => item.is_enabled)
     }
 
     // Auth Password Verification
@@ -140,12 +140,12 @@ export class SetUpTwoFactorAuthComponent {
             this.twoFaAuthenticationService.twoFactoreCheck(payload).subscribe({
                 next: (res) => {
                     if (res && res.status) {
-                        for(let i in this.twoFaAuthenticationService.twoFactorMethod){
-                            if(this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode){
+                        for (let i in this.twoFaAuthenticationService.twoFactorMethod) {
+                            if (this.twoFaAuthenticationService.twoFactorMethod[i].tfa_type == mode) {
                                 this.twoFaAuthenticationService.twoFactorMethod[i].is_enabled = true;
                                 this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = true;
                             } else {
-                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false; 
+                                this.twoFaAuthenticationService.twoFactorMethod[i].is_selected = false;
                             }
                         }
 
@@ -209,10 +209,10 @@ export class SetUpTwoFactorAuthComponent {
         });
     }
 
-     // closeModal close button condition
-     closeModal() {
+    // closeModal close button condition
+    closeModal() {
         this.matDialogRef.close();
-        if(!this.twoFaAuthenticationService.isTfaEnabled){
+        if (!this.twoFaAuthenticationService.isTfaEnabled) {
             this._matdialog.open(TwoFactorAuthComponent, {
                 width: '900px',
                 autoFocus: true,
@@ -223,10 +223,14 @@ export class SetUpTwoFactorAuthComponent {
     }
 
     // submit on enter key if the passowrd or otp is filled up
-    onKeyPress(event:KeyboardEvent){
-        if(event.key == 'Enter' && this.twoFaFormGroup.get('enablePassword').value){
-            this.authEnableStep();
-            event.preventDefault();
+    onKeyPress(event: KeyboardEvent, key:string) {
+        if (event.key == 'Enter') {
+            if (this.twoFaFormGroup.get('enablePassword').value && key == 'portal_password') {
+                this.authEnableStep();
+                event.preventDefault();
+            } else if(key == 'enable_2fa' && this.authotp?.length == 6){
+                this.authConfigureNow('AuthApp');
+            }
         }
     }
 }
