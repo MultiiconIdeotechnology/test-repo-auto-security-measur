@@ -109,7 +109,6 @@ export class UserService {
             if (this.tf2AuthService.isTfaEnabled) { // need to dynamically
                 this.openVerifyDialog().subscribe(isVerified => {
                     if (isVerified) {
-                        // return;
                         onSuccess();
                     } else {
                         // Optionally handle failed verification

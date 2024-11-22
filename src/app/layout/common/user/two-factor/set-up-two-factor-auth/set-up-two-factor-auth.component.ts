@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 import { FuseAlertComponent } from '@fuse/components/alert';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -17,6 +17,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { UserService } from 'app/core/user/user.service';
+import { TwoFactorAuthComponent } from '../two-factor-auth/two-factor-auth.component';
 
 @Component({
     selector: 'app-set-up-two-factor-auth',
@@ -51,6 +52,7 @@ export class SetUpTwoFactorAuthComponent {
     constructor(
         private builder: FormBuilder,
         public matDialogRef: MatDialogRef<SetUpTwoFactorAuthComponent>,
+        private _matdialog: MatDialog,
         @Inject(MAT_DIALOG_DATA) public data: any = {},
         public twoFaAuthenticationService: TwoFaAuthenticationService,
         private alertService: ToasterService,
@@ -205,5 +207,26 @@ export class SetUpTwoFactorAuthComponent {
         }).catch(err => {
             console.error('Could not copy text: ', err);
         });
+    }
+
+     // closeModal close button condition
+     closeModal() {
+        this.matDialogRef.close();
+        if(!this.twoFaAuthenticationService.isTfaEnabled){
+            this._matdialog.open(TwoFactorAuthComponent, {
+                width: '900px',
+                autoFocus: true,
+                disableClose: true,
+                data: {}
+            })
+        }
+    }
+
+    // submit on enter key if the passowrd or otp is filled up
+    onKeyPress(event:KeyboardEvent){
+        if(event.key == 'Enter' && this.twoFaFormGroup.get('enablePassword').value){
+            this.authEnableStep();
+            event.preventDefault();
+        }
     }
 }

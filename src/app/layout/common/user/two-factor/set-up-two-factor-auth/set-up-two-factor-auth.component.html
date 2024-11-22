@@ -49,13 +49,14 @@
                 you logged in to this device. We may
                 log you out from your other devices, to log back in, enter your password and complete the second
                 verification step.</p>
-            <div class="mb-4 w-[280px]">
-                <form [formGroup]="twoFaFormGroup" novalidate>
+            <form [formGroup]="twoFaFormGroup" novalidate (keydown)="onKeyPress($event)">
+                <div class="mb-4 w-[280px]">
                     <label for="password" class="font-Inter text-lg text-[#8F8F8F] dark:text-[#E5E1E1]">
                         Enter portal password<span class="text-red-500">*</span>
                     </label>
-                    <mat-form-field class="w-full mt-1" [ngClass]="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched ?
-            'border-red-500' : 'border-[#CECECE]'">
+                    <mat-form-field class="w-full mt-1" 
+                                    [ngClass]="twoFaFormGroup.get('enablePassword').hasError('required') && twoFaFormGroup.get('enablePassword').touched ?
+                                    'border-red-500' : 'border-[#CECECE]'">
                         <input id="password" matInput type="password" required formControlName="enablePassword" class=""
                             #passwordField>
                         <button mat-icon-button class="" type="button"
@@ -72,19 +73,20 @@
                             <span class="text-red-600 text-sm">Password is required</span>
                         </mat-error>
                     </mat-form-field>
-                </form>
-            </div>
-            <div class="text-end">
-                <button *ngIf="twoFaAuthenticationService.isTfaEnabled" type="button" (click)="matDialogRef.close()"
-                    class="border text-[15px] rounded-full dark:border-[#324154] min-h-11 w-[140px] mr-3 py-2">
-                    Close
-                </button>
-                <button mat-flat-button [color]="'primary'"
-                    class="px-7 py-2 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
-                    (click)="authEnableStep()" [disabled]="!twoFaFormGroup.get('enablePassword').value || disableBtn">
-                    Verify Now
-                </button>
-            </div>
+                </div>
+                <div class="text-end">
+                    <button type="button" (click)="closeModal()"
+                        class="border text-[15px] rounded-full dark:border-[#324154] min-h-11 w-[140px] mr-3 py-2">
+                        Close
+                    </button>
+                    <button mat-flat-button [color]="'primary'"
+                        class="px-7 py-2 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                        (click)="authEnableStep()"
+                        [disabled]="!twoFaFormGroup.get('enablePassword').value || disableBtn">
+                        Verify Now
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- Step 2 -->
@@ -132,9 +134,9 @@
             </div>
 
             <div class="flex justify-end pt-5">
-                <button *ngIf="twoFaAuthenticationService.isTfaEnabled"
+                <button
                     class="px-7 dark:text-white rounded-full min-w-[140px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
-                    (click)="matDialogRef.close()">
+                    (click)="closeModal()">
                     Close
                 </button>
 
@@ -166,14 +168,14 @@
             <div class="flex justify-end mt-5">
                 <button mat-flat-button [color]="'primary'"
                     class="px-7 py-2 mr-3 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
-                    (click)="matDialogRef.close()" [disabled]="!isCodeCopy">
+                    (click)="closeModal()" [disabled]="!isCodeCopy">
                     Yes i have save my code
                 </button>
 
                 <button mat-flat-button [color]="'primary'"
                     class="px-7 py-2 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
                     (click)="copyCodes()" [disabled]="isCodeCopy">
-                     {{isCodeCopy ? 'Copied' : 'Copy Codes' }}
+                    {{isCodeCopy ? 'Copied' : 'Copy Codes' }}
                 </button>
 
                 <!-- <button type="button" [disabled]="!isCodeCopy" (click)="matDialogRef.close()"

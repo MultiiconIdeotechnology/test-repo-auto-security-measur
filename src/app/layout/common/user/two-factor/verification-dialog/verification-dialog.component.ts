@@ -44,12 +44,6 @@ export class VerificationDialogComponent {
         });
     }
 
-    tfaMessages: any = {
-        AuthApp: 'Open your authenticator app to view your six-digit security code.',
-        Whatsapp: `Enter the six-digit security code sent to your registered WhatsApp mobile number (${this.user?.company_number})`,
-        SMS:''
-      };
-
     // whatsapp otp Sent
     whatsappOtpsent() {
         this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "Whatsapp" }).subscribe({
