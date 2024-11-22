@@ -49,14 +49,14 @@
                 <div class="flex flex-col">
                     <ng-container *ngIf="!method.is_enabled; else disableButtons">
                         <button class="px-8 min-w-26 min-h-8 font-semibold text-base" mat-flat-button
-                            [color]="'primary'"  [attr.autofocus]="false" (click)="authenticationEnabled(method)">
+                            [color]="'primary'" (click)="authenticationEnabled(method)">
                             Enable
                         </button>
                     </ng-container>
 
                     <ng-template #disableButtons>
                         <button
-                            class="px-7 min-w-24 min-h-8 font-semibold text-base text-[#B43737] bg-[#FFEDED]"
+                            class="px-8 min-w-26 min-h-8 font-semibold text-base text-[#B43737] bg-[#FFEDED]"
                             mat-flat-button (click)="authenticationDisabled(method)">
                             Disable
                         </button>
