@@ -66,6 +66,10 @@ export class GridUtils {
         defaultSortCol: string = null,
         defaultSortOrder: number = 0,
     ): FilterRequest {
+        if(filter) { // This codeition added when user search that time skip pass 0 to show data
+            event.first = event?.first || 0;
+        }
+
         const index = event?.first ?? primengTable?._first ?? 0;
         const size = (primengTable ? primengTable?._rows : (event.rows || AppConfig.pageSize));
         let sort = defaultSortCol;

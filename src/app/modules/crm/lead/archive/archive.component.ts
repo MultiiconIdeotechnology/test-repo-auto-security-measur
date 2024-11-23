@@ -165,6 +165,10 @@ export class ArchiveComponent extends BaseListingComponent{
 
     refreshItems(event?: any) {
         this.isLoading = true;
+        if(this.searchInputControlArchive.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
+            event = {};
+            event.first = event?.first || 0;
+        }
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlArchive.value;
         this.crmService.getArchiveLeadList(filterReq).subscribe({
