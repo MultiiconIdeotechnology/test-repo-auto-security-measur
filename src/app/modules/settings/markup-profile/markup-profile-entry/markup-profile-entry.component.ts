@@ -477,7 +477,6 @@ export class MarkupProfileEntryComponent {
                                     const filteredB2B = Object.fromEntries(
                                         Object.entries(b2b).filter(([key, value]) => !!value) 
                                       );
-                                      console.log("filteredB2b", filteredB2B)
                                       this.DetailFormGroup.patchValue(filteredB2B);
                                       this.GroupInquiryFormGroup.patchValue(filteredB2B);
                                 }
