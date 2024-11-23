@@ -181,6 +181,10 @@
                         IGST<p-sortIcon field="igst" />
                     </th>
 
+                    <th pSortableColumn="sale_price" pResizableColumn class="text-right">
+                        Sale Price<p-sortIcon field="sale_price" />
+                    </th>
+
                     <th pSortableColumn="commission_passedon" pResizableColumn class="text-right">
                         Commission Passed On<p-sortIcon field="commission_passedon" />
                     </th>
@@ -189,9 +193,7 @@
                         TDS On Commission Passed On<p-sortIcon field="tds_on_commission_passedon" />
                     </th>
 
-                    <th pSortableColumn="sale_price" pResizableColumn class="text-right">
-                        Sale Price<p-sortIcon field="sale_price" />
-                    </th>
+                    
 
                     <th pSortableColumn="commission_given" pResizableColumn class="text-right">
                         Commission Given<p-sortIcon field="commission_given" />
@@ -429,6 +431,11 @@
                     </th>
 
                     <th>
+                        <p-columnFilter type="numeric" field="sale_price" placeholder="Search by Sale Price"
+                            ariaLabel="Filter Sale Price" />
+                    </th>
+
+                    <th>
                         <p-columnFilter type="numeric" field="commission_passedon"
                             placeholder="Search by Commission Passed On" ariaLabel="Filter Commission Passed On" />
                     </th>
@@ -439,10 +446,7 @@
                             ariaLabel="Filter TDS On Commission Passed On" />
                     </th>
 
-                    <th>
-                        <p-columnFilter type="numeric" field="sale_price" placeholder="Search by Sale Price"
-                            ariaLabel="Filter Sale Price" />
-                    </th>
+                   
 
                     <th>
                         <p-columnFilter type="numeric" field="commission_given" placeholder="Search by Commission Given"
@@ -601,13 +605,15 @@
 
                     <td class="text-right">{{element.igst ? element.igst.toFixed(2): 0 }}</td>
 
+                    <td class="text-right">{{element.sale_price ? element.sale_price.toFixed(2): 0 }}</td>
+
+
                     <td class="text-right">{{element.commission_passedon ? element.commission_passedon.toFixed(2): 0 }}
                     </td>
 
                     <td class="text-right">{{element.tds_on_commission_passedon ?
                         element.tds_on_commission_passedon.toFixed(2): 0 }}</td>
 
-                    <td class="text-right">{{element.sale_price ? element.sale_price.toFixed(2): 0 }}</td>
 
                     <td class="text-right">{{element.commission_given ? element.commission_given.toFixed(2): 0 }}</td>
 

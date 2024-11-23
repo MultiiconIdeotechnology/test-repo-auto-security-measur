@@ -493,11 +493,11 @@
                             class="w-2 h-2 rounded-full inline-block me-1"
                             [ngClass]="element['is_kyc_completed'] ? 'bg-green-500' : 'bg-red-500'">
                         </div>
-                        <span class="border-b w-fit border-gray-500">{{element.agent_code}}</span>
+                        <span class="border-b w-fit border-gray-500">{{element.agent_code || "-"}}</span>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name" class="cursor-pointer"
                         (click)="view(element)">
-                        <div class="border-b w-fit border-gray-500">{{element.agency_name}}</div>
+                        <div class="border-b w-fit border-gray-500">{{element.agency_name || "-"}}</div>
                         <div class="text-red-500 text-xs" *ngIf="element['is_blocked']">
                             Blocked
                         </div>
@@ -512,7 +512,7 @@
                             <mat-icon class="text-yellow-600 icon-size-4 " [matTooltip]="'Verification Pending'"
                                 *ngIf="!element['is_email_verified'] ">warning
                             </mat-icon>
-                            {{element.email_address}}
+                            {{element.email_address || "-"}}
                         </span>
                     </td>
                     <td>
@@ -523,7 +523,7 @@
                             <mat-icon class="text-yellow-600 icon-size-4" [matTooltip]="'Verification Pending'"
                                 *ngIf="!element['is_mobile_verified'] ">warning
                             </mat-icon>
-                            {{element.mobile_number}}
+                            {{element.mobile_number || "-"}}
                         </span>
                     </td>
                     <td>{{element.currency || "-"}}</td>
