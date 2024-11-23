@@ -66,6 +66,7 @@ export class UpdateChargeComponent implements OnInit {
         bonton_markup_value: 0,
         addon_markup_value: 0,
         segment_amount: 0,
+        supplier_charge: 0,
         company_remark: ''
     }
 
@@ -86,8 +87,9 @@ export class UpdateChargeComponent implements OnInit {
                     bonton_markup_value: 0,
                     addon_markup_value: 0,
                     segment_amount: 0,
+                    supplier_charge: 0,
                     company_remark: '',
-                    quotation_proof: ''
+                    quotation_proof: '',
                 }
                 this.updateChargeDrawer.toggle();
                 this.getAmendment();
@@ -98,6 +100,11 @@ export class UpdateChargeComponent implements OnInit {
 
     ngOnInit(): void {
 
+    }
+
+    ngOnDestroy(){
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
     }
 
     viewFlightData(): void {
@@ -116,7 +123,7 @@ export class UpdateChargeComponent implements OnInit {
                     this.formObj.company_remark = (this.amendmentData?.company_remark || '');
                     this.formObj.addon_markup_value = (this.amendmentData?.addon_markup || 0);
                     this.formObj.segment_amount = (this.amendmentData?.segment_amount || 0);
-                    // this.formObj.quotation_proof = (this.amendmentData?.quotation_proof || 0);
+                    this.formObj.supplier_charge = (this.amendmentData?.supplier_charge || 0) * (this.amendmentData?.pax || 0);
                     this.calculation();
                 }
             }, error: (err) => {
@@ -124,6 +131,10 @@ export class UpdateChargeComponent implements OnInit {
                 this.alertService.showToast('error', err, "top-right", true);
             }
         })
+    }
+
+    getBontonMarkup() {
+        return this.formObj?.bonton_markup_value > this.formObj?.supplier_charge ? this.formObj?.bonton_markup_value - this.formObj?.supplier_charge : this.formObj?.bonton_markup_value;
     }
 
     // Calculation
@@ -178,7 +189,7 @@ export class UpdateChargeComponent implements OnInit {
                         isRefundAMDT: this.amendmentData.is_refund,
                         amountType: this.amendmentData.amountType,
                         addon_markup: this.formObj.addon_markup_value || 0,
-                        bonton_markup_value: this.formObj?.bonton_markup_value || 0,
+                        bonton_markup_value: this.getBontonMarkup(),
                         infant: this.formObj.Infant_charge || 0,
                         child: this.formObj.child_charge || 0,
                         adult: this.formObj.adult_charge || 0,

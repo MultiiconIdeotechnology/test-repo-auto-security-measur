@@ -117,6 +117,18 @@
                         <td class="border-l w-128">
                             <div class="flex flex-row gap-2 items-end">
                                 <span>
+                                    Supplier Charge
+                                </span>
+                            </div>
+                        </td>
+                        <td class="border-l p-2 pl-6">
+                            {{formObj.supplier_charge || "--" }}
+                        </td>
+                    </tr>
+                    <tr class="border border-blue-border">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
                                     Bonton Markup
                                 </span>
                                 <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
@@ -125,7 +137,7 @@
                             </div>
                         </td>
                         <td class="border-l p-2 pl-6">
-                            {{formObj?.bonton_markup_value}}
+                            {{getBontonMarkup()}}
                         </td>
                     </tr>
                     <tr class="border border-blue-border">
@@ -202,8 +214,7 @@
                                 [svgIcon]="'heroicons_outline:download'"></mat-icon>
                         </button>
                         <div [hidden]="true">
-                            <input type="file" name="documentUpload" #document2
-                                (change)="uploadDocument($event)">
+                            <input type="file" name="documentUpload" #document2 (change)="uploadDocument($event)">
                         </div>
                         <button (click)="document2.click()" [matTooltip]="'Upload'" mat-icon-button>
                             <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
