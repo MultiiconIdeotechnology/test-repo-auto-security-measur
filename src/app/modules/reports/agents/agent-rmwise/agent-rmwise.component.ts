@@ -76,22 +76,12 @@ export class AgentRMWiseComponent extends BaseListingComponent implements OnDest
     selectedEmployee: any;
     selectedRM: any;
 
-    columns = [
-        { key: 'rm', name: 'RM', is_date: true, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: true },
-        { key: 'totalAgent', name: 'Total', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'total_New_Agent', name: 'New', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'total_Active_Agent', name: 'Active', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'total_Inactive_Agent', name: 'Inactive', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false },
-        { key: 'total_Block_Agent', name: 'Blocked', is_date: false, date_formate: '', is_sortable: true, class: '', is_sticky: false, indicator: false, is_boolean: false, tooltip: false }
-    ]
-
     constructor(
         private agentsRMwiseService: AgentsRMwiseService,
         private refferralService: RefferralService,
         public _filterService: CommonFilterService
     ) {
         super(module_name.agents_rmwise)
-        // this.cols = this.columns.map(x => x.key);
         this.key = this.module_name;
         this.sortColumn = 'totalAgent';
         this.sortDirection = 'desc';
@@ -184,6 +174,7 @@ export class AgentRMWiseComponent extends BaseListingComponent implements OnDest
                     { header: 'New', property: 'total_New_Agent' },
                     { header: 'Active', property: 'total_Active_Agent' },
                     { header: 'InActive', property: 'total_Inactive_Agent' },
+                    { header: 'Dormant', property: 'total_Dormant_Agent' },
                     { header: 'Block', property: 'total_Block_Agent' }
                 ],
                 data.data, "RM Wise Agents", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
