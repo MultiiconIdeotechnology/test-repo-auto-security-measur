@@ -54,7 +54,7 @@
             <mat-tab label="Details">
                 <ng-template matTabContent>
 
-                    <div class="flex gap-2 w-full">
+                    <div class="flex gap-2 w-full pt-3">
                         <div class="w-[14%] border-r border-gray-200 dark:border-gray-800 ">
                             <ul class="flex-column text-md font-medium text-gray-500 dark:text-gray-400 ">
                                 <li class="cursor-pointer" (click)="onDetail('airline_wise_markup')"
@@ -1323,7 +1323,7 @@
 
             <mat-tab label="Group Inquiry">
                 <ng-template matTabContent>
-                    <div class="flex flex-col overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="GroupInquiryFormGroup">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <mat-form-field class="min-w-52 w-[24%]">
@@ -1406,7 +1406,7 @@
 
             <mat-tab label="Destination">
                 <ng-template matTabContent>
-                    <div class="flex flex-col mt-4 overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="DestinationFormGroup" *ngIf="!readonly">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <!-- <mat-radio-group aria-label="Select an option" required formControlName="profile_type">
@@ -1589,7 +1589,7 @@
 
             <mat-tab label="Visa">
                 <ng-template matTabContent>
-                    <div class="flex flex-col mt-4 overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="VisaFormGroup" *ngIf="!readonly">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <!-- <mat-radio-group aria-label="Select an option" required formControlName="profile_type">
@@ -1773,7 +1773,7 @@
 
             <mat-tab label="Supplier">
                 <ng-template matTabContent>
-                    <div class="flex flex-col mt-4 overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="SupplierFormGroup" *ngIf="!readonly">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <!-- <mat-radio-group aria-label="Select an option" required formControlName="profile_type">
