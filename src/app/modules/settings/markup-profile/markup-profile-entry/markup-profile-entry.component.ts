@@ -472,11 +472,28 @@ export class MarkupProfileEntryComponent {
                             for (var md of this.record.markup_details) {
                                 this.detailList.push(md);
                                 const b2b = this.detailList.find(x => x.profile_type === 'B2B')
-                                this.DetailFormGroup.patchValue(b2b);
-                                this.GroupInquiryFormGroup.patchValue(b2b);
-                                const b2c = this.detailList.find(x => x.profile_type === 'B2C')
 
-                                this.DetailFormGroupOne.patchValue(b2c);
+                                if(b2b){
+                                    const filteredB2B = Object.fromEntries(
+                                        Object.entries(b2b).filter(([key, value]) => !!value) 
+                                      );
+                                      console.log("filteredB2b", filteredB2B)
+                                      this.DetailFormGroup.patchValue(filteredB2B);
+                                      this.GroupInquiryFormGroup.patchValue(filteredB2B);
+                                }
+
+                                const b2c = this.detailList.find(x => x.profile_type === 'B2C')
+                                if(b2c){
+                                    const filteredB2C= Object.fromEntries(
+                                        Object.entries(b2c).filter(([key, value]) => !!value) 
+                                      );
+
+
+                                      this.DetailFormGroupOne.patchValue(filteredB2C);
+                                }
+                                // this.DetailFormGroup.patchValue(b2b);
+                                // this.GroupInquiryFormGroup.patchValue(b2b);
+
                                 this.Detail = 'Save';
                             }
                         }
