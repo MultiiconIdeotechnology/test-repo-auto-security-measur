@@ -486,13 +486,8 @@ export class MarkupProfileEntryComponent {
                                     const filteredB2C= Object.fromEntries(
                                         Object.entries(b2c).filter(([key, value]) => !!value) 
                                       );
-
-
                                       this.DetailFormGroupOne.patchValue(filteredB2C);
                                 }
-                                // this.DetailFormGroup.patchValue(b2b);
-                                // this.GroupInquiryFormGroup.patchValue(b2b);
-
                                 this.Detail = 'Save';
                             }
                         }
