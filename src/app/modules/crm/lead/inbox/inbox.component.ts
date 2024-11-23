@@ -157,6 +157,10 @@ export class InboxComponent extends BaseListingComponent {
 
     refreshItems(event?: any): void {
         this.isLoading = true;
+        if(this.searchInputControlInbox.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
+            event = {};
+            event.first = event?.first || 0;
+        }
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlInbox.value;
         this.crmService.getInboxLeadList(filterReq).subscribe({
