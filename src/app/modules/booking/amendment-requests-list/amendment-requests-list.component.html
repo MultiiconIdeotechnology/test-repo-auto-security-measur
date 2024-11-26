@@ -22,7 +22,7 @@
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
-<!--             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+            <!--             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
                 <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
             </button>
@@ -31,7 +31,7 @@
                     [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
             </p-overlayPanel> -->
 
-           <!------Common Filter------->
+            <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
                 (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
                 [disabled]="isLoading">
@@ -91,15 +91,25 @@
                         Amendment Type <p-sortIcon field="amendment_type" />
                     </th>
 
-                    <th class="min-w-[145px] flex justify-between items-center" pSortableColumn="amendment_status" pResizableColumn>
+                    <th class="min-w-[145px] flex justify-between items-center" pSortableColumn="amendment_status"
+                        pResizableColumn>
                         <div>
                             Status <p-sortIcon field="amendment_status" />
                         </div>
-                        <mat-icon class="mat-18" class="icon-size-4" (click)="statusInfo();$event.stopPropagation()">info</mat-icon>
+                        <mat-icon class="mat-18" class="icon-size-4"
+                            (click)="statusInfo();$event.stopPropagation()">info</mat-icon>
                     </th>
 
                     <th class="" pSortableColumn="company_name" pResizableColumn>
                         Supplier <p-sortIcon field="company_name" />
+                    </th>
+
+                    <th pSortableColumn="agency_name" pResizableColumn>
+                        Agent <p-sortIcon field="agency_name" />
+                    </th>
+
+                    <th pSortableColumn="agent_code" pResizableColumn>
+                        Agent Code <p-sortIcon field="agent_code" />
                     </th>
 
                     <th pSortableColumn="booking_ref_no" pResizableColumn>
@@ -110,13 +120,6 @@
                         PNR <p-sortIcon field="pnr" />
                     </th>
 
-                    <th pSortableColumn="agent_code" pResizableColumn>
-                        Agent Code <p-sortIcon field="agent_code" />
-                    </th>
-                    <th pSortableColumn="agency_name" pResizableColumn>
-                        Agent <p-sortIcon field="agency_name" />
-                    </th>
-                  
                     <th pSortableColumn="amendment_request_time" pResizableColumn>
                         Requested Time <p-sortIcon field="amendment_request_time" />
                     </th>
@@ -124,7 +127,7 @@
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns;">
                         {{col.header}} <p-sortIcon [field]="col.field" />
 
-                    <!-- <th  [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="amendment_request_time" pResizableColumn>
+                        <!-- <th  [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="amendment_request_time" pResizableColumn>
                         Requested On <p-sortIcon field="amendment_request_time" />
                     </th>
                     <th class="min-w-[200px]" pSortableColumn="travel_date" pResizableColumn>
@@ -168,9 +171,10 @@
                             </ng-template>
                         </p-columnFilter> -->
 
-                        <p-columnFilter  field="amendment_status" matchMode="in" [showMenu]="false">
+                        <p-columnFilter field="amendment_status" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect class="multi-checkbox-filter status-filter" [ngModel]="value" [options]="statusList" optionLabel="label" placeholder="Select Status"
+                                <p-multiSelect class="multi-checkbox-filter status-filter" [ngModel]="value"
+                                    [options]="statusList" optionLabel="label" placeholder="Select Status"
                                     (onChange)="filter($event.value)" [filter]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
@@ -224,8 +228,7 @@
                         <p-columnFilter field="company_name" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
-                                    placeholder="Select Supplier" (onChange)="filter($event.value)"
-                                    appendTo="body">
+                                    placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
                                     <ng-template let-agent pTemplate="item">
                                         <div>
                                             {{agent.company_name}}
@@ -234,20 +237,6 @@
                                 </p-multiSelect>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
-                            placeholder="Search by Booking Ref. No." ariaLabel="Filter Flight No." />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
-                            ariaLabel="Filter PNR" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="contains" field="agent_code"
-                            placeholder="Search by Agent Code" ariaLabel="Filter agent_code" />
                     </th>
 
                     <th>
@@ -272,6 +261,20 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="contains" field="agent_code"
+                            placeholder="Search by Agent Code" ariaLabel="Filter agent_code" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
+                            placeholder="Search by Booking Ref. No." ariaLabel="Filter Flight No." />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
+                            ariaLabel="Filter PNR" />
+                    </th>
 
                     <th>
                         <p-columnFilter field="amendment_request_time" matchMode="custom" [showMenu]="false">
@@ -283,7 +286,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'" >
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="amendment_request_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -293,7 +296,9 @@
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>
@@ -346,15 +351,15 @@
                                 <span style="font-weight: 600">Update Charge</span>
                             </button> -->
 
-                            <!-- <button mat-menu-item
+                    <!-- <button mat-menu-item
                                 *ngIf="element.amendment_status === 'Confirm' && element.amendment_status !== 'Quotation Sent'"
                                 (click)="complete(element)">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Complete</span>
                             </button> -->
 
-<!--                           Amendment commented -->
-<!--                             <button mat-menu-item (click)="completeAmendment(element)"
+                    <!--                           Amendment commented -->
+                    <!--                             <button mat-menu-item (click)="completeAmendment(element)"
                                 *ngIf="element.amendment_status == 'Confirm' || isMenuOpen">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Complete</span>
@@ -372,7 +377,7 @@
                                 <span style="font-weight: 600">{{status.label}}</span>
                             </button> -->
 
-                            <!-- <mat-divider
+                    <!-- <mat-divider
                                 *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') ||
                                     element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed'"></mat-divider>
 
@@ -392,7 +397,7 @@
                                 <span style="font-weight: 600">Complete</span>
                             </button> -->
 
-                            <!-- <mat-divider></mat-divider>
+                    <!-- <mat-divider></mat-divider>
                             <button mat-menu-item (click)="statusLogs(element)">
                                 <mat-icon class="mat-18">text_snippet</mat-icon>
                                 <span style="font-weight: 600">Status Logs</span>
@@ -416,18 +421,18 @@
                         {{element.company_name || "-"}}
                     </td>
                     <td>
+                        {{element.agency_name || "-"}}
+                    </td>
+                    <td>
+                        {{element.agent_code || "-"}}
+                    </td>
+                    <td>
                         <span class="cursor-pointer hover:text-primary-200 underline" (click)="viewData(element)">
                             {{element.booking_ref_no || "-"}}
                         </span>
                     </td>
                     <td>
                         {{element.pnr || "-"}}
-                    </td>
-                    <td>
-                        {{element.agent_code || "-"}}
-                    </td>
-                    <td>
-                        {{element.agency_name || "-"}}
                     </td>
                     <td>
                         {{(element.amendment_request_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
@@ -452,4 +457,3 @@
 <app-update-charge></app-update-charge>
 <app-amendment-request-entry></app-amendment-request-entry>
 <app-status-info></app-status-info>
-
