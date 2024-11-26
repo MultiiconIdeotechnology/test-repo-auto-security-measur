@@ -14,13 +14,13 @@ export default [
         path: 'details',
         component: InsuranceBookingDetailsComponent,
         canActivate: [AuthGuard],
-        data: { module: 'Insurance', group: 'Bookings', operation: 'View Detail', category: 'View Detail' }
+        data: { module: 'Insurance', group: 'Listing', operation: 'View Detail', category: 'View' }
     },
     {
         path: 'details/:id',
         component: InsuranceBookingDetailsComponent,
         canActivate: [AuthGuard],
-        data: { module: 'Insurance', group: 'Listing', operation: 'View Detail', category: 'View Detail' }
+        data: { module: 'Insurance', group: 'Listing', operation: 'View Detail', category: 'View' }
     }
 ] as Routes
 

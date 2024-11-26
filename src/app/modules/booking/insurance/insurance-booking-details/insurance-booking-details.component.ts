@@ -99,6 +99,8 @@ export class InsuranceBookingDetailsComponent {
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
+      console.log('id', id);
+      
 
       this.insuranceService.getInsuranceBookingRecord(id).subscribe({
         next: res => {
