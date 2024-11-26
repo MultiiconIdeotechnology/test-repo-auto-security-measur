@@ -1,5 +1,5 @@
 <div class="table-container paginator-bottom">
-    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+    <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
         columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
         [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
         [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
@@ -7,7 +7,7 @@
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
         styleClass="p-datatable-gridlines p-datatable-sm">
 
-        <ng-template pTemplate="header">
+        <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
                 <th pSortableColumn="callCount" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn class="dark:bg-[#1e293b]"
@@ -42,8 +42,13 @@
                 <th pSortableColumn="entry_date_time" pResizableColumn>
                     Lead Date <p-sortIcon field="entry_date_time" />
                 </th>
-                <th pSortableColumn="call_date_time" pResizableColumn class="min-w-[150px]">
+                <th pSortableColumn="call_date_time" pResizableColumn
+                    [ngClass]="{'w-full': !columns || !(columns && columns.length) }">
                     Call Date <p-sortIcon field="call_date_time" />
+                </th>
+                <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                    [ngClass]="{'w-full': isLast }">
+                    {{col.header}} <p-sortIcon [field]="col.field" />
                 </th>
             </tr>
 
@@ -122,10 +127,23 @@
                         </ng-template>
                     </p-columnFilter>
                 </th>
+                <th *ngFor="let col of columns">
+                    <p-columnFilter *ngIf="col.field == 'lead_assign_by'" type="text" [field]="col.field" [placeholder]="'Search by '+ col.header"
+                        [ariaLabel]="'Filter '+ col.header" />
+
+                    <p-columnFilter *ngIf="col.field == 'lead_assign_by_date'" field="lead_assign_by_date" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                                placeholder="Search by Assign by date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                
             </tr>
         </ng-template>
 
-        <ng-template pTemplate="body" let-element let-i="rowIndex">
+        <ng-template pTemplate="body" let-element let-i="rowIndex" let-columns="columns">
             <tr>
                 <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                     <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
@@ -223,18 +241,27 @@
                         <p class="text-primary leading-3 text-xs">{{element.entry_date_time | date:'HH:mm'}}</p>
                     </span>
                 </td>
-                <td class="w-full">
+                <td>
                       <span class="cursor-pointer flex flex-col ">
                         <p>{{element.call_date_time | date:'dd-MM-yyyy'}}</p>
                         <p class="text-primary leading-3 text-xs">{{element.call_date_time | date:'HH:mm'}}</p>
                     </span>
+                </td>
+                <td *ngFor="let col of columns">
+                    <ng-container *ngIf="col.field == 'lead_assign_by'">
+                        {{element[col.field] || "System"}}
+                    </ng-container>
+
+                    <ng-container *ngIf="col.field == 'lead_assign_by_date'">
+                        {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+                    </ng-container>
                 </td>
             </tr>
         </ng-template>
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="10" class="text-center font-semibold text-lg">
+                <td colspan="12" class="text-center font-semibold text-lg">
                     {{getNodataText()}}
                 </td>
             </tr>

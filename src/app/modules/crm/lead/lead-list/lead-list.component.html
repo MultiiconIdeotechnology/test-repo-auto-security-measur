@@ -33,7 +33,7 @@
             </div>
 
             <!------global filter------>
-            <button *ngIf="this.tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+            <button *ngIf="tabNameStr == 'Inbox'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
                 matTooltip="Advanced Filter" (click)="isFilterShowInbox = !isFilterShowInbox">
                 <img *ngIf="!isFilterShowInbox" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
@@ -41,7 +41,7 @@
                     alt="c">
             </button>
 
-            <button *ngIf="this.tabNameStr == 'Archive'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+            <button *ngIf="tabNameStr == 'Archive'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
                 matTooltip="Advanced Filter"
                 (click)="isFilterShowArchive  = !isFilterShowArchive ">
                 <img *ngIf="!isFilterShowArchive" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
@@ -55,6 +55,19 @@
                 matTooltip="Saved Filter" >
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <ng-container *ngIf="tabNameStr == 'Inbox'">
+                <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                    (click)="op.toggle($event)">
+                    <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+                </button>
+                <p-overlayPanel #op>
+                    <p-multiSelect [options]="cols" [(ngModel)]="_selectedColumns" optionLabel="header" class="overlay-panel"
+                        [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+                </p-overlayPanel>
+            </ng-container>
+             
 
             <!-- Refreshitems -->
             <ng-container *ngIf="tabNameStr == 'Inbox'">
@@ -80,7 +93,7 @@
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Inbox" [aria-label]="'Inbox'" *ngIf="getTabsPermission('inbox')">
             <ng-container *ngIf="tabNameStr == 'Inbox'">
-                <app-inbox #inbox [(isFilterShowInbox)]="isFilterShowInbox"></app-inbox>
+                <app-inbox #inbox [(isFilterShowInbox)]="isFilterShowInbox" [selectedColumns]="_selectedColumns" ></app-inbox>
             </ng-container>
         </mat-tab>
 

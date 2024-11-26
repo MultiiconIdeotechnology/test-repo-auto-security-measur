@@ -356,6 +356,18 @@
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
+
+                        <p-columnFilter *ngIf="col.field == 'agent_assign_by'" matchMode="contains" type="text" field="agent_assign_by"
+                            placeholder="Search by Assign By" ariaLabel="Filter Assign By" />
+
+                        <p-columnFilter *ngIf="col.field == 'agent_assign_by_date'" field="agent_assign_by_date"
+                            type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Assign By Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                 </tr>
             </ng-template>
@@ -541,7 +553,7 @@
                             {{element[col.field] ? element[col.field].toFixed(2) : element[col.field] }}
                         </ng-container>
 
-                        <ng-container *ngIf="col.field == 'web_last_login_time'">
+                        <ng-container *ngIf="col.field == 'web_last_login_time' || col.field == 'first_transaction_date_time' || col.field == 'first_login_date_time' || col.field == 'agent_assign_by_date'">
                             {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
                         </ng-container>
 
@@ -549,16 +561,12 @@
                             {{element[col.field] || '0'}}
                         </ng-container>
 
-                        <ng-container *ngIf="col.field == 'first_transaction_date_time'">
-                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
-                        </ng-container>
-
-                        <ng-container *ngIf="col.field == 'first_login_date_time'">
-                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+                        <ng-container *ngIf="col.field == 'agent_assign_by'">
+                            {{element[col.field] || 'System'}}
                         </ng-container>
 
                         <ng-container
-                            *ngIf="col.field !== 'is_blocked' && col.field !== 'is_wl' && col.field !== 'is_test' && col.field !== 'balance' && col.field !== 'subagent_count' && col.field !== 'web_last_login_time' && col.field != 'first_transaction_date_time' && col.field !== 'first_login_date_time'">
+                            *ngIf="col.field !== 'is_blocked' && col.field !== 'is_wl' && col.field !== 'is_test' && col.field !== 'balance' && col.field !== 'subagent_count' && col.field !== 'web_last_login_time' && col.field != 'first_transaction_date_time' && col.field !== 'first_login_date_time' && col.field !== 'agent_assign_by_date' && col.field !== 'agent_assign_by'">
                             {{element[col.field] ? element[col.field] : "-" }}
                         </ng-container>
                     </td>
