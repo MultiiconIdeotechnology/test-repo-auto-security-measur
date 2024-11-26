@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -133,13 +133,6 @@ export class InboxComponent extends BaseListingComponent {
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
             this.primengTable._filter();
         });
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        console.log("changes", changes);
-        //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-        //Add '${implements OnChanges}' to the class.
-        
     }
 
     ngAfterViewInit() {
