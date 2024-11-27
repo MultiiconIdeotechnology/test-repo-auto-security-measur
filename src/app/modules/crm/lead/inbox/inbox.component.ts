@@ -23,8 +23,6 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
 import { Security, filter_module_name, leadPermissions, messages, module_name } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject, takeUntil } from 'rxjs';
 import { MarketingMaterialsComponent } from '../marketing-materials/marketing-materials.component';
@@ -32,7 +30,7 @@ import { DialCallListComponent } from '../dial-call-list/dial-call-list.componen
 import { CRMScheduleCallListComponent } from '../schedule-call-list/schedule-call-list.component';
 import { EntityService } from 'app/services/entity.service';
 import { LeadStatusChangedLogComponent } from '../lead-status-changed-log/lead-status-changed-log.component';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
@@ -77,6 +75,7 @@ import { ScheduleCallRemarkComponent } from '../call-history-tab/schedule-call-d
 
 export class InboxComponent extends BaseListingComponent {
     @Input() isFilterShowInbox: boolean;
+    @Input() selectedColumns: Column[];
     @Output() isFilterShowInboxChange = new EventEmitter<boolean>();
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
@@ -108,7 +107,7 @@ export class InboxComponent extends BaseListingComponent {
         private conformationService: FuseConfirmationService,
         private matDialog: MatDialog,
         private entityService: EntityService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
     ) {
         super(module_name.lead);
         this.key = this.module_name;
