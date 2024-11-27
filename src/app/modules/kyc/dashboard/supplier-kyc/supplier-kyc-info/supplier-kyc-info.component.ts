@@ -67,7 +67,6 @@ export class SupplierKycInfoComponent {
         next: (item) => {
           this.settingsDrawer?.toggle();
           this.record = item.data;
-          console.log(this.record);
         },
         error: (err) => {
           this.alertService.showToast('error', err, 'top-right', true);

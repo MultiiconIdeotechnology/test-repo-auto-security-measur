@@ -39,7 +39,7 @@ th .ng-star-inserted {
     border-color: #2ab9a3ba !important;
 }
 
-.mat-mdc-radio-button
+    .mat-mdc-radio-button
     .mdc-radio
     .mdc-radio__native-control:enabled
     + .mdc-radio__background
@@ -390,6 +390,10 @@ app-view-details {
     display: none;
 }
 
+.set-dialog-hignt .mat-mdc-form-field-flex {
+    min-height: 40px !important;
+}
+
 .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td,
 th {
     padding: 0.4rem 0.8rem !important;
@@ -532,6 +536,10 @@ th {
     box-shadow: none;
 }
 
+.tootlip-Enter {
+    white-space: pre-line !important;
+}
+
 .p-datatable .p-datatable-thead > tr > th {
     overflow: visible;
     /* Ensure column header overflow is visible */
@@ -624,7 +632,6 @@ p-columnfilterformelement {
     cursor: pointer;
     border-radius: 100%;
 }
-
 // primeng sidebar
 // .p-sidebar-mask {
 //     display: none;
@@ -870,7 +877,6 @@ div:where(.swal2-container) button:where(.swal2-close){
 .tooltip:hover::before {
     opacity: 1;
     z-index: 999;
-
 }
 
 .min-max-width{

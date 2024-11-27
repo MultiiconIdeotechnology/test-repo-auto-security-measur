@@ -240,7 +240,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     }
 
     viewAgentData(data: any): void {
-        Linq.recirect([Routes.customers.agent_entry_route + '/' + data.receipt_to_id + '/readonly']);
+        Linq.recirect([Routes.customers.agent_entry_route + '/' + data.agent_id + '/readonly']);
     }
 
     refreshItems(event?: any): void {

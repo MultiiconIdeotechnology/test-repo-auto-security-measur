@@ -156,7 +156,7 @@ export class FlightComponent extends BaseListingComponent {
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.selectionDateDropdown = "";
-            this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+            this.selectedAgent = resp['table_config']['agent_name']?.value;
             this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
             this.selectedToAirport = resp['table_config']['to_id_filtres']?.value;
@@ -205,7 +205,7 @@ export class FlightComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            this.selectedAgent = filterData['table_config']['agent_name']?.value;
             this.selectedSupplier = filterData['table_config']['supplier_name']?.value;
             this.selectedFromAirport = filterData['table_config']['from_id_filtres']?.value;
             this.selectedToAirport = filterData['table_config']['to_id_filtres']?.value;
@@ -287,11 +287,14 @@ export class FlightComponent extends BaseListingComponent {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data: any) => {
             this.agentList = data;
 
-        
-
             for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}${this.agentList[i].email_address}`;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
+
+            // for (let i in this.agentList) {
+            //     this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+            // }
         });
     }
 

@@ -20,6 +20,10 @@ export class AmendmentRequestsService {
     return this.http.post<any>(this.baseUrl + 'AirAmendment/initialAmendmentCharges', { id: id });
   }
 
+  printInvoice(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'AirAmendment/printInvoice', { invoiceId: id });
+  }
+
   amendmentCharges(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'AirAmendment/amendmentCharges', model);
   }
@@ -34,6 +38,14 @@ export class AmendmentRequestsService {
   
   amendmentRefundInitiate(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + "AirAmendment/amendmentRefundInitiate", model);
+  }
+  
+  accountRejectAmendmentReq(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "AirAmendment/accountRejectAmendmentReq", model);
+  }
+
+  rejectAmendment(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AirAmendment/rejectAmendment", model);
   }
   
   amendmentInprocess(model: any): Observable<any> {
@@ -52,8 +64,16 @@ export class AmendmentRequestsService {
     return this.http.post<any>(this.baseUrl + 'AirAmendment/getAmendmentStatusLog', {id:id});
   }
 
-  completeAmendment(id: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'AirAmendment/completeAmendment', {id:id});
+  completeAmendment(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'AirAmendment/completeAmendment', model);
+  }
+
+  confirmAmendment(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AirAmendment/confirmAmendment", model);
+  }
+
+  amendmentCancel(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + 'AirAmendment/amendmentCancel', model);
   }
 
   SendAmendmentEmailToSupplier(id: string): Observable<any> {

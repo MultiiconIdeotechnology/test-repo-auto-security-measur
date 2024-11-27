@@ -57,7 +57,7 @@
                                         <div class="grid grid-cols-4 gap-4">
                                             <div class="flex flex-col" *ngFor="let filed of ListItem.filedList">
                                                 <div class="flex flex-row space-x-2">
-                                                    <span class="font-medium secondary-text">{{filed.name}}</span>
+                                                    <span class="font-medium text-secondary">{{filed.name}}</span>
                                                 </div>
                                                 <span class="truncate font-medium py-1" [ngClass]="filed.class" [matTooltip]="filed.value">{{filed.value || '--'}}</span>
                                             </div>

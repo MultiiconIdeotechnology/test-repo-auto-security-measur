@@ -1,0 +1,122 @@
+<div class="relative flex flex-col w-full h-full">
+
+  <div class="flex flex-col px-8">
+    <div class="flex flex-col sm:flex-row flex-auto items-center sm:items-start py-8 pb-6 sm:pb-4">
+      <!-- Icon -->
+      <ng-container>
+        <div class="flex flex-0 items-center justify-center w-10 h-10 sm:mr-4 rounded-full" [ngClass]="{'text-primary-600 bg-primary-100 dark:text-primary-50 dark:bg-primary-600': data.color === 'primary',
+                            'text-accent-600 bg-accent-100 dark:text-accent-50 dark:bg-accent-600': data.color === 'accent',
+                            'text-warn-600 bg-warn-100 dark:text-warn-50 dark:bg-warn-600': data.color === 'warn',
+                            'text-gray-600 bg-gray-100 dark:text-gray-50 dark:bg-gray-600': data.color === 'basic',
+                            'text-blue-600 bg-blue-100 dark:text-blue-50 dark:bg-blue-600': data.color === 'info',
+                            'text-green-500 bg-green-100 dark:text-green-50 dark:bg-green-500': data.color === 'success',
+                            'text-amber-500 bg-amber-100 dark:text-amber-50 dark:bg-amber-500': data.color === 'warning',
+                            'text-red-600 bg-red-100 dark:text-red-50 dark:bg-red-600': data.color === 'error'
+                            }">
+          <mat-icon class="text-current" [svgIcon]="data.icon"></mat-icon>
+        </div>
+      </ng-container>
+
+      <ng-container>
+        <div
+          class="flex flex-col items-center sm:items-start mt-4 sm:mt-0 sm:pr-8 space-y-1 text-center sm:text-left w-full">
+
+          <!-- Title -->
+          <ng-container>
+            <div class="text-xl leading-6 font-medium">{{data.title}}</div>
+          </ng-container>
+
+          <!-- Message -->
+          <ng-container>
+            <div class="text-secondary">{{data.desc}}</div>
+          </ng-container>
+
+        </div>
+      </ng-container>
+    </div>
+
+    <div *ngIf="data.document_title"
+      class="flex dark:bg-gray-700 bg-gray-200 min-h-[65px] w-full items-center px-4 mb-5 second-color justify-between shadow rounded-lg overflow-hidden">
+      <div class="flex flex-row items-center w-full justify-between overflow-hidden">
+        <div class="py-4 gap-0.5 flex flex-col justify-center second-color overflow-hidden">
+          <span class="text-base truncate">
+            {{data.document_title}}
+          </span>
+          <span class="text-secondary text-sm font-light leading-[14px]">
+            {{data.remark}}
+          </span>
+        </div>
+
+        <div class="flex flex-row items-end justify-center space-x-1">
+          <button mat-icon-button [matTooltip]="'Download'" (click)="download(document)" [disabled]="!document">
+            <mat-icon class="icon-size-6" [ngClass]="document ? 'text-primary':''"
+              [svgIcon]="'heroicons_outline:download'"></mat-icon>
+          </button>
+          <div [hidden]="true">
+            <input type="file" name="documentUpload" #document2 (change)="uploadDocument($event)">
+          </div>
+          <button (click)="document2.click()" [matTooltip]="'Upload'" mat-icon-button>
+            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="formGroup" class="flex flex-col w-full" *ngIf="data.isForm">
+      <div class="flex flex-col gap-2 pb-6">
+
+        <mat-form-field class="flex-grow bottom_none set-dialog-hignt" *ngIf="data.value1">
+          <mat-label class="text-base text-secondary font-medium dark:text-[#687798]">{{data.value1.label}}</mat-label>
+          <input matInput [type]="data.value1.type" name="value1" formControlName="value1" *ngIf="data.value1.type != 'textarea'"/>
+          <textarea matInput [type]="'text'" name="value1" *ngIf="data.value1.type == 'textarea'" formControlName="value1" ></textarea>
+        </mat-form-field>
+
+        <mat-form-field class="flex-grow bottom_none" *ngIf="data.isDateRequired">
+          <mat-label class="text-base text-secondary font-medium dark:text-[#687798]">Date</mat-label>
+          <input readonly matInput [matDatepicker]="date1" [max]="maxDateValid" placeholder="Choose a date" formControlName="date" />
+          <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
+          <mat-datepicker #date1></mat-datepicker>
+        </mat-form-field>
+
+      </div>
+    </form>
+
+    <div class="flex flex-col pb-4 w-full" *ngIf="data?.balance">
+      <div class="flex flex-row text-md font-normal border px-2 h-10 items-center w-full">
+        <div class="w-full h-full flex items-center border-r">Wallet Balance</div>
+        <div class="w-full h-full flex items-center border-r pl-2">Credit Balance</div>
+        <div class="w-full h-full flex items-center border-r pl-2">Total Balance</div>
+        <div class="w-full pl-2 flex items-center h-full">Purchase Price</div>
+      </div>
+      <div class="flex flex-row text-md text-secondary font-normal border border-t-0 px-2 h-10 items-center w-full">
+        <div class="w-full h-full flex items-center border-r">{{data.balance.currency_symbol}} {{data.balance.wallet_Balance.toFixed(2)}}</div>
+        <div class="w-full h-full flex items-center border-r pl-2">{{data.balance.currency_symbol}} {{data.balance.credit_Balance.toFixed(2)}}</div>
+        <div class="w-full h-full flex items-center border-r pl-2">{{data.balance.currency_symbol}} {{(data.balance.wallet_Balance + data.balance.credit_Balance).toFixed(2)}}</div>
+        <div class="w-full pl-2 flex items-center h-full">{{data.balance.currency_symbol}} {{data.balance.purchase_Price.toFixed(2)}}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Actions -->
+  <ng-container>
+    <div
+      class="flex items-center justify-center sm:justify-end px-6 py-4 space-x-3 bg-gray-50 dark:bg-black dark:bg-opacity-10">
+
+      <!-- Cancel -->
+      <ng-container>
+        <button mat-stroked-button (click)="matDialogRef.close({status : false})">
+          Cancel
+        </button>
+      </ng-container>
+
+      <!-- Default Confirm Dialog -->
+      <ng-container>
+        <button mat-flat-button [color]="'primary'" (click)="Confirm()">
+          Confirm
+        </button>
+      </ng-container>
+
+    </div>
+  </ng-container>
+</div>

@@ -114,9 +114,7 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
     this.isLoading = true;
 
     const request = this.getNewFilterReq(event);
-    console.log("request", request);
     request['monthsBack'] = this.monthsBack.value;
-    console.log("object, request", request);
 
     this.airlineSummaryService.airlineMonthlyAnalysis(request).subscribe({
       next: (data) => {
@@ -152,11 +150,9 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
 
     // Convert the grouped data into an array
     this.dataList = Object.values(groupedData);
-    console.log("this.dataList", this.dataList);
 
     // Extract the latest 3 months based on data provided
     this.latestMonths = [...new Set(data.map(item => item.month))].sort((a, b) => b - a).slice(0, this.monthsBack.value);
-    console.log("this.latestMonths", this.latestMonths);
   }
 
   getNodataText(): string {
@@ -187,7 +183,6 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
     for (let i = 1; i < this.currentMonthIndex; i++) {
       this.availableMonths.push({ name: monthNames[i - 1], value: this.currentMonthIndex - i });
     }
-    console.log("this.availableMonths", this.availableMonths);
 
   }
 
@@ -204,14 +199,12 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
 
     const formattedData = this.dataList.map(supplier => {
       const monthData = supplier.monthData.reduce((acc, item, index) => {
-        console.log("item", item);
         acc[`month${index + 1}_Volume`] = item.volume;
         acc[`month${index + 1}_Growth`] = item.growth + '%';
         acc[`month${index + 1}_Volume_Dom`] = item.volume_Domestic;
         acc[`month${index + 1}_Growth_Dom`] = item.growth_Domestic + '%';
         acc[`month${index + 1}_Volume_Int`] = item.volume_International;
         acc[`month${index + 1}_Growth_Int`] = item.growth_International + '%';
-        console.log("acc", acc);
         return acc;
       }, {
         supplier: supplier.supplier,
@@ -222,7 +215,6 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
         avg_Dom_Growth: supplier.avg_Growth_Domestic + '%',
         avg_Int_Growth: supplier.avg_Growth_International + '%'
       });
-      console.log("monthData ", monthData);
       return monthData;
     });
 

@@ -99,7 +99,6 @@ export class InsuranceBookingDetailsComponent {
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-
       this.insuranceService.getInsuranceBookingRecord(id).subscribe({
         next: res => {
           this.mainData = res.data;

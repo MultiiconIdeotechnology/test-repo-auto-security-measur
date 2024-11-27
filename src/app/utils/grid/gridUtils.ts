@@ -59,14 +59,18 @@ export class GridUtils {
     // PrimeNG Table function
 
     public static GetPrimeNGFilterReq(
-        event: LazyLoadEvent = { first: 0, rows: AppConfig.pageSize, sortField: null, sortOrder: null },
+        event: LazyLoadEvent = { rows: AppConfig.pageSize, sortField: null, sortOrder: null },
         primengTable: Table,
         activeFiltData: any = {},
         filter: string = '',
         defaultSortCol: string = null,
         defaultSortOrder: number = 0,
     ): FilterRequest {
-        const index = primengTable?._first || (event.first || 0);
+        if(filter) { // This codeition added when user search that time skip pass 0 to show data
+            event.first = event?.first || 0;
+        }
+
+        const index = event?.first ?? primengTable?._first ?? 0;
         const size = (primengTable ? primengTable?._rows : (event.rows || AppConfig.pageSize));
         let sort = defaultSortCol;
         let sortOrder = defaultSortOrder;

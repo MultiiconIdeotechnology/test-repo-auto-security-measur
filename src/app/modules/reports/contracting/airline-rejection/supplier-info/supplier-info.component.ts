@@ -80,7 +80,6 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
  
     this.record = data
     this.title = this.record.supplier
-    console.log("this.record", this.record);
   }
 
   ngOnInit(): void {
@@ -108,10 +107,6 @@ export class SupplierInfoComponent extends BaseListingComponent implements OnDes
   }
 
   supplierInfo(data: any, key: any){
-
-    console.log("106 key", key);
-    console.log("106 data", data, );
-
     this.matDialog.open(FailedConfirmedInfoComponent,
       { data: {
         supplier: this.record.supplier,
