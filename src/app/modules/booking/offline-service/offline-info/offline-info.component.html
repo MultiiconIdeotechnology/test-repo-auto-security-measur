@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <button mat-raised-button color="primary" (click)="Reverse()" *ngIf="status.toLowerCase() != 'cancelled'"
+        <!-- <button mat-raised-button color="primary" (click)="Reverse()" *ngIf="status.toLowerCase() != 'cancelled'"
             [disabled]="isLoading">
             Reverse
         </button>
@@ -22,7 +22,7 @@
         <button mat-raised-button color="primary" (click)="downloadCreditNote()" [disabled]="isLoading"
             *ngIf="status.toLowerCase() == 'cancelled'">
             Download Credit Note
-        </button>
+        </button> -->
 
         <button mat-raised-button color="primary" (click)="close()">
             Close
