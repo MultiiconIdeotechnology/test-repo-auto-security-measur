@@ -21,6 +21,7 @@
 
         <button mat-raised-button color="primary" (click)="downloadCreditNote()" [disabled]="isLoading"
             *ngIf="status.toLowerCase() == 'cancelled'">
+            Download Credit Note
         </button>
 
         <button mat-raised-button color="primary" (click)="close()">
