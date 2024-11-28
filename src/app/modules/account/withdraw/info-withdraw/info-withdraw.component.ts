@@ -66,7 +66,6 @@ export class InfoWithdrawComponent {
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe({
                 next: (item) => {
-                    console.log("item", item);
                     this.settingsDrawer?.toggle();
                     this.record = item.data;
                     if (!item.global_withdraw && this.record) {

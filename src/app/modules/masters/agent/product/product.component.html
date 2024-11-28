@@ -37,7 +37,7 @@
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600">Cancel</span>
                             </button>
-                            <button mat-menu-item (click)="salesReturnProduct(element)" *ngIf="element.receipt_status == 'Confirmed'">
+                            <button mat-menu-item (click)="salesReturnProduct(element)" *ngIf="element.receipt_status == 'Confirmed' && element.product_status != 'Sales Return'">
                                 <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                 <span style="font-weight: 600">Sales Return</span>
                             </button>

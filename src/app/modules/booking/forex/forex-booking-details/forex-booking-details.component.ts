@@ -79,8 +79,6 @@ export class ForexBookingDetailsComponent {
   ) {
     this.settingsUpdatedSubscription = this.entityService.onForexEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
-        console.log("item forex", item);
-
         if (item) {
           this.settingsDrawer.toggle()
           this.record = item?.data;

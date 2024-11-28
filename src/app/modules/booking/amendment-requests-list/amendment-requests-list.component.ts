@@ -78,33 +78,33 @@ export class AmendmentRequestsListComponent
     AmendmentFilter: any;
     _selectedColumns: Column[];
     cols = [];
-    selectedAgent:any
-    selectedSupplier:any;
-    selectedStatus:any;
+    selectedAgent: any
+    selectedSupplier: any;
+    selectedStatus: any;
     agentList: any[] = [];
     supplierList: any[] = [];
 
     isMenuOpen: boolean = false;
 
-    typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'Miscellaneous', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)'];
+    typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)', 'Miscellaneous Quotation - SSR', 'Miscellaneous Quotation - Refund'];
     statusList = [
-       { label:  "Request Sent to Supplier", value: 'Request Sent to Supplier' },
-       { label:  "Request to Supplier Failed", value: 'Request to Supplier Failed' },
-       { label:  "Quotation Sent", value: 'Quotation Sent' },
-       { label:  "Quotation Confirmed By TA", value: 'Quotation Confirmed By TA' },
-       { label:  "Quotation Rejected By TA", value: 'Quotation Rejected By TA' },
-       { label:  "Confirmation Sent To Supplier", value: 'Confirmation Sent To Supplier' },
-       { label:  "Payment Completed", value: 'Payment Completed' },
-       { label:  "Refund Process", value: 'Refund Process' },
-       { label:  "Refund Completed", value: 'Refund Completed' },
-       { label:  "Completed", value: 'Completed' },
-       { label:  "Rejected", value: 'Rejected' },
-       { label:  "Cancelled", value: 'Cancelled' },
-       { label:  "Partial Payment Completed", value: 'Partial Payment Completed' },
-       { label:  "Account Rejected", value: 'Account Rejected' },
-       { label:  "Account Audit" , value: 'Account Audit' }
+        { label: "Request Sent to Supplier", value: 'Request Sent to Supplier' },
+        { label: "Request to Supplier Failed", value: 'Request to Supplier Failed' },
+        { label: "Quotation Sent", value: 'Quotation Sent' },
+        { label: "Quotation Confirmed By TA", value: 'Quotation Confirmed By TA' },
+        { label: "Quotation Rejected By TA", value: 'Quotation Rejected By TA' },
+        { label: "Confirmation Sent To Supplier", value: 'Confirmation Sent To Supplier' },
+        { label: "Payment Completed", value: 'Payment Completed' },
+        { label: "Refund Process", value: 'Refund Process' },
+        { label: "Refund Completed", value: 'Refund Completed' },
+        { label: "Completed", value: 'Completed' },
+        { label: "Rejected", value: 'Rejected' },
+        { label: "Cancelled", value: 'Cancelled' },
+        { label: "Partial Payment Completed", value: 'Partial Payment Completed' },
+        { label: "Account Rejected", value: 'Account Rejected' },
+        { label: "Account Audit", value: 'Account Audit' }
     ];
-    
+
     statusListForAgent = [
         "Request Sent",
         "Quotation Received",
@@ -129,7 +129,7 @@ export class AmendmentRequestsListComponent
     ) {
         super(module_name.amendmentRequests);
         this.key = this.module_name;
-        this.sortColumn = 'amendment_request_time';
+        this.sortColumn = 'updated_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -184,19 +184,23 @@ export class AmendmentRequestsListComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
             if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
                 this._filterService.selectionDateDropdown = 'Custom Date Range';
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }
+            if (filterData?.['table_config']?.['updated_date_time']?.value != null && filterData['table_config']['updated_date_time'].value.length) {
+                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.rangeDateConvert(filterData['table_config']['updated_date_time']);
+            }
 
             if (filterData['table_config']['travel_date']?.value != null) {
-              filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
+                filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
         }
@@ -242,8 +246,8 @@ export class AmendmentRequestsListComponent
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
 
-            for(let i in this.supplierList){
-               this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+            for (let i in this.supplierList) {
+                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
             }
         });
     }
@@ -370,7 +374,7 @@ export class AmendmentRequestsListComponent
         }
     }
 
-    statusInfo(){
+    statusInfo() {
         this.entityService.raiseAmendmentStatusInfoCall(null);
     }
 
