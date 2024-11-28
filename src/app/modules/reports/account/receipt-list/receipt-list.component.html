@@ -312,7 +312,7 @@
                             </button>
                             
                             <!-- Generate Payment Link -->
-                            <!-- <ng-container *ngIf="element['receipt_status'] == 'Pending'">
+                            <ng-container *ngIf="element['receipt_status'] == 'Pending'">
                                 <button mat-menu-item *ngIf="!element.paymentLink"
                                     (click)="generatePaymentLink(element)">
                                     <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
@@ -323,7 +323,7 @@
                                     <mat-icon svgIcon="heroicons_outline:link"></mat-icon>
                                     <span style="font-weight: 600;">Copy Payment Link</span>
                                 </button>
-                            </ng-container> -->
+                            </ng-container>
                             
                             <ng-container *ngIf="element['service_for'] == 'Product purchase'">
                                 <button mat-menu-item (click)="product(element)">
