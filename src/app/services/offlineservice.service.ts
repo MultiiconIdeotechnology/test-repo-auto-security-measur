@@ -35,6 +35,10 @@ export class OfflineserviceService {
   getOsbInvoice(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'OfflineServiceBooking/getOsbInvoice', model);
   }
+
+  reverseOsbEntry(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'OfflineServiceBooking/reverseOsbEntry', model);
+  }
   
   getOsbSalesList(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'OsbSales/getOsbSalesList', model);

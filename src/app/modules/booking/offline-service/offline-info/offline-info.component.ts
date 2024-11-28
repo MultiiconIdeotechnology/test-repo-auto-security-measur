@@ -23,6 +23,8 @@ import { RejectedComponent } from 'app/modules/account/wallet/rejected/rejected.
 import { PaymentComponent } from '../payment/payment.component';
 import { ReceiptComponent } from '../receipt/receipt.component';
 import { InvoiceComponent } from '../invoice/invoice.component';
+import { CommonUtils } from 'app/utils/commonutils';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
   selector: 'app-offline-info',
@@ -62,6 +64,7 @@ export class OfflineInfoComponent {
   @ViewChild('sales') sales: SalesComponent;
 
   isSecound: boolean = true
+  isLoading: boolean = true
   isInvoiceGenerated: boolean = false;
 
   fieldList: {};
@@ -69,6 +72,8 @@ export class OfflineInfoComponent {
   tabNameStr: any = 'Purchase'
   tab: string = 'Purchase';
   id: string
+  status: string = '';
+  creditNoteId: string = '';
   agent_currency_id: string = '';
   currency_short_code: string = '';
   OfflineRoute = Routes.booking.offline_service_route;
@@ -77,9 +82,21 @@ export class OfflineInfoComponent {
     private router: Router,
     public route: ActivatedRoute,
     private offlineService: OfflineserviceService,
+    private flighttabService: FlightTabService,
     private toastr: ToasterService,
 
   ) {
+  }
+
+  downloadCreditNote() {
+    if (!this.creditNoteId) return;
+    this.flighttabService.Invoice(this.creditNoteId).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, 'credit note.pdf');
+      }, error: (err) => {
+        this.toastr.showToast('error', err)
+      }
+    })
   }
 
   close() {
@@ -94,7 +111,9 @@ export class OfflineInfoComponent {
         next: (data) => {
           this.agent_currency_id = data.currency_id;
           this.currency_short_code = data.currency_short_code;
-          this.isInvoiceGenerated = data.status.toLowerCase() == "completed";
+          this.status = data.status;
+          this.creditNoteId = data.creditNoteId;
+          this.isInvoiceGenerated = data.status.toLowerCase() == "completed" || data.status.toLowerCase() == "cancelled";
           this.fieldList = [
             { name: 'Ref.No', value: data.booking_ref_number, },
             { name: 'Agency Name', value: data.agency_name, },
@@ -107,16 +126,18 @@ export class OfflineInfoComponent {
             { name: 'Sales Person', value: data.sales_person, },
             { name: 'Entry Date Time', value: data.entry_date_time ? DateTime.fromISO(data.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '', },
           ];
+          this.isLoading = false;
         },
         error: (err) => {
           this.toastr.showToast('error', err, 'top-right', true);
+          this.isLoading = false;
         },
       }
       )
     });
   }
 
-  updateInvoiceGenerat(){
+  updateInvoiceGenerat() {
     this.isInvoiceGenerated = true;
   }
 
@@ -149,6 +170,19 @@ export class OfflineInfoComponent {
         this.tab = 'Invoice';
         break;
     }
+  }
+
+  Reverse() {
+    this.offlineService.reverseOsbEntry({ OsbId: this.id }).subscribe({
+      next: (data) => {
+        if (data.status) {
+          this.toastr.showToast('success', "Osb reverse generated successfully!");
+          this.creditNoteId = data.id;
+        }
+      }, error: (err) => {
+        this.toastr.showToast('error', err);
+      },
+    })
   }
 
 }
