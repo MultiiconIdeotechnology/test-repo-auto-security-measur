@@ -244,12 +244,12 @@
                     </th>
 
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList"
                                     optionLabel="agent_info" [filter]="true" filterBy="agent_info"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value?.id)"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
                                     [showClear]="true" appendTo="body" placeholder="Select Agent">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
