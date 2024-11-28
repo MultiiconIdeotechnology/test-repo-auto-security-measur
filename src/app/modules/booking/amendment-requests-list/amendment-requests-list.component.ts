@@ -182,7 +182,7 @@ export class AmendmentRequestsListComponent
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -231,7 +231,9 @@ export class AmendmentRequestsListComponent
             this.agentList = data;
 
             for(let i in this.agentList){
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+               this.agentList[i].id_by_value = this.agentList[i].agency_name;
+
             }
         });
     }
