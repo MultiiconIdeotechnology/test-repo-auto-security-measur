@@ -17,7 +17,7 @@ export class TwoFaAuthenticationService {
     };
 
     tfaConfigDetailsData: any[] = [];
-    isTfaEnabled:boolean = false;
+    isTfaEnabled: boolean = false;
     twoFactorMethod: any = [
         {
             title: 'Authenticator App',
@@ -49,12 +49,12 @@ export class TwoFaAuthenticationService {
     ];
 
 
-    constructor(private http: HttpClient,  private matDialog: MatDialog) { 
+    constructor(private http: HttpClient, private matDialog: MatDialog) {
         // if (this.tfaConfigDetailsData && !this.tfaConfigDetailsData?.length) {
         //     this.getTfaConfigList();
         // } else {
         //     const isEnabled = this.tfaConfigDetailsData.some((item:any) => item.is_enabled )
-    
+
         //     if(!isEnabled){
         //         this.openTF2AuthModal()
         //     }
@@ -78,15 +78,15 @@ export class TwoFaAuthenticationService {
     disableTwoFactoreAuth(model: any): Observable<any> {
         return this.http.post<any>(environment.apiUrl + 'TFAConfiguration/disableTwoFactorAuth', model);
     }
-    
+
     mobileVerificationOTP(model: any): Observable<any> {
         return this.http.post<any>(environment.apiUrl + 'TFAConfiguration/mobileVerificationOTP', model);
     }
-    
+
     changeAuthMode(model: any): Observable<any> {
         return this.http.post<any>(environment.apiUrl + 'TFAConfiguration/changeAuthMode', model);
     }
-    
+
     tfaConfigurationDetails(): Observable<any> {
         return this.http.post<any>(environment.apiUrl + 'employee/tfaConfigurationDetails', {});
     }
@@ -95,15 +95,15 @@ export class TwoFaAuthenticationService {
         return this.http.post<any>(environment.apiUrl + 'TFAConfiguration/verifyOtp', model);
     }
 
-      // GEt Employee TFA Configuration Details
-      getTfaConfigList() {
+    // GEt Employee TFA Configuration Details
+    getTfaConfigList() {
         this.tfaConfigurationDetails().subscribe({
             next: (resData) => {
                 this.tfaConfigDetailsData = resData;
                 this.twoFactorMethodUpdate(this.tfaConfigDetailsData);
-                this.isTfaEnabled = this.tfaConfigDetailsData.some((item:any) => item.is_enabled )
-    
-                if(!this.isTfaEnabled){
+                this.isTfaEnabled = this.tfaConfigDetailsData.some((item: any) => item.is_enabled)
+
+                if (!this.isTfaEnabled) {
                     this.openTF2AuthModal()
                 }
             },
@@ -115,7 +115,7 @@ export class TwoFaAuthenticationService {
 
 
     // to update the twoFactormethod  
-    twoFactorMethodUpdate(tfConfingData:any) {
+    twoFactorMethodUpdate(tfConfingData: any) {
         if (tfConfingData) {
             for (let i in tfConfingData) {
                 for (let j in this.twoFactorMethod) {
@@ -128,13 +128,13 @@ export class TwoFaAuthenticationService {
         }
     }
 
-        // Two FactorAuth Dialog
-        openTF2AuthModal(){
-            this.matDialog.open(TwoFactorAuthComponent, {
-                width:'900px',
-                autoFocus: true,
-                disableClose: true,
-                data: {}
-            })
-        }
+    // Two FactorAuth Dialog
+    openTF2AuthModal() {
+        this.matDialog.open(TwoFactorAuthComponent, {
+            width: '900px',
+            autoFocus: true,
+            disableClose: true,
+            data: {}
+        })
+    }
 }
