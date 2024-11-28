@@ -127,6 +127,8 @@ export class InsuranceBookingDetailsComponent {
   }
 
   viewPolicy(data){
+    console.log("data", data);
+    // window.open(data, '_blank')
     Linq.recirect(data);
   }
 
