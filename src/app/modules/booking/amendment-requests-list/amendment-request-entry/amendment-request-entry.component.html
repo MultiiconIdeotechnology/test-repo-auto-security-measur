@@ -163,7 +163,9 @@
                 </button>
             </ng-container>
 
-            <ng-container *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'confirmation sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'payment completed'">
+            <ng-container
+                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'confirmation sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || 
+                    recordList?.amendment_info?.status?.toLowerCase() == 'cancellation pending' || recordList?.amendment_info?.status?.toLowerCase() == 'partial cancellation pending'">
                 <button mat-stroked-button (click)="Reject()">
                     Reject
                 </button>
