@@ -17,6 +17,7 @@ import { OtpComponent } from '../otp/otp.component';
 import { Linq } from 'app/utils/linq';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
+import { ToasterService } from 'app/services/toaster.service';
 
 @Component({
     selector: 'auth-sign-in',
@@ -52,7 +53,8 @@ export class AuthSignInComponent implements OnInit {
         private _matDialog: MatDialog,
         private _formBuilder: UntypedFormBuilder,
         private _router: Router,
-        public twoFaAuthService: TwoFaAuthenticationService
+        public twoFaAuthService: TwoFaAuthenticationService,
+        private alertService: ToasterService,
     ) {
     }
 
@@ -185,8 +187,10 @@ export class AuthSignInComponent implements OnInit {
 
                 // Navigate to the redirect url
                 this._router.navigateByUrl(redirectURL);
+            }, error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
             }
-        })
+        });
     }
 
     // OTP Verify and Login

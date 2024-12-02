@@ -44,10 +44,11 @@
             
                 <ng-container *ngIf="is_recovery_code_show">
                     <div class="flex items-baseline mt-3 font-medium">
-                        <div class="text-white">Don’t have code?</div>
-                        <a class="ml-1 text-primary-500 hover:underline cursor-pointer" (click)="is_recovery_code_show = false; authotp = ''">
-                            Use your authenticator app
-                        </a>
+                        <div class="text-white">Don’t have code? <a class="ml-1 text-primary-500 hover:underline cursor-pointer"
+                                (click)="is_recovery_code_show = false; authotp = ''">
+                                Use your authenticator app
+                            </a>
+                        </div>
                     </div>
                 </ng-container>
             </div>
@@ -114,7 +115,7 @@
                     </div>
 
                     <!-- Submit button -->
-                    <button class="fuse-mat-button-large w-full mt-6" mat-flat-button [color]="'primary'"
+                    <button class="fuse-mat-button-large w-full mt-1" mat-flat-button [color]="'primary'"
                         [disabled]="signInForm.disabled" (click)="signIn()">
                         <span *ngIf="!signInForm.disabled">
                             Sign in
@@ -135,15 +136,17 @@
                     </ng-container>
 
                     <ng-container *ngIf="is_recovery_code_show">
-                        <mat-form-field class="w-full">
-                            <mat-label class="text-white">Enter recovery code</mat-label>
-                            <input id="recovery_code" type="text" name="authotp" [(ngModel)]="authotp">
-                        </mat-form-field>
+                        <form>
+                            <mat-form-field class="w-full" style="margin-bottom: -1.25em">
+                                <mat-label class="text-white">Enter recovery code</mat-label>
+                                <input matInput id="recovery_code" type="text" name="authotp" [(ngModel)]="authotp">
+                            </mat-form-field>
+                        </form>
                     </ng-container>
                 </div>
 
                 <!-- Submit button -->
-                <button class="fuse-mat-button-large w-full mt-6" mat-flat-button [color]="'primary'"
+                <button class="fuse-mat-button-large w-full " mat-flat-button [color]="'primary'"
                     [disabled]="authotp?.length < 6" (click)="confirmAndLogin()">
                     <span *ngIf="!signInForm.disabled">
                         Confirm

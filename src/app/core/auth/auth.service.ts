@@ -76,10 +76,16 @@ export class AuthService {
     }
 
     Login(code: any, credentials: any, is_master: any, twoFaAuth?: any): Observable<any> {
-        let body = {
+        let body: any = {
             code: code, 
             is_master: is_master
         }
+
+        if(twoFaAuth && twoFaAuth.authtype) {
+            body.otp = twoFaAuth.otp;
+            body.authtype = twoFaAuth.authtype;
+        }
+
         return this._httpClient.post(this.baseUrl + 'auth/emp/login', body).pipe(
             switchMap((response: any) => {
                 // Store the access token in the local storage
