@@ -14,6 +14,7 @@ export class TwoFaAuthenticationService {
         inputClass: 'ng-otp-input-box',
         containerClass: 'ng-otp-container',
         isPasswordInput: false,
+        allowNumbersOnly: true
     };
 
     tfaConfigDetailsData: any[] = [];
@@ -95,16 +96,21 @@ export class TwoFaAuthenticationService {
         return this.http.post<any>(environment.apiUrl + 'TFAConfiguration/verifyOtp', model);
     }
 
-    // GEt Employee TFA Configuration Details
+    // Get Employee TFA Configuration Details
     getTfaConfigList() {
         this.tfaConfigurationDetails().subscribe({
-            next: (resData) => {
-                this.tfaConfigDetailsData = resData;
-                this.twoFactorMethodUpdate(this.tfaConfigDetailsData);
-                this.isTfaEnabled = this.tfaConfigDetailsData.some((item: any) => item.is_enabled)
-
-                if (!this.isTfaEnabled) {
-                    this.openTF2AuthModal()
+            next: (res) => {
+                if(res && res.status) {
+                    this.tfaConfigDetailsData = res?.data || [];
+                    this.twoFactorMethodUpdate(this.tfaConfigDetailsData);
+                    this.isTfaEnabled = this.tfaConfigDetailsData.some((item: any) => item.is_enabled)
+                    console.log("this.isTfaEnabled", this.isTfaEnabled);
+                    
+                    if (!this.isTfaEnabled) {
+                        this.openTF2AuthModal();
+                    }
+                } else {
+                    this.openTF2AuthModal();
                 }
             },
             error: (err) => {

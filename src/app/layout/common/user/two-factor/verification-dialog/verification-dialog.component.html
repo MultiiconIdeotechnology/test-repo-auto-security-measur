@@ -44,7 +44,7 @@
 
             <button mat-flat-button [color]="'primary'"
                 class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
-                (click)="verifyOtp('Whatsapp')" [disabled]="authotp?.length < 6 || disableBtn">
+                (click)="verifyOtp(data.tfa_type)" [disabled]="authotp?.length < 6 || disableBtn">
                 Verify
             </button>
 

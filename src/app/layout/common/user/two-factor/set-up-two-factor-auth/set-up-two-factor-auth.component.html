@@ -50,7 +50,7 @@
                 log you out from your other devices, to log back in, enter your password and complete the second
                 verification step.</p>
             <form [formGroup]="twoFaFormGroup" novalidate (keydown)="onKeyPress($event, 'portal_password')">
-                <div class="mb-4 w-[280px]">
+                <div class="mb-3 w-[280px]">
                     <label for="password" class="font-Inter text-lg text-[#8F8F8F] dark:text-[#E5E1E1]">
                         Enter portal password<span class="text-red-500">*</span>
                     </label>
@@ -74,6 +74,8 @@
                         </mat-error>
                     </mat-form-field>
                 </div>
+                <div class="border-b border-stone-200 dark:border-[#374252] mb-5"></div>
+
                 <div class="text-end">
                     <button type="button" (click)="closeModal()"
                         class="border text-[15px] rounded-full dark:border-[#324154] min-h-11 w-[140px] mr-3 py-2">
@@ -169,7 +171,7 @@
                 <button mat-flat-button [color]="'primary'"
                     class="px-7 py-2 mr-3 primary-bg text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
                     (click)="closeModal()" [disabled]="!isCodeCopy">
-                    Yes i have save my code
+                    Yes, I have saved my code
                 </button>
 
                 <button mat-flat-button [color]="'primary'"

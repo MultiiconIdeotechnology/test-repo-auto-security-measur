@@ -100,8 +100,6 @@ export class SetUpTwoFactorAuthComponent {
 
     // Auth two Factor Enabled
     twoFactorEnabled() {
-
-
         let body = {
             "tfa_type": "AuthApp"
             // "tfa_type": "Whatsapp"
@@ -116,7 +114,7 @@ export class SetUpTwoFactorAuthComponent {
                         );
                     this.disableBtn = false;
                     this.recoveryCodes = JSON.parse(res?.recoveryCodes || "");
-                    this.alertService.showToast('success', 'Two-factor authentication enabled successfully!', 'top-right', true);
+                    // this.alertService.showToast('success', 'Two-factor authentication enabled successfully!', 'top-right', true);
                     if (this.currentStep < 3) {
                         this.currentStep++;
                         this.changeStep(this.currentStep);

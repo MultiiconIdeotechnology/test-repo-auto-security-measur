@@ -57,6 +57,10 @@ export class VerificationDialogComponent {
     // OTP On Change event
     onOtpChange(event: any) {
         this.authotp = event;
+        console.log("this.authotp.length", this.authotp.length);
+        if (this.authotp && this.authotp.length == 6) {
+            this.verifyOtp(this.data.tfa_type);
+        }
     }
 
     // Authentication verification

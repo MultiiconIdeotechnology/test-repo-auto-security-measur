@@ -109,7 +109,7 @@ export class UserService {
         onSuccess: () => void
     ): void {
         if(this.totpConfig.includes(data.title)){
-            if (this.tf2AuthService.isTfaEnabled) { // need to dynamically
+            if (this.tf2AuthService.isTfaEnabled) {
                 this.openVerifyDialog().subscribe(isVerified => {
                     if (isVerified) {
                         onSuccess();
@@ -120,7 +120,7 @@ export class UserService {
                 });
             } else {
                 // Execute directly if OTP is not enabled
-                console.log("otp is not enabled enter")
+                console.log("otp is not enabled enter");
                 onSuccess();
             }
 
