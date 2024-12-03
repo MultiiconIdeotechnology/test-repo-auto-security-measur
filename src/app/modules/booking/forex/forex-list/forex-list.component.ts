@@ -85,6 +85,9 @@ export class ForexListComponent extends BaseListingComponent {
     { label: 'Confirmed', value: 'Confirmed' },
     { label: 'Rejected', value: 'Rejected' },
     { label: 'Cancelled', value: 'Cancelled' },
+    { label: 'Token Payment Success', value: 'Token Payment Success' },
+    { label: 'Waiting for Token Payment', value: 'Waiting for Token Payment' },
+    { label: 'Token Payment Failed', value: 'Token Payment Failed' },
   ];
 
   rateList = ['BUY', 'SELL'];
@@ -337,11 +340,11 @@ export class ForexListComponent extends BaseListingComponent {
   }
 
   getStatusColor(status: string): string {
-    if (status == 'New') {
+    if (status == 'New' || status == 'Waiting for Token Payment') {
       return 'text-orange-600';
-    } else if (status == 'Confirmed') {
+    } else if (status == 'Confirmed' || status == 'Token Payment Success') {
       return 'text-green-600';
-    } else if (status == 'Cancelled' || status == 'Rejected') {
+    } else if (status == 'Cancelled' || status == 'Rejected' || status == 'Token Payment Failed') {
       return 'text-red-600';
     } else {
       return '';
