@@ -33,7 +33,6 @@ export class WhatsappAuthComponent {
         public _userService: UserService,
         private confirmationService: FuseConfirmationService,
     ) {
-        console.log("data", data)
         if (data && data.tfa_type == 'Whatsapp') {
             this.whatsappOtpsent();
         }
@@ -142,10 +141,8 @@ export class WhatsappAuthComponent {
                                         }
                                     }
                                 }
-
-
                                 this.twoFaAuthenticationService.isTfaEnabled = res.data ? true: false;
-                                console.log("twoFaAuthenticationService.isTfaEnabled on disabled", this.twoFaAuthenticationService.isTfaEnabled)
+                                
                                 this.disableBtn = false;
                                 let message = mode == 'AuthApp' ? 'Two-factor' : mode;
                                 this.alertService.showToast('success', `${message} authentication disabled successfully!`, 'top-right', true);

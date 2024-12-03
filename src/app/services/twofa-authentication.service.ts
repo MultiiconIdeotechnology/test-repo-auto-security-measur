@@ -104,7 +104,6 @@ export class TwoFaAuthenticationService {
                     this.tfaConfigDetailsData = res?.data || [];
                     this.twoFactorMethodUpdate(this.tfaConfigDetailsData);
                     this.isTfaEnabled = this.tfaConfigDetailsData.some((item: any) => item.is_enabled)
-                    console.log("this.isTfaEnabled", this.isTfaEnabled);
                     
                     if (!this.isTfaEnabled) {
                         this.openTF2AuthModal();

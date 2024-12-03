@@ -171,7 +171,7 @@ export class SupplierApiEntryComponent {
     }
 
     let title = this.record.id ? 'settings_supplier_api_modify':'settings_supplier_api_add';
-    console.log("title", title);
+
     const executeMethod = () => {
       this.disableBtn = true;
       const json = this.formGroup.getRawValue();

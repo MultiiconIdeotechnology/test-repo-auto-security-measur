@@ -26,7 +26,6 @@ export class UserService {
             if(user){
                 const userTotpconfig = JSON.parse(user['totp_config']);
                 this.totpConfig = userTotpconfig?.totpConfig || [];
-                console.log("this.totpConfig", this.totpConfig);
             }
         });
     }
@@ -124,7 +123,6 @@ export class UserService {
             }
 
         } else {
-            console.log("direct on Success");
             onSuccess();
         }
     }
