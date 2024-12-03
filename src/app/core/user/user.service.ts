@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { User } from 'app/core/user/user.types';
 import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-password.component';
-import { TwoFactorAuthComponent } from 'app/layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
 import { VerificationDialogComponent } from 'app/layout/common/user/two-factor/verification-dialog/verification-dialog.component';
 import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';

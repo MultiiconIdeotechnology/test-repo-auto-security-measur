@@ -140,6 +140,7 @@ export class TwoFaAuthenticationService {
             width: '900px',
             autoFocus: true,
             disableClose: true,
+            closeOnNavigation: false,
             data: {}
         })
     }

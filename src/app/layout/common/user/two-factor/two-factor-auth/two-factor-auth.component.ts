@@ -9,6 +9,7 @@ import { WhatsappAuthComponent } from '../whatsapp-auth/whatsapp-auth.component'
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { ToasterService } from 'app/services/toaster.service';
 import { UserService } from 'app/core/user/user.service';
+import { CommonUtils } from 'app/utils/commonutils';
 
 @Component({
     selector: 'app-two-factor-auth',
@@ -40,6 +41,7 @@ export class TwoFactorAuthComponent {
     }
 
     ngOnInit(): void {
+        CommonUtils.disableBrowserForwardButton();
         this.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item:any) => item.is_enabled) 
     }
 
@@ -51,6 +53,7 @@ export class TwoFactorAuthComponent {
                 width: '900px',
                 autoFocus: true,
                 disableClose: true,
+                closeOnNavigation: false,
                 data: {}
             })
         } else {
@@ -59,6 +62,7 @@ export class TwoFactorAuthComponent {
                 width: '825px',
                 autoFocus: true,
                 disableClose: true,
+                closeOnNavigation: false,
                 data: method
             })
         }
@@ -72,6 +76,7 @@ export class TwoFactorAuthComponent {
             width: '825px',
             autoFocus: true,
             disableClose: true,
+            closeOnNavigation: false,
             data: method
         })
     }
