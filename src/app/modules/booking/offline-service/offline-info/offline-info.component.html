@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <!-- <button mat-raised-button color="primary" (click)="Reverse()" *ngIf="status.toLowerCase() != 'cancelled'"
+        <button mat-raised-button color="primary" (click)="Reverse()" *ngIf="status.toLowerCase() != 'cancelled' && is_receipt_generated"
             [disabled]="isLoading">
             Reverse
         </button>
@@ -22,7 +22,7 @@
         <button mat-raised-button color="primary" (click)="downloadCreditNote()" [disabled]="isLoading"
             *ngIf="status.toLowerCase() == 'cancelled'">
             Download Credit Note
-        </button> -->
+        </button>
 
         <button mat-raised-button color="primary" (click)="close()">
             Close
@@ -41,7 +41,7 @@
                         </span>
                         <div class="relative truncate">
                             <span class="mat-mdc-tooltip-trigger text-base truncate"
-                                [matTooltip]="filed.value">{{filed.value || '--'}}</span>
+                                [matTooltip]="filed.value" [ngClass]="filed.name == 'Status' ? getStatusColor(filed.value) : ''">{{filed.value || '--'}}</span>
                         </div>
                     </div>
                 </div>
