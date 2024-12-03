@@ -176,6 +176,7 @@ export class UserComponent implements OnInit, OnDestroy {
             width:'900px',
             autoFocus: true,
             disableClose: true,
+            closeOnNavigation: false,
             data: {}
         })
     }
