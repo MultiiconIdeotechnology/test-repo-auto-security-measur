@@ -39,7 +39,7 @@ export class WhatsappAuthComponent {
         public _userService: UserService,
         private confirmationService: FuseConfirmationService,
     ) {
-        if (data && data.key == 'whatsapp-disabled') {
+        if (data && data.tfa_type == 'Whatsapp' && data.key == 'whatsapp-disabled') {
             this.whatsappOtpsent();
             this.isOtpInputShow = true;
         }
