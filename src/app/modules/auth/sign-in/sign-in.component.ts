@@ -18,6 +18,7 @@ import { Linq } from 'app/utils/linq';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { TwoFactorAuthComponent } from 'app/layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
 
 @Component({
     selector: 'auth-sign-in',
@@ -184,9 +185,19 @@ export class AuthSignInComponent implements OnInit {
         this._authService.Login(code, json, true, extBody).subscribe({
             next: res => {
                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
-
                 // Navigate to the redirect url
                 this._router.navigateByUrl(redirectURL);
+
+                // need to do
+                if(!extBody.authtype) {
+                    this._matDialog.open(TwoFactorAuthComponent, {
+                        width:'900px',
+                        autoFocus: true,
+                        disableClose: true,
+                        closeOnNavigation: false,
+                        data: {}
+                    })
+                }
             }, error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
             }

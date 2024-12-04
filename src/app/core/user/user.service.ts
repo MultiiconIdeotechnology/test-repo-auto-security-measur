@@ -91,6 +91,8 @@ export class UserService {
     // Method to open dialog and verify OTP
     openVerifyDialog(): Observable<boolean> {
         let selectedTf2Method = this.tf2AuthService.twoFactorMethod.find((item:any) => item.is_enabled && item.is_selected);
+        console.log("this.tf2AuthService.twoFactorMethod", this.tf2AuthService);
+        console.log("selectedTf2Method", selectedTf2Method);
         const dialogRef = this.matDialog.open(VerificationDialogComponent, {
             width: '450px',
             data: selectedTf2Method,
@@ -107,6 +109,8 @@ export class UserService {
         onSuccess: () => void
     ): void {
         if(this.totpConfig.includes(data.title)){
+            console.log("this.tf2AuthService.isTfaEnabled", this.tf2AuthService.isTfaEnabled);
+            
             if (this.tf2AuthService.isTfaEnabled) {
                 this.openVerifyDialog().subscribe(isVerified => {
                     if (isVerified) {

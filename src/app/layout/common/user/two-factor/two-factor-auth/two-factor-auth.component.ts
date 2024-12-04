@@ -42,7 +42,7 @@ export class TwoFactorAuthComponent {
 
     ngOnInit(): void {
         CommonUtils.disableBrowserForwardButton();
-        this.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item:any) => item.is_enabled) 
+        this.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item:any) => item.is_enabled && item.is_selected);
     }
 
     // authentication Enabled Dialog

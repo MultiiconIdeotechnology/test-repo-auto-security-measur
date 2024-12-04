@@ -38,7 +38,8 @@ export class VerificationDialogComponent {
         if (data && data.tfa_type == 'Whatsapp') {
             this.whatsappOtpsent();
         }
-
+        console.log("data", data);
+        
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
             this.user = user;
         });
@@ -64,6 +65,7 @@ export class VerificationDialogComponent {
 
     // Authentication verification
     verifyOtp(mode: any) {
+        console.log("mode", mode);
         if (this.authotp && this.authotp.length >= 6) {
             let payload: any = {
                 Mode: mode,
@@ -80,6 +82,7 @@ export class VerificationDialogComponent {
                 },
                 error: (err) => {
                     this.disableBtn = false;
+                    this.authotp = '';
                     this.alertService.showToast('error', err, 'top-right', true);
                 },
             });

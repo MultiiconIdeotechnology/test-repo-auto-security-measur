@@ -103,13 +103,15 @@ export class TwoFaAuthenticationService {
                 if(res && res.status) {
                     this.tfaConfigDetailsData = res?.data || [];
                     this.twoFactorMethodUpdate(this.tfaConfigDetailsData);
-                    this.isTfaEnabled = this.tfaConfigDetailsData.some((item: any) => item.is_enabled)
+                    this.isTfaEnabled = this.tfaConfigDetailsData.some((item: any) => item.is_enabled && item.is_selected);
                     
-                    if (!this.isTfaEnabled) {
-                        this.openTF2AuthModal();
-                    }
+                    // need to do
+                    // if (!this.isTfaEnabled) {
+                    //     this.openTF2AuthModal();
+                    // }
                 } else {
-                    this.openTF2AuthModal();
+                    // need to do
+                    // this.openTF2AuthModal();
                 }
             },
             error: (err) => {

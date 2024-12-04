@@ -10,11 +10,12 @@ import { ToasterService } from 'app/services/toaster.service';
 import { UserService } from 'app/core/user/user.service';
 import { Subject, takeUntil } from 'rxjs';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-whatsapp-auth',
     standalone: true,
-    imports: [CommonModule, MatIconModule, MatButtonModule, NgOtpInputModule],
+    imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, NgOtpInputModule],
     templateUrl: './whatsapp-auth.component.html'
 })
 export class WhatsappAuthComponent {
@@ -22,6 +23,11 @@ export class WhatsappAuthComponent {
     disableBtn: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     user: any = {};
+    company_number: any;
+    isButtonDisabled: boolean = false;
+    timer: number = 59;
+    countdownInterval: any;
+    isOtpInputShow: boolean = false;
 
     constructor(
         // private settingService:SettingsService,
@@ -33,12 +39,14 @@ export class WhatsappAuthComponent {
         public _userService: UserService,
         private confirmationService: FuseConfirmationService,
     ) {
-        if (data && data.tfa_type == 'Whatsapp') {
+        if (data && data.key == 'whatsapp-disabled') {
             this.whatsappOtpsent();
+            this.isOtpInputShow = true;
         }
 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
             this.user = user;
+            this.company_number = user?.company_number;
         });
     }
 
@@ -52,7 +60,7 @@ export class WhatsappAuthComponent {
         this.twoFaAuthenticationService.mobileVerificationOTP({ tfa_type: "Whatsapp" }).subscribe({
             next: (res) => {
                 if (res && res.status) {
-                    // this.startCountdown();
+                    this.startCountdown();
                 }
             },
             error: (err) => {
@@ -160,6 +168,27 @@ export class WhatsappAuthComponent {
 
     }
 
+    resendOtp() {
+        if (!this.isButtonDisabled) {
+            this.isOtpInputShow = true;
+            this.whatsappOtpsent();
+        }
+    }
+
+    startCountdown() {
+        this.isButtonDisabled = true;
+        this.timer = 59;
+
+        this.countdownInterval = setInterval(() => {
+            if (this.timer > 0) {
+                this.timer--;
+            } else {
+                this.isButtonDisabled = false;
+                clearInterval(this.countdownInterval);
+            }
+        }, 1000);
+    }
+
     // Two FactorAuth Dialog
     openTF2AuthModal() {
         this.matDialogRef.close();
@@ -179,6 +208,12 @@ export class WhatsappAuthComponent {
             } else {
                 this.authVerifyDisabled(key);
             }
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
         }
     }
 }

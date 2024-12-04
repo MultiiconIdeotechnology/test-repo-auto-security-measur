@@ -66,7 +66,7 @@ export class SetUpTwoFactorAuthComponent {
             enablePassword: ['', Validators.required],
         });
 
-        this.twoFaAuthenticationService.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item: any) => item.is_enabled)
+        this.twoFaAuthenticationService.isTfaEnabled = this.twoFaAuthenticationService.twoFactorMethod.some((item: any) => item.is_enabled && item.is_selected);
     }
 
     // Auth Password Verification

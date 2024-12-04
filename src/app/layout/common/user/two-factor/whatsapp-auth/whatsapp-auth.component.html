@@ -74,10 +74,30 @@
 
     <div class="body" (keydown)="onKeyPress($event, 'Whatsapp')">
         <div class="text-[#4f4f4f] dark:text-[#879FC1] text-lg pt-1 pb-4">
-            You will receive verification code on this registered contact number {{user?.company_number}}
+            <ng-container *ngIf="data.key !== 'whatsapp-disabled'">
+                Get authentication codes by Whatsapp on your phone when sign in.
+            </ng-container>
+            <ng-container *ngIf="data.key == 'whatsapp-disabled'">
+                By entering the six-digit code that is generate by Whatsapp on your phone and proceed.
+            </ng-container>
         </div>
 
-        <div class="text-center pt-1">
+        <div class="flex flex-row items-end gap-8 pb-5">
+            <div class="flex flex-col gap-1">
+                <span class="text-lg font-normal">Country or Region code</span>
+                <mat-form-field class="w-80 border border-[#bababa] dark:border-[#394353] rounded-[4px] felx items-center">
+                    <input matInput type="text" name="company_number" [(ngModel)]="company_number" readonly required
+                        class="pl-[12px] text-[#4f4f4f] dark:text-[#879FC1] text-lg h-[2.7rem]">
+                </mat-form-field>
+            </div>
+            <button mat-flat-button [color]="'primary'" class="px-7  min-w-[140px] min-h-11 rounded-md text-lg font-Inter"
+                (click)="resendOtp()" [disabled]="isButtonDisabled">
+                {{ isButtonDisabled ? 'Re-send OTP' : 'Send OTP'}}
+            </button>
+        </div>
+
+        <div *ngIf="isOtpInputShow">
+            <span class="text-lg font-normal">Verify the code sent to your phone</span>
             <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
                 [config]="twoFaAuthenticationService.otpConfig">
             </ng-otp-input>
