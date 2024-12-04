@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between -mx-6 px-6">
         <div class="flex items-center">
             <h1 class="text-3xl font-semibold text-[#0B0D0E] font-Inter dark:text-white">
-                Disable two-step verification
+                Disabled Two-step Verification
             </h1>
         </div>
     </div>
@@ -97,7 +97,7 @@
         </div>
 
         <div *ngIf="isOtpInputShow">
-            <span class="text-lg font-normal">Verify the code sent to your phone</span>
+            <span class="text-lg font-normal">Enter the code sent to your phone</span>
             <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
                 [config]="twoFaAuthenticationService.otpConfig">
             </ng-otp-input>
@@ -107,14 +107,14 @@
             <button
                 class="px-7 dark:text-white rounded-full min-w-[140px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
                 (click)="openTF2AuthModal()">
-                Close
+                Cancel
             </button>
 
             <ng-container *ngIf="data.key == 'Whatsapp'; else disableButton">
                 <button mat-flat-button [color]="'primary'"
                     class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
                     (click)="authConfigureNow('Whatsapp')" [disabled]="authotp?.length < 6 || disableBtn">
-                    Verify
+                    Continue
                 </button>
             </ng-container>
 
