@@ -46,7 +46,7 @@ export class SetUpTwoFactorAuthComponent {
     stepArr: any[] = [
         { step: 1, label: 'SETUP', isActive: true, isCompleted: false },
         { step: 2, label: 'CONNECT MOBILE', isActive: false, isCompleted: false },
-        { step: 3, label: 'SAVES CODES', isActive: false, isCompleted: false },
+        { step: 3, label: 'SAVE CODES', isActive: false, isCompleted: false },
     ]
 
     constructor(
