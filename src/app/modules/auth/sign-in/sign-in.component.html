@@ -18,7 +18,7 @@
             </ng-container>
 
             <ng-container *ngIf="!isSignInShow">
-                <span *ngIf="is_auth_enabled == 'AuthApp'">
+                <span class="text-white" *ngIf="is_auth_enabled == 'AuthApp'">
                     <ng-container *ngIf="!is_recovery_code_show">
                         Open your authenticator app to view your six-digit security code.
                     </ng-container>
@@ -132,7 +132,7 @@
                 <div class="py-6">
                     <ng-container *ngIf="!is_recovery_code_show">
                         <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
-                            [config]="twoFaAuthService.otpConfig"></ng-otp-input>
+                            [config]="twoFaAuthService.otpConfig" class="text-white"></ng-otp-input>
                     </ng-container>
 
                     <ng-container *ngIf="is_recovery_code_show">
