@@ -70,7 +70,7 @@
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="text-center left-[-1px]" pFrozenColumn>#</th>
+                    <!-- <th class="text-center left-[-1px]" pFrozenColumn>#</th> -->
                     <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b] text-center"
                         pSortableColumn="is_read_by_supplier" pResizableColumn alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.is_read_by_supplier"
@@ -134,7 +134,7 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <!-- <th class="left-[-1px]" pFrozenColumn></th> -->
 
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.is_read_by_supplier">
                         <p-columnFilter field="is_read_by_supplier" matchMode="equals" [showMenu]="false">
@@ -362,7 +362,7 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <!-- <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -373,7 +373,7 @@
                             </button>
                             <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 1)">
                                 <mat-icon svgIcon="heroicons_outline:check-circle"></mat-icon>
-                                <span style="font-weight: 600">Confirm</span>
+                                <span style="font-weight: 600">Complete</span>
                             </button>
                             <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 2)">
                                 <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
@@ -384,7 +384,7 @@
                                 <span style="font-weight: 600">Reject</span>
                             </button>
                         </mat-menu>
-                    </td>
+                    </td> -->
                     <td class="min-w-[175px] text-center" alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.is_read_by_supplier">
                         <span [matTooltip]="element['is_read_by_supplier'] ? 'Read': 'Unread'"
