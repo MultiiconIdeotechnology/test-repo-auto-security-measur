@@ -264,7 +264,7 @@
                         {{(element.payment_date_time | date: 'dd-MM-yyyy') || "-"}}
                     </td>
                     <td>
-                        {{(element.expiry_date | date: 'dd-MM-yyyy') || "-"}}
+                        {{(element.expiry_date | date: 'dd-MM-yyyy hh:mm a') || "-"}}
                     </td>
                 </tr>
             </ng-template>
