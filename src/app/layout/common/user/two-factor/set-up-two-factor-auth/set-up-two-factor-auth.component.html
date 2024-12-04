@@ -38,17 +38,15 @@
         <!-- Step 1 -->
         <div *ngSwitchCase="1">
             <!-- <h2 class="text-2xl font-semibold mb-4 font-Inter">Set-up for enable 2FA</h2> -->
-            <h2 class="text-3xl font-medium mb-3 mt-4 font-Inter">Set-up for enable 2FA</h2>
+            <h2 class="text-2xl font-medium mb-3 mt-4 font-Inter">Set-up for enable 2FA</h2>
             <p class="mb-4 font-Inter font-normal text-lg text-[#000000] dark:text-[#879FC1]">Start by entering your
                 password so
                 that we
                 know it's you. Then we'll walk through two more
                 simple steps.</p>
             <p class="mb-4 font-Inter font-normal text-lg text-[#000000] dark:text-[#879FC1]">When you enable two-step
-                verification, we keep
-                you logged in to this device. We may
-                log you out from your other devices, to log back in, enter your password and complete the second
-                verification step.</p>
+                verification, enter your password and complete the second verification step.
+            </p>
             <form [formGroup]="twoFaFormGroup" novalidate (keydown)="onKeyPress($event, 'portal_password')">
                 <div class="mb-3 w-[280px]">
                     <label for="password" class="font-Inter text-lg text-[#8F8F8F] dark:text-[#E5E1E1]">
@@ -93,11 +91,11 @@
 
         <!-- Step 2 -->
         <div *ngSwitchCase="2" (keydown)="onKeyPress($event, 'enable_2fa')">
-            <h2 class="text-3xl font-medium mb-3 mt-4 font-Inter">Enable 2FA</h2>
+            <h2 class="text-2xl font-medium mb-3 mt-4 font-Inter">Enable 2FA</h2>
             <div class="flex flex-raw justify-between">
                 <ol class="list-decimal list-inside">
                     <li class="mb-2 font-Inter font-normal text-lg">
-                        You will need an authenticator mobile ap to complete this process, such
+                        You will need an authenticator mobile app to complete this process, such
                         <div class="text-[#4A8ED2] font-Inter text-lg">
                             Microsoft Authenticator, Google Authenticator, Duo Mobile, Authenticator 7
                         </div>
@@ -152,7 +150,7 @@
 
         <!-- Step 3 -->
         <div *ngSwitchCase="3">
-            <h2 class="text-3xl font-medium mb-3 mt-4 font-Inter">Keep this recovery codes in safe</h2>
+            <h2 class="text-2xl font-medium mb-3 mt-4 font-Inter">Keep this recovery codes in safe</h2>
             <p class="mb-4 font-normal text-lg text-[#474747] dark:text-[#879FC1] ">
                 If you lose access to your authentication device, you can use one of these backup codes to log in your
                 account. Each code can only br used once. Make a copy of these codes and keep it somewhere safe.
