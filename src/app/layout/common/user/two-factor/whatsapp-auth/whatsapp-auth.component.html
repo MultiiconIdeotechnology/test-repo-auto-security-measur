@@ -93,7 +93,7 @@
                 </div>
                 <button mat-flat-button [color]="'primary'" class="px-7  min-w-[140px] min-h-11 rounded-md text-lg font-Inter"
                     (click)="resendOtp()" [disabled]="isButtonDisabled">
-                    {{ isButtonDisabled ? 'Re-send OTP' : 'Send OTP'}}
+                    {{ isOtpInputShow ? 'Re-send OTP' : 'Send OTP'}}
                 </button>
             </div>
             <div class="text-base text-[#4f4f4f] dark:text-[#879FC1] font-Inter font-medium pt-1" *ngIf="isButtonDisabled && timer">
