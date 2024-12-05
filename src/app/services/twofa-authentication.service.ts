@@ -139,7 +139,7 @@ export class TwoFaAuthenticationService {
     openTF2AuthModal() {
         this.matDialog.open(TwoFactorAuthComponent, {
             width: '900px',
-            autoFocus: true,
+            autoFocus: false,
             disableClose: true,
             closeOnNavigation: false,
             data: {}

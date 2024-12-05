@@ -17,7 +17,7 @@ import { CommonUtils } from 'app/utils/commonutils';
     imports: [
         CommonModule,
         MatIconModule,
-        MatButtonModule
+        MatButtonModule,
     ],
     templateUrl: './two-factor-auth.component.html',
     styleUrls: ['./two-factor-auth.component.scss']
@@ -51,7 +51,7 @@ export class TwoFactorAuthComponent {
         if (method.tfa_type == 'AuthApp') {
             this._matdialog.open(SetUpTwoFactorAuthComponent, {
                 width: '900px',
-                autoFocus: true,
+                autoFocus: false,
                 disableClose: true,
                 closeOnNavigation: false,
                 data: {}
@@ -60,7 +60,7 @@ export class TwoFactorAuthComponent {
             method.key = 'Whatsapp';
             this._matdialog.open(WhatsappAuthComponent, {
                 width: '825px',
-                autoFocus: true,
+                autoFocus: false,
                 disableClose: true,
                 closeOnNavigation: false,
                 data: method
@@ -74,7 +74,7 @@ export class TwoFactorAuthComponent {
         method.key = 'whatsapp-disabled';
         this._matdialog.open(WhatsappAuthComponent, {
             width: '825px',
-            autoFocus: true,
+            autoFocus: false,
             disableClose: true,
             closeOnNavigation: false,
             data: method

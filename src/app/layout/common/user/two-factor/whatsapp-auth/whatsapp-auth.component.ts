@@ -194,7 +194,7 @@ export class WhatsappAuthComponent {
         this.matDialogRef.close();
         this._matdialog.open(TwoFactorAuthComponent, {
             width: '900px',
-            autoFocus: true,
+            autoFocus: false,
             disableClose: true,
             closeOnNavigation: false,
             data: {}

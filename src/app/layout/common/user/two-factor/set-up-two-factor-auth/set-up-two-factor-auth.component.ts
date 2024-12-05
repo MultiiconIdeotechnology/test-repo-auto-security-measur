@@ -213,7 +213,7 @@ export class SetUpTwoFactorAuthComponent {
         if (!this.twoFaAuthenticationService.isTfaEnabled) {
             this._matdialog.open(TwoFactorAuthComponent, {
                 width: '900px',
-                autoFocus: true,
+                autoFocus: false,
                 disableClose: true,
                 closeOnNavigation: false,
                 data: {}

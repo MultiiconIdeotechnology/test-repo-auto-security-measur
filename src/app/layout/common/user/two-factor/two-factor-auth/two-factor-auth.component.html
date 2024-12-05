@@ -12,7 +12,7 @@
             </button> -->
         </div>
         <!-- *ngIf="twoFaAuthenticationService.isTfaEnabled" -->
-        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+        <button type="button" mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
             <mat-icon class="text-current text-[#374252] dark:text-white"
                 [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
         </button>
@@ -36,7 +36,7 @@
                         <div>
                             <h2 class="font-medium font-Inter text-xl text-[#24282E] dark:text-white">
                                 {{ method.title }}
-                                <button *ngIf="method.is_enabled"
+                                <button type="button" *ngIf="method.is_enabled"
                                     class="font-Inter py-1 px-3 ml-0.5 rounded-md text-sm text-[#2AB775] border border-[#2AB775] cursor-default">
                                     CONFIGURED
                                 </button>
@@ -53,38 +53,24 @@
     
                     <div class="flex flex-col">
                         <ng-container *ngIf="!method.is_enabled; else disableButtons">
-                            <button class="px-8 min-w-26 min-h-8 font-semibold text-base" mat-flat-button
-                                [color]="'primary'" (click)="authenticationEnabled(method)">
+                            <button mat-flat-button type="button" [color]="'primary'" class="px-8 min-w-26 min-h-8 font-semibold text-base" 
+                                (click)="authenticationEnabled(method)">
                                 Enable
                             </button>
                         </ng-container>
     
                         <ng-template #disableButtons>
-                            <button
+                            <button type="button"
                                 class="px-8 min-w-26 min-h-8 font-semibold text-base text-[#B43737] bg-[#FFEDED]"
                                 mat-flat-button (click)="authenticationDisabled(method)">
                                 Disable
                             </button>
     
-                            <button *ngIf="!method.is_selected" (click)="switchAuthentication(method)"
+                            <button type="button" *ngIf="!method.is_selected" (click)="switchAuthentication(method)"
                                 class="font-Inter font-semibold text-base p-1 mt-3 rounded-full text-[#000000] dark:text-[#ffffff] min-w-24 min-h-9 border border-[#0D9488]">
                                 Select
                             </button>
                         </ng-template>
-    
-                        <!-- <button *ngIf="method.is_selected"
-                            class="flex items-center font-semibold text-base font-Inter p-1 px-2 mt-3 rounded-full text-[#0D9488] min-w-24 min-h-8 border border-[#0D9488] cursor-default">
-                            <mat-icon svgIcon="heroicons_solid:check-circle"
-                                class="icon-size-6 text-[#0D9488] pr-1"></mat-icon>
-                            Selected
-                        </button> -->
-    
-                        <!-- <button *ngIf="method.is_selected"
-                            class="flex items-center font-medium font-Inter p-1 ml-2 mt-3 rounded-md text-base text-[#234977] w-24 border border-[#CDDAEA] bg-[#EBF4FF] cursor-default">
-                            <mat-icon svgIcon="heroicons_solid:check-circle"
-                                class="icon-size-6 text-[#234977] pr-1"></mat-icon>
-                            Selected
-                        </button> -->
                     </div>
                 </div>
             </ng-container>

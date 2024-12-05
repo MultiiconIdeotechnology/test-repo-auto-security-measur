@@ -192,7 +192,7 @@ export class AuthSignInComponent implements OnInit {
                 if(!extBody.authtype) {
                     this._matDialog.open(TwoFactorAuthComponent, {
                         width:'900px',
-                        autoFocus: true,
+                        autoFocus: false,
                         disableClose: true,
                         closeOnNavigation: false,
                         data: {}

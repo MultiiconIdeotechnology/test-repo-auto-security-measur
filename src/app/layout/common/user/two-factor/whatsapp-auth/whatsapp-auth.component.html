@@ -82,18 +82,25 @@
             </ng-container>
         </div>
 
-        <div class="flex flex-row items-end gap-8 pb-5">
-            <div class="flex flex-col gap-1">
-                <span class="text-lg font-normal">Country or Region code</span>
-                <mat-form-field class="w-80 border border-[#bababa] dark:border-[#394353] rounded-[4px] felx items-center">
-                    <input matInput type="text" name="company_number" [(ngModel)]="company_number" readonly required
-                        class="pl-[12px] text-[#4f4f4f] dark:text-[#879FC1] text-lg h-[2.7rem]">
-                </mat-form-field>
+        <div class="pb-5">
+            <div class="flex flex-row items-end gap-8">
+                <div class="flex flex-col gap-1">
+                    <span class="text-lg font-normal">Country or Region code</span>
+                    <mat-form-field class="w-80 border border-[#bababa] dark:border-[#394353] rounded-[4px] felx items-center">
+                        <input matInput type="text" name="company_number" [(ngModel)]="company_number" readonly required
+                            class="pl-[12px] text-[#4f4f4f] dark:text-[#879FC1] text-lg h-[2.7rem]">
+                    </mat-form-field>
+                </div>
+                <button mat-flat-button [color]="'primary'" class="px-7  min-w-[140px] min-h-11 rounded-md text-lg font-Inter"
+                    (click)="resendOtp()" [disabled]="isButtonDisabled">
+                    {{ isButtonDisabled ? 'Re-send OTP' : 'Send OTP'}}
+                </button>
             </div>
-            <button mat-flat-button [color]="'primary'" class="px-7  min-w-[140px] min-h-11 rounded-md text-lg font-Inter"
-                (click)="resendOtp()" [disabled]="isButtonDisabled">
-                {{ isButtonDisabled ? 'Re-send OTP' : 'Send OTP'}}
-            </button>
+            <div class="text-base text-[#4f4f4f] dark:text-[#879FC1] font-Inter font-medium pt-1" *ngIf="isButtonDisabled && timer">
+                <button class="cursor-default">
+                    Resend OTP {{ isOtpInputShow ? 'in ' + timer + ' sec' : '' }}
+                </button>
+            </div>
         </div>
 
         <div *ngIf="isOtpInputShow">
