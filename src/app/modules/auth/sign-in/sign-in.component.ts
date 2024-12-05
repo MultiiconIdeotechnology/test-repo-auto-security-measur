@@ -15,6 +15,10 @@ import { keys } from 'app/common/const';
 import { AuthService } from 'app/core/auth/auth.service';
 import { OtpComponent } from '../otp/otp.component';
 import { Linq } from 'app/utils/linq';
+import { NgOtpInputModule } from 'ng-otp-input';
+import { TwoFaAuthenticationService } from 'app/services/twofa-authentication.service';
+import { ToasterService } from 'app/services/toaster.service';
+import { TwoFactorAuthComponent } from 'app/layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
 
 @Component({
     selector: 'auth-sign-in',
@@ -22,10 +26,11 @@ import { Linq } from 'app/utils/linq';
     encapsulation: ViewEncapsulation.None,
     animations: fuseAnimations,
     standalone: true,
-    imports: [RouterLink, FuseAlertComponent, NgIf, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatProgressSpinnerModule],
+    imports: [RouterLink, FuseAlertComponent, NgIf, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatProgressSpinnerModule, NgOtpInputModule],
 })
 export class AuthSignInComponent implements OnInit {
     @ViewChild('signInNgForm') signInNgForm: NgForm;
+    isSignInShow: boolean = true;
 
     alert: { type: FuseAlertType; message: string } = {
         type: 'success',
@@ -33,8 +38,13 @@ export class AuthSignInComponent implements OnInit {
     };
     signInForm: UntypedFormGroup;
     showAlert: boolean = false;
+    is_recovery_code_show: boolean = false;
+    isFirstTime: boolean = true;
     captcha: any = {};
-
+    json_data: any = {};
+    is_auth_enabled: any = "";
+    login_code: any;
+    authotp: any;
     /**
      * Constructor
      */
@@ -44,6 +54,8 @@ export class AuthSignInComponent implements OnInit {
         private _matDialog: MatDialog,
         private _formBuilder: UntypedFormBuilder,
         private _router: Router,
+        public twoFaAuthService: TwoFaAuthenticationService,
+        private alertService: ToasterService,
     ) {
     }
 
@@ -129,14 +141,14 @@ export class AuthSignInComponent implements OnInit {
                     // to the correct page after a successful sign in. This way, that url can be set via
                     // routing file and we don't have to touch here.
                     if (res.code) {
-                        this._authService.Login(res.code, json, true).subscribe({
-                            next: res => {
-                                const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
-
-                                // Navigate to the redirect url
-                                this._router.navigateByUrl(redirectURL);
-                            }
-                        })
+                        if(res && res.authtype) {
+                            this.isSignInShow = false; // need to do
+                            this.is_auth_enabled = res.authtype;
+                            this.login_code = res.code;
+                            this.json_data = json;
+                        } else {
+                            this.finalSignIn(res.code, json);
+                        }
                     } else {
                         this._matDialog.open(OtpComponent, {
                             data: json,
@@ -161,5 +173,50 @@ export class AuthSignInComponent implements OnInit {
                     this.showAlert = true;
                 },
             });
+    }
+
+    // final SignIn
+    finalSignIn(code: any, json: any) {
+        let extBody: any = {}
+        if(this.authotp != null) { // Is Auth active to pass otp
+            extBody.otp = this.authotp;
+            extBody.authtype = this.is_auth_enabled;
+        }
+        this._authService.Login(code, json, true, extBody).subscribe({
+            next: res => {
+                const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
+                // Navigate to the redirect url
+                this._router.navigateByUrl(redirectURL);
+
+                // need to do
+                if(!extBody.authtype) {
+                    this._matDialog.open(TwoFactorAuthComponent, {
+                        width:'900px',
+                        autoFocus: true,
+                        disableClose: true,
+                        closeOnNavigation: false,
+                        data: {}
+                    })
+                }
+            }, error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+            }
+        });
+    }
+
+    // OTP Verify and Login
+    confirmAndLogin() {
+        if (this.authotp && this.authotp.length >= 6) {
+            this.finalSignIn(this.login_code, this.json_data);
+        }
+    }
+
+    // OTP On Change event
+    onOtpChange(event: any) {
+        this.authotp = event;
+        if (this.authotp && this.authotp.length == 6 && this.isFirstTime) {
+            this.finalSignIn(this.login_code, this.json_data);
+            this.isFirstTime = false;
+        }
     }
 }
