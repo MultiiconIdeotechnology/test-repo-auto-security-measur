@@ -24,7 +24,7 @@ export class UserService {
     ) {
         this._user.subscribe((user) => {
             if(user){
-                const userTotpconfig = JSON.parse(user['totp_config']);
+                const userTotpconfig = JSON.parse(user['totp_config'] || []);
                 this.totpConfig = userTotpconfig?.totpConfig || [];
             }
         });
