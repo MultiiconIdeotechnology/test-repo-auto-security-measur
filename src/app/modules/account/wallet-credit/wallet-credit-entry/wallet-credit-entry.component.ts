@@ -16,6 +16,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { UserService } from 'app/core/user/user.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { WalletService } from 'app/services/wallet-credit.service';
@@ -96,11 +97,12 @@ export class WalletCreditEntryComponent {
     public router: Router,
     public route: ActivatedRoute,
     public alertService: ToasterService,
+    private _userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
     this.record = data?.data ?? {}
-    if(this.data?.send)
-    this.createEntry = (this.data.send == 'create')
+    if (this.data?.send)
+      this.createEntry = (this.data.send == 'create')
 
   }
 
@@ -170,24 +172,24 @@ export class WalletCreditEntryComponent {
           this.btnLabel = this.readonly ? "Close" : 'Save';
         },
         error: (err) => {
-          this.alertService.showToast('error',err,'top-right',true);
+          this.alertService.showToast('error', err, 'top-right', true);
           this.disableBtn = false;
         },
       });
     }
   }
 
-  navigationChanged(data){
+  navigationChanged(data) {
     this.currency = data.base_currency
   }
 
-  changeValue(data:any){
+  changeValue(data: any) {
     this.formGroup.get('payment_cycle_policy').patchValue('')
-    if(data == 'Fix Week Day' || data == 'Fix Date'){
+    if (data == 'Fix Week Day' || data == 'Fix Date') {
       var date = new Date(this.formGroup.get('expiry_date').value)
       date.setFullYear(new Date().getFullYear() + 1)
       this.formGroup.get('expiry_date').patchValue(date)
-    }else{
+    } else {
       this.formGroup.get('expiry_date').patchValue(new Date())
     }
 
@@ -203,28 +205,37 @@ export class WalletCreditEntryComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-    this.disableBtn = true;
-    const json = this.formGroup.getRawValue();
-    json['master_agent_id'] = json.master_agent_id.id || '';
-    json['expiry_date'] =  DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd')
 
+    const executeMethod = () => {
+      this.disableBtn = true;
+      const json = this.formGroup.getRawValue();
+      json['master_agent_id'] = json.master_agent_id.id || '';
+      json['expiry_date'] = DateTime.fromJSDate(new Date(this.formGroup.get('expiry_date').value)).toFormat('yyyy-MM-dd')
 
-    this.walletService.create(json).subscribe({
-      next: () => {
+      this.walletService.create(json).subscribe({
+        next: () => {
           this.disableBtn = false;
           this.matDialogRef.close(true);
           if (json.id) {
-              this.alertService.showToast('success', 'Record modified', 'top-right', true);
+            this.alertService.showToast('success', 'Record modified', 'top-right', true);
           }
           else {
-              this.alertService.showToast('success', 'New record added', 'top-right', true);
+            this.alertService.showToast('success', 'New record added', 'top-right', true);
           }
-      },
-      error: (err) => {
-          this.alertService.showToast('error',err,'top-right',true);
+        },
+        error: (err) => {
+          this.alertService.showToast('error', err, 'top-right', true);
           this.disableBtn = false;
-      },
-  });
+        },
+      });
+
+    }
+
+    // Method to execute a function after verifying OTP if needed
+    this._userService.verifyAndExecute(
+      { title: 'account_wallet_credit_add' },
+      () => executeMethod()
+    );
 
   }
 

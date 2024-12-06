@@ -29,6 +29,7 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
 	selector: 'app-pending',
@@ -56,7 +57,7 @@ import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 		CommonModule,
 		MatTabsModule,
 		PrimeNgImportsModule,
-        ClipboardModule
+		ClipboardModule
 	],
 })
 export class PendingComponent extends BaseListingComponent {
@@ -93,10 +94,11 @@ export class PendingComponent extends BaseListingComponent {
 		private walletService: WalletService,
 		private conformationService: FuseConfirmationService,
 		private matDialog: MatDialog,
-        private clipboard: Clipboard,
+		private clipboard: Clipboard,
 		public agentService: AgentService,
 		private entityService: EntityService,
 		public _filterService: CommonFilterService,
+		private _userService: UserService,
 	) {
 		super(module_name.wallet)
 		this.key = this.module_name;
@@ -126,7 +128,7 @@ export class PendingComponent extends BaseListingComponent {
 		}, 1000);
 		this._filterService.selectionDateDropdown = "";
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-		this._filterService.selectionDateDropdown = "";
+			this._filterService.selectionDateDropdown = "";
 			this.selectedAgent = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPSP = resp['table_config']['psp_name']?.value;
@@ -163,12 +165,12 @@ export class PendingComponent extends BaseListingComponent {
 		});
 	}
 
-    copyLink(element: any): void {
-        if(element){
-            this.clipboard.copy(element.paymentlink);
-            this.alertService.showToast('success', 'Copied');
-        }
-    }
+	copyLink(element: any): void {
+		if (element) {
+			this.clipboard.copy(element.paymentlink);
+			this.alertService.showToast('success', 'Copied');
+		}
+	}
 
 	ngAfterViewInit() {
 		// Defult Active filter show
@@ -225,45 +227,54 @@ export class PendingComponent extends BaseListingComponent {
 		})
 	}
 
-    generatePaymentLink(data: any){
+	generatePaymentLink(data: any) {
 		if (!Security.hasPermission(walletRechargePermissions.generatePaymentLink)) {
 			return this.alertService.showToast('error', messages.permissionDenied);
 		}
 
-        let newMessage: any;
-        const label: string = 'Generate Payment Link'
-        newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
+		let newMessage: any;
+		const label: string = 'Generate Payment Link'
+		newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
 		this.conformationService.open({
 			title: label,
 			message: newMessage
 		}).afterClosed().subscribe({
 			next: (res) => {
 				if (res === 'confirmed') {
-                    let json = {
-                        reference_table_id: data?.id ? data?.id : "",
-                        service_for: "Wallet",
-                        mop: data?.mop ? data?.mop : ""
-                    }
-					this.walletService.generatePaymentLink(json).subscribe({
-						next: (res) => {
-                            // let paymentLink: any;
-                            // // paymentLink = res.url;
-                            // paymentLink = "https://sandbox.partner.bontonholidays.com//payment-link/Py8oKMeAJxzDrz3hLS31aKuLM1wuDYR0cvLAQ5r8thpfoE2H079eHFAlaA0$R87LaA0$dy"
-                            // this.matDialog.open(PaymentLinkCopyComponent, {
-                            //     panelClass: 'full-dialog',
-                            //     data: paymentLink,
-                            //     disableClose: true
-                            // });
 
-							this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
-							this.refreshItemsPending();
-							this.entityService.raiseWalletAuditedCall(data.id);
-						}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-					});
+					const executeMethod = () => {
+						let json = {
+							reference_table_id: data?.id ? data?.id : "",
+							service_for: "Wallet",
+							mop: data?.mop ? data?.mop : ""
+						}
+						this.walletService.generatePaymentLink(json).subscribe({
+							next: (res) => {
+								// let paymentLink: any;
+								// // paymentLink = res.url;
+								// paymentLink = "https://sandbox.partner.bontonholidays.com//payment-link/Py8oKMeAJxzDrz3hLS31aKuLM1wuDYR0cvLAQ5r8thpfoE2H079eHFAlaA0$R87LaA0$dy"
+								// this.matDialog.open(PaymentLinkCopyComponent, {
+								//     panelClass: 'full-dialog',
+								//     data: paymentLink,
+								//     disableClose: true
+								// });
+
+								this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
+								this.refreshItemsPending();
+								this.entityService.raiseWalletAuditedCall(data.id);
+							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+						});
+					}
+
+					// Method to execute a function after verifying OTP if needed
+					this._userService.verifyAndExecute(
+						{ title: 'account_wallet_recharge_generate_payment_link' },
+						() => executeMethod()
+					);
 				}
 			}
 		})
-    }
+	}
 
 	getMopList(value: string) {
 		this.walletService.getModeOfPaymentCombo(value).subscribe((data) => {
@@ -308,16 +319,25 @@ export class PendingComponent extends BaseListingComponent {
 		}).afterClosed().subscribe({
 			next: (res) => {
 				if (res === 'confirmed') {
-					this.walletService.setRechargeAudit(data.id).subscribe({
-						next: () => {
-							this.alertService.showToast('success', "Wallet Recharge Audited", "top-right", true);
-							this.refreshItemsPending();
-							this.entityService.raiseWalletAuditedCall(data.id);
-						}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-					});
+					const executeMethod = () => {
+						this.walletService.setRechargeAudit(data.id).subscribe({
+							next: () => {
+								this.alertService.showToast('success', "Wallet Recharge Audited", "top-right", true);
+								this.refreshItemsPending();
+								this.entityService.raiseWalletAuditedCall(data.id);
+							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+						});
+					}
+
+					// Method to execute a function after verifying OTP if needed
+					this._userService.verifyAndExecute(
+						{ title: 'account_wallet_recharge_audit' },
+						() => executeMethod()
+					);
 				}
 			}
 		})
+
 	}
 
 	// Reject(record: any): void {
@@ -360,14 +380,22 @@ export class PendingComponent extends BaseListingComponent {
 		}).afterClosed().subscribe({
 			next: (resone) => {
 				if (resone) {
-					this.walletService.setRechargeReject({ id: record.id, reject_reason: resone }).subscribe({
-						next: () => {
-							this.alertService.showToast('success', "Wallet Recharge Rejected", "top-right", true);
-							this.refreshItemsPending()
-							this.entityService.raiseWalletRejectedCall(record.id);
-						},
-						error: (err) => this.alertService.showToast('error', err, "top-right", true)
-					})
+					const executeMethod = () => {
+						this.walletService.setRechargeReject({ id: record.id, reject_reason: resone }).subscribe({
+							next: () => {
+								this.alertService.showToast('success', "Wallet Recharge Rejected", "top-right", true);
+								this.refreshItemsPending()
+								this.entityService.raiseWalletRejectedCall(record.id);
+							},
+							error: (err) => this.alertService.showToast('error', err, "top-right", true)
+						})
+					}
+
+					// Method to execute a function after verifying OTP if needed
+					this._userService.verifyAndExecute(
+						{ title: 'account_wallet_recharge_reject' },
+						() => executeMethod()
+					);
 				}
 			}
 		})
