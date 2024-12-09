@@ -7,10 +7,6 @@
 
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
             <!------Global Search------>
-            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
-                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
-            </mat-form-field> -->
             <div class="flex ctm_search">
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
                     (keyup.enter)="refreshItems()" />
@@ -24,6 +20,16 @@
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <!--             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+            </p-overlayPanel> -->
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
@@ -59,26 +65,17 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
-            styleClass="p-datatable-gridlines p-datatable-sm">
+        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="" styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <!-- <th class="min-w-[175px] max-w-[175px]" pSortableColumn="reference_no" pResizableColumn alignFrozen="left"
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
-                        [ngClass]="{'left-0': !frozenObj?.reference_no}">
-                        Ref. No <p-sortIcon field="reference_no" />
-                        <span class="float-right" (click)="isFrozenColumn('reference_no');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.reference_no" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.reference_no" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th> -->
+                    <!-- <th class="  text-center left-[-1px]" pFrozenColumn>#</th> -->
 
                     <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="reference_no"
                         pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
@@ -91,61 +88,67 @@
                     </th>
 
                     <th pSortableColumn="amendment_type" pResizableColumn>
-                        Type <p-sortIcon field="amendment_type" />
+                        Amendment Type <p-sortIcon field="amendment_type" />
                     </th>
-                    <!-- <th pSortableColumn="amendment_status" pResizableColumn>
-                        Status <p-sortIcon field="amendment_status" />
-                    </th> -->
-                    <th class="min-w-[145px]" pSortableColumn="amendment_status" pResizableColumn>
-                        Status <p-sortIcon field="amendment_status" />
-                        <span class="float-right" (click)="isFrozenColumn('amendment_status');$event.stopPropagation()">
-                        </span>
+
+                    <th class="min-w-[145px] flex justify-between items-center" pSortableColumn="amendment_status"
+                        pResizableColumn>
+                        <div>
+                            Status <p-sortIcon field="amendment_status" />
+                        </div>
+                        <mat-icon class="mat-18" class="icon-size-4"
+                            (click)="statusInfo();$event.stopPropagation()">info</mat-icon>
                     </th>
-                    <th pSortableColumn="agency_name" pResizableColumn>
-                        Agent <p-sortIcon field="agency_name" />
-                    </th>
+
                     <th class="" pSortableColumn="company_name" pResizableColumn>
                         Supplier <p-sortIcon field="company_name" />
                     </th>
-                    <th pSortableColumn="booking_ref_no" pResizableColumn>
-                        Flight No. <p-sortIcon field="booking_ref_no" />
+
+                    <th pSortableColumn="agency_name" pResizableColumn>
+                        Agent <p-sortIcon field="agency_name" />
                     </th>
+
+                    <th pSortableColumn="agent_code" pResizableColumn>
+                        Agent Code <p-sortIcon field="agent_code" />
+                    </th>
+
+                    <th pSortableColumn="booking_ref_no" pResizableColumn>
+                        Booking Ref. No. <p-sortIcon field="booking_ref_no" />
+                    </th>
+
                     <th pSortableColumn="pnr" pResizableColumn>
                         PNR <p-sortIcon field="pnr" />
                     </th>
-                    <th pSortableColumn="gds_pnr" pResizableColumn>
-                        GDS PNR <p-sortIcon field="gds_pnr" />
+
+                    <th pSortableColumn="amendment_request_time" pResizableColumn>
+                        Requested Time <p-sortIcon field="amendment_request_time" />
                     </th>
-                    <th  [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="amendment_request_time" pResizableColumn>
+
+                    <th pSortableColumn="updated_date_time" pResizableColumn>
+                        Updated Time <p-sortIcon field="updated_date_time" />
+                    </th>
+
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns;">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+
+                        <!-- <th  [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="amendment_request_time" pResizableColumn>
                         Requested On <p-sortIcon field="amendment_request_time" />
                     </th>
                     <th class="min-w-[200px]" pSortableColumn="travel_date" pResizableColumn>
                         Travel Date <p-sortIcon field="travel_date" />
                     </th>
                     <th class="min-w-[200px]" pSortableColumn="amendment_confirmation_time" pResizableColumn>
-                        Confirmed <p-sortIcon field="amendment_confirmation_time" />
+                        Confirmed <p-sortIcon field="amendment_confirmation_time" /> -->
                     </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <!-- <th class="left-[-1px]" pFrozenColumn></th> -->
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
                         <p-columnFilter type="text" matchMode="contains" field="reference_no"
                             placeholder="Search by Ref. No" ariaLabel="Filter Ref. No" />
                     </th>
-                    <!-- <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status">
-                        <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
-                                    appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option}}</p>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th> -->
+
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.amendment_type">
                         <p-columnFilter field="amendment_type" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -172,9 +175,10 @@
                             </ng-template>
                         </p-columnFilter> -->
 
-                        <p-columnFilter  field="amendment_status" matchMode="in" [showMenu]="false">
+                        <p-columnFilter field="amendment_status" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect class="multi-checkbox-filter status-filter" [ngModel]="value" [options]="statusList" optionLabel="label" placeholder="Select Status"
+                                <p-multiSelect class="multi-checkbox-filter status-filter" [ngModel]="value"
+                                    [options]="statusList" optionLabel="label" placeholder="Select Status"
                                     (onChange)="filter($event.value)" [filter]="true" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
@@ -183,7 +187,8 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th>
+
+                    <!-- <th>
                         <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -202,7 +207,7 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
+                    </th> -->
                     <th>
                         <!-- <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
                             [showMenu]="false">
@@ -227,8 +232,7 @@
                         <p-columnFilter field="company_name" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
-                                    placeholder="Select Supplier" (onChange)="filter($event.value)"
-                                    appendTo="body">
+                                    placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
                                     <ng-template let-agent pTemplate="item">
                                         <div>
                                             {{agent.company_name}}
@@ -238,95 +242,155 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
+
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList"
+                                    optionLabel="agent_info" [filter]="true" filterBy="agent_info"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div [value]="agent.id">
+                                                <div class="m-0">
+                                                    {{agent.code}} - {{agent.agency_name}}
+                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="contains" field="agent_code"
+                            placeholder="Search by Agent Code" ariaLabel="Filter agent_code" />
+                    </th>
+
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
-                            placeholder="Search by Flight No." ariaLabel="Filter Flight No." />
+                            placeholder="Search by Booking Ref. No." ariaLabel="Filter Flight No." />
                     </th>
 
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
                             ariaLabel="Filter PNR" />
                     </th>
+
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR"
-                            ariaLabel="Filter GDS PNR" />
-                    </th>
-                    <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'" field="amendment_request_time" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter field="amendment_request_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
-                                    optionLabel="label" placeholder="Select Option" 
-                                    appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'amendment_request_time')">
-                                            <div>{{option.label}}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
+                                </p-calendar>
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'" >
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="amendment_request_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
                                             (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>
+                   
                     <th>
-                        <p-columnFilter field="travel_date" type="date">
+                        <p-columnFilter field="updated_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                    appendTo="body" placeholder="Search by Travel Date">
+                                <p-calendar selectionMode="range" [ngModel]="value"
+                                    (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                    dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="updated_date_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
-                    <th>
-                        <p-columnFilter field="amendment_confirmation_time" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                    appendTo="body" placeholder="Search by Confirmed">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
+
                     <th *ngFor="let col of columns">
+                        <!-- Travel Date -->
+                        <ng-container *ngIf="col.field == 'travel_date'">
+                            <p-columnFilter field="travel_date" type="date">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                        appendTo="body" placeholder="Search by Travel Date">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                        </ng-container>
+
+                        <!-- Status for Agent -->
+                        <ng-container *ngIf="col.field == 'status_for_agent'">
+                            <p-columnFilter field="status_for_agent" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusListForAgent"
+                                        (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
+                                        appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.field !== 'status_for_agent' && col.field !== 'travel_date'">
+                            <p-columnFilter type="text" [field]="col.field" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" />
+                        </ng-container>
                     </th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
-                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
-                            <mat-icon> more_vert </mat-icon>
-                        </span>
+                    <!-- <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <mat-menu #optionMenu>
                             <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Info</span>
                             </button>
-                            <button mat-menu-item *ngIf="showUpdateCharge(element) || isMenuOpen"
-                                (click)="updateCharge(element)">
+                            <button mat-menu-item *ngIf="showUpdateCharge(element)" (click)="updateCharge(element)">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Update Charge</span>
-                            </button>
-                            <!-- <button mat-menu-item
+                            </button> -->
+
+                    <!-- <button mat-menu-item
                                 *ngIf="element.amendment_status === 'Confirm' && element.amendment_status !== 'Quotation Sent'"
                                 (click)="complete(element)">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Complete</span>
                             </button> -->
 
-                            <button mat-menu-item (click)="completeAmendment(element)"
+                    <!--                           Amendment commented -->
+                    <!--                             <button mat-menu-item (click)="completeAmendment(element)"
                                 *ngIf="element.amendment_status == 'Confirm' || isMenuOpen">
                                 <mat-icon svgIcon="heroicons_solid:check-circle"></mat-icon>
                                 <span style="font-weight: 600">Complete</span>
@@ -342,9 +406,9 @@
                                 *ngFor="let status of element.actionStatus">
                                 <mat-icon class="mat-18">{{status.icon}}</mat-icon>
                                 <span style="font-weight: 600">{{status.label}}</span>
-                            </button>
+                            </button> -->
 
-                            <!-- <mat-divider
+                    <!-- <mat-divider
                                 *ngIf="(element.amendment_status.toLowerCase() == 'payment completed' || element.amendment_status.toLowerCase() == 'quotation confirmed by ta') ||
                                     element.amendment_status.toLowerCase() == 'confirmation sent to supplier' || element.amendment_status.toLowerCase() == 'refund completed'"></mat-divider>
 
@@ -364,14 +428,15 @@
                                 <span style="font-weight: 600">Complete</span>
                             </button> -->
 
-                            <mat-divider></mat-divider>
+                    <!-- <mat-divider></mat-divider>
                             <button mat-menu-item (click)="statusLogs(element)">
                                 <mat-icon class="mat-18">text_snippet</mat-icon>
                                 <span style="font-weight: 600">Status Logs</span>
                             </button>
                         </mat-menu>
-                    </td>
-                    <td class="min-w-[175px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
+                    </td> -->
+                    <td class="min-w-[175px] cursor-pointer underline hover:text-primary-200" alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.reference_no" (click)="view(element)">
                         {{element.reference_no || "-"}}
                     </td>
 
@@ -384,44 +449,38 @@
                         </span>
                     </td>
                     <td>
-                        {{element.agency_name || "-"}}
-                    </td>
-                    <td>
                         {{element.company_name || "-"}}
                     </td>
                     <td>
-                        {{element.booking_ref_no || "-"}}
+                        {{element.agency_name || "-"}}
+                    </td>
+                    <td>
+                        {{element.agent_code || "-"}}
+                    </td>
+                    <td>
+                        <span class="cursor-pointer hover:text-primary-200 underline" (click)="viewData(element)">
+                            {{element.booking_ref_no || "-"}}
+                        </span>
                     </td>
                     <td>
                         {{element.pnr || "-"}}
                     </td>
                     <td>
-                        {{element.gds_pnr || "-"}}
-                    </td>
-                    <td>
                         {{(element.amendment_request_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
                     <td>
-                        {{(element.travel_date | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td class="w-full min-w-[160px]">
-                        {{(element.amendment_confirmation_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
+                        {{(element.updated_date_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
                     <td *ngFor="let col of columns">
-                        <!-- <ng-container *ngIf="!col['isDate']">
-                            {{element[col.field] || "-"}}
-                        </ng-container>
-
-                        <ng-container *ngIf="col['isDate']">
-                            {{(element[col.field] | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
-                        </ng-container> -->
+                        {{col.field == 'travel_date' || col.field == 'sup_refund_date' ? (element[col.field] ?
+                        (element[col.field] | date:'dd-MM-yyyy HH:mm:ss') :'') : (element[col.field] || "-")}}
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="16" class="text-center font-semibold text-lg">
+                    <td colspan="18" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
@@ -429,3 +488,6 @@
         </p-table>
     </div>
 </div>
+<app-update-charge></app-update-charge>
+<app-amendment-request-entry></app-amendment-request-entry>
+<app-status-info></app-status-info>

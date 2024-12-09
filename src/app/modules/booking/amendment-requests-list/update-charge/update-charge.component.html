@@ -1,165 +1,237 @@
-<div class="flex flex-col max-w-[52rem] min-w-[52rem] max-h-screen -m-6">
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'"
+    [name]="'updateChargeDrawer'" [position]="'right'" #updateChargeDrawer>
 
-    <!-- Header -->
-    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
-        <div class="text-lg font-medium text-white">{{title}}</div>
-        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
-            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-        </button>
+    <div class="flex flex-col w-full overflow-auto max-h-[calc(100vh-60px)] px-2 bg-card">
+
+        <!-- Header -->
+        <div
+            class="flex flex-row items-center sticky top-0 px-3 border-b h-13 min-h-13 dark:text-white bg-white dark:bg-card">
+            <div class="text-lg font-medium tracking-tight">Updates Charge</div>
+            <button class="ml-auto" mat-icon-button (click)="updateChargeDrawer.close()">
+                <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </div>
+
+        <form class="flex flex-col flex-auto py-3" #amendmentForm="ngForm">
+            <div class="grid grid-cols-2 gap-2 px-3 shadow-b-lg">
+                <div class="flex flex-col mb-1">
+                    <div class="flex flex-row space-x-2">
+                        <span class="text-md font-semibold text-secondary">Amedment Type</span>
+                    </div>
+                    <span class="text-base truncate">{{amendmentData?.amendment_type || "--" }}</span>
+                </div>
+                <div class="flex flex-col mb-1">
+                    <div class="flex flex-row space-x-2">
+                        <span class="text-md font-semibold text-secondary">Supplier</span>
+                    </div>
+                    <span class="text-base truncate">{{amendmentData?.company_name || "--" }}</span>
+                </div>
+                <div class="flex flex-col col-span-2 mb-1">
+                    <div class="flex flex-row space-x-2">
+                        <span class="text-md font-semibold text-secondary">Agent</span>
+                    </div>
+                    <span class="text-base truncate">{{amendmentData?.agent_name || "--" }}</span>
+                </div>
+                <div class="flex flex-col col-span-2 mb-1">
+                    <div class="flex flex-row space-x-2">
+                        <span class="text-md font-semibold text-secondary">Flight No.</span>
+                    </div>
+                    <span class="text-base truncate underline hover:text-primary-200 cursor-pointer"
+                        (click)="amendmentData?.air_booking_id ? viewFlightData() : null">{{amendmentData?.air_booking_number
+                        || " -- " }}</span>
+                </div>
+                <div class="flex flex-col mb-1">
+                    <div class="flex flex-row space-x-2">
+                        <span class="text-md font-semibold text-secondary">Total Pax</span>
+                    </div>
+                    <span class="text-base truncate">{{amendmentData?.pax || "--" }}</span>
+                </div>
+            </div>
+
+            <mat-card class="p-3 rounded-md shadow-lg">
+                <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
+                    <!-- *ngIf="amendmentData && amendmentData.is_adult" -->
+                    <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_adult">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
+                                    Adult Per Pax Charge
+                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Adult Per Pax Charge')"
+                                    [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
+                            </div>
+                        </td>
+                        <td class="border-l p-2">
+                            <mat-form-field class="w-full" style="margin-bottom: -1.25em">
+                                <input matInput type="number" [min]="0" name="adult_charge"
+                                    [(ngModel)]="formObj.adult_charge" (ngModelChange)="calculation()" tabindex="0"
+                                    numbersOnly required>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_child">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
+                                    Child Per Pax Charge
+                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Child Per Pax Charge')"
+                                    [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
+                            </div>
+                        </td>
+                        <td class="border-l p-2">
+                            <mat-form-field class="w-full" style="margin-bottom: -1.25em">
+                                <input matInput type="number" [min]="0" name="child_charge"
+                                    [(ngModel)]="formObj.child_charge" (ngModelChange)="calculation()" tabindex="0"
+                                    numbersOnly required>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr class="border border-blue-border" *ngIf="amendmentData && amendmentData.is_infant">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
+                                    Infant Per Pax Charge
+                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Infant Per Pax Charge')"
+                                    [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
+                            </div>
+                        </td>
+                        <td class="border-l p-2">
+                            <mat-form-field class="w-full" style="margin-bottom: -1.25em">
+                                <input matInput type="number" [min]="0" name="Infant_charge"
+                                    [(ngModel)]="formObj.Infant_charge" (ngModelChange)="calculation()" tabindex="0"
+                                    numbersOnly required>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+            </mat-card>
+
+            <mat-card class="mt-2 p-3 rounded-md shadow-lg">
+                <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
+                    <tr class="border border-blue-border">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
+                                    Supplier Charge
+                                </span>
+                            </div>
+                        </td>
+                        <td class="border-l p-2 pl-6">
+                            {{formObj.supplier_charge || "--" }}
+                        </td>
+                    </tr>
+                    <tr class="border border-blue-border">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
+                                    Bonton Markup
+                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Bonton Markup')"
+                                    [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
+                            </div>
+                        </td>
+                        <td class="border-l p-2 pl-6">
+                            {{getBontonMarkup()}}
+                        </td>
+                    </tr>
+                    <tr class="border border-blue-border">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
+                                    Addon Markup
+                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Addon Markup')"
+                                    [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
+                            </div>
+                        </td>
+                        <td class="border-l p-2">
+                            <mat-form-field class="w-full" style="margin-bottom: -1.25em">
+                                <input matInput type="number" name="addon_markup_value"
+                                    [(ngModel)]="formObj.addon_markup_value" class="focus:outline-none" tabindex="0"
+                                    required>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+            </mat-card>
+
+            <mat-card class="mt-2 p-3 rounded-md shadow-lg"
+                *ngIf="amendmentData && amendmentData.amountType == 'Receipt' && amendmentData.is_segment_amount">
+                <table cellPadding="10px" class="w-full border-collapse border border-blue-border">
+                    <tr class="border border-blue-border">
+                        <td class="border-l w-128">
+                            <div class="flex flex-row gap-2 items-end">
+                                <span>
+                                    Segment Amount
+                                </span>
+                                <mat-icon class="mat-18" class="icon-size-3 cursor-pointer mb-[3px]"
+                                    [matTooltip]="getTooltip('Segment Amount')"
+                                    [matTooltipClass]="'tootlip-Enter'">info</mat-icon>
+                            </div>
+                        </td>
+                        <td class="border-l p-2">
+                            <!-- *ngIf="formGroup.get('is_segment_amount').value == true"  -->
+                            <mat-form-field class="w-full" style="margin-bottom: -1.25em">
+                                <input matInput type="number" [min]="0" name="segment_amount"
+                                    [(ngModel)]="formObj.segment_amount" tabindex="0" numbersOnly required>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                </table>
+            </mat-card>
+
+            <mat-card class="mt-2 mb-3 p-3 rounded-md shadow-lg">
+                <mat-form-field style="margin-bottom: -1.25em">
+                    <mat-label>Remark</mat-label>
+                    <textarea matInput rows="1" name="company_remark" [(ngModel)]="formObj.company_remark"
+                        tabindex="0"></textarea>
+                </mat-form-field>
+            </mat-card>
+
+            <div
+                class="flex dark:bg-gray-700 bg-gray-200 min-h-[65px] w-full items-center px-4 mb-3 my-2 second-color justify-between shadow rounded-lg overflow-hidden">
+                <div class="flex flex-row items-center w-full justify-between overflow-hidden">
+                    <div class="py-4 gap-0.5 flex flex-col justify-center second-color overflow-hidden">
+                        <span class="text-base truncate">
+                            Quotation Proof
+                        </span>
+                        <span class="text-secondary text-sm font-light leading-[14px]">
+                            Please attach the supplier's mail screenshot.
+                        </span>
+                    </div>
+
+                    <div class="flex flex-row items-end justify-center space-x-1">
+                        <button mat-icon-button [matTooltip]="'Download'" (click)="download(formObj.quotation_proof)"
+                            [disabled]="!formObj.quotation_proof">
+                            <mat-icon class="icon-size-6" [ngClass]="formObj.quotation_proof ? 'text-primary':''"
+                                [svgIcon]="'heroicons_outline:download'"></mat-icon>
+                        </button>
+                        <div [hidden]="true">
+                            <input type="file" name="documentUpload" #document2 (change)="uploadDocument($event)">
+                        </div>
+                        <button (click)="document2.click()" [matTooltip]="'Upload'" mat-icon-button>
+                            <mat-icon class="icon-size-6" [svgIcon]="'heroicons_outline:upload'"></mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="flex items-center justify-end pt-4 h-15 sm:mt-0 pb-4 space-x-3 bottom-0 absolute w-full pr-4 dark:bg-[#1e293b] bg-white border-t m-auto">
+                <button mat-stroked-button (click)="updateChargeDrawer.close()">Close</button>
+                <button mat-flat-button [color]="'primary'" type="submit" (click)="submit(amendmentForm.form)"
+                    [disabled]="disableBtn">
+                    Send Quotation
+                </button>
+            </div>
+        </form>
+
     </div>
-
-    <form class="flex flex-col px-6 pt-6 overflow-y-auto max-h-160" [formGroup]="formGroup">
-
-        <div class="grid grid-cols-4 gap-2">
-            <div class="flex flex-col mb-3">
-                <div class="flex flex-row space-x-2">
-                    <span class="text-md font-semibold text-secondary">Amedment Type</span>
-                </div>
-                <span class="text-base truncate">{{formGroup.get('amendment_type').value || "--" }}</span>
-            </div>
-            <div class="flex flex-col mb-3">
-                <div class="flex flex-row space-x-2">
-                    <span class="text-md font-semibold text-secondary">Agent</span>
-                </div>
-                <span class="text-base truncate">{{formGroup.get('agent_name').value || "--" }}</span>
-            </div>
-            <div class="flex flex-col mb-3">
-                <div class="flex flex-row space-x-2">
-                    <span class="text-md font-semibold text-secondary">Supplier</span>
-                </div>
-                <span class="text-base truncate">{{formGroup.get('company_name').value || "--" }}</span>
-            </div>
-            <div class="flex flex-col mb-3">
-                <div class="flex flex-row space-x-2">
-                    <span class="text-md font-semibold text-secondary">Total Pax</span>
-                </div>
-                <span class="text-base truncate">{{formGroup.get('pax').value || "--" }}</span>
-            </div>
-        </div>
-
-        <mat-divider></mat-divider>
-
-        <div class="flex flex-row space-x-3 mt-3 items-center">
-
-            <!-- <mat-form-field class="flex-grow opacity-60">
-                <mat-label>Pax</mat-label>
-                <input matInput formControlName="pax" readonly>
-            </mat-form-field> -->
-
-            <!-- <mat-form-field class="flex-grow"> -->
-                <!-- <mat-label>Currency</mat-label>
-                <mat-select required formControlName="currency_id" [compareWith]="compareWith">
-                    <mat-option>
-                        <ngx-mat-select-search placeholderLabel="Search"
-                            noEntriesFoundLabel="'no matching currency found'" [formControlName]="'currencyfilter'">
-                        </ngx-mat-select-search>
-                    </mat-option>
-                    <mat-option *ngFor="let ct of CurrencyList" [value]="ct">{{ct.currency_code}}</mat-option>
-                </mat-select> -->
-                <!-- <input matInput [readonly]="readonly" formControlName="agent_name" required> -->
-                <!-- </mat-form-field> -->
-                
-
-            <!-- <mat-form-field class="flex-grow">
-                <mat-label>ROE</mat-label>
-                <input matInput type="number" formControlName="roe" required>
-            </mat-form-field> -->
-
-            <!-- <div class="flex-grow  mb-3">
-                <div class="flex flex-row space-x-2">
-                    <span class="text-md font-semibold text-secondary">Currency</span>
-                </div>
-                <span class="text-base truncate">{{formGroup.get('pax').value || "--" }}</span>
-            </div>
-
-            <div class="flex-grow  mb-3">
-                <div class="flex flex-row space-x-2">
-                    <span class="text-md font-semibold text-secondary">ROE</span>
-                </div>
-                <span class="text-base truncate">{{formGroup.get('pax').value || "--" }}</span>
-            </div> -->
-
-            <mat-form-field class="flex-grow">
-                <mat-label>Total Charge</mat-label>
-                <input matInput type="number" formControlName="base_amount" required>
-            </mat-form-field>
-
-            <!-- *ngIf="formGroup.get('is_segment_amount').value == true" -->
-            <mat-form-field class="flex-grow" *ngIf="formGroup.get('is_segment_amount').value == true">
-                <mat-label>Segment Amount</mat-label>
-                <input matInput type="number" formControlName="segmentAmount">
-            </mat-form-field>
-
-            <!-- <mat-form-field class="flex-grow">
-                <mat-label>Sales Return (Per Person)</mat-label>
-                <input matInput type="number" formControlName="amendment_amount_per_person" required>
-            </mat-form-field>
-
-            <mat-form-field class="flex-grow opacity-60">
-                <mat-label>Sales Return Total</mat-label>
-                <input matInput type="number" [value]="sales_return_total" readonly>
-            </mat-form-field> -->
-           
-        </div>
-
-        <mat-form-field>
-            <mat-label>Note</mat-label>
-            <textarea matInput rows="4" formControlName="company_remark"></textarea>
-        </mat-form-field>
-
-        <!-- <mat-divider></mat-divider> -->
-
-        <!-- <div class="flex flex-row space-x-3 mt-3">
-
-            <div class="flex flex-col mb-3 w-1/3 mt-4">
-                <div class="flex flex-row space-x-2">
-                    <span class="font-semibold text-secondary text-md">Markup</span>
-                </div>
-                <span class="text-base truncate" [matTooltip]="formGroup.get('markup_type').value">{{formGroup.get('markup_value').value || "--" }} {{formGroup.get('markup_type').value || "--" }} </span>
-            </div>
-
-            <mat-form-field class="w-1/3 opacity-60">
-                <mat-label>Gross Sales Return (Per Person)</mat-label>
-                <input type="number" matInput [value]="gross_sales_return_per_person" readonly>
-            </mat-form-field>
-
-            <mat-form-field class="w-1/3 opacity-60">
-                <mat-label>Gross Sales Return Total</mat-label>
-                <input type="number" matInput [value]="gross_sales_return_total" readonly>
-            </mat-form-field>
-
-        </div>
-
-        <div class="flex flex-row space-x-3">
-
-            <div class="flex flex-col mb-3 w-1/3 mt-4">
-                <div class="flex flex-row space-x-2">
-                    <span class="font-semibold text-secondary text-md">Tax</span>
-                </div>
-                <span class="text-base truncate" [matTooltip]="formGroup.get('air_amt_tax_type').value">{{formGroup.get('air_amt_tax_val').value || "--" }}% {{formGroup.get('air_amt_tax_type').value || "--" }} </span>
-            </div>
-
-            <mat-form-field class="w-1/3 opacity-60">
-                <mat-label>Net Sales Return (Per Person)</mat-label>
-                <input type="number" matInput [value]="net_sales_return_per_person" readonly>
-            </mat-form-field>
-
-            <mat-form-field class="w-1/3 opacity-60">
-                <mat-label>Net Sales Return Total</mat-label>
-                <input type="number" matInput [value]="net_sales_return_total" readonly>
-            </mat-form-field>
-
-        </div> -->
-
-    </form>
-
-
-    <div class="flex items-center justify-end mt-4 sm:mt-0 pr-6 pb-4 space-x-3">
-        <button mat-stroked-button (click)="matDialogRef.close()">
-            Close
-        </button>
-        <button mat-flat-button [color]="'primary'" (click)="submit()" >
-            {{btnLabel}}
-        </button>
-    </div>
-</div>
+</fuse-drawer>
