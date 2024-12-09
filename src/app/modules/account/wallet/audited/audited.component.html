@@ -20,7 +20,7 @@
                         <i *ngIf="frozenObj?.reference_number" class="pi pi-lock icon-size-3"></i>
                     </span>
                 </th>
-                <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="request_date_time" pResizableColumn>
+                <th [ngClass]="_filterService.selectionDateDropdown == 'custom_date_range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="request_date_time" pResizableColumn>
                     Request <p-sortIcon field="request_date_time" />
                 </th>
                 <th pSortableColumn="agent_code" pResizableColumn>
