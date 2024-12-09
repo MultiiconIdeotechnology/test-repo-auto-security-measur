@@ -185,7 +185,7 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
           { header: 'Request Date', property: 'requestDate' },
           { header: 'Refund Date', property: 'refundDate' },
           { header: 'Refunded Amount', property: 'refundedAmount' },
-          { header: 'Payment Method', property: 'PaymentMethod' },
+          { header: 'Payment Method', property: 'paymentMethod' },
         ],
         data.data, "PG Refund", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 10 } }]);
     });

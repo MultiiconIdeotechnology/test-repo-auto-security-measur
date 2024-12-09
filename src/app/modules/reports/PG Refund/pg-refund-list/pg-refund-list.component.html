@@ -111,8 +111,8 @@
                     <th class="text-right" pSortableColumn="refundedAmount" pResizableColumn>
                         Refunded Amount <p-sortIcon field="refundedAmount" />
                     </th>
-                    <th pSortableColumn="PaymentMethod" pResizableColumn>
-                        Payment Method <p-sortIcon field="PaymentMethod" />
+                    <th pSortableColumn="paymentMethod" pResizableColumn>
+                        Payment Method <p-sortIcon field="paymentMethod" />
                     </th>
                 </tr>
 
@@ -252,7 +252,7 @@
                             placeholder="Search by Refunded Amount" ariaLabel="Filter Refunded Amount" /> -->
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="PaymentMethod"
+                        <p-columnFilter type="text" matchMode="contains" field="paymentMethod"
                             placeholder="Search by Payment Method" ariaLabel="Filter Payment Method" />
                     </th>
                 </tr>
@@ -275,7 +275,7 @@
                         {{(element.refundDate | date: "dd-MM-yyyy HH:mm:ss") || "-"}}
                     </td>
                     <td class="text-right">{{element.refundedAmount || "-"}}</td>
-                    <td>{{element.PaymentMethod || "-"}}</td>
+                    <td>{{element.paymentMethod || "-"}}</td>
                 </tr>
             </ng-template>
 
