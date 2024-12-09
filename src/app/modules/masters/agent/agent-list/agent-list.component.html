@@ -356,6 +356,18 @@
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
+
+                        <p-columnFilter *ngIf="col.field == 'agent_assign_by'" matchMode="contains" type="text" field="agent_assign_by"
+                            placeholder="Search by Assign By" ariaLabel="Filter Assign By" />
+
+                        <p-columnFilter *ngIf="col.field == 'agent_assign_by_date'" field="agent_assign_by_date"
+                            type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Assign By Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                 </tr>
             </ng-template>
@@ -493,11 +505,11 @@
                             class="w-2 h-2 rounded-full inline-block me-1"
                             [ngClass]="element['is_kyc_completed'] ? 'bg-green-500' : 'bg-red-500'">
                         </div>
-                        <span class="border-b w-fit border-gray-500">{{element.agent_code}}</span>
+                        <span class="border-b w-fit border-gray-500">{{element.agent_code || "-"}}</span>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name" class="cursor-pointer"
                         (click)="view(element)">
-                        <div class="border-b w-fit border-gray-500">{{element.agency_name}}</div>
+                        <div class="border-b w-fit border-gray-500">{{element.agency_name || "-"}}</div>
                         <div class="text-red-500 text-xs" *ngIf="element['is_blocked']">
                             Blocked
                         </div>
@@ -512,7 +524,7 @@
                             <mat-icon class="text-yellow-600 icon-size-4 " [matTooltip]="'Verification Pending'"
                                 *ngIf="!element['is_email_verified'] ">warning
                             </mat-icon>
-                            {{element.email_address}}
+                            {{element.email_address || "-"}}
                         </span>
                     </td>
                     <td>
@@ -523,7 +535,7 @@
                             <mat-icon class="text-yellow-600 icon-size-4" [matTooltip]="'Verification Pending'"
                                 *ngIf="!element['is_mobile_verified'] ">warning
                             </mat-icon>
-                            {{element.mobile_number}}
+                            {{element.mobile_number || "-"}}
                         </span>
                     </td>
                     <td>{{element.currency || "-"}}</td>
@@ -541,7 +553,7 @@
                             {{element[col.field] ? element[col.field].toFixed(2) : element[col.field] }}
                         </ng-container>
 
-                        <ng-container *ngIf="col.field == 'web_last_login_time'">
+                        <ng-container *ngIf="col.field == 'web_last_login_time' || col.field == 'first_transaction_date_time' || col.field == 'first_login_date_time' || col.field == 'agent_assign_by_date'">
                             {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
                         </ng-container>
 
@@ -549,16 +561,12 @@
                             {{element[col.field] || '0'}}
                         </ng-container>
 
-                        <ng-container *ngIf="col.field == 'first_transaction_date_time'">
-                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
-                        </ng-container>
-
-                        <ng-container *ngIf="col.field == 'first_login_date_time'">
-                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+                        <ng-container *ngIf="col.field == 'agent_assign_by'">
+                            {{element[col.field] || 'System'}}
                         </ng-container>
 
                         <ng-container
-                            *ngIf="col.field !== 'is_blocked' && col.field !== 'is_wl' && col.field !== 'is_test' && col.field !== 'balance' && col.field !== 'subagent_count' && col.field !== 'web_last_login_time' && col.field != 'first_transaction_date_time' && col.field !== 'first_login_date_time'">
+                            *ngIf="col.field !== 'is_blocked' && col.field !== 'is_wl' && col.field !== 'is_test' && col.field !== 'balance' && col.field !== 'subagent_count' && col.field !== 'web_last_login_time' && col.field != 'first_transaction_date_time' && col.field !== 'first_login_date_time' && col.field !== 'agent_assign_by_date' && col.field !== 'agent_assign_by'">
                             {{element[col.field] ? element[col.field] : "-" }}
                         </ng-container>
                     </td>

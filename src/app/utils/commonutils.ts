@@ -134,6 +134,13 @@ export class CommonUtils {
         return array;
     }
 
+    public static disableBrowserForwardButton() {
+        history.pushState(null, null, location.href);
+        window.onpopstate = () => {
+            history.go(1);
+        };
+    }
+
     public static setDate(obj: any, property: string): void {
         if (!obj || !property || property === '') {
             return;

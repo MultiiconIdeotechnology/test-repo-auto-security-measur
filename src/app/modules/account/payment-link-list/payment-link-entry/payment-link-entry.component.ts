@@ -131,9 +131,9 @@ export class PaymentLinkComponent implements OnInit, OnDestroy {
                                 this.edit = false;
 
                                 this.formGroup.get("agent_id").patchValue(this.agentList[0]?.id);
-                                this.formGroup.get("service_for").patchValue("Wallet");
+                                // this.formGroup.get("service_for").patchValue("Wallet");
                                 // let mopPatchValue = ""
-                                this.formGroup.get("mop").patchValue("Online");
+                                // this.formGroup.get("mop").patchValue("Online");
                             }
                         }
                     });

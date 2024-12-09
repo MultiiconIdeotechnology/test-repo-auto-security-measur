@@ -50,6 +50,12 @@
         </button>
     </ng-template>
 
+    <button mat-menu-item (click)="openTF2AuthModal()">
+         <img src="assets\icons\tf2_auth_lock-light.svg" alt="auth-lock-light" class="w-[22px] h-[22px] mr-3 dark:hidden">
+         <img src="assets\icons\tf2_auth_lock-dark.svg" alt="auth-lock-dark" class="w-[22px] h-[22px] mr-3 hidden dark:block">
+        <span>TF2 Authentication</span>
+    </button>
+
     <mat-divider class="my-2"></mat-divider>
     <button mat-menu-item (click)="signOut()">
         <mat-icon [svgIcon]="'heroicons_outline:arrow-right-on-rectangle'"></mat-icon>

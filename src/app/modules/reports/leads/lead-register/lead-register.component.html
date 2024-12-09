@@ -40,14 +40,14 @@
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
-            <!-- <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
                 <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
             </button>
             <p-overlayPanel #op>
                 <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
                     [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
-            </p-overlayPanel> -->
+            </p-overlayPanel>
 
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
@@ -310,6 +310,17 @@
                         </ng-container>
                     </th>
                     <th *ngFor="let col of columns">
+                        <p-columnFilter *ngIf="col.field == 'lead_assign_by'" matchMode="contains" type="text" field="lead_assign_by"
+                            placeholder="Search by Assign By" ariaLabel="Filter Assign By" />
+
+                        <p-columnFilter *ngIf="col.field == 'lead_assign_by_date'" field="lead_assign_by_date"
+                            type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Assign By Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                 </tr>
             </ng-template>
@@ -398,14 +409,20 @@
                         {{(element.leadDate | date: 'dd-MM-yyyy') || "-"}}
                     </td>
                     <td *ngFor="let col of columns">
-                        {{element[col.field] || "-"}}
+                        <ng-container *ngIf="col.field == 'lead_assign_by'">
+                            {{element[col.field] || "System"}}
+                        </ng-container>
+    
+                        <ng-container *ngIf="col.field == 'lead_assign_by_date'">
+                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+                        </ng-container>
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="16" class="text-center font-semibold text-lg">
+                    <td colspan="18" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

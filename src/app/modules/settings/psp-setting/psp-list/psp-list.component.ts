@@ -19,6 +19,7 @@ import { PspEntryComponent } from '../psp-entry/psp-entry.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Subscription } from 'rxjs';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
   selector: 'app-psp-list',
@@ -69,7 +70,8 @@ export class PspListComponent extends BaseListingComponent {
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private toasterService: ToasterService,
-    public _filterService: CommonFilterService
+    public _filterService: CommonFilterService,
+    private _userService: UserService,
   ) {
     super(module_name.pspsetting);
     this.key = this.module_name;
@@ -81,22 +83,22 @@ export class PspListComponent extends BaseListingComponent {
 
   ngOnInit() {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        this.primengTable['filters'] = resp['table_config'];
-        this._selectedColumns = resp['selectedColumns'] || [];
-        this.isFilterShow = true;
-        this.primengTable._filter();
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      this.primengTable['filters'] = resp['table_config'];
+      this._selectedColumns = resp['selectedColumns'] || [];
+      this.isFilterShow = true;
+      this.primengTable._filter();
     });
   }
 
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     // Defult Active filter show
-    if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        this.primengTable['filters'] = filterData['table_config'];
-        this._selectedColumns = filterData['selectedColumns'] || [];
-        this.isFilterShow = true;
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.primengTable['filters'] = filterData['table_config'];
+      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
     }
   }
 
@@ -113,7 +115,6 @@ export class PspListComponent extends BaseListingComponent {
       this._selectedColumns = [];
     }
   }
-
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -194,21 +195,30 @@ export class PspListComponent extends BaseListingComponent {
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
-          this.pspsettingService.delete(record.id).subscribe({
-            next: () => {
-              this.toasterService.showToast(
-                'success',
-                'PSP has been Deleted!',
-                'top-right',
-                true
-              );
-              this.refreshItems();
-            },
-            error: (err) => {
-              this.toasterService.showToast('error', err)
-              this.isLoading = false;
-            },
-          });
+
+          const executeMethod = () => {
+            this.pspsettingService.delete(record.id).subscribe({
+              next: () => {
+                this.toasterService.showToast(
+                  'success',
+                  'PSP has been Deleted!',
+                  'top-right',
+                  true
+                );
+                this.refreshItems();
+              },
+              error: (err) => {
+                this.toasterService.showToast('error', err)
+                this.isLoading = false;
+              },
+            });
+          }
+
+          // Method to execute a function after verifying OTP if needed
+          this._userService.verifyAndExecute(
+            { title: 'settings_psp_delete' },
+            () => executeMethod()
+          );
         }
       });
   }
@@ -232,19 +242,29 @@ export class PspListComponent extends BaseListingComponent {
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
-          this.pspsettingService.setDefault(record.id).subscribe({
-            next: () => {
-              this.refreshItems();
-              this.toasterService.showToast(
-                'success',
-                'PSP as Default!'
-              );
-            },
-            error: (err) => {
-              this.toasterService.showToast('error', err)
-              this.isLoading = false;
-            },
-          });
+
+          const executeMethod = () => {
+            this.pspsettingService.setDefault(record.id).subscribe({
+              next: () => {
+                this.refreshItems();
+                this.toasterService.showToast(
+                  'success',
+                  'PSP as Default!'
+                );
+              },
+              error: (err) => {
+                this.toasterService.showToast('error', err)
+                this.isLoading = false;
+              },
+            });
+          }
+
+          // Method to execute a function after verifying OTP if needed
+          this._userService.verifyAndExecute(
+            { title: 'settings_psp_set_default' },
+            () => executeMethod()
+          );
+
         }
       });
   }
@@ -289,6 +309,8 @@ export class PspListComponent extends BaseListingComponent {
     const label: string = record.is_active
       ? 'Deactive PSP'
       : 'Active PSP';
+
+    const title:string = record.is_active ? 'settings_psp_deactive' : 'settings_psp_active';
     this.conformationService
       .open({
         title: label,
@@ -302,7 +324,9 @@ export class PspListComponent extends BaseListingComponent {
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
-          this.pspsettingService
+
+          const executeMethod = () => { 
+            this.pspsettingService
             .setActiveDeactive(record.id)
             .subscribe({
               next: () => {
@@ -332,6 +356,13 @@ export class PspListComponent extends BaseListingComponent {
                 this.isLoading = false;
               },
             });
+          }
+
+          // Method to execute a function after verifying OTP if needed
+          this._userService.verifyAndExecute(
+            { title: title },
+            () => executeMethod()
+          );
         }
       });
   }

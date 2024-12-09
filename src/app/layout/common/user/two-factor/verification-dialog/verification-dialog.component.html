@@ -1,0 +1,53 @@
+<div class="flex flex-col" id="two-factor">
+    <div class="flex items-center justify-center -mx-6 px-6">
+        <div class="flex items-center">
+            <h1 class="text-3xl font-semibold text-[#0B0D0E] font-Inter dark:text-white">
+                {{data.title}} Verification
+            </h1>
+        </div>
+    </div>
+
+    <div class="body">
+        <div [ngSwitch]="data.tfa_type" class="text-center text-lg text-gray-700 dark:text-blue-300 py-2">
+            <ng-container *ngSwitchCase="'AuthApp'">
+                Open your authenticator app to view your six-digit security code.
+            </ng-container>
+            <ng-container *ngSwitchCase="'Whatsapp'">
+                Enter the six-digit security code sent to your registered WhatsApp mobile number ({{user?.company_number }}).
+            </ng-container>
+            <ng-container *ngSwitchCase="'SMS'">
+                Enter the six-digit security code sent to your registered mobile number ({{ user?.company_number }}).
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+                Please select a valid two-factor authentication method.
+            </ng-container>
+        </div>
+
+
+        <div class="text-center flex justify-center pt-1">
+            <ng-otp-input #ngOtpInput (onInputChange)="onOtpChange($event)"
+                [config]="twoFaAuthenticationService.otpConfig">
+            </ng-otp-input>
+        </div>
+
+        <div class="flex justify-center items-center pt-8">
+            <!-- <button mat-flat-button
+                class="px-7 dark:text-white rounded-full min-w-[140px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
+                (click)="matDialogRef.close()">
+                Close
+            </button> -->
+
+            <button mat-stroked-button class="px-7 rounded-full min-w-[140px] min-h-11 text-lg mr-4 font-Inter"
+                (click)="matDialogRef.close()">
+                Close
+            </button>
+
+            <button mat-flat-button [color]="'primary'"
+                class="px-7 text-white min-w-[140px] min-h-11 rounded-full text-lg font-Inter"
+                (click)="verifyOtp(data.tfa_type)" [disabled]="authotp?.length < 6 || disableBtn">
+                Verify
+            </button>
+
+        </div>
+    </div>
+</div>

@@ -23,6 +23,8 @@ import { RejectedComponent } from 'app/modules/account/wallet/rejected/rejected.
 import { PaymentComponent } from '../payment/payment.component';
 import { ReceiptComponent } from '../receipt/receipt.component';
 import { InvoiceComponent } from '../invoice/invoice.component';
+import { CommonUtils } from 'app/utils/commonutils';
+import { FlightTabService } from 'app/services/flight-tab.service';
 
 @Component({
   selector: 'app-offline-info',
@@ -62,13 +64,17 @@ export class OfflineInfoComponent {
   @ViewChild('sales') sales: SalesComponent;
 
   isSecound: boolean = true
+  isLoading: boolean = true
   isInvoiceGenerated: boolean = false;
 
-  fieldList: {};
+  fieldList: any[] = [];
   tabName: any
   tabNameStr: any = 'Purchase'
   tab: string = 'Purchase';
   id: string
+  status: string = '';
+  creditNoteId: string = '';
+  is_receipt_generated: boolean = false;
   agent_currency_id: string = '';
   currency_short_code: string = '';
   OfflineRoute = Routes.booking.offline_service_route;
@@ -77,9 +83,24 @@ export class OfflineInfoComponent {
     private router: Router,
     public route: ActivatedRoute,
     private offlineService: OfflineserviceService,
+    private flighttabService: FlightTabService,
     private toastr: ToasterService,
 
   ) {
+  }
+
+  downloadCreditNote() {
+    if (!this.creditNoteId) return;
+    this.isLoading = true;
+    this.flighttabService.Invoice(this.creditNoteId).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, 'credit note.pdf');
+        this.isLoading = false;
+      }, error: (err) => {
+        this.toastr.showToast('error', err);
+        this.isLoading = false;
+      }
+    })
   }
 
   close() {
@@ -89,34 +110,55 @@ export class OfflineInfoComponent {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.id = params.get('id');
-
-      this.offlineService.getOfflineServiceBookingRecord(this.id).subscribe({
-        next: (data) => {
-          this.agent_currency_id = data.currency_id;
-          this.currency_short_code = data.currency_short_code;
-          this.isInvoiceGenerated = data.status.toLowerCase() == "completed";
-          this.fieldList = [
-            { name: 'Ref.No', value: data.booking_ref_number, },
-            { name: 'Agency Name', value: data.agency_name, },
-            { name: 'Status', value: data.status, },
-            { name: 'Lead Pax Name', value: data.lead_pax_name, },
-            { name: 'Lead Pax Email', value: data.lead_pax_email, },
-            { name: 'Lead Pax Mobile', value: data.lead_pax_mobile, },
-            { name: 'Invoice Generate Date', value: data.invoice_generate_date ? DateTime.fromISO(data.invoice_generate_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '', },
-            { name: 'Operation Person', value: data.operation_person, },
-            { name: 'Sales Person', value: data.sales_person, },
-            { name: 'Entry Date Time', value: data.entry_date_time ? DateTime.fromISO(data.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '', },
-          ];
-        },
-        error: (err) => {
-          this.toastr.showToast('error', err, 'top-right', true);
-        },
-      }
-      )
+      this.apiCall();
     });
   }
 
-  updateInvoiceGenerat(){
+  apiCall() {
+    this.offlineService.getOfflineServiceBookingRecord(this.id).subscribe({
+      next: (data) => {
+        this.agent_currency_id = data.currency_id;
+        this.currency_short_code = data.currency_short_code;
+        this.status = data.status;
+        this.creditNoteId = data.creditNoteId;
+        this.is_receipt_generated = data.is_receipt_generated;
+        this.isInvoiceGenerated = data.status.toLowerCase() == "completed" || data.status.toLowerCase() == "cancelled";
+        this.fieldList = [
+          { name: 'Ref.No', value: data.booking_ref_number, },
+          { name: 'Agency Name', value: data.agency_name, },
+          { name: 'Status', value: data.status, },
+          { name: 'Lead Pax Name', value: data.lead_pax_name, },
+          { name: 'Lead Pax Email', value: data.lead_pax_email, },
+          { name: 'Lead Pax Mobile', value: data.lead_pax_mobile, },
+          { name: 'Invoice Generate Date', value: data.invoice_generate_date ? DateTime.fromISO(data.invoice_generate_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '', },
+          { name: 'Operation Person', value: data.operation_person, },
+          { name: 'Sales Person', value: data.sales_person, },
+          { name: 'Entry Date Time', value: data.entry_date_time ? DateTime.fromISO(data.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '', },
+        ];
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.toastr.showToast('error', err, 'top-right', true);
+        this.isLoading = false;
+      },
+    })
+  }
+
+  getStatusColor(status: string): string {
+    if (status == 'Pending') {
+      return 'text-orange-600';
+    } else if (status == 'Completed') {
+      return 'text-green-600';
+    } else if (status == 'Rejected' || status == 'Cancelled') {
+      return 'text-red-600';
+    } else if (status == 'New') {
+      return 'text-blue-600';
+    } else {
+      return '';
+    }
+  }
+  
+  updateInvoiceGenerat() {
     this.isInvoiceGenerated = true;
   }
 
@@ -149,6 +191,25 @@ export class OfflineInfoComponent {
         this.tab = 'Invoice';
         break;
     }
+  }
+
+  Reverse() {
+    this.isLoading = true;
+    this.offlineService.reverseOsbEntry({ OsbId: this.id }).subscribe({
+      next: (data) => {
+        if (data.status) {
+          this.toastr.showToast('success', "Osb reverse generated successfully!");
+          this.creditNoteId = data.id;
+          this.status = 'Cancelled';
+          this.fieldList.find(x => x.name == 'Status').value = this.status;
+          this.updateInvoiceGenerat();
+        }
+        this.isLoading = false;
+      }, error: (err) => {
+        this.toastr.showToast('error', err);
+        this.isLoading = false;
+      },
+    })
   }
 
 }

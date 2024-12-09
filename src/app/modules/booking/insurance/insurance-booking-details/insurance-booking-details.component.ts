@@ -99,7 +99,6 @@ export class InsuranceBookingDetailsComponent {
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-
       this.insuranceService.getInsuranceBookingRecord(id).subscribe({
         next: res => {
           this.mainData = res.data;
@@ -128,7 +127,8 @@ export class InsuranceBookingDetailsComponent {
   }
 
   viewPolicy(data){
-    Linq.recirect(data);
+    window.open(data, '_blank')
+    // Linq.recirect(data);
   }
 
   agentInfo(data): void {

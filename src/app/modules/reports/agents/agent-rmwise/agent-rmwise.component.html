@@ -101,6 +101,9 @@
                     <th pSortableColumn="total_Inactive_Agent" pResizableColumn class="text-center">
                         Inactive <p-sortIcon field="total_Inactive_Agent" />
                     </th>
+                    <th pSortableColumn="total_Dormant_Agent" pResizableColumn class="text-center">
+                        Dormant <p-sortIcon field="total_Dormant_Agent" />
+                    </th>
                     <th class="w-full" pSortableColumn="total_Block_Agent" pResizableColumn>
                         Blocked <p-sortIcon field="total_Block_Agent" />
                     </th>
@@ -141,6 +144,10 @@
                             ariaLabel="Filter Inactive" />
                     </th>
                     <th>
+                        <p-columnFilter type="numeric" field="total_Dormant_Agent" placeholder="Search by Dormant"
+                            ariaLabel="Filter Dormant" />
+                    </th>
+                    <th>
                         <p-columnFilter type="numeric" field="total_Block_Agent" placeholder="Search by Blocked"
                             ariaLabel="Filter Blocked" />
                     </th>
@@ -156,6 +163,7 @@
                     <td class="text-center">{{element.total_New_Agent ? element.total_New_Agent : 0}}</td>
                     <td class="text-center">{{element.total_Active_Agent ? element.total_Active_Agent : 0}}</td>
                     <td class="text-center">{{element.total_Inactive_Agent ? element.total_Inactive_Agent : 0}}</td>
+                    <td class="text-center">{{element.total_Dormant_Agent ? element.total_Dormant_Agent : 0}}</td>
                     <td>
                         <div class="pl-[25px]">
                             {{element.total_Block_Agent ? element.total_Block_Agent : 0}}

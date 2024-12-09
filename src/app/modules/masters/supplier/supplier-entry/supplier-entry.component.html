@@ -29,6 +29,17 @@
         </div>
         <div class="flex flex-row gap-3">
             <mat-form-field class="flex-grow">
+                <mat-label>Domestic Charge</mat-label>
+                <input [readonly]="readonly" matInput type="number" required formControlName="dom_charge">
+            </mat-form-field>
+
+            <mat-form-field class="flex-grow">
+                <mat-label>International Charge</mat-label>
+                <input [readonly]="readonly" type="number" matInput required formControlName="int_charge">
+            </mat-form-field>
+        </div>
+        <div class="flex flex-row gap-3">
+            <mat-form-field class="flex-grow">
                 <mat-label>Mobile Code</mat-label>
                 <mat-select formControlName="mobile_code" required *ngIf="!readonly">
                     <mat-option>

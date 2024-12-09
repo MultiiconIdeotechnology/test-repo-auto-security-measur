@@ -75,8 +75,18 @@ export class AuthService {
         return this._httpClient.post(environment.apiUrl + 'auth/emp/resetPassword', model);
     }
 
-    Login(code, credentials, is_master): Observable<any> {
-        return this._httpClient.post(this.baseUrl + 'auth/emp/login', { code, is_master }).pipe(
+    Login(code: any, credentials: any, is_master: any, twoFaAuth?: any): Observable<any> {
+        let body: any = {
+            code: code, 
+            is_master: is_master
+        }
+
+        if(twoFaAuth && twoFaAuth.authtype) {
+            body.otp = twoFaAuth.otp;
+            body.authtype = twoFaAuth.authtype;
+        }
+
+        return this._httpClient.post(this.baseUrl + 'auth/emp/login', body).pipe(
             switchMap((response: any) => {
                 // Store the access token in the local storage
                 localStorage.setItem('filterData', JSON.stringify(response?.filterData || []));
@@ -86,6 +96,7 @@ export class AuthService {
                 this.storeInfo(response, credentials.rememberMe)
                 // Store the user on the user service
                 const user = JSON.parse(this.decrypt(keys.permissionHash, response.user))
+                
                 this._userService.user = user;
                 // Return a new observable with the response
                 return of(response);

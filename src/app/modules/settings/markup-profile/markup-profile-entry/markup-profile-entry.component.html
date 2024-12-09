@@ -54,7 +54,7 @@
             <mat-tab label="Details">
                 <ng-template matTabContent>
 
-                    <div class="flex gap-2 w-full">
+                    <div class="flex gap-2 w-full pt-3">
                         <div class="w-[14%] border-r border-gray-200 dark:border-gray-800 ">
                             <ul class="flex-column text-md font-medium text-gray-500 dark:text-gray-400 ">
                                 <li class="cursor-pointer" (click)="onDetail('airline_wise_markup')"
@@ -67,7 +67,7 @@
                                     [ngClass]="selectedDetailTab == 'amendment' ? 'green-tick text-[#0d9488] dark:bg-gray-800 bg-gray-200':' dark:text-white/60'">
                                     <a class="inline-flex items-center pl-4 pr-1 py-3 active w-full"
                                         aria-current="page">
-                                        Amendment Markup 
+                                        Amendment Markup
                                     </a>
                                 </li>
                                 <li class="cursor-pointer" (click)="onDetail('holiday')"
@@ -312,6 +312,38 @@
                                                     formControlName="air_correction_type" />
                                             </div>
                                         </mat-form-field>
+
+                                        <mat-form-field>
+                                            <mat-label>Miscellaneous Quotation - SSR</mat-label>
+                                            <div class="flex flex-row items-center justify-between w-full">
+                                                <input type="number" class="w-18 pr-3" matInput [readonly]="readonly"
+                                                    formControlName="air_misc_val" min="0" />
+                                                <mat-select required *ngIf="!readonly" formControlName="air_misc_type"
+                                                    class="min-w-[calc(100%-72px)]">
+                                                    <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
+                                                        {{ tl.viewValue }}
+                                                    </mat-option>
+                                                </mat-select>
+                                                <input matInput type="text" *ngIf="readonly" [readonly]="readonly"
+                                                    formControlName="air_misc_type" />
+                                            </div>
+                                        </mat-form-field>
+
+                                        <mat-form-field>
+                                            <mat-label>Miscellaneous Quotation - Refund</mat-label>
+                                            <div class="flex flex-row items-center justify-between w-full">
+                                                <input type="number" class="w-18 pr-3" matInput [readonly]="readonly"
+                                                    formControlName="air_misc_refund_val" min="0" />
+                                                <mat-select required *ngIf="!readonly" formControlName="air_misc_refund_type"
+                                                    class="min-w-[calc(100%-72px)]">
+                                                    <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
+                                                        {{ tl.viewValue }}
+                                                    </mat-option>
+                                                </mat-select>
+                                                <input matInput type="text" *ngIf="readonly" [readonly]="readonly"
+                                                    formControlName="air_misc_refund_type" />
+                                            </div>
+                                        </mat-form-field>
                                     </div>
 
                                     <div class="grid grid-cols-4 gap-3 w-full items-center pr-2 mt-2">
@@ -365,22 +397,6 @@
                                                     formControlName="air_int_reissue_type" />
                                             </div>
                                         </mat-form-field>
-
-                                        <!-- <mat-form-field>
-                                            <mat-label>Air Miscellaneous</mat-label>
-                                            <div class="flex flex-row items-center justify-between w-full">
-                                                <input type="number" class="w-18 pr-3" matInput [readonly]="readonly"
-                                                    formControlName="air_misc_val" min="0" />
-                                                <mat-select required *ngIf="!readonly" formControlName="air_misc_type"
-                                                    class="min-w-[calc(100%-72px)]">
-                                                    <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
-                                                        {{ tl.viewValue }}
-                                                    </mat-option>
-                                                </mat-select>
-                                                <input matInput type="text" *ngIf="readonly" [readonly]="readonly"
-                                                    formControlName="air_misc_type" />
-                                            </div>
-                                        </mat-form-field> -->
 
                                         <mat-form-field>
                                             <mat-label>Air No Show</mat-label>
@@ -463,6 +479,38 @@
                                                     formControlName="air_int_correction_type" />
                                             </div>
                                         </mat-form-field>
+
+                                        <mat-form-field>
+                                            <mat-label>Miscellaneous Quotation - SSR</mat-label>
+                                            <div class="flex flex-row items-center justify-between w-full">
+                                                <input type="number" class="w-18 pr-3" matInput [readonly]="readonly"
+                                                    formControlName="air_int_misc_val" min="0" />
+                                                <mat-select required *ngIf="!readonly" formControlName="air_int_misc_type"
+                                                    class="min-w-[calc(100%-72px)]">
+                                                    <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
+                                                        {{ tl.viewValue }}
+                                                    </mat-option>
+                                                </mat-select>
+                                                <input matInput type="text" *ngIf="readonly" [readonly]="readonly"
+                                                    formControlName="air_int_misc_type" />
+                                            </div>
+                                        </mat-form-field>
+
+                                        <mat-form-field>
+                                            <mat-label>Miscellaneous Quotation - Refund</mat-label>
+                                            <div class="flex flex-row items-center justify-between w-full">
+                                                <input type="number" class="w-18 pr-3" matInput [readonly]="readonly"
+                                                    formControlName="air_int_misc_refund_val" min="0" />
+                                                <mat-select required *ngIf="!readonly" formControlName="air_int_misc_refund_type"
+                                                    class="min-w-[calc(100%-72px)]">
+                                                    <mat-option *ngFor="let tl of typeAir_list" [value]="tl.value">
+                                                        {{ tl.viewValue }}
+                                                    </mat-option>
+                                                </mat-select>
+                                                <input matInput type="text" *ngIf="readonly" [readonly]="readonly"
+                                                    formControlName="air_int_misc_refund_type" />
+                                            </div>
+                                        </mat-form-field>
                                     </div>
                                     <div class="flex flex-row space-x-3 w-full items-center mb-5">
                                         <button mat-stroked-button color="primary" *ngIf="!readonly"
@@ -473,8 +521,8 @@
                                 </form>
 
                                 <!-- <form [formGroup]="DetailFormGroup" *ngIf="selectedDetailTab == 'amend_int'"> -->
-                                   
-                                    <!-- <div class="flex flex-row space-x-3 w-full items-center mb-5">
+
+                                <!-- <div class="flex flex-row space-x-3 w-full items-center mb-5">
                                         <button mat-stroked-button color="primary" *ngIf="!readonly"
                                             [disabled]="DetailFormGroup.invalid" (click)="AddDetailb2b()">
                                             {{ Detail }}
@@ -1275,7 +1323,7 @@
 
             <mat-tab label="Group Inquiry">
                 <ng-template matTabContent>
-                    <div class="flex flex-col overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="GroupInquiryFormGroup">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <mat-form-field class="min-w-52 w-[24%]">
@@ -1358,7 +1406,7 @@
 
             <mat-tab label="Destination">
                 <ng-template matTabContent>
-                    <div class="flex flex-col mt-4 overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="DestinationFormGroup" *ngIf="!readonly">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <!-- <mat-radio-group aria-label="Select an option" required formControlName="profile_type">
@@ -1541,7 +1589,7 @@
 
             <mat-tab label="Visa">
                 <ng-template matTabContent>
-                    <div class="flex flex-col mt-4 overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="VisaFormGroup" *ngIf="!readonly">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <!-- <mat-radio-group aria-label="Select an option" required formControlName="profile_type">
@@ -1593,7 +1641,7 @@
                                     </div>
                                 </mat-form-field>
 
-                               
+
 
                                 <button mat-stroked-button color="primary" *ngIf="!readonly" (click)="AddVisa()">
                                     {{ Visa }}
@@ -1725,7 +1773,7 @@
 
             <mat-tab label="Supplier">
                 <ng-template matTabContent>
-                    <div class="flex flex-col mt-4 overflow-hidden">
+                    <div class="flex flex-col overflow-hidden pt-3">
                         <form [formGroup]="SupplierFormGroup" *ngIf="!readonly">
                             <div class="flex flex-row space-x-3 w-full items-center">
                                 <!-- <mat-radio-group aria-label="Select an option" required formControlName="profile_type">

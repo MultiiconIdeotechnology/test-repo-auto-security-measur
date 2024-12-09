@@ -65,8 +65,8 @@ export class DocumentsListComponent
     _selectedColumns: Column[];
 
     cols: any = [
-        { field: 'rejection_note', header: 'Rejection Note', type:'text' },
-        { field: 'reject_date_time', header: 'Reject Date Time', type: 'date'},
+        { field: 'rejection_note', header: 'Rejection Note', type: 'text' },
+        { field: 'reject_date_time', header: 'Reject Date Time', type: 'date' },
     ];
     isFilterShow: boolean = false;
     selectedStatus: string;
@@ -108,12 +108,12 @@ export class DocumentsListComponent
             DocName: ''
         }
     }
-    
+
     ngOnInit(): void {
         this.getDocList();
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this.selectedDocument = resp['table_config']['kyc_profile_doc_name']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
@@ -129,7 +129,7 @@ export class DocumentsListComponent
             this.isFilterShow = true;
             this.primengTable._filter();
         });
-        
+
     }
 
     ngAfterViewInit() {
@@ -180,11 +180,11 @@ export class DocumentsListComponent
         return filterReq;
     }
 
-    refreshItems(event?:any): void {
+    refreshItems(event?: any): void {
         this.isLoading = true;
         let extraModel = this.getFilter();
         let oldModel = this.getNewFilterReq(event)
-        let model = {...extraModel, ...oldModel};
+        let model = { ...extraModel, ...oldModel };
         this.KycdocumentService.getdocumentList(model).subscribe({
             next: (data) => {
                 this.isLoading = false;
@@ -211,15 +211,15 @@ export class DocumentsListComponent
         })
     }
 
-       // Currency List api
-    getDocList(){
+    // Currency List api
+    getDocList() {
         this.kycDocService.getDocumentTypeCombo("").subscribe((data) => {
             this.documentList = data;
 
-            for(let i in this.documentList){
+            for (let i in this.documentList) {
                 this.documentList[i].id_by_value = this.documentList[i].document_name;
-             }
-        } );
+            }
+        });
     }
 
     createInternal(model): void {
@@ -328,7 +328,7 @@ export class DocumentsListComponent
         }).afterClosed().subscribe({
             next: (res) => {
                 if (res === 'confirmed') {
-                    this.KycdocumentService.verify({id : data.id}).subscribe({
+                    this.KycdocumentService.verify({ id: data.id }).subscribe({
                         next: () => {
                             this.alertService.showToast('success', "Document Audited", "top-right", true);
                             this.refreshItems();

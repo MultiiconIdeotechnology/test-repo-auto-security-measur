@@ -122,7 +122,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     ]
 
     cols: Column[] = [
-        { field: 'contact_person_mobile_code', header: 'Contact Person Mobile Code' }
+        { field: 'lead_assign_by', header: 'Assign By'},
+        { field: 'lead_assign_by_date', header: 'Assign By Date'},
     ];
     _selectedColumns: Column[];
     leadStatus: any;

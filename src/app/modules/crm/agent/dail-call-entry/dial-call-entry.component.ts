@@ -140,7 +140,8 @@ export class CRMDialCallEntryComponent extends BaseListingComponent implements O
         [
             { value: 'Rate', viewValue: 'Rate' },
             { value: 'Service', viewValue: 'Service' },
-            { value: 'Features', viewValue: 'Features' }
+            { value: 'Features', viewValue: 'Features' },
+            { value: 'Other', viewValue: 'Other' }
         ];
 
     purposeList: any[] =

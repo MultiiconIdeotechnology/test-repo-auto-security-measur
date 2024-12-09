@@ -30,6 +30,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { Linq } from 'app/utils/linq';
 import { SupplierService } from 'app/services/supplier.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-markup-profile-entry',
@@ -78,7 +79,8 @@ export class MarkupProfileEntryComponent {
     Visa = "Add";
     Supplier = "Add";
     compnyList: any[] = [];
-    selectedDetailTab:string = "airline_wise_markup"
+    selectedDetailTab: string = "airline_wise_markup"
+    recordId:any;
 
     markupprofileList: any[] = [
         "Company",
@@ -172,7 +174,8 @@ export class MarkupProfileEntryComponent {
         public destinationService: DestinationService,
         public cityService: CityService,
         private pspsettingService: PspSettingService,
-        private supplierService: SupplierService
+        private supplierService: SupplierService,
+        private _userService: UserService,
     ) { }
 
     ngOnInit(): void {
@@ -235,8 +238,14 @@ export class MarkupProfileEntryComponent {
             air_int_ins_can_val: [0, Validators.required],
             air_int_reissue_type: ['Flat for Full Amendment', Validators.required],
             air_int_reissue_val: [0, Validators.required],
-            // air_misc_type: ['Flat for Full Amendment', Validators.required],
-            // air_misc_val: [0, Validators.required],
+            air_misc_type: ['Flat for Full Amendment', Validators.required],
+            air_misc_val: [0, Validators.required],
+            air_int_misc_type: ['Flat for Full Amendment', Validators.required],
+            air_int_misc_val: [0, Validators.required],
+            air_misc_refund_type: ['Flat for Full Amendment', Validators.required],
+            air_misc_refund_val: [0, Validators.required],
+            air_int_misc_refund_type: ['Flat for Full Amendment', Validators.required],
+            air_int_misc_refund_val: [0, Validators.required],
             air_int_no_show_type: ['Flat for Full Amendment', Validators.required],
             air_int_no_show_val: [0, Validators.required],
             air_int_void_type: ['Flat for Full Amendment', Validators.required],
@@ -450,6 +459,7 @@ export class MarkupProfileEntryComponent {
 
         this.route.paramMap.subscribe(params => {
             const id = params.get('id');
+            this.recordId = params.get('id');
             const readonly = params.get('readonly');
 
             if (id) {
@@ -466,11 +476,22 @@ export class MarkupProfileEntryComponent {
                             for (var md of this.record.markup_details) {
                                 this.detailList.push(md);
                                 const b2b = this.detailList.find(x => x.profile_type === 'B2B')
-                                this.DetailFormGroup.patchValue(b2b);
-                                this.GroupInquiryFormGroup.patchValue(b2b);
-                                const b2c = this.detailList.find(x => x.profile_type === 'B2C')
 
-                                this.DetailFormGroupOne.patchValue(b2c);
+                                if(b2b){
+                                    const filteredB2B = Object.fromEntries(
+                                        Object.entries(b2b).filter(([key, value]) => !!value) 
+                                      );
+                                      this.DetailFormGroup.patchValue(filteredB2B);
+                                      this.GroupInquiryFormGroup.patchValue(filteredB2B);
+                                }
+
+                                const b2c = this.detailList.find(x => x.profile_type === 'B2C')
+                                if(b2c){
+                                    const filteredB2C= Object.fromEntries(
+                                        Object.entries(b2c).filter(([key, value]) => !!value) 
+                                      );
+                                      this.DetailFormGroupOne.patchValue(filteredB2C);
+                                }
                                 this.Detail = 'Save';
                             }
                         }
@@ -999,26 +1020,38 @@ export class MarkupProfileEntryComponent {
             return;
         }
 
-        this.disableBtn = true;
-        const json = this.formGroup.getRawValue();
-        json['company_id'] =  json.company_id;
-        this.markupprofileService.create(json).subscribe({
-            next: (res) => {
-                this.disableBtn = false;
-                this.toasterService.showToast('success', this.btnTitle === 'Create' ? 'Markup profile Created' : 'Markup profile Saved');
+        const title:string = this.recordId ? 'settings_markup_modify': 'settings_markup_add';
 
-                this.markupprofileService.getMarkup(res.id).subscribe({
-                    next: data => {
-                        this.record = data;
-                        this.formGroup.patchValue(this.record)
-                    }
-                })
+        const executeMethod = () => {
+            this.disableBtn = true;
+            const json = this.formGroup.getRawValue();
+            json['company_id'] = json.company_id;
+            this.markupprofileService.create(json).subscribe({
+                next: (res) => {
+                    this.disableBtn = false;
+                    this.toasterService.showToast('success', this.btnTitle === 'Create' ? 'Markup profile Created' : 'Markup profile Saved');
+    
+                    this.markupprofileService.getMarkup(res.id).subscribe({
+                        next: data => {
+                            this.record = data;
+                            this.formGroup.patchValue(this.record)
+                        }
+                    })
+    
+                }, error: (err) => {
+                    this.disableBtn = false;
+                    this.toasterService.showToast('error', err);
+                }
+            })
+         }
 
-            }, error: (err) => {
-                this.disableBtn = false;
-                this.toasterService.showToast('error', err);
-            }
-        })
+        // Method to execute a function after verifying OTP if needed
+        this._userService.verifyAndExecute(
+            { title: title },
+            () => executeMethod()
+        );
+
+    
     }
 
     changeprofile() {
@@ -1033,7 +1066,7 @@ export class MarkupProfileEntryComponent {
         return v1 && v2 && v1.id === v2.id;
     }
 
-    onDetail(val:any){
+    onDetail(val: any) {
         this.selectedDetailTab = val;
     }
 
