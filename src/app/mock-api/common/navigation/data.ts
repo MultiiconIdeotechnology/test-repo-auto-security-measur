@@ -432,6 +432,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         link: Routes.account.purchase_register_route
                     },
                     {
+                        id: 'reports.pg_refund',
+                        title: 'PG Refund',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_PG-REFUND_VIEW',
+                        icon: '',
+                        link: Routes.reports.pg_refund_route
+                    },
+                    {
                         id: 'reports.receipt_register',
                         title: 'Receipt Register',
                         type: 'basic',
