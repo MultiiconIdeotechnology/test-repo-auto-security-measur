@@ -75,6 +75,7 @@ export class AmendmentRequestEntryComponent {
     amendmentInfoList: any[] = [];
     paxInfoList: any;
     chargesList: any[] = [];
+    roeList: any[] = [];
     booking_id: any
     recordList: any;
     titleCharge: any;
@@ -228,6 +229,16 @@ export class AmendmentRequestEntryComponent {
                             { name: "No. of Pax", value: data.pax_info.length },
                             { name: name2, value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
+
+                        if (data.currency != "INR") {
+                            this.roeList = [
+                                { name: "Total Amount", value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
+                                { name: "ROE", value: data.b2bcharges?.roe },
+                                { name: `${data.currency} Amount`, value: `${data.currency} ${(data.b2bcharges?.roe * data.charges?.converted_charge)?.toFixed(2)}` },
+                            ];
+                        } else {
+                            this.roeList = [];
+                        }
                         // // if (this.recordList.is_refundable) {
                         //     this.chargesList.unshift({ name: 'Cancellation Charge', value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` })
                         // }
@@ -252,7 +263,7 @@ export class AmendmentRequestEntryComponent {
             disableClose: true
         })
     }
-    
+
     cancelReq() {
         if (!Security.hasPermission(amendmentRequestsPermissions.cancelAmendmentPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
