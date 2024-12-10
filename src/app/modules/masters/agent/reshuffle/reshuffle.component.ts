@@ -91,6 +91,7 @@ export class ReshuffleComponent {
         { value: 'New', viewValue: 'New' },
         { value: 'Active', viewValue: 'Active' },
         { value: 'Inactive', viewValue: 'Inactive' },
+        { value: 'Dormant', viewValue: 'Dormant' },
     ];
 
     statusTypeLead: any[] = [
@@ -381,6 +382,9 @@ export class ReshuffleComponent {
                 else if (this.mode2statusToCount == 'Inactive') {
                     this.finalagentmode2statusToCount = this.mode2agentStatusToCountNew1?.inactiveCount ? this.mode2agentStatusToCountNew1?.inactiveCount : 0;
                 }
+                else if (this.mode2statusToCount == 'Dormant') {
+                    this.finalagentmode2statusToCount = this.mode2agentStatusToCountNew1?.dormantCount ? this.mode2agentStatusToCountNew1?.dormantCount : 0;
+                }
                 else if (this.mode2statusToCount == 'All') {
                     const totalCount = this.mode2agentStatusToCountNew1?.activeCount + this.mode2agentStatusToCountNew1?.inactiveCount + this.mode2agentStatusToCountNew1?.newCount;
                     this.finalagentmode2statusToCount = totalCount;
@@ -426,7 +430,7 @@ export class ReshuffleComponent {
         this.disableBtn = true;
         const json1 = this.mode1Form.getRawValue();
         const json2 = this.mode2Form.getRawValue();
-        let mode = {}
+        let mode: any = {}
         if (this.tabNameStr == 'Mode 1') {
             mode = {
                 "FromId": json1.FromId,
@@ -472,6 +476,11 @@ export class ReshuffleComponent {
                 "LeadToConverted": this.mode2leadStatusToCount?.convertedCount ? this.mode2leadStatusToCount?.convertedCount: 0,
                 "LeadToDead": this.mode2leadStatusToCount?.deadCount ? this.mode2leadStatusToCount?.deadCount: 0,
                 "LeadCount" : this.finalmode2statusToCount
+            }
+
+            if(mode && mode['Status'] == 'All') {
+                this.alertService.showToast('error', "Please select any one status", 'top-right', true);
+                return;
             }
         }
 

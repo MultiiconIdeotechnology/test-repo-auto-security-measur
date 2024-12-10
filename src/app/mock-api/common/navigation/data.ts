@@ -222,14 +222,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.account.receipt_path
             },
             // Hide Payment link functionality
-            // {
-            //     id: 'reports.payment_link',
-            //     title: 'Payment Link',
-            //     type: 'basic',
-            //     pid: 'ACCOUNT_PAYMENTLINK_VIEW',
-            //     icon: 'heroicons_outline:link',
-            //     link: Routes.account.payment_link_path
-            // }
+            {
+                id: 'reports.payment_link',
+                title: 'Payment Link',
+                type: 'basic',
+                pid: 'ACCOUNT_PAYMENTLINK_VIEW',
+                icon: 'heroicons_outline:link',
+                link: Routes.account.payment_link_path
+            }
         ]
     },
     {
@@ -430,6 +430,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         pid: 'REPORTS-ACCOUNTS_PURCHASEREGISTER_VIEW',
                         icon: '',
                         link: Routes.account.purchase_register_route
+                    },
+                    {
+                        id: 'reports.pg_refund',
+                        title: 'PG Refund',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_PG-REFUND_VIEW',
+                        icon: '',
+                        link: Routes.reports.pg_refund_route
                     },
                     {
                         id: 'reports.receipt_register',

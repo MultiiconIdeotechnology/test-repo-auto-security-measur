@@ -975,4 +975,16 @@ div:where(.swal2-container) button:where(.swal2-close){
     transform: translatey(-50%);
 }
 
-  
+.ng-otp-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.ng-otp-input-box {
+    width: 44px !important;
+    height: 44px !important;
+    margin: 5px 0;
+    font-size: 18px !important;
+    text-align: center;
+}

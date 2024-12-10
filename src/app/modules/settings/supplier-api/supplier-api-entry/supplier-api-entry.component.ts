@@ -17,6 +17,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
   selector: 'app-supplier-api-entry',
@@ -76,6 +77,7 @@ export class SupplierApiEntryComponent {
     private supplierapiService: SupplierApiService,
     private supplierService: SupplierService,
     public alertService: ToasterService,
+    private _userService: UserService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
     this.record = data?.data ?? {}
@@ -168,17 +170,28 @@ export class SupplierApiEntryComponent {
       return;
     }
 
-    this.disableBtn = true;
-    const json = this.formGroup.getRawValue();
-    this.supplierapiService.create(json).subscribe({
-      next: () => {
-        this.matDialogRef.close(true);
-        this.disableBtn = false;
-      }, error: (err) => {
-        this.disableBtn = false;
-        this.alertService.showToast('error', err, "top-right", true);
-      }
-    })
+    let title = this.record.id ? 'settings_supplier_api_modify':'settings_supplier_api_add';
+
+    const executeMethod = () => {
+      this.disableBtn = true;
+      const json = this.formGroup.getRawValue();
+      this.supplierapiService.create(json).subscribe({
+        next: () => {
+          this.matDialogRef.close(true);
+          this.disableBtn = false;
+        }, error: (err) => {
+          this.disableBtn = false;
+          this.alertService.showToast('error', err, "top-right", true);
+        }
+      })
+    }
+
+    // Method to execute a function after verifying OTP if needed
+    this._userService.verifyAndExecute(
+      { title: title },
+      () => executeMethod()
+    );
+
   }
 
 }

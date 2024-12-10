@@ -89,7 +89,7 @@ export class GroupInquiryListComponent
     ) {
         super(module_name.groupInquiry);
         this.key = this.module_name;
-        this.sortColumn = 'departure_date';
+        this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);

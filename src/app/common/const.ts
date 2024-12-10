@@ -272,6 +272,8 @@ export const Routes = {
 
         purchase_register_path: 'account/purchase_register',
         purchase_register_route: 'account/purchase_register',
+
+        
     },
 
     leads:{
@@ -401,6 +403,8 @@ export const Routes = {
         agent_summary_path: 'reports/agent_summary',
         agent_summary_route: 'reports/agent_summary',
     
+        pg_refund_path: 'account/pg_refund',
+        pg_refund_route: 'account/pg_refund',
     },
 
     settings: {
