@@ -706,6 +706,22 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.inventory.visa_route
             },
             // {
+            //     id: 'inventory.holidayNew',
+            //     title: 'Holiday v2',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_HOLIDAYV2_VIEW',
+            //     icon: 'heroicons_outline:newspaper',
+            //     link: Routes.inventory.holiday_v2_route
+            // },
+            // {
+            //     id: 'inventory.cab',
+            //     title: 'Cab',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_VISA_VIEW',
+            //     icon: 'heroicons_outline:newspaper',
+            //     // link: Routes.inventory.visa_route
+            // },
+            // {
             //     id: 'inventory.markupProfile',
             //     title: 'Markup Profile',
             //     type: 'basic',

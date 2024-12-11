@@ -1,38 +1,34 @@
 <div class="flex flex-col pt-5 max-w-[1200px] min-w-[1200px] m-auto" *ngIf="record">
     <div>
         <div class="flex flex-col mb-4">
-            <span class="text-2xl font-semibold">{{
-                record?.product_name
-                }}</span>
+            <span class="text-2xl font-semibold">{{record.product?.product_name}}</span>
             <div class="font-medium flex items-center my-1">
-                <span>{{ record.no_of_nights }} Nights |
-                    {{ record.no_of_days }} Days</span><span
+                <span>{{ record.product?.no_of_nights }} Nights |
+                    {{ record.product?.no_of_days }} Days</span><span
                     class="h-[6px] w-[6px] block rounded-full bg-black mx-2"></span>
-                <span class="secondary-text pr-1" *ngFor="let ct of DisplayDetails.CitiesList; let index = index">({{
-                    ct.no_of_night
-                    }}N) in {{ ct.city }}
-                    {{ index != DisplayDetails.CitiesList.length - 1 ? "|" : "" }}
+                <span class="secondary-text pr-1" *ngFor="let ct of DisplayDetails.CitiesList; let index = index">
+                    ({{ct.no_of_nights}}N) in {{ ct.display_name }}{{ index != DisplayDetails.CitiesList.length - 1 ? "|" : "" }}
                 </span>
             </div>
         </div>
         <div class="images mb-10">
             <div class="img space-x-4 h-60 flex mb-4">
-                <img [src]="img" class="rounded-xl w-[33%] object-fill" *ngFor="let img of getImages(0, 3)" />
+                <img [src]="img.imageUrl" class="rounded-xl w-[33%] object-fill" *ngFor="let img of getImages(0, 3)" />
             </div>
             <div class="img space-x-4 h-44 flex">
                 <div *ngFor="
                         let img of getImages(3, 8);
                         let index = index
                     " class="w-[20%] h-44">
-                    <img [src]="img" class="rounded-xl h-44 object-fill w-full" />
+                    <img [src]="img.imageUrl" class="rounded-xl h-44 object-fill w-full" />
                 </div>
                 <div class="relative h-44 flex items-center justify-center rounded-xl w-[20%] overflow-hidden cursor-pointer"
                     [ngClass]="{
                         onshadow: getImages(8).length > 1
-                    }" (click)="allImages(DisplayDetails.SecondImageList)" *ngIf="getImages(8).length > 0">
+                    }" (click)="allImages(DisplayDetails.SecondImageList)">
+                    {{getImages(8)[0] | json}}
                     <img [src]="getImages(8)[0]" class="h-44 object-fill" />
-                    <span *ngIf="getImages(8).length > 1" class="z-10 absolute text-xl font-semibold text-white">View
-                        All</span>
+                    <span *ngIf="getImages(8).length > 1" class="z-10 absolute text-xl font-semibold text-white">View All</span>
                 </div>
             </div>
         </div>
@@ -79,12 +75,9 @@
                                 ">
                                 <div class="absolute left-0 top-4 flex">
                                     <div class="w-16 flex flex-col">
-                                        <span class="text-primary-500 font-semibold">Day {{ fl.day_no }}</span>
-                                        <span class="text-primary-500 font-medium text-xs">{{
-                                            deppDate
-                                            .plus({ days: index })
-                                            .toFormat("dd-MM-yyyy")
-                                            }}</span>
+                                        <span class="text-primary-500 font-semibold">Day {{ fl.dayNo }}</span>
+                                        <span class="text-primary-500 font-medium text-xs">
+                                            {{deppDate.plus({ days: index }).toFormat("dd-MM-yyyy")}}</span>
                                     </div>
                                     <span
                                         class="block w-4 h-4 primary-bg rounded-full border-2 bg-[#1e293b] border-[#365a57] outline-2 outline outline-[#365a57] ng-star-inserted"></span>
@@ -94,7 +87,7 @@
                                         [checked]="fl.checked" />
                                     <label class="tab-label flex flex-col relative" [for]="'chck' + index">
                                         <span class="text-lg font-medium text-secondary">
-                                            {{ fl.day_itinerary_highlight }}
+                                            {{ fl.highlight }}
                                         </span>
                                         <span class="font-medium pb-2 secondary-text">{{ fl.city }}</span>
 
@@ -261,7 +254,7 @@
                                                     </div>
                                                 </div> -->
 
-                                            <div *ngIf="ht.images.length === 0">
+                                            <div *ngIf="ht.image.length === 0">
                                                 <img class="min-h-40 max-h-40 max-w-56 min-w-56 rounded-xl" [src]="
                                                             'assets/icons/hotel.svg'
                                                         " alt="" />
@@ -302,7 +295,7 @@
                 </div>
             </div>
 
-            <div *ngIf="DisplayDetails.TransferList.length > 0" class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
+            <!-- <div *ngIf="DisplayDetails.TransferList.length > 0" class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
                 <div class="text-xl font-semibold px-4 pb-3 text-secondary border-b">
                     Transport
                 </div>
@@ -330,8 +323,8 @@
                     </div>
 
                 </div>
-            </div>
-
+            </div> -->
+<!-- 
             <div *ngIf="DisplayDetails.ActivityList.length > 0" class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
                 <div class="text-xl font-semibold px-4 pb-3 text-secondary border-b">
                     Activity
@@ -351,18 +344,6 @@
                                     <div class="tab-content flex space-x-4">
                                         <ngx-slick-carousel class="carousel h-24 max-w-40 min-w-40"
                                             #slickModal="slick-carousel" [config]="slideConfig">
-                                            <!-- <div ngxSlickItem *ngFor="
-                                                        let slide of act.images
-                                                    " class="slide rounded-xl">
-                                                    <div *ngIf="
-                                                            act.images.length >
-                                                            0
-                                                        ">
-                                                        <img [src]="slide" alt=""
-                                                            class="min-h-40 max-h-40 max-w-50 min-w-50 rounded-xl" />
-                                                    </div>
-                                                </div> -->
-
                                             <div *ngIf="act.images.length === 0">
                                                 <img class="min-h-10 max-h-10 max-w-40 min-w-40 rounded-xl"
                                                     [src]="'assets/icons/hiking.svg'" alt="" />
@@ -380,7 +361,7 @@
                     </div>
 
                 </div>
-            </div>
+            </div> -->
 
             <!-- <div *ngIf="DisplayDetails.OtherInclusionList.length > 0"
                 class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
