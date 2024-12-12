@@ -23,10 +23,10 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { ReplaySubject } from 'rxjs';
 import { MatSliderModule } from '@angular/material/slider';
-import { ImageCarouselComponent } from '../../Holiday/image-carousel/image-carousel.component';
 import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/compact.component';
 import { SelectHolidayPaxComponent } from '../select-holiday-pax/select-holiday-pax.component';
 import { HolidayVersionTwoService } from 'app/services/holidayversion2.service ';
+import { ImageCarouselComponent } from '../image-carousel/image-carousel.component';
 
 
 @Component({
@@ -72,6 +72,7 @@ export class ViewHolidayDetailsComponent {
   tab: number;
   showDetails: boolean = false;
   private id: string;
+  viewAllImage:any = ""
 
   record: any = {};
 
@@ -196,7 +197,7 @@ export class ViewHolidayDetailsComponent {
               console.log("this.displayDetails", this.DisplayDetails)
             }
             if (this.record.flight?.length > 0) {
-              this.DisplayDetails.FlightsList = Linq.groupBy(this.record.flight, (x: any) => x.trip_type);
+              this.DisplayDetails.FlightsList = Linq.groupBy(this.record.flight, (x: any) => x.sector);
               this.tab = 0
             } else {
               this.tab = 1
@@ -245,7 +246,7 @@ export class ViewHolidayDetailsComponent {
                 x.toDate = lastDate.plus({ day: x.no_of_nights }).toFormat('EEE, dd MMM yyyy');
                 lastDate = lastDate.plus({ day: x.no_of_nights })
               })
-              let hotelGrp: any[] = Linq.groupBy(this.record.hotel.sort((a, b) => a.order_by_no - b.order_by_no), (x: any) => x.city_name);
+              let hotelGrp: any[] = Linq.groupBy(this.record.hotel, (x: any) => x.city_name);
               this.DisplayDetails.HotelsList = hotelGrp;
             }
             // if (data.transfer.length > 0) {
@@ -262,6 +263,7 @@ export class ViewHolidayDetailsComponent {
 
             //   // this.DisplayDetails.OtherInclusionList = data.other_inclusions.sort((a, b) => a.order_by_no - b.order_by_no);
             // }
+            console.log("displaylist>>>", this.DisplayDetails)
           },
           error: err => {
             this.createDetailModel();
@@ -319,7 +321,7 @@ export class ViewHolidayDetailsComponent {
 
   depDates(): void {
     this.queryParams.date = DateTime.fromISO(this.DepatureformGroup.get('depDate').value).toFormat('yyyy-MM-dd'),
-      this.router.navigate(['/inventory/holiday-products/view-details'], { queryParams: this.queryParams })
+      this.router.navigate(['/inventory/holidayv2-products/view-details'], { queryParams: this.queryParams })
   }
 
 
@@ -355,7 +357,9 @@ export class ViewHolidayDetailsComponent {
   }
 
   getImages(i, ii): any[] {
+    // console.log("getImage reutnr", this.DisplayDetails.SecondImageList.slice(i,ii))
     return this.DisplayDetails.SecondImageList.slice(i, ii)
+
   }
 
   // opanChangesDialog() {
@@ -380,7 +384,7 @@ export class ViewHolidayDetailsComponent {
         this.child = res.child;
         this.queryParams.adult = this.adult;
         this.queryParams.child = this.child;
-        this.router.navigate(['/inventory/holiday-products/view-details'], { queryParams: this.queryParams })
+        this.router.navigate(['/inventory/holidayv2-products/view-details'], { queryParams: this.queryParams })
       }
     })
   }

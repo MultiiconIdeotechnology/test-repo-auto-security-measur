@@ -25,10 +25,11 @@
                 <div class="relative h-44 flex items-center justify-center rounded-xl w-[20%] overflow-hidden cursor-pointer"
                     [ngClass]="{
                         onshadow: getImages(8).length > 1
-                    }" (click)="allImages(DisplayDetails.SecondImageList)">
-                    {{getImages(8)[0] | json}}
-                    <img [src]="getImages(8)[0]" class="h-44 object-fill" />
-                    <span *ngIf="getImages(8).length > 1" class="z-10 absolute text-xl font-semibold text-white">View All</span>
+                    }" (click)="allImages(DisplayDetails.SecondImageList)" *ngIf="getImages(8).length > 0">
+                    <!-- {{getImages(8)[0] | json}} -->
+                    <img [src]="getImages(8)[0]?.imageUrl" class="h-40 object-fill" />
+                    <span  class="z-10 absolute text-xl font-semibold text-white">View All</span>
+                    <!-- *ngIf="getImages(8).length > 1" -->
                 </div>
             </div>
         </div>
@@ -135,9 +136,7 @@
                                 <div class="pb-4">
                                     Flight from {{ dt?.departure_city}} to
                                     {{ dt?.arrival_city }}
-                                    <span class="font-semibold">{{
-                                        dt?.duration
-                                        }}</span>
+                                    <span class="font-semibold">{{dt?.duration}}</span>
                                 </div>
                                 <div class="flex justify-between items-center w-full">
                                     <div class="flex items-center w-[30%]">
@@ -241,18 +240,16 @@
                                         </div> -->
 
                                     <div class="tab-content flex space-x-4">
-                                        <ngx-slick-carousel class="carousel h-40 max-w-56 min-w-56"
+                                        <ngx-slick-carousel class="carousel h-40 max-w-50 min-w-50"
                                             #slickModal="slick-carousel" [config]="slideConfig">
-                                            <!-- <div ngxSlickItem *ngFor="
-                                                        let slide of ht.images
+                                            <div ngxSlickItem *ngFor="
+                                                        let slide of ht.image
                                                     " class="slide rounded-xl">
-                                                    <div *ngIf="
-                                                            ht.images.length > 0
-                                                        ">
-                                                        <img [src]="slide" alt=""
-                                                            class="min-h-48 max-h-48 max-w-56 min-w-56 rounded-xl" />
+                                                    <div *ngIf="ht.image.length > 0">
+                                                        <img [src]="slide.imageUrl" alt=""
+                                                            class="min-h-40 max-h-40 max-w-50 min-w-50 rounded-xl" />
                                                     </div>
-                                                </div> -->
+                                                </div>
 
                                             <div *ngIf="ht.image.length === 0">
                                                 <img class="min-h-40 max-h-40 max-w-56 min-w-56 rounded-xl" [src]="
@@ -264,9 +261,9 @@
 
                                     <div class="flex flex-col w-[calc(100%-235px)]">
                                         <div class="flex items-center">
-                                            <span class="text-2xl font-semibold mr-3">{{ ht.inclusion }}</span>
+                                            <span class="text-2xl font-semibold mr-3">{{ ht.hotel_name}}</span>
                                             <div *ngFor="let star of getStar(ht.star_rating)">
-                                                <mat-icon class="mr-[2px] text-[#FFC24A] icon-size-5">star</mat-icon>
+                                                <mat-icon class="mr-[2px] text-[#FFC24A] icon-size-4">star</mat-icon>
                                             </div>
                                         </div>
                                         <div class="text-sm secondary-text">{{ht.hotel_address}}</div>
