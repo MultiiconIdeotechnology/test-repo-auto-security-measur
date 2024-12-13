@@ -26,6 +26,7 @@ export class VerificationDialogComponent {
     disableBtn: boolean = false;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     user: any = {};
+    isFirstTimeAuto: boolean = true;
 
     constructor(
         public matDialogRef: MatDialogRef<VerificationDialogComponent>,
@@ -57,7 +58,8 @@ export class VerificationDialogComponent {
     // OTP On Change event
     onOtpChange(event: any) {
         this.authotp = event;
-        if (this.authotp && this.authotp.length == 6) {
+        if (this.authotp && this.authotp.length == 6 && this.isFirstTimeAuto) {
+            this.isFirstTimeAuto = false;
             this.verifyOtp(this.data.tfa_type);
         }
     }

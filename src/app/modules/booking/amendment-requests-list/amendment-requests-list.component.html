@@ -120,6 +120,14 @@
                         PNR <p-sortIcon field="pnr" />
                     </th>
 
+                    <th pResizableColumn>
+                        Refund Mode
+                    </th>
+
+                    <th pResizableColumn>
+                        Refund Amount
+                    </th>
+
                     <th pSortableColumn="amendment_request_time" pResizableColumn>
                         Requested Time <p-sortIcon field="amendment_request_time" />
                     </th>
@@ -278,6 +286,14 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
                             ariaLabel="Filter PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="refund_mode" placeholder="Search by Refund Mode"
+                            ariaLabel="Filter Refund Mode" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="refund_amount" placeholder="Search by Refund Amount"
+                            ariaLabel="Filter Refund Amount" />
                     </th>
 
                     <th>
@@ -464,6 +480,12 @@
                     </td>
                     <td>
                         {{element.pnr || "-"}}
+                    </td>
+                    <td>
+                        {{element.refund_amount ? (element.refund_mode || "-") : ' - '}}
+                    </td>
+                    <td>
+                        {{element.refund_amount || "-"}}
                     </td>
                     <td>
                         {{(element.amendment_request_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}

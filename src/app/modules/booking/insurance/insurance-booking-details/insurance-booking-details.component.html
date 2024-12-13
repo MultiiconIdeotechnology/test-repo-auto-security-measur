@@ -37,12 +37,12 @@
 
                                 <div *ngIf="mainDataAll?.is_invoice_button_show"
                                     class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                    (click)="invoice()">
+                                    (click)="invoice('print')">
                                     <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
                                     <span class="text-md leading-none ml-2">Invoice</span>
                                 </div>
 
-                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
+                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer" (click)="logs()">
                                     <div>
                                         <img src="assets/icons/logs.svg" alt="">
                                     </div>
@@ -192,6 +192,13 @@
                                 <div class="truncate">
                                     <span class="text-base truncate"
                                         [matTooltip]="mainDataAll?.destination">{{mainDataAll?.destination || ' - '}}</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col ">
+                                <span class="text-md font-semibold text-secondary">Plan Name</span>
+                                <div class="truncate">
+                                    <span class="text-base truncate"
+                                        [matTooltip]="mainDataAll?.planName">{{mainDataAll?.planName || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">

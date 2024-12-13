@@ -42,6 +42,10 @@ export class WhatsappAuthComponent {
         if (data && data.tfa_type == 'Whatsapp' && data.key == 'whatsapp-disabled') {
             this.whatsappOtpsent();
             this.isOtpInputShow = true;
+        } else {
+            if(data.tfa_type == 'Whatsapp') {
+                this.twoFactorEnabled();
+            }
         }
 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
@@ -53,6 +57,20 @@ export class WhatsappAuthComponent {
     // OTP On Change event
     onOtpChange(event: any) {
         this.authotp = event;
+    }
+
+    // Whatsapp two Factor Enabled
+    twoFactorEnabled() {
+        let body = {
+            tfa_type: "Whatsapp"
+        }
+        this.twoFaAuthenticationService.twoFactorEnabled(body).subscribe({
+            next: (res) => { },
+            error: (err) => {
+                this.disableBtn = false;
+                this.alertService.showToast('error', err, 'top-right', true);
+            },
+        });
     }
 
     // whatsapp otp Sent

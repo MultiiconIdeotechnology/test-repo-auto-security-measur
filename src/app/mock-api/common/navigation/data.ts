@@ -432,6 +432,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         link: Routes.account.purchase_register_route
                     },
                     {
+                        id: 'reports.pg_refund',
+                        title: 'PG Refund',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_PG-REFUND_VIEW',
+                        icon: '',
+                        link: Routes.reports.pg_refund_route
+                    },
+                    {
                         id: 'reports.receipt_register',
                         title: 'Receipt Register',
                         type: 'basic',
@@ -697,6 +705,22 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:newspaper',
                 link: Routes.inventory.visa_route
             },
+            // {
+            //     id: 'inventory.holidayNew',
+            //     title: 'Holiday v2',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_HOLIDAYV2_VIEW',
+            //     icon: 'heroicons_outline:newspaper',
+            //     link: Routes.inventory.holiday_v2_route
+            // },
+            // {
+            //     id: 'inventory.cab',
+            //     title: 'Cab',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_VISA_VIEW',
+            //     icon: 'heroicons_outline:newspaper',
+            //     // link: Routes.inventory.visa_route
+            // },
             // {
             //     id: 'inventory.markupProfile',
             //     title: 'Markup Profile',
