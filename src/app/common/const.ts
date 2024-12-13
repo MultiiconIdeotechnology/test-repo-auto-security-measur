@@ -350,6 +350,11 @@ export const Routes = {
         visa_path: 'inventory/visa',
         visa_route: '/inventory/visa',
 
+        holiday_v2_path: 'inventory/holidayv2-products',
+        holiday_v2_route: '/inventory/holidayv2-products',
+        holiday_v2_entry_path: 'inventory/holidayv2-products/entry',
+        holiday_v2_entry_route: '/inventory/holidayv2-products/entry',
+
         // markup_profile_path: 'inventory/markup-profile',
         // markup_profile_route: '/inventory/markup-profile',
         // markup_profile_entry_path: 'inventory/markup-profile/entry',

@@ -217,6 +217,7 @@ export const module_name = {
     transfer: 'Transfers',
     supplier: 'Supplier',
     holiday: 'Holiday Products',
+    holidayV2: 'Holiday Products Version 2.0',
     productpricing: 'Product Pricing',
     hotel: 'Hotel',
     forex: 'Forex',

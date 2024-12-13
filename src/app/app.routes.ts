@@ -142,6 +142,9 @@ export const appRoutes: Route[] = [
             { path: Routes.inventory.product_fix_departure_path, loadChildren: () => import('app/modules/Inventory/Product-Fix-Departure/product-fix-departure.routes') },
             { path: Routes.inventory.product_flight_path, loadChildren: () => import('app/modules/Inventory/Product-Flight/product-flight.routes') },
             { path: Routes.inventory.visa_path, loadChildren: () => import('app/modules/Inventory/visa/visa-list/visa.routes') },
+
+            // new holiday
+            { path: Routes.inventory.holiday_v2_path, loadChildren: () => import('app/modules/Inventory/holiday-new/holiday-list/holiday-list.routes') },
             // {path: Routes.inventory.markup_profile_path, loadChildren: () => import('app/modules/Inventory/markup-profile/markup-profile-list/markup-profile-list.routes')},
 
             // REPORTS
