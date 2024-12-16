@@ -522,9 +522,12 @@ export class ReshuffleComponent {
                 "noofAgent": json3.noofAgent,
                 "Mode": "3",
                 "IncludeWLAgents": json3.IncludeWLAgents ? json3.IncludeWLAgents : false,
-                "ToNew": this.record.new_agent_count,
-                "ToActive": this.record.active_agent_count,
-                "ToInActive": this.record.inactive_agent_count,
+                // "ToNew": this.record.new_agent_count,
+                // "ToActive": this.record.active_agent_count,
+                // "ToInActive": this.record.inactive_agent_count,
+                "ToNew": this.mode1agentStatusToCount?.newCount ? this.mode1agentStatusToCount?.newCount: 0,
+                "ToActive": this.mode1agentStatusToCount?.activeCount ? this.mode1agentStatusToCount?.activeCount: 0,
+                "ToInActive": this.mode1agentStatusToCount?.inactiveCount ? this.mode1agentStatusToCount?.inactiveCount: 0,
             }
             console.log("mode", mode);
         }

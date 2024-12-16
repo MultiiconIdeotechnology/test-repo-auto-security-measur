@@ -73,24 +73,28 @@ export class ReshuffleConfirmDetailsComponent {
         if (this.title == "Agent") {
             if (this.record.Mode == 3) {
 
-                // const agentJson = {
-                //     FromId: this.record?.FromId?.id ? this.record?.FromId?.id : "",
-                //     Status: this.record?.Status == 'All' ? '' : this.record?.Status,
-                //     ToId: this.record?.ToId?.id ? this.record?.ToId?.id : "All",
-                //     noofAgent: this.record?.noofAgent == 0 ? null : this.record?.noofAgent,
-                //     Mode: this.record?.Mode,
-                //     IncludeWLAgents: this.record?.IncludeWLAgents ? this.record?.IncludeWLAgents : false
-                // }
+                const agentJson = {
+                    Status: this.record?.Status == 'All' ? '' : this.record?.Status,
+                    ToId: this.record?.ToId?.id ? this.record?.ToId?.id : "All",
+                    noofAgent: this.record?.noofAgent == 0 ? null : this.record?.noofAgent,
+                    Mode: this.record?.Mode,
+                    IncludeWLAgents: this.record?.IncludeWLAgents ? this.record?.IncludeWLAgents : false,
+                    columeFilters: this.record?.columeFilters,
+                    Filter: this.record.Filter
+                }
+                console.log("agentJson", agentJson);
+                
+                // return
 
-                // this.agentService.reshuffleAgentMode3(agentJson).subscribe({
-                //     next: () => {
-                //         this.alertService.showToast('success', 'Agent Reshuffled', 'top-right', true);
-                //         this.matDialogRef1.close(true);
-                //     },
-                //     error: (err) => {
-                //         this.alertService.showToast('error', err, 'top-right', true);
-                //     },
-                // });
+                this.agentService.reshuffleAgentMode3(agentJson).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', 'Agent Reshuffled', 'top-right', true);
+                        this.matDialogRef1.close(true);
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                    },
+                });
 
             } else {
                 const agentJson = {
