@@ -118,6 +118,12 @@ export class AgentService {
     TransferAgentRmToRm(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/TransferAgentRmToRm', model);
     }
+    
+    reshuffleAgentMode3(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/reshuffleAgentMode3', model);
+    }
+
+
 
     TransferLeadRmToRm(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'CRM/Reshuffle/TransferLeadRmToRm', model);
