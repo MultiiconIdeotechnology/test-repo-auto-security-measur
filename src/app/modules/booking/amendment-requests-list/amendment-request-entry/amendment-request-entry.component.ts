@@ -235,6 +235,7 @@ export class AmendmentRequestEntryComponent {
                                 { name: "Total Amount", value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                                 { name: "ROE", value: data.b2bcharges?.roe },
                                 { name: `${data.currency} Amount`, value: `${data.currency} ${(data.b2bcharges?.roe * data.charges?.converted_charge)?.toFixed(2)}` },
+                                { name: `DMCC Markup`, value: `INR ${data.pgRefund?.sale_markup || 0}` },
                             ];
                         } else {
                             this.roeList = [];

@@ -79,6 +79,16 @@ export class AgentListComponent extends BaseListingComponent {
     _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
+    active_agent_count: any
+    dormant_agent_count: any
+    inactive_agent_count: any
+    new_agent_count: any
+
+    // this.active_agent_count = data.active_agent_count || 0
+    // this.dormant_agent_count = data.dormant_agent_count || 0
+    // this.inactive_agent_count = data.inactive_agent_count || 0
+    // this.new_agent_count = data.new_agent_count || 0
+
     blockList = [
         { label: 'Yes', value: true },
         { label: 'No', value: false }
@@ -96,10 +106,10 @@ export class AgentListComponent extends BaseListingComponent {
         { field: 'is_test', header: 'Read Only' },
         { field: 'subagent_count', header: 'Sub Agent Count' },
         { field: 'city_name', header: 'City Name' },
-        { field: 'first_login_date_time', header: 'First Time Login'},
-        { field: 'first_transaction_date_time', header: 'First Time Transaction'},
-        { field: 'agent_assign_by', header: 'Assign By'},
-        { field: 'agent_assign_by_date', header: 'Assign By Date'},
+        { field: 'first_login_date_time', header: 'First Time Login' },
+        { field: 'first_transaction_date_time', header: 'First Time Transaction' },
+        { field: 'agent_assign_by', header: 'Assign By' },
+        { field: 'agent_assign_by_date', header: 'Assign By Date' },
     ];
 
     // statusList = ['All', 'New', 'Active','Inactive','Dormant',];
@@ -126,6 +136,7 @@ export class AgentListComponent extends BaseListingComponent {
     selectedEmployee: any = {};
     selectedKycProfile: any = {};
     selectedMarkup: any = {};
+    newModel: any
 
     constructor(
         private agentService: AgentService,
@@ -328,9 +339,10 @@ export class AgentListComponent extends BaseListingComponent {
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-        var newModel = this.getNewFilterReq(event);
+        this.newModel = this.getNewFilterReq(event);
+        console.log("newModel", this.newModel);
         var extraModel = this.getFilter();
-        var Model = { ...newModel, ...extraModel }
+        var Model = { ...this.newModel, ...extraModel }
 
         if (Security.hasPermission(agentsPermissions.viewOnlyAssignedPermissions)) {
             Model.relationmanagerId = this.user.id
@@ -338,6 +350,12 @@ export class AgentListComponent extends BaseListingComponent {
 
         this.agentService.getAgentList(Model).subscribe({
             next: data => {
+                console.log(data);
+                this.active_agent_count = data.active_agent_count || 0
+                this.dormant_agent_count = data.dormant_agent_count || 0
+                this.inactive_agent_count = data.inactive_agent_count || 0
+                this.new_agent_count = data.new_agent_count || 0
+
                 this.isLoading = false;
                 this.dataList = data.data;
                 this.totalRecords = data.total;
@@ -403,13 +421,26 @@ export class AgentListComponent extends BaseListingComponent {
         })
     }
 
+    //     this.active_agent_count = data.active_agent_count || 0
+    // this.dormant_agent_count = data.dormant_agent_count || 0
+    // this.inactive_agent_count = data.inactive_agent_count || 0
+    // this.new_agent_count = data.new_agent_count || 0
+
     reShuffle() {
         if (!Security.hasPermission(agentsPermissions.reshufflePermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
         this.matDialog.open(ReshuffleComponent, {
-            data: 'Agent',
+            data:
+            {
+                columeFilters: this.newModel,
+                active_agent_count: this.active_agent_count,
+                dormant_agent_count: this.dormant_agent_count,
+                inactive_agent_count: this.inactive_agent_count,
+                new_agent_count: this.new_agent_count,
+                title: 'Agent'
+            },
             disableClose: true,
         }).afterClosed().subscribe(res => {
             if (res) {

@@ -485,7 +485,7 @@
                         {{element.refund_amount ? (element.refund_mode || "-") : ' - '}}
                     </td>
                     <td>
-                        {{element.refund_amount || "-"}}
+                        {{element.refund_amount ? ("INR " + element.refund_amount) : "-"}}
                     </td>
                     <td>
                         {{(element.amendment_request_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
