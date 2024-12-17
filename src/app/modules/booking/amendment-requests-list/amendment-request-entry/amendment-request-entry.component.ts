@@ -237,6 +237,10 @@ export class AmendmentRequestEntryComponent {
                                 { name: `${data.currency} Amount`, value: `${data.currency} ${(data.b2bcharges?.roe * data.charges?.converted_charge)?.toFixed(2)}` },
                                 { name: `DMCC Markup`, value: `INR ${data.pgRefund?.sale_markup || 0}` },
                             ];
+
+                            if (this.recordList.is_refundable)
+                                this.roeList.push({ name: 'Credit Invoice', value: data.pgRefund.agent_credit_invoice })
+                            this.roeList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
                         } else {
                             this.roeList = [];
                         }

@@ -89,7 +89,18 @@
                             <div class="flex flex-row space-x-2">
                                 <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
                             </div>
-                            <span class="text-base truncate pr-2">{{af.value || ' 0 '}}</span>
+
+                            <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
+                                *ngIf="af.name == 'Credit Invoice' || af.name == 'Debit Invoice'"
+                                (click)="af.value ? invoice(af.value,af.name) : null" class="icon-size-5 cursor-pointer"
+                                [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
+                                [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
+                            <span class="text-base truncate"
+                                *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value ||
+                                af.value == 0)
+                                ? af.value : '--'}}</span>
+
+                            <!-- <span class="text-base truncate pr-2">{{af.value || ' 0 '}}</span> -->
                         </div>
                     </div>
                 </ng-container>
