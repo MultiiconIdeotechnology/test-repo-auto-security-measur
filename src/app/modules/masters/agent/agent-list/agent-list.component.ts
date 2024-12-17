@@ -340,7 +340,6 @@ export class AgentListComponent extends BaseListingComponent {
     refreshItems(event?: any): void {
         this.isLoading = true;
         this.newModel = this.getNewFilterReq(event);
-        console.log("newModel", this.newModel);
         var extraModel = this.getFilter();
         var Model = { ...this.newModel, ...extraModel }
 
@@ -350,7 +349,6 @@ export class AgentListComponent extends BaseListingComponent {
 
         this.agentService.getAgentList(Model).subscribe({
             next: data => {
-                console.log(data);
                 this.active_agent_count = data.active_agent_count || 0
                 this.dormant_agent_count = data.dormant_agent_count || 0
                 this.inactive_agent_count = data.inactive_agent_count || 0

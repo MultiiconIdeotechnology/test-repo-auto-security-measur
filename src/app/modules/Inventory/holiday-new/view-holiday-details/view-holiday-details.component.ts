@@ -140,7 +140,6 @@ export class ViewHolidayDetailsComponent {
       this.adult = JSON.parse(params.get('adult'));
       this.child = JSON.parse(params.get('child'));
       this.deppDate = DateTime.fromFormat(this.dep_date, 'yyyy-MM-dd');
-      console.log("this.deppdate", this.deppDate);
       this.DepatureformGroup.get('date').patchValue(this.dep_date);
       this.DepatureformGroup.get('depDate').patchValue(this.dep_date);
       this.commanService.raiseLoader(true);
@@ -163,7 +162,6 @@ export class ViewHolidayDetailsComponent {
           next: data => {
             this.commanService.raiseLoader(false);
             this.record = data[0];
-            console.log("record ..", this.record)
             if (this.record.city && this.record.city.length > 0) {
               this.DisplayDetails.CitiesList = this.record.city;
             }
@@ -194,7 +192,6 @@ export class ViewHolidayDetailsComponent {
               })
 
               this.DisplayDetails.ItineraryList = this.record.itinerary;
-              console.log("this.displayDetails", this.DisplayDetails)
             }
             if (this.record.flight?.length > 0) {
               this.DisplayDetails.FlightsList = Linq.groupBy(this.record.flight, (x: any) => x.sector);
@@ -263,7 +260,6 @@ export class ViewHolidayDetailsComponent {
 
             //   // this.DisplayDetails.OtherInclusionList = data.other_inclusions.sort((a, b) => a.order_by_no - b.order_by_no);
             // }
-            console.log("displaylist>>>", this.DisplayDetails)
           },
           error: err => {
             this.createDetailModel();

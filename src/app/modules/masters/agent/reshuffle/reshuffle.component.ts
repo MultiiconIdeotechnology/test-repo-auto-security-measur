@@ -117,7 +117,6 @@ export class ReshuffleComponent {
     ) {
         if (data)
             this.record = data;
-        console.log("this.record", this.record);
     }
 
     ngOnInit() {
@@ -529,7 +528,6 @@ export class ReshuffleComponent {
                 "ToActive": this.mode1agentStatusToCount?.activeCount ? this.mode1agentStatusToCount?.activeCount: 0,
                 "ToInActive": this.mode1agentStatusToCount?.inactiveCount ? this.mode1agentStatusToCount?.inactiveCount: 0,
             }
-            console.log("mode", mode);
         }
 
         if (this.record.title == 'Agent') {

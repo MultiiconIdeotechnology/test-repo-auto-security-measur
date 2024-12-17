@@ -336,7 +336,6 @@ export class HolidayListComponent extends BaseListingComponent {
 				if (res === 'confirmed') {
 						this.holidayService.setAuditUnaudit(data.id).subscribe({
 							next: (res) => {
-                                console.log("res >>>", res);
                                 if(res && res['status']){
                                     if(!data.is_audited){
                                         this.alertService.showToast('success', "Holiday Product Audited", "top-right", true);

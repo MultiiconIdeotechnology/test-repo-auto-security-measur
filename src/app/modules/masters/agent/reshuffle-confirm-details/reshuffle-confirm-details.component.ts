@@ -64,7 +64,6 @@ export class ReshuffleConfirmDetailsComponent {
         @Inject(MAT_DIALOG_DATA) public data: any = {}
     ) {
         if (data)
-            console.log(data, '111');
         this.record = data.data;
         this.title = data.send
     }
@@ -82,7 +81,6 @@ export class ReshuffleConfirmDetailsComponent {
                     columeFilters: this.record?.columeFilters,
                     Filter: this.record.Filter
                 }
-                console.log("agentJson", agentJson);
                 
                 // return
 
