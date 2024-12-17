@@ -290,7 +290,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     }
 
     getSupplier(value: string) {
-        this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
+        this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
             this.supplierList = data;
         });
     }
