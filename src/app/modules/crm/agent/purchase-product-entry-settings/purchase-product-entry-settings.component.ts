@@ -40,10 +40,6 @@ import { Subject, takeUntil } from 'rxjs';
     templateUrl: './purchase-product-entry-settings.component.html',
     standalone: true,
     imports: [
-        NgIf,
-        NgClass,
-        DatePipe,
-        AsyncPipe,
         FormsModule,
         ReactiveFormsModule,
         MatInputModule,
@@ -66,10 +62,8 @@ import { Subject, takeUntil } from 'rxjs';
         CdkDragPreview,
         CdkDragHandle,
         RouterLink,
-        TitleCasePipe,
         FuseDrawerComponent,
         MatDividerModule,
-        NgFor,
         CommonModule,
         MatDatepickerModule,
         MatMenuModule,
@@ -106,6 +100,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     productPurchaseMasterId: any;
     productId: any;
     productList: any[] = [];
+    filteredProducts: any[] = [];
     isProductInitialChanged: boolean = false;
     fieldList: {};
     isEditFlag: any = {};
@@ -121,27 +116,8 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     proofAttachjFile: JsonFile;
     proofAttachmentFlag: boolean = false;
     lowPriceFlag: boolean = false;
-
-    ngOnInit(): void {
-        this.formGroup = this.builder.group({
-            product: ['', Validators.required],
-            rm_remark: [''],
-            id: [''],
-            price: ['', Validators.required],
-            installments: ['', Validators.required],
-            // installmentsArray: this.formBuilder.array([])
-            installmentsArray: [[]],
-            proofAttachment: ['']
-        });
-
-
-        this._userService.user$
-            .pipe((takeUntil(this._unsubscribeAll)))
-            .subscribe((user: any) => {
-                this.user = user;
-            });
-    }
-
+    searchCtrl = this.builder.control('');
+    
     constructor(
         public builder: FormBuilder,
         public cityService: CityService,
@@ -158,6 +134,17 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         this.dateBeforeAllow = this.calculateDateBeforeDays(10);
         // this.isEditFlag = this.isEditFlag?.editFlag;
         // this.record = data?.data ?? {}
+        this.formGroup = this.builder.group({
+            product: ['', Validators.required],
+            rm_remark: [''],
+            id: [''],
+            price: ['', Validators.required],
+            installments: ['', Validators.required],
+            // installmentsArray: this.formBuilder.array([])
+            installmentsArray: [[]],
+            proofAttachment: ['']
+        });
+
         this.entityService.onproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 this.settingsDrawer?.toggle()
@@ -195,6 +182,16 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     if (!item?.editFlag) {
                         this.proofAttachment = false;
                         this.getProducts();
+                        
+                        this.searchCtrl.valueChanges.subscribe((searchTerm) => {
+                            if (searchTerm) {
+                                this.filteredProducts = this.productList.filter((product) =>
+                                    product.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+                                );
+                            } else {
+                                this.filteredProducts = [...this.productList]; // Reset to full list when search is cleared
+                            }
+                        });
                     }
                     else {
                         this.getProductDetail();
@@ -202,6 +199,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                 }
             }
         })
+    }
+
+    ngOnInit(): void {
+        this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
+            this.user = user;
+        });
     }
 
     calculateDateBeforeDays(days: number): Date {
@@ -215,12 +218,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
             const prevDate = new Date(this.installmentsArray[index - 1].installment_date);
             this.installmentsArray[index].minDate = prevDate;
         }
-    }
-
-
-    ngOnDestroy(): void {
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
     }
 
     refreshItems(): void {
@@ -345,6 +342,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         this.crmService.getProductNameList().subscribe({
             next: (data) => {
                 this.productList = data;
+                this.filteredProducts = [...this.productList]; // Initialize filtered list
                 if (this.record?.id1) {
                     this.formGroup.patchValue(this.record);
                     this.formGroup.get("product").patchValue(this.record?.product_id);
@@ -533,6 +531,11 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     }
 
     public compareWith(v1: any, v2: any) {
-        return v1 && v2 && v1.id === v2.id;
+        return v1 && v2 && v1 === v2;
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
     }
 }
