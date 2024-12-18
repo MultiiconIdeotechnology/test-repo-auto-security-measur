@@ -75,7 +75,7 @@
                         pSortableColumn="is_read_by_supplier" pResizableColumn alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.is_read_by_supplier"
                         [ngClass]="{'left-0': !frozenObj?.is_read_by_supplier}">
-                        Read By Supplier <p-sortIcon field="is_read_by_supplier" />
+                        Read <p-sortIcon field="is_read_by_supplier" />
                         <span class="float-right"
                             (click)="isFrozenColumn('is_read_by_supplier');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.is_read_by_supplier" class="pi pi-lock-open icon-size-3"></i>
