@@ -810,6 +810,9 @@ export class AgentListComponent extends BaseListingComponent {
                 // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
                 dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
                 dt.web_last_login_time = dt.web_last_login_time ? DateTime.fromISO(dt.web_last_login_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.first_login_date_time = dt.first_login_date_time ? DateTime.fromISO(dt.first_login_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.first_transaction_date_time = dt.first_transaction_date_time ? DateTime.fromISO(dt.first_transaction_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+                dt.agent_assign_by_date = dt.agent_assign_by_date ? DateTime.fromISO(dt.agent_assign_by_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
             }
             Excel.export(
                 'Agents',
@@ -832,7 +835,11 @@ export class AgentListComponent extends BaseListingComponent {
                     { property: 'is_wl', header: 'WL' },
                     { property: 'is_test', header: 'Read Only' },
                     { property: 'subagent_count', header: 'Sub Agent Count' },
-
+                    { property: 'first_login_date_time', header: 'First Time Login' },
+                    { property: 'first_transaction_date_time', header: 'First Time Transaction' },
+                    { property: 'city_name', header: 'City' },
+                    { property: 'agent_assign_by', header: 'Assigned By' },
+                    { property: 'agent_assign_by_date', header: 'Assigned by Date' },
                 ],
                 data.data, "Agents", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 17 } }]);
         });
