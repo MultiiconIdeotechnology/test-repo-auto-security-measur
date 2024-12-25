@@ -126,7 +126,7 @@ export class AuthSignInComponent implements OnInit {
         } else if(!this.captcha.value){
             this.alert = {
                 type: 'error',
-                message: 'Please enter valid captcha'
+                message: 'Please enter a valid Captcha'
             };
             this.showAlert = true;
             return;
