@@ -86,6 +86,9 @@
                     <th class="text-center" pSortableColumn="is_popular" pResizableColumn>
                         Is Popular <p-sortIcon field="is_popular" />
                     </th>
+                    <th class="text-center" pSortableColumn="is_audited" pResizableColumn>
+                        Is Audited <p-sortIcon field="is_audited" />
+                    </th>
                     <th pSortableColumn="publish_date_time" pResizableColumn>
                         Published <p-sortIcon field="publish_date_time" />
                     </th>
@@ -156,6 +159,20 @@
 
                     <th>
                         <p-columnFilter field="is_popular" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                    (onChange)="filter($event.value)" placeholder="Select Popular" appendTo="body"
+                                    [showClear]="true">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter field="is_audited" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
                                     (onChange)="filter($event.value)" placeholder="Select Popular" appendTo="body"
@@ -262,6 +279,10 @@
                     <td class="text-center">
                         <mat-icon class="text-green-600" *ngIf="element.is_popular">done</mat-icon>
                         <mat-icon class="text-red-600" *ngIf="!element.is_popular">clear</mat-icon>
+                    </td>
+                    <td class="text-center">
+                        <mat-icon class="text-green-600" *ngIf="element.is_audited">done</mat-icon>
+                        <mat-icon class="text-red-600" *ngIf="!element.is_audited">clear</mat-icon>
                     </td>
                     <td>
                         {{(element.publish_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}

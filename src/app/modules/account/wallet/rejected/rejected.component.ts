@@ -139,8 +139,8 @@ export class RejectedComponent extends BaseListingComponent {
 					this.pspList.push(this.selectedPsp);
 				}
 			}
-			if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
-				this._filterService.selectionDateDropdown = 'Custom Date Range';
+			if (resp['table_config']['request_date_time']?.value && Array.isArray(resp['table_config']['request_date_time']?.value)) {
+				this._filterService.selectionDateDropdown = 'custom_date_range';
 				this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
 			}
 			if (resp?.['table_config']?.['rejected_date_time']?.value != null) {
@@ -161,8 +161,8 @@ export class RejectedComponent extends BaseListingComponent {
 			let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
 			this.selectedMop = filterData['table_config']['mop']?.value;
 			this.selectedPsp = filterData['table_config']['psp_name']?.value;
-			if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
-				this._filterService.selectionDateDropdown = 'Custom Date Range';
+			if (filterData['table_config']['request_date_time']?.value && Array.isArray(filterData['table_config']['request_date_time']?.value)) {
+				this._filterService.selectionDateDropdown = 'custom_date_range';
 				this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
 			}
 

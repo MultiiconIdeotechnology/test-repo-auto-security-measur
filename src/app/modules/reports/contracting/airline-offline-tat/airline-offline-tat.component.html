@@ -108,7 +108,7 @@
                         <!-- <p-columnFilter type="text" matchMode="contains" field="ticketingTime"
                             placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" /> -->
 
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdownContracting != 'Custom'"
+                        <p-columnFilter *ngIf="_filterService.selectionDateDropdownContracting != 'custom_date_range'"
                             field="ticketingTime" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -124,13 +124,13 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdownContracting == 'Custom'">
+                        <ng-container *ngIf="_filterService.selectionDateDropdownContracting == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="ticketingTime" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
                                             (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>

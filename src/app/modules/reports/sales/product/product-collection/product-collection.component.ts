@@ -123,8 +123,8 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
             }
             this.selectedRM = resp['table_config']['rm']?.value;
 
-            if (resp['table_config']['installment_date']?.value != null && resp['table_config']['installment_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
             }
 
@@ -150,8 +150,8 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
                 }
             }
 
-            if (filterData['table_config']['installment_date']?.value != null && filterData['table_config']['installment_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['installment_date']?.value && Array.isArray(filterData['table_config']['installment_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
             }
 

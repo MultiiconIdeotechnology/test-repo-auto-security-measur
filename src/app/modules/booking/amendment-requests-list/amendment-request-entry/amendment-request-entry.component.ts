@@ -227,6 +227,7 @@ export class AmendmentRequestEntryComponent {
                             { name: "Bonton Markup", value: `INR ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
                             { name: name1, value: `INR ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
+                            { name: "Net Refund", value: `INR ${((data.charges?.charge || 0) - (data.b2bcharges?.bonton_markup || 0)).toFixed(2)}` },
                             { name: name2, value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
 
