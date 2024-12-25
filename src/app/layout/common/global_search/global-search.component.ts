@@ -1,4 +1,4 @@
-import { NgIf, NgFor, AsyncPipe, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,13 +17,15 @@ import { ToasterService } from 'app/services/toaster.service';
 import { Linq } from 'app/utils/linq';
 import { InfoWithdrawComponent } from "../../../modules/account/withdraw/info-withdraw/info-withdraw.component";
 import { Routes } from 'app/common/const';
+import { ForexBookingDetailsComponent } from 'app/modules/booking/forex/forex-booking-details/forex-booking-details.component';
 
 @Component({
     selector: 'app-global-search',
     templateUrl: './global-search.component.html',
     standalone: true,
-    imports: [RouterLink, NgIf, NgClass, FuseAlertComponent, FormsModule, ReactiveFormsModule, MatFormFieldModule,
-        MatInputModule, MatButtonModule, MatIconModule, RouterLink, NgFor, MatIconModule, AsyncPipe, InfoWithdrawComponent],
+    imports: [CommonModule, FuseAlertComponent, FormsModule, ReactiveFormsModule, MatFormFieldModule,
+        MatInputModule, MatButtonModule, MatIconModule, RouterLink, MatIconModule, InfoWithdrawComponent, ForexBookingDetailsComponent
+    ],
 })
 export class GlobalSearchComponent {
     formGroup: FormGroup;
@@ -72,7 +74,7 @@ export class GlobalSearchComponent {
                         // this.router.navigate([Routes.booking.booking_details_route + '/' + this.bookingRefValue])
                         //Linq.recirect('/booking/flight/details/' + this.bookingRefValue);
                         let uri = '/booking/flight/details/' + this.bookingRefValue
-                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'bus_booking') {
@@ -82,7 +84,7 @@ export class GlobalSearchComponent {
                         this.formGroup.get('searchfilter').patchValue("");
 
                         let uri = '/booking/bus/details/' + this.bookingRefValue
-                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         // this.router.navigate(['/booking/bus/details/' + this.bookingRefValue])
                         // Linq.recirect('/booking/bus/details/' + this.bookingRefValue);
                         this.matDialog.closeAll();
@@ -95,7 +97,7 @@ export class GlobalSearchComponent {
                         // this.router.navigate(['/booking/hotel/details/' + this.bookingRefValue])
                         // Linq.recirect('/booking/hotel/details/' + this.bookingRefValue);
                         let uri = '/booking/hotel/details/' + this.bookingRefValue
-                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'visa_booking') {
@@ -106,7 +108,7 @@ export class GlobalSearchComponent {
                         // Linq.recirect('/booking/visa/details/' + this.bookingRefValue);
                         // this.router.navigate(['/booking/visa/details/' + this.bookingRefValue])
                         let uri = 'booking/visa/details/' + this.bookingRefValue
-                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'offline_service_booking') {
@@ -117,7 +119,7 @@ export class GlobalSearchComponent {
                         // Linq.recirect('/booking/offline-service/entry/' + this.bookingRefValue + '/readonly');
                         // this.router.navigate(['/booking/offline-service/entry/' + this.bookingRefValue + '/readonly'])
                         let uri = '/booking/offline-service/entry/' + this.bookingRefValue + '/readonly'
-                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'agent_detail') {
@@ -128,7 +130,7 @@ export class GlobalSearchComponent {
                         // Linq.recirect('/customers/agent/entry/' + this.bookingRefValue + '/readonly');
                         // this.router.navigate([])
                         let uri = '/customers/agent/entry/' + this.bookingRefValue + '/readonly'
-                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
                     else if (this.bookingRefKey == 'payment_detail') {
@@ -167,7 +169,10 @@ export class GlobalSearchComponent {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        this.entityService.raiseInfoWithdraw({ data: this.bookingRefValue, global_withdraw: true })
+                        this.router.navigate(['/account/withdraw'])
+                        setTimeout(() => {
+                            this.entityService.raiseInfoWithdraw({ data: this.bookingRefValue, global_withdraw: true })
+                        }, 300);
                         this.matDialog.closeAll();
                     }
 
@@ -176,7 +181,10 @@ export class GlobalSearchComponent {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");
-                        this.entityService.raiseForexEntityCall({ data: this.bookingRefValue, global_withdraw: true })
+                        this.router.navigate(['/booking/forex'])
+                        setTimeout(() => {
+                            this.entityService.raiseForexEntityCall({ data: this.bookingRefValue, global_withdraw: true })
+                        }, 300);
                         this.matDialog.closeAll();
                     }
 
@@ -188,19 +196,31 @@ export class GlobalSearchComponent {
                         // Linq.recirect('/booking/group-inquiry/details/' + this.bookingRefValue);
                         // this.router.navigate(['/booking/group-inquiry/details' + this.bookingRefValue])
                         let uri = '/booking/group-inquiry/details' + this.bookingRefValue
-                        this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate([uri]));
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
+                        this.matDialog.closeAll();
+                    }
+                    
+                    else if (this.bookingRefKey == 'insurance') {
+                        if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
+                            return this.alertService.showToast('error', messages.permissionDenied);
+                        }
+                        this.formGroup.get('searchfilter').patchValue("");
+                        let uri = '/booking/insurance/details/' + this.bookingRefValue
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
 
-                    // else if (this.bookingRefKey == 'air_amendment') {
-                    //     if (!Security.hasViewDetailPermission(module_name.wallet)) {
-                    //         return this.alertService.showToast('error', messages.permissionDenied);
-                    //     }
-                    //     this.matDialog.open(InfoWalletComponent, {
-                    //         data: { data: this.bookingRefValue, readonly: true },
-                    //         disableClose: true
-                    //     })
-                    // }
+                    else if (this.bookingRefKey == 'air_amendment') {
+                        if (!Security.hasViewDetailPermission(module_name.wallet)) {
+                            return this.alertService.showToast('error', messages.permissionDenied);
+                        }
+                        this.formGroup.get('searchfilter').patchValue("");
+                        this.router.navigate(['/booking/amendment-requests'])
+                        setTimeout(() => {
+                            this.entityService.raiseAmendmentInfoCall({ data: {id:this.bookingRefValue}, global_withdraw: true })
+                        }, 1000);
+                        this.matDialog.closeAll();
+                    }
                 },
                 error: err => {
                     this.alertService.showToast('error', err, "top-right", true);

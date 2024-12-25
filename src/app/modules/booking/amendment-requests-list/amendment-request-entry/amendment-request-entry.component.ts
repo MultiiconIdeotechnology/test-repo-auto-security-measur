@@ -91,9 +91,17 @@ export class AmendmentRequestEntryComponent {
     ) {
         this.entityService.onAmendmentInfoCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
+                console.log("item am", item);
                 this.record = item?.data ?? {}
-                this.getData();
+                console.log("this.record", this.record);
+                // this.getData();
                 this.amendmentInfoDrawer.toggle();
+                if (!item.global_withdraw && this.record) {
+                    this.getData();
+                }
+                if (item.global_withdraw) {
+                    this.getData();
+                }
             }
         });
 
