@@ -75,6 +75,7 @@ export class AmendmentRequestEntryComponent {
     amendmentInfoList: any[] = [];
     paxInfoList: any;
     chargesList: any[] = [];
+    roeList: any[] = [];
     booking_id: any
     recordList: any;
     titleCharge: any;
@@ -226,8 +227,24 @@ export class AmendmentRequestEntryComponent {
                             { name: "Bonton Markup", value: `INR ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
                             { name: name1, value: `INR ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
+                            { name: "Net Refund", value: `INR ${((data.charges?.charge || 0) - (data.b2bcharges?.bonton_markup || 0)).toFixed(2)}` },
                             { name: name2, value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
+
+                        if (data.currency != "INR") {
+                            this.roeList = [
+                                { name: "Total Amount", value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
+                                { name: "ROE", value: data.b2bcharges?.roe },
+                                { name: `${data.currency} Amount`, value: `${data.currency} ${(data.b2bcharges?.roe * data.charges?.converted_charge)?.toFixed(2)}` },
+                                { name: `DMCC Markup`, value: `INR ${data.pgRefund?.sale_markup || 0}` },
+                            ];
+
+                            if (this.recordList.is_refundable)
+                                this.roeList.push({ name: 'Credit Invoice', value: data.pgRefund.agent_credit_invoice })
+                            this.roeList.push({ name: 'Debit Invoice', value: data.pgRefund.agent_debit_invoice })
+                        } else {
+                            this.roeList = [];
+                        }
                         // // if (this.recordList.is_refundable) {
                         //     this.chargesList.unshift({ name: 'Cancellation Charge', value: `${data.currency_symbol} ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` })
                         // }
@@ -252,7 +269,7 @@ export class AmendmentRequestEntryComponent {
             disableClose: true
         })
     }
-    
+
     cancelReq() {
         if (!Security.hasPermission(amendmentRequestsPermissions.cancelAmendmentPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);

@@ -315,7 +315,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         }
 
         this.matDialog.open(ReshuffleComponent, {
-            data: 'Lead',
+            data: {
+                title: 'Lead'
+            },
             disableClose: true,
         }).afterClosed().subscribe(res => {
             if (res) {

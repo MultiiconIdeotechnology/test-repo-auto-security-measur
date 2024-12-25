@@ -17,7 +17,15 @@ export class InsuranceService {
     }
 
     getInsuranceBookingRecord(id: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'InsuranceBooking/getInsuranceBookingRecord', {id : id});
+        return this.http.post<any>(this.baseUrl + 'InsuranceBooking/getInsuranceBookingRecord', { id: id });
     }
-    
+
+    printBooking(data: any) {
+        return this.http.post<any>(environment.apiUrl + 'AirBooking/printBooking', data);
+      }
+
+    printInvoice(invoiceId: string): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + "AirBooking/printInvoice", { invoiceId: invoiceId });
+    }
+
 }

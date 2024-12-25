@@ -81,6 +81,30 @@
                     </div>
                 </ng-container>
 
+                <ng-container *ngIf="recordList && recordList?.amendment_info?.status != 'Request Sent to Supplier' && roeList?.length > 0">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Currency Price Information</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of roeList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+
+                            <mat-icon svgIcon="heroicons_mini:arrow-down-tray"
+                                *ngIf="af.name == 'Credit Invoice' || af.name == 'Debit Invoice'"
+                                (click)="af.value ? invoice(af.value,af.name) : null" class="icon-size-5 cursor-pointer"
+                                [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
+                                [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
+                            <span class="text-base truncate"
+                                *ngIf="af.name != 'Credit Invoice' && af.name != 'Debit Invoice'">{{(af.value ||
+                                af.value == 0)
+                                ? af.value : '--'}}</span>
+
+                            <!-- <span class="text-base truncate pr-2">{{af.value || ' 0 '}}</span> -->
+                        </div>
+                    </div>
+                </ng-container>
+
                 <div *ngIf="recordList.paymentbyInfo">
                     <div class="border border-dashed"></div>
                     <div class="text-lg font-semibold pt-4 text-primary">Payment Info</div>
@@ -151,7 +175,8 @@
             </ng-container>
 
             <ng-container
-                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta'">
+                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta' || 
+                recordList?.amendment_info?.status?.toLowerCase() == 'cancellation pending' || recordList?.amendment_info?.status?.toLowerCase() == 'partial cancellation pending'">
                 <button mat-stroked-button (click)="inprocess()">
                     Confirmation Sent to Supplier
                 </button>

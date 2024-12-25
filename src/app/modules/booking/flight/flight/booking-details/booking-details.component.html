@@ -71,6 +71,11 @@
                                     <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Rejected
                                     </span>
                                 </div>
+                                 <div *ngIf="Status === 'Hold Failed'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Hold Failed</span>
+                                </div>
                                 <!-- <div *ngIf="Status === 'Partially Cancelled'"
                                     class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
                                     <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
