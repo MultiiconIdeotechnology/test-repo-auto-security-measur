@@ -1,6 +1,6 @@
 import { CommonModule, NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -53,12 +53,14 @@ export class RejectResonComponent {
 
   ngOnInit(): void {
       this.rejectForm = this.fb.group({
-          reject_reason: ''
-      });
+        reject_reason: ['', Validators.required]
+    });
   }
 
   saveDetail() {
       const json = this.rejectForm.getRawValue();
+      console.log("json", json);
+      
       this.matDialogRef.close(json)
   }
 

@@ -27,6 +27,7 @@ import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { RejectResonComponent } from 'app/modules/account/withdraw/reject-reson/reject-reson.component';
 
 @Component({
     selector: 'app-group-inquiry-list',
@@ -304,14 +305,20 @@ export class GroupInquiryListComponent
     }
 
     Reject(record: any): void {
-        const label: string = 'Reject Group Inquiry'
-        this.conformationService.open({
-            title: label,
-            message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+        this.matDialog.open(RejectResonComponent, {
+            data: null,
+            disableClose: true,
         }).afterClosed().subscribe({
             next: (res) => {
-                if (res === 'confirmed') {
-                    this.groupInquiryService.setBookingStatus({ id: record.id, Status: 'Rejected' }).subscribe({
+                console.log("res", res);
+                if (res && res.reject_reason) {
+                    let body = { 
+                        id: record.id, 
+                        Status: 'Rejected',
+                        reject_reason: res.reject_reason
+                    }
+                    
+                    this.groupInquiryService.setBookingStatus(body).subscribe({
                         next: () => {
                             this.alertService.showToast('success', "Group Inquiry Rejected", "top-right", true);
                             this.refreshItems();
@@ -319,7 +326,19 @@ export class GroupInquiryListComponent
                     });
                 }
             }
-        })
+        });
+
+        // const label: string = 'Reject Group Inquiry'
+        // this.conformationService.open({
+        //     title: label,
+        //     message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+        // }).afterClosed().subscribe({
+        //     next: (res) => {
+        //         if (res === 'confirmed') {
+
+        //         }
+        //     }
+        // })
     }
 
     ngOnDestroy(): void {
