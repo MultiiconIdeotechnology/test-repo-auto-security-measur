@@ -121,7 +121,7 @@ export class InsuranceComponent extends BaseListingComponent {
 
   ngOnInit() {
     this.agentList = this._filterService.agentListByValue;
-    
+
     // common filter
     this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
@@ -134,8 +134,8 @@ export class InsuranceComponent extends BaseListingComponent {
         }
       }
 
-      if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      if (resp['table_config']['bookingDate']?.value && Array.isArray(resp['table_config']['bookingDate']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
       }
       if (resp['table_config']['startDate']?.value != null) {
@@ -164,8 +164,8 @@ export class InsuranceComponent extends BaseListingComponent {
         }
       }
 
-      if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      if (filterData['table_config']['bookingDate']?.value && Array.isArray(filterData['table_config']['bookingDate']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
       }
       if (filterData['table_config']['startDate']?.value != null) {
@@ -290,12 +290,12 @@ export class InsuranceComponent extends BaseListingComponent {
           { header: 'Duration', property: 'duration' },
           { header: 'PG', property: 'payment_gateway' },
           { header: 'Travel Type', property: 'travelType' },
-          { header: 'Device', property: 'device',  },
+          { header: 'Device', property: 'device', },
           { header: 'IP Address', property: 'ip_address' },
           { header: 'No of Pax', property: 'pax' },
           { header: 'Policy Name', property: 'planName' },
           { header: 'PSP Reference No.', property: 'psp_ref_number' },
-          
+
         ],
         data.data, "Insurance Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
     });

@@ -128,8 +128,8 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
       this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['payment_request_date']?.value != null && resp['table_config']['payment_request_date'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      if (resp['table_config']['payment_request_date']?.value && Array.isArray(resp['table_config']['payment_request_date']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(resp['table_config']['payment_request_date']);
       }
       if (resp['table_config']['audit_date_time']?.value != null) {
@@ -146,8 +146,8 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      if (filterData['table_config']['payment_request_date']?.value != null && filterData['table_config']['payment_request_date'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      if (filterData['table_config']['payment_request_date']?.value && Array.isArray(filterData['table_config']['payment_request_date']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['payment_request_date']);
       }
       if (filterData['table_config']['audit_date_time']?.value != null) {

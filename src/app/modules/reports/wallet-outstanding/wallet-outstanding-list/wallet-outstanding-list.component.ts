@@ -108,8 +108,9 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             this.selectedRM = resp['table_config']['employee_name']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['due_date']?.value != null && resp['table_config']['due_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+
+            if (resp['table_config']['due_date']?.value && Array.isArray(resp['table_config']['due_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['due_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -131,8 +132,8 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
                   this.agentList.push(this.selectedAgent);
                 }
             }
-            if (filterData['table_config']['due_date']?.value != null && filterData['table_config']['due_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['due_date']?.value && Array.isArray(filterData['table_config']['due_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
