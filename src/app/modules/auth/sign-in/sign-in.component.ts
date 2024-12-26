@@ -115,7 +115,7 @@ export class AuthSignInComponent implements OnInit {
             return;
         }
 
-        if (this.captcha.ans !== this.captcha.value) {
+        if (this.captcha.value && this.captcha.ans !== this.captcha.value) {
             this.refreshCaptcha();
             this.alert = {
                 type: 'error',
@@ -123,7 +123,23 @@ export class AuthSignInComponent implements OnInit {
             };
             this.showAlert = true;
             return;
+        } else if(!this.captcha.value){
+            this.alert = {
+                type: 'error',
+                message: 'Please enter a valid Captcha'
+            };
+            this.showAlert = true;
+            return;
         }
+        // if (this.captcha.ans !== this.captcha.value) {
+        //     this.refreshCaptcha();
+        //     this.alert = {
+        //         type: 'error',
+        //         message: 'Invalid Captcha'
+        //     };
+        //     this.showAlert = true;
+        //     return;
+        // }
 
         // Disable the form
         this.signInForm.disable();

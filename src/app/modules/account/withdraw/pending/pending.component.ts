@@ -147,10 +147,10 @@ export class WPendingComponent extends BaseListingComponent {
       }
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
-        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-      }
+      if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
+				this._filterService.selectionDateDropdown = 'custom_date_range';
+				this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+			}
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowPending = true;
       this.isFilterShowPendingChange.emit(this.isFilterShowPending);
@@ -174,10 +174,10 @@ export class WPendingComponent extends BaseListingComponent {
           }
         }
       }, 1000);
-      if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
-        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
-      }
+      if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
+				this._filterService.selectionDateDropdown = 'custom_date_range';
+				this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+			}
 
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];

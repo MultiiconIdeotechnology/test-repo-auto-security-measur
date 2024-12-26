@@ -91,9 +91,17 @@ export class AmendmentRequestEntryComponent {
     ) {
         this.entityService.onAmendmentInfoCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
+                console.log("item am", item);
                 this.record = item?.data ?? {}
-                this.getData();
+                console.log("this.record", this.record);
+                // this.getData();
                 this.amendmentInfoDrawer.toggle();
+                if (!item.global_withdraw && this.record) {
+                    this.getData();
+                }
+                if (item.global_withdraw) {
+                    this.getData();
+                }
             }
         });
 
@@ -227,6 +235,7 @@ export class AmendmentRequestEntryComponent {
                             { name: "Bonton Markup", value: `INR ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
                             { name: name1, value: `INR ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
+                            { name: "Net Refund", value: `INR ${((data.charges?.charge || 0) - (data.b2bcharges?.bonton_markup || 0)).toFixed(2)}` },
                             { name: name2, value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
 

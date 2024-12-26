@@ -110,8 +110,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
 
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['last_top_up'].value && resp['table_config']['last_top_up'].value?.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (resp['table_config']['last_top_up']?.value && Array.isArray(resp['table_config']['last_top_up']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['last_top_up']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -135,8 +135,8 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
                 }
             }
 
-            if (filterData['table_config']['last_top_up'].value && filterData['table_config']['last_top_up'].value?.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['last_top_up']?.value && Array.isArray(filterData['table_config']['last_top_up']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['last_top_up']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];

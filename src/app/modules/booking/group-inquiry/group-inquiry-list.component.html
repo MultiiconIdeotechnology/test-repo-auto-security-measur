@@ -106,6 +106,9 @@
                         Pax
                         <!-- <p-sortIcon field="pax" /> -->
                     </th>
+                    <th pResizableColumn>
+                        Reject Reason
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -231,6 +234,8 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" /> -->
                     </th>
+                    <th>
+                    </th>
                 </tr>
             </ng-template>
 
@@ -246,12 +251,12 @@
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Info</span>
                             </button>
-                            <button *ngIf="element.booking_status != 'Rejected'" mat-menu-item
+                            <button *ngIf="(element.booking_status !== 'Rejected' && element.booking_status !== 'Confirmed')" mat-menu-item
                                 (click)="Reject(element)">
                                 <mat-icon class="mat-18">close</mat-icon>
                                 <span style="font-weight: 600;">Reject</span>
                             </button>
-                            <button mat-menu-item *ngIf="element.booking_status !== 'Confirmed'"
+                            <button mat-menu-item *ngIf="element.booking_status !== 'Confirmed' && element.booking_status !== 'Rejected'"
                                 (click)="UpdateCharge(element)">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Update Charge</span>
@@ -302,15 +307,18 @@
                         {{element.trip_type || '-'}}
                     </td>
 
-                    <td class="w-full">
+                    <td>
                         {{element.pax || '-'}}
+                    </td>
+                    <td class="w-full">
+                        {{element.reject_reason || '-'}}
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="10" class="text-center font-semibold text-lg">
+                    <td colspan="12" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

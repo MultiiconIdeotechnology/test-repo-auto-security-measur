@@ -176,8 +176,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (resp['table_config']['lastCall'].value) {
                 resp['table_config']['lastCall'].value = new Date(resp['table_config']['lastCall'].value);
             }
-            if (resp['table_config']['leadDate']?.value != null && resp['table_config']['leadDate'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (resp['table_config']['leadDate']?.value && Array.isArray(resp['table_config']['leadDate']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['leadDate']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -215,8 +215,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['lastCall'].value) {
                 filterData['table_config']['lastCall'].value = new Date(filterData['table_config']['lastCall'].value);
             }
-            if (filterData['table_config']['leadDate']?.value != null && filterData['table_config']['leadDate'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['leadDate']?.value && Array.isArray(filterData['table_config']['leadDate']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['leadDate']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];
