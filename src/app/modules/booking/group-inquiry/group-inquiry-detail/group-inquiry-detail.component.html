@@ -70,9 +70,9 @@
                 </div>
 
                 <div class="border rounded-2xl p-5 mb-8" *ngIf="mainData">
-                    <div class="grid  xl:grid-cols-3 grid-cols-2 gap-4  overflow-hidden  ">
+                    <div class="grid xl:grid-cols-3 grid-cols-2 gap-4 overflow-hidden">
                         <div class="contents mb-3 ">
-                            <div class="flex flex-col ">
+                            <div class="flex flex-col">
                                 <span class="text-md font-semibold text-secondary">Ref.No <mat-icon
                                         class="icon-size-3 cursor-pointer ml-1" [matTooltip]="'Copy Link'"
                                         (click)="copyLink(mainData.booking_ref_no)">content_copy</mat-icon></span>
@@ -130,6 +130,10 @@
                                     class="text-base truncate w-min cursor-pointer"
                                     [matTooltip]="mainData.agent_name">{{mainData.agent_name || ' - '}}</span>
                             </div>
+                        </div>
+                        <div class="xl:col-span-3 col-span-2 flex flex-col" *ngIf="mainData && mainData.reject_reason">
+                            <span class="text-md font-semibold text-secondary">Reject Reason</span>
+                            <span class="text-base">{{mainData.reject_reason || ' - '}}</span>
                         </div>
                     </div>
                 </div>
