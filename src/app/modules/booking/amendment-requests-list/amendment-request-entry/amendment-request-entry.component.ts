@@ -75,6 +75,7 @@ export class AmendmentRequestEntryComponent {
     amendmentInfoList: any[] = [];
     paxInfoList: any;
     chargesList: any[] = [];
+    priceDetailList: any[] = [];
     roeList: any[] = [];
     booking_id: any
     recordList: any;
@@ -235,10 +236,22 @@ export class AmendmentRequestEntryComponent {
                             { name: "Bonton Markup", value: `INR ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
                             { name: name1, value: `INR ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
-                            { name: "Net Refund", value: `INR ${((data.charges?.charge || 0) - (data.b2bcharges?.bonton_markup || 0)).toFixed(2)}` },
+                            { name: "Net Refund", value: `INR ${((data.charges?.charge || 0) + (data.b2bcharges?.bonton_markup || 0)).toFixed(2)}` },
                             { name: name2, value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
 
+                        var priceDetail = data.priceDetail;
+                        if (priceDetail)
+                            this.priceDetailList = [
+                                { name: "Base Fare", value: priceDetail?.base_fare },
+                                { name: "Tax & Fees", value: priceDetail?.tax_fees },
+                                { name: "SSR", value: priceDetail?.ssr },
+                                { name: "Commission Income", value: priceDetail?.commission_income },
+                                { name: "TDS", value: priceDetail?.tds },
+                                { name: "Net Purchase", value: priceDetail?.net_purchase },
+                            ]
+                        else
+                            this.priceDetailList = [];
                         if (data.currency != "INR") {
                             this.roeList = [
                                 { name: "Total Amount", value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
