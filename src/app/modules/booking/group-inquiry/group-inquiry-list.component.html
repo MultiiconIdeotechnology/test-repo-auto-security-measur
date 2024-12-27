@@ -311,7 +311,7 @@
                         {{element.pax || '-'}}
                     </td>
                     <td class="w-full">
-                        {{element.reject_reason || '-'}}
+                        {{(element.reject_reason && element.reject_reason?.length > 30) ? (element.reject_reason | slice:0:30) + '...' : (element?.reject_reason || '-')}}
                     </td>
                 </tr>
             </ng-template>

@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -34,9 +34,6 @@ import { RejectResonComponent } from 'app/modules/account/withdraw/reject-reson/
     templateUrl: './group-inquiry-list.component.html',
     standalone: true,
     imports: [
-        NgIf,
-        NgFor,
-        DatePipe,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatIconModule,
@@ -49,8 +46,8 @@ import { RejectResonComponent } from 'app/modules/account/withdraw/reject-reson/
         MatMenuModule,
         MatTooltipModule,
         MatDividerModule,
-        NgClass,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        CommonModule
     ],
 })
 export class GroupInquiryListComponent
