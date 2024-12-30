@@ -66,6 +66,19 @@
                     </div>
                 </div>
 
+                <ng-container *ngIf="priceDetailList.length > 0">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Bonton Purchase</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of priceDetailList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <span class="text-base truncate pr-2">{{af.value || ' - '}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
                 <!-- && recordList?.amendment_info?.status_for_agent !== 'Inprocess' && recordList?.amendment_info?.status_for_agent !== 'Request Sent to Supplier' -->
                 <ng-container *ngIf="recordList && recordList?.amendment_info?.status != 'Request Sent to Supplier'">
                     <div class="border border-dashed"></div>
@@ -120,19 +133,6 @@
                         </div>
                     </div>
                 </div>
-
-                <ng-container *ngIf="priceDetailList.length > 0">
-                    <div class="border border-dashed"></div>
-                    <div class="text-lg font-semibold pt-4 text-primary">Bonton Purchase</div>
-                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
-                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of priceDetailList">
-                            <div class="flex flex-row space-x-2">
-                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
-                            </div>
-                            <span class="text-base truncate pr-2">{{af.value || ' - '}}</span>
-                        </div>
-                    </div>
-                </ng-container>
 
                 <div
                     *ngIf="recordList && recordList?.amendment_info?.status == 'Account Audit' || recordList?.amendment_info?.status == 'Account Rejected' || recordList?.amendment_info?.status == 'Completed'">
