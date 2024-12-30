@@ -47,6 +47,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { WalletService } from 'app/services/wallet.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-receipt-list',
@@ -107,7 +108,8 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         private toasterService: ToasterService,
         private kycdocService: KycDocumentService,
         public _filterService: CommonFilterService,
-		private walletService: WalletService
+        private walletService: WalletService,
+        private _userService: UserService,
     ) {
         super(module_name.receipts);
 
@@ -148,16 +150,16 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.selectionDateDropdown = "";
             this.selectedAgent = resp['table_config']['agent_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
-              const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-              if (!match) {
-                this.agentList.push(this.selectedAgent);
-              }
-          }
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (resp['table_config']['receipt_request_date']?.value && Array.isArray(resp['table_config']['receipt_request_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
             if (resp['table_config']['audit_date_time']?.value != null) {
@@ -175,15 +177,15 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
 
-            if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['receipt_request_date']?.value && Array.isArray(filterData['table_config']['receipt_request_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
             if (filterData['table_config']['audit_date_time']?.value != null) {
@@ -233,9 +235,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             );
         }
 
-        const label: string = record.is_audited
-            ? 'Unaudit Receipt'
-            : 'Audit Receipt';
+        const label: string = record.is_audited ? 'Unaudit Receipt' : 'Audit Receipt';
         this.conformationService
             .open({
                 title: label,
@@ -249,31 +249,40 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
-                    this.accountService.setAuditUnaudit(record.id).subscribe({
-                        next: () => {
-                            record.is_audited = !record.is_audited;
-                            if (record.is_audited) {
-                                this.alertService.showToast(
-                                    'success',
-                                    'Receipt has been Audited!',
-                                    'top-right',
-                                    true
-                                );
-                                this.refreshItems();
-                            } else {
-                                this.alertService.showToast(
-                                    'success',
-                                    'Receipt has been Unaudited!',
-                                    'top-right',
-                                    true
-                                );
-                            }
-                        },
-                        error: (err) => {
-                            this.toasterService.showToast('error', err);
-                            this.isLoading = false;
-                        },
-                    });
+
+                    const executeMethod = () => {
+                        this.accountService.setAuditUnaudit(record.id).subscribe({
+                            next: () => {
+                                record.is_audited = !record.is_audited;
+                                if (record.is_audited) {
+                                    this.alertService.showToast(
+                                        'success',
+                                        'Receipt has been Audited!',
+                                        'top-right',
+                                        true
+                                    );
+                                    this.refreshItems();
+                                } else {
+                                    this.alertService.showToast(
+                                        'success',
+                                        'Receipt has been Unaudited!',
+                                        'top-right',
+                                        true
+                                    );
+                                }
+                            },
+                            error: (err) => {
+                                this.toasterService.showToast('error', err);
+                                this.isLoading = false;
+                            },
+                        });
+                    }
+
+                    // Method to execute a function after verifying OTP if needed
+                    this._userService.verifyAndExecute(
+                        { title: 'account_receipt_audit' },
+                        () => executeMethod()
+                    );
                 }
             });
     }
@@ -296,24 +305,32 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
             .subscribe({
                 next: (res) => {
                     if (res) {
-                        this.accountService.reject(record.id, res).subscribe({
-                            next: () => {
-                                this.alertService.showToast(
-                                    'success',
-                                    'Receipt Rejected',
-                                    'top-right',
-                                    true
-                                );
-                                this.refreshItems();
-                            },
-                            error: (err) =>
-                                this.alertService.showToast(
-                                    'error',
-                                    err,
-                                    'top-right',
-                                    true
-                                ),
-                        });
+                        const executeMethod = () => {
+                            this.accountService.reject(record.id, res).subscribe({
+                                next: () => {
+                                    this.alertService.showToast(
+                                        'success',
+                                        'Receipt Rejected',
+                                        'top-right',
+                                        true
+                                    );
+                                    this.refreshItems();
+                                },
+                                error: (err) =>
+                                    this.alertService.showToast(
+                                        'error',
+                                        err,
+                                        'top-right',
+                                        true
+                                    ),
+                            });
+                        }
+
+                        // Method to execute a function after verifying OTP if needed
+                        this._userService.verifyAndExecute(
+                            { title: 'account_receipt_reject' },
+                            () => executeMethod()
+                        );
                     }
                 },
             });
@@ -453,33 +470,33 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
     }
 
     copyLink(element: any): void {
-        if(element){
+        if (element) {
             this.clipboard.copy(element?.paymentLink);
             this.alertService.showToast('success', 'Copied');
         }
     }
 
-    generatePaymentLink(data: any){
+    generatePaymentLink(data: any) {
         if (!Security.hasPermission(receiptPermissions.generatePaymentLink)) {
-			return this.alertService.showToast('error', messages.permissionDenied);
-		}
-        
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
         let newMessage: any;
         const label: string = 'Generate Payment Link'
         newMessage = 'Are you sure to ' + label.toLowerCase() + ' ?'
-		this.conformationService.open({
-			title: label,
-			message: newMessage
+        this.conformationService.open({
+            title: label,
+            message: newMessage
         }).afterClosed().subscribe({
-			next: (res) => {
-				if (res === 'confirmed') {
+            next: (res) => {
+                if (res === 'confirmed') {
                     let json = {
                         reference_table_id: data?.id || "",
                         service_for: "Receipt",
                         mop: data?.mop || ""
                     }
-					this.walletService.generatePaymentLink(json).subscribe({
-						next: (res) => {
+                    this.walletService.generatePaymentLink(json).subscribe({
+                        next: (res) => {
                             // paymentLink = res.url;
                             // paymentLink = "https://sandbox.partner.bontonholidays.com//payment-link/Py8oKMeAJxzDrz3hLS31aKuLM1wuDYR0cvLAQ5r8thpfoE2H079eHFAlaA0$R87LaA0$dy"
                             // this.matDialog.open(PaymentLinkCopyComponent, {
@@ -487,13 +504,13 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
                             //     data: paymentLink,
                             //     disableClose: true
                             // });
-							this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
-							this.refreshItems();
-						}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-					});
-				}
-			}
-		})
+                            this.alertService.showToast('success', "Payment link generated successfully!", "top-right", true);
+                            this.refreshItems();
+                        }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+                    });
+                }
+            }
+        })
     }
 
     exportExcel(): void {
@@ -524,8 +541,8 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
 
         this.accountService.getReceiptList(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a')  : '';
-                dt.audit_date_time = dt.audit_date_time  ? DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy hh:mm a')  : '';
+                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy hh:mm a') : '';
+                dt.audit_date_time = dt.audit_date_time ? DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy hh:mm a') : '';
                 dt.agent_name = dt.agent_Code + ' ' + dt.agent_name;
                 // dt.payment_amount = dt.payment_amount + ' ' + dt.payment_currency
             }

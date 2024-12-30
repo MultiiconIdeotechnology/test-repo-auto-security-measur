@@ -25,6 +25,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { UserService } from 'app/core/user/user.service';
 
 
 @Component({
@@ -89,7 +90,8 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     private router: Router,
     private matDialog: MatDialog,
     private agentService: AgentService,
-    public _filterService: CommonFilterService
+    public _filterService: CommonFilterService,
+    private _userService: UserService,
   ) {
     super(module_name.walletCredit);
     this.key = this.module_name;
@@ -104,7 +106,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.selectedAgent = resp['table_config']['master_agent_name']?.value;
-      if(this.selectedAgent && this.selectedAgent.id) {
+      if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
         if (!match) {
           this.agentList.push(this.selectedAgent);
@@ -133,7 +135,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedAgent = filterData['table_config']['master_agent_name']?.value;
-      if(this.selectedAgent && this.selectedAgent.id) {
+      if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
         if (!match) {
           this.agentList.push(this.selectedAgent);
@@ -186,7 +188,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   getAgent(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
-  
+
       for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
         this.agentList[i].id_by_value = this.agentList[i].agency_name;
@@ -202,13 +204,13 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-          this.alertService.showToast(
-            'success',
-            'New record added',
-            'top-right',
-            true
-          );
-          this.refreshItems();
+            this.alertService.showToast(
+              'success',
+              'New record added',
+              'top-right',
+              true
+            );
+            this.refreshItems();
         }
       });
   }
@@ -244,6 +246,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     }
 
     const label: string = record.is_enable ? 'Disable' : 'Enable';
+    let title = label == 'Disable' ? 'account_wallet_credit_disable' : 'account_wallet_credit_enable';
     this.conformationService
       .open({
         title: label,
@@ -257,30 +260,40 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
-          this.walletService
-            .setEnable(record.id)
-            .subscribe({
-              next: () => {
-                record.is_enable = !record.is_enable;
-                if (record.is_enable) {
-                  this.alertService.showToast(
-                    'success',
-                    'Wallet Credit has been Enabled!',
-                    'top-right',
-                    true
-                  );
-                } else {
-                  this.alertService.showToast(
-                    'success',
-                    'Wallet Credit has been Disabled!',
-                    'top-right',
-                    true
-                  );
+
+          const executeMethod = () => {
+            this.walletService
+              .setEnable(record.id)
+              .subscribe({
+                next: () => {
+                  record.is_enable = !record.is_enable;
+                  if (record.is_enable) {
+                    this.alertService.showToast(
+                      'success',
+                      'Wallet Credit has been Enabled!',
+                      'top-right',
+                      true
+                    );
+                  } else {
+                    this.alertService.showToast(
+                      'success',
+                      'Wallet Credit has been Disabled!',
+                      'top-right',
+                      true
+                    );
+                  }
+                }, error: (err) => {
+                  this.alertService.showToast('error', err);
                 }
-              }, error: (err) => {
-                this.alertService.showToast('error', err);
-              }
-            });
+              });
+              
+            }
+            
+          // Method to execute a function after verifying OTP if needed
+          this._userService.verifyAndExecute(
+            { title: title },
+            () => executeMethod()
+          );
         }
       });
   }

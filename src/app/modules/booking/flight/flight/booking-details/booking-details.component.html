@@ -25,17 +25,70 @@
                     <ng-template pTemplate>
                         <div class="ml-2 flex items-center font-semibold text-[14px] leading-5">
                             <mat-icon svgIcon="heroicons_outline:information-circle" class="pr-1"></mat-icon>
-                            This booking is associated with {{mainDataAll?.another_flight_sagement}} on {{mainDataAll?.another_flight_departure_date | date: 'dd-MM-yyyy HH:mm:ss'}} PNR : {{mainDataAll?.another_flight_pnr}}
+                            This booking is associated with {{mainDataAll?.another_flight_sagement}} on
+                            {{mainDataAll?.another_flight_departure_date | date: 'dd-MM-yyyy HH:mm:ss'}} PNR :
+                            {{mainDataAll?.another_flight_pnr}}
                         </div>
                         <button mat-raised-button (click)="viewData(mainDataAll)">View</button>
                     </ng-template>
                 </p-messages>
             </div>
-            
+
             <div class="mb-6 flex ">
                 <div class="w-2/3 bg-card rounded-2xl p-6 h-fit">
                     <div>
-                        <div class="flex justify-between mb-3">
+                        <div class="flex flex-col gap-2.5 mb-3 w-full">
+                            <div class="flex gap-2 justify-end w-full">
+                                <!-- <button *ngIf="mainData?.payment_method == 'Online' && mainData?.payment_method == 'Online'" class="text-default font-normal px-4 py-1 rounded-[14px] bg-[#0D9488]" (click)="checkStatus()">
+                                    <span class="text-white">Check Status</span>
+                                </button> -->
+                                <div *ngIf="Status === 'Confirmed'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(1,175,71,0.1)] flex items-center border green-border">
+                                    <mat-icon class="green-text text-2xl">check_circle</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
+                                        Confirmed</span>
+                                </div>
+                                <div *ngIf="Status === 'Pending' || Status === 'Waiting for Payment' || Status === 'Confirmation Pending' || Status === 'Offline Pending'"
+                                    class="pl-2 pr-3 py-1 rounded-lg  flex items-center border light-border">
+                                    <mat-icon class="secondary-text text-2xl">watch_later</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none theme-black-text">Your Ticket
+                                        Process is Pending</span>
+                                </div>
+                                <div *ngIf="Status === 'Payment Failed'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Failed</span>
+                                </div>
+                                <div *ngIf="Status === 'Booking Failed' || Status === 'Cancelled' || Status === 'Partially Cancelled' || Status === 'Hold' || Status === 'Hold Released' "
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
+                                        {{Status}}</span>
+                                </div>
+                                <div *ngIf="Status === 'Rejected'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Rejected
+                                    </span>
+                                </div>
+                                 <div *ngIf="Status === 'Hold Failed'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Hold Failed</span>
+                                </div>
+                                <!-- <div *ngIf="Status === 'Partially Cancelled'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
+                                        {{Status}}</span>
+                                </div>
+                                <div *ngIf="Status === 'Hold'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(99,77,228,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
+                                        {{Status}}</span>
+                                </div> -->
+                            </div>
                             <div class="flex">
 
                                 <div *ngIf="mainDataAll?.is_print_button_show"
@@ -70,8 +123,8 @@
                                         <img src="assets/icons/logs.svg" alt="">
                                     </div>
                                     <span class="text-md leading-none ml-2">Logs</span>
-                                </div> 
-                                
+                                </div>
+
                                 <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
                                     (click)="fileLogs()">
                                     <div>
@@ -79,53 +132,6 @@
                                     </div>
                                     <span class="text-md leading-none ml-2">File Logs</span>
                                 </div>
-
-                            </div>
-                            <div class="flex gap-2">
-                                <!-- <button *ngIf="mainData?.payment_method == 'Online' && mainData?.payment_method == 'Online'" class="text-default font-normal px-4 py-1 rounded-[14px] bg-[#0D9488]" (click)="checkStatus()">
-                                    <span class="text-white">Check Status</span>
-                                </button> -->
-                                <div *ngIf="Status === 'Confirmed'"
-                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(1,175,71,0.1)] flex items-center border green-border">
-                                    <mat-icon class="green-text text-2xl">check_circle</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
-                                        Confirmed</span>
-                                </div>
-                                <div *ngIf="Status === 'Pending' || Status === 'Waiting for Payment' || Status === 'Confirmation Pending' || Status === 'Offline Pending'"
-                                    class="pl-2 pr-3 py-1 rounded-lg  flex items-center border light-border">
-                                    <mat-icon class="secondary-text text-2xl">watch_later</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none theme-black-text">Your Ticket
-                                        Process is Pending</span>
-                                </div>
-                                <div *ngIf="Status === 'Payment Failed'"
-                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
-                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Failed</span>
-                                </div>
-                                <div *ngIf="Status === 'Booking Failed' || Status === 'Cancelled' || Status === 'Partially Cancelled' || Status === 'Hold' || Status === 'Hold Released' "
-                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
-                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
-                                        {{Status}}</span>
-                                </div>
-                                <div *ngIf="Status === 'Rejected'"
-                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
-                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is Rejected
-                                    </span>
-                                </div>
-                                <!-- <div *ngIf="Status === 'Partially Cancelled'"
-                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
-                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
-                                        {{Status}}</span>
-                                </div>
-                                <div *ngIf="Status === 'Hold'"
-                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(99,77,228,0.1)] flex items-center border bonton-red-border">
-                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                    <span class="text-md font-semibold ml-2 leading-none">Your Ticket is
-                                        {{Status}}</span>
-                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -209,8 +215,8 @@
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate" [matTooltip]="mainDataAll?.pnr">{{mainDataAll?.pnr
                                         || ' - '}}</span>
-                                    <img  class="w-4 cursor-pointer"
-                                        (click)="pnr(mainDataAll,'PNR')" src="assets/icons/edit.svg" alt="">
+                                    <img class="w-4 cursor-pointer" (click)="pnr(mainDataAll,'PNR')"
+                                        src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -218,8 +224,8 @@
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate"
                                         [matTooltip]="mainDataAll?.gds_pnr">{{mainDataAll?.gds_pnr || ' - '}}</span>
-                                    <img  (click)="pnr(mainDataAll,'GDS PNR')"
-                                        class="w-4 cursor-pointer" src="assets/icons/edit.svg" alt="">
+                                    <img (click)="pnr(mainDataAll,'GDS PNR')" class="w-4 cursor-pointer"
+                                        src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -242,17 +248,17 @@
                                 <span class="text-md font-semibold text-secondary">Supplier</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.supplier_name">{{mainDataAll?.supplier_name || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.supplier_name">{{mainDataAll?.supplier_name
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Supplier Ref. No.</span>
                                 <div class="truncate flex gap-2">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.supplier_ref_no">{{mainDataAll?.supplier_ref_no || '
-                                        - '}}</span>
-                                    <img 
-                                        (click)="pnr(mainDataAll,'Supplier Ref. No.')" class="w-4 cursor-pointer"
+                                        [matTooltip]="mainDataAll?.supplier_ref_no">{{mainDataAll?.supplier_ref_no
+                                        || ' - '}}</span>
+                                    <img (click)="pnr(mainDataAll,'Supplier Ref. No.')" class="w-4 cursor-pointer"
                                         src="assets/icons/edit.svg" alt="">
                                 </div>
                             </div>
@@ -286,14 +292,16 @@
                                 <span class="text-md font-semibold text-secondary">Travel Type</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.travel_type">{{mainDataAll?.travel_type || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.travel_type">{{mainDataAll?.travel_type
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Cabin</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.cabin_class">{{mainDataAll?.cabin_class || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.cabin_class">{{mainDataAll?.cabin_class
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -316,7 +324,8 @@
                                 <span class="text-md font-semibold text-secondary">IP Address</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="mainDataAll?.ip_address">{{mainDataAll?.ip_address || ' - '}}</span>
+                                        [matTooltip]="mainDataAll?.ip_address">{{mainDataAll?.ip_address
+                                        || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -426,9 +435,8 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Status</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate"
-                                        [matTooltip]="paymentBy?.refund_status">{{paymentBy?.refund_status 
-                                        || ' - '}}</span>
+                                    <span class="text-base truncate" [matTooltip]="paymentBy?.refund_status">
+                                        {{paymentBy?.refund_status || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -440,16 +448,15 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Date Time</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime | 
-                                    date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
+                                    <span class="text-base truncate">{{(paymentBy?.refund_datetime |
+                                        date:'dd-MM-yyyy HH:mm:ss') || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">Refund Reason</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate"
-                                        [matTooltip]="paymentBy?.refund_reason">{{paymentBy?.refund_reason 
-                                        || ' - '}}</span>
+                                    <span class="text-base truncate" [matTooltip]="paymentBy?.refund_reason">
+                                        {{paymentBy?.refund_reason || ' - '}}</span>
                                 </div>
                             </div>
                         </div>
@@ -727,19 +734,18 @@
                     <div
                         class="flex flex-row border-b-2 max-h-10 min-h-10 items-center bg-card sticky top-0 text-lg px-4">
                         Amendment Details</div>
-                    <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0">
-                        <div class="tbl-grid gridwidth grid items-center gap-4 cursor-pointer px-4">#</div>
-                        <!-- <div class="w-15 px-4"></div> -->
-                        <div class="w-1/4 px-4">Ref No.</div>
-                        <div class="w-1/4 px-4">Type</div>
-                        <div class="w-1/4 px-4">Status</div>
-                        <div class="w-1/4 px-4">Request Time</div>
-                        <div class="w-1/4 px-4">Confirmation Time</div>
-                        <div class="w-1/4 px-4">Agent Remark</div>
+                    <div
+                        class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0 pl-4">
+                        <div class="w-[20%] pr-4">Ref No.</div>
+                        <div class="w-[17%] pr-4">Type</div>
+                        <div class="w-[12%] pr-4">Status</div>
+                        <div class="w-[17%] pr-4">Request Time</div>
+                        <div class="w-[17%] pr-4">Confirmation Time</div>
+                        <div class="w-[17%] pr-4">Agent Remark</div>
                     </div>
-                    <div class="flex flex-row border-b-2 max-h-30 min-h-10 items-center overflow-hidden"
+                    <div class="flex flex-row border-b-2 max-h-30 min-h-10 items-center overflow-hidden pl-4"
                         *ngFor="let data of amendmentsDataList">
-                        <div class="tbl-grid gridwidth grid items-center gap-4 cursor-pointer">
+                        <!-- <div class="tbl-grid gridwidth grid items-center gap-4 cursor-pointer">
                             <button mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="optionMenu"
                                 class="sticky left-0 bg-gray-50 dark:bg-gray-900"
                                 style="border-radius: 0%; width: 100%">
@@ -762,22 +768,29 @@
                                         </button>
                             </mat-menu>
                         </div>
-                        <!-- <div class=" px-4 flex flex-row gap-3">
+                        <div class=" pr-4 flex flex-row gap-3">
                             <div class="w-5 cursor-pointer" [matTooltip]="data.invoice_type">
                                 <img *ngIf="data.invoice_id && data.amendment_status == 'Completed'"
                                     src="assets/icons/voucher.svg" alt="" (click)="invoice(data.invoice_id)">
                             </div>
                         </div> -->
-                        <div class="w-1/4 px-4 flex flex-row gap-3">{{ data.ref_no || ' - ' }}</div>
-                        <div class="w-1/4 px-4">{{ data.amendment_type || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ data.amendment_status || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ (data.amendment_request_time | date: 'dd-MM-yyyy HH:mm:ss') 
-                        || ' - '}}
+                        <div class="w-[20%] pr-4 truncate gap-3 underline hover:text-primary-200 cursor-pointer"
+                            (click)="view(data)">{{
+                            data.ref_no || ' - ' }}</div>
+                        <div class="w-[17%] pr-4">{{ data.amendment_type || ' - '}}</div>
+                        <div class="w-[12%] pr-4">
+                            <div class="rounded-lg text-white px-2 max-w-fit text-md font-medium"
+                                [ngClass]="getStatusColorForAgent(data.status_for_agent)">
+                                {{data.status_for_agent}}
+                            </div>
                         </div>
-                        <div class="w-1/4 px-4">{{ (data.amendment_confirmation_time | date: 'dd-MM-yyyy HH:mm:ss') || '
-                            - '}}
+                        <div class="w-[17%] pr-4">{{ (data.amendment_request_time | date: 'dd-MM-yyyy HH:mm:ss')
+                            || ' - '}}
                         </div>
-                        <div class="w-1/4 px-4">{{ data.agent_remark || ' - '}}</div>
+                        <div class="w-[17%] pr-4">{{ (data.amendment_confirmation_time | date: 'dd-MM-yyyy HH:mm:ss')
+                            || ' - '}}
+                        </div>
+                        <div class="w-[17%] pr-4">{{ data.agent_remark || ' - '}}</div>
 
                     </div>
                 </div>

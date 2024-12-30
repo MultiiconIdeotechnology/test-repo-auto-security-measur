@@ -37,12 +37,12 @@
 
                                 <div *ngIf="mainDataAll?.is_invoice_button_show"
                                     class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                    (click)="invoice()">
+                                    (click)="invoice('print')">
                                     <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
                                     <span class="text-md leading-none ml-2">Invoice</span>
                                 </div>
 
-                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
+                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer" (click)="logs()">
                                     <div>
                                         <img src="assets/icons/logs.svg" alt="">
                                     </div>
@@ -192,6 +192,13 @@
                                 <div class="truncate">
                                     <span class="text-base truncate"
                                         [matTooltip]="mainDataAll?.destination">{{mainDataAll?.destination || ' - '}}</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col ">
+                                <span class="text-md font-semibold text-secondary">Plan Name</span>
+                                <div class="truncate">
+                                    <span class="text-base truncate"
+                                        [matTooltip]="mainDataAll?.planName">{{mainDataAll?.planName || ' - '}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -398,26 +405,26 @@
                         Customer Details</div>
                     <div
                         class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0 dark:bg-transparent bg-white">
-                        <div class="px-4">#</div>
-                        <div class="w-1/4 px-4">Name</div>
-                        <div class="w-1/4 px-4">Date Of Birth</div>
-                        <div class="w-1/4 px-4">Email</div>
-                        <div class="w-1/4 px-4">Mobile</div>
-                        <div class="w-1/4 px-4">Policy Number</div>
-                        <div class="w-1/4 px-4">View Policy</div>
+                        <div class="w-[40px] min-w-[40px] max-w-[40px] text-center">#</div>
+                        <div class="w-[255px] px-4">Name</div>
+                        <div class="w-[150px] px-4">Date Of Birth</div>
+                        <div class="w-[255px] px-4">Email</div>
+                        <div class="w-[150px] px-4">Mobile</div>
+                        <div class="w-[200px] px-4">Policy Number</div>
+                        <div class="w-[150px] text-center">View Policy</div>
                     </div>
                     <div class="flex flex-row border-b-2 max-h-30 min-h-10 items-center overflow-hidden dark:bg-transparent bg-white"
                         *ngFor="let data of travellerDataList">
-                        <div class="px-4 flex flex-row gap-3">
+                        <div class="w-[40px] min-w-[40px] max-w-[40px] text-center">
                             <mat-icon class="w-[10px] min-w-[17px] text-[#1674e6] cursor-pointer"
                                 svgIcon="heroicons_outline:exclamation-circle" (click)="info(data)"></mat-icon>
                         </div>
-                        <div class="w-1/4 px-4 flex flex-row gap-3">{{ data.name || ' - '}}</div>
-                        <div class="w-1/4 px-4 flex flex-row gap-3">{{ (data.dateOfBirth | date:'dd-MM-yyyy') || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ data.email || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ data.mobile || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ data.policyNumber || ' - '}}</div>
-                        <div class="w-1/4 pr-4 pl-13 cursor-pointer" tragate="_blank" (click)="viewPolicy(data.document_url)" ><mat-icon svgIcon="heroicons_outline:arrow-down-tray"></mat-icon>
+                        <div class="w-[255px] px-4">{{ data.name || ' - '}}</div>
+                        <div class="w-[150px] px-4">{{ (data.dateOfBirth | date:'dd-MM-yyyy') || ' - '}}</div>
+                        <div class="w-[255px] px-4">{{ data.email || ' - '}}</div>
+                        <div class="w-[150px] px-4">{{ data.mobile || ' - '}}</div>
+                        <div class="w-[200px] px-4">{{ data.policyNumber || ' - '}}</div>
+                        <div class="w-[150px] text-center cursor-pointer"><mat-icon (click)="viewPolicy(data.document_url)" svgIcon="heroicons_outline:arrow-down-tray"></mat-icon>
                         </div>
                     </div>
                 </div>

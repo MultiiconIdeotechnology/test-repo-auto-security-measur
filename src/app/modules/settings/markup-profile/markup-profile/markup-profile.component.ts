@@ -24,6 +24,7 @@ import { EntityService } from 'app/services/entity.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Subscription } from 'rxjs';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-markup-profile',
@@ -122,7 +123,8 @@ export class MarkupProfileComponent
         public entityService: EntityService,
         private pspsettingService: PspSettingService,
         private matDialog: MatDialog,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private _userService: UserService,
     ) {
         super(module_name.markupprofile);
         this.cols = this.columns.map((x) => x.key);
@@ -138,7 +140,7 @@ export class MarkupProfileComponent
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if(resp['table_config']['company_name']){
+            if (resp['table_config']['company_name']) {
                 this.selectedCompany = resp['table_config'].company_name?.value;
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -147,17 +149,17 @@ export class MarkupProfileComponent
         });
     }
 
-    ngAfterViewInit(){
+    ngAfterViewInit() {
         // Defult Active filter show
-        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            if(filterData['table_config']['company_name']){
+            if (filterData['table_config']['company_name']) {
                 this.selectedCompany = filterData['table_config'].company_name?.value;
             }
             this.primengTable['filters'] = filterData['table_config'];
         }
-      }
+    }
 
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
@@ -223,19 +225,28 @@ export class MarkupProfileComponent
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
-                    this.markupprofileService.delete(record.id).subscribe({
-                        next: () => {
-                            this.refreshItems();
-                            this.toasterService.showToast(
-                                'success',
-                                'Markup Profile has been Deleted!'
-                            );
-                        },
-                        error: (err) => {
-                            this.toasterService.showToast('error', err)
-                            this.isLoading = false;
-                        },
-                    });
+
+                    const executeMethod = () => {
+                        this.markupprofileService.delete(record.id).subscribe({
+                            next: () => {
+                                this.refreshItems();
+                                this.toasterService.showToast(
+                                    'success',
+                                    'Markup Profile has been Deleted!'
+                                );
+                            },
+                            error: (err) => {
+                                this.toasterService.showToast('error', err)
+                                this.isLoading = false;
+                            },
+                        });
+                    }
+
+                    // Method to execute a function after verifying OTP if needed
+                    this._userService.verifyAndExecute(
+                        { title: 'settings_markup_delete' },
+                        () => executeMethod()
+                    );
                 }
             });
     }
@@ -278,27 +289,36 @@ export class MarkupProfileComponent
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
-                    this.markupprofileService.setDefault(record.id).subscribe({
-                        next: () => {
-                            this.refreshItems();
-                            this.toasterService.showToast(
-                                'success',
-                                'Markup Profile Set as Default!'
-                            );
-                        },
-                        error: (err) => {
-                            this.toasterService.showToast('error', err)
-                            this.isLoading = false;
-                        },
-                    });
+
+                    const executeMethod = () => { 
+                        this.markupprofileService.setDefault(record.id).subscribe({
+                            next: () => {
+                                this.refreshItems();
+                                this.toasterService.showToast(
+                                    'success',
+                                    'Markup Profile Set as Default!'
+                                );
+                            },
+                            error: (err) => {
+                                this.toasterService.showToast('error', err)
+                                this.isLoading = false;
+                            },
+                        });
+                    }
+
+                    // Method to execute a function after verifying OTP if needed
+                    this._userService.verifyAndExecute(
+                        { title: 'settings_markup_set_default' },
+                        () => executeMethod()
+                    );
                 }
             });
     }
 
     ngOnDestroy() {
         if (this.settingsUpdatedSubscription) {
-          this.settingsUpdatedSubscription.unsubscribe();
-          this._filterService.activeFiltData = {};
+            this.settingsUpdatedSubscription.unsubscribe();
+            this._filterService.activeFiltData = {};
         }
-      }
+    }
 }

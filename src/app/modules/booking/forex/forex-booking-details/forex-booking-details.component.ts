@@ -80,17 +80,16 @@ export class ForexBookingDetailsComponent {
   ) {
     this.settingsUpdatedSubscription = this.entityService.onForexEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
-        console.log("item forex", item);
-
         if (item) {
+          console.log("item", item);
           this.settingsDrawer.toggle()
           this.record = item?.data;
           if (!item.global_withdraw && this.record) {
             this.refreshItem();
-        }
-        if (item.global_withdraw) {
+          }
+          if (item.global_withdraw) {
             this.refreshItem();
-        }
+          }
         }
       }
     })
@@ -131,6 +130,5 @@ export class ForexBookingDetailsComponent {
       }
     })
   }
-
 
 }

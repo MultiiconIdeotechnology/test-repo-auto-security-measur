@@ -30,6 +30,7 @@ import { EntityService } from 'app/services/entity.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
   selector: 'app-waudited',
@@ -104,7 +105,8 @@ export class WAuditedComponent extends BaseListingComponent {
     private matDialog: MatDialog,
     public agentService: AgentService,
     private entityService: EntityService,
-    public _filterService: CommonFilterService
+    public _filterService: CommonFilterService,
+    private _userService: UserService,
   ) {
     super(module_name.withdraw)
     this.key = this.module_name;
@@ -127,7 +129,7 @@ export class WAuditedComponent extends BaseListingComponent {
 
     this._filterService.selectionDateDropdown = "";
     this.withdrawAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-    this._filterService.selectionDateDropdown = "";
+      this._filterService.selectionDateDropdown = "";
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
@@ -137,8 +139,8 @@ export class WAuditedComponent extends BaseListingComponent {
           this.agentList.push(this.selectedEmployee);
         }
       }
-      if (resp['table_config']['entry_date_time'].value && resp['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -151,7 +153,7 @@ export class WAuditedComponent extends BaseListingComponent {
 
   ngAfterViewInit(): void {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-      
+
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       setTimeout(() => {
         this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
@@ -164,8 +166,9 @@ export class WAuditedComponent extends BaseListingComponent {
       }, 1000);
       this.isFilterShowAudit = true;
       this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
-      if (filterData['table_config']['entry_date_time'].value && filterData['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+
+      if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -179,7 +182,7 @@ export class WAuditedComponent extends BaseListingComponent {
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
 
-      for(let i in this.agentList){
+      for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
       }
     })
@@ -219,12 +222,21 @@ export class WAuditedComponent extends BaseListingComponent {
     }).afterClosed().subscribe({
       next: (res) => {
         if (res === 'confirmed') {
-          this.withdrawService.setWithdrawAudit(data.id).subscribe({
-            next: () => {
-              this.alertService.showToast('success', "Wallet Withdraw Audited", "top-right", true);
-              // this.refreshItemsAudited(this.data)
-            }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-          });
+
+          const executeMethod = () => {
+            this.withdrawService.setWithdrawAudit(data.id).subscribe({
+              next: () => {
+                this.alertService.showToast('success', "Wallet Withdraw Audited", "top-right", true);
+                // this.refreshItemsAudited(this.data)
+              }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+            });
+          }
+
+          // Method to execute a function after verifying OTP if needed
+          this._userService.verifyAndExecute(
+            { title: 'account_withdraw_audit' },
+            () => executeMethod()
+          );
         }
       }
     })
@@ -238,13 +250,22 @@ export class WAuditedComponent extends BaseListingComponent {
     }).afterClosed().subscribe({
       next: (res) => {
         if (res === 'confirmed') {
-          this.withdrawService.setWithdrawReject(record.id).subscribe({
-            next: () => {
-              this.alertService.showToast('success', "Wallet Withdraw Audited", "top-right", true);
-              this.refreshItemsAudited()
-              this.entityService.raiseWithdrawRejectedCall(record.id);
-            }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-          });
+
+          const executeMethod = () => {
+            this.withdrawService.setWithdrawReject(record.id).subscribe({
+              next: () => {
+                this.alertService.showToast('success', "Wallet Withdraw Audited", "top-right", true);
+                this.refreshItemsAudited()
+                this.entityService.raiseWithdrawRejectedCall(record.id);
+              }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+            });
+          }
+
+           // Method to execute a function after verifying OTP if needed
+           this._userService.verifyAndExecute(
+            { title: 'account_withdraw_reject' },
+            () => executeMethod()
+          );
         }
       }
     })

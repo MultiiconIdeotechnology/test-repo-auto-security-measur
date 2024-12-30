@@ -20,6 +20,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dial
 import { AgentService } from 'app/services/agent.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { ReshuffleConfirmDetailsComponent } from '../reshuffle-confirm-details/reshuffle-confirm-details.component';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
     selector: 'app-reshuffle',
@@ -49,18 +50,22 @@ import { ReshuffleConfirmDetailsComponent } from '../reshuffle-confirm-details/r
         MatSelectModule,
         MatTabsModule,
         MatCheckboxModule,
+        MatDividerModule,
     ],
 })
 export class ReshuffleComponent {
     record: any = {};
     mode1Form: FormGroup;
     mode2Form: FormGroup;
+    mode3Form: FormGroup;
     fromList: any = [];
     toList: any = [];
     toList2: any = [];
+    toList3: any = [];
     fromListTemp: any = [];
     toListTemp: any = [];
     toListTemp2: any = [];
+    toListTemp3: any = [];
     disableBtn: boolean = false;
 
     tabNameStr: any = 'Mode 1'
@@ -91,6 +96,7 @@ export class ReshuffleComponent {
         { value: 'New', viewValue: 'New' },
         { value: 'Active', viewValue: 'Active' },
         { value: 'Inactive', viewValue: 'Inactive' },
+        { value: 'Dormant', viewValue: 'Dormant' },
     ];
 
     statusTypeLead: any[] = [
@@ -138,16 +144,27 @@ export class ReshuffleComponent {
             IncludeWLAgents: [false]
         });
 
-        this.title = this.record
+        this.mode3Form = this.builder.group({
+            tofilter3: [''],
+            ToId: [''],
+            Mode: ['3'],
+            Status: ['All'],
+            noofAgent: ['0'],
+            IncludeWLAgents: [false]
+        });
+
+        this.title = this.record.title
 
         this.agentService.getFromEmployee('Agents').subscribe({
             next: res => {
                 this.fromList = JSON.parse(JSON.stringify(res['data']));
                 this.toList = JSON.parse(JSON.stringify(res['data']));
                 this.toList2 = JSON.parse(JSON.stringify(res['data']));
+                this.toList3 = JSON.parse(JSON.stringify(res['data']));
                 this.fromListTemp = JSON.parse(JSON.stringify(res['data']));
                 this.toListTemp = JSON.parse(JSON.stringify(res['data']));
                 this.toListTemp2 = JSON.parse(JSON.stringify(res['data']));
+                this.toListTemp3 = JSON.parse(JSON.stringify(res['data']));
 
                 this.toList.unshift({
                     id: '',
@@ -157,17 +174,21 @@ export class ReshuffleComponent {
                     id: '',
                     employee_name: 'All',
                 });
+                this.toList3.unshift({
+                    id: '',
+                    employee_name: 'All',
+                });
                 this.mode1Form.get('FromId').patchValue(this.fromList[0])
                 this.mode1Form.get('ToId').patchValue(this.toList[0]);
-
                 this.mode2Form.get('ToId').patchValue(this.toList2[0]);
+                this.mode3Form.get('ToId').patchValue(this.toList3[0]);
 
-                if (this.record === "Lead") {
+                if (this.record.title === "Lead") {
                     this.getLeadStatusFromCount(this.mode1Form.get('FromId')?.value);
                     this.getLeadStatusToCount("");
                 }
 
-                if (this.record === "Agent") {
+                if (this.record.title === "Agent") {
                     this.getAgentStatusFromCount(this.mode1Form.get('FromId')?.value);
                     this.getAgentStatusToCount("");
                 }
@@ -198,6 +219,15 @@ export class ReshuffleComponent {
             }
             else {
                 this.toList2 = this.toListTemp2.filter(x => x.employee_name.toLowerCase().includes(data.toLowerCase()));
+            }
+        })
+
+        this.mode3Form.get('tofilter3').valueChanges.subscribe(data => {
+            if (data.trim() == '') {
+                this.toList3 = this.toListTemp3
+            }
+            else {
+                this.toList3 = this.toListTemp3.filter(x => x.employee_name.toLowerCase().includes(data.toLowerCase()));
             }
         })
     }
@@ -313,12 +343,12 @@ export class ReshuffleComponent {
 
             case 'Mode 2':
                 this.tab = 'Mode 2';
-                if (this.record === "Lead") {
+                if (this.record.title === "Lead") {
                     this.getLeadStatusToCountMode2(form2AgentCount ? form2AgentCount?.id : "");
                     this.getLeadStatus();
                 }
 
-                if (this.record === "Agent") {
+                if (this.record.title === "Agent") {
                     this.getAgentStatusToCountMode2(form2AgentCount ? form2AgentCount?.id : "");
                     this.getAgentStatus();
                 }
@@ -327,31 +357,31 @@ export class ReshuffleComponent {
     }
 
     fromRMChanged(val: any) {
-        if (this.record === "Lead") {
+        if (this.record.title === "Lead") {
             this.getLeadStatusFromCount(val);
         }
 
-        if (this.record === "Agent") {
+        if (this.record.title === "Agent") {
             this.getAgentStatusFromCount(val);
         }
     }
 
     toRMChanged(val: any) {
-        if (this.record === "Lead") {
+        if (this.record.title === "Lead") {
             this.getLeadStatusToCount(val);
         }
 
-        if (this.record === "Agent") {
+        if (this.record.title === "Agent") {
             this.getAgentStatusToCount(val);
         }
     }
 
     mode2toRMChanged(val: any) {
-        if (this.record === "Lead") {
+        if (this.record.title === "Lead") {
             this.getLeadStatusToCountMode2(val);
         }
 
-        if (this.record === "Agent") {
+        if (this.record.title === "Agent") {
             this.getAgentStatusToCountMode2(val);
         }
     }
@@ -359,11 +389,11 @@ export class ReshuffleComponent {
     mode2StatusChanged(val: any) {
         this.mode2statusToCount = val;
         this.mode2AgentstatusToCount = val;
-        if (this.record === "Lead") {
+        if (this.record.title === "Lead") {
             this.getLeadStatus();
         }
 
-        if (this.record === "Agent") {
+        if (this.record.title === "Agent") {
             this.getAgentStatus();
         }
     }
@@ -380,6 +410,9 @@ export class ReshuffleComponent {
                 }
                 else if (this.mode2statusToCount == 'Inactive') {
                     this.finalagentmode2statusToCount = this.mode2agentStatusToCountNew1?.inactiveCount ? this.mode2agentStatusToCountNew1?.inactiveCount : 0;
+                }
+                else if (this.mode2statusToCount == 'Dormant') {
+                    this.finalagentmode2statusToCount = this.mode2agentStatusToCountNew1?.dormantCount ? this.mode2agentStatusToCountNew1?.dormantCount : 0;
                 }
                 else if (this.mode2statusToCount == 'All') {
                     const totalCount = this.mode2agentStatusToCountNew1?.activeCount + this.mode2agentStatusToCountNew1?.inactiveCount + this.mode2agentStatusToCountNew1?.newCount;
@@ -426,7 +459,8 @@ export class ReshuffleComponent {
         this.disableBtn = true;
         const json1 = this.mode1Form.getRawValue();
         const json2 = this.mode2Form.getRawValue();
-        let mode = {}
+        const json3 = this.mode3Form.getRawValue();
+        let mode: any = {}
         if (this.tabNameStr == 'Mode 1') {
             mode = {
                 "FromId": json1.FromId,
@@ -452,7 +486,7 @@ export class ReshuffleComponent {
                 "LeadToConverted": this.mode1leadStatusToCount?.convertedCount ? this.mode1leadStatusToCount?.convertedCount: 0,
                 "LeadToDead": this.mode1leadStatusToCount?.deadCount ? this.mode1leadStatusToCount?.deadCount: 0
             }
-        } else {
+        } else if(this.tabNameStr == 'Mode 2') {
             mode = {
                 "FromId": '',
                 "Status": json2.Status,
@@ -473,9 +507,30 @@ export class ReshuffleComponent {
                 "LeadToDead": this.mode2leadStatusToCount?.deadCount ? this.mode2leadStatusToCount?.deadCount: 0,
                 "LeadCount" : this.finalmode2statusToCount
             }
+
+            if(mode && mode['Status'] == 'All') {
+                this.alertService.showToast('error', "Please select any one status", 'top-right', true);
+                return;
+            }
+        }else{
+            mode = {
+                "columeFilters" : this.record.columeFilters.columeFilters, 
+                "Filter" : this.record.columeFilters.Filter, 
+                "Status": json3.Status,
+                "ToId": json3.ToId,
+                "noofAgent": json3.noofAgent,
+                "Mode": "3",
+                "IncludeWLAgents": json3.IncludeWLAgents ? json3.IncludeWLAgents : false,
+                // "ToNew": this.record.new_agent_count,
+                // "ToActive": this.record.active_agent_count,
+                // "ToInActive": this.record.inactive_agent_count,
+                "ToNew": this.mode1agentStatusToCount?.newCount ? this.mode1agentStatusToCount?.newCount: 0,
+                "ToActive": this.mode1agentStatusToCount?.activeCount ? this.mode1agentStatusToCount?.activeCount: 0,
+                "ToInActive": this.mode1agentStatusToCount?.inactiveCount ? this.mode1agentStatusToCount?.inactiveCount: 0,
+            }
         }
 
-        if (this.record == 'Agent') {
+        if (this.record.title == 'Agent') {
             this.matDialog.open(ReshuffleConfirmDetailsComponent, {
                 data: {data:mode, send : 'Agent'},
                 disableClose: true,

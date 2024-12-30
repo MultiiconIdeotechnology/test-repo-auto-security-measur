@@ -19,17 +19,27 @@
                         <div class="flex flex-row">
                             <mat-form-field class="flex-grow">
                                 <mat-label class="text-base font-medium ">Select Product</mat-label>
-                                <mat-select formControlName="product" [compareWith]="compareWith"
-                                    *ngIf="!formGroup.get('id').value"
-                                    (selectionChange)="onProductSelectionChange($event.value)">
-                                    <mat-option *ngFor="let lt of productList" [value]="lt.id">{{ lt.product_name
-                                        }}</mat-option>
-                                </mat-select>
+                                <ng-container *ngIf="!formGroup.get('id').value">
+                                    <mat-select formControlName="product" [compareWith]="compareWith" 
+                                        (selectionChange)="onProductSelectionChange($event.value)">
+                                        <mat-option>
+                                            <ngx-mat-select-search placeholderLabel="Search"
+                                                noEntriesFoundLabel="'no matching product'" [formControl]="searchCtrl">
+                                            </ngx-mat-select-search>
+                                        </mat-option>
+                                        <mat-option *ngFor="let lt of filteredProducts" [value]="lt.id">
+                                            {{lt.product_name}}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+                                
                                 <mat-error *ngIf="formGroup.get('product').hasError('required')">
                                     Product is required
                                 </mat-error>
-                                <input matInput readonly *ngIf="formGroup.get('id').value"
-                                    [formControlName]="'product'" />
+                                
+                                <ng-container *ngIf="formGroup.get('id').value">
+                                    <input matInput readonly [formControlName]="'product'" />
+                                </ng-container>
                             </mat-form-field>
                         </div>
                         <div class="flex flex-row">

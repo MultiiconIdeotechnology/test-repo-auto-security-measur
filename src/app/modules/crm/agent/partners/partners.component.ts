@@ -214,6 +214,10 @@ export class PartnersComponent extends BaseListingComponent{
 
     refreshItems(event?: any) {
         this.isLoading = true;
+        if(this.searchInputControlpartners.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
+            event = {};
+            event.first = event?.first || 0;
+        }
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlpartners.value;
         this.crmService.getPartnerAgentList(filterReq).subscribe({

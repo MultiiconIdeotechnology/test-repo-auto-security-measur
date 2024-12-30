@@ -14,6 +14,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GlobalSearchComponent } from '../global_search/global-search.component';
+import { TwoFactorAuthComponent } from './two-factor/two-factor-auth/two-factor-auth.component';
+import { VerificationDialogComponent } from './two-factor/verification-dialog/verification-dialog.component';
 
 @Component({
     selector: 'user',
@@ -137,6 +139,7 @@ export class UserComponent implements OnInit, OnDestroy {
      */
     signOut(): void {
         this._router.navigate(['/sign-out']);
+        localStorage.removeItem('tfa_type');
     }
 
     /**
@@ -159,10 +162,23 @@ export class UserComponent implements OnInit, OnDestroy {
 
     }
 
+    // Change Password
     changePassword(){
         this._matdialog.open(ChangePasswordComponent, {
             disableClose: true,
             data: {}
         })
     }
+
+    // Two FactorAuth Dialog
+    openTF2AuthModal(){
+        this._matdialog.open(TwoFactorAuthComponent, {
+            width:'900px',
+            autoFocus: false,
+            disableClose: true,
+            closeOnNavigation: false,
+            data: {}
+        })
+    }
+
 }

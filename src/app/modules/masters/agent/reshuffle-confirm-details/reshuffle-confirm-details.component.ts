@@ -64,29 +64,55 @@ export class ReshuffleConfirmDetailsComponent {
         @Inject(MAT_DIALOG_DATA) public data: any = {}
     ) {
         if (data)
-            this.record = data.data;
+        this.record = data.data;
         this.title = data.send
     }
 
     Confirm() {
         if (this.title == "Agent") {
-            const agentJson = {
-                FromId: this.record?.FromId?.id ? this.record?.FromId?.id : "",
-                Status: this.record?.Status == 'All' ? '' : this.record?.Status,
-                ToId: this.record?.ToId?.id ? this.record?.ToId?.id : "All",
-                noofAgent: this.record?.noofAgent == 0 ? null : this.record?.noofAgent,
-                Mode: this.record?.Mode,
-                IncludeWLAgents: this.record?.IncludeWLAgents ? this.record?.IncludeWLAgents : false
+            if (this.record.Mode == 3) {
+
+                const agentJson = {
+                    Status: this.record?.Status == 'All' ? '' : this.record?.Status,
+                    ToId: this.record?.ToId?.id ? this.record?.ToId?.id : "All",
+                    noofAgent: this.record?.noofAgent == 0 ? null : this.record?.noofAgent,
+                    Mode: this.record?.Mode,
+                    IncludeWLAgents: this.record?.IncludeWLAgents ? this.record?.IncludeWLAgents : false,
+                    columeFilters: this.record?.columeFilters,
+                    Filter: this.record.Filter
+                }
+                
+                // return
+
+                this.agentService.reshuffleAgentMode3(agentJson).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', 'Agent Reshuffled', 'top-right', true);
+                        this.matDialogRef1.close(true);
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                    },
+                });
+
+            } else {
+                const agentJson = {
+                    FromId: this.record?.FromId?.id ? this.record?.FromId?.id : "",
+                    Status: this.record?.Status == 'All' ? '' : this.record?.Status,
+                    ToId: this.record?.ToId?.id ? this.record?.ToId?.id : "All",
+                    noofAgent: this.record?.noofAgent == 0 ? null : this.record?.noofAgent,
+                    Mode: this.record?.Mode,
+                    IncludeWLAgents: this.record?.IncludeWLAgents ? this.record?.IncludeWLAgents : false
+                }
+                this.agentService.TransferAgentRmToRm(agentJson).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', 'Agent Reshuffled', 'top-right', true);
+                        this.matDialogRef1.close(true);
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+                    },
+                });
             }
-            this.agentService.TransferAgentRmToRm(agentJson).subscribe({
-                next: () => {
-                    this.alertService.showToast('success', 'Agent Reshuffled', 'top-right', true);
-                    this.matDialogRef1.close(true);
-                },
-                error: (err) => {
-                    this.alertService.showToast('error', err, 'top-right', true);
-                },
-            });
         } else {
             const leadJson = {
                 FromId: this.record?.FromId?.id ? this.record?.FromId?.id : "",

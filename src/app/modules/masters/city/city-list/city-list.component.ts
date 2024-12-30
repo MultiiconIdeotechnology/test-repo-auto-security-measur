@@ -1,7 +1,7 @@
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { Security, cityPermissions, messages, module_name, filter_module_name } from 'app/security';
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -149,7 +149,7 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             });
     }
 
-    editInternal(record): void {
+    editInternal(record: any): void {
         this.matDialog
             .open(CitysEntryComponent, {
                 data: { data: record, readonly: false },
@@ -163,14 +163,15 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             });
     }
 
-    viewInternal(record): void {
+
+    viewInternal(record: any): void {
         this.matDialog.open(CitysEntryComponent, {
             data: { data: record, readonly: true },
             disableClose: true,
         });
     }
 
-    deleteInternal(record): void {
+    deleteInternal(record: any): void {
         const label: string = 'Delete City';
         this.conformationService
             .open({
@@ -180,6 +181,7 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
+
                     this.cityService.delete(record.id).subscribe({
                         next: () => {
                             this.alertService.showToast(
@@ -204,7 +206,7 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             });
     }
 
-    EnableDisable(record): void {
+    EnableDisable(record: any): void {
         if (!Security.hasPermission(cityPermissions.enablePreferedHotelPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -252,7 +254,7 @@ export class CityListComponent extends BaseListingComponent implements OnDestroy
             });
     }
 
-    images(record): void {
+    images(record: any): void {
         if (!Security.hasPermission(cityPermissions.addImagePermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }

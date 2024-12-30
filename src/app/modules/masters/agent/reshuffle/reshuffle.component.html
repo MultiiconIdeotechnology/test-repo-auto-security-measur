@@ -25,7 +25,7 @@
                     </mat-select>
                 </mat-form-field>
                 <div class="flex flex-row justify-end items-end mt-[-17px] mb-2">
-                    <ng-container *ngIf="this.record == 'Lead'">
+                    <ng-container *ngIf="record.title == 'Lead'">
                         <span class="px-2">New: {{mode1leadStatusFromCount?.newCount?
                             mode1leadStatusFromCount?.newCount: 0 }}</span>
                         <span class="px-2">Live: {{mode1leadStatusFromCount?.liveCount ?
@@ -36,13 +36,15 @@
                             mode1leadStatusFromCount?.deadCount : 0}}</span>
                     </ng-container>
 
-                    <ng-container *ngIf="this.record == 'Agent'">
+                    <ng-container *ngIf="record.title == 'Agent'">
                         <span class="px-2">New: {{mode1agentStatusFromCount?.newCount ?
                             mode1agentStatusFromCount?.newCount: 0}}</span>
                         <span class="px-2">Active: {{mode1agentStatusFromCount?.activeCount?
                             mode1agentStatusFromCount?.activeCount: 0 }}</span>
                         <span class="px-2">Inactive: {{mode1agentStatusFromCount?.inactiveCount ?
                             mode1agentStatusFromCount?.inactiveCount : 0}}</span>
+                        <span class="px-2">Dormant: {{mode1agentStatusFromCount?.dormantCount ?
+                            mode1agentStatusFromCount?.dormantCount : 0}}</span>
                     </ng-container>
                 </div>
 
@@ -62,7 +64,7 @@
                     </mat-select>
                 </mat-form-field>
                 <div class="flex flex-row justify-end items-end mt-[-17px] mb-2">
-                    <ng-container *ngIf="this.record == 'Lead'">
+                    <ng-container *ngIf="record.title == 'Lead'">
                         <span class="px-2">New: {{mode1leadStatusToCount?.newCount ? mode1leadStatusToCount?.newCount :
                             0}}</span>
                         <span class="px-2">Live: {{mode1leadStatusToCount?.liveCount ? mode1leadStatusToCount?.liveCount
@@ -73,17 +75,19 @@
                             : 0}}</span>
                     </ng-container>
 
-                    <ng-container *ngIf="this.record == 'Agent'">
+                    <ng-container *ngIf="record.title == 'Agent'">
                         <span class="px-2">New: {{mode1agentStatusToCount?.newCount ?
                             mode1agentStatusToCount?.newCount: 0}}</span>
                         <span class="px-2">Active: {{mode1agentStatusToCount?.activeCount?
                             mode1agentStatusToCount?.activeCount: 0 }}</span>
                         <span class="px-2">Inactive: {{mode1agentStatusToCount?.inactiveCount ?
                             mode1agentStatusToCount?.inactiveCount : 0}}</span>
+                        <span class="px-2">Dormant: {{mode1agentStatusToCount?.dormantCount ?
+                            mode1agentStatusToCount?.dormantCount : 0}}</span>
                     </ng-container>
                 </div>
 
-                <mat-form-field class="flex-grow" *ngIf="this.record == 'Agent'">
+                <mat-form-field class="flex-grow" *ngIf="record.title == 'Agent'">
                     <mat-label>Status</mat-label>
                     <mat-select required formControlName="Status">
                         <mat-option *ngFor="let s of statusType" [value]="s.value">
@@ -92,7 +96,7 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="flex-grow" *ngIf="this.record == 'Lead'">
+                <mat-form-field class="flex-grow" *ngIf="record.title == 'Lead'">
                     <mat-label>Status</mat-label>
                     <mat-select required formControlName="Status">
                         <mat-option *ngFor="let s of statusTypeLead" [value]="s.value">
@@ -105,11 +109,12 @@
                 </div> -->
 
                 <mat-form-field class="flex-grow">
-                    <mat-label>No Of {{this.record == 'Agent' ? 'Agent' : 'Lead'}}</mat-label>
+                    <mat-label>No Of {{record.title == 'Agent' ? 'Agent' : 'Lead'}}</mat-label>
                     <input matInput required type="number" formControlName="noofAgent" />
                 </mat-form-field>
 
-                <mat-checkbox class="-ml-2" [color]="'primary'" formControlName="IncludeWLAgents" *ngIf="this.record == 'Agent'">
+                <mat-checkbox class="-ml-2" [color]="'primary'" formControlName="IncludeWLAgents"
+                    *ngIf="record.title == 'Agent'">
                     <span>Include WL Agents</span>
                 </mat-checkbox>
             </form>
@@ -129,7 +134,7 @@
 
         <mat-tab label="Mode 2" [aria-label]="'Mode 2'">
             <form class="flex flex-col flex-auto" [formGroup]="mode2Form">
-                <mat-form-field class="flex-grow" *ngIf="this.record == 'Agent'">
+                <mat-form-field class="flex-grow" *ngIf="record.title == 'Agent'">
                     <mat-label>Status</mat-label>
                     <mat-select required formControlName="Status" (selectionChange)="mode2StatusChanged($event.value)">
                         <mat-option *ngFor="let s of statusType" [value]="s.value">
@@ -138,7 +143,7 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="flex-grow" *ngIf="this.record == 'Lead'">
+                <mat-form-field class="flex-grow" *ngIf="record.title == 'Lead'">
                     <mat-label>Status</mat-label>
                     <mat-select required formControlName="Status" (selectionChange)="mode2StatusChanged($event.value)">
                         <mat-option *ngFor="let s of statusTypeLead" [value]="s.value">
@@ -147,11 +152,11 @@
                     </mat-select>
                 </mat-form-field>
                 <div class="flex flex-col justify-end items-end mt-[-17px] mb-2">
-                    <ng-container *ngIf="this.record == 'Lead'">
+                    <ng-container *ngIf="record.title == 'Lead'">
                         <span>Count: {{finalmode2statusToCount}}</span>
                     </ng-container>
 
-                    <ng-container *ngIf="this.record == 'Agent'">
+                    <ng-container *ngIf="record.title == 'Agent'">
                         <span>Count: {{finalagentmode2statusToCount}}</span>
                     </ng-container>
                 </div>
@@ -172,7 +177,7 @@
                     </mat-select>
                 </mat-form-field>
                 <div class="flex flex-row justify-end items-end mt-[-17px] mb-3">
-                    <ng-container *ngIf="this.record == 'Lead'">
+                    <ng-container *ngIf="record.title == 'Lead'">
                         <span class="px-2">New: {{mode2leadStatusToCount?.newCount ? mode2leadStatusToCount?.newCount :
                             0}}</span>
                         <span class="px-2">Live: {{mode2leadStatusToCount?.liveCount ? mode2leadStatusToCount?.liveCount
@@ -183,22 +188,131 @@
                             : 0}}</span>
                     </ng-container>
 
-                    <ng-container *ngIf="this.record == 'Agent'">
+                    <ng-container *ngIf="record.title == 'Agent'">
                         <span class="px-2">New: {{mode2agentStatusToCountNew?.newCount ?
                             mode2agentStatusToCountNew?.newCount: 0}}</span>
                         <span class="px-2">Active: {{mode2agentStatusToCountNew?.activeCount?
                             mode2agentStatusToCountNew?.activeCount: 0 }}</span>
                         <span class="px-2">Inactive: {{mode2agentStatusToCountNew?.inactiveCount ?
                             mode2agentStatusToCountNew?.inactiveCount : 0}}</span>
+                        <span class="px-2">Dormant: {{mode2agentStatusToCountNew?.dormantCount ?
+                            mode2agentStatusToCountNew?.dormantCount : 0}}</span>
                     </ng-container>
                 </div>
 
                 <mat-form-field class="flex-grow">
-                    <mat-label>No Of {{this.record == 'Agent' ? 'Agent' : 'Lead'}}</mat-label>
+                    <mat-label>No Of {{record.title == 'Agent' ? 'Agent' : 'Lead'}}</mat-label>
                     <input matInput required type="number" formControlName="noofAgent" />
                 </mat-form-field>
 
-                <mat-checkbox class="-ml-2" [color]="'primary'" formControlName="IncludeWLAgents" *ngIf="this.record == 'Agent'">
+                <mat-checkbox class="-ml-2" [color]="'primary'" formControlName="IncludeWLAgents"
+                    *ngIf="record.title == 'Agent'">
+                    <span>Include WL Agents</span>
+                </mat-checkbox>
+            </form>
+
+            <div class="flex flex-col justify-end items-end ">
+                <div class="flex items-center ">
+                    <button class="sm:mx-3 max-sm:mx-3" mat-stroked-button (click)="matDialogRef.close()">
+                        <span>Cancel</span>
+                    </button>
+                    <button class="order-first sm:order-last" type="submit" mat-flat-button [color]="'primary'"
+                        (click)="Submit()">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="Mode 3" [aria-label]="'Mode 3'" *ngIf="record.title === 'Agent'">
+            <form class="flex flex-col flex-auto" [formGroup]="mode3Form">
+                <div class="">
+                    <div>Filter List</div>
+                    <div class="flex flex-row mb-2">
+                        <!-- <ng-container >
+                            <span class="pr-2">New: {{ record.new_agent_count }}</span>
+                            <span class="px-2">Live: {{mode1leadStatusFromCount?.liveCount ?
+                                mode1leadStatusFromCount?.liveCount : 0}}</span>
+                            <span class="px-2">Converted: {{mode1leadStatusFromCount?.convertedCount ?
+                                mode1leadStatusFromCount?.convertedCount: 0}}</span>
+                            <span class="px-2">Dead: {{mode1leadStatusFromCount?.deadCount ?
+                                mode1leadStatusFromCount?.deadCount : 0}}</span>
+                        </ng-container> -->
+
+                        <ng-container>
+                            <span class="pr-2">New: {{record.new_agent_count}}</span>
+                            <span class="px-2">Active: {{ record.active_agent_count }}</span>
+                            <span class="px-2">Inactive: {{ record.inactive_agent_count }}</span>
+                            <span class="px-2">Dormant: {{ record.dormant_agent_count }}</span>
+                        </ng-container>
+                    </div>
+                </div>
+                <mat-divider class="mb-2"></mat-divider>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>To RM</mat-label>
+                    <mat-select formControlName="ToId" required (selectionChange)="toRMChanged($event.value)">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching employee found'" [formControlName]="'tofilter3'">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <ng-container *ngFor="let ct of toList3">
+                            <mat-option [value]="ct">
+                                {{ct.employee_name}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+                <div class="flex flex-row justify-end items-end mt-[-17px] mb-2">
+                    <!-- <ng-container *ngIf="record.title == 'Lead'">
+                        <span class="px-2">New: {{mode1leadStatusToCount?.newCount ? mode1leadStatusToCount?.newCount :
+                            0}}</span>
+                        <span class="px-2">Live: {{mode1leadStatusToCount?.liveCount ? mode1leadStatusToCount?.liveCount
+                            : 0}}</span>
+                        <span class="px-2">Converted: {{mode1leadStatusToCount?.convertedCount ?
+                            mode1leadStatusToCount?.convertedCount : 0}}</span>
+                        <span class="px-2">Dead: {{mode1leadStatusToCount?.deadCount ? mode1leadStatusToCount?.deadCount
+                            : 0}}</span>
+                    </ng-container> -->
+
+                    <ng-container *ngIf="record.title == 'Agent'">
+                        <span class="px-2">New: {{mode1agentStatusToCount?.newCount ?
+                            mode1agentStatusToCount?.newCount: 0}}</span>
+                        <span class="px-2">Active: {{mode1agentStatusToCount?.activeCount?
+                            mode1agentStatusToCount?.activeCount: 0 }}</span>
+                        <span class="px-2">Inactive: {{mode1agentStatusToCount?.inactiveCount ?
+                            mode1agentStatusToCount?.inactiveCount : 0}}</span>
+                        <span class="px-2">Dormant: {{mode1agentStatusToCount?.dormantCount ?
+                            mode1agentStatusToCount?.dormantCount : 0}}</span>
+                    </ng-container>
+                </div>
+
+                <mat-form-field class="flex-grow" *ngIf="record.title == 'Agent'">
+                    <mat-label>Status</mat-label>
+                    <mat-select required formControlName="Status">
+                        <mat-option *ngFor="let s of statusType" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow" *ngIf="record.title == 'Lead'">
+                    <mat-label>Status</mat-label>
+                    <mat-select required formControlName="Status">
+                        <mat-option *ngFor="let s of statusTypeLead" [value]="s.value">
+                            {{ s.viewValue }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>No Of {{record.title == 'Agent' ? 'Agent' : 'Lead'}}</mat-label>
+                    <input matInput required type="number" formControlName="noofAgent" />
+                </mat-form-field>
+
+                <mat-checkbox class="-ml-2" [color]="'primary'" formControlName="IncludeWLAgents"
+                    *ngIf="record.title == 'Agent'">
                     <span>Include WL Agents</span>
                 </mat-checkbox>
             </form>

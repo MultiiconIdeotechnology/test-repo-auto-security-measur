@@ -27,6 +27,8 @@ import { Routes } from 'app/common/const';
 import { Linq } from 'app/utils/linq';
 import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { TravellerInfoComponent } from '../traveller-info/traveller-info.component';
+import { CommonUtils } from 'app/utils/commonutils';
+import { LogsComponent } from '../../flight/flight/logs/logs.component';
 
 @Component({
   selector: 'app-insurance-booking-details',
@@ -99,7 +101,6 @@ export class InsuranceBookingDetailsComponent {
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-
       this.insuranceService.getInsuranceBookingRecord(id).subscribe({
         next: res => {
           this.mainData = res.data;
@@ -128,7 +129,8 @@ export class InsuranceBookingDetailsComponent {
   }
 
   viewPolicy(data){
-    Linq.recirect(data);
+    window.open(data, '_blank')
+    // Linq.recirect(data);
   }
 
   agentInfo(data): void {
@@ -162,6 +164,58 @@ export class InsuranceBookingDetailsComponent {
     this.matDialog.open(SubAgentInfoComponent, {
       data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
       disableClose: true
+    })
+  }
+
+  
+  print(val): void {
+
+    this.conformationService.open({
+      title: 'Print',
+      message: `Do you want to print without price information ?`,
+      actions: {
+        confirm: {
+          label: 'Yes',
+        },
+        cancel: {
+          label: 'No',
+        },
+      },
+    }).afterClosed().subscribe((res) => {
+      const json = {
+        ServiceType: "Insurance", //Airline,Bus,Hotel
+        bookingId: this.mainData.id,
+        is_customer: val === 'customer' ? true : false,
+        is_with_price: res === 'confirmed' ? false : true
+      }
+      this.insuranceService.printBooking(json).subscribe({
+        next: (res) => {
+          CommonUtils.downloadPdf(res.data, this.mainDataAll.booking_ref_no + '.pdf');
+        }, error: (err) => {
+          this.toastr.showToast('error', err)
+        }
+      })
+    });
+  }
+
+  invoice(record): void {
+    const recordData = record == 'print' ? this.mainData.invoice_id : record
+    this.insuranceService.printInvoice(recordData).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, this.mainData.invoice_no + '.pdf');
+      }, error: (err) => {
+        this.toastr.showToast('error', err)
+      }
+    })
+  }
+
+  logs(): void {
+    this.matDialog.open(LogsComponent, {
+      data: { data: this.mainData.id, service: 'Insurance' },
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      // if(res)
+      // this.refreshItems();
     })
   }
 

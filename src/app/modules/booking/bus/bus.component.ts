@@ -163,10 +163,10 @@ export class BusComponent extends BaseListingComponent {
 
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
-      if (resp['table_config']['bookingDate']?.value != null && resp['table_config']['bookingDate'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
-        this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
-      }
+      if (resp['table_config']['bookingDate']?.value && Array.isArray(resp['table_config']['bookingDate']?.value)) {
+				this._filterService.selectionDateDropdown = 'custom_date_range';
+				this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+			}
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.primengTable._filter();
@@ -189,10 +189,10 @@ export class BusComponent extends BaseListingComponent {
         }
       }
 
-      if (filterData['table_config']['bookingDate']?.value != null && filterData['table_config']['bookingDate'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
-        this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
-      }
+      if (filterData['table_config']['bookingDate']?.value && Array.isArray(filterData['table_config']['bookingDate']?.value)) {
+				this._filterService.selectionDateDropdown = 'custom_date_range';
+				this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+			}
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];

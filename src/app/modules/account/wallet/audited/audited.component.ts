@@ -126,7 +126,7 @@ export class AuditedComponent extends BaseListingComponent {
     this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.selectionDateDropdown = "";
       this.selectedMop = resp['table_config']['mop']?.value;
-			this.selectedPsp = resp['table_config']['psp_name']?.value;
+      this.selectedPsp = resp['table_config']['psp_name']?.value;
       this.selectedAgent = resp['table_config']['agent_code_filter']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -146,20 +146,20 @@ export class AuditedComponent extends BaseListingComponent {
           this.pspList.push(this.selectedPsp);
         }
       }
-        if (resp?.['table_config']?.['request_date_time']?.value != null && resp['table_config']['request_date_time'].value.length) {
-          this._filterService.selectionDateDropdown = 'Custom Date Range';
-          this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
-        }
-        if (resp?.['table_config']?.['audited_date_time']?.value != null) {
-          resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
-        }
+      if (resp['table_config']['request_date_time']?.value && Array.isArray(resp['table_config']['request_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(resp['table_config']['request_date_time']);
+      }
+      if (resp?.['table_config']?.['audited_date_time']?.value != null) {
+        resp['table_config']['audited_date_time'].value = new Date(resp['table_config']['audited_date_time'].value);
+      }
 
-        this.isFilterShowAudit = true;
-        this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
-        // this.sortColumn = resp['sortColumn'];
-        // this.primengTable['_sortField'] = resp['sortColumn'];
-        this.primengTable['filters'] = resp['table_config'];
-        this.primengTable._filter();
+      this.isFilterShowAudit = true;
+      this.isFilterShowAuditedChange.emit(this.isFilterShowAudit);
+      // this.sortColumn = resp['sortColumn'];
+      // this.primengTable['_sortField'] = resp['sortColumn'];
+      this.primengTable['filters'] = resp['table_config'];
+      this.primengTable._filter();
     });
   }
 
@@ -168,30 +168,30 @@ export class AuditedComponent extends BaseListingComponent {
 
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
       this.selectedMop = filterData['table_config']['mop']?.value;
-			this.selectedPsp = filterData['table_config']['psp_name']?.value;
+      this.selectedPsp = filterData['table_config']['psp_name']?.value;
       setTimeout(() => {
         this.selectedAgent = filterData['table_config']['agent_code_filter']?.value;
         if (this.selectedAgent && this.selectedAgent.id) {
-					const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-					if (!match) {
-						this.agentList.push(this.selectedAgent);
-					}
-				}
-				if (this.selectedMop && this.selectedMop.id) {
-					const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
-					if (!match) {
-						this.mopList.push(this.selectedMop);
-					}
-				}
-				if (this.selectedPsp && this.selectedPsp.id) {
-					const match = this.pspList.find((item: any) => item.id == this.selectedPsp?.id);
-					if (!match) {
-						this.pspList.push(this.selectedPsp);
-					}
-				}
-			}, 1000);
-      if (filterData?.['table_config']?.['request_date_time']?.value != null && filterData['table_config']['request_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+          const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+          if (!match) {
+            this.agentList.push(this.selectedAgent);
+          }
+        }
+        if (this.selectedMop && this.selectedMop.id) {
+          const match = this.mopList.find((item: any) => item.id == this.selectedMop?.id);
+          if (!match) {
+            this.mopList.push(this.selectedMop);
+          }
+        }
+        if (this.selectedPsp && this.selectedPsp.id) {
+          const match = this.pspList.find((item: any) => item.id == this.selectedPsp?.id);
+          if (!match) {
+            this.pspList.push(this.selectedPsp);
+          }
+        }
+      }, 1000);
+      if (filterData['table_config']['request_date_time']?.value && Array.isArray(filterData['table_config']['request_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['request_date_time']);
       }
       if (filterData['table_config']['audited_date_time']?.value != null) {

@@ -290,7 +290,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
     }
 
     getSupplier(value: string) {
-        this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
+        this.kycDocumentService.getSupplierCombo(value, '').subscribe((data) => {
             this.supplierList = data;
         });
     }
@@ -346,7 +346,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
                 { header: 'GST Number', property: 'gst_numner' },
                 { header: 'Sup Service Charge', property: 'sup_service_charge' },
                 { header: 'Bonton Service Charge', property: 'bonton_service_charge' },
-                { header: 'CGST', property: 'refunded_amount' },
+                { header: 'Refunded Amount', property: 'refunded_amount' },
                 { header: 'Service Charge', property: 'service_charge' },
                 { header: 'TAX', property: 'tax' },
                 { header: 'Net Refund', property: 'net_refund' },

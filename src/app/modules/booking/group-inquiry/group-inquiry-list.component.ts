@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,15 +27,13 @@ import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { RejectResonComponent } from 'app/modules/account/withdraw/reject-reson/reject-reson.component';
 
 @Component({
     selector: 'app-group-inquiry-list',
     templateUrl: './group-inquiry-list.component.html',
     standalone: true,
     imports: [
-        NgIf,
-        NgFor,
-        DatePipe,
         ReactiveFormsModule,
         MatFormFieldModule,
         MatIconModule,
@@ -48,8 +46,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatMenuModule,
         MatTooltipModule,
         MatDividerModule,
-        NgClass,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        CommonModule
     ],
 })
 export class GroupInquiryListComponent
@@ -89,7 +87,7 @@ export class GroupInquiryListComponent
     ) {
         super(module_name.groupInquiry);
         this.key = this.module_name;
-        this.sortColumn = 'departure_date';
+        this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -304,14 +302,20 @@ export class GroupInquiryListComponent
     }
 
     Reject(record: any): void {
-        const label: string = 'Reject Group Inquiry'
-        this.conformationService.open({
-            title: label,
-            message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+        this.matDialog.open(RejectResonComponent, {
+            data: null,
+            disableClose: true,
         }).afterClosed().subscribe({
             next: (res) => {
-                if (res === 'confirmed') {
-                    this.groupInquiryService.setBookingStatus({ id: record.id, Status: 'Rejected' }).subscribe({
+                console.log("res", res);
+                if (res && res.reject_reason) {
+                    let body = { 
+                        id: record.id, 
+                        Status: 'Rejected',
+                        reject_reason: res.reject_reason
+                    }
+                    
+                    this.groupInquiryService.setBookingStatus(body).subscribe({
                         next: () => {
                             this.alertService.showToast('success', "Group Inquiry Rejected", "top-right", true);
                             this.refreshItems();
@@ -319,7 +323,19 @@ export class GroupInquiryListComponent
                     });
                 }
             }
-        })
+        });
+
+        // const label: string = 'Reject Group Inquiry'
+        // this.conformationService.open({
+        //     title: label,
+        //     message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+        // }).afterClosed().subscribe({
+        //     next: (res) => {
+        //         if (res === 'confirmed') {
+
+        //         }
+        //     }
+        // })
     }
 
     ngOnDestroy(): void {

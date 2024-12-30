@@ -164,11 +164,11 @@ export class ReceiptEntryComponent implements OnInit {
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
 
-    if (json.mop == 'Wallet' && !json.proof_attachment.base64) {
-      this.alertService.showToast('error', 'Proof Attachment is required.', 'top-right', true);
-      this.disableBtn = false;
-      return;
-    }
+    // if (json.mop == 'Wallet' && !json.proof_attachment.base64) {
+    //   this.alertService.showToast('error', 'Proof Attachment is required.', 'top-right', true);
+    //   this.disableBtn = false;
+    //   return;
+    // }
     json['osb_id'] = this.obsId;
     if (!json.proof_attachment?.base64) {
       json.proof_attachment = {

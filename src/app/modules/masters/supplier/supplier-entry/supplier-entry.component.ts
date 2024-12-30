@@ -104,6 +104,8 @@ export class SupplierEntryComponent {
       cityfilter: [''],
       mobileCodefilter: [''],
       currencyfilter: [''],
+      int_charge: [''],
+      dom_charge: [''],
       // api_for: ['']
     });
 
@@ -191,7 +193,9 @@ export class SupplierEntryComponent {
           { name: 'E-Mail Address', value: this.record.email_address },
           { name: 'Priority', value: this.record.priority },
           { name: 'Services', value: this.record.api_for },
-          { name: 'Mobile Number', value: this.record.mobile_code + ' ' + this.record.mobile_number },
+          { name: 'Domestic Charge', value: this.record.dom_charge },
+          { name: 'International Charge', value: this.record.int_charge },
+          { name: 'Mobile Number', value: this.record.mobile_code + ' ' + this.record.mobile_number  },
           { name: 'City', value: this.record.city_name },
           { name: 'Base Currency', value: this.record.currency },
           { name: 'Profile Name', value: this.record.profile_name },

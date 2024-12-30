@@ -109,7 +109,7 @@
                                         <ngx-slick-carousel class="carousel h-48 max-w-56 min-w-56 accourdian_slide"
                                             #slickModal="slick-carousel" [config]="slideConfig" *ngIf="fl.image.length > 0">
                                             <div ngxSlickItem *ngFor="let slide of fl.image" class="slide rounded-xl">
-                                                <img [src]="slide" alt=""
+                                                <img [src]="slide.imageUrl" alt=""
                                                     class="min-h-48 max-h-48 max-w-56 min-w-56 rounded-xl" />
                                             </div>
                                         </ngx-slick-carousel>

@@ -218,6 +218,7 @@ export const module_name = {
     supplier: 'Supplier',
     user: 'User',
     holiday: 'Holiday Products',
+    holidayV2: 'Holiday Products Version 2.0',
     productpricing: 'Product Pricing',
     hotel: 'Hotel',
     forex: 'Forex',
@@ -254,6 +255,7 @@ export const module_name = {
     walletCredit: 'Wallet Credit',
     agentBalance: 'Agent Balance Register',
     walletOutstanding: 'Wallet Outstanding',
+    pgRefund: 'PG Refund',
     receipts: 'Receipts',
     receiptRegister: 'Receipt Register',
     firstTransaction: 'First Transaction',
@@ -377,6 +379,7 @@ export const filter_module_name = {
     sale_book: "sale_book",
     sales_return: "sales_return",
     wallet_outstanding: "wallet_outstanding",
+    pg_refund: "pg_refund",
     leads_register: "leads_register",
     leads_rm_wise_leads: "leads_rm_wise_leads",
     report_sales_products: "report_sales_products",
@@ -630,14 +633,15 @@ export const bookingsFlightPermissions = {
 
 export const amendmentRequestsPermissions = {
     updateChargePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Update Charge', category_name: category_name.entry },
-    // completePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Complete', category_name: category_name.complete },
-    confirmPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Confirm', category_name: category_name.confirm },
-    inprocessPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Inprocess', category_name: category_name.action },
-    refundInitiatePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Refund Initiate', category_name: category_name.action },
-    completePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Complete', category_name: category_name.action },
-    manuDisplayPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Menu Display', category_name: category_name.manu_display },
-    changeStatusPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Change Status', category_name: category_name.changeStatus },
     statusLogsPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.listingPage, operation_type: 'Status Logs', category_name: category_name.view },
+    cancelAmendmentPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Cancel Amendment', category_name: category_name.action },
+    confirmationSenttoSupplierPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Confirmation Sent to Supplier', category_name: category_name.action },
+    refundInitiate_ConfirmedBySupplierPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Refund Initiate/Confirmed By Supplier', category_name: category_name.action },
+    rejectPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Reject', category_name: category_name.action },
+    accountRejectPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Account Reject', category_name: category_name.action },
+    accountCompletePermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Account Complete', category_name: category_name.action },
+    confirmByTAPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Confirm By TA', category_name: category_name.action },
+    sendMailToSupplierPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Send Mail To Supplier', category_name: category_name.action },
 }
 
 

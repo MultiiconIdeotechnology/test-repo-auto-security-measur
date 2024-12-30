@@ -22,6 +22,8 @@ import { ToasterService } from 'app/services/toaster.service';
 import { EntityService } from 'app/services/entity.service';
 import { LeadEntrySettingsComponent } from '../lead-entry-settings/lead-entry-settings.component';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Column } from 'app/form-models/base-listing';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
     selector: 'app-crm-lead-list',
@@ -48,7 +50,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         MatTabsModule,
         InboxComponent,
         ArchiveComponent,
-        LeadEntrySettingsComponent
+        LeadEntrySettingsComponent,
+        PrimeNgImportsModule
     ],
 })
 export class CRMLeadListComponent implements OnDestroy {
@@ -67,9 +70,14 @@ export class CRMLeadListComponent implements OnDestroy {
     searchInputControlInbox = new FormControl('');
     _unsubscribeAll: Subject<any> = new Subject<any>();
     searchInputControlArchive = new FormControl('');
+    _selectedColumns: Column[];
     dataList = [];
     dataListArchive = [];
     total = 0;
+    cols: Column[] = [
+        { field: 'lead_assign_by', header: 'Assign By' },
+        { field: 'lead_assign_by_date', header: 'Assign By Date' },
+    ];
 
     constructor(
         private alertService: ToasterService,

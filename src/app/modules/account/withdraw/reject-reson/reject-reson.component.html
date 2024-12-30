@@ -12,6 +12,9 @@
                         <mat-label>Reason</mat-label>
                         <textarea id="reject_reason" class="mt-1" matInput [formControlName]="'reject_reason'"
                             matTextareaAutosize matAutosizeMinRows="5"></textarea>
+                        <mat-error *ngIf="rejectForm.get('reject_reason').hasError('required')">
+                            Reject reason is required.
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </div>

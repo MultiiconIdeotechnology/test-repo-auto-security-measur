@@ -147,9 +147,8 @@ export class ReceiptRegisterComponent
             this.selectedCompany = resp['table_config']['company']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['receipt_request_date']?.value != null && resp['table_config']['receipt_request_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
-                // this.dateRangeValue = resp['table_config']['receipt_request_date'].value;
+            if (resp['table_config']['receipt_request_date']?.value && Array.isArray(resp['table_config']['receipt_request_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
@@ -171,8 +170,8 @@ export class ReceiptRegisterComponent
                     this.agentList.push(this.selectedAgent);
                 }
             }
-            if (filterData['table_config']['receipt_request_date']?.value != null && filterData['table_config']['receipt_request_date'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            if (filterData['table_config']['receipt_request_date']?.value && Array.isArray(filterData['table_config']['receipt_request_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
             // this.primengTable['_sortField'] = filterData['sortColumn'];

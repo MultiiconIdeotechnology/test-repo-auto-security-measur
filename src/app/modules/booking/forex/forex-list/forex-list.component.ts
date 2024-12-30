@@ -156,8 +156,8 @@ export class ForexListComponent extends BaseListingComponent {
         }
       }
 
-      if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
       }
 
@@ -180,8 +180,13 @@ export class ForexListComponent extends BaseListingComponent {
         }
       }
 
-      if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+      // if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+      //   this._filterService.selectionDateDropdown = 'Custom Date Range';
+      //   this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+      // }
+
+      if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
         this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
 
@@ -222,8 +227,8 @@ export class ForexListComponent extends BaseListingComponent {
     this.forexService.getCityCombo(value).subscribe((data: any) => {
       this.cityList = data;
     });
-  } 
-  
+  }
+
   // Api to get the Supplier list data
   getSupplierList(value: string, bool = true) {
     this.forexService.getSupplierForexCombo(value).subscribe((data: any) => {
