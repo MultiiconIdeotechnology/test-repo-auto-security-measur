@@ -1,4 +1,3 @@
-// import { AmendmentRequestsService } from './../../../../services/amendment-requests.service';
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -51,8 +50,6 @@ import { StatusLogComponent } from '../status-log/status-log.component';
         NgClass,
         MatButtonModule,
         MatIconModule,
-        DatePipe,
-        AsyncPipe,
         NgxMatSelectSearchModule,
         MatDatepickerModule,
         NgxMatTimepickerModule,
@@ -223,14 +220,12 @@ export class AmendmentRequestEntryComponent {
                         if (this.recordList.is_refundable) {
                             name1 = 'Per Pax Refund'
                             name2 = 'Total Refund'
-                            this.titleCharge = 'Quotation'
                         } else {
                             name1 = 'Per Pax Charge'
                             name2 = 'Total Charge'
-                            this.titleCharge = 'Quotation'
                         }
 
-                        this.titleCharge = 'Quotation'
+                        this.titleCharge = 'Quotation';
                         this.chargesList = [
                             { name: this.recordList.is_refundable ? "Cancellation Charge" : "Charge", value: `INR ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` },
                             { name: "Bonton Markup", value: `INR ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
