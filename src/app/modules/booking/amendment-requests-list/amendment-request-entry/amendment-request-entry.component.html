@@ -151,7 +151,8 @@
                                 [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
 
-                            <span class="" *ngIf="af.name == 'Credit Invoice' && !af.value" class="text-red-600 pt-[3px] text-xs font-light">
+                            <span class="" *ngIf="af.name == 'Credit Invoice' && !af.value"
+                                class="text-red-600 pt-[3px] text-xs font-light">
                                 Credit invoice not generated.
                             </span>
 
@@ -195,8 +196,7 @@
             </ng-container>
 
             <ng-container
-                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta' || 
-                recordList?.amendment_info?.status?.toLowerCase() == 'cancellation pending' || recordList?.amendment_info?.status?.toLowerCase() == 'partial cancellation pending'">
+                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta'">
                 <button mat-stroked-button (click)="inprocess()">
                     Confirmation Sent to Supplier
                 </button>
@@ -245,7 +245,8 @@
             </ng-container>
 
             <ng-container *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent'
-                || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta')">
+                || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta' || recordList?.amendment_info?.status?.toLowerCase() == 'cancellation pending' || 
+                recordList?.amendment_info?.status?.toLowerCase() == 'partial cancellation pending')">
                 <button [color]="'primary'" mat-flat-button (click)="updateCharge()">
                     Update Charges
                 </button>
