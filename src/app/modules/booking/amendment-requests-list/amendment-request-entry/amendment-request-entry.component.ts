@@ -1,4 +1,3 @@
-// import { AmendmentRequestsService } from './../../../../services/amendment-requests.service';
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -51,8 +50,6 @@ import { StatusLogComponent } from '../status-log/status-log.component';
         NgClass,
         MatButtonModule,
         MatIconModule,
-        DatePipe,
-        AsyncPipe,
         NgxMatSelectSearchModule,
         MatDatepickerModule,
         NgxMatTimepickerModule,
@@ -75,6 +72,7 @@ export class AmendmentRequestEntryComponent {
     amendmentInfoList: any[] = [];
     paxInfoList: any;
     chargesList: any[] = [];
+    priceDetailList: any[] = [];
     roeList: any[] = [];
     booking_id: any
     recordList: any;
@@ -91,9 +89,17 @@ export class AmendmentRequestEntryComponent {
     ) {
         this.entityService.onAmendmentInfoCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
+                console.log("item am", item);
                 this.record = item?.data ?? {}
-                this.getData();
+                console.log("this.record", this.record);
+                // this.getData();
                 this.amendmentInfoDrawer.toggle();
+                if (!item.global_withdraw && this.record) {
+                    this.getData();
+                }
+                if (item.global_withdraw) {
+                    this.getData();
+                }
             }
         });
 
@@ -214,23 +220,33 @@ export class AmendmentRequestEntryComponent {
                         if (this.recordList.is_refundable) {
                             name1 = 'Per Pax Refund'
                             name2 = 'Total Refund'
-                            this.titleCharge = 'Quotation'
                         } else {
                             name1 = 'Per Pax Charge'
                             name2 = 'Total Charge'
-                            this.titleCharge = 'Quotation'
                         }
 
-                        this.titleCharge = 'Quotation'
+                        this.titleCharge = 'Quotation';
                         this.chargesList = [
                             { name: this.recordList.is_refundable ? "Cancellation Charge" : "Charge", value: `INR ${(data.charges?.cancellation_charge?.toFixed(2) || '0.00')}` },
                             { name: "Bonton Markup", value: `INR ${(data.b2bcharges?.bonton_markup?.toFixed(2) || '0.00')}` },
                             { name: name1, value: `INR ${(data.charges?.per_person_charge?.toFixed(2) || '0.00')}` },
                             { name: "No. of Pax", value: data.pax_info.length },
-                            { name: "Net Refund", value: `INR ${((data.charges?.charge || 0) - (data.b2bcharges?.bonton_markup || 0)).toFixed(2)}` },
+                            { name: "Net Refund", value: `INR ${((data.charges?.charge || 0) + (data.b2bcharges?.bonton_markup || 0)).toFixed(2)}` },
                             { name: name2, value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },
                         ];
 
+                        var priceDetail = data.priceDetail;
+                        if (priceDetail)
+                            this.priceDetailList = [
+                                { name: "Base Fare", value: priceDetail?.base_fare },
+                                { name: "Tax & Fees", value: priceDetail?.tax_fees },
+                                { name: "SSR", value: priceDetail?.ssr },
+                                { name: "Commission Income", value: priceDetail?.commission_income },
+                                { name: "TDS", value: priceDetail?.tds },
+                                { name: "Net Purchase", value: priceDetail?.net_purchase },
+                            ]
+                        else
+                            this.priceDetailList = [];
                         if (data.currency != "INR") {
                             this.roeList = [
                                 { name: "Total Amount", value: `INR ${(data.charges?.charge?.toFixed(2) || '0.00')}` },

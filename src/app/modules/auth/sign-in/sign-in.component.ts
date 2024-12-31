@@ -115,6 +115,17 @@ export class AuthSignInComponent implements OnInit {
             return;
         }
 
+        // Check if captcha value is provided
+        if (this.captcha.value === undefined || this.captcha.value === null || this.captcha.value === '') {
+            this.alert = {
+                type: 'error',
+                message: 'Please enter a valid Captcha'
+            };
+            this.showAlert = true;
+            return;
+        }
+
+        // Check if captcha value matches the answer
         if (this.captcha.ans !== this.captcha.value) {
             this.refreshCaptcha();
             this.alert = {
@@ -124,6 +135,15 @@ export class AuthSignInComponent implements OnInit {
             this.showAlert = true;
             return;
         }
+        // if (this.captcha.ans !== this.captcha.value) {
+        //     this.refreshCaptcha();
+        //     this.alert = {
+        //         type: 'error',
+        //         message: 'Invalid Captcha'
+        //     };
+        //     this.showAlert = true;
+        //     return;
+        // }
 
         // Disable the form
         this.signInForm.disable();
@@ -141,7 +161,7 @@ export class AuthSignInComponent implements OnInit {
                     // to the correct page after a successful sign in. This way, that url can be set via
                     // routing file and we don't have to touch here.
                     if (res.code) {
-                        if(res && res.authtype) {
+                        if (res && res.authtype) {
                             this.isSignInShow = false; // need to do
                             this.is_auth_enabled = res.authtype;
                             this.login_code = res.code;
@@ -178,7 +198,7 @@ export class AuthSignInComponent implements OnInit {
     // final SignIn
     finalSignIn(code: any, json: any) {
         let extBody: any = {}
-        if(this.authotp != null) { // Is Auth active to pass otp
+        if (this.authotp != null) { // Is Auth active to pass otp
             extBody.otp = this.authotp;
             extBody.authtype = this.is_auth_enabled;
         }
@@ -189,9 +209,9 @@ export class AuthSignInComponent implements OnInit {
                 this._router.navigateByUrl(redirectURL);
 
                 // need to do
-                if(!extBody.authtype) {
+                if (!extBody.authtype) {
                     this._matDialog.open(TwoFactorAuthComponent, {
-                        width:'900px',
+                        width: '900px',
                         autoFocus: false,
                         disableClose: true,
                         closeOnNavigation: false,
