@@ -230,23 +230,25 @@ export class HolidayListComponent extends BaseListingComponent {
         }
 
         const label: string = record.is_publish_for_bonton
-            ? 'Unpublish Holiday Product'
-            : 'Publish Holiday Product';
+            ? 'Unpublish'
+            : 'Publish';
         this.conformationService
             .open({
-                title: label,
+                title: label+ " Holiday",
                 message:
                     'Are you sure to ' +
+                    
                     label.toLowerCase() +
                     ' ' +
-                    record.destination_name +
+                    
+                    record.product_name +
                     ' ?',
             })
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     this.holidayService.setHolidayPublish(record.id).subscribe({
-                        next: () => {
+                        next: (res:any) => {
                             record.is_publish_for_bonton  = !record.is_publish_for_bonton ;
                             if (record.is_publish_for_bonton ) {
                                 this.alertService.showToast('success', "Holiday Product has been Publish!", "top-right", true);

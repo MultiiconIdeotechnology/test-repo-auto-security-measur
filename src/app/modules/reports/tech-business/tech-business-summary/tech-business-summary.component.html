@@ -1,0 +1,236 @@
+
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+            <span class="text-3xl">{{module_name}}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
+
+            <!------Global Search------>
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!-- Date Combo -->
+            <div class="justify-center items-center w-[245px]">
+                <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-select name="date" [formControl]="date" #dateRange
+                            (selectionChange)="updateDate($event.value)">
+                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
+                                dr
+                                }}</mat-option>
+                        </mat-select>
+                        <!-- <mat-icon svgIcon="heroicons_mini:chevron-down" (click)="dateRange.open()"
+                            class="cursor-pointer"></mat-icon> -->
+                    </mat-form-field>
+                </div>
+
+                <div *ngIf="date.value === DR.setCustomDate" class="w-full flex flex-row items-center space-x-1">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()" >
+                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly  
+                                #dateRangeStart />
+                            <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
+                                (dateInput)="
+                                        dateRangeChange(dateRangeStart, dateRangeEnd)
+                                    " />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                    <mat-icon class="icon-size-4 cursor-pointer" (click)="cancleDate()">cancel</mat-icon>
+                </div>
+            </div>
+
+            <!------Global filter------>
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <!-- <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button> -->
+
+            <!------Refresh------>
+            <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!---Excel--->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
+            <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
+
+            <ng-template pTemplate="header">
+
+                <tr>
+                    <th pSortableColumn="rm" pResizableColumn rowspan="2">RM <p-sortIcon field="rm" /></th>
+                    <th class="text-center bg-[#4c6793]" colspan="3">Parther</th>
+                    <th class="text-center bg-[#5f9da2]" colspan="3">Business</th>
+                </tr>
+                <tr>
+                    <!-- Partner Columns -->
+                    <th class="text-right" pSortableColumn="pax" pResizableColumn>New <p-sortIcon field="pax" /></th>
+                    <th class="text-right" pSortableColumn="pnr" pResizableColumn>1st Transaction <p-sortIcon field="pnr" /></th>
+                    <th class="text-right" pSortableColumn="volume" pResizableColumn>Activated <p-sortIcon field="volume" /></th>
+
+                    <!-- Business Columns -->
+                    <th class="text-right" pSortableColumn="domestic_Pax" pResizableColumn>Total<p-sortIcon field="domestic_Pax" /></th>
+                    <th class="text-right" pSortableColumn="domestic_PNR" pResizableColumn>New <p-sortIcon field="domestic_PNR" /></th>
+                    <th class="text-right" pSortableColumn="domestic_Volume" pResizableColumn>Old <p-sortIcon field="domestic_Volume" /></th>
+
+                </tr>
+
+                <!-- <tr *ngIf="isFilterShow">
+                    <th></th>
+
+                    <th>
+                        <p-columnFilter  type="numeric" matchMode="equals" field="pax"
+                            placeholder="Search by Pax" ariaLabel="Filter Pax" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="pnr"
+                            placeholder="Search by PNR" ariaLabel="Filter PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="volume"
+                            placeholder="Search by Volume" ariaLabel="Filter Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="weightage"
+                            placeholder="Search by Weightage" ariaLabel="Filter Weightage" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="domestic_Pax"
+                            placeholder="Search by Domestic Pax" ariaLabel="Filter Domestic Pax" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="domestic_PNR"
+                            placeholder="Search by Domestic PNR" ariaLabel="Filter Domestic PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="domestic_Volume"
+                            placeholder="Search by Domestic Volume" ariaLabel="Filter Domestic Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="domestic_Weightage"
+                            placeholder="Search by Domestic Weightage" ariaLabel="Filter Domestic Weightage" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="domestic_Ratio"
+                            placeholder="Search by Domestic Ratio" ariaLabel="Filter Domestic Ratio" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="international_Pax"
+                            placeholder="Search by International Pax" ariaLabel="Filter International Pax" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="international_PNR"
+                            placeholder="Search by International PNR" ariaLabel="Filter International PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="international_Volume"
+                            placeholder="Search by International Volume" ariaLabel="Filter International Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="international_Weightage"
+                            placeholder="Search by International Weightage" ariaLabel="Filter International Weightage" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="international_Ratio"
+                            placeholder="Search by International Ratio" ariaLabel="Filter International Ratio" />
+                    </th>
+
+                </tr> -->
+                <!-- </ng-template> -->
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td>{{ element.supplier }}</td>
+
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ element.pax }}</td>
+                    <td class="text-right">{{ element.pnr }}</td>
+                    <td class="text-right">{{ element.volume }}</td>
+
+                    <!-- Domestic Columns -->
+                    <td class="text-right">{{ element.domestic_Pax }}</td>
+                    <td class="text-right">{{ element.domestic_PNR }}</td>
+                    <td class="text-right">{{ element.domestic_Volume }}</td>
+
+                </tr>
+            </ng-template>
+
+            <!-- <ng-template pTemplate="footer">
+                <tr>
+                    <td>Total</td>
+                    <td class="text-right">{{dataListTotals?.total_pax ? dataListTotals?.total_pax.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_pnr ? dataListTotals?.total_pnr.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_volume ? dataListTotals?.total_volume.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.max_weightage ? dataListTotals?.max_weightage.toFixed(2) : 0}}%</td>
+
+                    <td class="text-right">{{dataListTotals?.total_domestic_pax ? dataListTotals?.total_domestic_pax.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_domestic_pnr ? dataListTotals?.total_domestic_pnr.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_domestic_volume ? dataListTotals?.total_domestic_volume.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.max_domestic_weightage ? dataListTotals?.max_domestic_weightage.toFixed(2) : 0}}%</td>
+                    <td class="text-right">{{dataListTotals?.max_domestic_ratio ? dataListTotals?.max_domestic_ratio.toFixed(2) : 0}}%</td>
+                    
+                    <td class="text-right">{{dataListTotals?.total_international_pax ? dataListTotals?.total_international_pax.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_international_pnr ? dataListTotals?.total_international_pnr.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_international_volume ? dataListTotals?.total_international_volume.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.max_international_weightage ? dataListTotals?.max_international_weightage.toFixed(2) : 0}}%</td>
+                    <td class="text-right">{{dataListTotals?.max_international_ratio ? dataListTotals?.max_international_ratio.toFixed(2) : 0}}%</td>
+
+                </tr>
+            </ng-template> -->
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="15" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

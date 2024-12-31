@@ -303,6 +303,9 @@ export const module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
+    tech_business_summary:'Tech Business Summary',
+    tech_rm_monthly_report: 'RM Monthly Report',
+    tech_product_monthly_report:'Tech Product Monthly Report',
 };
 
 export const filter_module_name = {
@@ -393,6 +396,9 @@ export const filter_module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
+    tech_business_summary: 'tech_business_summary',
+    tech_rm_monthly_report:'tech_rm_monthly_report',
+    tech_product_monthly_report:'tech_product_monthly_report',
 
     //Inventory
     activity: "activity",
