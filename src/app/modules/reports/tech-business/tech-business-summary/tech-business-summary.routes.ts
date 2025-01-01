@@ -8,6 +8,6 @@ export default [
         path: '',
         component: TechBusinessSummaryComponent,
         canActivate: [AuthGuard],
-        data: { module: 'BO Menu Links', group: 'Reports', operation: 'Tech Business', category: 'View' }
+        data: { module: 'BO Menu Links', group: 'Tech Business Report', operation: 'Summary', category: 'View' }
     },
 ] as Routes

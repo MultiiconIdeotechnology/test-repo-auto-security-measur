@@ -29,7 +29,7 @@ import { Subscription } from 'rxjs';
 import { TechBusinessService } from 'app/services/tech-business.service';
 
 @Component({
-  selector: 'app-tech-business-summary',
+  selector: 'app-rm-monthly-analytics',
   standalone: true,
   imports: [
     NgIf,
@@ -54,11 +54,11 @@ import { TechBusinessService } from 'app/services/tech-business.service';
     MatTabsModule,
     PrimeNgImportsModule
   ],
-  templateUrl: './tech-business-summary.component.html',
-  styleUrls: ['./tech-business-summary.component.scss']
+  templateUrl: './rm-monthly-analytics.component.html',
+  styleUrls: ['./rm-monthly-analytics.component.scss']
 })
 
-export class TechBusinessSummaryComponent extends BaseListingComponent implements OnDestroy {
+export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements OnDestroy {
 
   dataList = [];
   dataListTotals = [];
@@ -71,8 +71,8 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
   public dateRangeContractings = [];
   public date = new FormControl();
 
-  module_name = module_name.tech_business_summary
-  filter_table_name = filter_module_name.tech_business_summary;
+  module_name = module_name.tech_rm_monthly_report
+  filter_table_name = filter_module_name.tech_rm_monthly_report;
 
   private settingsUpdatedSubscription: Subscription;
   isFilterShow: boolean = false;
@@ -85,7 +85,7 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
     private matDialog: MatDialog,
     public _filterService: CommonFilterService
   ) {
-    super(module_name.tech_business_summary)
+    super(module_name.tech_rm_monthly_report)
     // this.key = 'supplier';
     this.sortColumn = 'volume';
     this.sortDirection = 'desc';
@@ -160,11 +160,11 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
       // Create a shortened, dynamic sheet name
       const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
       const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
-      const sheetName = `Tech Business Summary ${fromDate} to ${toDate}`.substring(0, 45);
+      const sheetName = `RM Monthly Analytics ${fromDate} to ${toDate}`.substring(0, 45);
       
       // Export the data using the custom Excel utility
       Excel.export(
-        'Tech Business Summary',  // File name
+        'RM Monthly Analytics',  // File name
         columns,            // Columns definition
         formattedData,      // Data rows
         sheetName,          // Sheet name (limited to 31 characters)
@@ -173,8 +173,6 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
       );
     });
   }
-
-
 
   public updateDate(event: any, isRefresh: boolean = true): void {
     if (event === dateRangeContracting.today) {
@@ -207,7 +205,6 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
       this.EndDate.setDate(1)
       this.EndDate.setDate(this.EndDate.getDate() - 1)
       this.endDate.patchValue(this.EndDate);
-
     }
     else if (event === dateRangeContracting.lastMonth) {
       this.StartDate = new Date();

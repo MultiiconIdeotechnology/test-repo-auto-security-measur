@@ -646,7 +646,41 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         link: Routes.reports.campaign_summary_path_route
                     },
                 ]
-            }
+            },
+            {
+                id: 'reports.techBusiness',
+                title: 'Tech Business',
+                type: 'collapsable',
+                pid: 'REPORTS_TECHBUSINESS_VIEW',
+                icon: 'heroicons_outline:cpu-chip',
+                children: [
+                    {
+                        id: 'reports.techBusinessSummary',
+                        title: 'Tech Business Summary',
+                        type: 'basic',
+                        pid: 'TECHBUSINESSREPORT_SUMMARY_VIEW',
+                        icon: '',
+                        link: Routes.reports.tech_summary_route
+                    },
+                    {
+                        id: 'reports.techRMMonthlyAnalytics',
+                        title: 'RM Monthly Analytics',
+                        type: 'basic',
+                        pid: 'TECHBUSINESSREPORT_RMMONTHLYANALYTICS_VIEW',
+                        icon: '',
+                        link: Routes.reports.tech_rm_monthly_route
+                    }, 
+                    {
+                        id: 'reports.techProductMonthlyAnalytics',
+                        title: 'Product Monthly Analytics',
+                        type: 'basic',
+                        pid: 'TECHBUSINESSREPORT_PRODUCTMONTHLYANALYTICS_VIEW',
+                        icon: '',
+                        link: Routes.reports.tech_product_monthly_route
+                    },
+              
+                ]
+            },
         ],
 
     },
@@ -947,7 +981,8 @@ export const compactNavigation: FuseNavigationItem[] = [
         pid: 'MAINMENU_SETTINGS_VIEW',
         icon: 'heroicons_outline:cog-8-tooth',
         children: []
-    }
+    },
+  
 ]
 export const futuristicNavigation: FuseNavigationItem[] = [
     {

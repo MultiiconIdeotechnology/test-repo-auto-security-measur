@@ -164,8 +164,8 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.pg_refund_path, loadChildren: () => import('app/modules/reports/PG Refund/pg-refund-list/pg-refund.routes') },
             { path: Routes.reports.agent_summary_path, loadChildren: () => import('app/modules/reports/sales/agent-summaries/agent-summary/agent-summary.routes') },
             { path: Routes.reports.tech_summary_path, loadChildren: () => import('app/modules/reports/tech-business/tech-business-summary/tech-business-summary.routes') },
-            { path: Routes.reports.tech_summary_path, loadChildren: () => import('app/modules/reports/tech-business/tech-business-summary/tech-business-summary.routes') },
-            { path: Routes.reports.tech_summary_path, loadChildren: () => import('app/modules/reports/tech-business/tech-business-summary/tech-business-summary.routes') },
+            { path: Routes.reports.tech_rm_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/rm-monthly-analytics/rm-monthly-analytics.routes') },
+            { path: Routes.reports.tech_product_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/product-monthly-analytics/product-monthly-analytics.routes') },
 
 
             // MY BOOKINGS

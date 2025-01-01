@@ -304,8 +304,8 @@ export const module_name = {
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
     tech_business_summary:'Tech Business Summary',
-    tech_rm_monthly_report: 'RM Monthly Report',
-    tech_product_monthly_report:'Tech Product Monthly Report',
+    tech_rm_monthly_report: 'RM Monthly Anaytics',
+    tech_product_monthly_report:'Product Monthly Analytics',
 };
 
 export const filter_module_name = {
