@@ -178,6 +178,7 @@ export const appRoutes: Route[] = [
             { path: Routes.booking.forex_path, loadChildren: () => import('app/modules/booking/forex/forex-list/forex.routes') },
             { path: Routes.booking.visa_path, loadChildren: () => import('app/modules/booking/visa/visa.routes') },
             { path: Routes.booking.offline_service_path, loadChildren: () => import('app/modules/booking/offline-service/offline-list/offline.routes') },
+            { path: Routes.booking.holiday_lead_path, loadChildren: () => import('app/modules/booking/holiday/holiday-list/holiday-lead.routes') },
 
             // SETTINGS
             { path: Routes.settings.erpsettings_path, loadChildren: () => import('app/modules/settings/erp-settings/erp-settings.routes') },

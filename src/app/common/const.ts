@@ -292,6 +292,10 @@ export const Routes = {
         bus_route: '/booking/bus',
         bus_details_route: '/booking/bus/details',
         
+        holiday_lead_path: 'booking/holiday-lead',
+        holiday_lead_route: '/booking/holiday-lead',
+        holiday_lead_details_route: '/booking/holiday-lead/details',
+        
         insurance_path: 'booking/insurance',
         insurance_route: '/booking/insurance',
         insurance_details_route: '/booking/insurance/details',

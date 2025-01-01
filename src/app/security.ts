@@ -221,6 +221,7 @@ export const module_name = {
     productpricing: 'Product Pricing',
     hotel: 'Hotel',
     forex: 'Forex',
+    holiday_lead: 'Holiday',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -368,6 +369,7 @@ export const filter_module_name = {
     visa_booking: "visa_booking",
     insurance_booking: "insurance_booking",
     offline_service_booking: "offline_service_booking",
+    holiday_lead_service_booking: "holiday_lead",
 
 
     //Report

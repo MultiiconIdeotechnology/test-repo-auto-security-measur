@@ -366,10 +366,10 @@ export class BookingDetailsComponent {
   }
 
   invoice(record): void {
-    const recordData = record == 'print' ? this.mainData[0].invoice_id : record
+    const recordData = record == 'DMCC' ? this.mainData[0].invoice_id : this.mainData[0].invoice_id_inr
     this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no + '.pdf');
+        CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.mainData[0].invoice_no : this.mainData[0].invoice_no_inr + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }
