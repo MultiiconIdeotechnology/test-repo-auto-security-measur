@@ -20,11 +20,12 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { filter_module_name, module_name } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { EntityService } from 'app/services/entity.service';
 import { HolidayLeadService } from 'app/services/holiday-lead.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
+import { Linq } from 'app/utils/linq';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subscription } from 'rxjs';
@@ -139,6 +140,14 @@ export class HolidayLeadComponent extends BaseListingComponent {
       this.isFilterShow = true;
     }
   }
+
+    view(record): void {
+      // if (!Security.hasViewDetailPermission(module_name.bus)) {
+      //   return this.alertService.showToast('error', messages.permissionDenied);
+      // }
+      // let queryParams: any= this.router.navigate([Routes.booking.booking_details_route + '/' + record.id + '/readonly'])
+      Linq.recirect('/booking/holiday-lead/details/' + record.id);
+    }
 
   ngOnDestroy(): void {
     if (this.settingsUpdatedSubscription) {

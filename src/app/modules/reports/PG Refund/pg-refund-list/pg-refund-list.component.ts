@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -25,6 +25,8 @@ import { module_name, filter_module_name, Security, messages } from 'app/securit
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { Subscription } from 'rxjs';
+import { dateRangeContracting } from 'app/common/const';
+import { CommonUtils } from 'app/utils/commonutils';
 
 @Component({
   selector: 'app-pg-refund-list',
@@ -60,6 +62,14 @@ import { Subscription } from 'rxjs';
 })
 export class PgRefundListComponent extends BaseListingComponent implements OnDestroy {
 
+  DR = dateRangeContracting;
+  public startDate = new FormControl();
+  public endDate = new FormControl();
+  public StartDate: any;
+  public EndDate: any;
+  public dateRangeContractings = [];
+  public date = new FormControl();
+
   module_name = module_name.pgRefund;
   filter_table_name = filter_module_name.pg_refund;
   private settingsUpdatedSubscription: Subscription;
@@ -70,9 +80,9 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
   selectedAgent: any;
   selectedRM: any;
 
-  serviceList = ['Airline', 'Hotel', 'Bus', 'Visa']; 
-  
-  typeList = [ 'Rejected','Booking Failed','Cancelled','Partially Cancelled'];
+  serviceList = ['Airline', 'Hotel', 'Bus', 'Visa'];
+
+  typeList = ['Rejected', 'Booking Failed', 'Cancelled', 'Partially Cancelled'];
 
   constructor(
     private pgRefundService: PgRefundService,
@@ -83,6 +93,11 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     this.sortColumn = 'requestDate';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+
+    this.dateRangeContractings = CommonUtils.valuesArray(dateRangeContracting);
+    this.date.patchValue(dateRangeContracting.lastMonth);
+    this.updateDate(dateRangeContracting.lastMonth, false)
+
     this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
@@ -139,7 +154,12 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
 
   refreshItems(event?: any): void {
     this.isLoading = true;
-    this.pgRefundService.getPGRefundReport(this.getNewFilterReq(event)).subscribe({
+
+    const request = this.getNewFilterReq(event);
+    request['req_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    request['req_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+
+    this.pgRefundService.getPGRefundReport(request).subscribe({
       next: (data) => {
         this.dataList = data.data;
         // this.total = data.total;
@@ -151,7 +171,7 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       }
     });
   }
- 
+
 
   getNodataText(): string {
     if (this.isLoading)
@@ -167,7 +187,9 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     }
 
     let newModel = this.getNewFilterReq({})
-    newModel['Take'] = this.totalRecords
+    newModel['Take'] = this.totalRecords;
+    newModel['req_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    newModel['req_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
     this.pgRefundService.getPGRefundReport(newModel).subscribe(data => {
       for (var dt of data.data) {
         dt.requestDate = dt.requestDate ? DateTime.fromISO(dt.requestDate).toFormat('dd-MM-yyyy hh:mm a') : '';
@@ -197,6 +219,86 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+  }
+
+  public updateDate(event: any, isRefresh: boolean = true): void {
+    if (event === dateRangeContracting.today) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(this.StartDate.getDate());
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.lastWeek) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      const dt = new Date(); // current date of week
+      const currentWeekDay = dt.getDay();
+      const lessDays = currentWeekDay === 0 ? 6 : currentWeekDay - 1;
+      const wkStart = new Date(new Date(dt).setDate(dt.getDate() - lessDays));
+      const wkEnd = new Date(new Date(wkStart).setDate(wkStart.getDate() + 6));
+
+      this.StartDate = wkStart;
+      this.EndDate = new Date();
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.previousMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 1);
+      this.startDate.patchValue(this.StartDate);
+      this.EndDate.setDate(1)
+      this.EndDate.setDate(this.EndDate.getDate() - 1)
+      this.endDate.patchValue(this.EndDate);
+
+    }
+    else if (event === dateRangeContracting.lastMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth());
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.last3Month) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 3);
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.last6Month) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 6);
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.setCustomDate) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    if (isRefresh)
+      this.refreshItems();
+  }
+
+  dateRangeContractingChange(start, end): void {
+    if (start.value && end.value) {
+      this.StartDate = start.value;
+      this.EndDate = end.value;
+      this.refreshItems();
+    }
+  }
+
+  cancleDate() {
+    this.date.patchValue('Today');
+    this.updateDate(dateRangeContracting.today);
   }
 
 }

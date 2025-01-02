@@ -358,14 +358,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:newspaper',
                 link: Routes.booking.offline_service_route
             },
-            {
-                id: 'booking.holiday_lead',
-                title: 'Holiday',
-                type: 'basic',
-                pid: 'BOOKINGS_HOLIDAYLEAD_VIEW',
-                icon: 'heroicons_outline:building-storefront',
-                link: Routes.booking.holiday_lead_route
-            },
+            // {
+            //     id: 'booking.holiday_lead',
+            //     title: 'Holiday',
+            //     type: 'basic',
+            //     pid: 'BOOKINGS_HOLIDAYLEAD_VIEW',
+            //     icon: 'heroicons_outline:building-storefront',
+            //     link: Routes.booking.holiday_lead_route
+            // },
         ]
     },
     {
