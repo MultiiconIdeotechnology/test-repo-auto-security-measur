@@ -23,114 +23,104 @@
             <div class="mb-6 flex ">
 
                 <div class="w-2/3 bg-card rounded-2xl p-6 h-fit">
-                    <div>
-                        <div class="flex justify-between mb-3">
-                            <div class="flex justify-between overflow-x-auto">
-                                <div>
-                                    <div class="flex space-x-3">
-                                        <div *ngIf="bookingDetail"
-                                            class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-gray cursor-pointer"
-                                            (click)="getCopy('agent')">
-                                            <mat-icon class="primary-text pr-1 text-xl"
+                    <div class="w-full mb-3">
+                        <div class="flex justify-between ">
+                            <div class="flex">
+                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    (click)="getCopy('agent')">
+                                    <mat-icon class="primary-text pr-1 text-xl"
                                                 svgIcon="heroicons_outline:document-text"></mat-icon>
-                                            <span class="text-md leading-none primary-text font-semibold">Your
-                                                Copy</span>
-                                        </div>
-
-                                        <div *ngIf="bookingDetail"
-                                            class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-gray cursor-pointer"
-                                            (click)="getCopy('customer')">
-                                            <mat-icon class="primary-text pr-1 text-xl"
-                                                svgIcon="heroicons_outline:document-text"></mat-icon>
-                                            <span class="text-md leading-none primary-text font-semibold">Customer
-                                                Copy</span>
-                                        </div>
-                                    </div>
+                                    <span class="text-md leading-none ml-1">Your Copy</span>
                                 </div>
-                                <div class="text-right mobile:min-w-fit mobile:pl-[13px]">
-                                    <div *ngIf=" bookingDetail?.lead_status === 'Confirmed' || bookingDetail?.lead_status == 'Token Payment Success'"
-                                        class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(1,175,71,0.1)] flex items-center border green-border">
-                                        <mat-icon class="green-text text-2xl">check_circle</mat-icon>
-                                        <span
-                                            class="text-md font-semibold ml-2 leading-none">{{bookingDetail?.lead_status}}</span>
-                                    </div>
 
-                                    <div *ngIf="bookingDetail?.lead_status === 'Waiting for Token Payment'"
-                                        class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(244,154,25,0.1)] flex items-center border orange-border">
-                                        <mat-icon class="text-2xl orange-text">watch_later</mat-icon>
-                                        <span
-                                            class="text-md font-semibold ml-2 leading-none orange-text">{{bookingDetail?.lead_status}}</span>
-                                    </div>
-
-                                    <div *ngIf="bookingDetail?.lead_status === 'New'"
-                                        class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(244,154,25,0.1)] flex items-center border orange-border">
-                                        <!-- <mat-icon class="text-2xl orange-text">watch_later</mat-icon> -->
-                                        <img class="w-auto" src="assets/icons/new.svg">
-                                        <span
-                                            class="text-md font-semibold ml-2 leading-none orange-text">{{bookingDetail?.lead_status}}</span>
-                                    </div>
-
-                                    <div *ngIf=" bookingDetail?.lead_status === 'Cancelled' || bookingDetail?.lead_status === 'Rejected' || bookingDetail?.lead_status === 'Token Payment Failed'"
-                                        class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
-                                        <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
-                                        <span
-                                            class="text-md font-semibold ml-2 leading-none">{{bookingDetail?.lead_status}}</span>
-                                    </div>
+                                <div class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
+                                    (click)="getCopy('customer')">
+                                    <mat-icon class="primary-text pr-1 text-xl"
+                                                svgIcon="heroicons_outline:document-text"></mat-icon>
+                                    <span class="text-md leading-none ml-1">Customer Copy</span>
                                 </div>
                             </div>
+                            <div>
+                                <div *ngIf="bookingDetail?.lead_status === 'Confirmed' || bookingDetail?.lead_status == 'Token Payment Success'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(1,175,71,0.1)] flex items-center border green-border">
+                                    <mat-icon class="green-text text-2xl">check_circle</mat-icon>
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none">{{bookingDetail?.lead_status}}</span>
+                                </div>
 
+                                <div *ngIf="bookingDetail?.lead_status === 'Waiting for Token Payment'"
+                                    class="pl-2 pr-3 py-1 rounded-lg  flex items-center border light-border">
+                                    <mat-icon class="secondary-text text-2xl">watch_later</mat-icon>
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none theme-black-text">{{bookingDetail?.lead_status}}</span>
+                                </div>
+
+                                <div *ngIf="bookingDetail?.lead_status === 'New'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <!-- <mat-icon class="text-2xl bonton-red-text">warning</mat-icon> -->
+                                    <img class="w-auto" src="assets/icons/new.svg">
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none">{{bookingDetail?.lead_status}}</span>
+                                </div>
+
+                                <div *ngIf="bookingDetail?.lead_status === 'Cancelled' || bookingDetail?.lead_status === 'Rejected' || bookingDetail?.lead_status === 'Token Payment Failed'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none">{{bookingDetail?.lead_status}}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!--Booking By--->
-                    <div class="mt-4 p-5 mobile:p-3  border-gray-border border rounded-lg">
-                        <div class="mb-3 text-2xl font-semibold text-[#1c1c1c]">{{bookingDetail?.product_name}}
+                    <div class=" p-5 mobile:p-3  border-gray-border border rounded-lg">
+                        <div class="mb-3 text-2xl font-semibold ">{{bookingDetail?.product_name}}
                         </div>
                         <div class="pb-3 flex mobile:flex-col">
                             <div class="w-[50%]">
-                                <div class="text-gray text-base">Ref.No</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.reference_no || '-'}}
+                                <div class="text-md font-semibold text-secondary">Ref.No</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.reference_no || '-'}}
                                 </div>
                             </div>
                             <div class="w-[50%] mobile:pt-2">
-                                <div class="text-gray text-base">Destination</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.destination || '-'}}</div>
+                                <div class="text-md font-semibold text-secondary">Destination</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.destination || '-'}}</div>
                             </div>
                         </div>
                         <div class="pb-3 flex">
                             <div class="w-[50%]">
-                                <div class="text-gray text-base">Duration</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.no_of_nights || '0'}}
+                                <div class="text-md font-semibold text-secondary">Duration</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.no_of_nights || '0'}}
                                     Night<span> / {{bookingDetail?.no_of_days || '0'}} Day</span></div>
                             </div>
                             <div class="w-[50%]">
-                                <div class="text-gray text-base">Inquiry Date</div>
-                                <div class="font-semibold pt-[2px]">{{(bookingDetail?.entry_date_time |
+                                <div class="text-md font-semibold text-secondary">Inquiry Date</div>
+                                <div class="text-base truncate pt-[2px]">{{(bookingDetail?.entry_date_time |
                                     date:'dd-MM-yyyy HH:mm') || '-'}}</div>
                             </div>
                         </div>
                         <div class="pb-3 flex">
                             <div class="w-[50%]">
-                                <div class="text-gray text-base">Tour Start Date</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.start_date |
+                                <div class="text-md font-semibold text-secondary">Tour Start Date</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.start_date |
                                     date:'dd-MM-yyyy HH:mm'}}
                                 </div>
                             </div>
                             <div class="w-[50%]">
-                                <div class="text-gray text-base">Tour End Date</div>
-                                <div class="font-semibold pt-[2px]">{{(bookingDetail?.end_date |
+                                <div class="text-md font-semibold text-secondary">Tour End Date</div>
+                                <div class="text-base truncate pt-[2px]">{{(bookingDetail?.end_date |
                                     date:'dd-MM-yyyy HH:mm') || '-'}}</div>
                             </div>
                         </div>
                         <div class="flex">
                             <div class="w-[50%]">
-                                <div class="text-gray text-base">Pax</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.no_of_adult || '0'}}
+                                <div class="text-md font-semibold text-secondary">Pax</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.no_of_adult || '0'}}
                                     Adult<span> / {{bookingDetail?.no_of_child || '0'}} Child</span></div>
                             </div>
                             <div class="w-[50%]">
-                                <div class="text-gray text-base">Nationality</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.nationality || '-'}}</div>
+                                <div class="text-md font-semibold text-secondary">Nationality</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.nationality || '-'}}</div>
                             </div>
                         </div>
                     </div>
@@ -138,27 +128,54 @@
                     <div class="mt-4 p-5 mobile:p-3  border-gray-border border rounded-lg">
                         <div class="flex">
                             <div class="w-[33%]">
-                                <div class="text-gray text-base">Lead Pax Name</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.lead_name || '-'}}</div>
+                                <div class="text-md font-semibold text-secondary">Lead Pax Name</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.lead_name || '-'}}</div>
                             </div>
                             <div class="w-[33%]">
-                                <div class="text-gray text-base">Lead Pax Email</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.lead_email || '-'}}</div>
+                                <div class="text-md font-semibold text-secondary">Lead Pax Email</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.lead_email || '-'}}</div>
                             </div>
                             <div class="w-[33%]">
-                                <div class="text-gray text-base">Lead Pax Contact No.</div>
-                                <div class="font-semibold pt-[2px]">{{bookingDetail?.lead_mobile || '-'}}</div>
+                                <div class="text-md font-semibold text-secondary">Lead Pax Contact No.</div>
+                                <div class="text-base truncate pt-[2px]">{{bookingDetail?.lead_mobile || '-'}}</div>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
+                <!-------Right-------->
                 <div class="  overflow-hidden w-1/3 ml-3 h-fit">
                     <div class="pb-1 info relative flex flex-col mb-5 overflow-hidden rounded-2xl bg-card">
-
+                        <div class="w-full text-lg font-medium px-4 py-3 border-b border-gray-border dark:bg-primary bg-gray-200">Fare Information</div>
+                            <mat-divider></mat-divider>
+                            <div class="pt-3">
+                                <div *ngFor="let category of bookingDetail?.pax_category_price | keyvalue">
+                                    <div class="justify-between px-4 flex  " [ngClass]="category.value.pax > 0 ? 'pb-3' : ''"
+                                        *ngIf="category.value.pax > 0">
+                                        <div>{{ category.value.category }} ( {{ category.value.price / category.value.pax }} x {{ category.value.pax }})</div>
+                                        <div>{{bookingDetail?.currency_symbol }} {{ category.value.price }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                            <div class="flex justify-between px-4 py-3">
+                                <div class=" ">Taxes & Service Fees</div>
+                                <div class=" ">{{bookingDetail?.currency_symbol }}
+                                    {{bookingDetail?.markup || '0'}}</div>
+                            </div>
+                            <mat-divider></mat-divider>
+                            <div class="flex justify-between px-4 py-3">
+                                <div class="">Total Amount</div>
+                                <div class="">{{bookingDetail?.currency_symbol }}
+                                    {{bookingDetail?.total_price || '0'}}</div>
+                            </div>
+                            <mat-divider></mat-divider>
+                            <div class="flex justify-between px-4 py-3">
+                                <div class=" ">Token Amount</div>
+                                <div class=" ">{{bookingDetail?.currency_symbol }}
+                                    {{bookingDetail?.token_amount || '0'}}</div>
+                            </div>
                     </div>
-
                 </div>
             </div>
         </div>

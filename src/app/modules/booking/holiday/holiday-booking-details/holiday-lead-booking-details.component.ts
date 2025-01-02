@@ -20,6 +20,8 @@ import { HolidayLeadService } from 'app/services/holiday-lead.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { ToasterService } from 'app/services/toaster.service';
 import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/compact.component';
+import { CommonUtils } from 'app/utils/commonutils';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-holiday-lead-booking-details',
@@ -47,6 +49,8 @@ import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/comp
     NgxMatSelectSearchModule,
     NgClass,
     ClipboardModule,
+    MatIconModule,
+    MatDividerModule,
   ]
 })
 export class HolidayLeadBookingDetailsComponent {
@@ -84,5 +88,20 @@ export class HolidayLeadBookingDetailsComponent {
     this.router.navigate([this.holidayRoute])
   }
 
+  getCopy(copyOf): void {
+    this.HolidayLeadService.downloadQuotationV2(this.bookingDetail.id).subscribe({
+      next: (res) => {
+        this.bookingDetail.copy = res.copy;
+        this.bookingDetail.customer_copy = res.customer_copy;
+        if (copyOf === 'agent') {
+          CommonUtils.downloadPdf(this.bookingDetail.copy, 'holiday_quotation.pdf');
+        }
+        else {
+          CommonUtils.downloadPdf(this.bookingDetail.customer_copy, 'holiday_quotation.pdf');
+        }
+      }, error: (err) => {
+      },
+    })
+  }
 
 }
