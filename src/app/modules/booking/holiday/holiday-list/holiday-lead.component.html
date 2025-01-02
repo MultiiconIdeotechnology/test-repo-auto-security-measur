@@ -157,7 +157,7 @@
           <ng-template pTemplate="body" let-element let-columns="columns">
               <tr>
                   <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
-                      <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
+                      <span class="cursor-pointer border-b border-gray-500" (click)="view(element)">
                           {{element.reference_no || "-"}}
                       </span>
                   </td>

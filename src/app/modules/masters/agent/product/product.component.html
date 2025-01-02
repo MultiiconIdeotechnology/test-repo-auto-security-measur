@@ -26,7 +26,7 @@
                             </button>
                             <!--*ngIf="element.receipt_status !== 'Confirmed'"   for delete-->
                             <button mat-menu-item (click)="deleteProduct(element)"
-                            *ngIf="(element.product_status.purchase_amount > 0 && element.receipt_status !== 'Confirmed' && element.product_status !== 'Delivered') || (element.product_status.purchase_amount == 0 && element.product_status !== 'Delivered')">
+                            *ngIf="(element.purchase_amount > 0 && (element.receipt_status !== 'Confirmed' && element.product_status !== 'Delivered')) || (element.purchase_amount == 0 && element.product_status !== 'Delivered')">
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600">Delete</span>
                             </button>

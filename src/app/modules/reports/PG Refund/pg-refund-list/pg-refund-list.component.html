@@ -31,6 +31,38 @@
                     (click)="refreshItems()"></mat-icon>
             </div>
 
+            <!-- Date Combo -->
+            <div class="ml-4 justify-center items-center w-[245px]">
+                <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-select name="date" [formControl]="date" #dateRange
+                            (selectionChange)="updateDate($event.value)">
+                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
+                                dr
+                                }}</mat-option>
+                        </mat-select>
+                        <!-- <mat-icon svgIcon="heroicons_mini:chevron-down" (click)="dateRange.open()"
+                            class="cursor-pointer"></mat-icon> -->
+                    </mat-form-field>
+                </div>
+
+                <div *ngIf="date.value === DR.setCustomDate" class="w-full flex flex-row items-center space-x-1">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()" >
+                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly  
+                                #dateRangeStart />
+                            <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
+                                (dateInput)="
+                                        dateRangeChange(dateRangeStart, dateRangeEnd)
+                                    " />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                    <mat-icon class="icon-size-4 cursor-pointer" (click)="cancleDate()">cancel</mat-icon>
+                </div>
+            </div>
+
             <!------Global filter------>
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">

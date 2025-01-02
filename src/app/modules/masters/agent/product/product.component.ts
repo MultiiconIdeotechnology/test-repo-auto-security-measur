@@ -179,10 +179,10 @@ export class ProductComponent {
             message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?'
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
-                const json = {
-                    id: record.id
-                }
-                this.crmService.deletePurchaseProduct(json).subscribe({
+                // const json = {
+                //     id: record.id
+                // }
+                this.crmService.deletePurchaseProduct(record.id).subscribe({
                     next: (res) => {
                         if (res)
                             this.alertService.showToast('success', "Purchase product has been deleted!", "top-right", true);
