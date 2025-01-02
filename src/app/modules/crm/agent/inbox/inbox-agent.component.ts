@@ -238,17 +238,30 @@ export class InboxAgentComponent extends BaseListingComponent {
         else return 'No data to display';
     }
 
+    // getStatusColor(status: string): string {
+    //     if (status == 'New') {
+    //         return 'text-green-600';
+    //     } else if (status == 'Active') {
+    //         return 'text-blue-600';
+    //     } else if (status == 'Inactive') {
+    //         return 'text-red-600';
+    //     } else if (status == 'Dormant') {
+    //         return 'text-red-600';
+    //     }
+    //     else {
+    //         return '';
+    //     }
+    // }
     getStatusColor(status: string): string {
         if (status == 'New') {
-            return 'text-green-600';
+            return 'text-blue-500';
+        } else if (status == 'Dormant') {
+            return 'text-yellow-600';
         } else if (status == 'Active') {
-            return 'text-blue-600';
+            return 'text-green-600';
         } else if (status == 'Inactive') {
             return 'text-red-600';
-        } else if (status == 'Dormant') {
-            return 'text-red-600';
-        }
-        else {
+        } else {
             return '';
         }
     }
