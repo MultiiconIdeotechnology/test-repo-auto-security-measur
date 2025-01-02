@@ -194,9 +194,9 @@
   
       const formattedData = this.dataList.map(product => {
         const monthData = product.monthData.reduce((acc, item, index) => {
-          acc[`month${index + 1}_avg_Amount`] = item.amount;
-          acc[`month${index + 1}_avg_Growth`] = item.growthPercentage;
-          acc[`month${index + 1}_avg_Weight`] = item.weightagePercentage;
+          acc[`month${index + 1}_amount`] = item.amount;
+          acc[`month${index + 1}_growthPercentage`] = item.growthPercentage;
+          acc[`month${index + 1}_weightagePercentage`] = item.weightagePercentage;
           return acc;
         }, {
           product: product.product,
