@@ -1,5 +1,3 @@
-
-
 <div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
 
     <!-- Header -->
@@ -11,10 +9,18 @@
         </div>
         <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
             <span class="text-3xl">{{module_name}}</span>
+            <span class="hidden max-sm:flex">
+                <!-- <button class="ml-4" mat-flat-button style="background-color: #5046E5;" (click)="create()">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                    <span class="ml-2 mr-1">Add</span>
+                </button> -->
+            </span>
         </div>
 
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
+
+          
 
             <!------Global Search------>
             <div class="flex ctm_search">
@@ -25,48 +31,19 @@
             </div>
 
             <!-- Date Combo -->
-            <div class="justify-center items-center w-[245px]">
-                <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
-                    <mat-form-field class="w-full bottom_none">
-                        <mat-select name="date" [formControl]="date" #dateRange
-                            (selectionChange)="updateDate($event.value)">
-                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
-                                dr
-                                }}</mat-option>
-                        </mat-select>
-                        <!-- <mat-icon svgIcon="heroicons_mini:chevron-down" (click)="dateRange.open()"
-                            class="cursor-pointer"></mat-icon> -->
-                    </mat-form-field>
-                </div>
-
-                <div *ngIf="date.value === DR.setCustomDate" class="w-full flex flex-row items-center space-x-1">
-                    <mat-form-field class="w-full bottom_none">
-                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()" >
-                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly  
-                                #dateRangeStart />
-                            <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
-                                (dateInput)="
-                                        dateRangeChange(dateRangeStart, dateRangeEnd)
-                                    " />
-                        </mat-date-range-input>
-                        <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-date-range-picker #picker></mat-date-range-picker>
-                    </mat-form-field>
-                    <mat-icon class="icon-size-4 cursor-pointer" (click)="cancleDate()">cancel</mat-icon>
-                </div>
-            </div>
+            <mat-form-field appearance="fill" class="monthly_combo w-36">
+                <mat-select [formControl]="monthsBack" (selectionChange)="refreshItems($event)">
+                    <mat-option *ngFor="let month of monthDataList" [value]="month">
+                        {{ month}} Months
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
             <!------Global filter------>
-            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <!-- <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
-            </button>
-
-            <!------Common Filter------->
-            <!-- <button mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
-                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button> -->
 
             <!------Refresh------>
@@ -88,6 +65,8 @@
         </div>
     </div>
 
+    
+
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
@@ -95,107 +74,57 @@
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
-            <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep"
+            styleClass="p-datatable-gridlines p-datatable-sm">
 
+            <!-- Table Header -->
             <ng-template pTemplate="header">
-
                 <tr>
-                    <th pSortableColumn="rm_name" pResizableColumn rowspan="2">RM <p-sortIcon field="rm_name" /></th>
-                    <th class="text-center bg-[#4c6793]" colspan="3">Avg.</th>
-                    <th class="text-center bg-[#5f9da2]" colspan="3">Nov</th>
-                    <th class="text-center bg-[#5f9da2]" colspan="1">Oct</th>
+                    <th rowspan="2">RM</th>
+                    <th class="text-center" colspan="3">Average</th>
+
+                    <ng-container *ngFor="let month of latestMonths">
+                        <th class="text-center" colspan="3">{{ monthsName(month) }}</th>
+                    </ng-container>
                 </tr>
                 <tr>
-                    <!-- Partner Columns -->
-                    <th class="text-right" pSortableColumn="new_partner" pResizableColumn>Onboard <p-sortIcon field="new_partner" /></th>
-                    <th class="text-right" pSortableColumn="first_transaction_partner" pResizableColumn>Activation <p-sortIcon field="first_transaction_partner" /></th>
-                    <th class="text-right" pSortableColumn="activated" pResizableColumn>Sales<p-sortIcon field="activated" /></th>
+                        <th class="text-right">Onboard</th>
+                        <th class="text-right">Activation</th>
+                        <th class="text-right">Sales</th>
 
-                    <!-- Business Columns -->
-                    <th class="text-right" pSortableColumn="total_business" pResizableColumn>Onboard<p-sortIcon field="total_business" /></th>
-                    <th class="text-right" pSortableColumn="total_new" pResizableColumn>Activation<p-sortIcon field="total_new" /></th>
-                    <th class="text-right" pSortableColumn="total_old" pResizableColumn>Sales<p-sortIcon field="total_old" /></th>
-                    <th class="text-right" pSortableColumn="total_old" pResizableColumn><p-sortIcon field="total_old" /></th>
 
+                    <!-- Month Columns -->
+                    <ng-container *ngFor="let month of latestMonths">
+                        <th class="text-right">Onboard</th>
+                        <th class="text-right">Activation</th>
+                        <th class="text-right">Sales</th>
+                    </ng-container>
                 </tr>
 
-                <tr *ngIf="isFilterShow">
-                    <!-- <th></th> -->
-
-                    <th>
-                        <p-columnFilter  type="text" matchMode="contains" field="rm_name"
-                            placeholder="Search by RM" ariaLabel="Filter RM" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="new_partner"
-                            placeholder="Search by New Partner" ariaLabel="Filter New Partner" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="first_transaction_partner"
-                            placeholder="Search by First Transaction Partner" ariaLabel="Filter First Transaction Partner" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="activated"
-                            placeholder="Search by Activated" ariaLabel="Filter Activated" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="total_business"
-                            placeholder="Search by Business Total" ariaLabel="Filter Business Total" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="total_new"
-                            placeholder="Search by Business New" ariaLabel="Filter Business New" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="total_old"
-                            placeholder="Search by Business Old" ariaLabel="Filter Business Old" />
-                    </th>
-                </tr>
-                <!-- </ng-template> -->
             </ng-template>
 
+            <!-- Table Body -->
             <ng-template pTemplate="body" let-element>
                 <tr>
-                    <td>{{ element.rm_name }}</td>
+                    <td>{{element.rm}}</td>
+                    <td class="text-right">{{ element.avg_Onboard }}</td>
+                    <td class="text-right">{{ element.avg_Activation }}</td>
+                    <td class="text-right">{{ element.avg_Sales }}</td>
 
-                    <!-- Total Columns -->
-                    <td class="text-right">{{ element.new_partner || 0 }}</td>
-                    <td class="text-right">{{ element.first_transaction_partner || 0 }}</td>
-                    <td class="text-right">{{ element.activated || 0 }}</td>
-
-                    <!-- Domestic Columns -->
-                    <td class="text-right">{{ element.total_business || 0 }}</td>
-                    <td class="text-right">{{ element.total_new || 0 }}</td>
-                    <td class="text-right">{{ element.total_old || 0 }}</td>
-
+                    <!-- Month Columns -->
+                    <ng-container *ngFor="let month of latestMonths">
+                        <ng-container *ngFor="let monthData of element.monthData">
+                            <ng-container *ngIf="monthData.month === month">
+                                <td class="text-right">{{ monthData.currentMonthOnboard }}</td>
+                                <td class="text-right">{{ monthData.currentMonthActivation }}</td>
+                                <td class="text-right">{{ monthData.currentMonthSales }}</td>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
                 </tr>
             </ng-template>
 
-            <!-- <ng-template pTemplate="footer">
-                <tr>
-                    <td>Total</td>
-                    <td class="text-right">{{dataListTotals?.total_pax ? dataListTotals?.total_pax.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_pnr ? dataListTotals?.total_pnr.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_volume ? dataListTotals?.total_volume.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.max_weightage ? dataListTotals?.max_weightage.toFixed(2) : 0}}%</td>
-
-                    <td class="text-right">{{dataListTotals?.total_domestic_pax ? dataListTotals?.total_domestic_pax.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_domestic_pnr ? dataListTotals?.total_domestic_pnr.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_domestic_volume ? dataListTotals?.total_domestic_volume.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.max_domestic_weightage ? dataListTotals?.max_domestic_weightage.toFixed(2) : 0}}%</td>
-                    <td class="text-right">{{dataListTotals?.max_domestic_ratio ? dataListTotals?.max_domestic_ratio.toFixed(2) : 0}}%</td>
-                    
-                    <td class="text-right">{{dataListTotals?.total_international_pax ? dataListTotals?.total_international_pax.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_international_pnr ? dataListTotals?.total_international_pnr.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_international_volume ? dataListTotals?.total_international_volume.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.max_international_weightage ? dataListTotals?.max_international_weightage.toFixed(2) : 0}}%</td>
-                    <td class="text-right">{{dataListTotals?.max_international_ratio ? dataListTotals?.max_international_ratio.toFixed(2) : 0}}%</td>
-
-                </tr>
-            </ng-template> -->
-
+            <!-- Empty Message -->
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
                     <td colspan="15" class="text-center font-semibold text-lg">
@@ -205,4 +134,5 @@
             </ng-template>
         </p-table>
     </div>
+
 </div>

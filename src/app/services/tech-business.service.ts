@@ -20,9 +20,15 @@ export class TechBusinessService {
 //     return this.http.post<any>(this.baseUrl + 'ContractReport/airlineOfflineTatAnalysis', model);
 //   }
 
-//   airlineMonthlyAnalysis(model: any): Observable<any>{
-//     return this.http.post<any>(this.baseUrl + 'ContractReport/airlineMonthlyAnalysis', model);
-//   }
+  getRmMonthlyAnalytics(model: any): Observable<any>{
+    return this.http.post<any>(this.baseUrl + 'AccountReport/rmMonthlyAnalysis', model);
+  }
+
+  GetProductMonthlyAnalytics(model: any): Observable<any>{
+    return this.http.post<any>(this.baseUrl + 'AccountReport/productMonthlyAnalysis', model);
+  }
+
+  
   
 //   airlineRejectionSupplierWiseAnalysis(model: any): Observable<any>{
 //     return this.http.post<any>(this.baseUrl + 'ContractReport/airlineRejectionSupplierWiseAnalysis', model);

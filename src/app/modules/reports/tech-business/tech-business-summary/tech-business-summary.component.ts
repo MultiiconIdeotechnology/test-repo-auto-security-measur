@@ -12,13 +12,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { AirlineSummaryService } from 'app/services/airline-summary.service';
-import { MatDialog } from '@angular/material/dialog';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { DateTime } from 'luxon';
@@ -78,16 +75,12 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
   isFilterShow: boolean = false;
 
   constructor(
-    private confirmService: FuseConfirmationService,
-    private router: Router,
-    private airlineSummaryService: AirlineSummaryService,
     private techService: TechBusinessService,
-    private matDialog: MatDialog,
     public _filterService: CommonFilterService
   ) {
     super(module_name.tech_business_summary)
     // this.key = 'supplier';
-    this.sortColumn = 'volume';
+    this.sortColumn = 'rm';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this.dateRangeContractings = CommonUtils.valuesArray(dateRangeContracting);
@@ -98,8 +91,6 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
 
   ngOnInit(): void {
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      // this.sortColumn = resp['sortColumn'];
-      // this.primengTable['_sortField'] = resp['sortColumn'];
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.primengTable._filter();
@@ -254,6 +245,10 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
   cancleDate() {
     this.date.patchValue('Today');
     this.updateDate(dateRangeContracting.today);
+  }
+
+  ngOnDestroy(): void {
+    this.settingsUpdatedSubscription.unsubscribe()
   }
 
 }
