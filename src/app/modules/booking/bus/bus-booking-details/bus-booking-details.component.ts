@@ -30,6 +30,7 @@ import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/comp
 import { Security, busBookingPermissions, messages } from 'app/security';
 import { CancellationPolicyComponent } from '../cancellation-policy/cancellation-policy.component';
 import { LogsComponent } from '../../flight/flight/logs/logs.component';
+import { FileLogsComponent } from '../../flight/flight/file-logs/file-logs.component';
 
 @Component({
   selector: 'app-bus-booking-details',
@@ -177,6 +178,16 @@ export class BusBookingDetailsComponent {
       }
     })
   }
+
+   fileLogs() {
+      this.matDialog.open(FileLogsComponent, {
+        data: {id:this.mainData.id, send: 'Bus'},
+        disableClose: true
+      }).afterClosed().subscribe(res => {
+        // if(res)
+        // this.refreshItems();
+      })
+    }
 
   Amendment(){
     if (!Security.hasPermission(busBookingPermissions.amendmentPermissions)) {

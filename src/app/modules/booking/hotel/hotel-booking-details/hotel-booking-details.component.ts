@@ -31,6 +31,7 @@ import { MatDivider, MatDividerModule } from '@angular/material/divider';
 import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { LogsComponent } from '../../flight/flight/logs/logs.component';
+import { FileLogsComponent } from '../../flight/flight/file-logs/file-logs.component';
 
 
 @Component({
@@ -159,6 +160,16 @@ export class HotelBookingDetailsComponent {
       }
     })
   }
+
+     fileLogs() {
+        this.matDialog.open(FileLogsComponent, {
+          data: {id:this.bookingDetail.id, send: 'Hotel'},
+          disableClose: true
+        }).afterClosed().subscribe(res => {
+          // if(res)
+          // this.refreshItems();
+        })
+      }
 
   print(val): void {
 
