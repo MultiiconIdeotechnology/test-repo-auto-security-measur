@@ -316,11 +316,11 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     this.updateDate(dateRangeContracting.today);
   }
 
-  onOptionClick(option: any, primengTable: any, field: any, key?: any) {
+  onContractionOption(option: any, primengTable: any, field: any, key?: any) {
     // this.selectionDateDropdown = option.id_by_value;
     this.selectedRefundDateSubject.next(option.id_by_value);
    
-    if(option.id_by_value != 'custom_date_range'){
+    if(option.id_by_value && option.id_by_value != 'custom_date_range'){
         primengTable.filter(option, field, 'custom');
     } 
 }

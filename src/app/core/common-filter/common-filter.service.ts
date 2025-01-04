@@ -194,7 +194,7 @@ export class CommonFilterService {
         // endDate.setHours(23, 59, 59, 999);
         // let dateArr = [startDate, endDate];
         // const range = [startDate.toISOString(), endDate.toISOString()].join(",");
-        if(option.id_by_value != 'custom_date_range'){
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
             primengTable.filter(option, field, 'custom');
             // primengTable.filters[field]['value'] = option.value;
             // primengTable.filters[field]['matchMode'] = 'custom';
