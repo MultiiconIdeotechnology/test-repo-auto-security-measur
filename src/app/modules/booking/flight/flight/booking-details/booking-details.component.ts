@@ -404,7 +404,7 @@ export class BookingDetailsComponent {
 
   fileLogs() {
     this.matDialog.open(FileLogsComponent, {
-      data: this.mainData[0].id,
+      data: {id:this.mainData[0].id, send: 'Airline'},
       disableClose: true
     }).afterClosed().subscribe(res => {
       // if(res)

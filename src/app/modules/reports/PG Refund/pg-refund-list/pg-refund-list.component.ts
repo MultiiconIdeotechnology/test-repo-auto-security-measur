@@ -81,9 +81,21 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
   selectedAgent: any;
   selectedRM: any;
 
-  serviceList = ['Airline', 'Hotel', 'Bus', 'Visa'];
+  // serviceList = ['Airline', 'Hotel', 'Bus', 'Visa'];
+  serviceList = [
+    { label: 'Airline', value: 'Airline' },
+    { label: 'Hotel', value: 'Hotel' },
+    { label: 'Bus', value: 'Bus' },
+    { label: 'Visa', value: 'Visa' },
+  ];
 
-  typeList = ['Rejected', 'Booking Failed', 'Cancelled', 'Partially Cancelled'];
+  // typeList = ['Rejected', 'Booking Failed', 'Cancelled', 'Partially Cancelled'];
+  typeList = [
+    { label: 'Rejected', value: 'Rejected' },
+    { label: 'Booking Failed', value: 'Booking Failed' },
+    { label: 'Cancelled', value: 'Cancelled' },
+    { label: 'Partially Cancelled', value: 'Partially Cancelled' },
+  ];
 
   constructor(
     private pgRefundService: PgRefundService,
@@ -129,6 +141,8 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       this.primengTable._filter();
     });
   }
+
+
 
   ngAfterViewInit() {
     // Defult Active filter show
@@ -289,7 +303,7 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       this.refreshItems();
   }
 
-  dateRangeContractingChange(start, end): void {
+  dateRangeChange(start, end): void {
     if (start.value && end.value) {
       this.StartDate = start.value;
       this.EndDate = end.value;
