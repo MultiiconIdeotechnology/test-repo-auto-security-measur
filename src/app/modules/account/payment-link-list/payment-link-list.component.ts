@@ -120,11 +120,11 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
     ngOnInit() {
         this.getAgent("");
 
-        this._filterService.selectionDateDropdown = "";
+        this._filterService.updateSelectedOption('');
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.selectionDateDropdown = "";
+            this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent']?.value;
             // this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             // this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
@@ -155,7 +155,7 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
 
     ngAfterViewInit() {
         // Defult Active filter show
-        // this._filterService.selectionDateDropdown = "";
+        // this._filterService.updateSelectedOption('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);

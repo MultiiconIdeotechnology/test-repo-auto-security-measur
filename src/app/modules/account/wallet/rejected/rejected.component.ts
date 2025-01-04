@@ -114,9 +114,9 @@ export class RejectedComponent extends BaseListingComponent {
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
 
-		this._filterService.selectionDateDropdown = ""
+		this._filterService.updateSelectedOption('');
 		this.settingsRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-			this._filterService.selectionDateDropdown = "";
+			this._filterService.updateSelectedOption('');
 			this.selectedEmployee = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPsp = resp['table_config']['psp_name']?.value;

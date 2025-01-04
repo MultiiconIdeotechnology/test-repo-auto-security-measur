@@ -132,9 +132,9 @@ export class WRejectedComponent extends BaseListingComponent {
   ngOnInit(): void {
     this.agentList = this._filterService.agentListById;
 
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.withdrawRejectSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;

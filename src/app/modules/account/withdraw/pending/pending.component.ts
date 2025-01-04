@@ -135,9 +135,9 @@ export class WPendingComponent extends BaseListingComponent {
   ngOnInit(): void {
     this.agentList = this._filterService.agentListById;
 
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.withdrawUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       this.selectedEmployee = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedEmployee && this.selectedEmployee.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);

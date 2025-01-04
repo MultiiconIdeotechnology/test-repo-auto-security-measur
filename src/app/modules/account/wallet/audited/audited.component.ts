@@ -122,9 +122,9 @@ export class AuditedComponent extends BaseListingComponent {
       this.pspList = this.filterApiData.pspData;
     }, 1000);
 
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       this.selectedMop = resp['table_config']['mop']?.value;
       this.selectedPsp = resp['table_config']['psp_name']?.value;
       this.selectedAgent = resp['table_config']['agent_code_filter']?.value;

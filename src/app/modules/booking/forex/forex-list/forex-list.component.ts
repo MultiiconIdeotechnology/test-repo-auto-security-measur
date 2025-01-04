@@ -142,9 +142,9 @@ export class ForexListComponent extends BaseListingComponent {
     this.agentList = this._filterService.agentListById;
 
     // common filter
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -178,7 +178,7 @@ export class ForexListComponent extends BaseListingComponent {
       }
 
       // if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
-      //   this._filterService.selectionDateDropdown = 'Custom Date Range';
+      //   this._filterService.updateSelectedOption('custom_date_range');
       //   this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       // }
 

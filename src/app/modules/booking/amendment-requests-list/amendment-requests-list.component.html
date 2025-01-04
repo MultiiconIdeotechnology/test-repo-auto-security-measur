@@ -128,11 +128,11 @@
                         Refund Amount
                     </th>
 
-                    <th [ngClass]="_filterService.selectionDateDropdown == 'custom_date_range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="amendment_request_time" pResizableColumn>
+                    <th class="min-w-[200px]" pSortableColumn="amendment_request_time" pResizableColumn>
                         Requested Time <p-sortIcon field="amendment_request_time" />
                     </th>
 
-                    <th [ngClass]="_filterService.selectionDateDropdown == 'custom_date_range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="updated_date_time" pResizableColumn>
+                    <th class="min-w-[200px]" pSortableColumn="updated_date_time" pResizableColumn>
                         Updated Time <p-sortIcon field="updated_date_time" />
                     </th>
 
@@ -297,13 +297,13 @@
                     </th>
 
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'" field="amendment_request_time" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="(selectionRefundOption$ | async) != 'custom_date_range'" field="amendment_request_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
                                     optionLabel="label" placeholder="Select Option" 
                                     appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'amendment_request_time')">
+                                        <div (click)="onLocalOption(option, primengTable, 'amendment_request_time')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
@@ -311,7 +311,7 @@
                             </ng-template>
                         </p-columnFilter>
     
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'" >
+                        <ng-container *ngIf="(selectionRefundOption$ | async) == 'custom_date_range'" >
                             <div class="relative inline-block">
                                 <p-columnFilter field="amendment_request_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -321,13 +321,14 @@
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  
+                                (click)="onLocalOption('', '', '')">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>
 
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'" field="updated_date_time" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'" field="updated_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
                                     optionLabel="label" placeholder="Select Option" 
@@ -341,7 +342,7 @@
                             </ng-template>
                         </p-columnFilter>
     
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'" >
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'" >
                             <div class="relative inline-block">
                                 <p-columnFilter field="updated_date_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -351,7 +352,8 @@
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  
+                                (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>

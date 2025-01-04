@@ -21,6 +21,10 @@ export class CommonFilterService {
     private selectedOptionSubject = new BehaviorSubject<any>('');
     selectionDateDropdown$ = this.selectedOptionSubject.asObservable();
 
+    // Public method to update the BehaviorSubject value
+    updateSelectedOption(option: string): void {
+        this.selectedOptionSubject.next(option);
+    }
 
     private baseUrl = environment.apiUrl;
     filterDrawerVisible: boolean = false;
