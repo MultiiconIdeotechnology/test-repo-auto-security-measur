@@ -37,14 +37,13 @@
                     }" (click)="allImages(DisplayDetails.SecondImageList)" *ngIf="getImages(8).length > 0">
                         <img loading="lazy" [src]="getImages(8)[0]?.imageUrl" class="h-44 object-cover"
                             alt="Place Image" />
-                        <span *ngIf="getImages(8).length > 1"
+                        <!-- <span *ngIf="getImages(8).length > 1"
                             class="z-10 absolute text-xl font-semibold white-text">View
-                            All</span>
+                            All</span> -->
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="flex w-full">
             <div class="left w-[69%] mr-[2%]">
                 
@@ -89,9 +88,9 @@
                                 </div>
                                 <div class="mx-5 px-4 pt-3 pb-1 relative">
                                     <div class="flex space-x-4">
-                                        <div class="tab-content flex space-x-4">
+                                        <div class="tab-content flex space-x-4 view-holiday-small-carousel">
                                             <ngx-slick-carousel *ngIf="ht.image.length !== 0"
-                                                class="carousel Hotel_carousel min-h-36 max-h-36 max-w-56 min-w-56"
+                                                class="carousel  min-h-36 max-h-36 max-w-56 min-w-56"
                                                 #slickModal="slick-carousel" [config]="slideConfig">
                                                 <div ngxSlickItem *ngFor="
                                                             let slide of ht.image
@@ -118,9 +117,9 @@
                                                 </div>
                                             </div>
                                             <div class="flex flex-row space-x-2 items-center py-1">
-                                                <mat-icon class="icon-size-4 text-black"
+                                                <mat-icon class="icon-size-4 text-black dark:text-white"
                                                     svgIcon="mat_outline:calendar_today"></mat-icon>
-                                                <span class="text-[#696969] font-normal text-base">{{ht.check_in | date:'EEE, dd-MM-yyyy'}} - {{ht.check_out | date: 'EEE, dd-MM-yyyy'}}</span>
+                                                <span class="text-[#696969] dark:text-gray-200 font-normal text-base">{{ht.check_in | date:'EEE, dd-MM-yyyy'}} - {{ht.check_out | date: 'EEE, dd-MM-yyyy'}}</span>
                                             </div>
                                             <div class="dark:dark bg-[#F8F8F8] p-3 rounded-lg mt-2">
                                                 <div class="font-semibold">Room Type: {{ht.room_category}}</div>
@@ -184,7 +183,7 @@
                                         </label>
                                         <div class="tab-content flex space-x-4 pt-0 rounded-xl">
                                             <ngx-slick-carousel *ngIf="fl.image.length !== 0"
-                                                class="carousel Hotel_carousel min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl"
+                                                class="carousel Hotel_carousel view-holiday-small-carousel min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl"
                                                 #slickModal="slick-carousel" [config]="slideConfig">
                                                 <div ngxSlickItem *ngFor="
                                                             let slide of fl.image
@@ -262,7 +261,7 @@
                         *ngFor="let fl of DisplayDetails.sightseeingList; let index = index" [ngClass]="{'border-b border-[#D9D9D9] ': index < DisplayDetails?.sightseeingList?.length - 1}">
                         <div class="tab-content flex space-x-4 pt-0">
                             <ngx-slick-carousel *ngIf="fl.image.length !== 0"
-                                class="carousel Hotel_carousel min-h-36 max-h-36 max-w-56 min-w-56"
+                                class="carousel Hotel_carousel view-holiday-small-carousel min-h-36 max-h-36 max-w-56 min-w-56"
                                 #slickModal="slick-carousel" [config]="slideConfig">
                                 <div ngxSlickItem *ngFor="
                                                             let slide of fl.image
@@ -296,13 +295,13 @@
                             </div> -->
 
                             <!-- w-[calc(100%-235px)] -->
-                            <div class="text-gray ">
+                            <div class="text-gray">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-1 max-w-1 min-w-1 h-1 max-h-1 min-h-1 rounded-full bg-[#1c1c1c]"></div>
-                                    <div class="text-lg font-medium text-[#1C1C1C]">{{fl.sightname}}</div>
+                                    <div class="w-1 max-w-1 min-w-1 h-1 max-h-1 min-h-1 rounded-full bg-[#1c1c1c] dark:bg-gray-100"></div>
+                                    <div class="text-lg font-medium text-[#1C1C1C] dark:text-gray-100">{{fl.sightname}}</div>
                                 </div>
                                 <div *ngIf="fl.description.length <= 440; else longContent">
-                                    <div class="text-base font-normal pl-3">{{ fl.description }}</div>
+                                    <div class="text-base font-normal pl-3 dark:text-gray-300">{{ fl.description }}</div>
                                 </div>
                                 <ng-template #longContent>
                                     <div>
@@ -333,7 +332,7 @@
                             <span class="flex py-[2px] text-lg">
                                 <mat-icon class="icon-size-4 mt-[3px] text-green-500"
                                     svgIcon="heroicons_solid:check"></mat-icon>
-                                <span class="text-gray pl-2 text-base text-[#1C1C1C]">{{ ex.inclusion }}</span></span>
+                                <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]">{{ ex.inclusion }}</span></span>
                         </div>
                     </div>
                     <div class="w-full relative pb-4">
@@ -362,34 +361,34 @@
                         <span class="flex py-[2px] text-lg">
                             <mat-icon class="icon-size-4 mt-[3px] text-red-500"
                                 svgIcon="heroicons_outline:x-mark"></mat-icon>
-                            <span class="text-gray pl-2 text-base text-[#1C1C1C]">{{ ex.exclusion }}</span></span>
+                            <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]">{{ ex.exclusion }}</span></span>
                     </div>
                 </div>
 
                 <!----------Special Notes----------->
                 <div *ngIf="DisplayDetails?.SpecialNoteList?.length > 0"
-                    class="flex flex-col py-4 px-5 bg-[#DFEEFF] rounded-lg overflow-hidden mb-7 round-shadow">
+                    class="flex flex-col py-4 px-5 bg-[#DFEEFF] dark:bg-[#415c7ad1] rounded-lg overflow-hidden mb-7 round-shadow">
                     <div class="text-xl font-semibold pb-2 theme-black-text">
                         Special Notes
                     </div>
                     <div *ngFor="let te of DisplayDetails.SpecialNoteList">
                         <span class="flex py-[2px] text-lg"><span
-                                class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-[#707070] mx-2 mt-[5px]"></span><span
-                                class="text-gray pl-2 text-base">{{ te.description }}</span></span>
+                                class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-[#707070] dark:bg-gray-300 mx-2 mt-[5px]"></span><span
+                                class="text-gray dark:text-gray-300 pl-2 text-base">{{ te.description }}</span></span>
                     </div>
                 </div>
 
                 <!----------Cancellation Policy----------->
                 <div *ngIf="DisplayDetails?.CancellationPolicyList?.length > 0"
-                    class="flex flex-col py-4 px-5 bg-[#FFE7E8] rounded-lg overflow-hidden mb-7 round-shadow">
+                    class="flex flex-col py-4 px-5 bg-[#FFE7E8] dark:bg-[#f9979b38] rounded-lg overflow-hidden mb-7 round-shadow">
                     <div class="text-xl font-semibold pb-2 theme-black-text">
                         Cancellation Policy
                     </div>
                     <div *ngFor="let te of DisplayDetails.CancellationPolicyList">
                         <span class="flex py-[2px] text-lg">
-                            <mat-icon class="text-[#9D9D9D] icon-size-4 mt-[3px]"
+                            <mat-icon class="text-[#9D9D9D] dark:text-gray-300 icon-size-4 mt-[3px]"
                                 svgIcon="heroicons_solid:check-circle"></mat-icon>
-                            <span class="text-gray pl-2 text-base">{{ te.description }}</span>
+                            <span class="text-gray dark:text-gray-400 pl-2 text-base">{{ te.description }}</span>
                         </span>
                     </div>
                 </div>
@@ -708,7 +707,7 @@
                     </div>
 
                     <form [formGroup]="DepatureformGroup">
-                        <div class="p-3 bg-[#e9edf1] text-primary border-primaryColor my-3 mx-5 rounded-xl border">
+                        <div class="p-3 bg-[#e9edf1] dark:dark text-primary border-primaryColor my-3 mx-5 rounded-xl border">
                             <span>Select your date</span>
                             <mat-select *ngIf="DisplayDetails.FixedDepatureList.length > 0"
                                 (selectionChange)="changeFixedDepature($event.value)" class="font-semibold text-lg"
@@ -732,7 +731,7 @@
                     </form>
 
                     <div (click)="editPax()"
-                        class="flex flex-row items-center justify-between p-3 bg-[#e9edf1] border-primaryColor my-3 mx-5 rounded-xl border cursor-pointer">
+                        class="flex flex-row items-center justify-between p-3 bg-[#e9edf1] dark:dark border-primaryColor my-3 mx-5 rounded-xl border cursor-pointer">
                         <div class="flex flex-col">
                             <span class="text-primary text-sm">Pax</span>
                             <span class="text-lg text-primary font-semibold">{{adult}} Adults, {{child}} Child</span>
@@ -740,7 +739,7 @@
                         <div class="text-primary font-semibold">Edit</div>
                     </div>
 
-                    <div class="border-y-2 border-border-gray-border my-5">
+                    <div class="border-t-2 border-border-gray-border my-5">
                         <div class="mx-5 flex items-center justify-between py-2">
                             <div class="text-primary text-lg font-medium">
                                 Total Amount:
@@ -757,13 +756,12 @@
                         </div>
                     </div>
 
-                    <div class="mx-5 mt-3">
+                    <!-- <div class="mx-5 mt-3">
                         <button mat-flat-button
                             class="w-full min-h-13 rounded-lg button-primary-border space-x-2 bg-primary" (click)="downloadQuotation()">
-                            <!-- <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="text-green-500"></mat-icon> -->
                             <span class="text-white font-semibold text-xl">Submit Your Inquiry</span>
                         </button>
-                    </div>
+                    </div> -->
 
                     <!-- <div class="mx-5 mt-3">
                     <button class="dark-blue py-4 fuse-mat-button-large px-7 w-full" (click)="bookNow()">

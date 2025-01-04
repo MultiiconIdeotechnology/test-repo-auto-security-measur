@@ -137,6 +137,7 @@ app-view-holiday-details {
 }
 
 .product-image-slick-carousel {
+
     .slick-prev:before, .slick-next:before {
         font-family: "slick";
         font-size: 2rem;
@@ -147,12 +148,43 @@ app-view-holiday-details {
         z-index: 9999999999 !important;
     }
 
-     .slick-prev:before {
+    .slick-prev:before {
         position:absolute;
         left: 2rem !important;
+        content: "\2190";
      }
 
      .slick-next:before{
+        position:absolute;
         right: 2rem !important;
+     }
+
+}
+
+.view-holiday-small-carousel {
+    .slick-prev:before, .slick-next:before {
+        font-family: "slick";
+        font-size: 1.2rem;
+        line-height: 1;
+        color: white;
+        opacity: 0.75;
+        -webkit-font-smoothing: antialiased;
+        // z-index: 9999999999 !important;
+    }
+
+    .slick-prev:before {
+        position:absolute;
+        left: 2rem !important;
+        content: "\2190";
+       
+     }
+
+     .slick-next:before{
+        position:absolute;
+        right: 2rem !important;
+     }
+
+     .slick-prev {
+        z-index:999999;
      }
 }

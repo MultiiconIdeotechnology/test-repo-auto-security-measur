@@ -86,18 +86,18 @@ export class ViewHolidayDetailsComponent {
   ];
 
   slideConfig = {
-    slidesToShow: 1, slidesToScroll: 1, dots: true, infinite: false, autoplay: false,
+    slidesToShow: 1, slidesToScroll: 1, dots: false, infinite: false, autoplay: false, arrows: true,
     autoplaySpeed: 3000,
   };
 
   slideConfigforItenary = {
-    slidesToShow: 1, slidesToScroll: 1, dots: true, infinite: false, autoplay: false,
-    autoplaySpeed: 3000, arrows: false,
+    slidesToShow: 1, slidesToScroll: 1, dots: false, infinite: false, autoplay: false,
+    autoplaySpeed: 3000, arrows: true,
   };
 
   slideConfigforsightseeing = {
-    slidesToShow: 1, slidesToScroll: 1, dots: true, infinite: false, autoplay: false,
-    autoplaySpeed: 3000, arrows: false,
+    slidesToShow: 1, slidesToScroll: 1, dots: false, infinite: false, autoplay: false,
+    autoplaySpeed: 3000, arrows: true,
   };
   @ViewChildren('slickCarousels') slickCarousels: QueryList<SlickCarouselComponent>;
 
@@ -200,18 +200,18 @@ export class ViewHolidayDetailsComponent {
               this.commanService.raiseLoader(false);
               this.loading = true;
               this.record = data.product || {};
-              if (data.hotel.length > 0) {
+              if (data?.hotel?.length > 0) {
                 this.DisplayDetails.HotelsList = data.hotel;
               }
-              if (data.city.length > 0) {
+              if (data.city?.length > 0) {
                 // this.DisplayDetails.CitiesList = data.city;
                 this.DisplayDetails.CitiesList = data.city.sort((a, b) => a.order_by_no - b.order_by_no);
               }
-              if (data.images.length > 0) {
+              if (data.images?.length > 0) {
                 this.DisplayDetails.SecondImageList = data.images;
               }
               // Sort dataList by order_by_no
-              // if (data[0].fix_departure.length > 0) {
+              // if (data[0].fix_departure?.length > 0) {
               //   this.DisplayDetails.FixedDepatureList = data[0].fix_departure;
               //   this.DisplayDetails.DateList = data[0].fix_departure;
               //   const date: string = DateTime.fromISO(params.date).toFormat('yyyy-MM-dd');
@@ -221,7 +221,7 @@ export class ViewHolidayDetailsComponent {
               //   else
               //     this.DepatureformGroup.get('date').patchValue(this.DisplayDetails.FixedDepatureList[0]);
               // }
-              if (data.itinerary.length > 0) {
+              if (data.itinerary?.length > 0) {
 
                 let itineraries: any[] = data.itinerary;
 
@@ -236,29 +236,29 @@ export class ViewHolidayDetailsComponent {
 
                 this.DisplayDetails.ItineraryList = data.itinerary;
               }
-              if (data.flight.length > 0) {
+              if (data.flight?.length > 0) {
                 this.DisplayDetails.FlightsList = Linq.groupBy(data.flight, (x: any) => x.trip_type);
                 this.tab = 0
               } else {
                 this.tab = 1
               }
-              if (data.flight.length > 0) {
+              if (data.flight?.length > 0) {
                 this.DisplayDetails.FlightList = data.flight;
               }
 
-              if (data.sightseeing.length > 0) {
+              if (data.sightseeing?.length > 0) {
                 this.DisplayDetails.sightseeingList = data.sightseeing;
               }
-              if (data.inclusion.length > 0) {
+              if (data.inclusion?.length > 0) {
                 this.DisplayDetails.CommonInclusionsList = data.inclusion;
               }
-              if (data.exclusion.length > 0) {
+              if (data.exclusion?.length > 0) {
                 this.DisplayDetails.ExclusionsList = data.exclusion;
               }
-              if (data.specialNote.length > 0) {
+              if (data.specialNote?.length > 0) {
                 this.DisplayDetails.SpecialNoteList = data.specialNote;
               }
-              if (data.cancellationPolicy.length > 0) {
+              if (data.cancellationPolicy?.length > 0) {
                 this.DisplayDetails.CancellationPolicyList = data.cancellationPolicy;
               }
               // this.DisplayDetails.CitiesList.forEach(x => {
@@ -287,7 +287,7 @@ export class ViewHolidayDetailsComponent {
               //     }
               //   })
               // })
-              // if (data[0].hotel.length > 0) {
+              // if (data[0].hotel?.length > 0) {
               //   data[0].hotel = data[0].hotel.sort((a, b) => a.order_by_no - b.order_by_no);
 
               //   let lastDate: DateTime = this.deppDate;
@@ -299,15 +299,15 @@ export class ViewHolidayDetailsComponent {
               //   let hotelGrp: any[] = Linq.groupBy(data[0].hotel.sort((a, b) => a.order_by_no - b.order_by_no), (x: any) => x.city_name);
               //   this.DisplayDetails.HotelsList = hotelGrp;
               // }
-              // if (data[0].transfer.length > 0) {
+              // if (data[0].transfer?.length > 0) {
               //   let transferGrp: any[] = Linq.groupBy(data[0].transfer.sort((a, b) => a.order_by_no - b.order_by_no), (x: any) => x.city_name);
               //   this.DisplayDetails.TransferList = transferGrp;
               // }
-              // if (data[0].activity.length > 0) {
+              // if (data[0].activity?.length > 0) {
               //   let activityGrp: any[] = Linq.groupBy(data[0].activity.sort((a, b) => a.order_by_no - b.order_by_no), (x: any) => x.city_name);
               //   this.DisplayDetails.ActivityList = activityGrp;
               // }
-              // if (data[0].other_inclusions.length > 0) {
+              // if (data[0].other_inclusions?.length > 0) {
               //   let otherGrp: any[] = Linq.groupBy(data[0].other_inclusions.sort((a, b) => a.order_by_no - b.order_by_no), (x: any) => x.city_name);
               //   this.DisplayDetails.OtherInclusionList = otherGrp;
 

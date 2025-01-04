@@ -39,7 +39,8 @@ export class ImageCarouselComponent {
     infinite: false,
     autoplay: false,
     autoplaySpeed: 3000,
-    initialSlide: 0
+    initialSlide: 0, 
+    arrows:true,
   };
   
   constructor(

@@ -1,8 +1,10 @@
 <div class="flex flex-col -m-6 mobile:m-0 product-image-slick-carousel">
-    <ngx-slick-carousel class="carousel mobile:max-h-72 max-h-[660px] mobile:h-72 h-[80vh] w-full mobile:max-w-full max-w-[1000px] overflow-hidden"
+    <ngx-slick-carousel
+        class="carousel mobile:max-h-72 max-h-[660px] mobile:h-72 h-[80vh] w-full mobile:max-w-full max-w-[1000px] overflow-hidden"
         #slickModal="slick-carousel" [config]="slideConfig">
         <div ngxSlickItem *ngFor="let slide of SecondImageList" class="slide">
-            <img loading="lazy" [src]="slide.imageUrl" class="w-full mobile:max-h-72 mobile:h-72 h-full object-cover object-center">
+            <img loading="lazy" [src]="slide.imageUrl"
+                class="w-full mobile:max-h-72 mobile:h-72 h-full object-cover object-center">
         </div>
     </ngx-slick-carousel>
 </div>

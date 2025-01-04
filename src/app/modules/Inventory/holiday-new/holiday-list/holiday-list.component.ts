@@ -366,19 +366,24 @@ export class HolidayListComponent extends BaseListingComponent {
         // );
         const queryParams = {
             id: record.id,
-            date: DateTime.fromISO(record.departure_date).toFormat(
-                'yyyy-MM-dd'),
+            date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),
             adult: 2,
             child: 0,
         };
-
-        let navigationExtras: NavigationExtras = {
+        
+        const navigationExtras: NavigationExtras = {
             queryParams: {
                 "user": JSON.stringify(queryParams)
             }
         };
-        // Linq.recirect('/inventory/holidayv2-products/view-details', navigationExtras);
-        this.router.navigate(['/inventory/holidayv2-products/view-details'], navigationExtras);
+        
+        // Construct the URL using the Router
+        const url = this.router.serializeUrl(
+            this.router.createUrlTree(['/inventory/holidayv2-products/view-details'], navigationExtras)
+        );
+        
+        // Open the URL in a new tab/window
+        window.open(url, '_blank');
 
     }
 
