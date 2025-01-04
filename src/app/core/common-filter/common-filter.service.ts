@@ -5,7 +5,7 @@ import { KycDocumentService } from 'app/services/kyc-document.service';
 import { RefferralService } from 'app/services/referral.service';
 import { environment } from 'environments/environment';
 import { Table } from 'primeng/table';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +17,10 @@ export class CommonFilterService {
     drawersUpdated$ = this.drawersUpdated.asObservable();
     private showFilterSubject = new Subject<void>();
     showFilter$ = this.showFilterSubject.asObservable();
+
+    private selectedOptionSubject = new BehaviorSubject<any>('');
+    selectionDateDropdown$ = this.selectedOptionSubject.asObservable();
+
 
     private baseUrl = environment.apiUrl;
     filterDrawerVisible: boolean = false;
@@ -155,7 +159,8 @@ export class CommonFilterService {
 
     // Date Range dropdown onselect 
     onOptionClick(option: any, primengTable: any, field: any, key?: any) {
-        this.selectionDateDropdown = option.id_by_value;
+        // this.selectionDateDropdown = option.id_by_value;
+        this.selectedOptionSubject.next(option.id_by_value);
         // const today = new Date();
         // let startDate = new Date(today);
         // let endDate = new Date(today);

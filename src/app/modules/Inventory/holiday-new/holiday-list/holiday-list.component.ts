@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { Routes } from 'app/common/const';
 import { Security, filter_module_name, inventoryHolidayPermissions, messages, module_name } from 'app/security';
@@ -371,7 +371,14 @@ export class HolidayListComponent extends BaseListingComponent {
             adult: 2,
             child: 0,
         };
-        Linq.recirect('/inventory/holidayv2-products/view-details', queryParams);
+
+        let navigationExtras: NavigationExtras = {
+            queryParams: {
+                "user": JSON.stringify(queryParams)
+            }
+        };
+        // Linq.recirect('/inventory/holidayv2-products/view-details', navigationExtras);
+        this.router.navigate(['/inventory/holidayv2-products/view-details'], navigationExtras);
 
     }
 

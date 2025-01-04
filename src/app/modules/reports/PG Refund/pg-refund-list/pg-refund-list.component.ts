@@ -24,7 +24,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { module_name, filter_module_name, Security, messages } from 'app/security';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { dateRangeContracting } from 'app/common/const';
 import { CommonUtils } from 'app/utils/commonutils';
 
@@ -61,7 +61,8 @@ import { CommonUtils } from 'app/utils/commonutils';
   styleUrls: ['./pg-refund-list.component.scss']
 })
 export class PgRefundListComponent extends BaseListingComponent implements OnDestroy {
-
+  selectedRefundDateSubject = new BehaviorSubject<any>('');
+  selectionRefundOption$ = this.selectedRefundDateSubject.asObservable();
   DR = dateRangeContracting;
   public startDate = new FormControl();
   public endDate = new FormControl();
@@ -300,5 +301,14 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     this.date.patchValue('Today');
     this.updateDate(dateRangeContracting.today);
   }
+
+  onOptionClick(option: any, primengTable: any, field: any, key?: any) {
+    // this.selectionDateDropdown = option.id_by_value;
+    this.selectedRefundDateSubject.next(option.id_by_value);
+   
+    if(option.id_by_value != 'custom_date_range'){
+        primengTable.filter(option, field, 'custom');
+    } 
+}
 
 }
