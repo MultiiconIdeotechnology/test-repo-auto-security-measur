@@ -365,9 +365,9 @@ export class ViewHolidayDetailsComponent {
 
     this.router.navigate(['/holidays/detail-info'], navigationExtras);
   }
+
   tabChanged(tab: number): void {
     this.tab = tab;
-
   }
 
   getStar(num: number) {

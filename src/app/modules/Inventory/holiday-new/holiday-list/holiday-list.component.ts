@@ -269,17 +269,12 @@ export class HolidayListComponent extends BaseListingComponent {
         }
 
         const label: string = record.is_popular
-            ? 'Not Popular Holiday Product'
-            : 'Popular Holiday Product';
+        ? 'Make as Unpopular Holiday Product'
+        : 'Set as Popular Holiday Product';
         this.conformationService
             .open({
                 title: label,
-                message:
-                    'Are you sure to ' +
-                    label.toLowerCase() +
-                    ' ' +
-                    record.destination_name +
-                    ' ?',
+                message: `Are you sure you want to set ${record.product_name} as ${record.is_popular ? 'Unpopular':'Popular'}?`
             })
             .afterClosed()
             .subscribe((res) => {
@@ -302,27 +297,27 @@ export class HolidayListComponent extends BaseListingComponent {
             });
     }
 
-    copy(record): void {
-        if (!Security.hasPermission(inventoryHolidayPermissions.copyProductPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+    // copy(record): void {
+    //     if (!Security.hasPermission(inventoryHolidayPermissions.copyProductPermissions)) {
+    //         return this.alertService.showToast('error', messages.permissionDenied);
+    //     }
 
-        this.conformationService.open({
-            title: 'Copy Product',
-            message: 'Are you sure to generate copy of ' + record.product_name + ' ?',
-        }).afterClosed().subscribe((res) => {
-            if (res === 'confirmed') {
-                this.holidayService.CopyProduct(record.id).subscribe({
-                    next: () => {
-                        this.alertService.showToast('success', 'Product Copied');
-                        this.refreshItems();
-                    }, error: (err) => {
-                        this.alertService.showToast('error', err);
-                    }
-                })
-            }
-        });
-    }
+    //     this.conformationService.open({
+    //         title: 'Copy Product',
+    //         message: 'Are you sure to generate copy of ' + record.product_name + ' ?',
+    //     }).afterClosed().subscribe((res) => {
+    //         if (res === 'confirmed') {
+    //             this.holidayService.CopyProduct(record.id).subscribe({
+    //                 next: () => {
+    //                     this.alertService.showToast('success', 'Product Copied');
+    //                     this.refreshItems();
+    //                 }, error: (err) => {
+    //                     this.alertService.showToast('error', err);
+    //                 }
+    //             })
+    //         }
+    //     });
+    // }
 
     Audit(data: any): void {
 		// if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
