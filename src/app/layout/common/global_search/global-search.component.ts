@@ -100,6 +100,15 @@ export class GlobalSearchComponent {
                         this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
                         this.matDialog.closeAll();
                     }
+                    else if (this.bookingRefKey == 'holiday_booking') {
+                        if (!Security.hasViewDetailPermission(module_name.bookingsHotel)) {
+                            return this.alertService.showToast('error', messages.permissionDenied);
+                        }
+                        this.formGroup.get('searchfilter').patchValue("");
+                        let uri = '/booking/holiday-lead/details/' + this.bookingRefValue
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
+                        this.matDialog.closeAll();
+                    }
                     else if (this.bookingRefKey == 'visa_booking') {
                         if (!Security.hasViewDetailPermission(module_name.bookingsVisa)) {
                             return this.alertService.showToast('error', messages.permissionDenied);
