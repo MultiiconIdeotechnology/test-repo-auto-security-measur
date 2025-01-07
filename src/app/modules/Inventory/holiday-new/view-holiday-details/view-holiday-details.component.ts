@@ -187,7 +187,7 @@ export class ViewHolidayDetailsComponent {
 
           this.queryParams = {
             id: this.id,
-            date: DateTime.fromJSDate(new Date(this.deppDate.toJSDate())).toFormat('yyyy-MM-dd'),
+            date:DateTime.now().toFormat('yyyy-MM-dd'),
             adult: this.adult,
             child: this.child,
             // filter: this.filter
@@ -379,26 +379,28 @@ export class ViewHolidayDetailsComponent {
   }
 
   depDates(): void {
-    this.queryParams.date = DateTime.fromISO(this.DepatureformGroup.get('depDate').value).toFormat('yyyy-MM-dd');
-    this.params.date = DateTime.fromISO(this.DepatureformGroup.get('depDate').value).toFormat('yyyy-MM-dd');
-    // let navigationExtras: NavigationExtras = {
-    //   queryParams: {
-    //     "user": JSON.stringify(this.queryParams)
-    //   }
-    // };
+    this.queryParams.date =DateTime.now().toFormat('yyyy-MM-dd');
+    this.params.date = DateTime.now().toFormat('yyyy-MM-dd');
+    let navigationExtras: NavigationExtras = {
+      queryParams: {
+        "user": JSON.stringify(this.queryParams)
+      }
+    };
 
-    // // this.router.navigate(['/holidays/detail-info'], navigationExtras);.
-    // this.queryParams = {
-    //   id: this.id,
-    //   date: DateTime.fromJSDate(new Date(this.deppDate.toJSDate())).toFormat('yyyy-MM-dd'),
-    //   adult: this.adult,
-    //   child: this.child,
-    //   // filter: this.filter
-    // }
+    
+    this.router.navigate(['/inventory/holidayv2-products/view-details'], navigationExtras);
+    // this.router.navigate(['/holidays/detail-info'], navigationExtras);
+    this.queryParams = {
+      id: this.id,
+      date: DateTime.fromJSDate(new Date(this.deppDate.toJSDate())).toFormat('yyyy-MM-dd'),
+      adult: this.adult,
+      child: this.child,
+      // filter: this.filter
+    }
 
     const Fdata = {
       destination_id: this.id,
-      departure_date: DateTime.fromISO(this.DepatureformGroup.get('depDate').value).toFormat('yyyy-MM-dd'),
+      departure_date:DateTime.now().toFormat('yyyy-MM-dd'),
       adult: this.adult,
       child: this.child,
     }
@@ -424,20 +426,20 @@ export class ViewHolidayDetailsComponent {
           return;
         this.adult = res.adult;
         this.child = res.child;
-        // this.queryParams.adult = this.adult;
-        // this.queryParams.child = this.child;
+        this.queryParams.adult = this.adult;
+        this.queryParams.child = this.child;
 
-        // let navigationExtras: NavigationExtras = {
-        //   queryParams: {
-        //     "user": JSON.stringify(this.queryParams)
-        //   }
-        // };
+        let navigationExtras: NavigationExtras = {
+          queryParams: {
+            "user": JSON.stringify(this.queryParams)
+          }
+        };
 
-        // this.router.navigate(['/holidays/detail-info'], navigationExtras);
+        this.router.navigate(['/inventory/holidayv2-products/view-details'], navigationExtras);
 
         const Fdata = {
           destination_id: this.id,
-          departure_date: DateTime.fromISO(this.DepatureformGroup.get('depDate').value).toFormat('yyyy-MM-dd'),
+          departure_date: DateTime.now().toFormat('yyyy-MM-dd'),
           adult: this.adult,
           child: this.child,
         }

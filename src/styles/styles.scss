@@ -1001,3 +1001,16 @@ div:where(.swal2-container) button:where(.swal2-close){
         var(--tw-shadow) !important;
 }
 
+.light {
+    .gradient-hotel {
+        background: linear-gradient(90deg, #FFE8C7 0%, #FFE8C7 5.5%, #FFFFFF 65.5%);
+    }
+}
+
+.dark {
+    .gradient-hotel {
+        background: linear-gradient(to right, #0d948899, #3de0d200);
+    }
+
+}
+
