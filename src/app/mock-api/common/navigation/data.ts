@@ -748,10 +748,10 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.inventory.visa_route
             },
             {
-                id: 'inventory.holidayNew',
-                title: 'Holiday v2',
+                id: 'inventory.holidayv2',
+                title: 'Holiday Products 2.0',
                 type: 'basic',
-                pid: 'INVENTORY_HOLIDAYV2_VIEW',
+                pid: 'INVENTORY_HOLIDAYPRODUCT2.0_VIEW',
                 icon: 'heroicons_outline:newspaper',
                 link: Routes.inventory.holiday_v2_route
             },

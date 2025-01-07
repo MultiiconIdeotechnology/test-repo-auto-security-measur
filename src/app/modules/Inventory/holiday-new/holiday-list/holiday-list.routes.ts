@@ -10,7 +10,7 @@ export default [
         path: '',
         component: HolidayListComponent,
         canActivate: [AuthGuard],
-        // data: { module: 'BO Menu Links', group: 'Inventory', operation: 'Holiday Products', category: 'View' }
+        // data: { module: 'BO Menu Links', group: 'Inventory', operation: 'Holiday Products 2.0', category: 'View' }
     },
     {
         path     : 'view-details',

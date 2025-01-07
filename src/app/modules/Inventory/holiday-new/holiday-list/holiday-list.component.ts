@@ -361,7 +361,8 @@ export class HolidayListComponent extends BaseListingComponent {
         // );
         const queryParams = {
             id: record.id,
-            date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),
+            // date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),
+            date:DateTime.now().toFormat('yyyy-MM-dd'),
             adult: 2,
             child: 0,
         };
