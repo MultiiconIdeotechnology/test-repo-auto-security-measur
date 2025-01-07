@@ -171,8 +171,8 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     this.isLoading = true;
 
     const request = this.getNewFilterReq(event);
-    request['req_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
-    request['req_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+    request['refund_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    request['refund_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
 
     this.pgRefundService.getPGRefundReport(request).subscribe({
       next: (data) => {
@@ -203,8 +203,8 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
 
     let newModel = this.getNewFilterReq({})
     newModel['Take'] = this.totalRecords;
-    newModel['req_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
-    newModel['req_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+    newModel['refund_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    newModel['refund_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
     this.pgRefundService.getPGRefundReport(newModel).subscribe(data => {
       for (var dt of data.data) {
         dt.requestDate = dt.requestDate ? DateTime.fromISO(dt.requestDate).toFormat('dd-MM-yyyy hh:mm a') : '';
