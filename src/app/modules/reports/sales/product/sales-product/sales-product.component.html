@@ -83,7 +83,7 @@
                     <th class="min-w-[145px]  dark:bg-[#1e293b]" pSortableColumn="agent_code" pResizableColumn
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code"
                         [ngClass]="{'left-0': !frozenObj?.agent_code}">
-                        Agent Code11 <p-sortIcon field="agent_code" />
+                        Agent Code <p-sortIcon field="agent_code" />
                         <span class="float-right" (click)="isFrozenColumn('agent_code');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.agent_code" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.agent_code" class="pi pi-lock icon-size-3"></i>
