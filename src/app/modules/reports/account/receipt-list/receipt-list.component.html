@@ -158,6 +158,9 @@
                     <th pSortableColumn="pg_payment_ref_no" pResizableColumn>
                         PG Ref.No. <p-sortIcon field="pg_payment_ref_no" />
                     </th>
+                    <th pSortableColumn="is_paymentlink" pResizableColumn>
+                        Payment Link <p-sortIcon field="is_paymentlink" />
+                    </th>
                     <!-- <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
                         {{col.header}} <p-sortIcon [field]="col.field" />
                     </th> -->
@@ -275,6 +278,7 @@
                         <p-columnFilter type="text" matchMode="contains" field="pg_payment_ref_no"
                             placeholder="Search by PG Ref. No" ariaLabel="Filter PG Ref. No" />
                     </th>
+                    <th></th>
                     <!-- <th *ngFor="let col of columns">
                     </th> -->
                 </tr>
@@ -439,6 +443,9 @@
                     </td>
                     <td>
                         {{element.pg_payment_ref_no || "-"}}
+                    </td>
+                    <td>
+                        {{element.is_paymentlink || "-"}}
                     </td>
                     <!-- <td *ngFor="let col of columns">
                         {{element[col.field]}}

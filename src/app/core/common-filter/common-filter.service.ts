@@ -21,10 +21,25 @@ export class CommonFilterService {
     private selectedOptionSubject = new BehaviorSubject<any>('');
     selectionDateDropdown$ = this.selectedOptionSubject.asObservable();
 
+    private selectedOptionTwoSubjectTwo = new BehaviorSubject<any>('');
+    selectionDateDropdownTwo$ = this.selectedOptionTwoSubjectTwo.asObservable();
+
+    private selectedOptionContracting = new BehaviorSubject<any>('');
+    selectionDateDropdownContracting$ = this.selectedOptionContracting.asObservable();
+
     // Public method to update the BehaviorSubject value
     updateSelectedOption(option: string): void {
         this.selectedOptionSubject.next(option);
     }
+
+    updatedSelectionOptionTwo(option:string):void {
+        this.selectedOptionTwoSubjectTwo.next(option);
+    }
+    
+    updatedSelectedContracting(option:string):void {
+        this.selectedOptionContracting.next(option);
+    }
+
 
     private baseUrl = environment.apiUrl;
     filterDrawerVisible: boolean = false;
@@ -165,88 +180,27 @@ export class CommonFilterService {
     onOptionClick(option: any, primengTable: any, field: any, key?: any) {
         // this.selectionDateDropdown = option.id_by_value;
         this.selectedOptionSubject.next(option.id_by_value);
-        // const today = new Date();
-        // let startDate = new Date(today);
-        // let endDate = new Date(today);
-
-        // switch (option.label) {
-        //     case 'Today':
-        //         break;
-        //     case 'Last 3 Days':
-        //         startDate.setDate(today.getDate() - 2);
-        //         break;
-        //     case 'This Week':
-        //         startDate.setDate(today.getDate() - today.getDay());
-        //         break;
-        //     case 'This Month':
-        //         startDate.setDate(1);
-        //         break;
-        //     case 'Last 3 Months':
-        //         startDate.setMonth(today.getMonth() - 3);
-        //         startDate.setDate(1);
-        //         break;
-        //     case 'Last 6 Months':
-        //         startDate.setMonth(today.getMonth() - 6);
-        //         startDate.setDate(1);
-        //         break;
-        //     case 'Custom Date Range':
-
-        //     default:
-        //         return;
-        // }
-        // startDate.setHours(0, 0, 0, 0);
-        // endDate.setHours(23, 59, 59, 999);
-        // let dateArr = [startDate, endDate];
-        // const range = [startDate.toISOString(), endDate.toISOString()].join(",");
+        
         if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
             primengTable.filter(option, field, 'custom');
-            // primengTable.filters[field]['value'] = option.value;
-            // primengTable.filters[field]['matchMode'] = 'custom';
         } 
     }
 
     // Date Range dropdown onselect Contracting
     onOptionClickContracting(option: any, primengTable: any, field: any, key?: any) {
-        this.selectionDateDropdownContracting = option.id_by_value;
-        // const today = new Date();
-        // let startDate = new Date(today);
-        // let endDate = new Date(today);
+        // this.selectionDateDropdownContracting = option.id_by_value;
+        this.selectedOptionContracting.next(option.id_by_value);
 
-        // switch (option.label) {
-        //     case 'Today':
-        //         break;
-        //     case 'This Week':
-        //         startDate.setDate(today.getDate() - today.getDay());
-        //         break;
-        //     case 'This Month':
-        //         startDate.setDate(1);
-        //         break;
-        //     case 'Previous Month':
-        //     startDate.setMonth(today.getMonth() - 1);
-        //     startDate.setDate(1);
+        if(option.id_by_value && option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
+
+    // date range option if more than one date range is required in same component
+    onOptionClickTwo(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectTwo.next(option.id_by_value);
         
-
-        //     endDate.setDate(0); 
-        //     break;
-        //     case 'Last 3 Months':
-        //         startDate.setMonth(today.getMonth() - 3);
-        //         startDate.setDate(1);
-        //         break;
-        //     case 'Last 6 Months':
-        //         startDate.setMonth(today.getMonth() - 6);
-        //         startDate.setDate(1);
-        //         break;
-        //     case 'Custom':
-
-        //     default:
-        //         return;
-        // }
-        // startDate.setHours(0, 0, 0, 0);
-        // endDate.setHours(23, 59, 59, 999);
-        // let dateArr = [startDate, endDate];
-        // const range = [startDate.toISOString(), endDate.toISOString()].join(",");
-
-        if(option.id_by_value != 'custom_date_range'){
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
             primengTable.filter(option, field, 'custom');
         } 
     }
