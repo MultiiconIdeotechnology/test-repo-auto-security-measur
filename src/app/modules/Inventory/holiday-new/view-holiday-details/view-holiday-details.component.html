@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="flex w-full">
-            <div class="left w-[69%] mr-[2%]">
+            <div class="left w-full mr-[2%]">
                 
 
                 <!------Flight-------->
@@ -54,7 +54,7 @@
                     <span class="h-7 w-1 bg-[#234977]  absolute left-0"></span>
                     <div class="flex items-center gap-3">
                         <img class="w-7" src="assets/icons/flight_holiday.svg">
-                        <div class="text-xl font-semibold theme-black-text">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
                             Flight
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                     <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
                     <div class="flex items-center gap-3 pl-5">
                         <img class="w-6" src="assets/icons/Hotel_holiday.svg">
-                        <div class="text-xl font-semibold theme-black-text">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
                             Hotel
                         </div>
                     </div>
@@ -144,7 +144,7 @@
                     <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
                     <div class="flex items-center gap-3 ">
                         <img class="w-6" src="assets/icons/Itinerary_holiday.svg">
-                        <div class="text-xl font-semibold theme-black-text">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
                             Day Wise Itinerary
                         </div>
                     </div>
@@ -252,7 +252,7 @@
                     <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
                     <div class="flex items-center gap-3">
                         <img class="w-7" src="assets/icons/sightseeing_holiday.svg">
-                        <div class="text-xl font-semibold theme-black-text">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
                             Sightseeing
                         </div>
                     </div>
@@ -324,7 +324,7 @@
                     class="flex flex-col bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
                     <div class="pt-4 px-5">
                         <span class="h-7 w-1 bg-[#01AF47] absolute left-0"></span>
-                        <div class="text-xl font-semibold pb-2 theme-black-text">
+                        <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
                             Inclusions
                         </div>
                         <div *ngFor="let ex of DisplayDetails.CommonInclusionsList">
@@ -353,7 +353,7 @@
                 <!----------Exclusions----------->
                 <div *ngIf="DisplayDetails?.ExclusionsList?.length > 0" class="flex flex-col py-4 px-5 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
                     <span class="h-7 w-1 bg-[#FC484F] absolute left-0"></span>
-                    <div class="text-xl font-semibold pb-2 theme-black-text">
+                    <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
                         Exclusions
                     </div>
                     <div *ngFor="let ex of DisplayDetails.ExclusionsList">
@@ -367,7 +367,7 @@
                 <!----------Special Notes----------->
                 <div *ngIf="DisplayDetails?.SpecialNoteList?.length > 0"
                     class="flex flex-col py-4 px-5 bg-[#DFEEFF] dark:bg-[#415c7ad1] rounded-lg overflow-hidden mb-7 round-shadow">
-                    <div class="text-xl font-semibold pb-2 theme-black-text">
+                    <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
                         Special Notes
                     </div>
                     <div *ngFor="let te of DisplayDetails.SpecialNoteList">
@@ -380,7 +380,7 @@
                 <!----------Cancellation Policy----------->
                 <div *ngIf="DisplayDetails?.CancellationPolicyList?.length > 0"
                     class="flex flex-col py-4 px-5 bg-[#FFE7E8] dark:bg-[#f9979b38] rounded-lg overflow-hidden mb-7 round-shadow">
-                    <div class="text-xl font-semibold pb-2 theme-black-text">
+                    <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
                         Cancellation Policy
                     </div>
                     <div *ngFor="let te of DisplayDetails.CancellationPolicyList">
@@ -699,7 +699,7 @@
                     </div>
                 </div> -->
             </div>
-            <div class="right w-[29%]">
+            <!-- <div class="right w-[29%]">
                 <div class="py-4 bg-card rounded-lg overflow-hidden mb-7 round-shadow">
                     <div class="text-xl mx-5 font-semibold pb-2 theme-black-text">
                         Booking Details
@@ -738,7 +738,7 @@
                         <div class="text-primary font-semibold">Edit</div>
                     </div>
 
-                    <div class="border-t-2 border-border-gray-border my-5">
+                    <div class="border-t-2 border-border-gray-border mt-5">
                         <div class="mx-5 flex items-center justify-between py-2">
                             <div class="text-primary text-lg font-medium">
                                 Total Amount:
@@ -755,20 +755,8 @@
                         </div>
                     </div>
 
-                    <!-- <div class="mx-5 mt-3">
-                        <button mat-flat-button
-                            class="w-full min-h-13 rounded-lg button-primary-border space-x-2 bg-primary" (click)="downloadQuotation()">
-                            <span class="text-white font-semibold text-xl">Submit Your Inquiry</span>
-                        </button>
-                    </div> -->
-
-                    <!-- <div class="mx-5 mt-3">
-                    <button class="dark-blue py-4 fuse-mat-button-large px-7 w-full" (click)="bookNow()">
-                        <span class="white-text text-lg tracking-wide font-semibold">BOOK NOW</span>
-                    </button>
-                </div> -->
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
