@@ -20,6 +20,7 @@ import {
     filter_module_name,
     messages,
     module_name,
+    saleProductPermissions,
 } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
@@ -31,10 +32,11 @@ import { Routes } from 'app/common/const';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { AgentService } from 'app/services/agent.service';
-import { Subscription } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { ProductTabComponent } from '../product-tab/product-tab.component';
 import { RefferralService } from 'app/services/referral.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-product-receipts',
@@ -78,6 +80,8 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     agentList: any[] = [];
     selectedRM: any;
     employeeList: any = [];
+    user: any = {};
+
 
     statusList: any[] = [
         { label: 'Confirmed', value: 'Confirmed' },
@@ -89,6 +93,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         private accountService: AccountService,
         private agentService: AgentService,
         private matDialog: MatDialog,
+        private _userService: UserService,
         public _filterService: CommonFilterService,
         private refferralService: RefferralService,
     ) {
@@ -97,6 +102,13 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         this.sortColumn = 'receipt_request_date';
         this.sortDirection = 'desc';
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        //user login
+        this._userService.user$
+            .pipe((takeUntil(this._unsubscribeAll)))
+            .subscribe((user: any) => {
+                this.user = user;
+            });
     }
 
     ngOnInit(): void {
@@ -250,6 +262,10 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         };
         let newModel = this.getNewFilterReq(event);
         let model = { ...extraModel, ...newModel }
+        if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
+            model.relationmanagerId = this.user.id
+        }
+        
         this.accountService.getReceiptList(model).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -287,7 +303,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             for (var dt of data.data) {
                 dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy') : '';
             }
-            ['receipt_ref_no','agent_Code',  'agent_name', 'rm_name', 'product_name' , 'payment_amount', 'receipt_status' , 'receipt_request_date']
+            ['receipt_ref_no', 'agent_Code', 'agent_name', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']
             Excel.export(
                 'Receipt',
                 [
