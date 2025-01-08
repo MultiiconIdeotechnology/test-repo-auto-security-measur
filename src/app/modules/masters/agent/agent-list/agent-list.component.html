@@ -199,13 +199,44 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter field="entry_date_time" type="date">
+                        <!-- <p-columnFilter field="entry_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
                                     [ngModel]="value" placeholder="Search by Signup">
                                 </p-calendar>
                             </ng-template>
+                        </p-columnFilter> -->
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                            field="entry_date_time" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'entry_date_time')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
 
                     <th *ngFor="let col of columns">
@@ -339,8 +370,8 @@
                         <p-columnFilter *ngIf="col.field == 'city_name'" type="text" matchMode="contains"
                             field="city_name" placeholder="Search by City Name" ariaLabel="Filter City Name" />
 
-                        <p-columnFilter *ngIf="col.field == 'first_transaction_date_time'" field="first_transaction_date_time"
-                            type="date">
+                        <p-columnFilter *ngIf="col.field == 'first_transaction_date_time'"
+                            field="first_transaction_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
                                     appendTo="body" placeholder="Search by First Transaction">
@@ -357,8 +388,8 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <p-columnFilter *ngIf="col.field == 'agent_assign_by'" matchMode="contains" type="text" field="agent_assign_by"
-                            placeholder="Search by Assign By" ariaLabel="Filter Assign By" />
+                        <p-columnFilter *ngIf="col.field == 'agent_assign_by'" matchMode="contains" type="text"
+                            field="agent_assign_by" placeholder="Search by Assign By" ariaLabel="Filter Assign By" />
 
                         <p-columnFilter *ngIf="col.field == 'agent_assign_by_date'" field="agent_assign_by_date"
                             type="date">
@@ -553,7 +584,8 @@
                             {{element[col.field] ? element[col.field].toFixed(2) : element[col.field] }}
                         </ng-container>
 
-                        <ng-container *ngIf="col.field == 'web_last_login_time' || col.field == 'first_transaction_date_time' || col.field == 'first_login_date_time' || col.field == 'agent_assign_by_date'">
+                        <ng-container
+                            *ngIf="col.field == 'web_last_login_time' || col.field == 'first_transaction_date_time' || col.field == 'first_login_date_time' || col.field == 'agent_assign_by_date'">
                             {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
                         </ng-container>
 

@@ -122,6 +122,9 @@ export class InboxAgentComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
 
         // common filter
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this._filterService.updatedSelectedContracting('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -132,11 +135,20 @@ export class InboxAgentComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['createdDate'].value) {
-                resp['table_config']['createdDate'].value = new Date(resp['table_config']['createdDate'].value);
+
+            if (resp['table_config']['createdDate']?.value != null && resp['table_config']['createdDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['createdDate']);
             }
-            if (resp['table_config']['lastTransaction'].value) {
-                resp['table_config']['lastTransaction'].value = new Date(resp['table_config']['lastTransaction'].value);
+
+            if (resp['table_config']['lastTransaction']?.value != null && resp['table_config']['lastTransaction'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['lastTransaction']);
+            }
+
+            if (resp['table_config']['call_date_time']?.value != null && resp['table_config']['call_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['call_date_time']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
@@ -147,6 +159,9 @@ export class InboxAgentComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this._filterService.updatedSelectedContracting('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
@@ -162,11 +177,19 @@ export class InboxAgentComponent extends BaseListingComponent {
                 }
             }, 1000);
          
-            if (filterData['table_config']['createdDate'].value) {
-                filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
+            if (filterData['table_config']['createdDate']?.value != null && filterData['table_config']['createdDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['createdDate']);
             }
-            if (filterData['table_config']['lastTransaction'].value) {
-                filterData['table_config']['lastTransaction'].value = new Date(filterData['table_config']['lastTransaction'].value);
+
+            if (filterData['table_config']['lastTransaction']?.value != null && filterData['table_config']['lastTransaction'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['lastTransaction']);
+            }
+
+            if (filterData['table_config']['call_date_time']?.value != null && filterData['table_config']['call_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];

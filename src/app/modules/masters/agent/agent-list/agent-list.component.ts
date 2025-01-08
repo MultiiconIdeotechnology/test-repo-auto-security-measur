@@ -185,7 +185,7 @@ export class AgentListComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-
+        this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedEmployee = resp['table_config']['rm_id_filters']?.value;
             this.selectedCurrency = resp['table_config']['currency']?.value;
@@ -193,8 +193,10 @@ export class AgentListComponent extends BaseListingComponent {
             this.selectedMarkup = resp['table_config']['markup_id_filter']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['entry_date_time'].value) {
-                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this._selectedColumns = resp['selectedColumns'] || [];
@@ -212,6 +214,7 @@ export class AgentListComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
@@ -222,8 +225,9 @@ export class AgentListComponent extends BaseListingComponent {
             if (!match) {
                 this.employeeList.push(this.selectedEmployee);
             }
-            if (filterData['table_config']['entry_date_time'].value) {
-                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
