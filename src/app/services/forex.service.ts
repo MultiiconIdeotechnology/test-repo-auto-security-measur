@@ -36,4 +36,8 @@ export class ForexService {
     return this.http.post<any>(environment.apiUrl + "forexlead/setLeadStatus", model);
   }
 
+  printInvoice(invoiceId: string): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AirBooking/printInvoice", {invoiceId:invoiceId});
+  }
+
 }
