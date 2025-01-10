@@ -41,10 +41,10 @@
             </button>
 
             <!-- Add  -->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createData()">
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createData()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
-            </button>
+            </button> -->
         </div>
     </div>
 
@@ -250,10 +250,10 @@
                                     {{ element.is_popular ? "Not Popular" : "Set as Popular"}}
                                 </span>
                             </button>
-                            <button mat-menu-item (click)="copy(element)">
+                            <!-- <button mat-menu-item (click)="copy(element)">
                                 <mat-icon class="mat-18">content_copy</mat-icon>
                                 <span style="font-weight: 600">Copy Product</span>
-                            </button>
+                            </button> -->
                             <button mat-menu-item (click)="viewDetails(element)">
                                 <mat-icon svgIcon="heroicons_solid:eye"></mat-icon>
                                 <span style="font-weight: 600">View Holiday</span>
@@ -295,7 +295,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="9" class="text-center font-semibold text-lg">
+                    <td colspan="10" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

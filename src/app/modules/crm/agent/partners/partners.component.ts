@@ -120,6 +120,8 @@ export class PartnersComponent extends BaseListingComponent{
         this.agentList = this._filterService.agentListByValue;
 
         // common filter
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -128,11 +130,14 @@ export class PartnersComponent extends BaseListingComponent{
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['createdDate'].value) {
-                resp['table_config']['createdDate'].value = new Date(resp['table_config']['createdDate'].value);
+            if (resp['table_config']['createdDate']?.value != null && resp['table_config']['createdDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['createdDate']);
             }
-            if (resp['table_config']['lastTransaction'].value) {
-                resp['table_config']['lastTransaction'].value = new Date(resp['table_config']['lastTransaction'].value);
+
+            if (resp['table_config']['lastTransaction']?.value != null && resp['table_config']['lastTransaction'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['lastTransaction']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPartners = true;
@@ -143,6 +148,8 @@ export class PartnersComponent extends BaseListingComponent{
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPartners = true;
             this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
@@ -157,11 +164,14 @@ export class PartnersComponent extends BaseListingComponent{
                     }
                 }
             }, 1000);
-            if (filterData['table_config']['createdDate'].value) {
-                filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
+            if (filterData['table_config']['createdDate']?.value != null && filterData['table_config']['createdDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['createdDate']);
             }
-            if (filterData['table_config']['lastTransaction'].value) {
-                filterData['table_config']['lastTransaction'].value = new Date(filterData['table_config']['lastTransaction'].value);
+
+            if (filterData['table_config']['lastTransaction']?.value != null && filterData['table_config']['lastTransaction'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['lastTransaction']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -180,14 +190,27 @@ export class PartnersComponent extends BaseListingComponent{
         })
     }
 
+    // getStatusColor(status: string): string {
+    //     if (status == 'New') {
+    //         return 'text-green-600';
+    //     } else if (status == 'Active') {
+    //         return 'text-blue-600';
+    //     } else if (status == 'Inactive') {
+    //         return 'text-red-600';
+    //     } else if (status == 'Dormant') {
+    //         return 'text-red-600';
+    //     } else {
+    //         return '';
+    //     }
+    // }
     getStatusColor(status: string): string {
         if (status == 'New') {
-            return 'text-green-600';
-        } else if (status == 'Active') {
-            return 'text-blue-600';
-        } else if (status == 'Inactive') {
-            return 'text-red-600';
+            return 'text-blue-500';
         } else if (status == 'Dormant') {
+            return 'text-yellow-600';
+        } else if (status == 'Active') {
+            return 'text-green-600';
+        } else if (status == 'Inactive') {
             return 'text-red-600';
         } else {
             return '';
@@ -233,17 +256,20 @@ export class PartnersComponent extends BaseListingComponent{
         });
     }
 
-    getLastLogin(item: any): any {
-        const iosLogin = item?.iosLastLogin ? new Date(item?.iosLastLogin) : null;
-        const androidLogin = item?.androidLastLogin ? new Date(item?.androidLastLogin) : null;
-        const webLogin = item?.webLastLogin ? new Date(item?.webLastLogin) : null;
+    // Get the last login date
+    getLastLogin(item: any): string {
+        const logins = [
+            item.iosLastLogin ? new Date(item.iosLastLogin) : null,
+            item.androidLastLogin ? new Date(item.androidLastLogin) : null,
+            item.webLastLogin ? new Date(item.webLastLogin) : null
+        ].filter(date => date !== null) as Date[];
 
-        // Check all dates are null
-        // if (!iosLogin && !androidLogin && !webLogin) {
-        //     return '-';
-        // }
-        const latestLogin = this.findLatestDate([iosLogin, androidLogin, webLogin]);
-        return latestLogin;
+        if (logins.length === 0) {
+            return '';
+        }
+
+        const latestLogin = new Date(Math.max(...logins.map(date => date.getTime())));
+        return latestLogin.toISOString();
     }
 
 
@@ -286,16 +312,6 @@ export class PartnersComponent extends BaseListingComponent{
             data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true,
         });
-    }
-
-    findLatestDate(dates: (Date | null)[]): Date | null {
-        let latestDate: Date | null = null;
-        dates.forEach(date => {
-            if (date && (!latestDate || date > latestDate)) {
-                latestDate = date;
-            }
-        });
-        return latestDate;
     }
 
     purchaseProduct(record): void {

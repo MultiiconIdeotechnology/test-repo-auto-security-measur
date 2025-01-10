@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -24,7 +24,9 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { module_name, filter_module_name, Security, messages } from 'app/security';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { dateRangeContracting } from 'app/common/const';
+import { CommonUtils } from 'app/utils/commonutils';
 
 @Component({
   selector: 'app-pg-refund-list',
@@ -59,6 +61,15 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./pg-refund-list.component.scss']
 })
 export class PgRefundListComponent extends BaseListingComponent implements OnDestroy {
+  selectedRefundDateSubject = new BehaviorSubject<any>('');
+  selectionRefundOption$ = this.selectedRefundDateSubject.asObservable();
+  DR = dateRangeContracting;
+  public startDate = new FormControl();
+  public endDate = new FormControl();
+  public StartDate: any;
+  public EndDate: any;
+  public dateRangeContractings = [];
+  public date = new FormControl();
 
   module_name = module_name.pgRefund;
   filter_table_name = filter_module_name.pg_refund;
@@ -70,9 +81,21 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
   selectedAgent: any;
   selectedRM: any;
 
-  serviceList = ['Airline', 'Hotel', 'Bus', 'Visa']; 
-  
-  typeList = [ 'Rejected','Booking Failed','Cancelled','Partially Cancelled'];
+  // serviceList = ['Airline', 'Hotel', 'Bus', 'Visa'];
+  serviceList = [
+    { label: 'Airline', value: 'Airline' },
+    { label: 'Hotel', value: 'Hotel' },
+    { label: 'Bus', value: 'Bus' },
+    { label: 'Visa', value: 'Visa' },
+  ];
+
+  // typeList = ['Rejected', 'Booking Failed', 'Cancelled', 'Partially Cancelled'];
+  typeList = [
+    { label: 'Rejected', value: 'Rejected' },
+    { label: 'Booking Failed', value: 'Booking Failed' },
+    { label: 'Cancelled', value: 'Cancelled' },
+    { label: 'Partially Cancelled', value: 'Partially Cancelled' },
+  ];
 
   constructor(
     private pgRefundService: PgRefundService,
@@ -83,6 +106,11 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     this.sortColumn = 'requestDate';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+
+    this.dateRangeContractings = CommonUtils.valuesArray(dateRangeContracting);
+    this.date.patchValue(dateRangeContracting.lastMonth);
+    this.updateDate(dateRangeContracting.lastMonth, false)
+
     this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
@@ -90,9 +118,9 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     this.agentList = this._filterService.agentListByValue;
 
     // common filter
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       this.selectedAgent = resp['table_config']['agency_name']?.value;
       if (this.selectedAgent && this.selectedAgent.id) {
         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -105,7 +133,7 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['due_date']?.value != null && resp['table_config']['due_date'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+        this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(resp['table_config']['due_date']);
       }
       this.primengTable['filters'] = resp['table_config'];
@@ -113,6 +141,8 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       this.primengTable._filter();
     });
   }
+
+
 
   ngAfterViewInit() {
     // Defult Active filter show
@@ -128,7 +158,7 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
         }
       }
       if (filterData['table_config']['due_date']?.value != null && filterData['table_config']['due_date'].value.length) {
-        this._filterService.selectionDateDropdown = 'Custom Date Range';
+        this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['due_date']);
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -139,7 +169,12 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
 
   refreshItems(event?: any): void {
     this.isLoading = true;
-    this.pgRefundService.getPGRefundReport(this.getNewFilterReq(event)).subscribe({
+
+    const request = this.getNewFilterReq(event);
+    request['refund_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    request['refund_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+
+    this.pgRefundService.getPGRefundReport(request).subscribe({
       next: (data) => {
         this.dataList = data.data;
         // this.total = data.total;
@@ -151,7 +186,7 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       }
     });
   }
- 
+
 
   getNodataText(): string {
     if (this.isLoading)
@@ -167,7 +202,9 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     }
 
     let newModel = this.getNewFilterReq({})
-    newModel['Take'] = this.totalRecords
+    newModel['Take'] = this.totalRecords;
+    newModel['refund_from_date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    newModel['refund_to_date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
     this.pgRefundService.getPGRefundReport(newModel).subscribe(data => {
       for (var dt of data.data) {
         dt.requestDate = dt.requestDate ? DateTime.fromISO(dt.requestDate).toFormat('dd-MM-yyyy hh:mm a') : '';
@@ -198,5 +235,94 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       this._filterService.activeFiltData = {};
     }
   }
+
+  public updateDate(event: any, isRefresh: boolean = true): void {
+    if (event === dateRangeContracting.today) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(this.StartDate.getDate());
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.lastWeek) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      const dt = new Date(); // current date of week
+      const currentWeekDay = dt.getDay();
+      const lessDays = currentWeekDay === 0 ? 6 : currentWeekDay - 1;
+      const wkStart = new Date(new Date(dt).setDate(dt.getDate() - lessDays));
+      const wkEnd = new Date(new Date(wkStart).setDate(wkStart.getDate() + 6));
+
+      this.StartDate = wkStart;
+      this.EndDate = new Date();
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.previousMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 1);
+      this.startDate.patchValue(this.StartDate);
+      this.EndDate.setDate(1)
+      this.EndDate.setDate(this.EndDate.getDate() - 1)
+      this.endDate.patchValue(this.EndDate);
+
+    }
+    else if (event === dateRangeContracting.lastMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth());
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.last3Month) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 3);
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.last6Month) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 6);
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.setCustomDate) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    if (isRefresh)
+      this.refreshItems();
+  }
+
+  dateRangeChange(start, end): void {
+    if (start.value && end.value) {
+      this.StartDate = start.value;
+      this.EndDate = end.value;
+      this.refreshItems();
+    }
+  }
+
+  cancleDate() {
+    this.date.patchValue('Today');
+    this.updateDate(dateRangeContracting.today);
+  }
+
+  onContractionOption(option: any, primengTable: any, field: any, key?: any) {
+    // this.selectionDateDropdown = option.id_by_value;
+    this.selectedRefundDateSubject.next(option.id_by_value);
+   
+    if(option.id_by_value && option.id_by_value != 'custom_date_range'){
+        primengTable.filter(option, field, 'custom');
+    } 
+}
 
 }

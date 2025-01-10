@@ -31,6 +31,38 @@
                     (click)="refreshItems()"></mat-icon>
             </div>
 
+            <!-- Date Combo -->
+            <div class="ml-4 justify-center items-center w-[245px]">
+                <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-select name="date" [formControl]="date" #dateRange
+                            (selectionChange)="updateDate($event.value)">
+                            <mat-option *ngFor="let dr of dateRangeContractings" [value]="dr">{{
+                                dr
+                                }}</mat-option>
+                        </mat-select>
+                        <!-- <mat-icon svgIcon="heroicons_mini:chevron-down" (click)="dateRange.open()"
+                            class="cursor-pointer"></mat-icon> -->
+                    </mat-form-field>
+                </div>
+
+                <div *ngIf="date.value === DR.setCustomDate" class="w-full flex flex-row items-center space-x-1">
+                    <mat-form-field class="w-full bottom_none">
+                        <mat-date-range-input [rangePicker]="picker" (selectionChange)="onRangeInputClicked()">
+                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly
+                                #dateRangeStart />
+                            <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
+                                (dateInput)="
+                                        dateRangeChange(dateRangeStart, dateRangeEnd)
+                                    " />
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                    <mat-icon class="icon-size-4 cursor-pointer" (click)="cancleDate()">cancel</mat-icon>
+                </div>
+            </div>
+
             <!------Global filter------>
             <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
@@ -122,7 +154,7 @@
                             ariaLabel="Filter Ref. No." />
                     </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service">
-                        <!-- <p-columnFilter field="service" matchMode="in" [showMenu]="false">
+                        <p-columnFilter field="service" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-multiSelect [ngModel]="value" [options]="serviceList" optionLabel="label"
                                     placeholder="Select service" (onChange)="filter($event.value)" appendTo="body">
@@ -131,9 +163,9 @@
                                     </ng-template>
                                 </p-multiSelect>
                             </ng-template>
-                        </p-columnFilter> -->
+                        </p-columnFilter>
 
-                        <p-columnFilter field="service" matchMode="equals" [showMenu]="false">
+                        <!-- <p-columnFilter field="service" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="serviceList"
                                     (onChange)="filter($event.value)" placeholder="Select service" [showClear]="true"
@@ -143,7 +175,7 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="pspName"
@@ -154,7 +186,7 @@
                             placeholder="Search by PSP Ref. No." ariaLabel="Filter PSP Ref. No." />
                     </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.type">
-                        <!-- <p-columnFilter field="type" matchMode="in" [showMenu]="false">
+                        <p-columnFilter field="type" matchMode="in" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-multiSelect [ngModel]="value" [options]="typeList" optionLabel="label"
                                     placeholder="Select Type" (onChange)="filter($event.value)" appendTo="body">
@@ -163,9 +195,9 @@
                                     </ng-template>
                                 </p-multiSelect>
                             </ng-template>
-                        </p-columnFilter> -->
+                        </p-columnFilter>
 
-                        <p-columnFilter field="type" matchMode="equals" [showMenu]="false">
+                        <!-- <p-columnFilter field="type" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="typeList"
                                     (onChange)="filter($event.value)" placeholder="Select type" [showClear]="true"
@@ -175,22 +207,22 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
                     </th>
                     <th>
                         <!-- <p-columnFilter type="numeric" field="amount" placeholder="Search by Amount"
                             ariaLabel="Filter Amount" /> -->
                     </th>
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'"
+                        <p-columnFilter *ngIf="(selectionRefundOption$ | async) != 'custom_date_range'"
                             field="requestDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    [options]="_filterService.dateRangeContractingList" optionLabel="label"
                                     placeholder="Select Option" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <div
-                                            (click)="_filterService.onOptionClick(option, primengTable, 'requestDate')">
+                                            (click)="onContractionOption(option, primengTable, 'requestDate')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
@@ -198,25 +230,25 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
+                        <ng-container *ngIf="(selectionRefundOption$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="requestDate" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
                                             (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
                                 <mat-icon class="icon-size-4 cursor-pointer absolute"
                                     style="top:50%; transform: translatey(-50%); right: 25px;"
-                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                    (click)="onContractionOption('', '', '')">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>
-                    
+
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'Custom Date Range'"
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
                             field="refundDate" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -231,19 +263,19 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'Custom Date Range'">
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="refundDate" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
                                             (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="Search by Date Range 📅">
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
                                 <mat-icon class="icon-size-4 cursor-pointer absolute"
                                     style="top:50%; transform: translatey(-50%); right: 25px;"
-                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>

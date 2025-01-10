@@ -292,6 +292,10 @@ export const Routes = {
         bus_route: '/booking/bus',
         bus_details_route: '/booking/bus/details',
         
+        holiday_lead_path: 'booking/holiday-lead',
+        holiday_lead_route: '/booking/holiday-lead',
+        holiday_lead_details_route: '/booking/holiday-lead/details',
+        
         insurance_path: 'booking/insurance',
         insurance_route: '/booking/insurance',
         insurance_details_route: '/booking/insurance/details',
@@ -365,6 +369,15 @@ export const Routes = {
     reports: {
         // amendment_requests_path: 'reports/amendment-requests',
         // amendment_requests_route: 'reports/amendment-requests',
+        tech_summary_path:'reports/tech_summary',
+        tech_summary_route:'reports/tech_summary',
+
+        tech_rm_monthly_path: 'reports/tech_rm_monthly_report',
+        tech_rm_monthly_route: 'reports/tech_rm_monthly_report',
+
+        tech_product_monthly_path:'reports/tech_product_monthly',
+        tech_product_monthly_route:'reports/tech_product_monthly',
+
 
         ledger_path: 'reports/ledger',
         ledger_route: 'reports/ledger',

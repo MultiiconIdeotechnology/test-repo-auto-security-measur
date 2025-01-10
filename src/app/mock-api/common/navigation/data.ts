@@ -357,7 +357,15 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'BOOKINGS_OFFLINESERVICE_VIEW',
                 icon: 'heroicons_outline:newspaper',
                 link: Routes.booking.offline_service_route
-            }
+            },
+            {
+                id: 'booking.holiday_lead',
+                title: 'Holiday',
+                type: 'basic',
+                pid: 'BOOKINGS_HOLIDAYLEAD_VIEW',
+                icon: 'heroicons_outline:building-storefront',
+                link: Routes.booking.holiday_lead_route
+            },
         ]
     },
     {
@@ -646,7 +654,41 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         link: Routes.reports.campaign_summary_path_route
                     },
                 ]
-            }
+            },
+            {
+                id: 'reports.techBusiness',
+                title: 'Tech Business',
+                type: 'collapsable',
+                pid: 'REPORTS_TECHBUSINESS_VIEW',
+                icon: 'heroicons_outline:cpu-chip',
+                children: [
+                    {
+                        id: 'reports.techBusinessSummary',
+                        title: 'Tech Business Summary',
+                        type: 'basic',
+                        pid: 'TECHBUSINESSREPORT_SUMMARY_VIEW',
+                        icon: '',
+                        link: Routes.reports.tech_summary_route
+                    },
+                    {
+                        id: 'reports.techRMMonthlyAnalytics',
+                        title: 'RM Monthly Analytics',
+                        type: 'basic',
+                        pid: 'TECHBUSINESSREPORT_RMMONTHLYANALYTICS_VIEW',
+                        icon: '',
+                        link: Routes.reports.tech_rm_monthly_route
+                    }, 
+                    {
+                        id: 'reports.techProductMonthlyAnalytics',
+                        title: 'Product Monthly Analytics',
+                        type: 'basic',
+                        pid: 'TECHBUSINESSREPORT_PRODUCTMONTHLYANALYTICS_VIEW',
+                        icon: '',
+                        link: Routes.reports.tech_product_monthly_route
+                    },
+              
+                ]
+            },
         ],
 
     },
@@ -706,10 +748,10 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link: Routes.inventory.visa_route
             },
             {
-                id: 'inventory.holidayNew',
-                title: 'Holiday v2',
+                id: 'inventory.holidayv2',
+                title: 'Holiday Products 2.0',
                 type: 'basic',
-                pid: 'INVENTORY_HOLIDAYV2_VIEW',
+                pid: 'INVENTORY_HOLIDAYPRODUCT2.0_VIEW',
                 icon: 'heroicons_outline:newspaper',
                 link: Routes.inventory.holiday_v2_route
             },
@@ -947,7 +989,8 @@ export const compactNavigation: FuseNavigationItem[] = [
         pid: 'MAINMENU_SETTINGS_VIEW',
         icon: 'heroicons_outline:cog-8-tooth',
         children: []
-    }
+    },
+  
 ]
 export const futuristicNavigation: FuseNavigationItem[] = [
     {

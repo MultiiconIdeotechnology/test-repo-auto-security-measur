@@ -163,6 +163,10 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.products_path, loadChildren: () => import('app/modules/reports/sales/product/sales-product/sales-product.routes') },
             { path: Routes.reports.pg_refund_path, loadChildren: () => import('app/modules/reports/PG Refund/pg-refund-list/pg-refund.routes') },
             { path: Routes.reports.agent_summary_path, loadChildren: () => import('app/modules/reports/sales/agent-summaries/agent-summary/agent-summary.routes') },
+            { path: Routes.reports.tech_summary_path, loadChildren: () => import('app/modules/reports/tech-business/tech-business-summary/tech-business-summary.routes') },
+            { path: Routes.reports.tech_rm_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/rm-monthly-analytics/rm-monthly-analytics.routes') },
+            { path: Routes.reports.tech_product_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/product-monthly-analytics/product-monthly-analytics.routes') },
+
 
             // MY BOOKINGS
             { path: Routes.booking.flight_path, loadChildren: () => import('app/modules/booking/flight/flight/flights.routes') },
@@ -174,6 +178,7 @@ export const appRoutes: Route[] = [
             { path: Routes.booking.forex_path, loadChildren: () => import('app/modules/booking/forex/forex-list/forex.routes') },
             { path: Routes.booking.visa_path, loadChildren: () => import('app/modules/booking/visa/visa.routes') },
             { path: Routes.booking.offline_service_path, loadChildren: () => import('app/modules/booking/offline-service/offline-list/offline.routes') },
+            { path: Routes.booking.holiday_lead_path, loadChildren: () => import('app/modules/booking/holiday/holiday-list/holiday-lead.routes') },
 
             // SETTINGS
             { path: Routes.settings.erpsettings_path, loadChildren: () => import('app/modules/settings/erp-settings/erp-settings.routes') },

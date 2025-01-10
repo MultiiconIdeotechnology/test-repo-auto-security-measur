@@ -96,9 +96,9 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
         this.employeeList = this._filterService.rmListByValue;
 
         // common filter
-        this._filterService.selectionDateDropdown = "";
+        this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this._filterService.selectionDateDropdown = "";
+            this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             this.selectedRM = resp['table_config']['rm']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {

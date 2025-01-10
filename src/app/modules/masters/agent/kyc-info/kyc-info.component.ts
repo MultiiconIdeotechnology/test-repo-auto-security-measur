@@ -82,6 +82,7 @@ export class KycInfoComponent {
   ) {
     // this.convertAgent = this.datas.send
     this.data = datas.record;
+    console.log("this.data>>>", this.datas);
     if (this.datas?.send)
       this.convertAgent = (this.datas.send == "agentKYC");
 
@@ -106,6 +107,10 @@ export class KycInfoComponent {
   ngOnInit(): void {
     this.refreshItems();
     this.title = this.datas.record.agency_name
+
+    if(this.datas.isLead == 'Supplier'){
+      this.title = this.datas.record?.company_name;
+    }
   }
 
   leadConverter(): void {

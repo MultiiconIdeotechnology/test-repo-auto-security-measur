@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,7 +30,7 @@ import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { EntityService } from 'app/services/entity.service';
-import { takeUntil } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { Linq } from 'app/utils/linq';
 import { StatusInfoComponent } from './status-info/status-info.component';
 import { Subscription } from 'rxjs';
@@ -42,6 +42,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     templateUrl: './amendment-requests-list.component.html',
     standalone: true,
     imports: [
+        CommonModule,
         NgIf,
         NgFor,
         DatePipe,
@@ -68,6 +69,9 @@ import { MultiSelectModule } from 'primeng/multiselect';
 })
 export class AmendmentRequestsListComponent
     extends BaseListingComponent {
+    selectedRefundDateSubject = new BehaviorSubject<any>('');
+    selectionRefundOption$ = this.selectedRefundDateSubject.asObservable();
+
     isFilterShow: boolean = false;
     module_name = module_name.amendmentRequests;
     filter_table_name = filter_module_name.amendment_requests_booking;
@@ -170,11 +174,11 @@ export class AmendmentRequestsListComponent
         this.getSupplier("");
         this.agentList = this._filterService.agentListById;
 
-        this._filterService.selectionDateDropdown = "";
+        this._filterService.updateSelectedOption('');
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.selectionDateDropdown = "";
+            this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             this.selectedSupplier = resp['table_config']['company_name']?.value;
 
@@ -188,9 +192,9 @@ export class AmendmentRequestsListComponent
             if (resp['table_config']['amendment_request_time']?.value && Array.isArray(resp['table_config']['amendment_request_time']?.value)) {
                 this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['amendment_request_time']);
-              }
-              if (resp?.['table_config']?.['updated_date_time']?.value != null && resp['table_config']['updated_date_time'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+            }
+            if (resp?.['table_config']?.['updated_date_time']?.value != null && resp['table_config']['updated_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['updated_date_time']);
             }
             if (resp['table_config']['travel_date']?.value != null) {
@@ -214,13 +218,13 @@ export class AmendmentRequestsListComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedSupplier = filterData['table_config']['company_name']?.value;
-        
+
             if (filterData?.['table_config']?.['amendment_request_time']?.value != null && filterData['table_config']['amendment_request_time'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['amendment_request_time']);
             }
             if (filterData?.['table_config']?.['updated_date_time']?.value != null && filterData['table_config']['updated_date_time'].value.length) {
-                this._filterService.selectionDateDropdown = 'Custom Date Range';
+                this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['updated_date_time']);
             }
 
@@ -266,9 +270,9 @@ export class AmendmentRequestsListComponent
                 }
             }
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-               this.agentList[i].id_by_value = this.agentList[i].agency_name;
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
 
             }
         });
@@ -491,6 +495,14 @@ export class AmendmentRequestsListComponent
                 ],
                 data.data, "Amendment Booking", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 12 } }]);
         });
+    }
+
+    onLocalOption(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedRefundDateSubject.next(option.id_by_value);
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+            primengTable.filter(option, field, 'custom');
+        }
     }
 
     ngOnDestroy(): void {

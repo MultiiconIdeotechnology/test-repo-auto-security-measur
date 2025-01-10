@@ -66,6 +66,19 @@
                     </div>
                 </div>
 
+                <ng-container *ngIf="priceDetailList.length > 0">
+                    <div class="border border-dashed"></div>
+                    <div class="text-lg font-semibold pt-4 text-primary">Bonton Purchase</div>
+                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
+                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of priceDetailList">
+                            <div class="flex flex-row space-x-2">
+                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
+                            </div>
+                            <span class="text-base truncate pr-2">{{af.value || ' - '}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+
                 <!-- && recordList?.amendment_info?.status_for_agent !== 'Inprocess' && recordList?.amendment_info?.status_for_agent !== 'Request Sent to Supplier' -->
                 <ng-container *ngIf="recordList && recordList?.amendment_info?.status != 'Request Sent to Supplier'">
                     <div class="border border-dashed"></div>
@@ -121,19 +134,6 @@
                     </div>
                 </div>
 
-                <ng-container *ngIf="priceDetailList.length > 0">
-                    <div class="border border-dashed"></div>
-                    <div class="text-lg font-semibold pt-4 text-primary">Bonton Purchase</div>
-                    <div class="flex flex-wrap pt-2 pb-2 bg-card rounded-2xl">
-                        <div class="flex flex-col mb-3 w-1/4" *ngFor="let af of priceDetailList">
-                            <div class="flex flex-row space-x-2">
-                                <span class=" text-md font-semibold text-secondary">{{af.name}}</span>
-                            </div>
-                            <span class="text-base truncate pr-2">{{af.value || ' - '}}</span>
-                        </div>
-                    </div>
-                </ng-container>
-
                 <div
                     *ngIf="recordList && recordList?.amendment_info?.status == 'Account Audit' || recordList?.amendment_info?.status == 'Account Rejected' || recordList?.amendment_info?.status == 'Completed'">
                     <div class="border border-dashed"></div>
@@ -151,7 +151,8 @@
                                 [ngClass]="af.value ? 'text-blue-500' : 'text-gray-500' "
                                 [matTooltip]="af.value ? 'Download' : ''"></mat-icon>
 
-                            <span class="" *ngIf="af.name == 'Credit Invoice' && !af.value" class="text-red-600 pt-[3px] text-xs font-light">
+                            <span class="" *ngIf="af.name == 'Credit Invoice' && !af.value"
+                                class="text-red-600 pt-[3px] text-xs font-light">
                                 Credit invoice not generated.
                             </span>
 
@@ -195,8 +196,7 @@
             </ng-container>
 
             <ng-container
-                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta' || 
-                recordList?.amendment_info?.status?.toLowerCase() == 'cancellation pending' || recordList?.amendment_info?.status?.toLowerCase() == 'partial cancellation pending'">
+                *ngIf="recordList?.amendment_info?.status?.toLowerCase() == 'payment completed' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta'">
                 <button mat-stroked-button (click)="inprocess()">
                     Confirmation Sent to Supplier
                 </button>
@@ -245,7 +245,8 @@
             </ng-container>
 
             <ng-container *ngIf="recordList && (recordList?.amendment_info?.status?.toLowerCase() == 'request sent to supplier' || recordList?.amendment_info?.status?.toLowerCase() == 'quotation sent'
-                || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta')">
+                || recordList?.amendment_info?.status?.toLowerCase() == 'quotation confirmed by ta' || recordList?.amendment_info?.status?.toLowerCase() == 'cancellation pending' || 
+                recordList?.amendment_info?.status?.toLowerCase() == 'partial cancellation pending')">
                 <button [color]="'primary'" mat-flat-button (click)="updateCharge()">
                     Update Charges
                 </button>

@@ -210,7 +210,8 @@ export class CallHistoryTabComponent {
         );
 
         filterReq['MasterId'] = this.MasterId ? this.MasterId : "",
-            filterReq['MasterFor'] = "lead_master"
+        filterReq['MasterFor'] = "lead_master";
+        filterReq['Take'] = 500;
         this.crmService.getCallHistoryList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;

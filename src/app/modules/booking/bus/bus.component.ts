@@ -132,9 +132,9 @@ export class BusComponent extends BaseListingComponent {
     this.getToCity('');
 
     // common filter
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       this.selectedSupplier = resp['table_config']['supplier']?.value;
       this.selectedFromCity = resp['table_config']['from_id_filters']?.value;

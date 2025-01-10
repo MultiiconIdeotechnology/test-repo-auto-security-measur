@@ -162,9 +162,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         this.getEmployee("");
         // this.employeeList = this._filterService.originalRmList;
 
-        this._filterService.selectionDateDropdown = "";
+        this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this._filterService.selectionDateDropdown = "";
+            this._filterService.updateSelectedOption('');
             this.selectedRm = resp['table_config']['rm_Id']?.value;
             this.selectedLeadStatus = resp['table_config']['lead_source']?.value;
 

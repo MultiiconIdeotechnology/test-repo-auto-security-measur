@@ -204,8 +204,9 @@ export class AgentCallHistoryComponent {
             this._sort,
             this.searchInputControl.value, "entry_date_time", 1
         );
-        filterReq['MasterId'] = this.MasterId ? this.MasterId : ""
-        filterReq['MasterFor'] = "agent_signup"
+        filterReq['MasterId'] = this.MasterId ? this.MasterId : "";
+        filterReq['MasterFor'] = "agent_signup";
+        filterReq['Take'] = 500;
         this.crmService.getCallHistoryList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;

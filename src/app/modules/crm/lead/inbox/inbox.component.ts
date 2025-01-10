@@ -119,15 +119,25 @@ export class InboxComponent extends BaseListingComponent {
 
     ngOnInit(): void {
         // common filter
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this._filterService.updatedSelectedContracting('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            // this.sortColumn = resp['sortColumn'];
-            // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['last_call_date_time'].value) {
-                resp['table_config']['last_call_date_time'].value = new Date(resp['table_config']['last_call_date_time'].value);
+            if (resp['table_config']['last_call_date_time']?.value != null && resp['table_config']['last_call_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['last_call_date_time']);
             }
-            if (resp['table_config']['entry_date_time'].value) {
-                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+
+            if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
+
+            if (resp['table_config']['call_date_time']?.value != null && resp['table_config']['call_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['call_date_time']);
+            }
+
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
@@ -137,15 +147,26 @@ export class InboxComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this._filterService.updatedSelectedContracting('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            if (filterData['table_config']['last_call_date_time'].value) {
-                filterData['table_config']['last_call_date_time'].value = new Date(filterData['table_config']['last_call_date_time'].value);
+            if (filterData['table_config']['last_call_date_time']?.value != null && filterData['table_config']['last_call_date_time'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['last_call_date_time']);
             }
-            if (filterData['table_config']['entry_date_time'].value) {
-                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+
+            if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+            }
+
+            if (filterData['table_config']['call_date_time']?.value != null && filterData['table_config']['call_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -156,7 +177,7 @@ export class InboxComponent extends BaseListingComponent {
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-        if(this.searchInputControlInbox.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
+        if (this.searchInputControlInbox.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
             event = {};
             event.first = event?.first || 0;
         }
@@ -254,7 +275,13 @@ export class InboxComponent extends BaseListingComponent {
         this.matDialog.open(DialCallListComponent, {
             data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true,
-        });
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res) {
+                    this.refreshItems();
+                }
+            }
+        })
     }
 
     scheduleCall(record): void {
@@ -314,7 +341,7 @@ export class InboxComponent extends BaseListingComponent {
         });
     }
 
-    deadLead(record, index): void {
+    deadLead(record: any, index: any): void {
         if (!Security.hasPermission(leadPermissions.deadLeadPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -336,7 +363,8 @@ export class InboxComponent extends BaseListingComponent {
                     this.crmService.deadLead(newJson).subscribe({
                         next: (res) => {
                             if (res) {
-                                this.dataList.splice(index, 1);
+                                this.refreshItems();
+                                // this.dataList.splice(index, 1);
                             }
                             this.alertService.showToast('success', "Dead Lead Successfully!", "top-right", true);
                             this.isLoading = false;

@@ -68,8 +68,8 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/createProduct', model);
     }
 
-    deletePurchaseProduct(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/delete', model);
+    deletePurchaseProduct(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/delete', {id:id});
     }
 
     expiryProduct(model: any): Observable<any> {

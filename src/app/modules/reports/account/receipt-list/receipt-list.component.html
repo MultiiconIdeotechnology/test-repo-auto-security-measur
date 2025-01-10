@@ -158,6 +158,9 @@
                     <th pSortableColumn="pg_payment_ref_no" pResizableColumn>
                         PG Ref.No. <p-sortIcon field="pg_payment_ref_no" />
                     </th>
+                    <th pSortableColumn="is_paymentlink" pResizableColumn>
+                        Payment Link <p-sortIcon field="is_paymentlink" />
+                    </th>
                     <!-- <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
                         {{col.header}} <p-sortIcon [field]="col.field" />
                     </th> -->
@@ -208,7 +211,7 @@
                             placeholder="Search by MOP" ariaLabel="Filter MOP" />
                     </th>
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'" field="receipt_request_date" matchMode="custom" [showMenu]="false">
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'" field="receipt_request_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value" [options]="_filterService.dateRangeList"
                                     optionLabel="label" placeholder="Select Option"
@@ -222,7 +225,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'" >
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'" >
                             <div class="relative inline-block">
                                 <p-columnFilter field="receipt_request_date" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -232,7 +235,7 @@
                                         </p-calendar>
                                     </ng-template>
                                 </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute" style="top:50%; transform: translatey(-50%); right: 25px;"  (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>
@@ -275,6 +278,7 @@
                         <p-columnFilter type="text" matchMode="contains" field="pg_payment_ref_no"
                             placeholder="Search by PG Ref. No" ariaLabel="Filter PG Ref. No" />
                     </th>
+                    <th></th>
                     <!-- <th *ngFor="let col of columns">
                     </th> -->
                 </tr>
@@ -440,6 +444,9 @@
                     <td>
                         {{element.pg_payment_ref_no || "-"}}
                     </td>
+                    <td>
+                        {{element.is_paymentlink || "-"}}
+                    </td>
                     <!-- <td *ngFor="let col of columns">
                         {{element[col.field]}}
                     </td> -->
@@ -448,7 +455,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="16" class="text-center font-semibold text-lg">
+                    <td colspan="17" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

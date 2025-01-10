@@ -51,33 +51,33 @@ export class HolidayVersionTwoService {
     return this.http.post<any>(this.baseUrl + 'product/getProductList', model);
   }
 
-  create(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'HolidayProduct/create', model);
-  }
+  // create(model: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'HolidayProduct/create', model);
+  // }
 
-  createCity(model: any[]): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductCities/create', model);
-  }
+  // createCity(model: any[]): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductCities/create', model);
+  // }
 
-  createInclusion(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductInclusions/create', model);
-  }
+  // createInclusion(model: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductInclusions/create', model);
+  // }
 
-  createExclusion(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductExclusions/create', model);
-  }
+  // createExclusion(model: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductExclusions/create', model);
+  // }
 
-  addDefaultExclusions(product_id: string, exclusions: string[]): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductExclusions/addDefaultExclusions', { product_id, exclusions });
-  }
+  // addDefaultExclusions(product_id: string, exclusions: string[]): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductExclusions/addDefaultExclusions', { product_id, exclusions });
+  // }
 
-  createItenrary(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductItinerary/create', model);
-  }
+  // createItenrary(model: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductItinerary/create', model);
+  // }
 
-  createNotes(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductSpecialNotes/create', model);
-  }
+  // createNotes(model: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductSpecialNotes/create', model);
+  // }
 
 
 
@@ -85,20 +85,24 @@ export class HolidayVersionTwoService {
     return this.http.post<any>(this.baseUrl + 'HolidayProduct/CopyProduct', { id: id });
   }
 
-  deleteCity(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductCities/delete', { id: id });
-  }
+  // deleteCity(id: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductCities/delete', { id: id });
+  // }
 
-  deleteInclusion(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductInclusions/delete', { id: id });
-  }
+  // deleteInclusion(id: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductInclusions/delete', { id: id });
+  // }
 
-  deleteExclusion(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductExclusions/delete', { id: id });
-  }
+  // deleteExclusion(id: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductExclusions/delete', { id: id });
+  // }
 
-  deleteNotes(id: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductSpecialNotes/delete', { id: id });
+  // deleteNotes(id: any): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductSpecialNotes/delete', { id: id });
+  // }
+
+  getProductPricing(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "product/getProductPricing", model);
   }
 
   // setHolidayPublish(id: string, publish_for: string = 'Global'): Observable<any> {
@@ -107,13 +111,13 @@ export class HolidayVersionTwoService {
 
 
 
-  pasteInclusionItems(model: {}): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'ProductInclusions/pasteInclusionItems', model);
-  }
+  // pasteInclusionItems(model: {}): Observable<any> {
+  //   return this.http.post<any>(this.baseUrl + 'ProductInclusions/pasteInclusionItems', model);
+  // }
 
-  holidayThemeCombo(): Observable<any[]> {
-    return this.http.post<any[]>(this.baseUrl + 'holidayProduct/getHolidayThemeCombo', {});
-  }
+  // holidayThemeCombo(): Observable<any[]> {
+  //   return this.http.post<any[]>(this.baseUrl + 'holidayProduct/getHolidayThemeCombo', {});
+  // }
 
   downloadQuotation(model: any): Observable<any[]> {
     return this.http.post<any[]>(environment.apiUrl + 'HolidayLeads/downloadQuotation', model);

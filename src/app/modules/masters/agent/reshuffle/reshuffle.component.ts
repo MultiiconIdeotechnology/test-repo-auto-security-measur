@@ -441,7 +441,7 @@ export class ReshuffleComponent {
                     this.finalmode2statusToCount = this.mode2agentStatusToCountNew2?.convertedCount ? this.mode2agentStatusToCountNew2?.convertedCount : 0;
                 }
                 else if (this.mode2AgentstatusToCount == 'Dead') {
-                    this.finalmode2statusToCount = this.mode2agentStatusToCountNew2?.Dead ? this.mode2agentStatusToCountNew2?.Dead : 0;
+                    this.finalmode2statusToCount = this.mode2agentStatusToCountNew2?.deadCount ? this.mode2agentStatusToCountNew2?.deadCount : 0;
                 }
                 else if (this.mode2AgentstatusToCount == 'All') {
                     this.finalmode2statusToCount = this.mode2agentStatusToCountNew2?.newCount + this.mode2agentStatusToCountNew2?.liveCount + this.mode2agentStatusToCountNew2?.convertedCount + this.mode2agentStatusToCountNew2?.deadCount;

@@ -218,10 +218,11 @@ export const module_name = {
     supplier: 'Supplier',
     user: 'User',
     holiday: 'Holiday Products',
-    holidayV2: 'Holiday Products Version 2.0',
+    holidayV2: 'Holiday Products 2.0',
     productpricing: 'Product Pricing',
     hotel: 'Hotel',
     forex: 'Forex',
+    holiday_lead: 'Holiday',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -304,6 +305,9 @@ export const module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
+    tech_business_summary:'Tech Business Summary',
+    tech_rm_monthly_report: 'RM Monthly Anaytics',
+    tech_product_monthly_report:'Product Monthly Analytics',
 };
 
 export const filter_module_name = {
@@ -366,6 +370,7 @@ export const filter_module_name = {
     visa_booking: "visa_booking",
     insurance_booking: "insurance_booking",
     offline_service_booking: "offline_service_booking",
+    holiday_lead_service_booking: "holiday_lead",
 
 
     //Report
@@ -394,6 +399,9 @@ export const filter_module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
+    tech_business_summary: 'tech_business_summary',
+    tech_rm_monthly_report:'tech_rm_monthly_report',
+    tech_product_monthly_report:'tech_product_monthly_report',
 
     //Inventory
     activity: "activity",

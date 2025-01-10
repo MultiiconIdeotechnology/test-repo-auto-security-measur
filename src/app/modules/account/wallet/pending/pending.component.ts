@@ -126,9 +126,10 @@ export class PendingComponent extends BaseListingComponent {
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
-		this._filterService.selectionDateDropdown = "";
+		
+		this._filterService.updateSelectedOption('');
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-			this._filterService.selectionDateDropdown = "";
+			this._filterService.updateSelectedOption('');
 			this.selectedAgent = resp['table_config']['agent_code_filter']?.value;
 			this.selectedMop = resp['table_config']['mop']?.value;
 			this.selectedPSP = resp['table_config']['psp_name']?.value;
@@ -153,7 +154,7 @@ export class PendingComponent extends BaseListingComponent {
 				}
 			}
 			if (resp?.table_config?.request_date_time?.value != null && resp.table_config.request_date_time.value.length) {
-				this._filterService.selectionDateDropdown = 'Custom Date Range';
+				this._filterService.updateSelectedOption('custom_date_range');
 				this._filterService.rangeDateConvert(resp.table_config.request_date_time);
 			}
 			this.isFilterShowPending = true;
@@ -203,7 +204,7 @@ export class PendingComponent extends BaseListingComponent {
 				}
 			}, 1000);
 			if (filterData?.table_config?.request_date_time?.value != null && filterData.table_config.request_date_time.value.length) {
-				this._filterService.selectionDateDropdown = 'Custom Date Range';
+				this._filterService.updateSelectedOption('custom_date_range');
 				this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
 			}
 			this.primengTable['filters'] = filterData['table_config'];
