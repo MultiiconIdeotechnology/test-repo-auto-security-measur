@@ -21,6 +21,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ForexService } from 'app/services/forex.service';
 import { MatSidenav } from '@angular/material/sidenav';
+import { CommonUtils } from 'app/utils/commonutils';
 
 @Component({
   selector: 'app-forex-booking-details',
@@ -109,18 +110,25 @@ export class ForexBookingDetailsComponent {
   }
 
   getStatusColor(status: string): string {
-    if (status == 'New') {
-      return 'text-orange-600';
-    } else if (status == 'Confirmed') {
-      return 'text-green-600';
-    } else if (status == 'Cancelled' || status == 'Rejected') {
-      return 'text-red-600';
+    if (status == 'New' || status == 'Waiting for Token Payment') {
+      return 'text-orange-600 border-orange-500';
+    } else if (status == 'Completed' || status == 'Token Payment Success') {
+      return 'text-green-600 border-green-500';
+    } else if (status == 'Cancelled' || status == 'Rejected' || status == 'Token Payment Failed') {
+      return 'text-red-600 border-red-500';
     } else {
       return '';
     }
   }
 
-
-
+  invoice() {
+    this.forexService.printInvoice(this.infoData.invoice_id).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, this.infoData?.reference_no + '.pdf' );
+      }, error: (err) => {
+        this.alertService.showToast('error', err)
+      }
+    })
+  }
 
 }

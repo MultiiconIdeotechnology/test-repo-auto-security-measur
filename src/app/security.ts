@@ -216,6 +216,7 @@ export const module_name = {
     supplierapi: 'Supplier API',
     transfer: 'Transfers',
     supplier: 'Supplier',
+    user: 'User',
     holiday: 'Holiday Products',
     holidayV2: 'Holiday Products 2.0',
     productpricing: 'Product Pricing',
