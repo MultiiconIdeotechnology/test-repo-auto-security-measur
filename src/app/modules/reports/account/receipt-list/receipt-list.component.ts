@@ -563,6 +563,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
                     { header: 'Agent', property: 'agent_name' },
                     { header: 'PG', property: 'pg_name' },
                     { header: 'PG Ref.No.', property: 'pg_payment_ref_no' },
+                    { header: 'Paymentlink', property: 'is_paymentlink' },
                 ],
                 data.data,
                 'Receipt',
