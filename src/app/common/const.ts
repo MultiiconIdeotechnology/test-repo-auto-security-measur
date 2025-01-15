@@ -91,6 +91,15 @@ export const imgExtantions = {
     svg: 'svg'
 }
 
+export const imgPdfExtantions = {
+    jpg: 'jpg',
+    jpeg: 'jpeg',
+    png: 'png',
+    gif: 'gif',
+    svg: 'svg',
+    pdf: 'pdf'
+}
+
 export const mealPlan = {
     BreakfastOnly: 'Breakfast Only [CP]',
     BreaskfastLunchDinner: 'Breakfast + Lunch/Dinner [MAP]',
