@@ -117,6 +117,14 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
     });
   }
 
+  dateRangeChange(start, end): void {
+    if (start.value && end.value) {
+      this.StartDate = start.value;
+      this.EndDate = end.value;
+      this.refreshItems();
+    }
+  }
+
   getNodataText(): string {
     if (this.isLoading)
       return 'Loading...';

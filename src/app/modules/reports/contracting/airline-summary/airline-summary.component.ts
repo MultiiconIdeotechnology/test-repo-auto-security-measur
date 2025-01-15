@@ -102,6 +102,7 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
       this.primengTable._filter();
     });
   }
+
   refreshItems(event?: any): void {
     this.isLoading = true;
 
@@ -122,6 +123,13 @@ export class AirlineSummaryComponent extends BaseListingComponent implements OnD
     });
   }
 
+  dateRangeChange(start, end): void {
+    if (start.value && end.value) {
+      this.StartDate = start.value;
+      this.EndDate = end.value;
+      this.refreshItems();
+    }
+  }
 
   getNodataText(): string {
     if (this.isLoading)
