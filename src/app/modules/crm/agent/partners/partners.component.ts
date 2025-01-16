@@ -311,6 +311,12 @@ export class PartnersComponent extends BaseListingComponent{
         this.matDialog.open(DialAgentCallListComponent, {
             data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true,
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res) {
+                    this.refreshItems();
+                }
+            }
         });
     }
 
