@@ -459,7 +459,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 dt.kycStarted = dt.kycStarted ? 'Yes' : 'No'
             }
             Excel.export(
-                'Leads Register',
+                'Lead Register',
                 [
                     { header: 'Calls', property: 'calls' },
                     { header: 'Status', property: 'status' },
@@ -478,7 +478,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                     { header: 'Last Call', property: 'lastCall' },
                     { header: 'Lead Date', property: 'leadDate' },
                 ],
-                data.data, "Leads Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
+                data.data, "Lead Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
         });
     }
 

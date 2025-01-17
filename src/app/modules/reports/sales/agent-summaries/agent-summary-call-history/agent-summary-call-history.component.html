@@ -59,9 +59,10 @@
                                         class="items-center justify-center m-auto flex text-center">
                                         <div *ngIf="col.name == 'Schedule Call'">
                                             <span class="flex flex-row ml-4"
-                                                [ngClass]="ListItem.is_call_rescheduled == true ? 'border-b border-gray-500 cursor-pointer' : ''"
-                                                (click)="isScheduleCall(ListItem)">{{ListItem.is_call_rescheduled ==
+                                            >{{ListItem.is_call_rescheduled ==
                                                 true ? 'Yes' : 'No'}}</span>
+                                                <!-- [ngClass]="ListItem.is_call_rescheduled == true ? 'border-b border-gray-500 cursor-pointer' : ''" -->
+                                                <!-- (click)="isScheduleCall(ListItem)" -->
                                         </div>
                                     </span>
                                     <div

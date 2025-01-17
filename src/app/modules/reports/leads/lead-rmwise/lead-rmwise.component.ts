@@ -169,7 +169,7 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
 
         this.agentsRMwiseService.rmwiseLeadsList(filterReq).subscribe(data => {
             Excel.export(
-                'RM Wise Leads',
+                'Lead Summary',
                 [
                     { header: 'RM', property: 'rm' },
                     { header: 'Total', property: 'totallead' },
@@ -178,7 +178,7 @@ export class LeadRMWiseComponent extends BaseListingComponent implements OnDestr
                     { header: 'Converted', property: 'total_Converted_lead' },
                     { header: 'Dead', property: 'total_Dead_lead' }
                 ],
-                data.data, "RM Wise Leads", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+                data.data, "Lead Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });
     }
 

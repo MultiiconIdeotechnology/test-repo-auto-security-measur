@@ -541,7 +541,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                                 id: 'reports.leadsrep',
                                 title: 'Summary',
                                 type: 'basic',
-                                pid: 'LEADS-REPORTS_RMWISELEADS_VIEW',
+                                pid: 'LEADS-REPORTS_LEADSUMMARY_VIEW',
                                 icon: '',
                                 link: Routes.reports.leads_rmwise_route
                             },
@@ -585,7 +585,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                                 id: 'reports.agentrmwise',
                                 title: 'Summary',
                                 type: 'basic',
-                                pid: 'AGENTS-REPORTS_RMWISEAGENTS_VIEW',
+                                pid: 'AGENTS-REPORTS_PARTNERSUMMARY_VIEW',
                                 icon: '',
                                 link: Routes.reports.agents_rmwise_agents_route
                             },
@@ -593,7 +593,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                                 id: 'reports.agentsummary',
                                 title: 'Register',
                                 type: 'basic',
-                                pid: 'SALES-REPORTS_AGENTSUMMARY_VIEW',
+                                pid: 'SALES-REPORTS_PARTNERREGISTER_VIEW',
                                 icon: '',
                                 link: Routes.reports.agent_summary_route
                             }
@@ -642,14 +642,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         ]
                     },
 
-                    // {
-                    //     id: 'reports.products',
-                    //     title: 'Products',
-                    //     type: 'basic',
-                    //     pid: 'SALES-REPORTS_PRODUCTS_VIEW',
-                    //     icon: '',
-                    //     link: Routes.reports.products_route
-                    // },
+                    {
+                        id: 'reports.products',
+                        title: 'Products',
+                        type: 'basic',
+                        pid: 'SALES-REPORTS_PRODUCTS_VIEW',
+                        icon: '',
+                        link: Routes.reports.products_route
+                    },
                     // {
                     //     id: 'reports.agentsummary',
                     //     title: 'Agent Summary',

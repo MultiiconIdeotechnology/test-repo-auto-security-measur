@@ -274,7 +274,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                 dt.statuschange_date = dt.statuschange_date ? DateTime.fromISO(dt.statuschange_date).toFormat('dd-MM-yyyy hh:mm a') : '';
             }
             Excel.export(
-                'Agent Summary',
+                'Partner Register',
                 [
                     { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agency Name', property: 'agent_name' },
@@ -290,7 +290,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                     { header: 'Last Transaction Date', property: 'last_trancation_date' },
                     { header: 'Last Status Change Date', property: 'statuschange_date' }
                 ],
-                data.data, "Agent Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 15 } }]);
+                data.data, "Partner Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 15 } }]);
         });
     }
 
