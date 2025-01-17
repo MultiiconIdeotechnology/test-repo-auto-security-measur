@@ -65,7 +65,7 @@
                                 <mat-label
                                     class="text-base text-secondary font-medium dark:text-[#687798]">Date</mat-label>
                                 <input matInput [matDatepicker]="date1" placeholder="Choose a date" [min]="minDate"
-                                    formControlName="date" />
+                                    formControlName="date" (click)="date1.open()" readonly/>
                                 <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
                                 <mat-datepicker #date1></mat-datepicker>
                                 <mat-error *ngIf="formGroupDate.get('date').hasError('required')">
@@ -79,7 +79,7 @@
                                 <mat-label
                                     class="text-base text-secondary font-medium dark:text-[#687798]">Date</mat-label>
                                 <input matInput [matDatepicker]="date1" placeholder="Choose a date"
-                                    formControlName="date" />
+                                    formControlName="date" (click)="date1.open()" readonly/>
                                 <mat-datepicker-toggle matSuffix [for]="date1"></mat-datepicker-toggle>
                                 <mat-datepicker #date1></mat-datepicker>
                                 <mat-error *ngIf="formGroupDate.get('date').hasError('required')">
