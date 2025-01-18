@@ -22,6 +22,8 @@ import { ToasterService } from 'app/services/toaster.service';
 import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/compact.component';
 import { CommonUtils } from 'app/utils/commonutils';
 import { MatDividerModule } from '@angular/material/divider';
+import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
   selector: 'app-holiday-lead-booking-details',
@@ -62,7 +64,9 @@ export class HolidayLeadBookingDetailsComponent {
     private router: Router,
     public route: ActivatedRoute,
     private HolidayLeadService: HolidayLeadService,
+    private conformationService: FuseConfirmationService,
     private alertService: ToasterService,
+    private matDialog: MatDialog,
     private classy: CompactLayoutComponent,
 
   ) { }
@@ -103,5 +107,58 @@ export class HolidayLeadBookingDetailsComponent {
       },
     })
   }
+
+  status(record: any, code: any): void {
+    const label: string = code == 1 ? 'Holiday Completed' : 'Holiday Cancelled';
+    this.conformationService.open({
+      title: label,
+      message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+    }).afterClosed().subscribe({
+      next: (res) => {
+        if (res === 'confirmed') {
+          const Fdata = {}
+          Fdata['id'] = record.id,
+            Fdata['status_code'] = code,
+            Fdata['note'] = '',
+            this.HolidayLeadService.setLeadStatus(Fdata).subscribe({
+              next: (res) => {
+                if(res){
+                  this.alertService.showToast('success', code == 1 ? 'Holiday Completed' : 'Holiday Cancelled', "top-right", true);
+                  this.bookingDetail.lead_status = 'Completed'
+                }
+              }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+            });
+        }
+      }
+    })
+  }
+
+  Rejected(record: any, code: any): void {
+
+    this.matDialog.open(RejectReasonComponent, {
+      disableClose: true,
+      data: record,
+      panelClass: 'full-dialog'
+    }).afterClosed().subscribe({
+      next: (res) => {
+        if (res) {
+          const Fdata = {}
+          Fdata['id'] = record.id,
+            Fdata['status_code'] = code,
+            Fdata['note'] = res,
+            this.HolidayLeadService.setLeadStatus(Fdata).subscribe({
+              next: (res) => {
+                if(res){
+                  this.alertService.showToast('success', "Holiday Reject", "top-right", true);
+                  this.bookingDetail.lead_status = 'Rejected'
+                }
+              },
+              error: (err) => this.alertService.showToast('error', err, "top-right", true)
+            })
+        }
+      }
+    })
+  }
+
 
 }
