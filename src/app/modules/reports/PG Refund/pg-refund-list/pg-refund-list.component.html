@@ -32,7 +32,7 @@
             </div>
 
             <!-- Date Combo -->
-            <div class="ml-4 justify-center items-center w-[245px]">
+            <div class="ml-4 justify-center items-center w-[255px]">
                 <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
                     <mat-form-field class="w-full bottom_none">
                         <mat-select name="date" [formControl]="date" #dateRange
@@ -52,9 +52,7 @@
                             <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly
                                 #dateRangeStart />
                             <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
-                                (dateInput)="
-                                        dateRangeChange(dateRangeStart, dateRangeEnd)
-                                    " />
+                                (dateInput)="dateRangeChange(dateRangeStart, dateRangeEnd)" />
                         </mat-date-range-input>
                         <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-date-range-picker #picker></mat-date-range-picker>

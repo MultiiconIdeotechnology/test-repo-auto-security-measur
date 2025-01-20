@@ -58,7 +58,7 @@ import { CommonUtils } from 'app/utils/commonutils';
     PrimeNgImportsModule
   ],
   templateUrl: './pg-refund-list.component.html',
-  styleUrls: ['./pg-refund-list.component.scss']
+  styleUrls: ['./pg-refund-list.component.scss'],
 })
 export class PgRefundListComponent extends BaseListingComponent implements OnDestroy {
   selectedRefundDateSubject = new BehaviorSubject<any>('');
@@ -326,3 +326,5 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
 }
 
 }
+
+
