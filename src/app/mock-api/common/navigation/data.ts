@@ -156,14 +156,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:contact_page',
                 link: Routes.customers.agent_route
             },
-            {
-                id: 'master.whitelabel',
-                title: 'Whitelable',
-                type: 'basic',
-                pid: 'CUSTOMERS_WHITELABLE_VIEW',
-                icon: 'mat_outline:branding_watermark',
-                link: Routes.customers.whitelabel_route
-            },
+            // {
+            //     id: 'master.whitelabel',
+            //     title: 'Whitelable',
+            //     type: 'basic',
+            //     pid: 'CUSTOMERS_WHITELABLE_VIEW',
+            //     icon: 'mat_outline:branding_watermark',
+            //     link: Routes.customers.whitelabel_route
+            // },
             {
                 id: 'master.distributor',
                 title: 'Distributor',

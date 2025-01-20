@@ -91,6 +91,17 @@ export class SupplierEntryRightComponent {
   @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
   infoData: any;
 
+  serviceArray: any = [
+    'Airline',
+    'Bus',
+    'Cab',
+    'Forex',
+    'Holidays',
+    'Hotel',
+    'Insurance',
+    'Visa'
+  ]
+
   constructor(
     private builder: FormBuilder,
     private supplierService: SupplierService,
@@ -105,14 +116,12 @@ export class SupplierEntryRightComponent {
   ) {
     this.entityService.onsupplierEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
-        console.log("item main record", item);
         this.settingsDrawer.toggle()
         this.create = item?.create;
         this.info = item?.info;
         if (this.info) {
           this.infoData = item?.data;
           this.title = "Supplier Info"
-          console.log("this.infoData", this.infoData);
         }
 
 
@@ -122,6 +131,7 @@ export class SupplierEntryRightComponent {
           email_address: "",
           mobile_code: "",
           mobile_number: "",
+          service: [],
           city_id: "",
           pan_number: "",
           gst_number: "",
@@ -151,9 +161,8 @@ export class SupplierEntryRightComponent {
           this.create = false;
           this.edit = true;
           this.record = item?.data;
-          console.log("this.record", this.record);
           this.readonly = item?.readonlys;
-          this.title = "Edit Supplier"
+          this.title = "Edit"
 
           this.formGroup.patchValue(this.record)
           if (this.record?.id) {
@@ -185,6 +194,7 @@ export class SupplierEntryRightComponent {
       mobile_code: [''],
       mobile_number: [''],
       city_id: [''],
+      service: [[]],
       priority: [''],
       transaction_currency_id: [''],
       cityfilter: [''],
@@ -202,7 +212,6 @@ export class SupplierEntryRightComponent {
     this.formGroup.get('email_address').valueChanges.subscribe(text => {
       this.formGroup.get('email_address').patchValue(text.toLowerCase(), { emitEvent: false });
     })
-
 
   }
 
@@ -284,7 +293,6 @@ export class SupplierEntryRightComponent {
 
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
-    console.log("json", json);
     this.supplierService.create(json).subscribe({
       next: () => {
         this.disableBtn = false;

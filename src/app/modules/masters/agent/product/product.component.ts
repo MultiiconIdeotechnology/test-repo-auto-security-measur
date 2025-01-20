@@ -156,7 +156,7 @@ export class ProductComponent {
             return 'text-green-600';
         } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else if (status == 'Cancel' || status == 'Sales Return' || status == 'Expired' || status == 'Block' || status == 'Cancelled') {
+        } else if (status == 'Cancel' || status == 'Sales Return' || status == 'Expired' || status == 'Block' || status == 'Blocked' || status == 'Cancelled') {
             return 'text-red-600';
         }
         else {
