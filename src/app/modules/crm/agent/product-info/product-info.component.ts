@@ -198,7 +198,7 @@ export class AgentProductInfoComponent {
             return 'text-blue-600';
         } else if (status == 'Expired') {
             return 'text-red-600';
-        } else if (status == 'Cancelled' || status == 'Cancel' || status == 'Block' || status == 'Sales Return' || status == 'Cancelled') {
+        } else if (status == 'Cancelled' || status == 'Cancel' || status == 'Block' || status == 'Blocked' || status == 'Sales Return' || status == 'Cancelled') {
             return 'text-red-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';

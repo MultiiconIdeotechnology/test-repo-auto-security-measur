@@ -97,7 +97,6 @@ export class UserModifyComponent {
       next: (item) => {
         this.settingsDrawer.toggle()
         this.record = item?.data;
-        console.log("item main record", this.record);
         this.edit = false;
 
         if (item?.edit) {
@@ -147,7 +146,6 @@ export class UserModifyComponent {
 
     this.disableBtn = true;
     const json = this.formGroup.getRawValue();
-    console.log("json", json);
     this.supplierService.createUser(json).subscribe({
       next: () => {
         this.disableBtn = false;

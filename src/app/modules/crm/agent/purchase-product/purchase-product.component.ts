@@ -299,7 +299,7 @@ export class PurchaseProductComponent {
             return 'text-green-600';
         } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else if (status == 'Expired' || status == 'Cancel' || status == 'Block' || status == 'Cancelled') {
+        } else if (status == 'Expired' || status == 'Cancel' || status == 'Block' || status == 'Blocked' || status == 'Cancelled') {
             return 'text-red-600';
         } {
             return '';

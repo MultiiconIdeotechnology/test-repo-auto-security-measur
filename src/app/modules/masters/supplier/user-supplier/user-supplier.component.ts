@@ -76,7 +76,6 @@ export class UserSupplierComponent extends BaseListingComponent {
     this.Mainmodule = this;
     this.data = data
     this.record = data?.data ?? {}
-    console.log("this.record", data);
 
     this.entityService.onrefreshUserSupplierEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
