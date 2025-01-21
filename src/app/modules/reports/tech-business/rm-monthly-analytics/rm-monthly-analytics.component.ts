@@ -120,6 +120,8 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
 
     const request = this.getNewFilterReq(event);
     request['monthsBack'] = this.monthsBack.value;
+    delete request['Take'];
+    delete request['Skip'];
 
     this.techService.getRmMonthlyAnalytics(request).subscribe({
       next: (data) => {

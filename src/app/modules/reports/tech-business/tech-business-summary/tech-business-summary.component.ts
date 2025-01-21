@@ -103,6 +103,8 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
     const request = this.getNewFilterReq(event);
     request['From_Date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
     request['To_Date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+    delete request['Skip'];
+    delete request['Take'];
 
     this.techService.getTechSummary(request).subscribe({
       next: (data) => {

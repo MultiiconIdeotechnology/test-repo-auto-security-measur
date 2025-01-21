@@ -89,7 +89,7 @@
     <!----------------Table----------------->
     <div class="table-container paginator-bottom tech-business-table">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="false"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
@@ -100,9 +100,9 @@
             <ng-template pTemplate="header">
 
                 <tr>
-                    <th pSortableColumn="rm_name" pResizableColumn rowspan="2">RM <p-sortIcon field="rm_name" /></th>
-                    <th class="text-center text-white bg-[#4c6793]" colspan="3">Parther</th>
-                    <th class="text-center text-white bg-[#5f9da2]" colspan="3">Business</th>
+                    <th class="w-[30%]" pSortableColumn="rm_name" pResizableColumn rowspan="2">RM <p-sortIcon field="rm_name" /></th>
+                    <th class="text-center text-white bg-[#4c6793] w-[35%]" colspan="3">Parther</th>
+                    <th class="text-center text-white bg-[#5f9da2] w-[35%]" colspan="3">Business</th>
                 </tr>
                 <tr>
                     <!-- Partner Columns -->

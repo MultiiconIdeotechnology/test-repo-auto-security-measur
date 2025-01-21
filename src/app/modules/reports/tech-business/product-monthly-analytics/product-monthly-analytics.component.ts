@@ -114,6 +114,8 @@ export class ProductMonthlyAnalyticsComponent extends BaseListingComponent imple
 
     const request = this.getNewFilterReq(event);
     request['monthsBack'] = this.monthsBack.value;
+    delete request['Skip'];
+    delete request['Take'];
 
     this.techService.GetProductMonthlyAnalytics(request).subscribe({
       next: (data) => {
