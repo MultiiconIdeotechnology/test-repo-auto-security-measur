@@ -51,6 +51,11 @@
                 <input [readonly]="readonly" matInput type="number" required formControlName="priority">
             </mat-form-field>
 
+            <mat-form-field class="flex-grow">
+                <mat-label>DI Volumn(%)</mat-label>
+                <input [readonly]="readonly" matInput type="number" required formControlName="di_volume">
+            </mat-form-field>
+
             <mat-form-field>
                 <mat-label>Service</mat-label>
                 <mat-select formControlName="service" multiple required>

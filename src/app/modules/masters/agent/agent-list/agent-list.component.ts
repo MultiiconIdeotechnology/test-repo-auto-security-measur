@@ -563,6 +563,56 @@ export class AgentListComponent extends BaseListingComponent {
         }
     }
 
+     EnableDisable(record): void {
+        // if (!Security.hasPermission(walletCreditPermissions.enableDisablePermissions)) {
+        //   return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+    
+        const label: string = record.is_cashback_enable ? 'Disable' : 'Enable';
+        let title = label == 'Disable' ? 'Cashback Disable' : 'Cashback Enable';
+        this.conformationService
+          .open({
+            title: label,
+            message:
+              'Are you sure to ' +
+              label.toLowerCase() +
+              ' ' +
+              record.agency_name +
+              ' ?',
+          })
+          .afterClosed()
+          .subscribe((res) => {
+            if (res === 'confirmed') {
+    
+                this.agentService
+                  .setCashbackEnable(record.id)
+                  .subscribe({
+                    next: () => {
+                      record.is_cashback_enable = !record.is_cashback_enable;
+                      if (record.is_cashback_enable) {
+                        this.alertService.showToast(
+                          'success',
+                          'Cashback Enabled!',
+                          'top-right',
+                          true
+                        );
+                      } else {
+                        this.alertService.showToast(
+                          'success',
+                          'Cashback Disabled!',
+                          'top-right',
+                          true
+                        );
+                      }
+                    }, error: (err) => {
+                      this.alertService.showToast('error', err);
+                    }
+                  });
+                  
+            }
+          });
+      }
+
     relationahipManager(record): void {
         if (!Security.hasPermission(agentsPermissions.relationshipManagerPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);

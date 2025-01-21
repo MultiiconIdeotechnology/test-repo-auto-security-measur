@@ -57,6 +57,10 @@ export class AgentService {
     regenerateNewPassword(id: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Agent/regenerateNewPassword', { id: id });
     }
+    
+    setCashbackEnable(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setCashbackEnable', { id: id });
+    }
 
     // transferOldToNew
     transferOldToNew(model: any): Observable<any> {

@@ -96,6 +96,9 @@
                     <th pSortableColumn="entry_date_time" pResizableColumn>
                         Entry <p-sortIcon field="entry_date_time" />
                     </th>
+                    <th class="text-right" pSortableColumn="di_volume" pResizableColumn>
+                        DI Volumn(%) <p-sortIcon field="di_volume" />
+                    </th>
                     <th class="text-right" pSortableColumn="wallet_Balance" pResizableColumn>
                         Wallet Balance <p-sortIcon field="wallet_Balance" />
                     </th>
@@ -162,6 +165,11 @@
                         </p-columnFilter>
                     </th>
 
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="contains" field="di_volume"
+                            placeholder="Search by DI Volumn(%)" ariaLabel="Filter DI Volumn(%)" />
+                    </th> 
+                    
                     <th>
                         <p-columnFilter type="numeric" matchMode="contains" field="wallet_Balance"
                             placeholder="Search by Wallet Balance" ariaLabel="Filter Wallet Balance" />
@@ -245,6 +253,7 @@
                     <td>{{element.contact_person_name || "-" }}</td>
                     <td>{{(element.is_kyc_completed ? 'Yes' : 'No') || "-" }}</td>
                     <td>{{element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss' || "-"}}</td>
+                    <td class="text-right">{{element.di_volume || '0'}}</td>
                     <td class="text-right">{{element.wallet_Balance || '0'}}</td>
                     <td *ngFor="let col of columns" [ngClass]="col.field == 'priority' ? 'text-center' : ''">
                         {{element[col.field]}}

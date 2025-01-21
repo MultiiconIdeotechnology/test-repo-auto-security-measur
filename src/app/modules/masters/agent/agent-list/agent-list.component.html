@@ -437,7 +437,16 @@
                                 <mat-icon class="mat-18 icon-size-5">person</mat-icon>
                                 <span style="font-weight: 500">Change Markup</span>
                             </button>
-
+                            <button mat-menu-item (click)="EnableDisable(element)">
+                                <mat-icon class="mat-18">{{
+                                    element.is_cashback_enable
+                                    ? "highlight_off"
+                                    : "check_circle"
+                                    }}</mat-icon>
+                                <span style="font-weight: 600">{{
+                                    element.is_cashback_enable ? "Disable" : "Enable"
+                                    }}</span>
+                            </button>
                             <mat-divider></mat-divider>
 
                             <button mat-menu-item (click)="setKYCVerify(element)">

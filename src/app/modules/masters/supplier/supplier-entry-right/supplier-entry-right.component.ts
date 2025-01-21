@@ -144,6 +144,7 @@ export class SupplierEntryRightComponent {
           is_send: "",
           address: "",
           contact_person_name: "",
+          di_volume: "",
         })
 
         if (this.create) {
@@ -207,6 +208,7 @@ export class SupplierEntryRightComponent {
       kycfilter: [''],
       kyc_profile_id: [''],
       is_send: [false],
+      di_volume:[''],
     });
 
     this.formGroup.get('email_address').valueChanges.subscribe(text => {
