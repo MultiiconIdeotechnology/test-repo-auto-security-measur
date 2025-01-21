@@ -68,23 +68,25 @@
 
 
     <!----------------Table----------------->
-    <div class="table-container paginator-bottom">
+    <div class="table-container">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="false"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight" class="contracting_rep"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <!-- Table Header -->
             <ng-template pTemplate="header">
                 <tr>
-                    <th rowspan="2">RM</th>
+                    <th rowspan="2" alignFrozen="left" pFrozenColumn
+                    [frozen]="frozenObj?.rm" [ngClass]="{'left-0': !frozenObj?.rm}">
+                    RM
+                    <span class="float-right" (click)="isFrozenColumn('rm');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.rm" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.rm" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
                     <th class="text-center bg-[#ec9f48]" colspan="3">Average</th>
                     
-
-
                     <ng-container *ngFor="let month of latestMonths; let i = index;">
                         <th class="text-center" [ngClass]="i % 2 == 0 ? 'bg-[#4c6793]': 'bg-[#5f9da2]'" colspan="3">{{ monthsName(month) }}</th>
                     </ng-container>
@@ -108,7 +110,7 @@
             <!-- Table Body -->
             <ng-template pTemplate="body" let-element>
                 <tr>
-                    <td>{{element.rm}}</td>
+                    <td pFrozenColumn [frozen]="frozenObj?.rm">{{element.rm}}</td>
                     <td class="text-right">{{ element.avg_Onboard }}</td>
                     <td class="text-right">{{ element.avg_Activation }}</td>
                     <td class="text-right">{{ element.avg_Sales }}</td>
@@ -128,7 +130,7 @@
 
             <ng-template pTemplate="footer">
                 <tr>
-                    <td>Total</td>
+                    <td pFrozenColumn [frozen]="frozenObj?.rm">Total</td>
                     <td class="text-right">{{(AlldataList?.averageOnboard) || '0'}}</td>
                     <td class="text-right">{{(AlldataList?.averageActivation) || '0'}}</td>
                     <td class="text-right">{{(AlldataList?.averageSales) || '0'}}</td>
