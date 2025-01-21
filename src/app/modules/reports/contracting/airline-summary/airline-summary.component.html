@@ -23,7 +23,7 @@
             </div>
 
             <!-- Date Combo -->
-            <div class="justify-center items-center w-[245px]">
+            <div class="justify-center items-center w-[255px]">
                 <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
                     <mat-form-field class="w-full bottom_none">
                         <mat-select name="date" [formControl]="date" #dateRange
@@ -237,7 +237,6 @@
                     <td class="text-right">{{dataListTotals?.total_international_volume ? dataListTotals?.total_international_volume.toFixed(2) : 0}}</td>
                     <td class="text-right">{{dataListTotals?.max_international_weightage ? dataListTotals?.max_international_weightage.toFixed(2) : 0}}%</td>
                     <td class="text-right">{{dataListTotals?.max_international_ratio ? dataListTotals?.max_international_ratio.toFixed(2) : 0}}%</td>
-
                 </tr>
             </ng-template>
 

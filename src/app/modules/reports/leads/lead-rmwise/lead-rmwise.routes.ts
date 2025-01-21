@@ -7,6 +7,6 @@ export default [
         path: '',
         component: LeadRMWiseComponent,
         canActivate: [AuthGuard],
-        data: { module: 'BO Menu Links', group: 'Leads-Reports', operation: 'RM Wise Leads', category: 'View' }
+        data: { module: 'BO Menu Links', group: 'Leads-Reports', operation: 'Lead Summary', category: 'View' }
     },
 ] as Routes

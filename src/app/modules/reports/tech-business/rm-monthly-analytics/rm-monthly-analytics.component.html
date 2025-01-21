@@ -20,7 +20,7 @@
         <!-- Actions -->
         <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
 
-          
+
 
             <!------Global Search------>
             <div class="flex ctm_search">
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    
+
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
@@ -88,9 +88,9 @@
                     </ng-container>
                 </tr>
                 <tr>
-                        <th class="text-right">Onboard</th>
-                        <th class="text-right">Activation</th>
-                        <th class="text-right">Sales</th>
+                    <th class="text-right">Onboard</th>
+                    <th class="text-right">Activation</th>
+                    <th class="text-right">Sales</th>
 
 
                     <!-- Month Columns -->
@@ -123,6 +123,36 @@
                     </ng-container>
                 </tr>
             </ng-template>
+
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td>Total</td>
+                    <td class="text-right">{{(AlldataList?.averageOnboard) || '0'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageActivation) || '0'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageSales) || '0'}}</td>
+            
+                    <!-- Dynamic Monthly Totals -->
+                    <ng-container *ngFor="let month of latestMonths">
+                        <ng-container *ngIf="AlldataList?.monthlyTotals[monthsName(month)]">
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].onboard }}
+                            </td>
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].activation }}
+                            </td>
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].sales | number:'1.2-2' }}
+                            </td>
+                        </ng-container>
+                        <ng-container *ngIf="!AlldataList?.monthlyTotals[monthsName(month)]">
+                            <td class="text-right">0</td>
+                            <td class="text-right">0</td>
+                            <td class="text-right">0</td>
+                        </ng-container>
+                    </ng-container>
+                </tr>
+            </ng-template>
+            
 
             <!-- Empty Message -->
             <ng-template pTemplate="emptymessage">

@@ -136,7 +136,7 @@ export class TechInfoTabsComponent {
                                 this.record?.product_status === 'Waiting for Customer Update' ? 'text-blue-600 font-semibold' :
                                     this.record?.product_status === 'Waiting for Account Activation' ? 'text-blue-600 font-semibold' :
                                         this.record?.product_status === 'Rejected from Store' ? 'text-red-600 font-semibold' :
-                                            this.record?.product_status === 'Block' ? 'text-red-600 font-semibold' :
+                                            this.record?.product_status === 'Blocked' ? 'text-red-600 font-semibold' :
                                                 this.record?.product_status === 'Sales Return' ? 'text-red-600 font-semibold' :
                                                     this.record?.product_status === 'Expired' ? 'text-red-600 font-semibold' : ''
                 },
@@ -156,25 +156,6 @@ export class TechInfoTabsComponent {
                 { name: 'RM Remark', value: this.record?.special_status_remark }
             ]
         }
-    }
-
-    statusChangedLog(): void {
-        let statusJson = {
-            skip: 0,
-            take: 10,
-            orderBy: "",
-            orderDirection: 0,
-            filter: "",
-            id: this.record?.id
-        }
-        this.crmService.getStatusChangedLog(statusJson).subscribe({
-            next: (data) => {
-                this.fieldListStatusChanged = data?.data;
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-            },
-        });
     }
 
     public tabChanged(event: any): void {

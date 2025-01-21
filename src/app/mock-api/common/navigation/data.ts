@@ -156,14 +156,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:contact_page',
                 link: Routes.customers.agent_route
             },
-            {
-                id: 'master.whitelabel',
-                title: 'Whitelable',
-                type: 'basic',
-                pid: 'CUSTOMERS_WHITELABLE_VIEW',
-                icon: 'mat_outline:branding_watermark',
-                link: Routes.customers.whitelabel_route
-            },
+            // {
+            //     id: 'master.whitelabel',
+            //     title: 'Whitelable',
+            //     type: 'basic',
+            //     pid: 'CUSTOMERS_WHITELABLE_VIEW',
+            //     icon: 'mat_outline:branding_watermark',
+            //     link: Routes.customers.whitelabel_route
+            // },
             {
                 id: 'master.distributor',
                 title: 'Distributor',
@@ -390,7 +390,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         pid: 'REPORTS-ACCOUNTS_AGENTWISESERVICEWISE_VIEW',
                         icon: '',
                         link: Routes.account.agent_wise_service_wise_path_route
-                    }, 
+                    },
                     {
                         id: 'reports.balance_register',
                         title: 'Agent Balance Register',
@@ -497,31 +497,31 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     // },
                 ]
             },
-            {
-                id: 'reports.leads',
-                title: 'Leads',
-                type: 'collapsable',
-                pid: 'REPORTS_LEADS-REPORTS_VIEW',
-                icon: 'heroicons_outline:adjustments-vertical',
-                children: [
-                    {
-                        id: 'reports.ledger',
-                        title: 'Register',
-                        type: 'basic',
-                        pid: 'LEADS-REPORTS_REGISTER_VIEW',
-                        icon: '',
-                        link: Routes.leads.leads_register_route
-                    },
-                    {
-                        id: 'reports.leadsrep',
-                        title: 'RM Wise Leads',
-                        type: 'basic',
-                        pid: 'LEADS-REPORTS_RMWISELEADS_VIEW',
-                        icon: '',
-                        link: Routes.reports.leads_rmwise_route
-                    },
-                ]
-            },
+            // {
+            //     id: 'reports.leads',
+            //     title: 'Leads',
+            //     type: 'collapsable',
+            //     pid: 'REPORTS_LEADS-REPORTS_VIEW',
+            //     icon: 'heroicons_outline:adjustments-vertical',
+            //     children: [
+            //         {
+            //             id: 'reports.ledger',
+            //             title: 'Register',
+            //             type: 'basic',
+            //             pid: 'LEADS-REPORTS_REGISTER_VIEW',
+            //             icon: '',
+            //             link: Routes.leads.leads_register_route
+            //         },
+            //         {
+            //             id: 'reports.leadsrep',
+            //             title: 'RM Wise Leads',
+            //             type: 'basic',
+            //             pid: 'LEADS-REPORTS_RMWISELEADS_VIEW',
+            //             icon: '',
+            //             link: Routes.reports.leads_rmwise_route
+            //         },
+            //     ]
+            // },
             {
                 id: 'reports.sales',
                 title: 'Sales',
@@ -529,6 +529,119 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'REPORTS_SALES-REPORTS_VIEW',
                 icon: 'heroicons_outline:cube',
                 children: [
+
+                    {
+                        id: 'reports.sales',
+                        title: 'Leads',
+                        type: 'collapsable',
+                        pid: 'REPORTS_SALES-REPORTS_VIEW',
+                        // icon: 'heroicons_outline:cube',
+                        children: [
+                            {
+                                id: 'reports.leadsrep',
+                                title: 'Summary',
+                                type: 'basic',
+                                pid: 'LEADS-REPORTS_LEADSUMMARY_VIEW',
+                                icon: '',
+                                link: Routes.reports.leads_rmwise_route
+                            },
+                            {
+                                id: 'reports.ledger',
+                                title: 'Register',
+                                type: 'basic',
+                                pid: 'LEADS-REPORTS_REGISTER_VIEW',
+                                icon: '',
+                                link: Routes.leads.leads_register_route
+                            }
+                            
+                            // {
+                            //     id: 'reports.products',
+                            //     title: 'Summary',
+                            //     type: 'basic',
+                            //     pid: 'SALES-REPORTS_PRODUCTS_VIEW',
+                            //     icon: '',
+                            //     link: Routes.reports.products_route
+                            // },
+                            // {
+                            //     id: 'reports.agentsummary',
+                            //     title: 'Register',
+                            //     type: 'basic',
+                            //     pid: 'SALES-REPORTS_AGENTSUMMARY_VIEW',
+                            //     icon: '',
+                            //     link: Routes.reports.agent_summary_route
+                            // }
+                        ]
+                    },
+
+                    {
+                        id: 'reports.sales',
+                        title: 'Partner',
+                        type: 'collapsable',
+                        pid: 'REPORTS_SALES-REPORTS_VIEW',
+                        // icon: 'heroicons_outline:cube',
+                        children: [
+
+                            {
+                                id: 'reports.agentrmwise',
+                                title: 'Summary',
+                                type: 'basic',
+                                pid: 'AGENTS-REPORTS_PARTNERSUMMARY_VIEW',
+                                icon: '',
+                                link: Routes.reports.agents_rmwise_agents_route
+                            },
+                            {
+                                id: 'reports.agentsummary',
+                                title: 'Register',
+                                type: 'basic',
+                                pid: 'SALES-REPORTS_PARTNERREGISTER_VIEW',
+                                icon: '',
+                                link: Routes.reports.agent_summary_route
+                            }
+                            // {
+                            //     id: 'reports.agentsummary',
+                            //     title: 'Register',
+                            //     type: 'basic',
+                            //     pid: 'SALES-REPORTS_AGENTSUMMARY_VIEW',
+                            //     icon: '',
+                            //     link: Routes.reports.agent_summary_route
+                            // }
+                        ]
+                    },
+
+                    {
+                        id: 'reports.sales',
+                        title: 'Tech Business',
+                        type: 'collapsable',
+                        pid: 'REPORTS_SALES-REPORTS_VIEW',
+                        // icon: 'heroicons_outline:cube',
+                        children: [
+                            {
+                                id: 'reports.techBusinessSummary',
+                                title: 'Summary',
+                                type: 'basic',
+                                pid: 'TECHBUSINESSREPORT_SUMMARY_VIEW',
+                                icon: '',
+                                link: Routes.reports.tech_summary_route
+                            },
+                            {
+                                id: 'reports.techRMMonthlyAnalytics',
+                                title: 'RM Monthly Analytics',
+                                type: 'basic',
+                                pid: 'TECHBUSINESSREPORT_RMMONTHLYANALYTICS_VIEW',
+                                icon: '',
+                                link: Routes.reports.tech_rm_monthly_route
+                            },
+                            {
+                                id: 'reports.techProductMonthlyAnalytics',
+                                title: 'Product Monthly Analytics',
+                                type: 'basic',
+                                pid: 'TECHBUSINESSREPORT_PRODUCTMONTHLYANALYTICS_VIEW',
+                                icon: '',
+                                link: Routes.reports.tech_product_monthly_route
+                            },
+                        ]
+                    },
+
                     {
                         id: 'reports.products',
                         title: 'Products',
@@ -537,33 +650,33 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.reports.products_route
                     },
-                    {
-                        id: 'reports.agentsummary',
-                        title: 'Agent Summary',
-                        type: 'basic',
-                        pid: 'SALES-REPORTS_AGENTSUMMARY_VIEW',
-                        icon: '',
-                        link: Routes.reports.agent_summary_route
-                    }
+                    // {
+                    //     id: 'reports.agentsummary',
+                    //     title: 'Agent Summary',
+                    //     type: 'basic',
+                    //     pid: 'SALES-REPORTS_AGENTSUMMARY_VIEW',
+                    //     icon: '',
+                    //     link: Routes.reports.agent_summary_route
+                    // }
                 ]
             },
-            {
-                id: 'reports.agentsrep',
-                title: 'Agents',
-                type: 'collapsable',
-                pid: 'REPORTS_AGENTS-REPORTS_VIEW',
-                icon: 'heroicons_outline:square-3-stack-3d',
-                children: [
-                    {
-                        id: 'reports.agentrmwise',
-                        title: 'RM Wise Agents',
-                        type: 'basic',
-                        pid: 'AGENTS-REPORTS_RMWISEAGENTS_VIEW',
-                        icon: '',
-                        link: Routes.reports.agents_rmwise_agents_route
-                    }
-                ]
-            },
+            // {
+            //     id: 'reports.agentsrep',
+            //     title: 'Agents',
+            //     type: 'collapsable',
+            //     pid: 'REPORTS_AGENTS-REPORTS_VIEW',
+            //     icon: 'heroicons_outline:square-3-stack-3d',
+            //     children: [
+            //         {
+            //             id: 'reports.agentrmwise',
+            //             title: 'RM Wise Agents',
+            //             type: 'basic',
+            //             pid: 'AGENTS-REPORTS_RMWISEAGENTS_VIEW',
+            //             icon: '',
+            //             link: Routes.reports.agents_rmwise_agents_route
+            //         }
+            //     ]
+            // },
             {
                 id: 'reports.contracting',
                 title: 'Contracting',
@@ -586,7 +699,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         pid: 'CONTRACTING-REPORTS_AIRLINESUMMARY_VIEW',
                         icon: '',
                         link: Routes.reports.airline_summary_route
-                    }, 
+                    },
                     {
                         id: 'reports.airline_monthly',
                         title: 'Airline Monthly Analysis',
@@ -603,7 +716,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.reports.airline_career_route
                     },
-                   
+
                     {
                         id: 'reports.airline_offline',
                         title: 'Airline Offline TAT Analysis',
@@ -655,40 +768,40 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     },
                 ]
             },
-            {
-                id: 'reports.techBusiness',
-                title: 'Tech Business',
-                type: 'collapsable',
-                pid: 'REPORTS_TECHBUSINESS_VIEW',
-                icon: 'heroicons_outline:cpu-chip',
-                children: [
-                    {
-                        id: 'reports.techBusinessSummary',
-                        title: 'Tech Business Summary',
-                        type: 'basic',
-                        pid: 'TECHBUSINESSREPORT_SUMMARY_VIEW',
-                        icon: '',
-                        link: Routes.reports.tech_summary_route
-                    },
-                    {
-                        id: 'reports.techRMMonthlyAnalytics',
-                        title: 'RM Monthly Analytics',
-                        type: 'basic',
-                        pid: 'TECHBUSINESSREPORT_RMMONTHLYANALYTICS_VIEW',
-                        icon: '',
-                        link: Routes.reports.tech_rm_monthly_route
-                    }, 
-                    {
-                        id: 'reports.techProductMonthlyAnalytics',
-                        title: 'Product Monthly Analytics',
-                        type: 'basic',
-                        pid: 'TECHBUSINESSREPORT_PRODUCTMONTHLYANALYTICS_VIEW',
-                        icon: '',
-                        link: Routes.reports.tech_product_monthly_route
-                    },
-              
-                ]
-            },
+            // {
+            //     id: 'reports.techBusiness',
+            //     title: 'Tech Business',
+            //     type: 'collapsable',
+            //     pid: 'REPORTS_TECHBUSINESS_VIEW',
+            //     icon: 'heroicons_outline:cpu-chip',
+            //     children: [
+            //         {
+            //             id: 'reports.techBusinessSummary',
+            //             title: 'Tech Business Summary',
+            //             type: 'basic',
+            //             pid: 'TECHBUSINESSREPORT_SUMMARY_VIEW',
+            //             icon: '',
+            //             link: Routes.reports.tech_summary_route
+            //         },
+            //         {
+            //             id: 'reports.techRMMonthlyAnalytics',
+            //             title: 'RM Monthly Analytics',
+            //             type: 'basic',
+            //             pid: 'TECHBUSINESSREPORT_RMMONTHLYANALYTICS_VIEW',
+            //             icon: '',
+            //             link: Routes.reports.tech_rm_monthly_route
+            //         },
+            //         {
+            //             id: 'reports.techProductMonthlyAnalytics',
+            //             title: 'Product Monthly Analytics',
+            //             type: 'basic',
+            //             pid: 'TECHBUSINESSREPORT_PRODUCTMONTHLYANALYTICS_VIEW',
+            //             icon: '',
+            //             link: Routes.reports.tech_product_monthly_route
+            //         },
+
+            //     ]
+            // },
         ],
 
     },
@@ -990,7 +1103,7 @@ export const compactNavigation: FuseNavigationItem[] = [
         icon: 'heroicons_outline:cog-8-tooth',
         children: []
     },
-  
+
 ]
 export const futuristicNavigation: FuseNavigationItem[] = [
     {

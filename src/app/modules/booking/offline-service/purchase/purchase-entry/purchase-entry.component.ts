@@ -19,7 +19,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { imgExtantions } from 'app/common/const';
+import { imgPdfExtantions } from 'app/common/const';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { OfflineserviceService } from 'app/services/offlineservice.service';
 import { SupplierService } from 'app/services/supplier.service';
@@ -222,7 +222,7 @@ export class PurchaseEntryComponent {
   uploadDocument(event: any, from: string): void {
     const file = (event.target as HTMLInputElement).files[0];
 
-    const extantion: string[] = CommonUtils.valuesArray(imgExtantions);
+    const extantion: string[] = CommonUtils.valuesArray(imgPdfExtantions);
     var validator: DocValidationDTO = CommonUtils.isDocValid(file, extantion, 3036, null);
     if (!validator.valid) {
       this.alertService.showToast('error', validator.alertMessage);

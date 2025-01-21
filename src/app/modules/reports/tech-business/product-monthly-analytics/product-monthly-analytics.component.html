@@ -125,6 +125,35 @@
                 </tr>
             </ng-template>
 
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td>Total</td>
+                    <td class="text-right">{{(AlldataList?.averageAmount | number:'1.2-2') || '0'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageGrowth | number:'1.2-2') || '0'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageWeight | number:'1.2-2') || '0'}}</td>
+            
+                    <!-- Dynamic Monthly Totals -->
+                    <ng-container *ngFor="let month of latestMonths">
+                        <ng-container *ngIf="AlldataList?.monthlyTotals[monthsName(month)]">
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].totalAmount | number:'1.2-2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].averageGrowth | number:'1.2-2'}}
+                            </td>
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].totalWeightage | number:'1.2-2' }}
+                            </td>
+                        </ng-container>
+                        <ng-container *ngIf="!AlldataList?.monthlyTotals[monthsName(month)]">
+                            <td class="text-right">0</td>
+                            <td class="text-right">0</td>
+                            <td class="text-right">0</td>
+                        </ng-container>
+                    </ng-container>
+                </tr>
+            </ng-template>
+
             <!-- Empty Message -->
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">

@@ -16,6 +16,18 @@ export class SupplierService {
     return this.http.post<any>(this.baseUrl + 'Supplier/create', model);
   }
 
+  createUser(model): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/create', model);
+  }
+  
+  getSupplierUserMasterList(model): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/getSupplierUserMasterList', model);
+  }
+
+  autoLogin(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/autoLogin', model);
+  }
+
   getSupplierList(model): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'Supplier/getSupplierList', model);
   }
@@ -26,6 +38,14 @@ export class SupplierService {
 
   delete(id: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'Supplier/delete', { id });
+  }
+  
+  deleteUser(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/delete', { id });
+  }
+  
+  resetPasswordUser(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/regenerateNewPassword', { id });
   }
 
   getSupplierCombo(filter: string,OsbId?:string): Observable<any> {
@@ -40,6 +60,10 @@ export class SupplierService {
     return this.http.post<any>(this.baseUrl + 'Supplier/setBlockUnblock', { id, note });
   }
 
+  setBlockUnblockUser(id: string, note: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierUserMaster/setBlockUnblock', { id, note });
+  }
+
   setKYCVerify(id: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'Supplier/setKYCVerify', { id });
   }
@@ -47,4 +71,7 @@ export class SupplierService {
   assignKYCProfile(id: string, KycProfileId: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'Supplier/assignKycProfile', { id: id, KycProfileId: KycProfileId });
   }
+
+
+
 }

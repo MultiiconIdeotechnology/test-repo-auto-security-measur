@@ -169,7 +169,7 @@ export class tabStatusChangedLogComponent {
             return 'text-blue-600';
         } else if (status == 'Rejected from Store') {
             return 'text-red-600';
-        } else if (status == 'Block') {
+        } else if (status == 'Block' || status == 'Blocked') {
             return 'text-red-600';
         } else if (status == 'Expired') {
             return 'text-red-600';
@@ -196,7 +196,7 @@ export class tabStatusChangedLogComponent {
         );
         // filterReq['id']= this.record?.data.purchase_id;
         filterReq['module_for'] ='Product_Purchase_master',
-        filterReq['module_for_id'] = this.record?.data.purchase_id;
+        filterReq['module_for_id'] = this.record?.data?.item_id || "";
         this.crmService.getStatusChangeLogsList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;

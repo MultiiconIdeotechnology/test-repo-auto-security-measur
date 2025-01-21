@@ -275,7 +275,13 @@ export class InboxComponent extends BaseListingComponent {
         this.matDialog.open(DialCallListComponent, {
             data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true,
-        });
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res) {
+                    this.refreshItems();
+                }
+            }
+        })
     }
 
     scheduleCall(record): void {
@@ -335,7 +341,7 @@ export class InboxComponent extends BaseListingComponent {
         });
     }
 
-    deadLead(record, index): void {
+    deadLead(record: any, index: any): void {
         if (!Security.hasPermission(leadPermissions.deadLeadPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -357,7 +363,8 @@ export class InboxComponent extends BaseListingComponent {
                     this.crmService.deadLead(newJson).subscribe({
                         next: (res) => {
                             if (res) {
-                                this.dataList.splice(index, 1);
+                                this.refreshItems();
+                                // this.dataList.splice(index, 1);
                             }
                             this.alertService.showToast('success', "Dead Lead Successfully!", "top-right", true);
                             this.isLoading = false;

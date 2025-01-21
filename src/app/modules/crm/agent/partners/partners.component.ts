@@ -256,17 +256,20 @@ export class PartnersComponent extends BaseListingComponent{
         });
     }
 
-    getLastLogin(item: any): any {
-        const iosLogin = item?.iosLastLogin ? new Date(item?.iosLastLogin) : null;
-        const androidLogin = item?.androidLastLogin ? new Date(item?.androidLastLogin) : null;
-        const webLogin = item?.webLastLogin ? new Date(item?.webLastLogin) : null;
+    // Get the last login date
+    getLastLogin(item: any): string {
+        const logins = [
+            item.iosLastLogin ? new Date(item.iosLastLogin) : null,
+            item.androidLastLogin ? new Date(item.androidLastLogin) : null,
+            item.webLastLogin ? new Date(item.webLastLogin) : null
+        ].filter(date => date !== null) as Date[];
 
-        // Check all dates are null
-        // if (!iosLogin && !androidLogin && !webLogin) {
-        //     return '-';
-        // }
-        const latestLogin = this.findLatestDate([iosLogin, androidLogin, webLogin]);
-        return latestLogin;
+        if (logins.length === 0) {
+            return '';
+        }
+
+        const latestLogin = new Date(Math.max(...logins.map(date => date.getTime())));
+        return latestLogin.toISOString();
     }
 
 
@@ -308,17 +311,13 @@ export class PartnersComponent extends BaseListingComponent{
         this.matDialog.open(DialAgentCallListComponent, {
             data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true,
-        });
-    }
-
-    findLatestDate(dates: (Date | null)[]): Date | null {
-        let latestDate: Date | null = null;
-        dates.forEach(date => {
-            if (date && (!latestDate || date > latestDate)) {
-                latestDate = date;
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res) {
+                    this.refreshItems();
+                }
             }
         });
-        return latestDate;
     }
 
     purchaseProduct(record): void {

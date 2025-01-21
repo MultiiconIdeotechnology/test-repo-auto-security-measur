@@ -91,6 +91,15 @@ export const imgExtantions = {
     svg: 'svg'
 }
 
+export const imgPdfExtantions = {
+    jpg: 'jpg',
+    jpeg: 'jpeg',
+    png: 'png',
+    gif: 'gif',
+    svg: 'svg',
+    pdf: 'pdf'
+}
+
 export const mealPlan = {
     BreakfastOnly: 'Breakfast Only [CP]',
     BreaskfastLunchDinner: 'Breakfast + Lunch/Dinner [MAP]',
@@ -409,17 +418,17 @@ export const Routes = {
         bus_path: 'reports/bus',
         bus_route: 'reports/bus',
 
-        agents_rmwise_agents_path: 'reports/rmwise-agents',
-        agents_rmwise_agents_route: 'reports/rmwise-agents',
+        agents_rmwise_agents_path: 'reports/partner-summary',
+        agents_rmwise_agents_route: 'reports/partner-summary',
 
-        leads_rmwise_path: 'reports/rmwise-leads',
-        leads_rmwise_route: 'reports/rmwise-leads',
+        leads_rmwise_path: 'reports/lead-summary',
+        leads_rmwise_route: 'reports/lead-summary',
 
         products_path: 'reports/products',
         products_route: 'reports/products',
 
-        agent_summary_path: 'reports/agent_summary',
-        agent_summary_route: 'reports/agent_summary',
+        agent_summary_path: 'reports/partner-register',
+        agent_summary_route: 'reports/partner-register',
     
         pg_refund_path: 'account/pg_refund',
         pg_refund_route: 'account/pg_refund',

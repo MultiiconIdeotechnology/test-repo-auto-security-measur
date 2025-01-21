@@ -1,4 +1,3 @@
-
 <div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
 
     <!-- Header -->
@@ -24,7 +23,7 @@
             </div>
 
             <!-- Date Combo -->
-            <div class="justify-center items-center w-[245px]">
+            <div class="justify-center items-center w-[255px]">
                 <div *ngIf="date.value !== DR.setCustomDate" class="w-full flex flex-row justify-between">
                     <mat-form-field class="w-full bottom_none">
                         <mat-select name="date" [formControl]="date" #dateRange
@@ -40,8 +39,8 @@
 
                 <div *ngIf="date.value === DR.setCustomDate" class="w-full flex flex-row items-center space-x-1">
                     <mat-form-field class="w-full bottom_none">
-                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()" >
-                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly  
+                        <mat-date-range-input [rangePicker]="picker" (click)="onRangeInputClicked()">
+                            <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly
                                 #dateRangeStart />
                             <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
                                 (dateInput)="
@@ -88,7 +87,7 @@
     </div>
 
     <!----------------Table----------------->
-    <div class="table-container paginator-bottom">
+    <div class="table-container paginator-bottom tech-business-table">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
@@ -102,19 +101,25 @@
 
                 <tr>
                     <th pSortableColumn="rm_name" pResizableColumn rowspan="2">RM <p-sortIcon field="rm_name" /></th>
-                    <th class="text-center bg-[#4c6793]" colspan="3">Parther</th>
-                    <th class="text-center bg-[#5f9da2]" colspan="3">Business</th>
+                    <th class="text-center text-white bg-[#4c6793]" colspan="3">Parther</th>
+                    <th class="text-center text-white bg-[#5f9da2]" colspan="3">Business</th>
                 </tr>
                 <tr>
                     <!-- Partner Columns -->
-                    <th class="text-right" pSortableColumn="new_partner" pResizableColumn>New <p-sortIcon field="new_partner" /></th>
-                    <th class="text-right" pSortableColumn="first_transaction_partner" pResizableColumn>1st Transaction <p-sortIcon field="first_transaction_partner" /></th>
-                    <th class="text-right" pSortableColumn="activated" pResizableColumn>Activated <p-sortIcon field="activated" /></th>
+                    <th class="text-right" pSortableColumn="new_partner" pResizableColumn>New <p-sortIcon
+                            field="new_partner" /></th>
+                    <th class="text-right" pSortableColumn="first_transaction_partner" pResizableColumn>1st Transaction
+                        <p-sortIcon field="first_transaction_partner" /></th>
+                    <th class="text-right" pSortableColumn="activated" pResizableColumn>Activated <p-sortIcon
+                            field="activated" /></th>
 
                     <!-- Business Columns -->
-                    <th class="text-right" pSortableColumn="total_business" pResizableColumn>Total<p-sortIcon field="total_business" /></th>
-                    <th class="text-right" pSortableColumn="total_new" pResizableColumn>New <p-sortIcon field="total_new" /></th>
-                    <th class="text-right" pSortableColumn="total_old" pResizableColumn>Old <p-sortIcon field="total_old" /></th>
+                    <th class="text-right" pSortableColumn="total_business" pResizableColumn>Total<p-sortIcon
+                            field="total_business" /></th>
+                    <th class="text-right" pSortableColumn="total_new" pResizableColumn>New <p-sortIcon
+                            field="total_new" /></th>
+                    <th class="text-right" pSortableColumn="total_old" pResizableColumn>Old <p-sortIcon
+                            field="total_old" /></th>
 
                 </tr>
 
@@ -122,8 +127,8 @@
                     <!-- <th></th> -->
 
                     <th>
-                        <p-columnFilter  type="text" matchMode="contains" field="rm_name"
-                            placeholder="Search by RM" ariaLabel="Filter RM" />
+                        <p-columnFilter type="text" matchMode="contains" field="rm_name" placeholder="Search by RM"
+                            ariaLabel="Filter RM" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" matchMode="equals" field="new_partner"
@@ -131,15 +136,16 @@
                     </th>
                     <th>
                         <p-columnFilter type="numeric" matchMode="equals" field="first_transaction_partner"
-                            placeholder="Search by First Transaction Partner" ariaLabel="Filter First Transaction Partner" />
+                            placeholder="Search by First Transaction Partner"
+                            ariaLabel="Filter First Transaction Partner" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" matchMode="equals" field="activated"
                             placeholder="Search by Activated" ariaLabel="Filter Activated" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" field="total_business"
-                            placeholder="Search by Business Total" ariaLabel="Filter Business Total" />
+                        <p-columnFilter type="numeric" field="total_business" placeholder="Search by Business Total"
+                            ariaLabel="Filter Business Total" />
                     </th>
                     <th>
                         <p-columnFilter type="numeric" matchMode="equals" field="total_new"
@@ -170,28 +176,21 @@
                 </tr>
             </ng-template>
 
-            <!-- <ng-template pTemplate="footer">
+            <ng-template pTemplate="footer" >
                 <tr>
                     <td>Total</td>
-                    <td class="text-right">{{dataListTotals?.total_pax ? dataListTotals?.total_pax.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_pnr ? dataListTotals?.total_pnr.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_volume ? dataListTotals?.total_volume.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.max_weightage ? dataListTotals?.max_weightage.toFixed(2) : 0}}%</td>
 
-                    <td class="text-right">{{dataListTotals?.total_domestic_pax ? dataListTotals?.total_domestic_pax.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_domestic_pnr ? dataListTotals?.total_domestic_pnr.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_domestic_volume ? dataListTotals?.total_domestic_volume.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.max_domestic_weightage ? dataListTotals?.max_domestic_weightage.toFixed(2) : 0}}%</td>
-                    <td class="text-right">{{dataListTotals?.max_domestic_ratio ? dataListTotals?.max_domestic_ratio.toFixed(2) : 0}}%</td>
-                    
-                    <td class="text-right">{{dataListTotals?.total_international_pax ? dataListTotals?.total_international_pax.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_international_pnr ? dataListTotals?.total_international_pnr.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_international_volume ? dataListTotals?.total_international_volume.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.max_international_weightage ? dataListTotals?.max_international_weightage.toFixed(2) : 0}}%</td>
-                    <td class="text-right">{{dataListTotals?.max_international_ratio ? dataListTotals?.max_international_ratio.toFixed(2) : 0}}%</td>
+                    <!-- Total Columns -->
+                    <td class="text-right">{{ dataListTotals?.final_parther_new_total || 0 }}</td>
+                    <td class="text-right">{{ dataListTotals?.final_parther_fisrt_total || 0 }}</td>
+                    <td class="text-right">{{ dataListTotals?.final_parther_active_total || 0 }}</td>
 
+                    <!-- Domestic Columns -->
+                    <td class="text-right">{{ dataListTotals?.final_business_total || 0 }}</td>
+                    <td class="text-right">{{ dataListTotals?.final_business_new_total || 0 }}</td>
+                    <td class="text-right">{{ dataListTotals?.final_business_old_total || 0 }}</td>
                 </tr>
-            </ng-template> -->
+            </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">

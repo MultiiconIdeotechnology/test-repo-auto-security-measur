@@ -7,6 +7,6 @@ export default [
         path: '',
         component: AgentRMWiseComponent,
         canActivate: [AuthGuard],
-        data: { module: 'BO Menu Links', group: 'Agents-Reports', operation: 'RM Wise Agents', category: 'View' }
+        data: { module: 'BO Menu Links', group: 'Agents-Reports', operation: 'Partner Summary', category: 'View' }
     },
 ] as Routes
