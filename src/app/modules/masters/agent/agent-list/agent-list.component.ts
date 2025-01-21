@@ -604,6 +604,8 @@ export class AgentListComponent extends BaseListingComponent {
                           true
                         );
                       }
+                      this.refreshItems();
+
                     }, error: (err) => {
                       this.alertService.showToast('error', err);
                     }
