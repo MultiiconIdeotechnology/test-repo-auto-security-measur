@@ -131,18 +131,18 @@
             <ng-template pTemplate="footer">
                 <tr>
                     <td pFrozenColumn [frozen]="frozenObj?.rm">Total</td>
-                    <td class="text-right">{{(AlldataList?.averageOnboard) || '0'}}</td>
-                    <td class="text-right">{{(AlldataList?.averageActivation) || '0'}}</td>
-                    <td class="text-right">{{(AlldataList?.averageSales) || '0'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageOnboard) | number:'1.2-2'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageActivation) | number:'1.2-2'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageSales) | number:'1.2-2'}}</td>
             
                     <!-- Dynamic Monthly Totals -->
                     <ng-container *ngFor="let month of latestMonths">
                         <ng-container *ngIf="AlldataList?.monthlyTotals[monthsName(month)]">
                             <td class="text-right">
-                                {{ AlldataList?.monthlyTotals[monthsName(month)].onboard }}
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].onboard | number:'1.2-2' }}
                             </td>
                             <td class="text-right">
-                                {{ AlldataList?.monthlyTotals[monthsName(month)].activation }}
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].activation | number:'1.2-2' }}
                             </td>
                             <td class="text-right">
                                 {{ AlldataList?.monthlyTotals[monthsName(month)].sales | number:'1.2-2' }}

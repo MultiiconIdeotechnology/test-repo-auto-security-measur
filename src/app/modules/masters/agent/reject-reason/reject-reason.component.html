@@ -22,7 +22,7 @@
             Close
         </button>
         <!-- Save as draft -->
-        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="note.invalid">
+        <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="!note.value">
             Reject
         </button>
     </div>
