@@ -47,6 +47,8 @@ export class RejectReasonComponent {
   }
 
   submit(): void {
-    this.matDialogRef.close(this.note.value);
+    if(this.note.value){
+      this.matDialogRef.close(this.note.value);
+    }
   }
 }

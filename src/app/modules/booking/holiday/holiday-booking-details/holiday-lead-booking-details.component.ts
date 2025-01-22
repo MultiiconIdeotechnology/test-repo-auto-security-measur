@@ -147,10 +147,11 @@ export class HolidayLeadBookingDetailsComponent {
             Fdata['status_code'] = code,
             Fdata['note'] = res,
             this.HolidayLeadService.setLeadStatus(Fdata).subscribe({
-              next: (res) => {
-                if(res){
+              next: (response) => {
+                if(response){
                   this.alertService.showToast('success', "Holiday Reject", "top-right", true);
                   this.bookingDetail.lead_status = 'Rejected'
+                  this.bookingDetail.reject_reason = res
                 }
               },
               error: (err) => this.alertService.showToast('error', err, "top-right", true)
