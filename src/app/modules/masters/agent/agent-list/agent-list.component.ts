@@ -564,9 +564,9 @@ export class AgentListComponent extends BaseListingComponent {
     }
 
      EnableDisable(record): void {
-        // if (!Security.hasPermission(walletCreditPermissions.enableDisablePermissions)) {
-        //   return this.alertService.showToast('error', messages.permissionDenied);
-        // }
+        if (!Security.hasPermission(agentsPermissions.enableDisablePermissions)) {
+          return this.alertService.showToast('error', messages.permissionDenied);
+        }
     
         const label: string = record.is_cashback_enable ? 'Disable' : 'Enable';
         let title = label == 'Disable' ? 'Cashback Disable' : 'Cashback Enable';
