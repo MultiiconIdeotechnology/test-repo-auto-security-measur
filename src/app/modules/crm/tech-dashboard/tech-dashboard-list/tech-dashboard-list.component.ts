@@ -172,22 +172,29 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
     }
 
-    pendingRefresh(event:any) {
+    exportExcel(): void {
+        if (this.tab == 'blocked')
+            this.blocked.exportExcel()
+        else
+            this.expired.exportExcel()
+    }
+
+    pendingRefresh(event: any) {
         this.pending.searchInputControlPending.patchValue(event);
         this.pending?.refreshItems();
     }
 
-    completedRefresh(event:any) {
+    completedRefresh(event: any) {
         this.completed.searchInputControlCompleted.patchValue(event);
         this.completed?.refreshItems();
     }
 
-    expiredRefresh(event:any) {
+    expiredRefresh(event: any) {
         this.expired.searchInputControlExpired.patchValue(event);
         this.expired?.refreshItems();
     }
 
-    blockedRefresh(event:any) {
+    blockedRefresh(event: any) {
         this.blocked.searchInputControlBlocked.patchValue(event);
         this.blocked?.refreshItems();
     }
