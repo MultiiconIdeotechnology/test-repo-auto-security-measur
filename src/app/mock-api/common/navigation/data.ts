@@ -865,9 +865,17 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Holiday Products 2.0',
                 type: 'basic',
                 pid: 'INVENTORY_HOLIDAYPRODUCT2.0_VIEW',
-                icon: 'heroicons_outline:newspaper',
+                icon: 'mat_outline:holiday_village',
                 link: Routes.inventory.holiday_v2_route
             },
+            // {
+            //     id: 'inventory.cab',
+            //     title: 'Cab',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_CAB_VIEW',
+            //     icon: 'heroicons_outline:newspaper',
+            //     link: Routes.inventory.cab_route
+            // },
             // {
             //     id: 'inventory.cab',
             //     title: 'Cab',

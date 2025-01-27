@@ -16,6 +16,7 @@ import { CommonFilterComponent } from './modules/settings/common-filter/common-f
 import { CommonFilterService } from './core/common-filter/common-filter.service';
 import { AuthService } from './core/auth/auth.service';
 import { TwoFaAuthenticationService } from './services/twofa-authentication.service';
+import { CityService } from './services/city.service';
 
 @Component({
     selector: 'app-root',
@@ -56,6 +57,7 @@ export class AppComponent implements AfterViewInit {
         public _userService: UserService,
         public _filterService: CommonFilterService,
         private twoFaAuthenticationService: TwoFaAuthenticationService,
+        private cityService:CityService,
 
         @Inject(DOCUMENT) private document: Document
     ) {
@@ -98,6 +100,10 @@ export class AppComponent implements AfterViewInit {
                     if(!this._filterService.originalRmList?.length){
                         // calling the employee/rm list api
                         this._filterService.getEmployeeList("");
+                    }
+
+                    if (!this.cityService.cityListV2Subject.getValue()?.length) {
+                        this.cityService.getCityListV2({skip:0, take:10, filter:''});
                     }
 
                     // calling getTfaConfigList api

@@ -274,6 +274,7 @@ export const module_name = {
     inventoryHoliday: 'Inventory - Holiday',
     inventoryHotel: 'Inventory - Hotel',
     inventoryVisa: 'Inventory - Visa',
+    inventoryCab: 'Inventory - Cab',
     ERPSettings: 'ERP Settings',
     SaleBook: 'Sale Book',
     SalesReturn: 'Sales Return',
@@ -312,6 +313,7 @@ export const module_name = {
     tech_business_summary:'Tech Business Summary',
     tech_rm_monthly_report: 'RM Monthly Anaytics',
     tech_product_monthly_report:'Product Monthly Analytics',
+    cab_inventory: 'Cab',
 };
 
 export const filter_module_name = {
@@ -414,6 +416,7 @@ export const filter_module_name = {
     vehicle: "vehicle",
     hotel: "hotel",
     visa: "visa",
+    cab: "cab",
 
     //Hr
     permission_profile: "permission_profile",
@@ -709,6 +712,13 @@ export const inventoryHolidayPermissions = {
     setasPopularPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
     copyProductPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
     viewHolidayPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'View Holiday', category_name: category_name.view },
+}
+
+export const inventoryCabPermissions = {
+    publishUnpublishPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
+    setasPopularPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
+    copyProductPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
+    viewCabPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'View Cab', category_name: category_name.view },
 }
 
 export const vehiclePermissions = {

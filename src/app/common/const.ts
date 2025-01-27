@@ -368,6 +368,9 @@ export const Routes = {
         holiday_v2_entry_path: 'inventory/holidayv2-products/entry',
         holiday_v2_entry_route: '/inventory/holidayv2-products/entry',
 
+        cab_path: 'inventory/cab',
+        cab_route: '/inventory/cab',
+
         // markup_profile_path: 'inventory/markup-profile',
         // markup_profile_route: '/inventory/markup-profile',
         // markup_profile_entry_path: 'inventory/markup-profile/entry',
