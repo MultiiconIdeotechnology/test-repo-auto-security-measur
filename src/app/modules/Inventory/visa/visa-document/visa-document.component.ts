@@ -46,7 +46,7 @@ export class VisaDocumentComponent {
     { value: 'Passport Front Page', viewValue: 'Passport Front Page' },
     { value: 'Passport Last Page', viewValue: 'Passport Last Page' },
     { value: 'Pan Card', viewValue: 'Pan Card' },
-    { value: 'One Way Ticket', viewValue: 'One Way Ticket' },
+    { value: 'Onward Ticket', viewValue: 'Onward Ticket' },
     { value: 'Return Ticket', viewValue: 'Return Ticket' },
     { value: 'Hotel Voucher', viewValue: 'Hotel Voucher' },
     { value: 'Bank Statement', viewValue: 'Bank Statement' },
