@@ -39,7 +39,7 @@ export class CabService {
   // } // ---
 
   setCabPublish(id: any): Observable<any[]> {
-    return this.http.post<any[]>(this.baseUrl + 'cab/setPublishUnPublishForBonton', {id:id});
+    return this.http.post<any[]>(this.baseUrl + 'cab/setPublishUnPublishBonton', {id:id});
   }
 
   // getHolidaysSearchDetail(model: any): Observable<any> {

@@ -380,28 +380,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			return this.alertService.showToast('error', messages.permissionDenied);
 		}
 
-		// const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value);
-		// const req = Object.assign(filterReq);
-
-		// req.skip = 0;
-		// req.take = this._paginator.length;
-		// const filterReq = {};
-		// filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
-		// filterReq['service'] = this.saleFilter?.service || 'All';
-		// filterReq['date'] = this.saleFilter.date || 'Last Month';
-		// filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-		// filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.company_id || 'All';
-		// filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
-		// filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
-		// filterReq['supplier_id'] = this.saleFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? 'All' : this.saleFilter?.supplier_id?.map(x => x.id).join(',');
-
-		// this.SalebookService.getSalesBookReport(filterReq).subscribe(data => {
-		//   for (var dt of data?.data) {
-		//     // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
-		//   }
-		// this.tempData = cloneDeep(this.dataList);
-		let salesData = this.primengTable['_value'] || [];
-		this.tempData = cloneDeep(salesData);
+		// let salesData = this.primengTable['_value'] || [];
+		this.tempData = cloneDeep(this.dataList);
 		for (var dt of this.tempData) {
 			// dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm');
 			dt.inquiry_date = new DatePipe('en-US').transform(dt.inquiry_date, 'dd-MM-yyyy HH:mm');

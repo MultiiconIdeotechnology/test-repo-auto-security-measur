@@ -67,6 +67,7 @@ export class CabListComponent extends BaseListingComponent {
   ToCityList: any[] = [];
   selectedFromCity: any = {};
   selectedToCity: any = {};
+  _selectedColumns: any;
 
   tripList: any = [
     { label: 'Outstation One Way', value: 'Outstation One Way' },
@@ -288,7 +289,7 @@ export class CabListComponent extends BaseListingComponent {
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
-          this.holidayService.setHolidayPublish(record.id).subscribe({
+          this.cabService.setCabPublish(record.id).subscribe({
             next: (res: any) => {
               record.is_publish_for_bonton = !record.is_publish_for_bonton;
               if (record.is_publish_for_bonton) {
@@ -397,9 +398,6 @@ export class CabListComponent extends BaseListingComponent {
     //   return this.alertService.showToast('error', messages.permissionDenied);
     // }
 
-    // const oldJSONn = JSON.parse(
-    //     localStorage.getItem('holiday-filters') || '{}'
-    // );
     const queryParams = {
       id: record.id,
       // date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),
@@ -416,7 +414,7 @@ export class CabListComponent extends BaseListingComponent {
 
     // Construct the URL using the Router
     const url = this.router.serializeUrl(
-      this.router.createUrlTree(['/inventory/holidayv2-products/view-details'], navigationExtras)
+      this.router.createUrlTree(['/inventory/cab/view-details'], navigationExtras)
     );
 
     // Open the URL in a new tab/window

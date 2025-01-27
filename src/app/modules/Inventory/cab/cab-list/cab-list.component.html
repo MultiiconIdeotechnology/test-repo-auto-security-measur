@@ -30,6 +30,17 @@
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
+            <!-- Select Columns Button and Select Box -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="_selectedColumns" optionLabel="header"
+                    class="overlay-panel" [style]="{'max-width': '220px'}" display="chip"
+                    placeholder="Choose Columns" />
+            </p-overlayPanel>
+
             <!-- Refresh -->
             <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()"
                 matTooltip="Refresh">
@@ -46,7 +57,7 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        <p-table #datatable [value]="dataList" [columns]="_selectedColumns" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
@@ -282,7 +293,7 @@
                             </button> -->
                             <button mat-menu-item (click)="viewDetails(element)">
                                 <mat-icon svgIcon="heroicons_solid:eye"></mat-icon>
-                                <span style="font-weight: 600">View Holiday</span>
+                                <span style="font-weight: 600">View Cab</span>
                             </button>
                         </mat-menu>
                     </td>
