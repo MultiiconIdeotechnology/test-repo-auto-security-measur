@@ -35,6 +35,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
+import { Excel } from 'app/utils/export/excel';
 
 @Component({
     selector: 'app-crm-tech-dashboard-blocked',
@@ -118,7 +119,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
 
     ngOnInit(): void {
         this.agentList = this._filterService.agentListByValue;
-        
+
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
@@ -262,8 +263,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
         });
     }
 
-     // Api call to Get Agent data
-     getAgent(value: string) {
+    // Api call to Get Agent data
+    getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
@@ -361,5 +362,35 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    exportExcel(event?: any): void {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlBlocked.value;
+        filterReq['Take'] = this.totalRecords;
+
+        this.crmService.getTechBlockedProductList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                dt.block_date_time = dt.block_date_time ? DateTime.fromISO(dt.block_date_time).toFormat('dd-MM-yyyy') : ''
+                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+            }
+            Excel.export(
+                'Blocked',
+                [
+                    { header: 'Item Code', property: 'item_code' },
+                    { header: 'Item.', property: 'item_name' },
+                    { header: 'Product', property: 'product_name' },
+                    { header: 'Agent Code', property: 'agentCode' },
+                    { header: 'Agency Name', property: 'agency_name' },
+                    { header: 'Block Date', property: 'block_date_time' },
+                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'RM', property: 'rm' },
+                ],
+                data.data, "Blocked", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+        });
     }
 }
