@@ -65,10 +65,10 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['trip_type', 'destination_name', 'supplier_name', 'no_of_nights','no_of_days','is_popular','publish_date_time','entry_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
-
             <ng-template pTemplate="header">
+                
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th class="  text-center left-[-1px]" pFrozenColumn># </th>
 
                     <th *ngIf="!is_wl" class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="trip_type"
                         pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.trip_type"
@@ -321,7 +321,7 @@
                         <mat-icon class="text-green-600" *ngIf="element.is_audited">done</mat-icon>
                         <mat-icon class="text-red-600" *ngIf="!element.is_audited">clear</mat-icon>
                     </td>
-                    <td *ngFor="let col of columns" [ngClass]="col.field == 'priority' ? 'text-center' : ''">
+                    <td *ngFor="let col of columns">
                         {{element[col.field] | date: 'dd-MM-yyyy HH:mm:ss' || '-'}}
                     </td>
                     <!-- <td>
@@ -335,7 +335,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="10" class="text-center font-semibold text-lg">
+                    <td colspan="11" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
@@ -343,4 +343,5 @@
         </p-table>
     </div>
 
+   
 </div>

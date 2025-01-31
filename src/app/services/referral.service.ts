@@ -28,4 +28,8 @@ export class RefferralService {
         return this.http.post<any>(this.baseUrl + 'ReferralLink/delete', { id: id });
     }
 
+    setReferalLinkEnable(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ReferralLink/ReferralLink/setReferralLinkEnable', { id: id });
+    }
+
 }
