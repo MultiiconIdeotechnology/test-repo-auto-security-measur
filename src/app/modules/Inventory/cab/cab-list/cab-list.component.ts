@@ -4,7 +4,7 @@ import { Routes } from 'app/common/const';
 import { Security, filter_module_name, inventoryCabPermissions, messages, module_name } from 'app/security';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,6 +36,7 @@ import { cloneDeep } from 'lodash';
     DatePipe,
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -67,7 +68,7 @@ export class CabListComponent extends BaseListingComponent {
   ToCityList: any[] = [];
   selectedFromCity: any = {};
   selectedToCity: any = {};
-  _selectedColumns: any;
+  _selectedColumns: Column[];
 
   tripList: any = [
     { label: 'Outstation One Way', value: 'Outstation One Way' },
@@ -76,11 +77,15 @@ export class CabListComponent extends BaseListingComponent {
     { label: 'Hourly Rental', value: 'Hourly Rental' },
   ]
 
-
   cols: Column[] = [
     { field: 'bonton_publish_date_time', header: 'Bonton Publish Date' },
     { field: 'wl_publish_date_time', header: 'WL Publish Date' },
   ];
+
+  actionList: any[] = [
+    { label: 'Yes', value: true },
+    { label: 'No', value: false },
+  ]
 
   constructor(
     private cabService: CabService,
@@ -177,11 +182,6 @@ export class CabListComponent extends BaseListingComponent {
       this.ToCityList = data;
     });
   }
-
-  actionList: any[] = [
-    { label: 'Yes', value: true },
-    { label: 'No', value: false },
-  ]
 
   getSupplier(value) {
     this.flighttabService.getSupplierBoCombo(value).subscribe((data: any) => {
