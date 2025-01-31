@@ -26,7 +26,6 @@ import { RefundableComponent } from '../refundable/refundable.component';
 import { SegmentComponent } from '../segment/segment.component';
 import { AccountDetailsComponent } from '../account-details/account-details.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Linq } from 'app/utils/linq';
 import { CommonUtils } from 'app/utils/commonutils';
 import { AmendmentRequestComponent } from '../amendment-request/amendment-request.component';
@@ -249,6 +248,11 @@ export class BookingDetailsComponent {
 
   viewData(record: any): void {
     Linq.recirect('/booking/flight/details/' + record.another_flight_code);
+  }
+
+  // Navigate to Insurance
+  goToData() {
+    Linq.recirect('/booking/insurance/details/' + this.mainDataAll.insurance_id);
   }
 
   segmentChange(model, status): void {
