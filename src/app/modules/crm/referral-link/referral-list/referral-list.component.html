@@ -178,6 +178,12 @@
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600;">Delete</span>
                             </button>
+                            <button mat-menu-item (click)="setReferalLinkEnable(element)">
+                                <mat-icon class="mat-18">check_circle</mat-icon>
+                                <span style="font-weight: 600;">
+                                    {{element.is_enable ? 'Deactive' : 'Active'}}
+                                </span>
+                            </button>
                         </mat-menu>
                     </td>
                     <td>
@@ -186,9 +192,12 @@
                     <td>{{element.referral_link_for || '-'}}</td>
                     <td>{{element.referral_code || '-'}}</td>
                     <td>{{element.relationship_manager_name || '-'}}</td>
-                    <td class="text-center justify-center cursor-pointer">
-                        <mat-icon svgIcon="heroicons_outline:clipboard-document-check" class="text-blue-600 p-0.5"
-                            (click)="linkCopy(element.referral_link)" [matTooltip]="element.referral_link">
+                    <td class="text-center justify-center">
+                        <!-- <mat-icon svgIcon="heroicons_outline:clipboard-document-check" 
+                        [ngClass]="element?.is_enable ? 'text-blue-600 p-0.5 cursor-pointer' : 'text-gray-300 opacity-4 p-0.5 cursor-not-allowed'" -->
+                        <mat-icon svgIcon="heroicons_outline:clipboard-document-check" 
+                      class="text-blue-600 p-0.5 cursor-pointer"
+                            (click)="linkCopy(element)" [matTooltip]="element.referral_link">
                         </mat-icon>
                     </td>
                     <td class="text-center">{{element.no_of_leads || '-'}}</td>

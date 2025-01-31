@@ -216,10 +216,42 @@ export class ReferralListComponent extends BaseListingComponent {
         })
     }
 
-    linkCopy(link) {
-        this.clipboard.copy(link);
-        this.toasterService.showToast('success', 'Copied');
+    linkCopy(data:any) {
+        // if(data.enable){
+            this.clipboard.copy(data.referral_link);
+            this.toasterService.showToast('success', 'Copied');
+        // }
     }
+
+    setReferalLinkEnable(data: any): void {
+		// if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
+		// 	return this.alertService.showToast('error', messages.permissionDenied);
+		// }
+
+		const label: string = data.is_enable ? 'Deactivate Referral Link' : 'Activate Referral Link';
+		this.conformationService.open({
+			title: label,
+			message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+		}).afterClosed().subscribe({
+			next: (res) => {
+				if (res === 'confirmed') {
+						this.refferralService.setReferalLinkEnable(data.id).subscribe({
+							next: () => {
+                                if(!data.is_enable){
+                                    this.alertService.showToast('success', "Referral Link has been activated.", "top-right", true);
+                                } else {
+                                    this.alertService.showToast('success', "Referral Link has been deactivated.", "top-right", true);
+                                }
+
+                                data.is_enable = !data.is_enable;
+                              
+							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+						});
+				}
+			}
+		})
+
+	}
 
     getNodataText(): string {
         if (this.isLoading)
