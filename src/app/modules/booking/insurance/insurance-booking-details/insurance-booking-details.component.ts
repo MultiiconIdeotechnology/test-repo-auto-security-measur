@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AsyncPipe, CommonModule, DatePipe, JsonPipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,6 +29,7 @@ import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/
 import { TravellerInfoComponent } from '../traveller-info/traveller-info.component';
 import { CommonUtils } from 'app/utils/commonutils';
 import { LogsComponent } from '../../flight/flight/logs/logs.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-insurance-booking-details',
@@ -36,10 +37,7 @@ import { LogsComponent } from '../../flight/flight/logs/logs.component';
   templateUrl: './insurance-booking-details.component.html',
   styleUrls: ['./insurance-booking-details.component.scss'],
   imports: [
-    NgIf,
-    NgFor,
-    DatePipe,
-    AsyncPipe,
+    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     MatIconModule,
@@ -53,12 +51,11 @@ import { LogsComponent } from '../../flight/flight/logs/logs.component';
     MatSlideToggleModule,
     NgxMatTimepickerModule,
     NgxMatSelectSearchModule,
-    NgClass,
     ClipboardModule,
     MatTableModule,
     MatSliderModule,
-    JsonPipe,
-    AccountDetailsComponent
+    AccountDetailsComponent,
+    PrimeNgImportsModule
   ]
 })
 export class InsuranceBookingDetailsComponent {
@@ -167,6 +164,18 @@ export class InsuranceBookingDetailsComponent {
     })
   }
 
+  // navigate to url
+  goToData() {
+    const routes = {
+      'Airline': '/booking/flight/details/',
+      'Hotel': '/booking/hotel/details/',
+      'Bus': '/booking/bus/details/'
+    };
+    const route = routes[this.mainDataAll?.insurance_for];
+    if (route) {
+      Linq.recirect(route + this.mainDataAll?.insurance_for_id);
+    }
+  }
   
   print(val): void {
 
