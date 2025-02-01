@@ -217,10 +217,10 @@ export class ReferralListComponent extends BaseListingComponent {
     }
 
     linkCopy(data:any) {
-        // if(data.enable){
+        if(data.is_enable){
             this.clipboard.copy(data.referral_link);
             this.toasterService.showToast('success', 'Copied');
-        // }
+        }
     }
 
     setReferalLinkEnable(data: any): void {

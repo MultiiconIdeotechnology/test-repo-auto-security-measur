@@ -193,11 +193,9 @@
                     <td>{{element.referral_code || '-'}}</td>
                     <td>{{element.relationship_manager_name || '-'}}</td>
                     <td class="text-center justify-center">
-                        <!-- <mat-icon svgIcon="heroicons_outline:clipboard-document-check" 
-                        [ngClass]="element?.is_enable ? 'text-blue-600 p-0.5 cursor-pointer' : 'text-gray-300 opacity-4 p-0.5 cursor-not-allowed'" -->
                         <mat-icon svgIcon="heroicons_outline:clipboard-document-check" 
-                      class="text-blue-600 p-0.5 cursor-pointer"
-                            (click)="linkCopy(element)" [matTooltip]="element.referral_link">
+                        [ngClass]="element?.is_enable ? 'text-blue-600 p-0.5 cursor-pointer' : 'text-gray-300 opacity-4 p-0.5 cursor-not-allowed'"
+                            (click)="linkCopy(element)" [matTooltip]="element.is_enable ? element.referral_link : 'Referral deactivated'">
                         </mat-icon>
                     </td>
                     <td class="text-center">{{element.no_of_leads || '-'}}</td>
