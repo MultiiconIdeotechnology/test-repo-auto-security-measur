@@ -70,6 +70,11 @@ export class ReferralListComponent extends BaseListingComponent {
         { value: 'API', label: 'API' },
     ];
 
+    actionList:any[] = [
+        { label: 'Active', value: true },
+        { label: 'Deactive', value: false },
+      ]
+
     cols = [];
 
     constructor(
