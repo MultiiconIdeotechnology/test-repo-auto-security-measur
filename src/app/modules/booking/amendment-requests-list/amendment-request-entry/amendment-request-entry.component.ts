@@ -176,8 +176,8 @@ export class AmendmentRequestEntryComponent {
                             this.paxInfoList = data.pax_info.map(pax => [
                                 { name: 'Passenger Name', value: pax.passenger_name },
                                 { name: 'Segment Detail', value: pax.traveller_detail },
-                                { name: 'Old Booking Date', value: pax.old_booking_date ? DateTime.fromISO(pax.old_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
-                                { name: 'New Booking Date', value: pax.new_booking_date ? DateTime.fromISO(pax.new_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+                                { name: 'Old Travel Date', value: pax.old_booking_date ? DateTime.fromISO(pax.old_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+                                { name: 'New Travel Date', value: pax.new_booking_date ? DateTime.fromISO(pax.new_booking_date).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
                             ]);
                         } else if (data.amendment_info.type === 'Baggage Quotation(SSR)') {
                             this.paxInfoList = data.pax_info.map(pax => [
