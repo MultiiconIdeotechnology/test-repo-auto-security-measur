@@ -189,7 +189,7 @@
                                 placeholder="Select Option" appendTo="body">
                                 <ng-template let-option pTemplate="item">
                                     <div
-                                        (click)="_filterService.onOptionClickTwo(option, primengTable, 'first_login_date_time')">
+                                        (click)="onOptionClickThree(option, primengTable, 'first_login_date_time')">
                                         <div>{{option.label}}</div>
                                     </div>
                                 </ng-template>
@@ -223,7 +223,7 @@
                                 placeholder="Select Option" appendTo="body">
                                 <ng-template let-option pTemplate="item">
                                     <div
-                                        (click)="onOptionClickThree(option, primengTable, 'first_transaction_date_time')">
+                                        (click)="onOptionClickFour(option, primengTable, 'first_transaction_date_time')">
                                         <div>{{option.label}}</div>
                                     </div>
                                 </ng-template>
@@ -327,7 +327,7 @@
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="9" class="text-center font-semibold text-lg">
+                <td colspan="11" class="text-center font-semibold text-lg">
                     {{getNodataText()}}
                 </td>
             </tr>

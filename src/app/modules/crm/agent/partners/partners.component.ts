@@ -475,7 +475,7 @@ export class PartnersComponent extends BaseListingComponent {
     }
 
     onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
-        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+        this.selectedOptionTwoSubjectFour.next(option.id_by_value);
         
         if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
             primengTable.filter(option, field, 'custom');
