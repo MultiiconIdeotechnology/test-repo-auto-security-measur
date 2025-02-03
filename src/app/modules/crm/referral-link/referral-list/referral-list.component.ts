@@ -88,7 +88,7 @@ export class ReferralListComponent extends BaseListingComponent {
     ) {
         super(module_name.Referrallink)
         this.key = this.module_name;
-        this.sortColumn = 'entry_date_time';
+        // this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
