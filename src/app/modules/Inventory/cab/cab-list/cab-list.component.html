@@ -25,7 +25,7 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable, _selectedColumns)" matTooltip="Saved Filter"
                 [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
@@ -65,10 +65,10 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['trip_type', 'destination_name', 'supplier_name', 'no_of_nights','no_of_days','is_popular','publish_date_time','entry_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header" let-columns>
                 
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn># </th>
+                    <th class="text-center left-[-1px]" pFrozenColumn>#</th>
 
                     <th *ngIf="!is_wl" class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="trip_type"
                         pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.trip_type"
@@ -246,7 +246,7 @@
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-element let-index="rowIndex">
+            <ng-template pTemplate="body" let-element let-index="rowIndex" let-columns="columns">
                 <tr>
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
