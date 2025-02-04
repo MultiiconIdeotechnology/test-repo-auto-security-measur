@@ -146,6 +146,11 @@ export class MarkupProfileEntryComponent {
         { value: 'Percentage(%) Per Pax', viewValue: 'Percentage(%) Per Pax' },
     ];
 
+    type_list_two: any[] = [
+        { value: 'Flat Per Pax', viewValue: 'Flat Per Pax' },
+        { value: 'Percentage(%) Per Pax', viewValue: 'Percentage(%) Per Pax' },
+    ];
+
     typeAir_list: any[] = [
         { value: 'Flat for Full Amendment', viewValue: 'Flat for Full Amendment' },
         { value: 'Flat Per Pax', viewValue: 'Flat Per Pax' },
@@ -208,8 +213,10 @@ export class MarkupProfileEntryComponent {
             hot_dom_val: [0, Validators.required],
             hot_int_type: ['Flat for Full Booking', Validators.required],
             hot_int_val: [0, Validators.required],
-            bus_type: ['Flat for Full Booking', Validators.required],
+            bus_type: ['Flat Per Pax', Validators.required],
             bus_val: [0, Validators.required],
+            bus_cancel_type: ['Flat Per Pax', Validators.required],
+            bus_cancel_val: [0, Validators.required],
             ins_type: ['Flat for Full Booking', Validators.required],
             ins_val: [0, Validators.required],
             ins_can_type: ['Flat for Full Booking', Validators.required],

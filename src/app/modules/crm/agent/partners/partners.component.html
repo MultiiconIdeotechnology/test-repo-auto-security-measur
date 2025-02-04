@@ -28,14 +28,21 @@
                 <th pSortableColumn="agencyName" pResizableColumn>
                     Agency <p-sortIcon field="agencyName" />
                 </th>
-                <th class="min-w-[130px]" pSortableColumn="createdDate" pResizableColumn>
+                <th class="min-w-[200px]" pSortableColumn="createdDate" pResizableColumn>
                     Created Date <p-sortIcon field="createdDate" />
                 </th>
-                <th class="min-w-[100px]" pResizableColumn>
+                <th class="min-w-[200px]" pResizableColumn>
                     Last Login
                 </th>
-                <th class="min-w-[150px]" pSortableColumn="lastTransaction" pResizableColumn>
+                <th class="min-w-[200px]" pSortableColumn="lastTransaction" pResizableColumn>
                     Last Transaction <p-sortIcon field="lastTransaction" />
+                </th>
+                <th  class="min-w-[200px]" pSortableColumn="first_login_date_time" pResizableColumn>
+                    First Time Login <p-sortIcon field="first_login_date_time" />
+                </th>
+                <th class="min-w-[200px]" pSortableColumn="first_transaction_date_time" pResizableColumn
+                    [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
+                    First Time Transaction <p-sortIcon field="first_transaction_date_time" />
                 </th>
             </tr>
 
@@ -172,6 +179,75 @@
                         </div>
                     </ng-container>
                 </th>
+
+                <th>
+                    <p-columnFilter *ngIf="(selectionDateDropdownThree$ | async) != 'custom_date_range'"
+                        field="first_login_date_time" matchMode="custom" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                [options]="_filterService.dateRangeList" optionLabel="label"
+                                placeholder="Select Option" appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <div
+                                        (click)="onOptionClickThree(option, primengTable, 'first_login_date_time')">
+                                        <div>{{option.label}}</div>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+
+                    <ng-container *ngIf="(selectionDateDropdownThree$ | async) == 'custom_date_range'">
+                        <div class="relative inline-block">
+                            <p-columnFilter field="first_login_date_time" matchMode="custom" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar selectionMode="range" [ngModel]="value"
+                                        (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                        dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                            <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                style="top:50%; transform: translatey(-50%); right: 25px;"
+                                (click)="onOptionClickThree('', '', '')">cancel</mat-icon>
+                        </div>
+                    </ng-container>
+                </th>
+
+                <th>
+                    <p-columnFilter *ngIf="(selectionDateDropdownFour$ | async) != 'custom_date_range'"
+                        field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                [options]="_filterService.dateRangeList" optionLabel="label"
+                                placeholder="Select Option" appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <div
+                                        (click)="onOptionClickFour(option, primengTable, 'first_transaction_date_time')">
+                                        <div>{{option.label}}</div>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+
+                    <ng-container *ngIf="(selectionDateDropdownFour$ | async) == 'custom_date_range'">
+                        <div class="relative inline-block">
+                            <p-columnFilter field="first_transaction_date_time" matchMode="custom"
+                                [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar selectionMode="range" [ngModel]="value"
+                                        (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                        dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                            <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                style="top:50%; transform: translatey(-50%); right: 25px;"
+                                (click)="onOptionClickFour('', '', '')">cancel</mat-icon>
+                        </div>
+                    </ng-container>
+                </th>
             </tr>
         </ng-template>
 
@@ -234,15 +310,24 @@
                         {{ (getLastLogin(element) | date: 'dd-MM-yyyy') || ' - ' }}
                     </span>
                 </td>
-                <td class="w-full">
+                <td>
                     {{(element.lastTransaction | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+                <td>
+                    {{element.first_login_date_time && element.first_login_date_time != '0001-01-01T00:00:00'
+                    ?(element.first_login_date_time | date: "dd-MM-yyyy") : "-"}}
+                </td>
+                <td>
+                    {{element.first_transaction_date_time && element.first_transaction_date_time !=
+                    '0001-01-01T00:00:00'
+                    ? (element.first_transaction_date_time | date: "dd-MM-yyyy") : "-"}}
                 </td>
             </tr>
         </ng-template>
 
         <ng-template pTemplate="emptymessage">
             <tr class="h-14">
-                <td colspan="9" class="text-center font-semibold text-lg">
+                <td colspan="11" class="text-center font-semibold text-lg">
                     {{getNodataText()}}
                 </td>
             </tr>

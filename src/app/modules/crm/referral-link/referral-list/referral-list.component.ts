@@ -70,6 +70,11 @@ export class ReferralListComponent extends BaseListingComponent {
         { value: 'API', label: 'API' },
     ];
 
+    actionList:any[] = [
+        { label: 'Active', value: true },
+        { label: 'Deactive', value: false },
+      ]
+
     cols = [];
 
     constructor(
@@ -83,7 +88,7 @@ export class ReferralListComponent extends BaseListingComponent {
     ) {
         super(module_name.Referrallink)
         this.key = this.module_name;
-        this.sortColumn = 'entry_date_time';
+        // this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -217,10 +222,10 @@ export class ReferralListComponent extends BaseListingComponent {
     }
 
     linkCopy(data:any) {
-        // if(data.enable){
+        if(data.is_enable){
             this.clipboard.copy(data.referral_link);
             this.toasterService.showToast('success', 'Copied');
-        // }
+        }
     }
 
     setReferalLinkEnable(data: any): void {

@@ -24,7 +24,7 @@ import { AppConfig } from 'app/config/app-config';
 import { Security, agentPermissions, filter_module_name, messages, module_name, partnerPurchaseProductPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { PurchaseProductComponent } from '../purchase-product/purchase-product.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
@@ -73,12 +73,26 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         PrimeNgImportsModule
     ]
 })
-export class PartnersComponent extends BaseListingComponent{
+export class PartnersComponent extends BaseListingComponent {
     @Input() isFilterShowPartners: boolean;
     @Output() isFilterShowPartnersChange = new EventEmitter<boolean>();
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
+
+    private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+    selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+    private selectedOptionTwoSubjectFour = new BehaviorSubject<any>('');
+    selectionDateDropdownFour$ = this.selectedOptionTwoSubjectFour.asObservable();
+
+    updateSelectedOptionThree(option: string): void {
+        this.selectedOptionTwoSubjectThree.next(option);
+    }
+
+    updateSelectedOptionFour(option: string): void {
+        this.selectedOptionTwoSubjectFour.next(option);
+    }
 
     Mainmodule: any;
     module_name = module_name.crmagent;
@@ -90,7 +104,7 @@ export class PartnersComponent extends BaseListingComponent{
     appConfig = AppConfig;
     isLoading: any;
     searchInputControlpartners = new FormControl('');
-    statusList = [ 'New', 'Active', 'Inactive', 'Dormant'];
+    statusList = ['New', 'Active', 'Inactive', 'Dormant'];
 
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
@@ -122,11 +136,13 @@ export class PartnersComponent extends BaseListingComponent{
         // common filter
         this._filterService.updateSelectedOption('');
         this._filterService.updatedSelectionOptionTwo('');
+        this.updateSelectedOptionThree('');
+        this.updateSelectedOptionFour('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-            if(!match) {
-               this.agentList.push(this.selectedAgent);
+            if (!match) {
+                this.agentList.push(this.selectedAgent);
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
@@ -139,6 +155,16 @@ export class PartnersComponent extends BaseListingComponent{
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['lastTransaction']);
             }
+
+            if (resp['table_config']['first_login_date_time']?.value != null && resp['table_config']['first_login_date_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['first_login_date_time']);
+            }
+
+            if (resp['table_config']['first_transaction_date_time']?.value != null && resp['table_config']['first_transaction_date_time'].value.length) {
+                this.updateSelectedOptionFour('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
+            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPartners = true;
             this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
@@ -150,6 +176,8 @@ export class PartnersComponent extends BaseListingComponent{
         // Defult Active filter show
         this._filterService.updateSelectedOption('');
         this._filterService.updatedSelectionOptionTwo('');
+        this.updateSelectedOptionThree('');
+        this.updateSelectedOptionFour('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowPartners = true;
             this.isFilterShowPartnersChange.emit(this.isFilterShowPartners);
@@ -157,7 +185,7 @@ export class PartnersComponent extends BaseListingComponent{
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
-    
+
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
                         this.agentList.push(this.selectedAgent);
@@ -173,6 +201,16 @@ export class PartnersComponent extends BaseListingComponent{
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['lastTransaction']);
             }
+
+            if (filterData['table_config']['lastTransaction']?.value != null && filterData['table_config']['lastTransaction'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['lastTransaction']);
+            }
+
+            if (filterData['table_config']['call_date_time']?.value != null && filterData['table_config']['call_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
+            }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
@@ -183,9 +221,9 @@ export class PartnersComponent extends BaseListingComponent{
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-                this.agentList[i].id_by_value = this.agentList[i].agency_name; 
+                this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
         })
     }
@@ -237,7 +275,7 @@ export class PartnersComponent extends BaseListingComponent{
 
     refreshItems(event?: any) {
         this.isLoading = true;
-        if(this.searchInputControlpartners.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
+        if (this.searchInputControlpartners.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
             event = {};
             event.first = event?.first || 0;
         }
@@ -426,6 +464,22 @@ export class PartnersComponent extends BaseListingComponent{
                     });
                 }
             });
+    }
+
+    onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
+
+    onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectFour.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
     }
 
     ngOnDestroy(): void {

@@ -33,6 +33,7 @@ import { cloneDeep } from 'lodash';
 import { Table } from 'primeng/table';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { labels } from 'app/mock-api/apps/mailbox/data';
 
 @Component({
 	selector: 'app-sale-book',
@@ -103,7 +104,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 
 
 	dateBy = [{ value: 'BookingDate', label: 'Booking Date' }, { value: 'InvoiceDate', label: 'Invoice Date' }, { value: 'TravelDate', label: 'Travel Date' }];
-	ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }];
+	ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }, {value:'Insurance', label:'Insurance'}, {value:'Tech Product', label:'Tech Product'}, {value:'OSB', label:'OSB'}];
 	// companyBy = [{value:'BONTON HOLIDAYS PVT. LTD.', label:'BONTON HOLIDAYS PVT. LTD.'},{value:'BONTON TOURS & TRAVELS DMCC', label:'BONTON TOURS & TRAVELS DMCC'}];
 
 

@@ -202,15 +202,15 @@ export class VisaComponent extends BaseListingComponent {
         return this._selectedColumns;
     }
 
-    set selectedColumns(val: Column[]) {
-        if (Array.isArray(val)) {
-            this._selectedColumns = this.cols.filter(col =>
-                val.some(selectedCol => selectedCol.field === col.field)
-            );
-        } else {
-            this._selectedColumns = [];
-        }
-    }
+    // set selectedColumns(val: Column[]) {
+    //     if (Array.isArray(val)) {
+    //         this._selectedColumns = this.cols.filter(col =>
+    //             val.some(selectedCol => selectedCol.field === col.field)
+    //         );
+    //     } else {
+    //         this._selectedColumns = [];
+    //     }
+    // }
 
     getFilter(): any {
         const filterReq = {};
