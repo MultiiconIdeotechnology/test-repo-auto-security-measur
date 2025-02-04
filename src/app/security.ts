@@ -566,7 +566,8 @@ export const leadRegisterPermissions = {
     reshufflePermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Reshuffle', category_name: category_name.re_shuffle },
     importPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Import Leads', category_name: category_name.entry },
     relationshipManagerLogsPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Relationship Manager Logs', category_name: category_name.view },
-    deadLeadToLiveLeadPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Dead Lead To Live Lead', category_name: category_name.operation }
+    deadLeadToLiveLeadPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Dead Lead To Live Lead', category_name: category_name.operation },
+    leadsSyncPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Sync', category_name: category_name.entry },
 }
 
 
