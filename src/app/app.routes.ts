@@ -131,6 +131,7 @@ export const appRoutes: Route[] = [
             { path: Routes.account.commission_income_path, loadChildren: () => import('app/modules/reports/account/commission-income/commission-income.routes') },
             { path: Routes.account.purchase_register_path, loadChildren: () => import('app/modules/reports/account/purchase-register/purchase-register.routes') },
             { path: Routes.account.agent_wise_service_wise_path, loadChildren: () => import('app/modules/reports/account/agent-wise-service-wise/agent-wise-service-wise.component.routes') },
+            { path: Routes.account.agent_ledger_wallet_missmatch_path, loadChildren: () => import('app/modules/reports/account/agent-ledger-wallet-missmatch/agent-ledger-wallet-missmatch.component.routes') },
 
 
             //Inventory

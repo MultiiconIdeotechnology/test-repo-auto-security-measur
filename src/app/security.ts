@@ -256,6 +256,7 @@ export const module_name = {
     offlineService: 'Offline Service',
     walletCredit: 'Wallet Credit',
     agentBalance: 'Agent Balance Register',
+    agentLedgerWalletMissmatch: 'Agent Ledger/Wallet Missmatch',
     walletOutstanding: 'Wallet Outstanding',
     pgRefund: 'PG Refund',
     receipts: 'Receipts',
@@ -381,6 +382,7 @@ export const filter_module_name = {
 
     //Report
     agent_balance_register: "agent_balance_register",
+    agent_ledger_wallet_missmatch: "agent_ledger_wallet_missmatch",
     commission_income: "commission_income",
     commission_expense: "commission_expense",
     first_transaction: "first_transaction",

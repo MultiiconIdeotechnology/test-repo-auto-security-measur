@@ -96,25 +96,6 @@
                         <th class="text-center" colspan="6" *ngIf="!hideDomVolume">{{ monthsName(month) }}</th>
                     </ng-container>
                 </tr>
-                <!-- <tr> -->
-                <!-- Average Columns -->
-                <!-- <th class="text-right">Volume (INR)</th>
-                    <th class="text-right">Dom. Volume (INR)</th>
-                    <th class="text-right">Int. Volume (INR)</th>
-                    <th class="text-right">Growth (%)</th>
-                    <th class="text-right">Growth (%) Domestic</th>
-                    <th class="text-right">Growth (%) International</th> -->
-
-                <!-- Month Columns -->
-                <!-- <ng-container *ngFor="let month of latestMonths">
-                        <th class="text-right">Volume (INR)</th>
-                        <th class="text-right">Growth (%)</th>
-                        <th class="text-right">Volume Domestic (INR)</th>
-                        <th class="text-right">Growth (%) Domestic</th>
-                        <th class="text-right">Volume International (INR)</th>
-                        <th class="text-right">Growth (%) International</th>
-                    </ng-container>
-                </tr> -->
                 <tr>
                         <th class="text-right">Volume (INR)</th>
                         <th class="text-right" *ngIf="!hideDomVolume">Dom. Volume (INR)</th>
@@ -141,27 +122,6 @@
                 <tr>
                     <td>{{ element.supplier }}</td>
 
-                    <!-- Average Columns -->
-                    <!-- <td class="text-right">{{ element.avg_Volume }}</td>
-                    <td class="text-right">{{ element.avg_Volume_Domestic }}</td>
-                    <td class="text-right">{{ element.avg_Volume_International }}</td>
-                    <td class="text-right">{{ element.avg_Growth }}%</td>
-                    <td class="text-right">{{ element.avg_Growth_Domestic }}%</td>
-                    <td class="text-right">{{ element.avg_Growth_International }}%</td> -->
-
-                    <!-- Month Columns -->
-                    <!-- <ng-container *ngFor="let month of latestMonths">
-                        <ng-container *ngFor="let monthData of element.monthData">
-                            <ng-container *ngIf="monthData.month === month">
-                                <td class="text-right">{{ monthData.volume }}</td>
-                                <td class="text-right">{{ monthData.growth }}%</td>
-                                <td class="text-right">{{ monthData.volume_Domestic }}</td>
-                                <td class="text-right">{{ monthData.growth_Domestic }}%</td>
-                                <td class="text-right">{{ monthData.volume_International }}</td>
-                                <td class="text-right">{{ monthData.growth_International }}%</td>
-                            </ng-container>
-                        </ng-container>
-                    </ng-container> -->
                     <!-- Average Columns -->
                         <td class="text-right">{{ element.avg_Volume }}</td>
                         <td class="text-right" *ngIf="!hideDomVolume">{{ element.avg_Volume_Domestic }}</td>
