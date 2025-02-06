@@ -77,6 +77,9 @@
                             <i *ngIf="frozenObj?.agent" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
+                    <th [ngClass]="{'min-w-[150px]': isFilterShow}" pSortableColumn="bill_to" pResizableColumn>
+                        Bill To<p-sortIcon field="bill_to" />
+                    </th>
                     <th pSortableColumn="supplier" pResizableColumn>
                         Supplier <p-sortIcon field="supplier" />
                     </th>
@@ -156,10 +159,10 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <!-- <th>
-                        <p-columnFilter type="text" matchMode="contains" field="supplier" placeholder="Search by Supplier"
-                            ariaLabel="Filter Supplier" />
-                    </th> -->
+                    <th>
+                        <p-columnFilter type="text" field="bill_to" placeholder="Search by Bill To"
+                            ariaLabel="Filter Bill To" />
+                    </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="supplier" matchMode="equals"
                             [showMenu]="false">
@@ -264,7 +267,7 @@
                     <td class="min-w-[150px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent">
                         <span> {{element.agent || "-"}} </span>
                     </td>
-
+                    <td>{{element.bill_to || '-'}}</td>
                     <td>{{element.supplier || '-'}}</td>
                     <td class="text-left">{{(element.complete_date_time | date:'dd-MM-yyyy') || '-'}}</td>
                     <td>{{element.amendment_ref_no || '-'}}</td>
@@ -291,7 +294,7 @@
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
+                <tr class="h-15">
                     <td colspan="20" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
