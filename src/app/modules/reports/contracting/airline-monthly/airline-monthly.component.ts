@@ -129,31 +129,65 @@ export class AirlineMonthlyComponent extends BaseListingComponent implements OnD
     });
   }
 
+  // processData(data: any[]) {
+  //   // Extract distinct suppliers
+  //   const groupedData = data.reduce((acc, item) => {
+  //     if (!acc[item.supplier]) {
+  //       acc[item.supplier] = {
+  //         supplier: item.supplier,
+  //         avg_Volume: item.avg_Volume,
+  //         avg_Volume_Domestic: item.avg_Volume_Domestic,
+  //         avg_Volume_International: item.avg_Volume_International,
+  //         avg_Growth: item.avg_Growth,
+  //         avg_Growth_Domestic: item.avg_Growth_Domestic,
+  //         avg_Growth_International: item.avg_Growth_International,
+  //         monthData: []
+  //       };
+  //     }
+  //     acc[item.supplier].monthData.push(item);
+  //     return acc;
+  //   }, {});
+
+  //   // Convert the grouped data into an array
+  //   this.dataList = Object.values(groupedData);
+
+  //   // Extract the latest 3 months based on data provided
+  //   this.latestMonths = [...new Set(data.map(item => item.month))].sort((a, b) => b - a).slice(0, this.monthsBack.value);
+  // }
+
   processData(data: any[]) {
     // Extract distinct suppliers
     const groupedData = data.reduce((acc, item) => {
-      if (!acc[item.supplier]) {
-        acc[item.supplier] = {
-          supplier: item.supplier,
-          avg_Volume: item.avg_Volume,
-          avg_Volume_Domestic: item.avg_Volume_Domestic,
-          avg_Volume_International: item.avg_Volume_International,
-          avg_Growth: item.avg_Growth,
-          avg_Growth_Domestic: item.avg_Growth_Domestic,
-          avg_Growth_International: item.avg_Growth_International,
-          monthData: []
-        };
-      }
-      acc[item.supplier].monthData.push(item);
-      return acc;
+        if (!acc[item.supplier]) {
+            acc[item.supplier] = {
+                supplier: item.supplier,
+                avg_Volume: item.avg_Volume,
+                avg_Volume_Domestic: item.avg_Volume_Domestic,
+                avg_Volume_International: item.avg_Volume_International,
+                avg_Growth: item.avg_Growth,
+                avg_Growth_Domestic: item.avg_Growth_Domestic,
+                avg_Growth_International: item.avg_Growth_International,
+                monthData: []
+            };
+        }
+        acc[item.supplier].monthData.push(item);
+        return acc;
     }, {});
 
     // Convert the grouped data into an array
     this.dataList = Object.values(groupedData);
 
-    // Extract the latest 3 months based on data provided
-    this.latestMonths = [...new Set(data.map(item => item.month))].sort((a, b) => b - a).slice(0, this.monthsBack.value);
-  }
+    // Sort months by Year + Month to correctly order them
+    this.latestMonths = [...new Set(data.map(item => `${item.year}-${item.month}`))]
+        .sort((a, b) => {
+            const [yearA, monthA] = a.split('-').map(Number);
+            const [yearB, monthB] = b.split('-').map(Number);
+            return yearB - yearA || monthB - monthA; // Sort by Year, then by Month
+        })
+        .slice(0, this.monthsBack.value) // Keep the latest N months
+        .map(entry => Number(entry.split('-')[1])); // Extract only the month numbers for display
+}
+
 
   getNodataText(): string {
     if (this.isLoading)

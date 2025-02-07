@@ -258,6 +258,9 @@ export const Routes = {
         agent_wise_service_wise_path: 'account/agent-wise-service-wise',
         agent_wise_service_wise_path_route: 'account/agent-wise-service-wise',
 
+        agent_ledger_wallet_missmatch_path: 'account/agent-ledger-wallet-missmatch',
+        agent_ledger_wallet_missmatch_route: 'account/agent-ledger-wallet-missmatch',
+
         sale_path: 'account/sale-book',
         sale_route: 'account/sale-book',
 

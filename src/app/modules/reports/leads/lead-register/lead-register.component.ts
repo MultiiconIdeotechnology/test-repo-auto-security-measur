@@ -342,6 +342,21 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         })
     }
 
+    syncLeads(){
+        if (!Security.hasPermission(leadRegisterPermissions.leadsSyncPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.leadsRegisterService.syncLeads().subscribe({
+            next: () => {
+                this.alertService.showToast('success', "Leads have been synced!", "top-right", true);
+                this.refreshItems();
+            }, error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+            },
+        })
+    }
+
     getStatusColor(status: string): string {
         if (status == 'Converted' || status == 'Live') {
             return 'text-green-600';

@@ -384,6 +384,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 // link: Routes.reports.account_route
                 children: [
                     {
+                        id: 'reports.agent_ledger_wallet_missmatch',
+                        title: 'Agent Ledger/Wallet Missmatch',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_AGENTLEDGERWALLETMISSMATCH_VIEW',
+                        icon: '',
+                        link: Routes.account.agent_ledger_wallet_missmatch_route
+                    },
+                    {
                         id: 'reports.agent_wise_service_wise',
                         title: 'Agent Wise Service Wise',
                         type: 'basic',

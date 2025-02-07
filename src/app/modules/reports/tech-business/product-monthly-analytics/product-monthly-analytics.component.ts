@@ -152,7 +152,16 @@ export class ProductMonthlyAnalyticsComponent extends BaseListingComponent imple
     this.dataList = Object.values(groupedData);
 
     // Extract the latest 3 months based on data provided
-    this.latestMonths = [...new Set(data.map(item => item.month))].sort((a, b) => b - a).slice(0, this.monthsBack.value);
+    // this.latestMonths = [...new Set(data.map(item => item.month))].sort((a, b) => b - a).slice(0, this.monthsBack.value);
+      // Sort months by Year + Month to correctly order them
+      this.latestMonths = [...new Set(data.map(item => `${item.year}-${item.month}`))]
+      .sort((a, b) => {
+          const [yearA, monthA] = a.split('-').map(Number);
+          const [yearB, monthB] = b.split('-').map(Number);
+          return yearB - yearA || monthB - monthA; // Sort by Year, then by Month
+      })
+      .slice(0, this.monthsBack.value) // Keep the latest N months
+      .map(entry => Number(entry.split('-')[1])); // Extract only the month numbers for display
   }
 
   getNodataText(): string {

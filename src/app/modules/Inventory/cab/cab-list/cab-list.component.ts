@@ -46,7 +46,7 @@ import { cloneDeep } from 'lodash';
     MatDialogModule,
     MatTooltipModule,
     MatDividerModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
   ],
   templateUrl: './cab-list.component.html',
   styleUrls: ['./cab-list.component.scss']
@@ -137,7 +137,7 @@ export class CabListComponent extends BaseListingComponent {
       // }
 
       this.primengTable['filters'] = resp['table_config'];
-      // this._selectedColumns = resp['selectedColumns'] || [];
+      this._selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
       this.primengTable._filter();
     });
@@ -166,7 +166,7 @@ export class CabListComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = filterData['table_config'];
-      // this._selectedColumns = filterData['selectedColumns'] || [];
+      this._selectedColumns = filterData['selectedColumns'] || [];
       this.isFilterShow = true;
     }
   }
