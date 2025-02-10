@@ -337,6 +337,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
             'Sales Return',
             [
                 { header: 'Agent', property: 'agent' },
+                { header: 'Bill To', property: 'bill_to' },
                 { header: 'Supplier', property: 'supplier' },
                 { header: 'Return Date Time', property: 'complete_date_time' },
                 { header: 'Amendment Ref No', property: 'amendment_ref_no' },

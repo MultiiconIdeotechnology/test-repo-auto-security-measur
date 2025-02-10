@@ -453,8 +453,8 @@ export class PendingComponent extends BaseListingComponent {
 		filterReq['particularId'] = this.pendingFilter?.particularId == "all" ? '' : this.pendingFilter?.particularId;
 		filterReq['mop'] = this.pendingFilter?.mop || '';
 		filterReq['psp'] = this.pendingFilter?.psp || '';
-		filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.pendingFilter.FromDate)).toFormat('yyyy-MM-dd');
-		filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.pendingFilter.ToDate)).toFormat('yyyy-MM-dd');
+		// filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.pendingFilter.FromDate)).toFormat('yyyy-MM-dd');
+		// filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.pendingFilter.ToDate)).toFormat('yyyy-MM-dd');
 		filterReq['Take'] = this.totalRecords;
 
 		this.walletService.getWalletRechargeFilterList(filterReq).subscribe(data => {

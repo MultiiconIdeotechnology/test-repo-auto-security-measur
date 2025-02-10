@@ -399,6 +399,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			[
 				{ header: 'Agent Code', property: 'agent_code' },
 				{ header: 'Agent', property: 'master_agent' },
+				{ header: 'Bill To', property: 'bill_to' },
 				{ header: 'Service Type', property: 'service_type' },
 				{ header: 'Sales Type', property: 'sales_type' },
 				{ header: 'Agent Pan No.', property: 'agent_pan_no' },
