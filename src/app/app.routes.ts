@@ -191,6 +191,8 @@ export const appRoutes: Route[] = [
             { path: Routes.settings.supplierapi_path, loadChildren: () => import('app/modules/settings/supplier-api/supplier-api.routes') },
             { path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes') },
             { path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes') },
+            { path: Routes.settings.cashback_parameters_path, loadChildren: () => import('app/modules/settings/cashback-parameter/cashback-parameter.route') },
+
         ]
     },
 ];

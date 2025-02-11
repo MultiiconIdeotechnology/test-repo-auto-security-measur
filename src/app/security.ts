@@ -208,6 +208,7 @@ export const module_name = {
     activity: "Activity",
     city: "City",
     cachingparameters: "Caching Parameters",
+    cashbackparameters: "Cashback Parameters",
     department: "Department",
     document: 'Types of Documents',
     kycprofile: 'KYC Profile',
@@ -434,7 +435,9 @@ export const filter_module_name = {
     message_events: "message_events",
     email_setup: "email_setup",
     markup_profile: "markup_profile",
-    erp_settings: "erp_settings"
+    erp_settings: "erp_settings",
+    cashback_parameters_master: "cashback_parameters_master",
+
 }
 
 export const cityPermissions = {

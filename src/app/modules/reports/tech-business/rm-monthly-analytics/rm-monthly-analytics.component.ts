@@ -22,6 +22,9 @@ import { DateTime } from 'luxon';
 import { Subscription } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { TechBusinessService } from 'app/services/tech-business.service';
+import { MatDialog } from '@angular/material/dialog';
+import { OnboardSubreportComponent } from './onboard-subreport/onboard-subreport.component';
+import { SalesSubreportComponent } from './sales-subreport/sales-subreport.component';
 
 
 @Component({
@@ -80,7 +83,8 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
 
   constructor(
     private techService: TechBusinessService,
-    public _filterService: CommonFilterService
+    public _filterService: CommonFilterService,
+    private matDialog: MatDialog,
   ) {
     super(module_name.tech_rm_monthly_report)
     this.key = 'rm';
@@ -167,6 +171,7 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
       })
       .slice(0, this.monthsBack.value) // Keep the latest N months
       .map(entry => Number(entry.split('-')[1])); // Extract only the month numbers for display
+
   }
 
   getNodataText(): string {
@@ -203,6 +208,47 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
   onMonthSelectionChange(event: any) {
     this.monthsBack = event.value
     this.refreshItems();
+  }
+
+
+  // open a subreport for onboard
+  openOnboardModal(key:string, monthData:any){
+    let date = this.getFirstDateOfMonth(monthData.month, monthData.year)
+    this.matDialog.open(OnboardSubreportComponent, {
+                data: {
+                  rm_id:monthData.rm_id,
+                  rm_name: monthData.rm,
+                  date:date,
+                  type:key
+                },
+                panelClass: 'custom-dialog-modal',
+            }).afterClosed().subscribe(res => {
+                if (res) {
+                    // this.refreshItems();
+                }
+            })
+  }
+
+  //open a subreport for sales 
+  openSalesModal(monthData:any){
+    let date = this.getFirstDateOfMonth(monthData.month, monthData.year)
+    this.matDialog.open(SalesSubreportComponent, {
+                data: {
+                  rm_id:monthData.rm_id,
+                  rm_name: monthData.rm,
+                  date:date,
+                },
+                panelClass: 'custom-dialog-modal',
+            }).afterClosed().subscribe(res => {
+                if (res) {
+                    // this.refreshItems();
+                }
+            })
+  }
+
+  getFirstDateOfMonth(month: number, year:any): string {
+    const formattedMonth = String(month).padStart(2, '0'); // Ensure two-digit month
+    return `01-${formattedMonth}-${year}`;
   }
 
   exportExcel(): void {
@@ -245,6 +291,8 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
       'RM Monthly Analytics'
     );
   }
+
+
 
 }
 

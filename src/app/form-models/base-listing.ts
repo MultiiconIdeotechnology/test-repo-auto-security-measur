@@ -231,6 +231,7 @@ export abstract class BaseListingComponent implements OnInit {
             this.sortColumn,
             (this.sortDirection === 'desc' ? 1 : 0)
         );
+        console.log("filterReq", filterReq)
         return filterReq;
     }
 
@@ -301,15 +302,15 @@ export abstract class BaseListingComponent implements OnInit {
 
     //#region Delete Entry
 
-    public delete(model?: any): void {
+    public delete(model?: any, index?:number): void {
         if (!Security.hasDeleteEntryPermission(this.module)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
 
-        this.deleteInternal(model);
+        this.deleteInternal(model, index);
     }
 
-    protected deleteInternal(model: any): void {
+    protected deleteInternal(model: any, index?:number): void {
     }
 
     //#endregion

@@ -470,5 +470,8 @@ export const Routes = {
 
         caching_parameters_path: 'settings/caching_parameters',
         caching_parameters_route: '/settings/caching_parameters',
+
+        cashback_parameters_path: 'settings/cashback_parameters',
+        cashback_parameters_route: '/settings/cashback_parameters',
     }
 }
