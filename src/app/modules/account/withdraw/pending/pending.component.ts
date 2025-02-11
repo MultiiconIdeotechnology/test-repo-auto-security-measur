@@ -226,7 +226,7 @@ export class WPendingComponent extends BaseListingComponent {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
-    if (data.bank_audit) {
+    if (data?.bank_audit || data?.withdraw_type == 'Deduction') {
       const label: string = 'Audit Wallet Withdraw'
       this.conformationService.open({
         title: label,
