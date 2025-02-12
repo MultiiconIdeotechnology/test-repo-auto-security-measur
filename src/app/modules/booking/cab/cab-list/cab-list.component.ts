@@ -30,6 +30,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { Linq } from 'app/utils/linq';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { ForexService } from 'app/services/forex.service';
 
 @Component({
   selector: 'app-cab-list',
@@ -83,6 +84,7 @@ export class CabListComponent extends BaseListingComponent {
     private cabService: CabService,
     private matDialog: MatDialog,
     private agentService: AgentService,
+    private forexService: ForexService,
     private toasterService: ToasterService,
     public _filterService: CommonFilterService,
     private conformationService: FuseConfirmationService,
@@ -97,6 +99,7 @@ export class CabListComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
+    this.getSupplierList('');
     this.agentList = this._filterService.agentListById;
 
     // common filter
@@ -161,7 +164,24 @@ export class CabListComponent extends BaseListingComponent {
     }
   }
 
-  
+  // Api to get the Supplier list data
+  getSupplierList(value: string, bool = true) {
+    this.forexService.getSupplierForexCombo(value).subscribe((data: any) => {
+      this.supplierList = data;
+    });
+  }
+
+  getAgent(value: string) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.agentList = data;
+
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+      }
+    });
+  }
+
+
   refreshItems(event?: any) {
     this.isLoading = true;
     let model = this.getNewFilterReq(event)
@@ -220,6 +240,8 @@ export class CabListComponent extends BaseListingComponent {
         [
           { header: 'Ref. No.', property: 'reference_no' },
           { header: 'Status', property: 'lead_status' },
+          { header: 'Supplier Name', property: 'supplier_name' },
+          { header: 'Agent Name', property: 'agent_name' },
           { header: 'Date', property: 'entry_date_time' },
           { header: 'Trip Type', property: 'trip_type' },
           { header: 'Lead Name', property: 'lead_pax_name' },

@@ -71,6 +71,12 @@
                     </th>
                     <th pSortableColumn="lead_status" pResizableColumn>
                         Status <p-sortIcon field="lead_status" />
+                    </th> 
+                    <th pSortableColumn="supplier_name" pResizableColumn>
+                        Supplier <p-sortIcon field="supplier_name" />
+                    </th>
+                    <th pSortableColumn="agent_name" pResizableColumn>
+                        Agent <p-sortIcon field="agent_name" />
                     </th>
                     <th pSortableColumn="entry_date_time" pResizableColumn>
                         Date <p-sortIcon field="entry_date_time" />
@@ -103,6 +109,45 @@
                                     appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="supplier_id_filters" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
+                                    [(ngModel)]="selectedAgent" [filter]="true" filterBy="company_name"
+                                    (onFilter)="getSupplierList($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select City">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            {{agent.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                            </div>
+                                        </div>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
@@ -184,6 +229,12 @@
                         <span [ngClass]="getStatusColor(element.lead_status)">
                             {{element.lead_status || "-"}}
                         </span>
+                    </td>
+                    <td>
+                        {{element.supplier_name || "-"}}
+                    </td>
+                    <td>
+                        {{element.agent_name || "-"}}
                     </td>
                     <td>
                         {{(element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
