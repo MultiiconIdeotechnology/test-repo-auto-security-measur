@@ -59,7 +59,7 @@ export class SaleFilterComponent {
   public ToDate: any;
   public dateRanges = [];
   dateBy = [{value:'BookingDate', name:'Booking Date'},{value:'InvoiceDate', name:'Invoice Date'},{value:'TravelDate', name:'Travel Date'}];
-  ServicesBy = [{value:'All', name:'All'},{value:'Airline', name:'Airline'},{value:'Hotel', name:'Hotel'},{value:'Bus', name:'Bus'},{value:'Visa', name:'Visa'},{value:'Insurance', name:'Insurance'}];
+  ServicesBy = [{value:'All', name:'All'},{value:'Airline', name:'Airline'},{value:'Hotel', name:'Hotel'},{value:'Bus', name:'Bus'},{value:'Visa', name:'Visa'},{value:'Insurance', name:'Insurance'}, {value:'Tech Product', name:'Tech Product'}, {value:'OSB', name:'OSB'}];
 
   constructor(
     public matDialogRef: MatDialogRef<SaleFilterComponent>,

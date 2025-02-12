@@ -26,7 +26,6 @@ import { RefundableComponent } from '../refundable/refundable.component';
 import { SegmentComponent } from '../segment/segment.component';
 import { AccountDetailsComponent } from '../account-details/account-details.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Linq } from 'app/utils/linq';
 import { CommonUtils } from 'app/utils/commonutils';
 import { AmendmentRequestComponent } from '../amendment-request/amendment-request.component';
@@ -251,6 +250,11 @@ export class BookingDetailsComponent {
     Linq.recirect('/booking/flight/details/' + record.another_flight_code);
   }
 
+  // Navigate to Insurance
+  goToData() {
+    Linq.recirect('/booking/insurance/details/' + this.mainDataAll.insurance_id);
+  }
+
   segmentChange(model, status): void {
     this.matDialog.open(SegmentComponent, {
       data: { data: model, mainId: this.mainData[0].id, status: status },
@@ -366,10 +370,10 @@ export class BookingDetailsComponent {
   }
 
   invoice(record): void {
-    const recordData = record == 'print' ? this.mainData[0].invoice_id : record
+    const recordData = record == 'DMCC' ? this.mainData[0].invoice_id : this.mainData[0].invoice_id_inr
     this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no + '.pdf');
+        CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.mainData[0].invoice_no : this.mainData[0].invoice_no_inr + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }
@@ -404,7 +408,7 @@ export class BookingDetailsComponent {
 
   fileLogs() {
     this.matDialog.open(FileLogsComponent, {
-      data: this.mainData[0].id,
+      data: {id:this.mainData[0].id, send: 'Airline'},
       disableClose: true
     }).afterClosed().subscribe(res => {
       // if(res)

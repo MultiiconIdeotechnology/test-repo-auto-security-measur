@@ -1,5 +1,5 @@
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
-import { NgIf, NgFor, DatePipe, AsyncPipe, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FuseNavigationService } from '@fuse/components/navigation';
 import { Routes } from 'app/common/const';
-import { ClassyLayoutComponent } from 'app/layout/layouts/vertical/classy/classy.component';
 import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { BusService } from 'app/services/bus.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
@@ -30,6 +29,8 @@ import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/comp
 import { Security, busBookingPermissions, messages } from 'app/security';
 import { CancellationPolicyComponent } from '../cancellation-policy/cancellation-policy.component';
 import { LogsComponent } from '../../flight/flight/logs/logs.component';
+import { FileLogsComponent } from '../../flight/flight/file-logs/file-logs.component';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 
 @Component({
   selector: 'app-bus-booking-details',
@@ -37,10 +38,7 @@ import { LogsComponent } from '../../flight/flight/logs/logs.component';
   styleUrls: ['./bus-booking-details.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
-    NgFor,
-    DatePipe,
-    AsyncPipe,
+    CommonModule,
     RouterModule,
     ReactiveFormsModule,
     MatIconModule,
@@ -54,9 +52,9 @@ import { LogsComponent } from '../../flight/flight/logs/logs.component';
     MatSlideToggleModule,
     NgxMatTimepickerModule,
     NgxMatSelectSearchModule,
-    NgClass,
     ClipboardModule,
     AccountDetailsComponent,
+    PrimeNgImportsModule
   ]
 })
 export class BusBookingDetailsComponent {
@@ -156,13 +154,12 @@ export class BusBookingDetailsComponent {
     });
   }
 
-  cancellationPolicy(record){
+  cancellationPolicy(record) {
     this.matDialog.open(CancellationPolicyComponent, {
-      data:  record,
+      data: record,
       disableClose: true
     })
   }
-
 
   invoice(): void {
     if (!Security.hasPermission(busBookingPermissions.invoicePermissions)) {
@@ -171,14 +168,24 @@ export class BusBookingDetailsComponent {
 
     this.flighttabService.Invoice(this.mainData.invoice_id).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no == null ? this.mainDataAll.booking_ref_no : this.mainDataAll.invoice_no  + '.pdf');
+        CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no == null ? this.mainDataAll.booking_ref_no : this.mainDataAll.invoice_no + '.pdf');
       }, error: (err) => {
         this.toastr.showToast('error', err)
       }
     })
   }
 
-  Amendment(){
+  fileLogs() {
+    this.matDialog.open(FileLogsComponent, {
+      data: { id: this.mainData.id, send: 'Bus' },
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      // if(res)
+      // this.refreshItems();
+    })
+  }
+
+  Amendment() {
     if (!Security.hasPermission(busBookingPermissions.amendmentPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
@@ -188,69 +195,69 @@ export class BusBookingDetailsComponent {
     this.router.navigate([this.busRoute])
   }
 
-  checkStatus(){
+  checkStatus() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-    const label: string = 'Check Status';
-    this.conformationService
-      .open({
-        title: label,
-        message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res === 'confirmed') {
-          const json = {
-            id: id,
-            service: 'Bus'
-          }
-          this.flighttabService.checkPaymentStatus(json).subscribe({
-            next: (res:any) => {
-              this.toastr.showToast('success', res.status, 'top-right', true);
-            },
-            error: (err) => {
-              this.toastr.showToast('error', err, 'top-right', true);
+      const label: string = 'Check Status';
+      this.conformationService
+        .open({
+          title: label,
+          message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res === 'confirmed') {
+            const json = {
+              id: id,
+              service: 'Bus'
+            }
+            this.flighttabService.checkPaymentStatus(json).subscribe({
+              next: (res: any) => {
+                this.toastr.showToast('success', res.status, 'top-right', true);
+              },
+              error: (err) => {
+                this.toastr.showToast('error', err, 'top-right', true);
 
-            },
-          });
-        }
-      });
+              },
+            });
+          }
+        });
     })
   }
 
-  refund(){
+  refund() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-    const label: string = 'Refund';
-    this.conformationService
-      .open({
-        title: label,
-        message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
-      })
-      .afterClosed()
-      .subscribe((res) => {
-        if (res === 'confirmed') {
-          const json = {
-            id: id,
-            service: 'Bus'
-          }
-          this.flighttabService.generateRevertPayment(json).subscribe({
-            next: (res:any) => {
-              this.alertService.showToast('success', 'Refund is initiated!', 'top-right', true);
-            },
-            error: (err) => {
-              this.alertService.showToast('error', err, 'top-right', true);
+      const label: string = 'Refund';
+      this.conformationService
+        .open({
+          title: label,
+          message: 'Are you sure want to ' + label.toLowerCase() + ' ?',
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res === 'confirmed') {
+            const json = {
+              id: id,
+              service: 'Bus'
+            }
+            this.flighttabService.generateRevertPayment(json).subscribe({
+              next: (res: any) => {
+                this.alertService.showToast('success', 'Refund is initiated!', 'top-right', true);
+              },
+              error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
 
-            },
-          });
-        }
-      });
+              },
+            });
+          }
+        });
     })
   }
 
   logs(): void {
     this.matDialog.open(LogsComponent, {
-      data: {data: this.mainDataAll.id, service:'Bus'},
+      data: { data: this.mainDataAll.id, service: 'Bus' },
       disableClose: true
     }).afterClosed().subscribe(res => {
       // if(res)
@@ -271,8 +278,8 @@ export class BusBookingDetailsComponent {
   // }
   agentInfo(data): void {
     if (data.master_agent_id) {
-    //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
-         Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+      //   this.router.navigate([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
+      Linq.recirect([Routes.customers.agent_entry_route + '/' + data.master_agent_id + '/readonly'])
     }
     else {
       this.B2BPartnerInfo();
@@ -283,11 +290,11 @@ export class BusBookingDetailsComponent {
     }
   }
 
-  B2BPartnerInfo(){
+  B2BPartnerInfo() {
     this.matDialog.open(SubAgentInfoComponent, {
-          data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
-          disableClose: true
-        })
+      data: { data: this.mainDataAll, readonly: true, id: this.mainDataAll.agent_id },
+      disableClose: true
+    })
   }
 
   copyLink(link: string): void {
@@ -297,6 +304,11 @@ export class BusBookingDetailsComponent {
 
   isSamePlanes(plan1, plan2): boolean {
     return `${plan1.airlineCode}${plan1.fareClass}${plan1.flightNumber}` === `${plan2.airlineCode}${plan2.fareClass}${plan2.flightNumber}`
+  }
+
+  // Navigate to Insurance
+  goToData() {
+    Linq.recirect('/booking/insurance/details/' + this.mainDataAll.insurance_id);
   }
 
 }

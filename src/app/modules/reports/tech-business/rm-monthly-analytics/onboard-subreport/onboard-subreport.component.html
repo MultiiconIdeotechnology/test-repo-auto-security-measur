@@ -1,0 +1,89 @@
+
+<div class="sticky top-0 z-10 bg-primary">
+    <div class="flex items-center justify-between border-b border-gray-border p-3">
+        <span class="font-inter font-semibold text-lg text-white">{{data?.rm_name ? data.rm_name: ''}}</span>
+        <span class="flex items-center gap-2">
+            <div class="flex ctm_search dark:bg-gray-900">
+                <input #inputRef matInput [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="onGlobalFilterSearch(inputRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="onGlobalFilterSearch(inputRef.value)"></mat-icon>
+            </div>
+            <!-- <mat-icon svgIcon="close" class="cursor-pointer theme-black-text" (click)="closeModal()"></mat-icon> -->
+            <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </span>
+    </div>
+</div>
+
+<div class="table-container modal-custom-table paginator-bottom">
+        <p-table #datatable  [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+        [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+        [loading]="isLoading" [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+        [showJumpToPageDropdown]="false"
+        [globalFilterFields]="['code', 'company', 'agency', 'status', 'email', 'mobile', 'city', 'currency', 'signup']"
+        styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <!-- <th class="  text-center left-[-1px]" pFrozenColumn>#</th> -->
+                <th class="min-w-[110px] dark:bg-[#1e293b]" pSortableColumn="code" pResizableColumn
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code"
+                    [ngClass]="{'left-0': !frozenObj?.code}">
+                    Code <p-sortIcon field="code" />
+                    <span class="float-right" (click)="isFrozenColumn('code');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.code" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.code" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                <th pSortableColumn="company" pResizableColumn>
+                    Company <p-sortIcon field="company" />
+                </th>
+                <th pSortableColumn="agency" pResizableColumn>
+                    Agency <p-sortIcon field="agency" />
+                </th>
+                <th pSortableColumn="status" pResizableColumn>
+                    Status <p-sortIcon field="status" />
+                </th>
+                <th pSortableColumn="email" pResizableColumn>
+                    Email <p-sortIcon field="email" />
+                </th>
+                <th pSortableColumn="mobile" pResizableColumn>
+                    Mobile <p-sortIcon field="mobile" />
+                </th>
+                <th pSortableColumn="city" pResizableColumn>
+                    City <p-sortIcon field="city" />
+                </th>
+                <th pSortableColumn="currency" pResizableColumn>
+                    Currency <p-sortIcon field="currency" />
+                </th>
+                <th pSortableColumn="signup" pResizableColumn>
+                    Signup <p-sortIcon field="signup" />
+                </th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-element let-columns="columns">
+            <tr>
+                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">{{element.code}}</td>
+                <td>{{element.company || "-"}}</td>
+                <td>{{element.agency || "-"}}</td>
+                <td>{{element.status || "-"}}</td>
+                <td>{{element.email || "-"}}</td>
+                <td>{{element.mobile || "-"}}</td>
+                <td>{{element.city || "-"}}</td>
+                <td>{{element.currency || "-"}}</td>
+                <td>{{element.signup ? (element.signup | date: 'dd-MM-yyyy HH:mm:ss') : "-"}}</td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="18" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

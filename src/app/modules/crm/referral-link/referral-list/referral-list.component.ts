@@ -70,6 +70,11 @@ export class ReferralListComponent extends BaseListingComponent {
         { value: 'API', label: 'API' },
     ];
 
+    actionList:any[] = [
+        { label: 'Active', value: true },
+        { label: 'Deactive', value: false },
+      ]
+
     cols = [];
 
     constructor(
@@ -83,7 +88,7 @@ export class ReferralListComponent extends BaseListingComponent {
     ) {
         super(module_name.Referrallink)
         this.key = this.module_name;
-        this.sortColumn = 'entry_date_time';
+        // this.sortColumn = 'entry_date_time';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -216,10 +221,42 @@ export class ReferralListComponent extends BaseListingComponent {
         })
     }
 
-    linkCopy(link) {
-        this.clipboard.copy(link);
-        this.toasterService.showToast('success', 'Copied');
+    linkCopy(data:any) {
+        if(data.is_enable){
+            this.clipboard.copy(data.referral_link);
+            this.toasterService.showToast('success', 'Copied');
+        }
     }
+
+    setReferalLinkEnable(data: any): void {
+		// if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
+		// 	return this.alertService.showToast('error', messages.permissionDenied);
+		// }
+
+		const label: string = data.is_enable ? 'Deactivate Referral Link' : 'Activate Referral Link';
+		this.conformationService.open({
+			title: label,
+			message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+		}).afterClosed().subscribe({
+			next: (res) => {
+				if (res === 'confirmed') {
+						this.refferralService.setReferalLinkEnable(data.id).subscribe({
+							next: () => {
+                                if(!data.is_enable){
+                                    this.alertService.showToast('success', "Referral Link has been activated.", "top-right", true);
+                                } else {
+                                    this.alertService.showToast('success', "Referral Link has been deactivated.", "top-right", true);
+                                }
+
+                                data.is_enable = !data.is_enable;
+                              
+							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+						});
+				}
+			}
+		})
+
+	}
 
     getNodataText(): string {
         if (this.isLoading)

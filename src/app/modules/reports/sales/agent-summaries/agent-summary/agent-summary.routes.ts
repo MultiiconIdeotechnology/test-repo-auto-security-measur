@@ -7,6 +7,6 @@ export default [
         path: '',
         component: AgentSummaryComponent,
         canActivate: [AuthGuard],
-        data: { module: 'BO Menu Links', group: 'Sales-Reports', operation: 'Agent Summary', category: 'View' }
+        data: { module: 'BO Menu Links', group: 'Sales-Reports', operation: 'Partner Register', category: 'View' }
     },
 ] as Routes

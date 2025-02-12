@@ -70,12 +70,12 @@
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="text-center left-[-1px]" pFrozenColumn>#</th>
+                    <!-- <th class="text-center left-[-1px]" pFrozenColumn>#</th> -->
                     <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b] text-center"
                         pSortableColumn="is_read_by_supplier" pResizableColumn alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.is_read_by_supplier"
                         [ngClass]="{'left-0': !frozenObj?.is_read_by_supplier}">
-                        Read By Supplier <p-sortIcon field="is_read_by_supplier" />
+                        Read <p-sortIcon field="is_read_by_supplier" />
                         <span class="float-right"
                             (click)="isFrozenColumn('is_read_by_supplier');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.is_read_by_supplier" class="pi pi-lock-open icon-size-3"></i>
@@ -134,7 +134,7 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <!-- <th class="left-[-1px]" pFrozenColumn></th> -->
 
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.is_read_by_supplier">
                         <p-columnFilter field="is_read_by_supplier" matchMode="equals" [showMenu]="false">
@@ -183,7 +183,7 @@
                     </th> -->
 
                     <th>
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdown != 'custom_date_range'"
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
                             field="entry_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -199,7 +199,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdown == 'custom_date_range'">
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -211,7 +211,7 @@
                                 </p-columnFilter>
                                 <mat-icon class="icon-size-4 cursor-pointer absolute"
                                     style="top:50%; transform: translatey(-50%); right: 25px;"
-                                    (click)="_filterService.selectionDateDropdown = ''">cancel</mat-icon>
+                                    (click)="_filterService.onOptionClick('', primengTable, '')">cancel</mat-icon>
                             </div>
                         </ng-container>
                     </th>
@@ -362,7 +362,7 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <!-- <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -373,7 +373,7 @@
                             </button>
                             <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 1)">
                                 <mat-icon svgIcon="heroicons_outline:check-circle"></mat-icon>
-                                <span style="font-weight: 600">Confirm</span>
+                                <span style="font-weight: 600">Complete</span>
                             </button>
                             <button *ngIf="element.lead_status == 'New'" mat-menu-item (click)="status(element, 2)">
                                 <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
@@ -384,7 +384,7 @@
                                 <span style="font-weight: 600">Reject</span>
                             </button>
                         </mat-menu>
-                    </td>
+                    </td> -->
                     <td class="min-w-[175px] text-center" alignFrozen="left" pFrozenColumn
                         [frozen]="frozenObj?.is_read_by_supplier">
                         <span [matTooltip]="element['is_read_by_supplier'] ? 'Read': 'Unread'"

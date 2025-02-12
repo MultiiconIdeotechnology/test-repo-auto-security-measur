@@ -57,6 +57,10 @@ export class AgentService {
     regenerateNewPassword(id: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Agent/regenerateNewPassword', { id: id });
     }
+    
+    setCashbackEnable(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setCashbackEnable', { id: id });
+    }
 
     // transferOldToNew
     transferOldToNew(model: any): Observable<any> {
@@ -191,5 +195,9 @@ export class AgentService {
 
     agentMobileVerify(otp: string, mobileCode: string, whatsAppNumber: string, for_agent?: string): Observable<any> {
         return this.http.post<any>(environment.apiUrl + ('auth/agent/mobileVerify'), { code: otp, mobile_code: mobileCode, mobile_number: whatsAppNumber, for: for_agent });
+    }
+
+    setCreditcardActiveDeactive(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'paymentlink/setCC_Active', { id });
     }
 }

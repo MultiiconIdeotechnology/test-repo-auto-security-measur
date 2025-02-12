@@ -33,6 +33,7 @@ import { cloneDeep } from 'lodash';
 import { Table } from 'primeng/table';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { labels } from 'app/mock-api/apps/mailbox/data';
 
 @Component({
 	selector: 'app-sale-book',
@@ -103,7 +104,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 
 
 	dateBy = [{ value: 'BookingDate', label: 'Booking Date' }, { value: 'InvoiceDate', label: 'Invoice Date' }, { value: 'TravelDate', label: 'Travel Date' }];
-	ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }];
+	ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }, {value:'Insurance', label:'Insurance'}, {value:'Tech Product', label:'Tech Product'}, {value:'OSB', label:'OSB'}];
 	// companyBy = [{value:'BONTON HOLIDAYS PVT. LTD.', label:'BONTON HOLIDAYS PVT. LTD.'},{value:'BONTON TOURS & TRAVELS DMCC', label:'BONTON TOURS & TRAVELS DMCC'}];
 
 
@@ -380,28 +381,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			return this.alertService.showToast('error', messages.permissionDenied);
 		}
 
-		// const filterReq = GridUtils.GetFilterReq(this._paginator, this._sort, this.searchInputControl.value);
-		// const req = Object.assign(filterReq);
-
-		// req.skip = 0;
-		// req.take = this._paginator.length;
-		// const filterReq = {};
-		// filterReq['filter_date_by'] = this.saleFilter?.filter_date_by || 'BookingDate';
-		// filterReq['service'] = this.saleFilter?.service || 'All';
-		// filterReq['date'] = this.saleFilter.date || 'Last Month';
-		// filterReq['agent_id'] = this.saleFilter?.agent_id?.id || 'All';
-		// filterReq['billing_company_id'] = this.saleFilter?.billing_company_id.company_id || 'All';
-		// filterReq['from_date'] = DateTime.fromJSDate(this.saleFilter.FromDate).toFormat('yyyy-MM-dd');
-		// filterReq['to_date'] = DateTime.fromJSDate(this.saleFilter.ToDate).toFormat('yyyy-MM-dd');
-		// filterReq['supplier_id'] = this.saleFilter?.supplier_id?.map(x => x.id).join(',') == 'all' ? 'All' : this.saleFilter?.supplier_id?.map(x => x.id).join(',');
-
-		// this.SalebookService.getSalesBookReport(filterReq).subscribe(data => {
-		//   for (var dt of data?.data) {
-		//     // dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy hh:mm a')
-		//   }
-		// this.tempData = cloneDeep(this.dataList);
-		let salesData = this.primengTable['_value'] || [];
-		this.tempData = cloneDeep(salesData);
+		// let salesData = this.primengTable['_value'] || [];
+		this.tempData = cloneDeep(this.dataList);
 		for (var dt of this.tempData) {
 			// dt.datetime = DateTime.fromISO(dt.datetime).toFormat('dd-MM-yyyy HH:mm');
 			dt.inquiry_date = new DatePipe('en-US').transform(dt.inquiry_date, 'dd-MM-yyyy HH:mm');
@@ -418,6 +399,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			[
 				{ header: 'Agent Code', property: 'agent_code' },
 				{ header: 'Agent', property: 'master_agent' },
+				{ header: 'Bill To', property: 'bill_to' },
 				{ header: 'Service Type', property: 'service_type' },
 				{ header: 'Sales Type', property: 'sales_type' },
 				{ header: 'Agent Pan No.', property: 'agent_pan_no' },

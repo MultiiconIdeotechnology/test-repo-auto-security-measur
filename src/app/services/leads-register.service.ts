@@ -43,4 +43,8 @@ export class LeadsRegisterService {
     deadLeadToLiveLead(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'leadmaster/DeadToLiveLead', model);
     }
+
+    syncLeads(){
+        return this.http.post<any>(this.baseUrl + 'CronJob/leadStoreCronJob', {});
+    }
 }

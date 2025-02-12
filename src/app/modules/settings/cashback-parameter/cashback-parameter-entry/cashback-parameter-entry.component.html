@@ -1,0 +1,81 @@
+
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="w-full">
+        <div class="flex flex-col w-[100%] gap-2 m-auto">
+            <div class="flex flex-row justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+                <span class=" text-xl font-semibold">{{modalData?.title ? modalData.title : "No Title"}}</span>
+                <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                (click)="settingsDrawer.close()"></mat-icon>
+            </div>
+
+            <div style="height: calc(100vh - 130px)" class="overflow-auto px-5 py-2"  *ngIf="modalType == 'edit' || modalType == 'create'">
+                <div class="flex flex-wrap bg-card overflow-hidden">
+                    <form class="flex flex-col gap-1 flex-auto px-0 pt-0" [formGroup]="formGroup">
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Cashback For</mat-label>
+                            <mat-select formControlName="cashback_for">
+                                <mat-option *ngFor="let item of cashforList" [value]="item.value">{{ item.label}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+            
+                        <mat-form-field class="flex-grow">
+                            <mat-label>Transaction Type</mat-label>
+                            <mat-select formControlName="transaction_type">
+                                <mat-option *ngFor="let item of transactionTypeList" [value]="item.value">{{ item.label}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+            
+                        <div class="mb-1">From Amount*
+                        </div>
+                        <mat-form-field class="flex-grow">
+                            <input  matInput type="number" formControlName="from_amount"  />
+                        </mat-form-field>
+                        <div class="mb-1">To Amount *
+                            <!-- <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span> -->
+                        </div>
+                        <mat-form-field class="flex-grow">
+                            <input appOnlyFloat matInput type="number" formControlName="to_amount" />
+                        </mat-form-field>
+            
+                        <div class="mb-1">Fix Cashback *
+                        </div>
+                        <mat-form-field class="flex-grow">
+                            <input appOnlyFloat matInput type="number" formControlName="fix_cashback" />
+                        </mat-form-field>
+            
+                        <div class="mb-1">From Range *
+                        </div>
+                        <mat-form-field class="flex-grow">
+                            <input appOnlyFloat matInput type="text" formControlName="from_range"/>
+                        </mat-form-field>
+            
+                        <div class="mb-1">To Range *
+                            <!-- <span class="text-sm dark:text-[#7a86a0]">(Time interval in minutes)</span> -->
+                        </div>
+                        <mat-form-field class="flex-grow">
+                            <input appOnlyFloat matInput type="text" formControlName="to_range"/>
+                        </mat-form-field>
+            
+                        <div class="mb-1">Minimum Amount *
+                        </div>
+                        <mat-form-field class="flex-grow">
+                            <input appOnlyFloat matInput type="number" formControlName="minimum_amount"/>
+                        </mat-form-field>
+                    </form>
+                </div>
+            </div>
+
+            <app-cashback-read *ngIf="modalType == 'readOnly'" [record]="record"></app-cashback-read>
+            
+            <div class="justify-end items-center flex sticky bottom-0 border-t-2 border-gray-border white-bg px-5 py-2 h-15">
+                <button class="mr-2" mat-stroked-button (click)="closeSidebar()">Close</button>
+            
+                <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid">
+                    {{btnLabel}}
+                </button>
+            </div>
+        </div>
+    </div>
+</fuse-drawer>

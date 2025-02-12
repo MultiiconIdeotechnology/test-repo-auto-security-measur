@@ -23,7 +23,7 @@ import { AppConfig } from 'app/config/app-config';
 import { Security, agentPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { MarketingMaterialsComponent } from '../marketing-materials/marketing-materials.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
@@ -78,6 +78,20 @@ export class InboxAgentComponent extends BaseListingComponent {
     @ViewChild(MatPaginator) public _paginatorInbox: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
 
+    private selectedOptionTwoSubjectThree = new BehaviorSubject<any>('');
+    selectionDateDropdownThree$ = this.selectedOptionTwoSubjectThree.asObservable();
+
+    private selectedOptionTwoSubjectFour = new BehaviorSubject<any>('');
+    selectionDateDropdownFour$ = this.selectedOptionTwoSubjectFour.asObservable();
+
+    updateSelectedOptionThree(option: string): void {
+        this.selectedOptionTwoSubjectThree.next(option);
+    }
+
+    updateSelectedOptionFour(option: string): void {
+        this.selectedOptionTwoSubjectFour.next(option);
+    }
+
     module_name = module_name.crmagent;
     filter_table_name = filter_module_name.agents_inbox;
     private settingsUpdatedSubscription: Subscription;
@@ -122,6 +136,11 @@ export class InboxAgentComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
 
         // common filter
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this._filterService.updatedSelectedContracting('');
+        this.updateSelectedOptionThree('');
+        this.updateSelectedOptionFour('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agencyName']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -132,21 +151,45 @@ export class InboxAgentComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['createdDate'].value) {
-                resp['table_config']['createdDate'].value = new Date(resp['table_config']['createdDate'].value);
+
+            if (resp['table_config']['createdDate']?.value != null && resp['table_config']['createdDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['createdDate']);
             }
-            if (resp['table_config']['lastTransaction'].value) {
-                resp['table_config']['lastTransaction'].value = new Date(resp['table_config']['lastTransaction'].value);
+
+            if (resp['table_config']['lastTransaction']?.value != null && resp['table_config']['lastTransaction'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['lastTransaction']);
+            }
+
+            if (resp['table_config']['call_date_time']?.value != null && resp['table_config']['call_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['call_date_time']);
+            }
+
+            if (resp['table_config']['first_login_date_time']?.value != null && resp['table_config']['first_login_date_time'].value.length) {
+                this.updateSelectedOptionThree('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['first_login_date_time']);
+            }
+
+            if (resp['table_config']['first_transaction_date_time']?.value != null && resp['table_config']['first_transaction_date_time'].value.length) {
+                this.updateSelectedOptionFour('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowInbox = true;
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
-            this.primengTable._filter();   
+            this.primengTable._filter();
         });
     }
 
     ngAfterViewInit() {
         // Defult Active filter show
+        this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectionOptionTwo('');
+        this._filterService.updatedSelectedContracting('');
+        this.updateSelectedOptionThree('');
+        this.updateSelectedOptionFour('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowInbox = true;
             this.isFilterShowInboxChange.emit(this.isFilterShowInbox);
@@ -154,19 +197,27 @@ export class InboxAgentComponent extends BaseListingComponent {
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agencyName']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
-    
+
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
                         this.agentList.push(this.selectedAgent);
                     }
                 }
             }, 1000);
-         
-            if (filterData['table_config']['createdDate'].value) {
-                filterData['table_config']['createdDate'].value = new Date(filterData['table_config']['createdDate'].value);
+
+            if (filterData['table_config']['createdDate']?.value != null && filterData['table_config']['createdDate'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['createdDate']);
             }
-            if (filterData['table_config']['lastTransaction'].value) {
-                filterData['table_config']['lastTransaction'].value = new Date(filterData['table_config']['lastTransaction'].value);
+
+            if (filterData['table_config']['lastTransaction']?.value != null && filterData['table_config']['lastTransaction'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['lastTransaction']);
+            }
+
+            if (filterData['table_config']['call_date_time']?.value != null && filterData['table_config']['call_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -178,7 +229,7 @@ export class InboxAgentComponent extends BaseListingComponent {
     getAgent(value: string, bool = true) {
         this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
             this.agentList = data;
-            
+
             for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
@@ -188,7 +239,7 @@ export class InboxAgentComponent extends BaseListingComponent {
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-        if(this.searchInputControlInbox.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
+        if (this.searchInputControlInbox.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
             event = {};
             event.first = event?.first || 0;
         }
@@ -207,27 +258,20 @@ export class InboxAgentComponent extends BaseListingComponent {
         });
     }
 
-    getLastLogin(item: any): any {
-        const iosLogin = item.iosLastLogin ? new Date(item.iosLastLogin) : null;
-        const androidLogin = item.androidLastLogin ? new Date(item.androidLastLogin) : null;
-        const webLogin = item.webLastLogin ? new Date(item.webLastLogin) : null;
+    // Get the last login date
+    getLastLogin(item: any): string {
+        const logins = [
+            item.iosLastLogin ? new Date(item.iosLastLogin) : null,
+            item.androidLastLogin ? new Date(item.androidLastLogin) : null,
+            item.webLastLogin ? new Date(item.webLastLogin) : null
+        ].filter(date => date !== null) as Date[];
 
-        // Check all dates are null
-        // if (!iosLogin && !androidLogin && !webLogin) {
-        //     return '-';
-        // }
-        const latestLogin = this.findLatestDate([iosLogin, androidLogin, webLogin]);
-        return latestLogin;
-    }
+        if (logins.length === 0) {
+            return '';
+        }
 
-    findLatestDate(dates: (Date | null)[]): Date | null {
-        let latestDate: Date | null = null;
-        dates.forEach(date => {
-            if (date && (!latestDate || date > latestDate)) {
-                latestDate = date;
-            }
-        });
-        return latestDate;
+        const latestLogin = new Date(Math.max(...logins.map(date => date.getTime())));
+        return latestLogin.toISOString();
     }
 
     getNodataText(): string {
@@ -238,17 +282,30 @@ export class InboxAgentComponent extends BaseListingComponent {
         else return 'No data to display';
     }
 
+    // getStatusColor(status: string): string {
+    //     if (status == 'New') {
+    //         return 'text-green-600';
+    //     } else if (status == 'Active') {
+    //         return 'text-blue-600';
+    //     } else if (status == 'Inactive') {
+    //         return 'text-red-600';
+    //     } else if (status == 'Dormant') {
+    //         return 'text-red-600';
+    //     }
+    //     else {
+    //         return '';
+    //     }
+    // }
     getStatusColor(status: string): string {
         if (status == 'New') {
-            return 'text-green-600';
+            return 'text-blue-500';
+        } else if (status == 'Dormant') {
+            return 'text-yellow-600';
         } else if (status == 'Active') {
-            return 'text-blue-600';
+            return 'text-green-600';
         } else if (status == 'Inactive') {
             return 'text-red-600';
-        } else if (status == 'Dormant') {
-            return 'text-red-600';
-        }
-        else {
+        } else {
             return '';
         }
     }
@@ -312,6 +369,12 @@ export class InboxAgentComponent extends BaseListingComponent {
         this.matDialog.open(DialAgentCallListComponent, {
             data: { data: record, readonly: true, selectedTabIndex: 3 },
             disableClose: true,
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res) {
+                    this.refreshItems();
+                }
+            }
         });
     }
 
@@ -385,42 +448,19 @@ export class InboxAgentComponent extends BaseListingComponent {
         }
     }
 
-    // reActive(record): void {
-    //     const label: string = 'Reactive';
-    //     this.conformationService
-    //         .open({
-    //             title: label,
-    //             message: 'Do you want to Reactive?',
-    //             inputBox: 'Reason',
-    //             customShow: true
-    //         })
-    //         .afterClosed()
-    //         .subscribe((res) => {
-    //             if (res?.action === 'confirmed') {
-    //                 let newJson = {
-    //                     Id: record.agentid,
-    //                     status_remark: res?.statusRemark ? res?.statusRemark : ""
-    //                 }
-    //                 this.crmService.reactive(newJson).subscribe({
-    //                     next: (res) => {
-    //                         this.refreshItems();
-    //                         this.alertService.showToast(
-    //                             'success',
-    //                             'Reactive Successfully!',
-    //                             'top-right',
-    //                             true
-    //                         );
-    //                     },
-    //                     error: (err) => {
-    //                         this.alertService.showToast(
-    //                             'error',
-    //                             err,
-    //                             'top-right',
-    //                             true
-    //                         );
-    //                     },
-    //                 });
-    //             }
-    //         });
-    // }
+    onOptionClickThree(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectThree.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
+
+    onOptionClickFour(option: any, primengTable: any, field: any, key?: any) {
+        this.selectedOptionTwoSubjectFour.next(option.id_by_value);
+        
+        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+            primengTable.filter(option, field, 'custom');
+        } 
+    }
 }

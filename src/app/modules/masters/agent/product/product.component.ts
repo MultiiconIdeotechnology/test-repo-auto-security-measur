@@ -156,7 +156,7 @@ export class ProductComponent {
             return 'text-green-600';
         } else if (status == 'Delivered') {
             return 'text-blue-600';
-        } else if (status == 'Cancel' || status == 'Sales Return' || status == 'Expired' || status == 'Block' || status == 'Cancelled') {
+        } else if (status == 'Cancel' || status == 'Sales Return' || status == 'Expired' || status == 'Block' || status == 'Blocked' || status == 'Cancelled') {
             return 'text-red-600';
         }
         else {
@@ -179,10 +179,10 @@ export class ProductComponent {
             message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.product_name + ' ?'
         }).afterClosed().subscribe(res => {
             if (res === 'confirmed') {
-                const json = {
-                    id: record.id
-                }
-                this.crmService.deletePurchaseProduct(json).subscribe({
+                // const json = {
+                //     id: record.id
+                // }
+                this.crmService.deletePurchaseProduct(record.id).subscribe({
                     next: (res) => {
                         if (res)
                             this.alertService.showToast('success', "Purchase product has been deleted!", "top-right", true);

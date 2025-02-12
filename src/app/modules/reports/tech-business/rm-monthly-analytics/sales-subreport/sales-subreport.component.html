@@ -1,0 +1,93 @@
+<div class="flex flex-col max-h-screen supplier_info">
+     <!-- Header -->
+    <div class="sticky top-0 z-10 bg-primary">
+        <div class="flex items-center justify-between border-b border-gray-border p-3">
+            <span class="font-inter font-semibold text-lg text-white">{{data?.rm_name ? data.rm_name: ''}}</span>
+            <span class="flex items-center gap-3">
+                <div class="flex ctm_search dark:bg-gray-900">
+                    <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                        (keyup.enter)="refreshItems()" />
+                    <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                        (click)="refreshItems()"></mat-icon>
+                </div>
+                <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                    <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                </button>
+            </span>
+        </div>
+    </div>
+    
+    <!-- table -->
+    <div class="table-container modal-custom-table paginator-bottom">
+        <p-table #datatable  [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="10" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
+    
+            <ng-template pTemplate="header">
+            
+                <tr>
+                    <th class="min-w-[110px]  dark:bg-[#1e293b]" pSortableColumn="service" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service"
+                        [ngClass]="{'left-0': !frozenObj?.service}">
+                        Service <p-sortIcon field="service" />
+                        <span class="float-right" (click)="isFrozenColumn('service');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.service" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.service" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="refNo" pResizableColumn>
+                        Ref. No. <p-sortIcon field="refNo" />
+                    </th>
+                    <th pSortableColumn="status" pResizableColumn>
+                        Status <p-sortIcon field="status" />
+                    </th>
+                    <th pSortableColumn="agent" pResizableColumn>
+                        Agent <p-sortIcon field="agent" />
+                    </th>
+                    <th pSortableColumn="book_date" pResizableColumn>
+                        Book Date <p-sortIcon field="book_date" />
+                    </th>
+                    <th class="text-right" pSortableColumn="salePrice" pResizableColumn>
+                        Sale Price <p-sortIcon field="salePrice" />
+                    </th>
+                    <th pSortableColumn="mop" pResizableColumn>
+                        MOP <p-sortIcon field="mop" />
+                    </th>
+                </tr>
+            </ng-template>
+    
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service">{{element.service || "-"}}</td>
+                    <td>{{element.refNo || "-"}}</td>
+                    <td ><span [ngClass]="getStatusColor(element.status)">{{element.status || "-"}}</span></td>
+                    <td>{{element.agent || "-"}}</td>
+                    <td>{{element.book_date ? (element.book_date | date: 'dd-MM-yyyy HH:mm:ss') : "-"}}</td>
+                    <td class="text-right">{{element.salePrice || "-"}}</td>
+                    <td>{{element.mop || "-"}}</td>
+                </tr>
+            </ng-template>
+    
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td pFrozenColumn [frozen]="frozenObj?.service">Total</td>
+                    <td *ngFor="let i of [1,2,3,4]"></td>
+                    <td class="text-right">{{totalSaleAmount || 0}}</td>
+                    <td></td>
+                </tr>
+            </ng-template>
+    
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="7" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

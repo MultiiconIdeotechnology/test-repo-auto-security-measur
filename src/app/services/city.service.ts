@@ -1,13 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CityService {
     private baseUrl = environment.apiUrl;
+
+    public cityListV2Subject = new BehaviorSubject<any[]>([]);
+    cityListV2$ = this.cityListV2Subject.asObservable();
+    cityListv2:any[] = [];
 
     constructor(private http: HttpClient) {}
 
@@ -55,4 +59,15 @@ export class CityService {
     setPreferedHotelEnable(id: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'city/setPreferedHotelEnable', { id: id });
     }
+
+    getCityComboV2(data:any): Observable<any[]> {
+        return this.http.post<any[]>(this.baseUrl + 'city/getCityListV2', data);
+    }
+
+    getCityListV2(data:any){
+        this.getCityComboV2(data).subscribe((res:any) => {
+          this.cityListV2Subject.next(res);
+          this.cityListv2 = res;
+        })
+      }
 }

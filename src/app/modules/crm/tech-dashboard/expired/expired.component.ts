@@ -37,6 +37,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
+import { Excel } from 'app/utils/export/excel';
 
 @Component({
     selector: 'app-crm-tech-dashboard-expired',
@@ -75,7 +76,7 @@ import { GlobalSearchService } from 'app/services/global-search.service';
         PrimeNgImportsModule
     ]
 })
-export class TechDashboardExpiredComponent extends BaseListingComponent{
+export class TechDashboardExpiredComponent extends BaseListingComponent {
     @Input() isFilterShowExpired: boolean;
     @Output() isFilterShowExpiredChange = new EventEmitter<boolean>();
     cols = [];
@@ -99,8 +100,8 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     filter_table_name = filter_module_name.tech_dashboard_expired;
     private settingsUpdatedSubscription: Subscription;
     data: any;
-    selectedAgent:any;
-    agentList:any[] = [];
+    selectedAgent: any;
+    agentList: any[] = [];
     filter: any = {}
 
     constructor(
@@ -122,16 +123,16 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
     ngOnInit(): void {
         this.agentList = this._filterService.agentListByValue;
 
-         // common filter
-         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        // common filter
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
-                if (this.selectedAgent && this.selectedAgent.id) {
-    
-                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                    if (!match) {
-                        this.agentList.push(this.selectedAgent);
-                    }
+            if (this.selectedAgent && this.selectedAgent.id) {
+
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
                 }
+            }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['activation_date'].value) {
@@ -156,7 +157,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agency_name']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
-    
+
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
                         this.agentList.push(this.selectedAgent);
@@ -226,12 +227,12 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
         });
     }
 
-     // Api call to Get Agent data
-     getAgent(value: string) {
+    // Api call to Get Agent data
+    getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
@@ -352,7 +353,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
                                 'top-right',
                                 true
                             );
-                            if(res){
+                            if (res) {
                                 this.dataList.splice(index, 1);
                             }
                         },
@@ -376,5 +377,35 @@ export class TechDashboardExpiredComponent extends BaseListingComponent{
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    exportExcel(event?: any): void {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlExpired.value;
+        filterReq['Take'] = this.totalRecords;
+
+        this.crmService.getTechExpiredProductList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                dt.activation_date = dt.activation_date ? DateTime.fromISO(dt.activation_date).toFormat('dd-MM-yyyy') : ''
+                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+            }
+            Excel.export(
+                'Expired',
+                [
+                    { header: 'Item Code', property: 'item_code' },
+                    { header: 'Item.', property: 'item_name' },
+                    { header: 'Product', property: 'product_name' },
+                    { header: 'Agent Code', property: 'agentCode' },
+                    { header: 'Agency Name', property: 'agency_name' },
+                    { header: 'Activation Date', property: 'activation_date' },
+                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'RM', property: 'rm' },
+                ],
+                data.data, "Expired", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+        });
     }
 }

@@ -50,11 +50,17 @@ export class FileLogsComponent {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.record = data 
+    console.log("this.record", this.record);
   }
 
   ngOnInit(): void {
 
-    this.flighttabService.getBookingFileLog(this.data).subscribe({
+    const Fdata = {
+      id: this.record.id,
+      service: this.record.send,
+    } 
+
+    this.flighttabService.getBookingFileLog(Fdata).subscribe({
       next: (res) => {
         this.dataList = res
       }, error: (err) => {

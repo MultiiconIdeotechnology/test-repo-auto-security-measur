@@ -238,6 +238,14 @@
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600">Delete</span>
                             </button>
+                            <button mat-menu-item (click)="setCCActiveDeactive(element)">
+                                <mat-icon class="mat-18">
+                                    {{element.is_cc_active  ? "highlight_off" : "check_circle"}}
+                                </mat-icon>
+                                <span style="font-weight: 600">
+                                    {{ element.is_cc_active  ? "Deny CC" : "Allow CC" }}
+                                </span>
+                            </button>
                         </mat-menu>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link" class="text-center">

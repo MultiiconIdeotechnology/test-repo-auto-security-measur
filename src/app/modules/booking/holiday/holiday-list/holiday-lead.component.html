@@ -1,0 +1,266 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+        <div class="text-3xl font-extrabold tracking-tight">
+            {{module_name}}
+        </div>
+
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+              <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+              <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
+          </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!--- Modal filter -->
+            <!-- <button class="ml-4" mat-flat-button [color]="'primary'" (click)="filter()">
+              <mat-icon class="w-10 h-10">filter_alt</mat-icon>
+              <span class="mr-1">Filter</span>
+          </button> -->
+
+            <!------ Export Excel ------->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="[ 'reference_no', 'lead_status',  'start_date', 'end_date', 'no_of_nights', 'entry_date_time', 'transaction_type', 'lead_name', 'lead_email', 'lead_mobile', 'entry_date_time']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <!-- <th class="text-center left-[-1px]" pFrozenColumn>Supplier</th> -->
+
+                    <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="supplier_name"
+                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name"
+                        [ngClass]="{'left-0': !frozenObj?.supplier_name}">
+                        Supplier <p-sortIcon field="supplier_name" />
+                        <span class="float-right" (click)="isFrozenColumn('supplier_name');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.supplier_name" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.supplier_name" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+
+                    <!-- <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="reference_no"
+                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
+                        [ngClass]="{'left-0': !frozenObj?.reference_no}">
+                        Ref. No. <p-sortIcon field="reference_no" />
+                        <span class="float-right" (click)="isFrozenColumn('reference_no');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.reference_no" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.reference_no" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th> -->
+
+                    <th pSortableColumn="agent_name" pResizableColumn>
+                        Agent <p-sortIcon field="agent_name" />
+                    </th>
+                    <th pSortableColumn="reference_no" pResizableColumn>
+                        Ref. No. <p-sortIcon field="reference_no" />
+                    </th>
+                    <th pSortableColumn="lead_status" pResizableColumn>
+                        Status <p-sortIcon field="lead_status" />
+                    </th>
+                    <th pSortableColumn="start_date" pResizableColumn>
+                        Start Date <p-sortIcon field="start_date" />
+                    </th>
+                    <th pSortableColumn="end_date" pResizableColumn>
+                        End Date <p-sortIcon field="end_date" />
+                    </th>
+                    <th pSortableColumn="no_of_nights" pResizableColumn>
+                        No of Nights <p-sortIcon field="no_of_nights" />
+                    </th>
+                    <th class="w-full" pSortableColumn="entry_date_time" pResizableColumn>
+                        Created <p-sortIcon field="entry_date_time" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <!-- <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name">
+                        <p-columnFilter type="text" matchMode="contains" field="supplier_name"
+                            placeholder="Search by Supplier" ariaLabel="Filter Supplier" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="agent_name"
+                            placeholder="Search by Agent" ariaLabel="Filter Agent" />
+                    </th> -->
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="supplier_id_filters" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
+                                    [(ngModel)]="selectedAgent" [filter]="true" filterBy="company_name"
+                                    (onFilter)="getSupplierList($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select City">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            {{agent.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
+                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
+                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            <div class="m-0">
+                                                {{agent.code}} - {{agent.agency_name}}
+                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                            </div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th >
+                        <p-columnFilter type="text" matchMode="contains" field="reference_no"
+                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
+                    </th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">
+                        <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter field="start_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter field="end_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="no_of_nights"
+                            placeholder="Search by No of nights" ariaLabel="Filter No of nights" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Entry">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name">
+                        <span >
+                            {{element.supplier_name || "-"}}
+                        </span>
+                    </td>
+                    <td>
+                        {{element.agent_name || "-"}}
+                    </td>
+                    <td>
+                        <span class="cursor-pointer border-b border-gray-500" (click)="view(element)">
+                            {{element.reference_no || "-"}}
+                        </span>
+                    </td>
+                    <td>
+                        <span [ngClass]="getStatusColor(element.lead_status)">
+                            {{element.lead_status || "-"}}
+                        </span>
+                    </td>
+                    <td>
+                        {{(element.start_date | date:'dd-MM-yyyy') || "-"}}
+                    </td>
+                    <td>
+                        {{(element.end_date | date:'dd-MM-yyyy') || "-"}}
+                    </td>
+                    <td>
+                        {{element.no_of_nights || "-"}}
+                    </td>
+                    <td>
+                        {{(element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="20" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

@@ -120,11 +120,11 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
     ngOnInit() {
         this.getAgent("");
 
-        this._filterService.selectionDateDropdown = "";
+        this._filterService.updateSelectedOption('');
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.selectionDateDropdown = "";
+            this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent']?.value;
             // this.selectedSupplier = resp['table_config']['supplier_name']?.value;
             // this.selectedFromAirport = resp['table_config']['from_id_filtres']?.value;
@@ -155,7 +155,7 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
 
     ngAfterViewInit() {
         // Defult Active filter show
-        // this._filterService.selectionDateDropdown = "";
+        // this._filterService.updateSelectedOption('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
@@ -265,6 +265,33 @@ export class PaymentLinkListComponent extends BaseListingComponent implements On
 
     info(record: any): void {
         this.entityService.raisePaymentLinkEntityCall({ data: record, title: 'Payment Link Info', list: true })
+    }
+
+    setCCActiveDeactive(data:any){
+        const label: string = !data.is_cc_active ? 'Allow Credit card' : 'Deny Credit card';
+		this.confirmService.open({
+			title: label,
+			message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+		}).afterClosed().subscribe({
+			next: (res) => {
+				if (res === 'confirmed') {
+						this.agentService.setCreditcardActiveDeactive(data.id).subscribe({
+							next: (res) => {
+                                if(res && res['status']){
+                                    if(!data.is_cc_active){
+                                        this.alertService.showToast('success', "Credit card method has been allowed", "top-right", true);
+                                    } else {
+                                        this.alertService.showToast('success', "Credit card method has been denied", "top-right", true);
+                                    }
+    
+                                    data.is_cc_active = !data.is_cc_active;
+                                }
+                              
+							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+						});
+				}
+			}
+		})
     }
 
     exportExcel(): void {

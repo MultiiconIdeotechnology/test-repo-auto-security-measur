@@ -153,6 +153,7 @@ export const category_name = {
     export: 'Export',
     import: 'Import',
     block_unblock: 'Block/Unblock',
+    enable_disable: 'Enable/Disable',
     copy: 'Copy',
     is_most: 'IsMost',
     resetPassword: 'Reset Password',
@@ -207,6 +208,7 @@ export const module_name = {
     activity: "Activity",
     city: "City",
     cachingparameters: "Caching Parameters",
+    cashbackparameters: "Cashback Parameters",
     department: "Department",
     document: 'Types of Documents',
     kycprofile: 'KYC Profile',
@@ -216,11 +218,14 @@ export const module_name = {
     supplierapi: 'Supplier API',
     transfer: 'Transfers',
     supplier: 'Supplier',
+    user: 'User',
     holiday: 'Holiday Products',
-    holidayV2: 'Holiday Products Version 2.0',
+    holidayV2: 'Holiday Products 2.0',
     productpricing: 'Product Pricing',
     hotel: 'Hotel',
     forex: 'Forex',
+    holiday_lead: 'Holiday',
+    cab_lead: 'Cab',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -253,6 +258,7 @@ export const module_name = {
     offlineService: 'Offline Service',
     walletCredit: 'Wallet Credit',
     agentBalance: 'Agent Balance Register',
+    agentLedgerWalletMissmatch: 'Agent Ledger/Wallet Missmatch',
     walletOutstanding: 'Wallet Outstanding',
     pgRefund: 'PG Refund',
     receipts: 'Receipts',
@@ -266,11 +272,14 @@ export const module_name = {
     bookingsBus: 'Bookings - BUS',
     bookingsHotel: 'Bookings - Hotel',
     bookingsForex: 'Bookings - Forex',
+    bookingsCab: 'Bookings - Cab',
+    bookingsHoliday: 'Bookings - Holiday',
     bookingsVisa: 'Bookings - Visa',
     bookingsInsurance: 'Bookings - Visa',
     inventoryHoliday: 'Inventory - Holiday',
     inventoryHotel: 'Inventory - Hotel',
     inventoryVisa: 'Inventory - Visa',
+    inventoryCab: 'Inventory - Cab',
     ERPSettings: 'ERP Settings',
     SaleBook: 'Sale Book',
     SalesReturn: 'Sales Return',
@@ -282,17 +291,20 @@ export const module_name = {
     Referrallink: 'Referral Link',
     itemMaster: 'Items',
     product: 'Products',
-    leads_register: 'Leads Register',
-    agents_rmwise: 'RM Wise Agents',
+    leads_register: 'Lead Register',
+    // agents_rmwise: 'RM Wise Agents',
+    agents_rmwise: 'Partner Summary',
     info_airline: 'Info Airline',
-    leads_rmwise: 'RM Wise Leads',
+    // leads_rmwise: 'RM Wise Leads',
+    leads_rmwise: 'Lead Summary',
     airline: 'Airline',
     report_hotel: 'Hotel',
     report_bus: 'Bus',
     campaign_summary: 'Campaign Summary',
     agent_ledger: 'Agent Ledger',
     products: 'Products',
-    agentSummary: 'Agent Summary',
+    // agentSummary: 'Agent Summary',
+    agentSummary: 'Partner Register',
     insurance: 'Insurance',
     products_collection: 'Collection',
     products_receipts: 'Receipts',
@@ -303,6 +315,10 @@ export const module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
+    tech_business_summary:'Tech Business Summary',
+    tech_rm_monthly_report: 'RM Monthly Anaytics',
+    tech_product_monthly_report:'Product Monthly Analytics',
+    cab_inventory: 'Cab',
 };
 
 export const filter_module_name = {
@@ -365,10 +381,13 @@ export const filter_module_name = {
     visa_booking: "visa_booking",
     insurance_booking: "insurance_booking",
     offline_service_booking: "offline_service_booking",
+    holiday_lead_service_booking: "holiday_lead",
+    cab_lead_service_booking: "cab_lead",
 
 
     //Report
     agent_balance_register: "agent_balance_register",
+    agent_ledger_wallet_missmatch: "agent_ledger_wallet_missmatch",
     commission_income: "commission_income",
     commission_expense: "commission_expense",
     first_transaction: "first_transaction",
@@ -393,6 +412,9 @@ export const filter_module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
+    tech_business_summary: 'tech_business_summary',
+    tech_rm_monthly_report:'tech_rm_monthly_report',
+    tech_product_monthly_report:'tech_product_monthly_report',
 
     //Inventory
     activity: "activity",
@@ -401,6 +423,7 @@ export const filter_module_name = {
     vehicle: "vehicle",
     hotel: "hotel",
     visa: "visa",
+    cab: "cab",
 
     //Hr
     permission_profile: "permission_profile",
@@ -416,7 +439,9 @@ export const filter_module_name = {
     message_events: "message_events",
     email_setup: "email_setup",
     markup_profile: "markup_profile",
-    erp_settings: "erp_settings"
+    erp_settings: "erp_settings",
+    cashback_parameters_master: "cashback_parameters_master",
+
 }
 
 export const cityPermissions = {
@@ -527,6 +552,7 @@ export const agentsPermissions = {
     reshufflePermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Reshuffle', category_name: category_name.re_shuffle },
     walletTransferPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Wallet Transfer', category_name: category_name.operation },
     blockUnblockPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Block Unblock', category_name: category_name.block_unblock },
+    enableDisablePermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enable_disable },
     verifyEmailPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Verify Email', category_name: category_name.operation },
     verifyMobilePermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Verify Mobile', category_name: category_name.operation },
     setCurrencyPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Set Currency', category_name: category_name.entry },
@@ -549,7 +575,8 @@ export const leadRegisterPermissions = {
     reshufflePermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Reshuffle', category_name: category_name.re_shuffle },
     importPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Import Leads', category_name: category_name.entry },
     relationshipManagerLogsPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Relationship Manager Logs', category_name: category_name.view },
-    deadLeadToLiveLeadPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Dead Lead To Live Lead', category_name: category_name.operation }
+    deadLeadToLiveLeadPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Dead Lead To Live Lead', category_name: category_name.operation },
+    leadsSyncPermissions: { module_name: module_name.leads_register, group_name: group_name.listingPage, operation_type: 'Sync', category_name: category_name.entry },
 }
 
 
@@ -695,6 +722,13 @@ export const inventoryHolidayPermissions = {
     setasPopularPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
     copyProductPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
     viewHolidayPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'View Holiday', category_name: category_name.view },
+}
+
+export const inventoryCabPermissions = {
+    publishUnpublishPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
+    setasPopularPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
+    copyProductPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
+    viewCabPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'View Cab', category_name: category_name.view },
 }
 
 export const vehiclePermissions = {

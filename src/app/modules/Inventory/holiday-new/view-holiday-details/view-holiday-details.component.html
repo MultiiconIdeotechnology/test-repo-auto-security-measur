@@ -1,514 +1,762 @@
-<div class="flex flex-col pt-5 max-w-[1200px] min-w-[1200px] m-auto" *ngIf="record">
-    <div>
-        <div class="flex flex-col mb-4">
-            <span class="text-2xl font-semibold">{{record.product?.product_name}}</span>
-            <div class="font-medium flex items-center my-1">
-                <span>{{ record.product?.no_of_nights }} Nights |
-                    {{ record.product?.no_of_days }} Days</span><span
-                    class="h-[6px] w-[6px] block rounded-full bg-black mx-2"></span>
-                <span class="secondary-text pr-1" *ngFor="let ct of DisplayDetails.CitiesList; let index = index">
-                    ({{ct.no_of_nights}}N) in {{ ct.display_name }}{{ index != DisplayDetails.CitiesList.length - 1 ? "|" : "" }}
-                </span>
+<div class="flex justify-center pt-[15px] w-full" *ngIf="loading">
+    <div class="flex flex-col min-w-[1300px] max-w-[1300px]">
+        <div>
+            <div class="flex flex-col mb-4">
+                <span class="text-2xl font-semibold">{{
+                    record?.product_name
+                    }}</span>
+                <div class="font-medium flex items-center my-1">
+                    <span>{{ record?.no_of_nights }} Nights |
+                        {{ record?.no_of_days }} Days</span><span
+                        class="h-[6px] w-[6px] block rounded-full bg-black mx-2"></span>
+                    <span class="text-gray pr-1" *ngFor="let ct of DisplayDetails.CitiesList; let index = index">({{
+                        ct?.no_of_nights
+                        }}N) in {{ ct?.city_name }}
+                        {{ index != DisplayDetails.CitiesList.length - 1 ? "|" : "" }}
+                    </span>
+                </div>
             </div>
-        </div>
-        <div class="images mb-10">
-            <div class="img space-x-4 h-60 flex mb-4">
-                <img [src]="img.imageUrl" class="rounded-xl w-[33%] object-fill" *ngFor="let img of getImages(0, 3)" />
-            </div>
-            <div class="img space-x-4 h-44 flex">
-                <div *ngFor="
+            <div class="images mb-10" *ngIf="DisplayDetails.SecondImageList?.length">
+                <div class="img space-x-4 h-60 flex mb-4">
+                    <img loading="lazy" [src]="img.imageUrl" class="rounded-xl w-[33%] object-cover cursor-pointer"
+                        *ngFor="let img of getImages(0, 3)" alt="Place Image"
+                        (click)="allImages(DisplayDetails.SecondImageList,img)" />
+                </div>
+                <div class="img space-x-4 h-44 flex" *ngIf="getImages(3, 8)?.length">
+                    <div *ngFor="
                         let img of getImages(3, 8);
                         let index = index
                     " class="w-[20%] h-44">
-                    <img [src]="img.imageUrl" class="rounded-xl h-44 object-fill w-full" />
-                </div>
-                <div class="relative h-44 flex items-center justify-center rounded-xl w-[20%] overflow-hidden cursor-pointer"
-                    [ngClass]="{
+                        <img loading="lazy" [src]="img.imageUrl"
+                            class="rounded-xl h-44 object-cover w-full cursor-pointer" alt="Place Image"
+                            (click)="allImages(DisplayDetails.SecondImageList,img)" />
+                    </div>
+                    <div class="relative h-44 flex items-center justify-center rounded-xl w-[20%] overflow-hidden cursor-pointer"
+                        [ngClass]="{
                         onshadow: getImages(8).length > 1
                     }" (click)="allImages(DisplayDetails.SecondImageList)" *ngIf="getImages(8).length > 0">
-                    <!-- {{getImages(8)[0] | json}} -->
-                    <img [src]="getImages(8)[0]?.imageUrl" class="h-40 object-fill" />
-                    <span  class="z-10 absolute text-xl font-semibold text-white">View All</span>
-                    <!-- *ngIf="getImages(8).length > 1" -->
+                        <img loading="lazy" [src]="getImages(8)[0]?.imageUrl" class="h-44 object-cover"
+                            alt="Place Image" />
+                        <!-- <span *ngIf="getImages(8).length > 1"
+                            class="z-10 absolute text-xl font-semibold white-text">View
+                            All</span> -->
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="flex w-full">
+            <div class="left w-full mr-[2%]">
+                
 
-    <div class="flex w-full">
-        <div class="left w-[69%] mr-[2%]">
-            <div *ngIf="DisplayDetails.FixedDepatureList.length > 0"
-                class="px-5 py-4 bg-card rounded-lg overflow-hidden mb-5  ">
-                <div class="text-xl font-semibold pb-3 text-secondary">
-                    Fixed Depature
+                <!------Flight-------->
+                <div *ngIf="DisplayDetails?.FlightsList?.length > 0"
+                    class="flex flex-col py-4 px-5 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
+                    <span class="h-7 w-1 bg-[#234977]  absolute left-0"></span>
+                    <div class="flex items-center gap-3">
+                        <img class="w-7" src="assets/icons/flight_holiday.svg">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
+                            Flight
+                        </div>
+                    </div>
+                    <div class="p-3 mt-4 text-lg bg-[#F8F8F8] dark:dark border border-[#F2F2F2] dark:border-gray-600 rounded-lg"
+                        *ngFor="let ex of DisplayDetails.FlightList">
+                        <div class="flex items-center">
+                            <span
+                                class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-[#707070] dark:bg-gray-100 mx-2 "></span>
+                            <span class="text-gray dark:text-gray-100 pl-2 text-lg text-[#1C1C1C]">{{ ex.sector }}</span>
+                        </div>
+                        <div class="text-[#707070] dark:text-gray-300 text-base font-normal pl-8">{{ex.description}}</div>
+                    </div>
                 </div>
-                <div class="flex space-x-4 overflow-y-auto">
-                    <div class="p-2 border rounded-md min-w-56 cursor-pointer" [ngClass]="
-                            DepatureformGroup.get('date').value.id == fl.id
-                                ? 'primary-border shadow-lg'
-                                : 'border-gray-border'
-                        " *ngFor="let fl of DisplayDetails.FixedDepatureList" (click)="changeFixedDepature(fl)">
-                        <span class="font-medium pb-2 text-lg">{{
-                            fl.departure_date | date : "dd MMM yyyy EEEE"
-                            }}</span>
-                        <div class="flex justify-between pt-2">
-                            <div class="flex flex-col">
-                                <span class="text-md">Depature Time</span>
-                                <span class="font-medium">{{
-                                    fl.departure_date | date : "hh:mm a"
-                                    }}</span>
+
+                <!----------Hotel----------->
+                <div *ngIf="DisplayDetails?.HotelsList?.length > 0"
+                    class="py-4 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
+                    <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
+                    <div class="flex items-center gap-3 pl-5">
+                        <img class="w-6" src="assets/icons/Hotel_holiday.svg">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
+                            Hotel
+                        </div>
+                    </div>
+                    <div class="w-full relative">
+                        <div>
+                            <div *ngFor="let ht of DisplayDetails.HotelsList; let index = index">
+                                <div class="my-3 font-medium text-lg text-[#3C3C3C] dark:text-gray-200 py-2 pl-5 pr-6 gradient-hotel">
+                                    {{ ht.city_name }}
+                                </div>
+                                <div class="mx-5 px-4 pt-3 pb-1 relative">
+                                    <div class="flex space-x-4">
+                                        <div class="tab-content flex space-x-4 view-holiday-small-carousel">
+                                            <ngx-slick-carousel *ngIf="ht.image.length !== 0"
+                                                class="carousel  min-h-36 max-h-36 max-w-56 min-w-56"
+                                                #slickModal="slick-carousel" [config]="slideConfig">
+                                                <div ngxSlickItem *ngFor="
+                                                            let slide of ht.image
+                                                        " class="slide rounded-xl">
+                                                    <div *ngIf="ht.image.length > 0">
+                                                        <img [src]="slide.imageUrl" alt=""
+                                                            class="min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl" />
+                                                    </div>
+                                                </div>
+                                            </ngx-slick-carousel>
+                                            <div *ngIf="ht.image.length === 0"
+                                                class="rounded-[10px] min-h-36 max-h-36 max-w-56 min-w-56 bg-[#EDEDED] p-5">
+                                                <img class="w-4/5 m-auto" src="assets/images/holidays/no_hotel.png">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex flex-col w-[calc(100%-235px)]">
+                                            <div class="flex items-center">
+                                                <span class="text-xl font-semibold mr-3">{{ ht.hotel_name}}</span>
+                                                <div class="items-center flex"
+                                                    *ngFor="let star of getStar(ht.star_rating)">
+                                                    <mat-icon
+                                                        class="mr-[2px] text-[#FFC24A] icon-size-4">star</mat-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-row space-x-2 items-center py-1">
+                                                <mat-icon class="icon-size-4 text-black dark:text-white"
+                                                    svgIcon="mat_outline:calendar_today"></mat-icon>
+                                                <span class="text-[#696969] dark:text-gray-400 font-normal text-base">{{ht.check_in | date:'EEE, dd-MM-yyyy'}} - {{ht.check_out | date: 'EEE, dd-MM-yyyy'}}</span>
+                                            </div>
+                                            <div class="dark:dark bg-[#F8F8F8] p-3 rounded-lg mt-2">
+                                                <div class="font-semibold">Room Type: {{ht.room_category}}</div>
+                                                <span class="mb-1 text-sm block font-medium dark:text-gray-400">Meal Plan: {{
+                                                    ht.meal_plan}}</span>
+                                                <div class="font-semibold">Room Inclusion:</div>
+                                                <span class="flex flex-row">
+                                                    <span class="text-sm font-medium dark:text-gray-400">
+                                                        {{ ht.description}}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="px-5 py-4 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl font-semibold pb-3 text-secondary">
-                    Day Wise Itinerary
-                </div>
-                <div class="accordian">
-                    <div class="col">
-                        <div class="tabs">
-                            <div class="tab pl-22 relative" *ngFor="
+                <!------Day Wise Itinerary-------->
+                <div *ngIf="DisplayDetails?.ItineraryList?.length > 0" class="px-5 py-4 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
+                    <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
+                    <div class="flex items-center gap-3 ">
+                        <img class="w-6" src="assets/icons/Itinerary_holiday.svg">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
+                            Day Wise Itinerary
+                        </div>
+                    </div>
+                    <div class="accordian">
+                        <div class="col">
+                            <div class="tabs">
+                                <div class="tab pl-22 relative" *ngFor="
                                     let fl of DisplayDetails.ItineraryList;
                                     let index = index
                                 ">
-                                <div class="absolute left-0 top-4 flex">
-                                    <div class="w-16 flex flex-col">
-                                        <span class="text-primary-500 font-semibold">Day {{ fl.dayNo }}</span>
-                                        <span class="text-primary-500 font-medium text-xs">
-                                            {{deppDate.plus({ days: index }).toFormat("dd-MM-yyyy")}}</span>
+                                    <div class="absolute left-0 top-4 flex">
+                                        <div class="w-16 flex flex-col">
+                                            <span class="primary-text font-semibold">Day {{ fl.dayNo }}</span>
+                                            <span class="primary-text font-medium text-xs">{{deppDate.plus({ days: index
+                                                }).toFormat("dd-MM-yyyy")}}</span>
+                                        </div>
+                                        <span
+                                            class="block w-4 h-4 bg-primary rounded-full border-2 border-white outline-2 outline primary-outline ng-star-inserted"></span>
                                     </div>
-                                    <span
-                                        class="block w-4 h-4 primary-bg rounded-full border-2 bg-[#1e293b] border-[#365a57] outline-2 outline outline-[#365a57] ng-star-inserted"></span>
-                                </div>
-                                <div class="border-b border-gray-border">
-                                    <input type="checkbox" [id]="'chck' + index" class="hidden"
-                                        [checked]="fl.checked" />
-                                    <label class="tab-label flex flex-col relative" [for]="'chck' + index">
-                                        <span class="text-lg font-medium text-secondary">
-                                            {{ fl.highlight }}
-                                        </span>
-                                        <span class="font-medium pb-2 secondary-text">{{ fl.city }}</span>
+                                    <div class="border-b border-gray-border">
+                                        <input type="checkbox" [id]="'chck' + index" class="hidden"
+                                            [checked]="fl.checked" />
+                                        <label class="tab-label flex flex-col relative" [for]="'chck' + index">
+                                            <span class="text-lg font-medium theme-black-text">
+                                                {{ fl.highlight }}
+                                            </span>
+                                            <!-- <span class="font-medium pb-2 text-gray text-sm">{{ fl.city }}</span> -->
 
-                                        <mat-icon class="acc-arrow absolute right-3 top-3 text-[30px] font-light"
-                                            [style.transform]="
+                                            <mat-icon class="acc-arrow absolute right-3 top-3 text-[30px] font-light"
+                                                [style.transform]="
                                                 fl.checked
                                                     ? 'rotate(90deg)'
                                                     : ''
                                             ">keyboard_arrow_down</mat-icon>
-                                    </label>
-                                    <div class="tab-content flex space-x-4">
-                                        <ngx-slick-carousel class="carousel h-48 max-w-56 min-w-56 accourdian_slide"
-                                            #slickModal="slick-carousel" [config]="slideConfig" *ngIf="fl.image.length > 0">
-                                            <div ngxSlickItem *ngFor="let slide of fl.image" class="slide rounded-xl">
-                                                <img [src]="slide.imageUrl" alt=""
-                                                    class="min-h-48 max-h-48 max-w-56 min-w-56 rounded-xl" />
+                                        </label>
+                                        <div class="tab-content flex space-x-4 pt-0 rounded-xl">
+                                            <ngx-slick-carousel *ngIf="fl.image.length !== 0"
+                                                class="carousel Hotel_carousel view-holiday-small-carousel min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl"
+                                                #slickModal="slick-carousel" [config]="slideConfig">
+                                                <div ngxSlickItem *ngFor="
+                                                            let slide of fl.image
+                                                        " class="slide rounded-xl">
+                                                    <div *ngIf="fl.image.length > 0">
+                                                        <img [src]="slide.imageUrl" alt=""
+                                                            class="min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl" />
+                                                    </div>
+                                                </div>
+                                            </ngx-slick-carousel>
+                                            <!-- <div class="relative" *ngIf="fl.image.length > 0">
+                                                <ngx-slick-carousel class="carousel h-48 max-w-56 min-w-56 rounded-xl"
+                                                    *ngIf="fl.image.length > 0" #slickCarousels="slick-carousel"
+                                                    [config]="slideConfigforItenary">
+                                                    <div ngxSlickItem *ngFor="let slide of fl.image"
+                                                        class="slide rounded-xl">
+                                                        <img loading="lazy" [src]="slide.imageUrl" alt="Place Image"
+                                                            class="min-h-48 max-h-48 max-w-56 min-w-56 rounded-xl" />
+                                                    </div>
+                                                </ngx-slick-carousel>
+                                                <div mat-ripple *ngIf="fl.image.length > 1"
+                                                    class="flex flex-row justify-center items-center absolute h-5 w-5 white-bg rounded-full left-1 top-[90px] shadow-xl gray-border border cursor-pointer"
+                                                    (click)="slickPrev(index)">
+                                                    <mat-icon
+                                                        class="relative icon-size-3 pl-1 primary-text">arrow_back_ios</mat-icon>
+                                                </div>
+                                                <div mat-ripple *ngIf="fl.image.length > 1"
+                                                    class="flex flex-row justify-center items-center absolute h-5 w-5 white-bg rounded-full right-1 top-[90px] shadow-xl gray-border border cursor-pointer"
+                                                    (click)="slickNext(index)">
+                                                    <mat-icon
+                                                        class="primary-text icon-size-3">arrow_forward_ios</mat-icon>
+                                                </div>
+                                            </div> -->
+
+                                            <!-- w-[calc(100%-235px)] -->
+                                            <!-- <div class="text-gray ">
+                                                <span style="white-space: pre-line">{{fl.description}}</span>
+                                            </div> -->
+                                            <div class="text-gray ">
+                                                <div *ngIf="fl.description.length <= 540; else longContent">
+                                                    <p class="text-base font-normal break-all">{{ fl.description }}</p>
+                                                </div>
+                                                <ng-template #longContent>
+                                                    <div>
+                                                        <span class="text-base font-normal" *ngIf="!fl.expanded">{{
+                                                            fl.description.slice(0, 540) }}</span>
+                                                        <span class="text-base font-normal" *ngIf="fl.expanded">{{
+                                                            fl.description}}</span>
+                                                        <span
+                                                            class="text-base font-medium text-[#234977] dark:text-blue-300 cursor-pointer"
+                                                            (click)="toggleContent(fl)">
+                                                            Read {{ fl.expanded ? 'Less...' : 'More...'}}
+                                                        </span>
+                                                    </div>
+                                                </ng-template>
                                             </div>
-                                        </ngx-slick-carousel>
-                                        <div class="secondary-text" style="white-space: pre-line"
-                                            [innerHTML]="fl.day_itinerary"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div *ngIf="DisplayDetails.FlightsList.length > 0" class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl font-semibold px-4 pb-3 text-secondary border-b">
-                    Flight
+                <!----------Sightseeing----------->
+                <div *ngIf="DisplayDetails?.sightseeingList?.length > 0" class="flex flex-col py-4 px-5 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
+                    <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
+                    <div class="flex items-center gap-3">
+                        <img class="w-7" src="assets/icons/sightseeing_holiday.svg">
+                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
+                            Sightseeing
+                        </div>
+                    </div>
+                    <div class="py-4 text-lg" 
+                        *ngFor="let fl of DisplayDetails.sightseeingList; let index = index" [ngClass]="{'border-b border-[#D9D9D9] dark:border-gray-600 ': index < DisplayDetails?.sightseeingList?.length - 1}">
+                        <div class="tab-content flex space-x-4 pt-0">
+                            <ngx-slick-carousel *ngIf="fl.image.length !== 0"
+                                class="carousel Hotel_carousel view-holiday-small-carousel min-h-36 max-h-36 max-w-56 min-w-56"
+                                #slickModal="slick-carousel" [config]="slideConfig">
+                                <div ngxSlickItem *ngFor="
+                                                            let slide of fl.image
+                                                        " class="slide rounded-xl">
+                                    <div *ngIf="fl.image.length > 0">
+                                        <img [src]="slide.imageUrl" alt=""
+                                            class="min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl" />
+                                    </div>
+                                </div>
+                            </ngx-slick-carousel>
+                            <!-- <div class="relative" *ngIf="fl.image.length > 0">
+                                <ngx-slick-carousel class="carousel Hotel_carousel h-48 max-w-56 min-w-56 rounded-xl"
+                                    *ngIf="fl.image.length > 0" #slickCarousels="slick-carousel"
+                                    [config]="slideConfigforsightseeing">
+                                    <div ngxSlickItem *ngFor="let slide of fl.image" class="slide rounded-xl">
+                                        <img loading="lazy" [src]="slide.imageUrl" alt="Place Image"
+                                            class="min-h-48 max-h-48 max-w-56 min-w-56 rounded-xl" />
+                                    </div>
+                                </ngx-slick-carousel>
+                                <div mat-ripple *ngIf="fl.image.length > 1"
+                                    class="flex flex-row justify-center items-center absolute h-5 w-5 white-bg rounded-full left-1 top-[90px] shadow-xl gray-border border cursor-pointer"
+                                    (click)="slickPrev(index)">
+                                    <mat-icon class="relative icon-size-3 pl-1 primary-text">arrow_back_ios</mat-icon>
+
+                                </div>
+                                <div mat-ripple *ngIf="fl.image.length > 1"
+                                    class="flex flex-row justify-center items-center absolute h-5 w-5 white-bg rounded-full right-1 top-[90px] shadow-xl gray-border border cursor-pointer"
+                                    (click)="slickNext(index)">
+                                    <mat-icon class="primary-text icon-size-3">arrow_forward_ios</mat-icon>
+                                </div>
+                            </div> -->
+
+                            <!-- w-[calc(100%-235px)] -->
+                            <div class="text-gray">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1 max-w-1 min-w-1 h-1 max-h-1 min-h-1 rounded-full bg-[#1c1c1c] dark:bg-gray-100"></div>
+                                    <div class="text-lg font-medium text-[#1C1C1C] dark:text-gray-100">{{fl.sightname}}</div>
+                                </div>
+                                <div *ngIf="fl.description.length <= 440; else longContent">
+                                    <div class="text-base font-normal pl-3 dark:text-gray-300">{{ fl.description }}</div>
+                                </div>
+                                <ng-template #longContent>
+                                    <div>
+                                        <div class="text-base font-normal pl-3 dark:text-gray-300" *ngIf="!fl.expanded">{{
+                                            fl.description.slice(0, 440) }}</div>
+                                        <div class="text-base font-normal pl-3 dark: text-gray-300" *ngIf="fl.expanded">{{
+                                            fl.description}}</div>
+                                        <div class="text-base font-medium text-[#234977] dark:text-blue-300 cursor-pointer pl-3"
+                                            (click)="toggleContent(fl)">
+                                            Read {{ fl.expanded ? 'Less...' : 'More...'}}
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-full relative">
-                    <div>
-                        <div class="flex flex-col" *ngFor="
+
+                <!----------Inclusions----------->
+                <div *ngIf="DisplayDetails?.CommonInclusionsList?.length > 0"
+                    class="flex flex-col bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
+                    <div class="pt-4 px-5">
+                        <span class="h-7 w-1 bg-[#01AF47] absolute left-0"></span>
+                        <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
+                            Inclusions
+                        </div>
+                        <div *ngFor="let ex of DisplayDetails.CommonInclusionsList">
+                            <span class="flex py-[2px] text-lg">
+                                <mat-icon class="icon-size-4 mt-[3px] text-green-500"
+                                    svgIcon="heroicons_solid:check"></mat-icon>
+                                <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]">{{ ex.inclusion }}</span></span>
+                        </div>
+                    </div>
+                    <div class="w-full relative pb-4">
+                        <div class="flex flex-col overflow-y-auto">
+                            <div class="flex flex-col" *ngFor="let act of DisplayDetails.OtherInclusionList">
+                                <div
+                                    class="dark-blue my-3 text-lg white-text py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
+                                    {{ act.key }}
+                                </div>
+                                <div *ngFor="let inc of act.value" class="flex flex-col mx-5 px-4 pt-2 pb-1 space-y-1">
+                                    <div class="text-lg font-semibold">{{ inc.inclusion }}</div>
+                                    <div class="text-gray">{{ inc.description }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!----------Exclusions----------->
+                <div *ngIf="DisplayDetails?.ExclusionsList?.length > 0" class="flex flex-col py-4 px-5 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
+                    <span class="h-7 w-1 bg-[#FC484F] absolute left-0"></span>
+                    <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
+                        Exclusions
+                    </div>
+                    <div *ngFor="let ex of DisplayDetails.ExclusionsList">
+                        <span class="flex py-[2px] text-lg">
+                            <mat-icon class="icon-size-4 mt-[3px] text-red-500"
+                                svgIcon="heroicons_outline:x-mark"></mat-icon>
+                            <span class="text-gray dark:text-gray-300 pl-2 text-base text-[#1C1C1C]">{{ ex.exclusion }}</span></span>
+                    </div>
+                </div>
+
+                <!----------Special Notes----------->
+                <div *ngIf="DisplayDetails?.SpecialNoteList?.length > 0"
+                    class="flex flex-col py-4 px-5 bg-[#DFEEFF] dark:bg-[#415c7ad1] rounded-lg overflow-hidden mb-7 round-shadow">
+                    <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
+                        Special Notes
+                    </div>
+                    <div *ngFor="let te of DisplayDetails.SpecialNoteList">
+                        <span class="flex py-[2px] text-lg"><span
+                                class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-[#707070] dark:bg-gray-300 mx-2 mt-[5px]"></span><span
+                                class="text-gray dark:text-gray-300 pl-2 text-base">{{ te.description }}</span></span>
+                    </div>
+                </div>
+
+                <!----------Cancellation Policy----------->
+                <div *ngIf="DisplayDetails?.CancellationPolicyList?.length > 0"
+                    class="flex flex-col py-4 px-5 bg-[#FFE7E8] dark:bg-[#f9979b38] rounded-lg overflow-hidden mb-7 round-shadow">
+                    <div class="text-xl font-semibold pb-2 theme-black-text dark:text-gray-300">
+                        Cancellation Policy
+                    </div>
+                    <div *ngFor="let te of DisplayDetails.CancellationPolicyList">
+                        <span class="flex py-[2px] text-lg">
+                            <mat-icon class="text-[#9D9D9D] dark:text-gray-300 icon-size-4 mt-[3px]"
+                                svgIcon="heroicons_solid:check-circle"></mat-icon>
+                            <span class="text-gray dark:text-gray-400 pl-2 text-base">{{ te.description }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- <div *ngIf="DisplayDetails.FlightsList.length > 0"
+                    class="py-4 white-bg rounded-lg overflow-hidden mb-7 round-shadow">
+                    <div class="text-xl font-semibold px-4 pb-3 theme-black-text border-b">
+                        Flight11
+                    </div>
+                    <div class="w-full relative">
+                        <div>
+                            <div class="flex flex-col" *ngFor="
                                     let dts of DisplayDetails.FlightsList;
                                     let index = index
                                 ">
-                            <div
-                                class="bg-primary my-3 text-lg text-white py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
-                                {{ dts?.key }}
-                            </div>
-                            <div class="rounded-xl mx-5 px-4 pt-3 pb-1 border border-gray-border relative mb-3"
-                                *ngFor="let dt of dts.value">
-                                <div class="pb-4">
-                                    Flight from {{ dt?.departure_city}} to
-                                    {{ dt?.arrival_city }}
-                                    <span class="font-semibold">{{dt?.duration}}</span>
+                                <div
+                                    class="dark-blue my-3 text-lg white-text py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
+                                    {{ dts?.key }}
                                 </div>
-                                <div class="flex justify-between items-center w-full">
-                                    <div class="flex items-center w-[30%]">
-                                        <img class="w-8 h-8 object-contain mr-3" [src]="dt?.logo" alt="" />
-                                        <div>
-                                            <div class="font-semibold text-lg">
-                                                {{ dt?.airline_name }}
-                                            </div>
-                                            <!-- <div class="secondary-text">6E - X - 5317</div> -->
-                                        </div>
+                                <div class="rounded-xl mx-5 px-4 pt-3 pb-1 border border-gray-border relative mb-3"
+                                    *ngFor="let dt of dts.value">
+                                    <div class="pb-4">
+                                        Flight from {{ dt?.departure_city}} to
+                                        {{ dt?.arrival_city }}
+                                        <span class="font-semibold">{{
+                                            dt?.duration
+                                            }}</span>
                                     </div>
-                                    <div class="flex justify-between items-center w-[70%] pr-10">
-                                        <div class="flex flex-col w-[110px]">
-                                            <span class="font-semibold text-xl">{{
-                                                dt?.departure_airport_code
-                                                }}</span>
-                                            <span class="text-sm font-medium">{{
-                                                dt?.departure_date_time
-                                                | date : "hh:mma"
-                                                }}</span>
-                                            <span class="secondary-text text-sm">{{
-                                                dt?.departure_date_time
-                                                | date
-                                                : "ccc, dd MMM"
-                                                }}</span>
-                                        </div>
-                                        <div class="flex flex-col gap-2">
-                                            <div class="min-w-30 justify-center text-sm flex">
-                                                {{ dt?.duration }}
+                                    <div class="flex justify-between items-center w-full">
+                                        <div class="flex items-center w-[30%]">
+                                            <img loading="lazy" class="w-8 h-8 object-contain mr-3" [src]="dt?.logo"
+                                                alt="logo" />
+                                            <div>
+                                                <div class="font-semibold text-lg">
+                                                    {{ dt?.airline_name }}
+                                                </div>
                                             </div>
-                                            <div class="flex mx-7 items-center z-[1]">
-                                                <span
-                                                    class="block w-2 h-2 primary-bg rounded-full border border-white outline-1 outline outline-[#234977] ng-star-inserted"></span>
-                                                <span
-                                                    class="border-dashed border-b border-gray-border min-w-30 relative flex justify-center items-center">
-                                                    <mat-icon
-                                                        class="absolute top-[-11px] rotate-90 orange-text z-10">flight</mat-icon>
-                                                </span>
-                                                <span
-                                                    class="block w-2 h-2 primary-bg rounded-full border border-white outline-1 outline outline-[#234977] ng-star-inserted"></span>
-                                            </div>
-                                            <div class="min-w-30 justify-center text-sm flex h-[18px!]"></div>
                                         </div>
+                                        <div class="flex justify-between items-center w-[70%] pr-10">
+                                            <div class="flex flex-col w-[110px]">
+                                                <span class="font-semibold text-xl">{{
+                                                    dt?.departure_airport_code
+                                                    }}</span>
+                                                <span class="text-sm font-medium">{{
+                                                    dt?.departure_date_time
+                                                    | date : "HH:mm:ss"
+                                                    }}</span>
+                                                <span class="text-gray text-sm">{{
+                                                    dt?.departure_date_time
+                                                    | date
+                                                    : "ccc, dd MMM"
+                                                    }}</span>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <div class="min-w-30 justify-center text-sm flex">
+                                                    {{ dt?.duration }}
+                                                </div>
+                                                <div class="flex mx-7 items-center z-[1]">
+                                                    <span
+                                                        class="block w-2 h-2 bg-primary rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
+                                                    <span
+                                                        class="border-dashed border-b border-gray-border min-w-30 relative flex justify-center items-center">
+                                                        <mat-icon
+                                                            class="absolute top-[-11px] rotate-90 orange-text z-10">flight</mat-icon>
+                                                    </span>
+                                                    <span
+                                                        class="block w-2 h-2 bg-primary rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
+                                                </div>
+                                                <div class="min-w-30 justify-center text-sm flex h-[18px!]"></div>
+                                            </div>
 
-                                        <div class="flex flex-col w-[150px]">
-                                            <span class="font-semibold text-xl">{{
-                                                dt?.arrival_airport_code
-                                                }}</span>
-                                            <span class="text-sm font-medium">{{
-                                                dt?.arrival_date_time
-                                                | date : "hh:mma"
-                                                }}</span>
-                                            <span class="secondary-text text-sm">{{
-                                                dt?.arrival_date_time
-                                                | date
-                                                : "ccc, dd MMM"
-                                                }}</span>
+                                            <div class="flex flex-col w-[150px]">
+                                                <span class="font-semibold text-xl">{{
+                                                    dt?.arrival_airport_code
+                                                    }}</span>
+                                                <span class="text-sm font-medium">{{
+                                                    dt?.arrival_date_time
+                                                    | date : "HH:mm:ss"
+                                                    }}</span>
+                                                <span class="text-gray text-sm">{{
+                                                    dt?.arrival_date_time
+                                                    | date
+                                                    : "ccc, dd MMM"
+                                                    }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="flex justify-between items-center pb-1 pt-2">
-                                    <div class="flex items-center">
+                                    <div class="flex justify-between items-center pb-1 pt-2">
                                         <div class="flex items-center">
-                                            <mat-icon
-                                                class="secondary-text material-symbols-outlined icon-size-4">luggage</mat-icon>
-                                            <span class="secondary-text text-md font-medium leading-none pt-1">{{
-                                                dt?.checkin_baggage
-                                                }}</span>
-                                        </div>
-                                        <div class="flex items-center ml-2 mr-4">
-                                            <mat-icon
-                                                class="secondary-text material-symbols-outlined icon-size-4">local_mall</mat-icon>
-                                            <span class="secondary-text text-md pl-1 font-medium leading-none pt-1">{{
-                                                dt?.cabin_baggage
-                                                }}</span>
+                                            <div class="flex items-center">
+                                                <mat-icon
+                                                    class="text-gray material-symbols-outlined icon-size-4">luggage</mat-icon>
+                                                <span class="text-gray text-md font-medium leading-none pt-1">{{
+                                                    dt?.checkin_baggage
+                                                    }}</span>
+                                            </div>
+                                            <div class="flex items-center ml-2 mr-4">
+                                                <mat-icon
+                                                    class="text-gray material-symbols-outlined icon-size-4">local_mall</mat-icon>
+                                                <span class="text-gray text-md pl-1 font-medium leading-none pt-1">{{
+                                                    dt?.cabin_baggage
+                                                    }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div> -->
 
-            <div *ngIf="DisplayDetails.HotelsList.length > 0" class=" py-4 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl font-semibold px-4 pb-3 text-secondary border-b">
-                    Hotel
-                </div>
-                <div class="w-full relative">
-                    <div>
-                        <div *ngFor="let htf of DisplayDetails.HotelsList; let index = index">
-                            <div
-                                class="bg-primary my-3 text-lg text-white py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
-                                {{ htf.key }}
-                            </div>
-                            <div class="mx-5 px-4 pt-3 pb-1 relative" *ngFor="let ht of htf.value">
-                                <div class="flex space-x-4">
-                                    <!-- <div>
-                                            <img src="assets/images/temp_images/holiday/goa.jpg"
-                                                class="object-cover w-52 rounded-lg" alt="">
+                <!-- <div *ngIf="DisplayDetails.HotelsList.length > 0"
+                    class="py-4 white-bg rounded-lg overflow-hidden mb-7 round-shadow">
+                    <div class="text-xl font-semibold px-4 pb-3 theme-black-text border-b">
+                        Hotel
+                    </div>
+                    <div class="w-full relative">
+                        <div>
+                            <div *ngFor="let htf of DisplayDetails.HotelsList; let index = index">
+                                <div
+                                    class="dark-blue my-3 text-lg white-text py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
+                                    {{ htf.key }}
+                                </div>
+                                <div class="mx-5 px-4 pt-3 pb-1 relative" *ngFor="let ht of htf.value">
+                                    <div class="flex space-x-4"> -->
+                <!-- <div>
+                                            <img loading="lazy" src="assets/images/temp_images/holiday/goa.jpg"
+                                                class="object-cover w-52 rounded-lg" alt="goa">
                                         </div> -->
 
-                                    <div class="tab-content flex space-x-4">
-                                        <ngx-slick-carousel class="carousel h-40 max-w-50 min-w-50"
-                                            #slickModal="slick-carousel" [config]="slideConfig">
-                                            <div ngxSlickItem *ngFor="
-                                                        let slide of ht.image
+                <!-- <div class="tab-content flex space-x-4">
+                                            <ngx-slick-carousel class="carousel h-40 max-w-56 min-w-56"
+                                                #slickModal="slick-carousel" [config]="slideConfig"> -->
+                <!-- <div ngxSlickItem *ngFor="
+                                                        let slide of ht.images
                                                     " class="slide rounded-xl">
-                                                    <div *ngIf="ht.image.length > 0">
-                                                        <img [src]="slide.imageUrl" alt=""
-                                                            class="min-h-40 max-h-40 max-w-50 min-w-50 rounded-xl" />
+                                                    <div *ngIf="
+                                                            ht.images.length > 0
+                                                        ">
+                                                        <img loading="lazy" [src]="slide" alt="slide"
+                                                            class="min-h-48 max-h-48 max-w-56 min-w-56 rounded-xl" />
                                                     </div>
+                                                </div> -->
+
+                <!-- <div *ngIf="ht.images.length === 0">
+                                                    <img loading="lazy"
+                                                        class="min-h-40 max-h-40 max-w-56 min-w-56 rounded-xl" [src]="
+                                                            'assets/images/icon/hotel.svg'
+                                                        " alt="hotel" />
                                                 </div>
+                                            </ngx-slick-carousel>
+                                        </div>
 
-                                            <div *ngIf="ht.image.length === 0">
-                                                <img class="min-h-40 max-h-40 max-w-56 min-w-56 rounded-xl" [src]="
-                                                            'assets/icons/hotel.svg'
-                                                        " alt="" />
+                                        <div class="flex flex-col w-[calc(100%-235px)]">
+                                            <div class="flex items-center">
+                                                <span class="text-2xl font-semibold mr-3">{{ ht.inclusion }}</span>
+                                                <div *ngFor="let star of getStar(ht.star_rating)">
+                                                    <mat-icon
+                                                        class="mr-[2px] text-[#FFC24A] icon-size-5">star</mat-icon>
+                                                </div>
                                             </div>
-                                        </ngx-slick-carousel>
-                                    </div>
-
-                                    <div class="flex flex-col w-[calc(100%-235px)]">
-                                        <div class="flex items-center">
-                                            <span class="text-2xl font-semibold mr-3">{{ ht.hotel_name}}</span>
-                                            <div *ngFor="let star of getStar(ht.star_rating)">
-                                                <mat-icon class="mr-[2px] text-[#FFC24A] icon-size-4">star</mat-icon>
+                                            <div class="text-sm text-gray">{{ht.hotel_address}}</div>
+                                            <div class="flex flex-row space-x-2 items-center py-1">
+                                                <mat-icon class="icon-size-4 text-black"
+                                                    svgIcon="mat_outline:calendar_today"></mat-icon>
+                                                <span class="text-gray">{{ht.fromDate}} - {{ht.toDate}}</span>
+                                                <span class="text-gray"> | Nights: {{ht.no_of_nights}}</span>
+                                            </div>
+                                            <div class="bg-gray-bg p-3 rounded-lg mt-2">
+                                                <div class="font-semibold">Room Type: {{ht.room_category}}</div>
+                                                <span class="mb-1 text-sm block font-medium">Meal Plan: {{ ht.meal_plan
+                                                    }}</span> -->
+                <!-- <div class="font-semibold">Description:</div> -->
+                <!-- <span class="flex flex-row">
+                                                    <span class="text-sm font-medium">
+                                                        {{ ht.description}}</span>
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="text-sm secondary-text">{{ht.hotel_address}}</div>
-                                        <div class="flex flex-row space-x-2 items-center py-1">
-                                            <mat-icon class="icon-size-4 text-white"
-                                                svgIcon="mat_outline:calendar_today"></mat-icon>
-                                            <span class="secondary-text">{{ht.fromDate}} - {{ht.toDate}}</span>
-                                            <span class="secondary-text"> | Nights: {{ht.no_of_nights}}</span>
-                                        </div>
-                                        <div class="dark:dark bg-gray-200 p-3 rounded-lg mt-2">
-                                            <div class="font-semibold">Room Type: {{ht.room_category}}</div>
-                                            <span class="mb-1 text-sm block font-medium">Meal Plan: {{ ht.meal_plan
-                                                }}</span>
-                                            <!-- <div class="font-semibold">Description:</div> -->
-                                            <span class="flex flex-row">
-                                                <span class="text-sm font-medium">
-                                                    {{ ht.description}}</span>
-                                            </span>
-                                        </div>
-                                    </div>
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div> -->
 
-            <!-- <div *ngIf="DisplayDetails.TransferList.length > 0" class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl font-semibold px-4 pb-3 text-secondary border-b">
-                    Transport
-                </div>
-                <div class="w-full relative">
+                <!-- <div *ngIf="DisplayDetails.TransferList.length > 0"
+                    class="py-4 white-bg rounded-lg overflow-hidden mb-7 round-shadow">
+                    <div class="text-xl font-semibold px-4 pb-3 theme-black-text border-b">
+                        Transport
+                    </div>
+                    <div class="w-full relative">
 
-                    <div class="overflow-y-auto">
-                        <div *ngFor="
+                        <div class="overflow-y-auto">
+                            <div *ngFor="
                                     let dtg of DisplayDetails.TransferList;
                                     let index = index
                                 " class="flex flex-col gap-4">
-                            <div
-                                class="bg-primary my-3 text-lg text-white py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
-                                {{ dtg.key }}
-                            </div>
-                            <div class="mx-5 px-4 pt-1 pb-1 relative" *ngFor="let dt of dtg.value">
-                                <div class="flex flex-row">
-                                    <img src="/assets/icons/cari.png" class="h-24 w-44 object-contain" />
-                                    <div class="flex flex-col pl-12">
-                                        <span class="font-semibold text-lg">{{ dt.inclusion }}</span>
-                                        <span class="pt-1">{{ dt.description }}</span>
+                                <div
+                                    class="dark-blue my-3 text-lg white-text py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
+                                    {{ dtg.key }}
+                                </div>
+                                <div class="mx-5 px-4 pt-1 pb-1 relative" *ngFor="let dt of dtg.value">
+                                    <div class="flex flex-row">
+                                        <img loading="lazy" src="/assets/images/icon/cari.webp"
+                                            class="h-24 w-44 object-contain" />
+                                        <div class="flex flex-col pl-12">
+                                            <span class="font-semibold text-lg">{{ dt.inclusion }}</span>
+                                            <span class="pt-1">{{ dt.description }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                    </div>
+                </div> -->
+
+                <!-- <div *ngIf="DisplayDetails.ActivityList.length > 0"
+                    class="py-4 white-bg rounded-lg overflow-hidden mb-7 round-shadow">
+                    <div class="text-xl font-semibold px-4 pb-3 theme-black-text border-b">
+                        Activity
                     </div>
 
-                </div>
-            </div> -->
-<!-- 
-            <div *ngIf="DisplayDetails.ActivityList.length > 0" class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl font-semibold px-4 pb-3 text-secondary border-b">
-                    Activity
-                </div>
+                    <div class="w-full relative">
 
-                <div class="w-full relative">
+                        <div class="overflow-y-auto">
+                            <div class="flex flex-col gap-4"
+                                *ngFor="let actg of DisplayDetails.ActivityList;let index = index">
+                                <div
+                                    class="dark-blue my-3 text-lg white-text py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
+                                    {{ actg.key }}
+                                </div>
+                                <div class="mx-5 px-4 pt-3 pb-1 relative" *ngFor="let act of actg.value">
+                                    <div class="flex items-start">
+                                        <div class="tab-content flex space-x-4">
+                                            <ngx-slick-carousel class="carousel h-10 max-w-16 min-w-16"
+                                                #slickModal="slick-carousel" [config]="slideConfig"> -->
+                <!-- <div ngxSlickItem *ngFor="
+                                                        let slide of act.images
+                                                    " class="slide rounded-xl">
+                                                    <div *ngIf="
+                                                            act.images.length >
+                                                            0
+                                                        ">
+                                                        <img loading="lazy" [src]="slide" alt="slide"
+                                                            class="min-h-40 max-h-40 max-w-50 min-w-50 rounded-xl" />
+                                                    </div>
+                                                </div> -->
 
-                    <div class="overflow-y-auto">
-                        <div class="flex flex-col gap-4"
-                            *ngFor="let actg of DisplayDetails.ActivityList;let index = index">
-                            <div
-                                class="bg-primary my-3 text-lg text-white py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
-                                {{ actg.key }}
-                            </div>
-                            <div class="mx-5 px-4 pt-3 pb-1 relative" *ngFor="let act of actg.value">
-                                <div class="flex items-start">
-                                    <div class="tab-content flex space-x-4">
-                                        <ngx-slick-carousel class="carousel h-24 max-w-40 min-w-40"
-                                            #slickModal="slick-carousel" [config]="slideConfig">
-                                            <div *ngIf="act.images.length === 0">
-                                                <img class="min-h-10 max-h-10 max-w-40 min-w-40 rounded-xl"
-                                                    [src]="'assets/icons/hiking.svg'" alt="" />
-                                            </div>
-                                        </ngx-slick-carousel>
-                                    </div>
+                <!-- <div *ngIf="act.images.length === 0">
+                                                    <img loading="lazy"
+                                                        class="min-h-10 max-h-10 max-w-16 min-w-16 rounded-xl"
+                                                        [src]="'assets/images/icon/hiking.svg'" alt="hiking" />
+                                                </div>
+                                            </ngx-slick-carousel>
+                                        </div>
 
-                                    <div class="pl-6">
-                                        <span class="text-xl font-semibold block">{{ act.inclusion }}</span>
-                                        <span class="secondary-text pt-3 block">{{ act.description }}</span>
+                                        <div class="pl-6">
+                                            <span class="text-lg font-semibold block">{{ act.inclusion }}</span>
+                                            <span class="text-gray pt-3 block">{{ act.description }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
+                </div> -->
 
-                </div>
-            </div> -->
-
-            <!-- <div *ngIf="DisplayDetails.OtherInclusionList.length > 0"
-                class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl font-semibold px-4 pb-3 text-secondary border-b">
+                <!-- <div *ngIf="DisplayDetails.OtherInclusionList.length > 0"
+                class="py-4 white-bg rounded-lg overflow-hidden mb-7 shadow-[0_0_15px_0_rgba(167,167,167,0.2)]">
+                <div class="text-xl font-semibold px-4 pb-3 theme-black-text border-b">
                     Other
                 </div>
                 <div class="w-full relative">
 
                     <div class="flex flex-col overflow-y-auto">
                         <div class="flex flex-col" *ngFor="let act of DisplayDetails.OtherInclusionList">
-                            <div class="bg-primary my-3 text-lg text-white py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
+                            <div class="dark-blue my-3 text-lg white-text py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
                                 {{ act.key }}
                             </div>
                             <div *ngFor="let inc of act.value" class="flex flex-col mx-5 px-4 pt-2 pb-1 space-y-1">
                                 <div class="text-lg font-semibold">{{ inc.inclusion }}</div>
-                                <div class="secondary-text">{{ inc.description }}</div>
+                                <div class="text-gray">{{ inc.description }}</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div> -->
 
-            <div *ngIf="DisplayDetails.CommonInclusionsList"
-                class="flex flex-col  bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="pt-4 px-5">
-
-                    <div class="text-xl font-semibold pb-2 text-secondary">
-                        Inclusions
+                <!-- <div *ngIf="DisplayDetails.FixedDepatureList.length > 0"
+                    class="px-5 py-4 white-bg rounded-lg overflow-hidden mb-5 round-shadow">
+                    <div class="text-xl font-semibold pb-3 theme-black-text">
+                        Fixed Depature
                     </div>
-                    <div *ngFor="let ex of DisplayDetails.CommonInclusionsList">
-                        <span class="flex py-[2px] text-lg"><span
-                                class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-white mx-2 mt-[10px]"></span><span
-                                class="secondary-text pl-2">{{ ex.inclusion }}</span></span>
-                    </div>
-                </div>
-
-                <div class="w-full relative pb-4">
-                    <div class="flex flex-col overflow-y-auto">
-                        <div class="flex flex-col" *ngFor="let act of DisplayDetails.OtherInclusionList">
-                            <div
-                                class="bg-primary my-3 text-lg text-white py-2 pl-8 pr-6 ml-[-20px] w-fit rounded-full">
-                                {{ act.key }}
-                            </div>
-                            <div *ngFor="let inc of act.value" class="flex flex-col mx-5 px-4 pt-2 pb-1 space-y-1">
-                                <div class="text-lg font-semibold">{{ inc.inclusion }}</div>
-                                <div class="secondary-text">{{ inc.description }}</div>
-                            </div>
+                    <div class="flex space-x-4 overflow-y-auto">
+                        <div class="p-2 border rounded-md min-w-56 cursor-pointer" [ngClass]="
+                            DepatureformGroup.get('date').value.id == fl.id
+                                ? 'primary-border shadow-lg'
+                                : 'border-gray-border'
+                        " *ngFor="let fl of DisplayDetails.FixedDepatureList" (click)="changeFixedDepature(fl)">
+                            <span class="font-medium pb-2 text-lg">{{
+                                fl.departure_date | date : "dd-MM-yyyy EEEE"
+                                }}</span>
+                           
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col py-4 px-5 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl font-semibold pb-2 text-secondary">
-                    Exclusions
-                </div>
-                <div *ngFor="let ex of DisplayDetails.ExclusionsList">
-                    <span class="flex py-[2px] text-lg"><span
-                            class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-white mx-2 mt-[10px]"></span><span
-                            class="secondary-text pl-2">{{ ex.exclusion }}</span></span>
-                </div>
-            </div>
-
-            <div class="flex flex-col py-4 px-5 bg-card rounded-lg overflow-hidden mb-7  "
-                *ngIf="DisplayDetails.TermsAndConditionsList.lenght > 0">
-                <div class="text-xl font-semibold pb-2 text-secondary">
-                    Terms & Conditions
-                </div>
-                <div *ngFor="let te of DisplayDetails.TermsAndConditionsList">
-                    <span class="flex py-[2px] text-lg"><span
-                            class="min-h-[7px] min-w-[7px] max-h-[7px] max-w-[7px] block rounded-full bg-white mx-2 mt-[10px]"></span><span
-                            class="secondary-text pl-2">{{ te.special_note }}</span></span>
-                </div>
-            </div>
-        </div>
-        <div class="right w-[29%]">
-            <div class="py-4 bg-card rounded-lg overflow-hidden mb-7  ">
-                <div class="text-xl mx-5 font-semibold pb-2 text-secondary">
-                    Booking Process
-                </div>
-
-                <form [formGroup]="DepatureformGroup">
-                    <div class="p-3 dark:dark bg-gray-200 text-primary-500 primary-border my-3 mx-5 rounded-xl border">
-                        <span class="text-black dark:text-primary-500">Select your date</span>
-                        <mat-select *ngIf="DisplayDetails.FixedDepatureList.length > 0"
-                            (selectionChange)="changeFixedDepature($event.value)" class="font-semibold text-lg"
-                            formControlName="date">
-                            <mat-option *ngFor="let fl of DisplayDetails.DateList" [value]="fl">
-                                <div class="font-semibold text-base">
-                                    {{
-                                    fl.departure_date
-                                    | date : "dd MMM yyyy EEEE"
-                                    }}
-                                </div>
-                            </mat-option>
-                        </mat-select>
-                        <div class="w-full flex items-center justify-between"
-                            *ngIf="DisplayDetails.FixedDepatureList.length < 1">
-                            <input class="w-full font-semibold text-lg" matInput [matDatepicker]="picker"
-                                [min]="minDate" (click)="picker.open()" formControlName="depDate" required
-                                (dateChange)="depDates()" readonly />
-                            <mat-datepicker-toggle matSuffix [for]="picker"
-                                class="text-primary-500"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
-                        </div>
-                    </div>
-                </form>
-
-                <div (click)="editPax()"
-                    class="flex flex-row items-center justify-between p-3 dark:dark bg-gray-200 primary-border my-3 mx-5 rounded-xl border cursor-pointer">
-                    <div class="flex flex-col">
-                        <span class=" text-black dark:text-primary-500">Pax</span>
-                        <span class="text-lg text-primary-500 font-semibold">{{adult}} Adults, {{child}}
-                            Child</span>
-                    </div>
-                    <div class="text-primary-500 font-semibold">Edit</div>
-                </div>
-
-                <div class="border-t-2 border-border-gray-border mt-5">
-                    <div class="mx-5 flex items-center justify-between py-2">
-                        <div class="text-primary-500 text-lg font-medium">
-                            Total Amount:
-                        </div>
-                        <div class="text-right">
-                            <div class="font-semibold text-primary-500 text-xl">
-                                {{record.currency}} {{ ((record.purchase_price / record.total_pax) ||
-                                0).toFixed(0)}}
-                            </div>
-                            <div class="text-secondary -m-1 text-sm mr-1">
-                                Per Person
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- <div class="mx-5 mt-3">
-                    <button mat-flat-button style="border: 1px solid #0d9488;"
-                        class=" w-full min-h-13 rounded-lg  space-x-2"
-                        (click)="downloadQuotation()">
-                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray" class="text-green-500"></mat-icon>
-                        <span class="text-primary-500 font-semibold text-lg">Download Quotation</span>
-                    </button>
-                </div>
-
-                <div class="mx-5 mt-3">
-                    <button class="bg-primary rounded-md py-4 fuse-mat-button-large px-7 w-full" (click)="bookNow()">
-                        <span class="text-white text-lg tracking-wide font-semibold">BOOK NOW</span>
-                    </button>
                 </div> -->
             </div>
+            <!-- <div class="right w-[29%]">
+                <div class="py-4 bg-card rounded-lg overflow-hidden mb-7 round-shadow">
+                    <div class="text-xl mx-5 font-semibold pb-2 theme-black-text">
+                        Booking Details
+                    </div>
+
+                    <form [formGroup]="DepatureformGroup">
+                        <div class="p-3 bg-[#e9edf1] dark:dark text-primary border-primaryColor my-3 mx-5 rounded-xl border">
+                            <span>Select your date</span>
+                            <mat-select *ngIf="DisplayDetails.FixedDepatureList.length > 0"
+                                (selectionChange)="changeFixedDepature($event.value)" class="font-semibold text-lg"
+                                formControlName="date">
+                                <mat-option *ngFor="let fl of DisplayDetails.DateList" [value]="fl">
+                                    <div class="font-semibold text-base">
+                                        {{ fl.departure_date | date : "dd-MM-yyyy EEEE" }}
+                                    </div>
+                                </mat-option>
+                            </mat-select>
+                            <div class="w-full flex items-center justify-between"
+                                *ngIf="DisplayDetails.FixedDepatureList.length < 1">
+                                <input class="w-full font-semibold text-lg" matInput [matDatepicker]="picker"
+                                    [min]="minDate" (click)="picker.open()" formControlName="depDate" required
+                                    (dateChange)="depDates()" readonly />
+                                <mat-datepicker-toggle matSuffix [for]="picker"
+                                    class="text-primary"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div (click)="editPax()"
+                        class="flex flex-row items-center justify-between p-3 bg-[#e9edf1] dark:dark border-primaryColor my-3 mx-5 rounded-xl border cursor-pointer">
+                        <div class="flex flex-col">
+                            <span class="text-primary text-sm">Pax</span>
+                            <span class="text-lg text-primary font-semibold">{{adult}} Adults, {{child}} Child</span>
+                        </div>
+                        <div class="text-primary font-semibold">Edit</div>
+                    </div>
+
+                    <div class="border-t-2 border-border-gray-border mt-5">
+                        <div class="mx-5 flex items-center justify-between py-2">
+                            <div class="text-primary text-lg font-medium">
+                                Total Amount:
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold text-primary text-xl">
+                                    {{holidayDetailAll?.product?.currency_symbol}} {{ ((((holidayDetailAll?.product?.sell_price + holidayDetailAll?.product?.tax) / (adult + child))) ||
+                                        0).toFixed(0)}}
+                                </div>
+                                <div class="text-gray -m-1 text-sm mr-1">
+                                    Per Person
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div> -->
         </div>
     </div>
 </div>

@@ -122,9 +122,9 @@ export class AuditedComponent extends BaseListingComponent {
       this.pspList = this.filterApiData.pspData;
     }, 1000);
 
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.settingsAuitedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       this.selectedMop = resp['table_config']['mop']?.value;
       this.selectedPsp = resp['table_config']['psp_name']?.value;
       this.selectedAgent = resp['table_config']['agent_code_filter']?.value;
@@ -335,8 +335,8 @@ export class AuditedComponent extends BaseListingComponent {
     filterReq['particularId'] = this.auditListFilter?.particularId == "all" ? '' : this.auditListFilter?.particularId;
     filterReq['mop'] = this.auditListFilter?.mop || '';
     filterReq['psp'] = this.auditListFilter?.psp || '';
-    filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.FromDate)).toFormat('yyyy-MM-dd');
-    filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.ToDate)).toFormat('yyyy-MM-dd');
+    // filterReq['FromDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.FromDate)).toFormat('yyyy-MM-dd');
+    // filterReq['ToDate'] = DateTime.fromJSDate(new Date(this.auditListFilter.ToDate)).toFormat('yyyy-MM-dd');
     filterReq['Take'] = this.totalRecords;
 
 

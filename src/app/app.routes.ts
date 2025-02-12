@@ -131,6 +131,7 @@ export const appRoutes: Route[] = [
             { path: Routes.account.commission_income_path, loadChildren: () => import('app/modules/reports/account/commission-income/commission-income.routes') },
             { path: Routes.account.purchase_register_path, loadChildren: () => import('app/modules/reports/account/purchase-register/purchase-register.routes') },
             { path: Routes.account.agent_wise_service_wise_path, loadChildren: () => import('app/modules/reports/account/agent-wise-service-wise/agent-wise-service-wise.component.routes') },
+            { path: Routes.account.agent_ledger_wallet_missmatch_path, loadChildren: () => import('app/modules/reports/account/agent-ledger-wallet-missmatch/agent-ledger-wallet-missmatch.component.routes') },
 
 
             //Inventory
@@ -142,6 +143,7 @@ export const appRoutes: Route[] = [
             { path: Routes.inventory.product_fix_departure_path, loadChildren: () => import('app/modules/Inventory/Product-Fix-Departure/product-fix-departure.routes') },
             { path: Routes.inventory.product_flight_path, loadChildren: () => import('app/modules/Inventory/Product-Flight/product-flight.routes') },
             { path: Routes.inventory.visa_path, loadChildren: () => import('app/modules/Inventory/visa/visa-list/visa.routes') },
+            { path: Routes.inventory.cab_path, loadChildren: () => import('app/modules/Inventory/cab/cab-inventory.routes') },
 
             // new holiday
             { path: Routes.inventory.holiday_v2_path, loadChildren: () => import('app/modules/Inventory/holiday-new/holiday-list/holiday-list.routes') },
@@ -163,6 +165,10 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.products_path, loadChildren: () => import('app/modules/reports/sales/product/sales-product/sales-product.routes') },
             { path: Routes.reports.pg_refund_path, loadChildren: () => import('app/modules/reports/PG Refund/pg-refund-list/pg-refund.routes') },
             { path: Routes.reports.agent_summary_path, loadChildren: () => import('app/modules/reports/sales/agent-summaries/agent-summary/agent-summary.routes') },
+            { path: Routes.reports.tech_summary_path, loadChildren: () => import('app/modules/reports/tech-business/tech-business-summary/tech-business-summary.routes') },
+            { path: Routes.reports.tech_rm_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/rm-monthly-analytics/rm-monthly-analytics.routes') },
+            { path: Routes.reports.tech_product_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/product-monthly-analytics/product-monthly-analytics.routes') },
+
 
             // MY BOOKINGS
             { path: Routes.booking.flight_path, loadChildren: () => import('app/modules/booking/flight/flight/flights.routes') },
@@ -174,6 +180,8 @@ export const appRoutes: Route[] = [
             { path: Routes.booking.forex_path, loadChildren: () => import('app/modules/booking/forex/forex-list/forex.routes') },
             { path: Routes.booking.visa_path, loadChildren: () => import('app/modules/booking/visa/visa.routes') },
             { path: Routes.booking.offline_service_path, loadChildren: () => import('app/modules/booking/offline-service/offline-list/offline.routes') },
+            { path: Routes.booking.holiday_lead_path, loadChildren: () => import('app/modules/booking/holiday/holiday-list/holiday-lead.routes') },
+            { path: Routes.booking.cab_path, loadChildren: () => import('app/modules/booking/cab/cab-list/cab.routes') },
 
             // SETTINGS
             { path: Routes.settings.erpsettings_path, loadChildren: () => import('app/modules/settings/erp-settings/erp-settings.routes') },
@@ -184,6 +192,8 @@ export const appRoutes: Route[] = [
             { path: Routes.settings.supplierapi_path, loadChildren: () => import('app/modules/settings/supplier-api/supplier-api.routes') },
             { path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes') },
             { path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes') },
+            { path: Routes.settings.cashback_parameters_path, loadChildren: () => import('app/modules/settings/cashback-parameter/cashback-parameter.route') },
+
         ]
     },
 ];

@@ -73,7 +73,7 @@
                                 </button>
 
                                 <button mat-menu-item (click)="salesReturnProduct(ListItem)"
-                                    *ngIf="ListItem.receipt_status == 'Confirmed'">
+                                    *ngIf="ListItem.receipt_status == 'Confirmed' && ListItem.product_status != 'Sales Return'">
                                     <mat-icon svgIcon="heroicons_outline:currency-rupee"></mat-icon>
                                     <span style="font-weight: 600">Sales Return</span>
                                 </button>

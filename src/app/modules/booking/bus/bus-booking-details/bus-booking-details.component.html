@@ -20,6 +20,18 @@
 
     <div class="m-8">
         <div class="m-auto max-w-[1200px]">
+            <div class="pb-2 primeng-alert" *ngIf="mainDataAll && mainDataAll?.insurance_id">
+                <p-messages severity="info">
+                    <ng-template pTemplate>
+                        <div class="ml-2 flex items-center font-semibold text-[14px] leading-5">
+                            <mat-icon svgIcon="heroicons_outline:information-circle" class="pr-1"></mat-icon>
+                            This booking is associated with Insurance {{mainDataAll?.insurance_ref_no}}
+                        </div>
+                        <button mat-raised-button (click)="goToData()">View</button>
+                    </ng-template>
+                </p-messages>
+            </div>
+            
             <div class="mb-6 flex ">
                 <div class="w-2/3 bg-card rounded-2xl p-6 h-fit">
                     <div>
@@ -52,12 +64,20 @@
                                     </div>
                                 </div>
 
-                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
+                                <div class="px-2 py-1 mr-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
                                     (click)="logs()">
                                     <div>
                                         <img src="assets/icons/logs.svg" alt="">
                                     </div>
                                     <span class="text-md leading-none ml-2">Logs</span>
+                                </div>
+
+                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
+                                    (click)="fileLogs()">
+                                    <div>
+                                        <img src="assets/icons/logs.svg" alt="">
+                                    </div>
+                                    <span class="text-md leading-none ml-2">File Logs</span>
                                 </div>
 
                             </div>
@@ -160,8 +180,7 @@
                                 <span class="text-md font-semibold text-secondary">Agent Contact Number</span>
                                 <div class="truncate">
                                     <span class="text-base truncate"
-                                        [matTooltip]="bookingBy?.agent_contact">{{bookingBy?.agent_contact || ' -
-                                        '}}</span>
+                                        [matTooltip]="bookingBy?.agent_contact">{{bookingBy?.agent_contact || ' -'}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">
@@ -174,8 +193,7 @@
                             <div class="flex flex-col ">
                                 <span class="text-md font-semibold text-secondary">RM</span>
                                 <div class="truncate">
-                                    <span class="text-base truncate" [matTooltip]="bookingBy?.rm">{{bookingBy?.rm || ' -
-                                        '}}</span>
+                                    <span class="text-base truncate" [matTooltip]="bookingBy?.rm">{{bookingBy?.rm || ' -'}}</span>
                                 </div>
                             </div>
                             <div class="flex flex-col ">

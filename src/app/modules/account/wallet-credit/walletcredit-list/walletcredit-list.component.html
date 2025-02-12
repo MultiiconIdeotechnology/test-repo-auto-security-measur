@@ -116,6 +116,9 @@
                     <th class="text-right" pSortableColumn="over_due_count" pResizableColumn>
                         Over Due <p-sortIcon field="over_due_count" />
                     </th>
+                    <th pSortableColumn="is_defaulter" pResizableColumn>
+                        Defaulter <p-sortIcon field="is_defaulter" />
+                    </th>
                     <th pSortableColumn="entry_date_time" pResizableColumn>
                         Entry <p-sortIcon field="entry_date_time" />
                     </th>
@@ -183,6 +186,23 @@
                     <th>
                         <p-columnFilter type="numeric" field="over_due_count" placeholder="Search by Over Due"
                             ariaLabel="Filter Over Due" />
+                    </th>
+                    <th>
+                        <p-columnFilter field="is_defaulter" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown"
+                                            [ngModel]="value"
+                                            [options]="defaulterActionList"
+                                            (onChange)="filter($event.value)"
+                                            placeholder="Select Option"
+                                             appendTo="body"
+                                            [showClear]="true">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
@@ -265,6 +285,7 @@
                     <td>{{element.payment_cycle_policy}}</td>
                     <td class="text-right">{{element.outstanding_on_due_date ? element.outstanding_on_due_date.toFixed(2) : 0 }}</td>
                     <td class="text-right">{{element.over_due_count}}</td>
+                    <td>{{element.is_defaulter ? 'Yes': 'No'}}</td>
                     <td>
                         {{(element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>

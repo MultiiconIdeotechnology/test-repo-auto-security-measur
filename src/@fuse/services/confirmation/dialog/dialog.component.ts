@@ -3,7 +3,7 @@ import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MatOptionModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,6 +16,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { FuseConfirmationConfig } from '@fuse/services/confirmation/confirmation.types';
 import { UserService } from 'app/core/user/user.service';
+import { LuxonDateAdapterService } from 'app/services/LuxonDateAdapter.service';
+import { MY_DATE_FORMATS } from 'app/utils/commonutils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -63,6 +65,10 @@ import { Subject, takeUntil } from 'rxjs';
         MatOptionModule,
         MatDatepickerModule
     ],
+    providers: [
+        { provide: DateAdapter, useClass: LuxonDateAdapterService },
+        { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    ]
 })
 export class FuseConfirmationDialogComponent {
     formGroup: FormGroup;

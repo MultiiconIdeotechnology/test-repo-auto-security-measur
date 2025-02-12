@@ -1,4 +1,4 @@
-import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,16 +35,12 @@ import { FlightTabService } from 'app/services/flight-tab.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
-
 @Component({
   selector: 'app-bus',
   templateUrl: './bus.component.html',
   styleUrls: ['./bus.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
-    NgFor,
-    DatePipe,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -57,7 +53,6 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     MatInputModule,
     MatButtonModule,
     MatTooltipModule,
-    NgClass,
     RouterOutlet,
     MatProgressSpinnerModule,
     MatDatepickerModule,
@@ -132,9 +127,9 @@ export class BusComponent extends BaseListingComponent {
     this.getToCity('');
 
     // common filter
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
       this.selectedSupplier = resp['table_config']['supplier']?.value;
       this.selectedFromCity = resp['table_config']['from_id_filters']?.value;

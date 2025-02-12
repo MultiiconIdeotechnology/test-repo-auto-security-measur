@@ -34,6 +34,18 @@
                 </p-messages>
             </div>
 
+            <div class="pb-2 primeng-alert" *ngIf="mainDataAll && mainDataAll?.insurance_id">
+                <p-messages severity="info">
+                    <ng-template pTemplate>
+                        <div class="ml-2 flex items-center font-semibold text-[14px] leading-5">
+                            <mat-icon svgIcon="heroicons_outline:information-circle" class="pr-1"></mat-icon>
+                            This booking is associated with Insurance {{mainDataAll?.insurance_ref_no}}
+                        </div>
+                        <button mat-raised-button (click)="goToData()">View</button>
+                    </ng-template>
+                </p-messages>
+            </div>
+
             <div class="mb-6 flex ">
                 <div class="w-2/3 bg-card rounded-2xl p-6 h-fit">
                     <div>
@@ -100,12 +112,22 @@
                                     <span class="text-md leading-none ml-2">Voucher</span>
                                 </div>
 
-                                <div *ngIf="mainDataAll?.is_invoice_button_show"
+                                <div *ngIf="mainDataAll?.is_invoice_button_show" [matMenuTriggerFor]="optionMenu" 
                                     class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                    (click)="invoice('print')">
+                                    >
                                     <mat-icon class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
-                                    <span class="text-md leading-none ml-2">Invoice</span>
+                                    <span  class="text-md leading-none ml-2">Invoice</span>
                                 </div>
+                                <mat-menu #optionMenu>
+                                    <button mat-menu-item (click)="invoice('INR')">
+                                        <!-- <mat-icon class="mat-18">info</mat-icon> -->
+                                        <span style="font-weight: 600">Invoice 1</span>
+                                    </button>
+                                    <button mat-menu-item (click)="invoice('DMCC')">
+                                        <!-- <mat-icon class="mat-18">info</mat-icon> -->
+                                        <span style="font-weight: 600">Invoice 2</span>
+                                    </button>
+                                </mat-menu>
                                 <!-- *ngIf="Status === 'Confirmed'" -->
                                 <div class="flex space-x-3 mr-2">
                                     <div (click)="amendment()"
@@ -693,34 +715,43 @@
                         <div class="w-[110px] px-4 truncate">{{ data.gender }}</div>
                         <div class="w-[140px] px-4 truncate">{{ data.pax_type }}</div>
                         <div class="w-[200px] px-4 truncate">{{ data.ticket_number || ' - '}}</div>
-                        <div class="w-[200px] px-4 truncate"><mat-icon
-                                class="material-symbols-outlined text-default text-xl relative top-1">luggage</mat-icon>{{data.checkin_baggage
-                            || ' - '}}</div>
-                        <div class="w-[190px] px-4 truncate"><mat-icon
-                                class="material-symbols-outlined text-default text-xl ml-1 relative top-1">local_mall</mat-icon>{{data.cabin_baggage
-                            || ' - '}}
+                        <div class="w-[200px] px-4 truncate">
+                            <ng-container *ngIf="data.checkin_baggage; else noBaggage">
+                                <mat-icon class="material-symbols-outlined text-default text-xl relative top-1">luggage</mat-icon>
+                                {{data.checkin_baggage}}
+                            </ng-container>
+                            <ng-template #noBaggage>-</ng-template>
+                        </div>
+                        <div class="w-[190px] px-4 truncate">
+                            <ng-container *ngIf="data.cabin_baggage; else noCabinBaggage">
+                                <mat-icon class="material-symbols-outlined text-default text-xl ml-1 relative top-1">local_mall</mat-icon>
+                                {{data.cabin_baggage}}
+                            </ng-container>
+                            <ng-template #noCabinBaggage>-</ng-template>
                         </div>
                     </div>
                 </div>
 
-                <div *ngIf="baggageDataList.length > 0"
+                <div *ngIf="baggageDataList && baggageDataList.length > 0"
                     class="flex flex-col mt-7 overflow-x-hidden overflow-y-auto rounded-2xl border"
                     style="max-height: 40% !important">
                     <div
                         class="flex flex-row border-b-2 max-h-10 min-h-10 items-center bg-card sticky top-0 text-lg px-4">
                         Extra meal & Baggage Details</div>
                     <div class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0">
-                        <div class="w-1/4 px-4">Passenger Name</div>
-                        <div class="w-1/4 px-4">Sector</div>
-                        <div class="w-1/4 px-4">SSR Type</div>
-                        <div class="w-1/4 px-4">SSR Info</div>
+                        <div class="w-1/5 px-4">Passenger Name</div>
+                        <div class="w-1/5 px-4">Sector</div>
+                        <div class="w-1/5 px-4">SSR Type</div>
+                        <div class="w-1/5 px-4">SSR Info</div>
+                        <div class="w-1/5 px-4">SSR Amount</div>
                     </div>
                     <div class="flex flex-row border-b-2 max-h-30 min-h-10 items-center overflow-hidden"
                         *ngFor="let data of baggageDataList">
-                        <div class="w-1/4 px-4 flex flex-row gap-3">{{ data.passanger_name || ' - ' }}</div>
-                        <div class="w-1/4 px-4">{{ data.sector || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ data.ssr_type || ' - '}}</div>
-                        <div class="w-1/4 px-4">{{ data.ssr_info || ' - '}}</div>
+                        <div class="w-1/5 px-4 flex flex-row gap-3">{{ data.passanger_name || ' - ' }}</div>
+                        <div class="w-1/5 px-4">{{ data.sector || ' - '}}</div>
+                        <div class="w-1/5 px-4">{{ data.ssr_type || ' - '}}</div>
+                        <div class="w-1/5 px-4">{{ data.ssr_info || ' - '}}</div>
+                        <div class="w-1/5 px-4">{{ data?.ssr_amount || '0'}}</div>
                     </div>
                 </div>
 

@@ -123,9 +123,9 @@ export class PaymentListComponent extends BaseListingComponent implements OnDest
   }
 
   ngOnInit() {
-    this._filterService.selectionDateDropdown = "";
+    this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this._filterService.selectionDateDropdown = "";
+      this._filterService.updateSelectedOption('');
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['payment_request_date']?.value && Array.isArray(resp['table_config']['payment_request_date']?.value)) {

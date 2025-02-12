@@ -1,0 +1,183 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+            <span class="text-3xl">{{module_name}}</span>
+            <span class="hidden max-sm:flex">
+                <!-- <button class="ml-4" mat-flat-button style="background-color: #5046E5;" (click)="create()">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                    <span class="ml-2 mr-1">Add</span>
+                </button> -->
+            </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
+
+
+
+            <!------Global Search------>
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!-- Date Combo -->
+            <mat-form-field appearance="fill" class="monthly_combo w-36">
+                <mat-select [formControl]="monthsBack" (selectionChange)="refreshItems($event)">
+                    <mat-option *ngFor="let month of monthDataList" [value]="month">
+                        {{ month}} Months
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!------Global filter------>
+            <!-- <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button> -->
+
+            <!------Refresh------>
+            <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!---Excel--->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+
+
+    <!----------------Table----------------->
+    <div class="table-container">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="false"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight" class="contracting_rep"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <!-- Table Header -->
+            <ng-template pTemplate="header">
+                <tr>
+                    <th rowspan="2" alignFrozen="left" pFrozenColumn
+                    [frozen]="frozenObj?.rm" [ngClass]="{'left-0': !frozenObj?.rm}">
+                    RM
+                    <span class="float-right" (click)="isFrozenColumn('rm');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.rm" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.rm" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+                    <th class="text-center bg-[#ec9f48]" colspan="3">Average</th>
+                    
+                    <ng-container *ngFor="let month of latestMonths; let i = index;">
+                        <th class="text-center" [ngClass]="i % 2 == 0 ? 'bg-[#4c6793]': 'bg-[#5f9da2]'" colspan="3">{{ monthsName(month) }}</th>
+                    </ng-container>
+                </tr>
+                <tr>
+                    <th class="text-right">Onboard</th>
+                    <th class="text-right">Activation</th>
+                    <th class="text-right">Sales</th>
+
+
+                    <!-- Month Columns -->
+                    <ng-container *ngFor="let month of latestMonths">
+                        <th class="text-right">Onboard</th>
+                        <th class="text-right">Activation</th>
+                        <th class="text-right">Sales</th>
+                    </ng-container>
+                </tr>
+
+            </ng-template>
+
+            <!-- Table Body -->
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td pFrozenColumn [frozen]="frozenObj?.rm">{{element.rm}}</td>
+                    <td class="text-right">{{ element.avg_Onboard }}</td>
+                    <td class="text-right">{{ element.avg_Activation }}</td>
+                    <td class="text-right">{{ element.avg_Sales }}</td>
+
+                    <!-- Month Columns -->
+                    <ng-container *ngFor="let month of latestMonths">
+                        <ng-container *ngFor="let monthData of element.monthData">
+                            <ng-container *ngIf="monthData.month === month">
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
+                                    (click)="openOnboardModal('onboard', monthData)">
+                                    <!-- <span > -->
+                                        {{ monthData.currentMonthOnboard }}
+                                    <!-- </span> -->
+                                </td>
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
+                                (click)="openOnboardModal('activation', monthData)">
+                                    {{ monthData.currentMonthActivation }}
+                                </td>
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
+                                (click)="openSalesModal(monthData)">
+                                    {{ monthData.currentMonthSales }}
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td pFrozenColumn [frozen]="frozenObj?.rm">Total</td>
+                    <td class="text-right">{{(AlldataList?.averageOnboard) | number:'1.2-2'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageActivation) | number:'1.2-2'}}</td>
+                    <td class="text-right">{{(AlldataList?.averageSales) | number:'1.2-2'}}</td>
+            
+                    <!-- Dynamic Monthly Totals -->
+                    <ng-container *ngFor="let month of latestMonths">
+                        <ng-container *ngIf="AlldataList?.monthlyTotals[monthsName(month)]">
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].onboard | number:'1.2-2' }}
+                            </td>
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].activation | number:'1.2-2' }}
+                            </td>
+                            <td class="text-right">
+                                {{ AlldataList?.monthlyTotals[monthsName(month)].sales | number:'1.2-2' }}
+                            </td>
+                        </ng-container>
+                        <ng-container *ngIf="!AlldataList?.monthlyTotals[monthsName(month)]">
+                            <td class="text-right">0</td>
+                            <td class="text-right">0</td>
+                            <td class="text-right">0</td>
+                        </ng-container>
+                    </ng-container>
+                </tr>
+            </ng-template>
+            
+
+            <!-- Empty Message -->
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="15" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>

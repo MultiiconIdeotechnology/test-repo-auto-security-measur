@@ -36,6 +36,9 @@
                 <th pSortableColumn="expiry_date" pResizableColumn>
                     Expiry Date <p-sortIcon field="expiry_date" />
                 </th>
+                <th pSortableColumn="rm" pResizableColumn>
+                    RM <p-sortIcon field="rm" />
+                </th>
             </tr>
 
             <tr *ngIf="isFilterShowExpired">
@@ -122,6 +125,10 @@
                         </ng-template>
                     </p-columnFilter>
                 </th>
+                <th>
+                    <p-columnFilter type="text" field="rm" placeholder="Search by RM"
+                        ariaLabel="Filter RM" />
+                </th>
             </tr>
         </ng-template>
 
@@ -173,8 +180,11 @@
                 <td>
                     {{(element.activation_date | date: 'dd-MM-yyyy') || "-"}}
                 </td>
-                <td class="w-full">
+                <td class="">
                     {{(element.expiry_date | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+                <td class="w-full">
+                    {{element.rm || '-'}}
                 </td>
             </tr>
         </ng-template>

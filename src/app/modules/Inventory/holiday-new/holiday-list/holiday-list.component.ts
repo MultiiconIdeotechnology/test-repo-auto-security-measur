@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { Routes } from 'app/common/const';
 import { Security, filter_module_name, inventoryHolidayPermissions, messages, module_name } from 'app/security';
@@ -15,7 +15,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
-// import { ProductEntryComponent } from '../product-entry/product-entry.component';
 import { Linq } from 'app/utils/linq';
 import { DateTime } from 'luxon';
 import { ToasterService } from 'app/services/toaster.service';
@@ -230,23 +229,25 @@ export class HolidayListComponent extends BaseListingComponent {
         }
 
         const label: string = record.is_publish_for_bonton
-            ? 'Unpublish Holiday Product'
-            : 'Publish Holiday Product';
+            ? 'Unpublish'
+            : 'Publish';
         this.conformationService
             .open({
-                title: label,
+                title: label+ " Holiday",
                 message:
                     'Are you sure to ' +
+                    
                     label.toLowerCase() +
                     ' ' +
-                    record.destination_name +
+                    
+                    record.product_name +
                     ' ?',
             })
             .afterClosed()
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     this.holidayService.setHolidayPublish(record.id).subscribe({
-                        next: () => {
+                        next: (res:any) => {
                             record.is_publish_for_bonton  = !record.is_publish_for_bonton ;
                             if (record.is_publish_for_bonton ) {
                                 this.alertService.showToast('success', "Holiday Product has been Publish!", "top-right", true);
@@ -267,17 +268,12 @@ export class HolidayListComponent extends BaseListingComponent {
         }
 
         const label: string = record.is_popular
-            ? 'Not Popular Holiday Product'
-            : 'Popular Holiday Product';
+        ? 'Make as Unpopular Holiday Product'
+        : 'Set as Popular Holiday Product';
         this.conformationService
             .open({
                 title: label,
-                message:
-                    'Are you sure to ' +
-                    label.toLowerCase() +
-                    ' ' +
-                    record.destination_name +
-                    ' ?',
+                message: `Are you sure you want to set ${record.product_name} as ${record.is_popular ? 'Unpopular':'Popular'}?`
             })
             .afterClosed()
             .subscribe((res) => {
@@ -300,27 +296,27 @@ export class HolidayListComponent extends BaseListingComponent {
             });
     }
 
-    copy(record): void {
-        if (!Security.hasPermission(inventoryHolidayPermissions.copyProductPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+    // copy(record): void {
+    //     if (!Security.hasPermission(inventoryHolidayPermissions.copyProductPermissions)) {
+    //         return this.alertService.showToast('error', messages.permissionDenied);
+    //     }
 
-        this.conformationService.open({
-            title: 'Copy Product',
-            message: 'Are you sure to generate copy of ' + record.product_name + ' ?',
-        }).afterClosed().subscribe((res) => {
-            if (res === 'confirmed') {
-                this.holidayService.CopyProduct(record.id).subscribe({
-                    next: () => {
-                        this.alertService.showToast('success', 'Product Copied');
-                        this.refreshItems();
-                    }, error: (err) => {
-                        this.alertService.showToast('error', err);
-                    }
-                })
-            }
-        });
-    }
+    //     this.conformationService.open({
+    //         title: 'Copy Product',
+    //         message: 'Are you sure to generate copy of ' + record.product_name + ' ?',
+    //     }).afterClosed().subscribe((res) => {
+    //         if (res === 'confirmed') {
+    //             this.holidayService.CopyProduct(record.id).subscribe({
+    //                 next: () => {
+    //                     this.alertService.showToast('success', 'Product Copied');
+    //                     this.refreshItems();
+    //                 }, error: (err) => {
+    //                     this.alertService.showToast('error', err);
+    //                 }
+    //             })
+    //         }
+    //     });
+    // }
 
     Audit(data: any): void {
 		// if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
@@ -364,12 +360,25 @@ export class HolidayListComponent extends BaseListingComponent {
         // );
         const queryParams = {
             id: record.id,
-            date: DateTime.fromISO(record.departure_date).toFormat(
-                'yyyy-MM-dd'),
+            // date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),
+            date:DateTime.now().toFormat('yyyy-MM-dd'),
             adult: 2,
             child: 0,
         };
-        Linq.recirect('/inventory/holidayv2-products/view-details', queryParams);
+        
+        const navigationExtras: NavigationExtras = {
+            queryParams: {
+                "user": JSON.stringify(queryParams)
+            }
+        };
+        
+        // Construct the URL using the Router
+        const url = this.router.serializeUrl(
+            this.router.createUrlTree(['/inventory/holidayv2-products/view-details'], navigationExtras)
+        );
+        
+        // Open the URL in a new tab/window
+        window.open(url, '_blank');
 
     }
 

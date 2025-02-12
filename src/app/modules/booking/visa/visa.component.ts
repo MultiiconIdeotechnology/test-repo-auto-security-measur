@@ -132,9 +132,9 @@ export class VisaComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListById;
 
         // common filter
-        this._filterService.selectionDateDropdown = "";
+        this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
-           this._filterService.selectionDateDropdown = "";
+           this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
             if(this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -202,15 +202,15 @@ export class VisaComponent extends BaseListingComponent {
         return this._selectedColumns;
     }
 
-    set selectedColumns(val: Column[]) {
-        if (Array.isArray(val)) {
-            this._selectedColumns = this.cols.filter(col =>
-                val.some(selectedCol => selectedCol.field === col.field)
-            );
-        } else {
-            this._selectedColumns = [];
-        }
-    }
+    // set selectedColumns(val: Column[]) {
+    //     if (Array.isArray(val)) {
+    //         this._selectedColumns = this.cols.filter(col =>
+    //             val.some(selectedCol => selectedCol.field === col.field)
+    //         );
+    //     } else {
+    //         this._selectedColumns = [];
+    //     }
+    // }
 
     getFilter(): any {
         const filterReq = {};

@@ -84,6 +84,11 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     { label: 'No', value: 'No' },
   ]
 
+  defaulterActionList:any[] = [
+    { label: 'Yes', value: true },
+    { label: 'No', value: false },
+  ]
+
   constructor(
     private walletService: WalletService,
     private conformationService: FuseConfirmationService,

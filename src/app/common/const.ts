@@ -91,6 +91,15 @@ export const imgExtantions = {
     svg: 'svg'
 }
 
+export const imgPdfExtantions = {
+    jpg: 'jpg',
+    jpeg: 'jpeg',
+    png: 'png',
+    gif: 'gif',
+    svg: 'svg',
+    pdf: 'pdf'
+}
+
 export const mealPlan = {
     BreakfastOnly: 'Breakfast Only [CP]',
     BreaskfastLunchDinner: 'Breakfast + Lunch/Dinner [MAP]',
@@ -249,6 +258,9 @@ export const Routes = {
         agent_wise_service_wise_path: 'account/agent-wise-service-wise',
         agent_wise_service_wise_path_route: 'account/agent-wise-service-wise',
 
+        agent_ledger_wallet_missmatch_path: 'account/agent-ledger-wallet-missmatch',
+        agent_ledger_wallet_missmatch_route: 'account/agent-ledger-wallet-missmatch',
+
         sale_path: 'account/sale-book',
         sale_route: 'account/sale-book',
 
@@ -292,6 +304,10 @@ export const Routes = {
         bus_route: '/booking/bus',
         bus_details_route: '/booking/bus/details',
         
+        holiday_lead_path: 'booking/holiday-lead',
+        holiday_lead_route: '/booking/holiday-lead',
+        holiday_lead_details_route: '/booking/holiday-lead/details',
+        
         insurance_path: 'booking/insurance',
         insurance_route: '/booking/insurance',
         insurance_details_route: '/booking/insurance/details',
@@ -303,6 +319,10 @@ export const Routes = {
         forex_path: 'booking/forex',
         forex_route: '/booking/forex',
         forex_details_route: '/booking/forex/details',
+        
+        cab_path: 'booking/cab',
+        cab_route: '/booking/cab',
+        cab_details_route: '/booking/cab/details',
 
         flight_path: 'booking/flight',
         flight_route: '/booking/flight',
@@ -355,6 +375,9 @@ export const Routes = {
         holiday_v2_entry_path: 'inventory/holidayv2-products/entry',
         holiday_v2_entry_route: '/inventory/holidayv2-products/entry',
 
+        cab_path: 'inventory/cab',
+        cab_route: '/inventory/cab',
+
         // markup_profile_path: 'inventory/markup-profile',
         // markup_profile_route: '/inventory/markup-profile',
         // markup_profile_entry_path: 'inventory/markup-profile/entry',
@@ -365,6 +388,15 @@ export const Routes = {
     reports: {
         // amendment_requests_path: 'reports/amendment-requests',
         // amendment_requests_route: 'reports/amendment-requests',
+        tech_summary_path:'reports/tech_summary',
+        tech_summary_route:'reports/tech_summary',
+
+        tech_rm_monthly_path: 'reports/tech_rm_monthly_report',
+        tech_rm_monthly_route: 'reports/tech_rm_monthly_report',
+
+        tech_product_monthly_path:'reports/tech_product_monthly',
+        tech_product_monthly_route:'reports/tech_product_monthly',
+
 
         ledger_path: 'reports/ledger',
         ledger_route: 'reports/ledger',
@@ -396,17 +428,17 @@ export const Routes = {
         bus_path: 'reports/bus',
         bus_route: 'reports/bus',
 
-        agents_rmwise_agents_path: 'reports/rmwise-agents',
-        agents_rmwise_agents_route: 'reports/rmwise-agents',
+        agents_rmwise_agents_path: 'reports/partner-summary',
+        agents_rmwise_agents_route: 'reports/partner-summary',
 
-        leads_rmwise_path: 'reports/rmwise-leads',
-        leads_rmwise_route: 'reports/rmwise-leads',
+        leads_rmwise_path: 'reports/lead-summary',
+        leads_rmwise_route: 'reports/lead-summary',
 
         products_path: 'reports/products',
         products_route: 'reports/products',
 
-        agent_summary_path: 'reports/agent_summary',
-        agent_summary_route: 'reports/agent_summary',
+        agent_summary_path: 'reports/partner-register',
+        agent_summary_route: 'reports/partner-register',
     
         pg_refund_path: 'account/pg_refund',
         pg_refund_route: 'account/pg_refund',
@@ -442,5 +474,8 @@ export const Routes = {
 
         caching_parameters_path: 'settings/caching_parameters',
         caching_parameters_route: '/settings/caching_parameters',
+
+        cashback_parameters_path: 'settings/cashback_parameters',
+        cashback_parameters_route: '/settings/cashback_parameters',
     }
 }

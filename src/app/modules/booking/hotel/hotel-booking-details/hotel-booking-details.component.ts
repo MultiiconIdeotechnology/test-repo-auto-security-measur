@@ -31,6 +31,7 @@ import { MatDivider, MatDividerModule } from '@angular/material/divider';
 import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { LogsComponent } from '../../flight/flight/logs/logs.component';
+import { FileLogsComponent } from '../../flight/flight/file-logs/file-logs.component';
 
 
 @Component({
@@ -145,19 +146,30 @@ export class HotelBookingDetailsComponent {
     this.alertService.showToast('success', 'Copied');
   }
 
-  invoice(): void {
+  invoice(record): void {
     if (!Security.hasPermission(bookingsHotelPermissions.invoicePermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
+    const recordData = record == 'DMCC' ? this.bookingDetail.invoice_id : this.bookingDetail.invoice_id_inr
 
-    this.flighttabService.Invoice(this.bookingDetail.invoice_id).subscribe({
+    this.flighttabService.Invoice(recordData).subscribe({
       next: (res) => {
-        CommonUtils.downloadPdf(res.data, this.mainDataAll.invoice_no + '.pdf');
+        CommonUtils.downloadPdf(res.data, record == 'DMCC' ? this.bookingDetail.invoice_no : this.bookingDetail.invoice_no_inr + '.pdf');
       }, error: (err) => {
         this.alertService.showToast('error', err)
       }
     })
   }
+
+     fileLogs() {
+        this.matDialog.open(FileLogsComponent, {
+          data: {id:this.bookingDetail.id, send: 'Hotel'},
+          disableClose: true
+        }).afterClosed().subscribe(res => {
+          // if(res)
+          // this.refreshItems();
+        })
+      }
 
   print(val): void {
 

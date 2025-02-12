@@ -162,9 +162,9 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         this.getEmployee("");
         // this.employeeList = this._filterService.originalRmList;
 
-        this._filterService.selectionDateDropdown = "";
+        this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this._filterService.selectionDateDropdown = "";
+            this._filterService.updateSelectedOption('');
             this.selectedRm = resp['table_config']['rm_Id']?.value;
             this.selectedLeadStatus = resp['table_config']['lead_source']?.value;
 
@@ -342,6 +342,21 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         })
     }
 
+    syncLeads(){
+        if (!Security.hasPermission(leadRegisterPermissions.leadsSyncPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.leadsRegisterService.syncLeads().subscribe({
+            next: () => {
+                this.alertService.showToast('success', "Leads have been synced!", "top-right", true);
+                this.refreshItems();
+            }, error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+            },
+        })
+    }
+
     getStatusColor(status: string): string {
         if (status == 'Converted' || status == 'Live') {
             return 'text-green-600';
@@ -459,7 +474,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 dt.kycStarted = dt.kycStarted ? 'Yes' : 'No'
             }
             Excel.export(
-                'Leads Register',
+                'Lead Register',
                 [
                     { header: 'Calls', property: 'calls' },
                     { header: 'Status', property: 'status' },
@@ -478,7 +493,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                     { header: 'Last Call', property: 'lastCall' },
                     { header: 'Lead Date', property: 'leadDate' },
                 ],
-                data.data, "Leads Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
+                data.data, "Lead Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]);
         });
     }
 

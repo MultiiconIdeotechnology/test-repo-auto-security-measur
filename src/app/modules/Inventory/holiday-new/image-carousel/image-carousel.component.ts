@@ -30,15 +30,30 @@ import { SlickCarouselModule } from 'ngx-slick-carousel';
 })
 export class ImageCarouselComponent {
   SecondImageList: any[] = [];
+  img: any;
+  startIndex: number;
   slideConfig = {
-    slidesToShow: 1, slidesToScroll: 1, dots: false, infinite: true, autoplay: false,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    dots: false,
+    infinite: false,
+    autoplay: false,
     autoplaySpeed: 3000,
+    initialSlide: 0, 
+    arrows:true,
   };
-
+  
   constructor(
     public matDialogRef: MatDialogRef<ImageCarouselComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
-    this.SecondImageList = data;
+    this.SecondImageList = data.list;
+    this.img = data.img;
+  }
+  
+  ngOnInit() {
+    const index = this.SecondImageList.findIndex(x => x === this.img);
+    this.startIndex = index !== -1 ? index : 0;
+    this.slideConfig.initialSlide = this.startIndex;
   }
 }

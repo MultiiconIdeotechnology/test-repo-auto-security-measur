@@ -35,13 +35,22 @@
                                         <span class="text-md leading-none ml-2">Voucher</span>
                                     </div>
 
-                                    <div *ngIf="mainDataAll?.is_invoice_button_show"
-                                        class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer"
-                                        (click)="invoice()">
+                                    <div *ngIf="mainDataAll?.is_invoice_button_show" [matMenuTriggerFor]="optionMenu"
+                                        class="px-2 py-1 mx-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer">
                                         <mat-icon
                                             class="material-symbols-outlined secondary-text text-xl">print</mat-icon>
                                         <span class="text-md leading-none ml-2">Invoice</span>
                                     </div>
+                                    <mat-menu #optionMenu>
+                                        <button mat-menu-item (click)="invoice('INR')">
+                                            <!-- <mat-icon class="mat-18">info</mat-icon> -->
+                                            <span style="font-weight: 600">Invoice 1</span>
+                                        </button>
+                                        <button mat-menu-item (click)="invoice('DMCC')">
+                                            <!-- <mat-icon class="mat-18">info</mat-icon> -->
+                                            <span style="font-weight: 600">Invoice 2</span>
+                                        </button>
+                                    </mat-menu>
 
                                     <div class="flex space-x-3" *ngIf="Status === 'Confirmed'">
                                         <div (click)="amendment()"
@@ -59,6 +68,14 @@
                                             <img src="assets/icons/logs.svg" alt="">
                                         </div>
                                         <span class="text-md leading-none ml-2">Logs</span>
+                                    </div>
+
+                                    <div class="px-2 py-1 ml-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
+                                        (click)="fileLogs()">
+                                        <div>
+                                            <img src="assets/icons/logs.svg" alt="">
+                                        </div>
+                                        <span class="text-md leading-none ml-2">File Logs</span>
                                     </div>
 
                                 </div>
@@ -139,9 +156,10 @@
                                         <span class="text-md font-semibold text-secondary">B2B Partner</span>
                                         <div class="truncate">
                                             <span class="text-base truncate"
-                                            [ngClass]="bookingBy?.b2b_partner ? 'cursor-pointer border-b border-gray-500' : ''"
-                                        [matTooltip]="bookingBy?.b2b_partner"
-                                        (click)="bookingBy?.b2b_partner ? B2BPartnerInfo() : null">{{bookingBy?.b2b_partner || ' - '}}</span>
+                                                [ngClass]="bookingBy?.b2b_partner ? 'cursor-pointer border-b border-gray-500' : ''"
+                                                [matTooltip]="bookingBy?.b2b_partner"
+                                                (click)="bookingBy?.b2b_partner ? B2BPartnerInfo() : null">{{bookingBy?.b2b_partner
+                                                || ' - '}}</span>
                                         </div>
                                     </div>
                                     <div class="flex flex-col ">

@@ -129,7 +129,7 @@ export class AirlineCareerWiseComponent
                     this.supplierColumns = Object.keys(firstRow)
                         .filter(
                             (key) =>
-                                key.endsWith('_air') || key.endsWith('_air_2')
+                                key.endsWith('_air') || key.endsWith('_air_2') || key.endsWith('_b2b_api') 
                         )
                         .map((key) => ({
                             field: key, // Key name (e.g., 'tbo_air', 'jck_air')
