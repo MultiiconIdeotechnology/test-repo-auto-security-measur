@@ -366,6 +366,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:building-storefront',
                 link: Routes.booking.holiday_lead_route
             },
+            {
+                id: 'booking.cab',
+                title: 'Cab',
+                type: 'basic',
+                pid: 'BOOKINGS_CAB_VIEW',
+                icon: 'local_taxi',
+                link: Routes.booking.cab_route
+            },
         ]
     },
     {

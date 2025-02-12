@@ -1,0 +1,267 @@
+<div class="flex flex-col flex-auto min-w-0 overflow-hidden">
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-5 sm:px-10 border-b bg-card dark:bg-transparent">
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center font-medium">
+                <div class="cursor-pointer" [routerLink]="cabRoute">
+                    <a class="whitespace-nowrap text-primary-500">Cab Details</a>
+                </div>
+                <div class="flex items-center ml-1 whitespace-nowrap">
+                    <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+                    <a class="ml-1 text-primary-500">Details</a>
+                </div>
+            </div>
+        </div>
+
+        <button mat-raised-button color="primary" (click)="close()">
+            Close
+        </button>
+    </div>
+
+    <div class="m-8">
+        <div class="m-auto max-w-[1200px]">
+            <div class="mb-6 flex ">
+                <!-------Left-------->
+                <div class="w-2/3 h-fit flex flex-col mobile:w-full mobile:mr-0 bg-card rounded-2xl p-6">
+                    <div class="first relative flex flex-col white-bg rounded-md  overflow-x-hidden">
+                        <div class="flex justify-between overflow-x-auto">
+                            <div>
+                                <div class="flex space-x-3"
+                                    *ngIf="bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'">
+                                    <div *ngIf="(bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success') && bontonPanel.isB2B()"
+                                        class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-secondary cursor-pointer"
+                                        (click)="getCopy('agent')">
+                                        <mat-icon class="primary-text pr-1 text-xl"
+                                            svgIcon="heroicons_outline:document-text"></mat-icon>
+                                        <span class="text-md leading-none primary-text font-semibold">Your
+                                            Copy</span>
+                                    </div>
+
+                                    <div *ngIf="(bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success') && bontonPanel.isB2B()"
+                                        class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-secondary cursor-pointer"
+                                        (click)="getCopy('customer')">
+                                        <mat-icon class="primary-text pr-1 text-xl"
+                                            svgIcon="heroicons_outline:document-text"></mat-icon>
+                                        <span class="text-md leading-none primary-text font-semibold">Customer
+                                            Copy</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right mobile:min-w-fit mobile:pl-[13px]">
+                                <div *ngIf=" bookingDetail?.lead_status === 'Confirmed' || bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(1,175,71,0.1)] flex items-center border green-border">
+                                    <mat-icon class="green-text text-2xl">check_circle</mat-icon>
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none">{{bookingDetail?.lead_status}}</span>
+                                </div>
+
+                                <div *ngIf="bookingDetail?.lead_status === 'Waiting for Token Payment'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(244,154,25,0.1)] flex items-center border orange-border">
+                                    <mat-icon class="text-2xl orange-text">watch_later</mat-icon>
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none orange-text">{{bookingDetail?.lead_status}}</span>
+                                </div>
+
+                                <div *ngIf="bookingDetail?.lead_status === 'New'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(244,154,25,0.1)] flex items-center border orange-border">
+                                    <!-- <mat-icon class="text-2xl orange-text">watch_later</mat-icon> -->
+                                    <img class="w-auto" src="assets/icons/new.svg">
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none orange-text">{{bookingDetail?.lead_status}}</span>
+                                </div>
+
+                                <div *ngIf=" bookingDetail?.lead_status === 'Cancelled' || bookingDetail?.lead_status === 'Rejected' || bookingDetail?.lead_status === 'Token Payment Failed'"
+                                    class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                    <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                    <span
+                                        class="text-md font-semibold ml-2 leading-none">{{bookingDetail?.lead_status}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-5 mobile:p-3  border-gray-border border rounded-lg">
+
+                            <div class="pb-5 relative border-b border-dashed border-gray-border">
+                                <div class="flex justify-between">
+                                    <div><img class="w-auto" src="assets/icons/no-cars.svg"></div>
+                                    <div class="px-4 w-[100%]">
+                                        <div class=" text-xl font-semibold">
+                                            {{bookingDetail?.car_name}}</div>
+                                        <div class="text-secondary font-medium text-md mb-2">{{bookingDetail?.car_type}}
+                                            -
+                                            {{bookingDetail?.is_air_conditioner ? 'Ac' :
+                                            'Non/Ac'}} - {{bookingDetail?.pessanger_capacity}} Seats -
+                                            {{bookingDetail?.included_km}} kms included
+                                        </div>
+                                        <div class="border-t border-gray-border w-full pt-2">
+                                            <!-- <div class="text-white text-base font-semibold mt-2 mb-1">Large Car</div> -->
+                                            <div class="grid grid-cols-2 gap-1">
+                                                <div class="flex gap-2 items-center">
+                                                    <img class="icon-size-4" src="assets/icons/gray-location.svg">
+                                                    <span class="text-secondary font-medium text-base w-24">Extra km
+                                                        fare</span>
+                                                    <span
+                                                        class=" font-medium text-base">{{bookingDetail?.extra_km_fare}}</span>
+                                                </div>
+                                                <div class="flex gap-2 items-center">
+                                                    <img class="icon-size-4" src="assets/icons/gray-timer-plus.svg">
+                                                    <span class="text-secondary font-medium text-base w-24">Extra time
+                                                        fare</span>
+                                                    <span
+                                                        class=" font-medium text-base">{{bookingDetail?.extra_time_fare}}</span>
+                                                </div>
+                                                <div class="flex gap-2 items-center">
+                                                    <img class="icon-size-4" src="assets/icons/gray-petrol-pump.svg">
+                                                    <span class="text-secondary font-medium text-base w-24">Fuel
+                                                        type</span>
+                                                    <span
+                                                        class=" font-medium text-base">{{bookingDetail?.fual_type}}</span>
+                                                </div>
+                                                <div class="flex gap-2 items-center">
+                                                    <img class="icon-size-4" src="assets/icons/gray-cancellation.svg">
+                                                    <span
+                                                        class="text-secondary font-medium text-base w-24">Cancellation</span>
+                                                    <span
+                                                        class="primary-text font-medium text-base cursor-pointer border-b primary-border">View
+                                                        Policy</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 pt-5 pb-4 relative border-b border-dashed border-gray-border">
+                                <div class="w-1/3"
+                                    [ngClass]="bookingDetail?.trip_type == 'Hourly Rental' ? 'w-full' : ''">
+                                    <div
+                                        class="dark:bg-primary bg-gray-200 rounded px-3 py-1 font-medium text-sm w-fit">
+                                        Pick-up time & Address</div>
+                                    <div class=" text-base font-semibold pt-1">
+                                        {{bookingDetail?.departure_date | date:'dd MMM yyyy hh:mm a'}}</div>
+                                    <div class="text-secondary text-base font-normal truncate"
+                                        [matTooltip]="bookingDetail?.pick_up_address">
+                                        {{bookingDetail?.pick_up_address}}</div>
+                                </div>
+                                <div class="w-1/3 m-auto" *ngIf="bookingDetail?.trip_type != 'Hourly Rental'">
+                                    <div class="flex items-center space-x-2 justify-center">
+                                        <!-- Left Circle -->
+                                        <div
+                                            class=" min-w-3 max-w-3 w-3 min-h-3 max-h-3 h-3 mobile:min-w-2 mobile:min-h-2 primary-bg rounded-full border border-white outline-1 outline primary-outline">
+                                        </div>
+
+                                        <!-- Dotted Line -->
+                                        <div class="w-18 border-dotted border-t-2 primary-border"></div>
+
+                                        <!-- Text -->
+                                        <span class="text-white font-normal text-sm">{{bookingDetail?.duration}}</span>
+
+                                        <!-- Dotted Line -->
+                                        <div class="w-18 border-dotted border-t-2 primary-border"></div>
+
+                                        <!-- Right Circle -->
+                                        <div
+                                            class=" min-w-3 max-w-3 w-3 min-h-3 max-h-3 h-3 mobile:min-w-2 mobile:min-h-2 primary-bg rounded-full border border-white outline-1 outline primary-outline">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-1/3 text-end justify-end grid"
+                                    *ngIf="bookingDetail?.trip_type != 'Hourly Rental'">
+                                    <div
+                                        class="dark:bg-primary bg-gray-200 rounded px-3 py-1 font-medium text-sm w-fit">
+                                        Dropping time & Address</div>
+                                    <div class="text-white text-base font-semibold pt-1">
+                                        {{bookingDetail?.return_date | date:'dd MMM yyyy hh:mm a'}}</div>
+                                    <div class="text-secondary text-base font-normal truncate"
+                                        [matTooltip]="bookingDetail?.drop_off_address">
+                                        {{bookingDetail?.drop_off_address}}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex pt-4">
+                                <div class="w-1/3">
+                                    <div class="text-secondary font-normal text-base pb-1">Booking Ref.No.</div>
+                                    <div class=" font-medium text-lg">{{bookingDetail?.reference_no}}
+                                    </div>
+                                </div>
+                                <div class="w-1/3">
+                                    <div class="text-secondary font-normal text-base pb-1">Booking Date</div>
+                                    <div class=" font-medium text-lg">{{bookingDetail?.entry_date_time
+                                        | date: 'dd MMM yyyy hh:mm a'}}</div>
+                                </div>
+                                <div class="w-1/3">
+                                    <div class="text-secondary font-normal text-base pb-1">Trip type</div>
+                                    <div class=" font-medium text-lg">{{bookingDetail?.trip_type}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="bookingDetail?.lead_status === 'Rejected'"
+                        class="bg-[#FFECEC] p-3  bonton-red-text rounded ">
+                        <div class=""><strong>Reject Reson : </strong> {{bookingDetail?.reject_reason}}</div>
+                    </div>
+                </div>
+
+                <!-------Right-------->
+                <div class="  overflow-hidden w-1/3 ml-3 h-fit">
+                    <div class="pb-1 info relative flex flex-col mb-5 overflow-hidden rounded-2xl bg-card"
+                        *ngFor="let pdv of priceDetail; let i = index">
+                        <div *ngFor="let pd of pdv.value">
+                            <div *ngIf="pd.is_header"
+                                class="w-full text-lg font-medium px-4 py-3  border-b border-gray-border dark:bg-primary bg-gray-200">
+                                {{pd.key}}</div>
+                            <div *ngIf="!pd.is_header">
+                                <div [ngClass]="{'text-default': pd.is_bold, 'text-default': pd.is_main, 'text-default': (!pd.is_bold && !pd.is_main)}"
+                                    class="flex justify-between w-full px-4 py-2"
+                                    *ngIf="pd.key != '---' && pd.key != 'Total Amount'">
+                                    <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''"
+                                        class="flex items-center">{{pd.key}}</span>
+                                    <span [ngClass]="(pd.is_bold || pd.is_main)? 'font-semibold':''"
+                                        class="relative top-[2px]">{{pd.value}}</span>
+                                </div>
+                                <span *ngIf="pd.key === '---'"
+                                    class="py-1 mx-4 block border-b border-dashed border-gray-border"></span>
+                                <div *ngIf="pd.key === 'Total Amount'"
+                                    class="px-4 text-default py-3 flex justify-between  font-semibold text-xl">
+                                    <span>{{pd.key}}</span>
+                                    <span>{{pd.value}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <div class="text-3xl font-extrabold tracking-tight">Traveller Information</div>
+                <div class="flex flex-col mt-5 mb-6 overflow-x-hidden overflow-y-auto border rounded-2xl"
+                    style="max-height: 40% !important">
+                    <div
+                        class="flex flex-row border-b-2 max-h-10 min-h-10 items-center dark:bg-card bg-gray-200 sticky top-0 text-lg px-4">
+                        Customer Details</div>
+                    <div
+                        class="flex flex-row border-b-2 max-h-10 min-h-10 items-center text-secondary sticky top-0 dark:bg-transparent bg-white">
+                        <div class="w-1/4 px-4">Name</div>
+                        <div class="w-1/4 px-4">Email</div>
+                        <div class="w-1/4 px-4">Gender</div>
+                        <div class="w-1/4 px-4">Contact No</div>
+                    </div>
+                    <div
+                        class="flex flex-row border-b-2 max-h-30 min-h-10 items-center overflow-hidden dark:bg-transparent bg-white">
+                        <div class="w-1/4 px-4 flex flex-row gap-3">{{ bookingDetail?.lead_pax_name || ' - '}}</div>
+                        <div class="w-1/4 px-4">{{ bookingDetail?.lead_pax_email || ' - '}}</div>
+                        <div class="w-1/4 px-4">{{ bookingDetail?.gender || ' - '}}</div>
+                        <div class="w-1/4 px-4">{{ bookingDetail?.lead_pax_contact || ' - '}}</div>
+
+                        <!-- <div class="w-1/3 px-4 font-semibold">{{ bookingDetail?.lead_pax_name || ' - ' }}</div>
+                        <div class="w-1/4 px-4 font-semibold">{{ bookingDetail?.lead_pax_email || ' - '}}</div>
+                        <div class="w-1/4 px-4 font-semibold">{{ bookingDetail?.gender || ' - '}}</div>
+                        <div class="w-1/4 px-4 font-semibold">{{ bookingDetail?.lead_pax_contact || ' - '}} -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

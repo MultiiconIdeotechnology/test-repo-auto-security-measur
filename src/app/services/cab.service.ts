@@ -16,18 +16,18 @@ export class CabService {
   // getCabProductRecord(id: any): Observable<any> {
   //   return this.http.post<any>(this.baseUrl + 'cab/getCabProductRecord', { id: id });
   // }
-  
+
   getCabList(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'cab/getCabList', model);
   }
 
   delete(id: any): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'cab/delete', { id: id });
-  } 
+  }
 
   setAuditUnaudit(id: any) {
     return this.http.post<any[]>(this.baseUrl + 'cab/setAuditUnaudit', { id: id });
-  } 
+  }
 
   CopyProduct(id: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'HolidayProduct/CopyProduct', { id: id });
@@ -39,7 +39,7 @@ export class CabService {
   // } // ---
 
   setCabPublish(id: any): Observable<any[]> {
-    return this.http.post<any[]>(this.baseUrl + 'cab/setPublishUnPublishBonton', {id:id});
+    return this.http.post<any[]>(this.baseUrl + 'cab/setPublishUnPublishBonton', { id: id });
   }
 
   // getHolidaysSearchDetail(model: any): Observable<any> {
@@ -56,5 +56,13 @@ export class CabService {
 
   downloadQuotation(model: any): Observable<any[]> {
     return this.http.post<any[]>(environment.apiUrl + 'HolidayLeads/downloadQuotation', model);
+  }
+
+  getCabLeadsList(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "cableads/getCabLeadsList", model);
+  }
+
+  getCabBookingDetail(id: string): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "cableads/getCabBookingDetail", { id: id });
   }
 }

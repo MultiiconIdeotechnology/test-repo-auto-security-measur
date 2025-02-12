@@ -225,6 +225,7 @@ export const module_name = {
     hotel: 'Hotel',
     forex: 'Forex',
     holiday_lead: 'Holiday',
+    cab_lead: 'Cab',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -271,6 +272,8 @@ export const module_name = {
     bookingsBus: 'Bookings - BUS',
     bookingsHotel: 'Bookings - Hotel',
     bookingsForex: 'Bookings - Forex',
+    bookingsCab: 'Bookings - Cab',
+    bookingsHoliday: 'Bookings - Holiday',
     bookingsVisa: 'Bookings - Visa',
     bookingsInsurance: 'Bookings - Visa',
     inventoryHoliday: 'Inventory - Holiday',
@@ -379,6 +382,7 @@ export const filter_module_name = {
     insurance_booking: "insurance_booking",
     offline_service_booking: "offline_service_booking",
     holiday_lead_service_booking: "holiday_lead",
+    cab_lead_service_booking: "cab_lead",
 
 
     //Report
