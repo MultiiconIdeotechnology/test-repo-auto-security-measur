@@ -1014,3 +1014,55 @@ div:where(.swal2-container) button:where(.swal2-close){
 
 }
 
+.custom-dialog-modal {
+    // max-height: 80vh;
+    // min-height: 80vh;
+    overflow: auto;
+    max-width: 1260px !important;
+    min-width: 1000px !important;
+
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+}
+
+@media screen and (max-width: 1260px){
+    .custom-dialog-modal {
+        // max-height: 95vh;
+        overflow: auto;
+        max-width: 90vw !important;
+        min-width: 1000px;
+    
+        .mat-mdc-dialog-container .mdc-dialog__surface {
+            padding: 0 !important
+        }
+    }
+}
+
+.modal-custom-table {
+    // p-paginator {
+    //     position: sticky;
+    //     bottom:0;
+    // }
+
+    // table[role="table"] {
+    //     max-height: calc(95vh - 7rem);
+    // }
+
+    .p-datatable-tfoot{
+        z-index: 0 !important;
+    }
+
+    .p-dropdown-panel {
+        bottom: 100% !important; /* Moves dropdown above the paginator */
+        top: auto !important;
+        transform-origin: bottom !important; /* Keeps animation direction correct */
+        position: absolute;
+        bottom: 2rem !important
+      }
+}
+
+  
+

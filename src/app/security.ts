@@ -208,6 +208,7 @@ export const module_name = {
     activity: "Activity",
     city: "City",
     cachingparameters: "Caching Parameters",
+    cashbackparameters: "Cashback Parameters",
     department: "Department",
     document: 'Types of Documents',
     kycprofile: 'KYC Profile',
@@ -224,6 +225,7 @@ export const module_name = {
     hotel: 'Hotel',
     forex: 'Forex',
     holiday_lead: 'Holiday',
+    cab_lead: 'Cab',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -270,6 +272,8 @@ export const module_name = {
     bookingsBus: 'Bookings - BUS',
     bookingsHotel: 'Bookings - Hotel',
     bookingsForex: 'Bookings - Forex',
+    bookingsCab: 'Bookings - Cab',
+    bookingsHoliday: 'Bookings - Holiday',
     bookingsVisa: 'Bookings - Visa',
     bookingsInsurance: 'Bookings - Visa',
     inventoryHoliday: 'Inventory - Holiday',
@@ -378,6 +382,7 @@ export const filter_module_name = {
     insurance_booking: "insurance_booking",
     offline_service_booking: "offline_service_booking",
     holiday_lead_service_booking: "holiday_lead",
+    cab_lead_service_booking: "cab_lead",
 
 
     //Report
@@ -434,7 +439,9 @@ export const filter_module_name = {
     message_events: "message_events",
     email_setup: "email_setup",
     markup_profile: "markup_profile",
-    erp_settings: "erp_settings"
+    erp_settings: "erp_settings",
+    cashback_parameters_master: "cashback_parameters_master",
+
 }
 
 export const cityPermissions = {

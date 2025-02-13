@@ -1,0 +1,247 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden dark:bg-transparent">
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+        <!-- Title -->
+        <div class="text-3xl font-extrabold tracking-tight ">
+            {{ module_name }}
+        </div>
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!------Global Search------>
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
+                <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'" />
+            </mat-form-field> -->
+            <div class="flex ctm_search">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!------Global filter------>
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button class="ml-4" mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                matTooltip="Saved Filter" [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <!-- <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="_selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+            </p-overlayPanel> -->
+
+            <!------Refresh------>
+            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+            <!------Create------->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="create()">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
+            </button>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [columns]="_selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="" styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class=" text-center left-[-1px]" pFrozenColumn>#</th>
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="cashback_for" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.cashback_for"
+                        [ngClass]="{'left-0': !frozenObj?.cashback_for}">
+                        Cashback For <p-sortIcon field="cashback_for" />
+                        <span class="float-right" (click)="isFrozenColumn('cashback_for');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.cashback_for" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.cashback_for" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="transaction_type" pResizableColumn>
+                        Type <p-sortIcon field="transaction_type" />
+                    </th>
+                    <th pSortableColumn="from_amount" pResizableColumn>
+                        From Amount <p-sortIcon field="from_amount" />
+                    </th>
+                    <th pSortableColumn="to_amount" pResizableColumn>
+                        To Amount <p-sortIcon field="to_amount" />
+                    </th>
+
+                    <th pSortableColumn="fix_cashback" pResizableColumn>
+                        Fix Cashback <p-sortIcon field="fix_cashback" />
+                    </th>
+                    <th pSortableColumn="from_range" pResizableColumn>
+                        From Range <p-sortIcon field="from_range" />
+                    </th>
+                    <th pSortableColumn="to_range" pResizableColumn>
+                        To Range <p-sortIcon field="to_range" />
+                    </th>
+                    <th pSortableColumn="minimum_amount" pResizableColumn>
+                        Minimum Amount <p-sortIcon field="minimum_amount" />
+                    </th>
+                    <th class="w-full" pSortableColumn="today_range" pResizableColumn>
+                        Today Range <p-sortIcon field="today_range" />
+                    </th>
+
+
+                    <!-- <th [ngClass]="{'w-full': isLast}" [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast=last">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
+                    </th> -->
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th class="left-[-1px]" pFrozenColumn></th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.cashback_for">
+                        <p-columnFilter field="cashback_for" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="cashforList"
+                                    (onChange)="filter($event.value)" placeholder="Select Type" appendTo="body"
+                                    [showClear]="true">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="transaction_type" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="transactionTypeList"
+                                    (onChange)="filter($event.value)" placeholder="Select Type" appendTo="body"
+                                    [showClear]="true">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="from_amount"
+                            placeholder="Search by From Amount" ariaLabel="Filter From Amount" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="to_amount"
+                            placeholder="Search by To Amount" ariaLabel="Filter To Amount" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="fix_cashback"
+                            placeholder="Search by Fix Cashback" ariaLabel="Filter Fix Cashback" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="from_range"
+                            placeholder="Search by From Range" ariaLabel="Filter From Range" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="to_range" placeholder="Search by To Range"
+                            ariaLabel="Filter To Range" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="minimum_amount" placeholder="Search by Minimum Amount"
+                            ariaLabel="Filter Minimum Amount" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" field="today_range" placeholder="Search by Today Range"
+                            ariaLabel="Filter Today Range" />
+                    </th>
+                    <!-- <th *ngFor="let col of columns">
+                        <p-columnFilter *ngIf="col.type == 'text'" [type]="col.type" [field]="col.field" [placeholder]="'Search by ' + col.header" />
+
+                        <p-columnFilter [field]="col.field" type="date" *ngIf="col.type == 'date'">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" [placeholder]="'Search by ' + col.header">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th> -->
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns" let-index="rowIndex">
+                <tr [ngClass]="{'opacity-20': !element.is_enable}">
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                            <mat-icon> more_vert </mat-icon>
+                        </span>
+                        <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="view(element)">
+                                <mat-icon class="mat-18">info</mat-icon>
+                                <span style="font-weight: 600">Info</span>
+                            </button>
+                            <button mat-menu-item (click)="edit(element)">
+                                <mat-icon class="mat-18">edit</mat-icon>
+                                <span style="font-weight: 600">Edit</span>
+                            </button>
+                            <button mat-menu-item (click)="delete(element, index)">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                                <span style="font-weight: 600">Delete</span>
+                            </button>
+                            <button mat-menu-item (click)="setEnableDisable(element)">
+                                <mat-icon *ngIf="!element.is_enable" class="mat-18">check_circle</mat-icon>
+                                <mat-icon *ngIf="element.is_enable" class="mat-18">highlight_off</mat-icon>
+                                <span style="font-weight: 600;">
+                                    {{element.is_enable ? 'Disable' : 'Enable'}}
+                                </span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.cashback_for">{{element?.cashback_for || "-"}}</td>
+                    <td>{{element.transaction_type || '-'}}</td>
+                    <td>{{element.from_amount || '-'}}</td>
+                    <td>{{element.to_amount || '-'}}</td>
+                    <td>{{element.fix_cashback || '-' }}</td>
+                    <td>{{element.from_range || '-'}}</td>
+                    <td>{{element.to_range || '-'}}</td>
+                    <td>
+                        {{element.minimum_amount || '-'}}
+                    </td>
+                    <td>
+                        {{element.today_range || '-'}}
+                    </td>
+                    <!-- <td *ngFor="let col of columns">
+                        <span *ngIf="col.type == 'text'">
+                            {{element[col.field] || "-"}}
+                        </span>
+                        <span *ngIf="col.type == 'date'">
+                            {{element[col.field] ? (element[col.field] | date:'dd-MM-yyyy') : "-"}}
+                        </span>
+                    </td> -->
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="10" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<app-cashback-parameter-entry></app-cashback-parameter-entry>

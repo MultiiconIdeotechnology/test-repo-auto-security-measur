@@ -230,6 +230,17 @@ export class GlobalSearchComponent {
                         }, 1000);
                         this.matDialog.closeAll();
                     }
+
+                    else if (this.bookingRefKey == 'cab_booking') {
+                        if (!Security.hasViewDetailPermission(module_name.bookingsCab)) {
+                            return this.alertService.showToast('error', messages.permissionDenied);
+                        }
+                        this.formGroup.get('searchfilter').patchValue("");
+
+                        let uri = '/booking/cab/details/' + this.bookingRefValue
+                        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate([uri]));
+                        this.matDialog.closeAll();
+                    }
                 },
                 error: err => {
                     this.alertService.showToast('error', err, "top-right", true);

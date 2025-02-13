@@ -17,7 +17,7 @@
             <!------Global Search------>
             <div class="flex ctm_search">
                 <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
-                    (keyup.enter)="refreshItems()" />
+                    (input)="refreshItems()" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                     (click)="refreshItems()"></mat-icon>
             </div>
@@ -166,9 +166,14 @@
                     <td class="text-right">{{ element.activated || 0 }}</td>
 
                     <!-- Domestic Columns -->
-                    <td class="text-right">{{ element.total_business || 0 }}</td>
-                    <td class="text-right">{{ element.total_new || 0 }}</td>
-                    <td class="text-right">{{ element.total_old || 0 }}</td>
+                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_business}"
+                    (click)="openOnSubReport('total', element)">
+                    {{ element.total_business || 0 }}
+                    </td>
+                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_new}" 
+                    (click)="openOnSubReport('new', element)">{{ element.total_new || 0 }}</td>
+                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_old}"
+                    (click)="openOnSubReport('old', element)">{{ element.total_old || 0 }}</td>
 
                 </tr>
             </ng-template>
@@ -177,12 +182,12 @@
                 <tr>
                     <td>Total</td>
 
-                    <!-- Total Columns -->
+                    <!-- Partner Columns -->
                     <td class="text-right">{{ dataListTotals?.final_parther_new_total || 0 }}</td>
                     <td class="text-right">{{ dataListTotals?.final_parther_fisrt_total || 0 }}</td>
                     <td class="text-right">{{ dataListTotals?.final_parther_active_total || 0 }}</td>
 
-                    <!-- Domestic Columns -->
+                    <!-- Business Columns -->
                     <td class="text-right">{{ dataListTotals?.final_business_total || 0 }}</td>
                     <td class="text-right">{{ dataListTotals?.final_business_new_total || 0 }}</td>
                     <td class="text-right">{{ dataListTotals?.final_business_old_total || 0 }}</td>

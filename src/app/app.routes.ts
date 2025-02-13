@@ -181,6 +181,7 @@ export const appRoutes: Route[] = [
             { path: Routes.booking.visa_path, loadChildren: () => import('app/modules/booking/visa/visa.routes') },
             { path: Routes.booking.offline_service_path, loadChildren: () => import('app/modules/booking/offline-service/offline-list/offline.routes') },
             { path: Routes.booking.holiday_lead_path, loadChildren: () => import('app/modules/booking/holiday/holiday-list/holiday-lead.routes') },
+            { path: Routes.booking.cab_path, loadChildren: () => import('app/modules/booking/cab/cab-list/cab.routes') },
 
             // SETTINGS
             { path: Routes.settings.erpsettings_path, loadChildren: () => import('app/modules/settings/erp-settings/erp-settings.routes') },
@@ -191,6 +192,8 @@ export const appRoutes: Route[] = [
             { path: Routes.settings.supplierapi_path, loadChildren: () => import('app/modules/settings/supplier-api/supplier-api.routes') },
             { path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes') },
             { path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes') },
+            { path: Routes.settings.cashback_parameters_path, loadChildren: () => import('app/modules/settings/cashback-parameter/cashback-parameter.route') },
+
         ]
     },
 ];

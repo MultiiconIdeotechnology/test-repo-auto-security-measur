@@ -366,6 +366,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:building-storefront',
                 link: Routes.booking.holiday_lead_route
             },
+            {
+                id: 'booking.cab',
+                title: 'Cab',
+                type: 'basic',
+                pid: 'BOOKINGS_CAB_VIEW',
+                icon: 'local_taxi',
+                link: Routes.booking.cab_route
+            },
         ]
     },
     {
@@ -876,14 +884,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:holiday_village',
                 link: Routes.inventory.holiday_v2_route
             },
-            // {
-            //     id: 'inventory.cab',
-            //     title: 'Cab',
-            //     type: 'basic',
-            //     pid: 'INVENTORY_CAB_VIEW',
-            //     icon: 'heroicons_outline:newspaper',
-            //     link: Routes.inventory.cab_route
-            // },
+            {
+                id: 'inventory.cab',
+                title: 'Cab',
+                type: 'basic',
+                pid: 'INVENTORY_CAB_VIEW',
+                icon: 'heroicons_outline:newspaper',
+                link: Routes.inventory.cab_route
+            },
             // {
             //     id: 'inventory.cab',
             //     title: 'Cab',
@@ -1034,6 +1042,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'MASTERS_CACHINGPARAMETERS_VIEW',
                 icon: 'heroicons_outline:square-3-stack-3d',
                 link: Routes.settings.caching_parameters_route
+            },
+            {
+                id: 'settings.cashbackparameters',
+                title: 'Cashback Parameters',
+                type: 'basic',
+                pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
+                icon: 'heroicons_outline:wallet',
+                link: Routes.settings.cashback_parameters_route
             }
         ]
     }

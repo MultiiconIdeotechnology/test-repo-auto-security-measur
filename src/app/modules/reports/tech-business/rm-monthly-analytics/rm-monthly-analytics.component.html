@@ -119,9 +119,20 @@
                     <ng-container *ngFor="let month of latestMonths">
                         <ng-container *ngFor="let monthData of element.monthData">
                             <ng-container *ngIf="monthData.month === month">
-                                <td class="text-right">{{ monthData.currentMonthOnboard }}</td>
-                                <td class="text-right">{{ monthData.currentMonthActivation }}</td>
-                                <td class="text-right">{{ monthData.currentMonthSales }}</td>
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
+                                    (click)="openOnboardModal('onboard', monthData)">
+                                    <!-- <span > -->
+                                        {{ monthData.currentMonthOnboard }}
+                                    <!-- </span> -->
+                                </td>
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
+                                (click)="openOnboardModal('activation', monthData)">
+                                    {{ monthData.currentMonthActivation }}
+                                </td>
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
+                                (click)="openSalesModal(monthData)">
+                                    {{ monthData.currentMonthSales }}
+                                </td>
                             </ng-container>
                         </ng-container>
                     </ng-container>

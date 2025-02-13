@@ -146,7 +146,7 @@ export class RefundInitiateComponent implements OnInit {
       return;
     }
 
-    if (this.data?.balance && ((this.data.balance.wallet_Balance + this.data.balance.wallet_Balance) < this.data.balance.purchase_Price)) {
+    if (this.data?.balance && ((this.data.balance.wallet_Balance + this.data.balance.credit_Balance) < this.data.balance.purchase_Price)) {
       this.alertService.showToast('error', "Insufficient wallet balance");
       return;
     }

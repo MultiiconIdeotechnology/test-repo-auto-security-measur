@@ -28,6 +28,20 @@ export class TechBusinessService {
     return this.http.post<any>(this.baseUrl + 'AccountReport/productMonthlyAnalysis', model);
   }
 
+  onboardReport(model:any): Observable<any>{
+    return this.http.post<any>(this.baseUrl + 'AccountReport/rmMonthlyZoomInReport', model);
+  }
+
+  onSalesReport(model:any): Observable<any>{
+    return this.http.post<any>(this.baseUrl + 'AccountReport/rmMonthlyZoomInSalesList', model);
+  }
+
+  onSummaryReport(model:any): Observable<any>{
+    return this.http.post<any>(this.baseUrl + 'AccountReport/rmBusinessZoomInReport', model);
+  }
+
+  
+
   
   
 //   airlineRejectionSupplierWiseAnalysis(model: any): Observable<any>{

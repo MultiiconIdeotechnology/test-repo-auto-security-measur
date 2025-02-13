@@ -319,6 +319,10 @@ export const Routes = {
         forex_path: 'booking/forex',
         forex_route: '/booking/forex',
         forex_details_route: '/booking/forex/details',
+        
+        cab_path: 'booking/cab',
+        cab_route: '/booking/cab',
+        cab_details_route: '/booking/cab/details',
 
         flight_path: 'booking/flight',
         flight_route: '/booking/flight',
@@ -470,5 +474,8 @@ export const Routes = {
 
         caching_parameters_path: 'settings/caching_parameters',
         caching_parameters_route: '/settings/caching_parameters',
+
+        cashback_parameters_path: 'settings/cashback_parameters',
+        cashback_parameters_route: '/settings/cashback_parameters',
     }
 }
