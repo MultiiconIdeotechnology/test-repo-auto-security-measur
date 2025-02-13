@@ -24,6 +24,8 @@ import { LeadEntrySettingsComponent } from '../lead-entry-settings/lead-entry-se
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Column } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { CrmService } from 'app/services/crm.service';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
     selector: 'app-crm-lead-list',
@@ -65,6 +67,7 @@ export class CRMLeadListComponent implements OnDestroy {
     tabNameStr: any = 'Inbox'
     tab: string = 'Inbox';
     isSecound: boolean = true
+    isLoading: boolean = false
     isThird: boolean = true
     filterData: any = {};
     searchInputControlInbox = new FormControl('');
@@ -82,7 +85,9 @@ export class CRMLeadListComponent implements OnDestroy {
     constructor(
         private alertService: ToasterService,
         private entityService: EntityService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private crmService: CrmService,
+        private conformationService: FuseConfirmationService,
     ) {
         this.entityService.onrefreshleadEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -163,6 +168,32 @@ export class CRMLeadListComponent implements OnDestroy {
         //         }
         //     });
         this.entityService.raiseleadEntityCall({})
+    }
+
+    // Get Leads
+    getLeads() {
+        const label: string = 'New Leads'
+        this.conformationService.open({
+            title: label,
+            message: 'Are you sure you want to get new leads?',
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this.isLoading = true;
+                    this.crmService.getdeadLeadbyrm({}).subscribe({
+                        next: (data) => {
+                            this.inbox?.refreshItems();
+                            this.alertService.showToast('success', "Leads get successfully ", "top-right", true);
+                            this.isLoading = false;
+                        },
+                        error: (err) => {
+                            this.alertService.showToast('error', err, 'top-right', true);
+                            this.isLoading = false;
+                        },
+                    });
+                }
+            }
+        });
     }
 
     ngOnDestroy(): void {

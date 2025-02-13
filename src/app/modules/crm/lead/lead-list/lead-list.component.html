@@ -75,11 +75,19 @@
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
+
             <ng-container *ngIf="tabNameStr == 'Archive'">
                 <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Archive')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
+
+            <!-- Get Lead -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="getLeads()" [disabled]="isLoading"
+                *ngIf="tabNameStr == 'Inbox'">
+                <mat-icon svgIcon="new_label"></mat-icon>
+                <span class="ml-2 mr-1">Get Leads</span>
+            </button>
 
             <!-- Add -->
             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createInternal()"
