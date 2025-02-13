@@ -307,7 +307,6 @@ export class GroupInquiryListComponent
             disableClose: true,
         }).afterClosed().subscribe({
             next: (res) => {
-                console.log("res", res);
                 if (res && res.reject_reason) {
                     let body = { 
                         id: record.id, 

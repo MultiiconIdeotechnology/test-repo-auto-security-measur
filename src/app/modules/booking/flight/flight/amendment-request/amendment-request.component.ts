@@ -325,7 +325,6 @@ export class AmendmentRequestComponent {
       }
     }
 
-    // console.log("json", json);
     // return
     this.bookingService.CreateAmendment(json).subscribe({
       next: (res) => {

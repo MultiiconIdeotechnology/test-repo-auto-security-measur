@@ -81,7 +81,6 @@ export class ForexBookingDetailsComponent {
     this.settingsUpdatedSubscription = this.entityService.onForexEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
       next: (item) => {
         if (item) {
-          console.log("item", item);
           this.settingsDrawer.toggle()
           this.record = item?.data;
           if (!item.global_withdraw && this.record) {

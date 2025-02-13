@@ -59,8 +59,6 @@ export class RejectResonComponent {
 
   saveDetail() {
       const json = this.rejectForm.getRawValue();
-      console.log("json", json);
-      
       this.matDialogRef.close(json)
   }
 
