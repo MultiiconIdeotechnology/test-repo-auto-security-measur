@@ -186,6 +186,8 @@ export class AgentListComponent extends BaseListingComponent {
 
     ngOnInit() {
         this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectedContracting('');
+        this._filterService.updatedSelectionOptionTwo('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedEmployee = resp['table_config']['rm_id_filters']?.value;
             this.selectedCurrency = resp['table_config']['currency']?.value;
@@ -197,6 +199,16 @@ export class AgentListComponent extends BaseListingComponent {
             if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+            }
+            
+            if (resp['table_config']['first_transaction_date_time']?.value != null && resp['table_config']['first_transaction_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
+            }
+            
+            if (resp['table_config']['first_login_date_time']?.value != null && resp['table_config']['first_login_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['first_login_date_time']);
             }
             this.primengTable['filters'] = resp['table_config'];
             this._selectedColumns = resp['selectedColumns'] || [];
@@ -215,6 +227,9 @@ export class AgentListComponent extends BaseListingComponent {
     ngAfterViewInit() {
         // Defult Active filter show
         this._filterService.updateSelectedOption('');
+        this._filterService.updatedSelectedContracting('');
+        this._filterService.updatedSelectionOptionTwo('');
+
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedEmployee = filterData['table_config']['rm_id_filters'].value || {};
@@ -228,6 +243,15 @@ export class AgentListComponent extends BaseListingComponent {
             if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+            }
+            if (filterData['table_config']['first_transaction_date_time']?.value != null && filterData['table_config']['first_transaction_date_time'].value.length) {
+                this._filterService.updatedSelectedContracting('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['first_transaction_date_time']);
+            }
+            
+            if (filterData['table_config']['first_login_date_time']?.value != null && filterData['table_config']['first_login_date_time'].value.length) {
+                this._filterService.updatedSelectionOptionTwo('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['first_login_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
             this._selectedColumns = filterData['selectedColumns'] || [];
