@@ -80,6 +80,10 @@
                     <th pSortableColumn="master_agent" pResizableColumn>
                         Agent<p-sortIcon field="master_agent" />
                     </th>
+                    
+                    <th pSortableColumn="supplier_booking_ref_no" pResizableColumn>
+                        Supplier Booking Ref. No.<p-sortIcon field="supplier_booking_ref_no" />
+                    </th>
 
                     <th [ngClass]="{'min-w-[150px]': isFilterShow}" pSortableColumn="bill_to" pResizableColumn>
                         Bill To<p-sortIcon field="bill_to" />
@@ -276,6 +280,11 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" field="supplier_booking_ref_no" placeholder="Search by Supplier Booking Ref. No."
+                            ariaLabel="Filter Supplier Booking Ref. No." />
                     </th>
 
                     <th>
@@ -551,6 +560,8 @@
                     </td>
 
                     <td>{{element.master_agent || '-'}}</td>
+
+                    <td>{{element.supplier_booking_ref_no || '-'}}</td>
 
                     <td>{{element.bill_to || '-'}}</td>
 
