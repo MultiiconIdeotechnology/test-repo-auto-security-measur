@@ -28,6 +28,10 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'CallHistory/getCallHistoryList', model);
     }
 
+    getdeadLeadbyrm(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'leadmaster/getdeadLeadbyrm', model);
+    }
+    
     startKycProces(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'AgentLead/startKYCProcess', model);
     }

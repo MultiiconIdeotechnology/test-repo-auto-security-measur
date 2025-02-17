@@ -19,8 +19,9 @@
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600;">Info</span>
                             </button>
+                            <!-- *ngIf="element.product_status == 'Pending'" -->
                             <button mat-menu-item (click)="editProduct(element)"
-                                *ngIf="element.product_status == 'Pending'">
+                                 *ngIf="element.receipt_status !== 'Confirmed'">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Modify</span>
                             </button>

@@ -370,23 +370,23 @@
                         <p-columnFilter *ngIf="col.field == 'city_name'" type="text" matchMode="contains"
                             field="city_name" placeholder="Search by City Name" ariaLabel="Filter City Name" />
 
-                        <p-columnFilter *ngIf="col.field == 'first_transaction_date_time'"
+                        <!-- <p-columnFilter *ngIf="col.field == 'first_transaction_date_time'"
                             field="first_transaction_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
                                     appendTo="body" placeholder="Search by First Transaction">
                                 </p-calendar>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
 
-                        <p-columnFilter *ngIf="col.field == 'first_login_date_time'" field="first_login_date_time"
+                        <!-- <p-columnFilter *ngIf="col.field == 'first_login_date_time'" field="first_login_date_time"
                             type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
                                     appendTo="body" placeholder="Search by First Login">
                                 </p-calendar>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
 
                         <p-columnFilter *ngIf="col.field == 'agent_assign_by'" matchMode="contains" type="text"
                             field="agent_assign_by" placeholder="Search by Assign By" ariaLabel="Filter Assign By" />
@@ -399,6 +399,75 @@
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
+
+                 
+                        <ng-container *ngIf="col.field == 'first_login_date_time'">
+                            <p-columnFilter *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
+                                field="first_login_date_time" matchMode="custom" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                        [options]="_filterService.dateRangeList" optionLabel="label"
+                                        placeholder="Select Option" appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <div
+                                                (click)="_filterService.onOptionClickTwo(option, primengTable, 'first_login_date_time')">
+                                                <div>{{option.label}}</div>
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+    
+                            <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
+                                <div class="relative inline-block">
+                                    <p-columnFilter field="first_login_date_time" matchMode="custom" [showMenu]="false">
+                                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                            <p-calendar selectionMode="range" [ngModel]="value"
+                                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                                dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                            </p-calendar>
+                                        </ng-template>
+                                    </p-columnFilter>
+                                    <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                        style="top:50%; transform: translatey(-50%); right: 25px;"
+                                        (click)="_filterService.onOptionClickTwo('', '', '')">cancel</mat-icon>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.field == 'first_transaction_date_time'">
+                            <p-columnFilter *ngIf="(_filterService.selectionDateDropdownContracting$ | async) != 'custom_date_range'"
+                                field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                        [options]="_filterService.dateRangeList" optionLabel="label"
+                                        placeholder="Select Option" appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <div
+                                                (click)="_filterService.onOptionClickContracting(option, primengTable, 'first_transaction_date_time')">
+                                                <div>{{option.label}}</div>
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+    
+                            <ng-container *ngIf="(_filterService.selectionDateDropdownContracting$ | async) == 'custom_date_range'">
+                                <div class="relative inline-block">
+                                    <p-columnFilter field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
+                                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                            <p-calendar selectionMode="range" [ngModel]="value"
+                                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                                dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                            </p-calendar>
+                                        </ng-template>
+                                    </p-columnFilter>
+                                    <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                        style="top:50%; transform: translatey(-50%); right: 25px;"
+                                        (click)="_filterService.onOptionClickContracting('', '', '')">cancel</mat-icon>
+                                </div>
+                            </ng-container>
+                        </ng-container>
                     </th>
                 </tr>
             </ng-template>
@@ -437,7 +506,7 @@
                                 <mat-icon class="mat-18 icon-size-5">person</mat-icon>
                                 <span style="font-weight: 500">Change Markup</span>
                             </button>
-                            <button mat-menu-item (click)="EnableDisable(element)">
+                            <!-- <button mat-menu-item (click)="EnableDisable(element)">
                                 <mat-icon class="mat-18">{{
                                     element.is_cashback_enable
                                     ? "highlight_off"
@@ -446,7 +515,7 @@
                                 <span style="font-weight: 600">{{
                                     element.is_cashback_enable ? "Disable Cashback" : "Enable Cashback"
                                     }}</span>
-                            </button>
+                            </button> -->
                             <mat-divider></mat-divider>
 
                             <button mat-menu-item (click)="setKYCVerify(element)">

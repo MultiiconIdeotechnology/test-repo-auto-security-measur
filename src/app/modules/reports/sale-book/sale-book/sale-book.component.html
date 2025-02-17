@@ -80,6 +80,8 @@
                     <th pSortableColumn="master_agent" pResizableColumn>
                         Agent<p-sortIcon field="master_agent" />
                     </th>
+                    
+                    
 
                     <th [ngClass]="{'min-w-[150px]': isFilterShow}" pSortableColumn="bill_to" pResizableColumn>
                         Bill To<p-sortIcon field="bill_to" />
@@ -143,6 +145,10 @@
 
                     <th pSortableColumn="pnr" pResizableColumn>
                         PNR<p-sortIcon field="pnr" />
+                    </th>
+
+                    <th pSortableColumn="supplier_booking_ref_no" pResizableColumn>
+                        Supplier Booking Ref. No.<p-sortIcon field="supplier_booking_ref_no" />
                     </th>
 
                     <th pSortableColumn="gds_pnr" pResizableColumn>
@@ -278,6 +284,8 @@
                         </p-columnFilter>
                     </th>
 
+                   
+
                     <th>
                         <p-columnFilter type="text" field="bill_to" placeholder="Search by Bill To"
                             ariaLabel="Filter Bill To" />
@@ -386,6 +394,11 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
                             ariaLabel="Filter PNR" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" field="supplier_booking_ref_no" placeholder="Search by Supplier Booking Ref. No."
+                            ariaLabel="Filter Supplier Booking Ref. No." />
                     </th>
 
                     <th>
@@ -552,6 +565,7 @@
 
                     <td>{{element.master_agent || '-'}}</td>
 
+
                     <td>{{element.bill_to || '-'}}</td>
 
                     <td>{{element.service_type || '-'}}</td>
@@ -592,6 +606,9 @@
                     <td>{{element.booking_ref_no || '-'}}</td>
 
                     <td>{{element.pnr || '-'}}</td>
+
+                    <td>{{element.supplier_booking_ref_no || '-'}}</td>
+
 
                     <td>{{element.gds_pnr || '-'}}</td>
 

@@ -104,7 +104,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 
 
 	dateBy = [{ value: 'BookingDate', label: 'Booking Date' }, { value: 'InvoiceDate', label: 'Invoice Date' }, { value: 'TravelDate', label: 'Travel Date' }];
-	ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }, {value:'Insurance', label:'Insurance'}, {value:'Tech Product', label:'Tech Product'}, {value:'OSB', label:'OSB'}];
+	ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }, { value: 'Insurance', label: 'Insurance' }, { value: 'Tech Product', label: 'Tech Product' }, { value: 'OSB', label: 'OSB' }];
 	// companyBy = [{value:'BONTON HOLIDAYS PVT. LTD.', label:'BONTON HOLIDAYS PVT. LTD.'},{value:'BONTON TOURS & TRAVELS DMCC', label:'BONTON TOURS & TRAVELS DMCC'}];
 
 
@@ -274,19 +274,19 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			this.primengTable.filter(supplier?.company_name, 'supplier', 'equals');
 			setTimeout(() => {
 				this.primengTable.filters['supplier']['value'] = supplier;
-			},  this.primengTable.filterDelay);
+			}, this.primengTable.filterDelay);
 		} else {
 			this.primengTable.filter(null, 'supplier', 'equals');
 			this.primengTable.filters['supplier'] = { value: null, matchMode: 'equals' };
 		}
 	}
 
-	onBillingComChange(billingCompany:any){
+	onBillingComChange(billingCompany: any) {
 		if (billingCompany) {
 			this.primengTable.filter(billingCompany?.company_name, 'billing_company', 'equals');
 			setTimeout(() => {
 				this.primengTable.filters['billing_company']['value'] = billingCompany;
-			},  this.primengTable.filterDelay);
+			}, this.primengTable.filterDelay);
 		} else {
 			this.primengTable.filter(null, 'billing_company', 'equals');
 			this.primengTable.filters['billing_company'] = { value: null, matchMode: 'equals' };
@@ -415,6 +415,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 				{ header: 'Pax', property: 'pax' },
 				{ header: 'Booking Reference No.', property: 'booking_ref_no' },
 				{ header: 'PNR', property: 'pnr' },
+				{ header: 'Supplier Ref. No.', property: 'supplier_booking_ref_no' },
 				{ header: 'GDS PNR', property: 'gds_pnr' },
 				{ header: 'Purchase Amount', property: 'purchase_amount' },
 				{ header: 'Commission Income', property: 'commission_income' },
