@@ -120,17 +120,17 @@
                         <ng-container *ngFor="let monthData of element.monthData">
                             <ng-container *ngIf="monthData.month === month">
                                 <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
-                                    (click)="openOnboardModal('onboard', monthData)">
+                                    (click)="monthData.currentMonthOnboard ? openOnboardModal('onboard', monthData) : null">
                                     <!-- <span > -->
                                         {{ monthData.currentMonthOnboard }}
                                     <!-- </span> -->
                                 </td>
-                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
-                                (click)="openOnboardModal('activation', monthData)">
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthActivation}"
+                                (click)="monthData.currentMonthActivation ? openOnboardModal('activation', monthData) : null">
                                     {{ monthData.currentMonthActivation }}
                                 </td>
-                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthOnboard}"
-                                (click)="openSalesModal(monthData)">
+                                <td class="text-right" [ngClass]="{'underline cursor-pointer': monthData.currentMonthSales}"
+                                (click)="monthData.currentMonthSales ? openSalesModal(monthData) : null">
                                     {{ monthData.currentMonthSales }}
                                 </td>
                             </ng-container>

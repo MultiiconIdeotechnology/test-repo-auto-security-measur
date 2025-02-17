@@ -24,74 +24,84 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrls: ['./techsummary-zoomreport.component.scss']
 })
 export class TechsummaryZoomreportComponent extends BaseListingComponent {
-  dataList:any[] = [];
-  sortColumn:string = "";
-  record:any;
-  reqData:any = {};
-  originalDataList:any[] = [];
-  totalSaleAmount:number = 0;
+  dataList: any[] = [];
+  sortColumn: string = "";
+  record: any;
+  reqData: any = {};
+  originalDataList: any[] = [];
+  totalSaleAmount: number = 0;
+  isFilterShow:boolean = false;
 
   statusColors: { [key: string]: string } = {
     Delivered: '#4CAF50',
-    Expired: '#F44336',  
-    Pending: '#FFC107',  
-    Blocked: '#9E9E9E'   
+    Expired: '#F44336',
+    Pending: '#FFC107',
+    Blocked: '#B22222',
+    Confirmed: '#198754'
   };
+
+  statusList: any[] = [
+    { label: "Delivered", value: "Delivered" },
+    { label: "Expired", value: "Expired" },
+    { label: "Pending", value: "Pending" },
+    { label: "Blocked", value: "Blocked" },
+    { label: "Confirmed", value: "Confirmed" }
+  ]
 
   constructor(
     public matDialogRef: MatDialogRef<TechsummaryZoomreportComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any = {},
     private techService: TechBusinessService,
- ){
-   super("");
- 
- };
+  ) {
+    super("");
 
- ngOnInit(){
-  if(this.data){
-    this.record = this.data;
-    this.reqData = {
-      rm_id: this.record.rm_id,
-      from_date: this.record.from_date,
-      to_date: this.record.to_date,
-      type: this.record.type
+  };
+
+  ngOnInit() {
+    if (this.data) {
+      this.record = this.data;
+      this.reqData = {
+        rm_id: this.record.rm_id,
+        from_date: this.record.from_date,
+        to_date: this.record.to_date,
+        type: this.record.type
+      }
+
+      this.refreshItems();
     }
-
-    this.refreshItems();
   }
- }
- 
- refreshItems(event?:any): void {
-   this.techService.onSummaryReport(this.reqData).subscribe({
-     next: (resp:any) => {
-       this.dataList = resp.data;
-       this.totalSaleAmount = resp.total_sale_price || 0;
-       this.originalDataList = resp.data;
-       this.totalRecords = resp.total;
-       this.isLoading = false;
-     },
-     error: (err) => {
-       this.alertService.showToast('error', err);
-       this.isLoading = false;
-     }
-   });
- }
 
- onGlobalFilterSearch(val:any){
-  this.dataList = this.originalDataList.filter((item:any) =>
-    JSON.stringify(item).toLowerCase().includes(val.toLowerCase())
-  );
-}
+  refreshItems(event?: any): void {
+    this.techService.onSummaryReport(this.reqData).subscribe({
+      next: (resp: any) => {
+        this.dataList = resp.data;
+        this.totalSaleAmount = resp.total_sale_price || 0;
+        this.originalDataList = resp.data;
+        this.totalRecords = resp.total;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err);
+        this.isLoading = false;
+      }
+    });
+  }
 
-getStatusColor(status: string): string {
-  return this.statusColors[status] || '#000000'; 
-}
+  onGlobalFilterSearch(val: any) {
+    this.dataList = this.originalDataList.filter((item: any) =>
+      JSON.stringify(item).toLowerCase().includes(val.toLowerCase())
+    );
+  }
 
- getNodataText(): string {
-   if (this.isLoading)
-       return 'Loading...';
-   else if (this.searchInputControl.value)
-       return `no search results found for \'${this.searchInputControl.value}\'.`;
-   else return 'No data to display';
- }
+  getStatusColor(status: string): string {
+    return this.statusColors[status];
+  }
+
+  getNodataText(): string {
+    if (this.isLoading)
+      return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
 }

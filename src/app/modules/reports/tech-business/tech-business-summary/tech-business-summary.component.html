@@ -97,26 +97,20 @@
             <ng-template pTemplate="header">
 
                 <tr>
-                    <th class="w-[30%]" pSortableColumn="rm_name" pResizableColumn rowspan="2">RM <p-sortIcon field="rm_name" /></th>
+                    <th class="w-[30%]" pResizableColumn rowspan="2">RM</th>
                     <th class="text-center text-white bg-[#4c6793] w-[35%]" colspan="3">Parther</th>
                     <th class="text-center text-white bg-[#5f9da2] w-[35%]" colspan="3">Business</th>
                 </tr>
                 <tr>
                     <!-- Partner Columns -->
-                    <th class="text-right" pSortableColumn="new_partner" pResizableColumn>New <p-sortIcon
-                            field="new_partner" /></th>
-                    <th class="text-right" pSortableColumn="first_transaction_partner" pResizableColumn>1st Transaction
-                        <p-sortIcon field="first_transaction_partner" /></th>
-                    <th class="text-right" pSortableColumn="activated" pResizableColumn>Activated <p-sortIcon
-                            field="activated" /></th>
+                    <th class="text-right" pResizableColumn>New</th>
+                    <th class="text-right" pResizableColumn>1st Transaction</th>
+                    <th class="text-right" pResizableColumn>Activated </th>
 
                     <!-- Business Columns -->
-                    <th class="text-right" pSortableColumn="total_business" pResizableColumn>Total<p-sortIcon
-                            field="total_business" /></th>
-                    <th class="text-right" pSortableColumn="total_new" pResizableColumn>New <p-sortIcon
-                            field="total_new" /></th>
-                    <th class="text-right" pSortableColumn="total_old" pResizableColumn>Old <p-sortIcon
-                            field="total_old" /></th>
+                    <th class="text-right" pResizableColumn>Total</th>
+                    <th class="text-right" pResizableColumn>New </th>
+                    <th class="text-right" pResizableColumn>Old </th>
 
                 </tr>
 
@@ -160,20 +154,28 @@
                 <tr>
                     <td>{{ element.rm_name }}</td>
 
-                    <!-- Total Columns -->
-                    <td class="text-right">{{ element.new_partner || 0 }}</td>
-                    <td class="text-right">{{ element.first_transaction_partner || 0 }}</td>
-                    <td class="text-right">{{ element.activated || 0 }}</td>
+                    <!-- Partner Columns -->
+                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.new_partner}"
+                    (click)="element.new_partner ? openOnSubReport('new_partner', element): null">
+                        {{ element.new_partner || 0 }}
+                    </td>
+                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.first_transaction_partner}"
+                    (click)="element.first_transaction_partner ? openOnSubReport('first_partner', element): null">
+                        {{ element.first_transaction_partner || 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.activated || 0 }}
+                    </td>
 
-                    <!-- Domestic Columns -->
+                    <!-- Business Columns -->
                     <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_business}"
-                    (click)="openOnSubReport('total', element)">
+                    (click)="element.total_business ? openOnSubReport('total', element): null">
                     {{ element.total_business || 0 }}
                     </td>
                     <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_new}" 
-                    (click)="openOnSubReport('new', element)">{{ element.total_new || 0 }}</td>
+                    (click)="element.total_new ? openOnSubReport('new', element) : null">{{ element.total_new || 0 }}</td>
                     <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_old}"
-                    (click)="openOnSubReport('old', element)">{{ element.total_old || 0 }}</td>
+                    (click)="element.total_old ? openOnSubReport('old', element) : null">{{ element.total_old || 0 }}</td>
 
                 </tr>
             </ng-template>

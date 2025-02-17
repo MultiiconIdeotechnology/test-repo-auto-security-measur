@@ -26,6 +26,7 @@ import { Subscription } from 'rxjs';
 import { TechBusinessService } from 'app/services/tech-business.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TechsummaryZoomreportComponent } from './techsummary-zoomreport/techsummary-zoomreport.component';
+import { OnboardSubreportComponent } from '../rm-monthly-analytics/onboard-subreport/onboard-subreport.component';
 
 @Component({
   selector: 'app-tech-business-summary',
@@ -51,7 +52,8 @@ import { TechsummaryZoomreportComponent } from './techsummary-zoomreport/techsum
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatTabsModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    OnboardSubreportComponent
   ],
   templateUrl: './tech-business-summary.component.html',
   styleUrls: ['./tech-business-summary.component.scss']
@@ -124,7 +126,14 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
 
   //open a subreport for sales 
   openOnSubReport(key:string,element: any) {
-    this.matDialog.open(TechsummaryZoomreportComponent, {
+    let reportComponent:any = TechsummaryZoomreportComponent;
+    if(key == 'total' || key == 'new' || key == 'old'){
+      reportComponent = TechsummaryZoomreportComponent
+    } else if( key == 'new_partner' || key == 'first_partner'){
+       reportComponent =  OnboardSubreportComponent;
+    }
+    
+    this.matDialog.open(reportComponent, {
       data: {
         rm_id: element.rm_id,
         rm_name: element.rm_name,
@@ -133,6 +142,8 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
         type: key
       },
       panelClass: 'custom-dialog-modal',
+      backdropClass: 'custom-dialog-backdrop',
+      disableClose: true 
     }).afterClosed().subscribe(res => {
       if (res) {
         // this.refreshItems();

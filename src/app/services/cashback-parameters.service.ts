@@ -15,6 +15,9 @@ export class CashbackParameterService {
     private cashbackListSubject = new BehaviorSubject<any[]>([]);
     cashbackList$ = this.cashbackListSubject.asObservable();
 
+    private companyListSubject = new BehaviorSubject<any[]>([]);
+    companyList$ = this.companyListSubject.asObservable();
+
     constructor(private http: HttpClient) { }
 
     getCashbackParametersList(model: any): Observable<any> {
@@ -31,6 +34,10 @@ export class CashbackParameterService {
 
     delete(id: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'cashbackparameters/delete', { id: id });
+    }
+
+    getCompanyCombo(filter: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Company/getCompanyCombo', { filter });
     }
 
     // cashbackId subject to to get the last value of cashbackid;
@@ -53,5 +60,11 @@ export class CashbackParameterService {
     addCashbackItem(newItem: any): void {
         const currentList = this.cashbackListSubject.value;
         this.cashbackListSubject.next([newItem, ...currentList]); // Push new item
-      }
+    }
+
+    // get companyList/cashbackfor list
+    setCompanyList(data: any): void {
+        this.companyListSubject.next(data);
+    }
+ 
 }

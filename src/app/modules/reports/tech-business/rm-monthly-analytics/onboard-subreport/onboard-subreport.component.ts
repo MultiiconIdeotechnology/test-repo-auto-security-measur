@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TechBusinessService } from 'app/services/tech-business.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-onboard-subreport',
@@ -30,50 +31,89 @@ export class OnboardSubreportComponent extends BaseListingComponent {
   record:any;
   reqData:any = {};
   originalDataList:any[] = [];
+  isFilterShow:boolean = false;
+
+  statusList:any[] = ["Active", "New", "Inactive", "Dormant"];
+  statusColors: { [key: string]: string } = {
+    Active: '#28a745',
+    New: '#007bff',
+    Inactive: '#B22222',
+    Dormant: '#C4A484'
+  };
 
   constructor(
      public matDialogRef: MatDialogRef<OnboardSubreportComponent>,
      @Inject(MAT_DIALOG_DATA) public data: any = {},
      private techService: TechBusinessService,
+     public _filterService: CommonFilterService,
   ){
     super("");
-
   };
 
   ngOnInit(): void {
     if(this.data){
       this.record = this.data;
-      this.reqData = {
-        rm_id:  this.record.rm_id,
-        from_date: this.record.date,
-        type: this.record.type,
-        columeFilters: {},
-        Filter:""
-      }
 
-      this.refreshItems()
+      if(this.record.type == 'onboard' || this.record.type == 'activation'){
+        this.reqData = {
+          rm_id:  this.record.rm_id,
+          from_date: this.record.date,
+          type: this.record.type,
+          columeFilters: {},
+          Filter:""
+        } 
+      } else {
+        this.reqData = {
+          rm_id: this.record.rm_id,
+          from_date: this.record.from_date,
+          to_date: this.record.to_date,
+          type: this.record.type
+        }
+      }
+      this.refreshItems();
     }
   }
   
   refreshItems(event?:any): void {
-    this.techService.onboardReport(this.reqData).subscribe({
-      next: (resp:any) => {
-        this.dataList = resp.data;
-        this.originalDataList = resp.data;
-        this.totalRecords = this.dataList.length;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.alertService.showToast('error', err);
-        this.isLoading = false;
-      }
-    });
+    if(this.record.type == 'onboard' || this.record.type == 'activation'){
+      this.techService.onboardReport(this.reqData).subscribe({
+        next: (resp:any) => {
+          this.dataList = resp.data;
+          this.dataList.forEach((item:any) => item.signup = new Date(item.signup))
+          this.originalDataList = resp.data;
+          this.totalRecords = resp.total;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.alertService.showToast('error', err);
+          this.isLoading = false;
+        }
+      });
+    } else if(this.record.type == 'new_partner' || this.record.type == 'first_partner'){
+      this.techService.onSummaryReport(this.reqData).subscribe({
+        next: (resp:any) => {
+          this.dataList = resp.data;
+          this.dataList.forEach((item:any) => item.signup = new Date(item.signup))
+          this.originalDataList = resp.data;
+          this.totalRecords = resp.total;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.alertService.showToast('error', err);
+          this.isLoading = false;
+        }
+      });
+    }
   }
 
   onGlobalFilterSearch(val:any){
     this.dataList = this.originalDataList.filter((item:any) =>
       JSON.stringify(item).toLowerCase().includes(val.toLowerCase())
     );
+  }
+
+  getStatusColor(status: string): string {
+    return this.statusColors[status];
   }
 
   getNodataText(): string {

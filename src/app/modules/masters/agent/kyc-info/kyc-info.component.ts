@@ -82,7 +82,6 @@ export class KycInfoComponent {
   ) {
     // this.convertAgent = this.datas.send
     this.data = datas.record;
-    console.log("this.data>>>", this.datas);
     if (this.datas?.send)
       this.convertAgent = (this.datas.send == "agentKYC");
 

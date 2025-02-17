@@ -1,4 +1,4 @@
-import { Component, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { combineLatest, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -16,15 +16,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatOptionModule } from '@angular/material/core';
-import { NumberOnlyDirective } from '@fuse/directives/number-only.directive';
 import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
-import { ThisReceiver } from '@angular/compiler';
-
 
 @Component({
   selector: 'app-cashback-parameter-entry',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     FuseDrawerComponent,
     CashbackReadComponent,
     MatIconModule,
@@ -38,7 +36,6 @@ import { ThisReceiver } from '@angular/compiler';
     MatTooltipModule,
     MatOptionModule,
     FuseDrawerComponent,
-    NumberOnlyDirective,
     OnlyFloatDirective
   ],
   templateUrl: './cashback-parameter-entry.component.html',
@@ -52,8 +49,10 @@ export class CashbackParameterEntryComponent {
   btnLabel: string = 'Create';
   private subscription: Subscription;
   private cashbackSubscription: Subscription;
+  private companySubscription: Subscription;
   cashbackId: any;
   formGroup: FormGroup;
+  tempCashBackId:any;
 
   cashforList: any[] = [
     { label: 'Company', value: 'Company' },
@@ -114,6 +113,11 @@ export class CashbackParameterEntryComponent {
       this.cashbackId = id;
     });
 
+    this.companySubscription = this.cashbackService.companyList$.subscribe(data => {
+      this.cashforList = data;
+      this.tempCashBackId = data.find((item:any) => item.company_name == 'BONTON HOLIDAYS PVT. LTD.')?.company_id;
+    })
+
     this.formGroup = this.formBuilder.group({
       id: [''],
       cashback_for_id: [''],
@@ -146,7 +150,6 @@ export class CashbackParameterEntryComponent {
           this.formGroup.get('fix_cashback')?.setValidators(Validators.required);
         }
       });
-
   }
 
   // To change the value in form input based on selection of fix cashback
@@ -192,9 +195,30 @@ export class CashbackParameterEntryComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-
+    
     const formData = this.formGroup.getRawValue();
-    formData.cashback_for_id = this.cashbackId;
+    if(formData.from_amount >= formData.to_amount){
+      this.alertService.showToast('error', 'From Amount cannot be greater or equal to To Amount', 'top-right', true);
+      // this.formGroup.get('from_amount').reset();
+      // this.formGroup.get('from_amount').markAsTouched();
+      // this.formGroup.get('to_amount').reset();
+      // this.formGroup.get('to_amount').markAsTouched();
+      return;
+    }
+    
+    if(!formData.fix_cashback || formData.fix_cashback == 0){
+      if(formData.from_range >= formData.to_range){
+        this.alertService.showToast('error', 'From Range cannot be greater or equal to To Range', 'top-right', true);
+        // this.formGroup.get('from_range').reset();
+        // this.formGroup.get('from_range').markAsTouched();
+        // this.formGroup.get('to_range').reset();
+        // this.formGroup.get('to_range').markAsTouched();
+        return;
+      }
+      
+    }
+    
+    formData.cashback_for_id = this.cashbackId || this.tempCashBackId;
 
     this.cashbackService.create(formData).subscribe({
       next: (res: any) => {
@@ -204,6 +228,8 @@ export class CashbackParameterEntryComponent {
             this.alertService.showToast('success', 'Record has been modified', 'top-right', true);
           }
           else {
+            formData.id = res['id'];
+            // formData.cashback_for_id = this.tempCashBackId;
             this.cashbackService.addCashbackItem(formData)
             this.alertService.showToast('success', 'New record has been added', 'top-right', true);
           }
@@ -225,5 +251,6 @@ export class CashbackParameterEntryComponent {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
     this.cashbackSubscription.unsubscribe();
+    this.companySubscription.unsubscribe();
   }
 }

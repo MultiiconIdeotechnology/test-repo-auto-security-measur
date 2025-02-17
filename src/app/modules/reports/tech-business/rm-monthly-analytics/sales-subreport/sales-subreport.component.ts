@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TechBusinessService } from 'app/services/tech-business.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-sales-subreport',
@@ -30,11 +31,34 @@ export class SalesSubreportComponent extends BaseListingComponent {
   reqData:any = {};
   // originalDataList:any[] = [];
   totalSaleAmount:number = 0;
+  isFilterShow:boolean = false;
+  mopList: any[] = ['Wallet', 'Online'];
+
+  statusList = [
+    { label: 'Pending', value: 'Pending' },
+    { label: 'Rejected', value: 'Rejected' },
+    { label: 'Waiting for Payment', value: 'Waiting for Payment' },
+    { label: 'Confirmed', value: 'Confirmed' },
+    { label: 'Completed', value: 'Completed' },
+    { label: 'Success', value: 'Success'},
+    { label: 'Offline Pending', value: 'Offline Pending' },
+    { label: 'Confirmation Pending', value: 'Confirmation Pending' },
+    { label: 'Payment Failed', value: 'Payment Failed' },
+    { label: 'Booking Failed', value: 'Booking Failed' },
+    { label: 'Cancelled', value: 'Cancelled' },
+    { label: 'Partially Cancelled', value: 'Partially Cancelled' },
+    { label: 'Hold', value: 'Hold' },
+    { label: 'Payment Completed', value: 'Payment Completed' },
+    { label: 'Partial Payment Completed', value: 'Partial Payment Completed' },
+    { label: 'Assign To Refund', value: 'Assign To Refund' },
+    { label: 'Account Audit', value: 'Account Audit' },
+];
 
   constructor(
      public matDialogRef: MatDialogRef<SalesSubreportComponent>,
      @Inject(MAT_DIALOG_DATA) public data: any = {},
      private techService: TechBusinessService,
+     public _filterService: CommonFilterService,
   ){
     super("");
     if(data){
@@ -72,11 +96,11 @@ export class SalesSubreportComponent extends BaseListingComponent {
       return 'text-orange-600';
     } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed' || status == 'Assign To Refund' || status == 'Payment Completed') {
       return 'text-yellow-600';
-    } else if (status == 'Confirmed') {
+    } else if (status == 'Confirmed' || status == 'Completed' || status == 'Success') {
       return 'text-green-600';
     } else if (status == 'Payment Failed' || status == 'Booking Failed' || status == 'Cancelled' || status == 'Rejected' || status == 'Hold Failed') {
       return 'text-red-600';
-    } else if (status == 'Hold') {
+    } else if (status == 'Hold' || status == "Account Audit") {
       return 'text-blue-600';
     } else {
       return '';

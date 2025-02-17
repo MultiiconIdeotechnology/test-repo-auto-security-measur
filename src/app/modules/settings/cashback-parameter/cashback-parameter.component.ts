@@ -62,15 +62,13 @@ export class CashbackParameterComponent extends BaseListingComponent implements 
   isFilterShow: boolean = false;
   supplierListAll: any[] = [];
   selectedSupplier: any;
-  cashforList: any[] = [
-    { label: 'Company', value: 'Company' },
-    { label: 'Agent', value: 'Agent' }
-  ]
-
+  cashforList: any[] = [];
   transactionTypeList: any[] = [
     { label: 'Domestic', value: 'Domestic' },
     { label: 'International', value: 'International' }
   ]
+
+  cashforCompanyList:any[] = ['Company', 'Agent'];
 
   constructor(
     private cashbackService: CashbackParameterService,
@@ -91,6 +89,8 @@ export class CashbackParameterComponent extends BaseListingComponent implements 
     this.cashbackService.cashbackList$.subscribe(list => {
       this.dataList = list;
     });
+
+    this.getCompanyList();
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       // if (resp['table_config']['modify_date_time']?.value != null) {
@@ -208,6 +208,23 @@ export class CashbackParameterComponent extends BaseListingComponent implements 
       }
     })
 
+  }
+
+  getCompanyList(){
+    this.cashbackService.getCompanyCombo("").subscribe({
+      next: (data) => {
+        this.cashforList = data.map((item: any) => {
+          return {
+            ...item, 
+            label: item.company_name === "BONTON HOLIDAYS PVT. LTD." ? 'Company' : 'Agent',
+          };
+        });
+        this.cashbackService.setCompanyList(this.cashforList);
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err, 'top-right', true);
+      },
+    });
   }
 
   getNodataText(): string {

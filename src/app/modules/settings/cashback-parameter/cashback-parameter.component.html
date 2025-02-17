@@ -117,11 +117,11 @@
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.cashback_for">
                         <p-columnFilter field="cashback_for" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="cashforList"
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="cashforCompanyList"
                                     (onChange)="filter($event.value)" placeholder="Select Type" appendTo="body"
                                     [showClear]="true">
                                     <ng-template let-option pTemplate="item">
-                                        <p>{{option.label}}</p>
+                                        <p>{{option}}</p>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>

@@ -1,14 +1,22 @@
-
 <div class="sticky top-0 z-10 bg-primary">
     <div class="flex items-center justify-between border-b border-gray-border p-3">
         <span class="font-inter font-semibold text-lg text-white">{{data?.rm_name ? data.rm_name: ''}}</span>
         <span class="flex items-center gap-2">
+            <!-- global Search on modal -->
             <div class="flex ctm_search dark:bg-gray-900">
                 <input #inputRef matInput [autocomplete]="'off'" [placeholder]="'Search'"
                     (keyup.enter)="onGlobalFilterSearch(inputRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                     (click)="onGlobalFilterSearch(inputRef.value)"></mat-icon>
             </div>
+            <!-- Column Filter -->
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="this.isFilterShow = !this.isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!-- close modal  -->
             <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
                 <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
             </button>
@@ -17,18 +25,18 @@
 </div>
 
 <div class="table-container modal-custom-table">
-    <p-table #datatable  [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
-        [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
-        [loading]="isLoading" 
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading"[paginator]="true"
+        [rows]="10" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
         [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+        [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         [globalFilterFields]="['refNo', 'productCode', 'agentCode', 'agency', 'status', 'price']"
         styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
 
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th class="min-w-[110px] dark:bg-[#1e293b]" pSortableColumn="refNo" pResizableColumn
-                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.refNo"
-                    [ngClass]="{'left-0': !frozenObj?.refNo}">
+                <th class="min-w-[110px] dark:bg-[#1e293b]" pSortableColumn="refNo" pResizableColumn alignFrozen="left"
+                    pFrozenColumn [frozen]="frozenObj?.refNo" [ngClass]="{'left-0': !frozenObj?.refNo}">
                     Ref. No. <p-sortIcon field="refNo" />
                     <span class="float-right" (click)="isFrozenColumn('refNo');$event.stopPropagation()">
                         <i *ngIf="!frozenObj?.refNo" class="pi pi-lock-open icon-size-3"></i>
@@ -51,6 +59,42 @@
                     Price <p-sortIcon field="price" />
                 </th>
             </tr>
+
+            <tr *ngIf="isFilterShow">
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.refNo">
+                    <p-columnFilter type="text" matchMode="contains" field="refNo" placeholder="Search by Ref.No."
+                        ariaLabel="Filter Ref.No." />
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" matchMode="equals" field="productCode"
+                        placeholder="Search by Product Code" ariaLabel="Filter Product Code" />
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" matchMode="equals" field="agentCode"
+                        placeholder="Search by Agent Code" ariaLabel="Filter Agent Code" />
+                </th>
+                <th>
+                    <p-columnFilter type="text" matchMode="contains" field="agency"
+                        placeholder="Search by Agency" ariaLabel="Filter Agency" />
+                </th>
+                <th>
+                    <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                (onChange)="filter($event.value)" placeholder="Select Status" appendTo="body"
+                                [showClear]="true">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option.value}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" matchMode="equals" field="price"
+                        placeholder="Search by Price" ariaLabel="Filter Price" />
+                </th>
+            </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-element let-columns="columns">
@@ -59,9 +103,9 @@
                 <td>{{element.productCode || "-"}}</td>
                 <td>{{element.agentCode || "-"}}</td>
                 <td>{{element.agency || "-"}}</td>
-                <td ><span [style.color]="getStatusColor(element.status)">
-                    {{ element.status }}
-                  </span></td>
+                <td><span [style.color]="getStatusColor(element.status)">
+                        {{ element.status }}
+                    </span></td>
                 <td class="text-right">{{element.price || "-"}}</td>
             </tr>
         </ng-template>

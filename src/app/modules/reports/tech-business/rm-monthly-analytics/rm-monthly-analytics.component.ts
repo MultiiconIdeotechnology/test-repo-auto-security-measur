@@ -117,8 +117,6 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
   //   return new Date(month).toLocaleString('en-US', { month: 'long', year: 'numeric' });
   // }
 
-
-
   refreshItems(event?: any): void {
     this.isLoading = true;
 
@@ -222,6 +220,8 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
                   type:key
                 },
                 panelClass: 'custom-dialog-modal',
+                backdropClass: 'custom-dialog-backdrop',
+                disableClose: true 
             }).afterClosed().subscribe(res => {
                 if (res) {
                     // this.refreshItems();
@@ -231,6 +231,7 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
 
   //open a subreport for sales 
   openSalesModal(monthData:any){
+  
     let date = this.getFirstDateOfMonth(monthData.month, monthData.year)
     this.matDialog.open(SalesSubreportComponent, {
                 data: {
@@ -239,6 +240,8 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
                   date:date,
                 },
                 panelClass: 'custom-dialog-modal',
+                backdropClass: 'custom-dialog-backdrop',
+                disableClose: true 
             }).afterClosed().subscribe(res => {
                 if (res) {
                     // this.refreshItems();
@@ -248,7 +251,7 @@ export class RmMonthlyAnalyticsComponent extends BaseListingComponent implements
 
   getFirstDateOfMonth(month: number, year:any): string {
     const formattedMonth = String(month).padStart(2, '0'); // Ensure two-digit month
-    return `01-${formattedMonth}-${year}`;
+    return `${year}-${formattedMonth}-01`;
   }
 
   exportExcel(): void {
