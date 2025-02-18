@@ -263,6 +263,8 @@ export class MarkupProfileEntryComponent {
             air_int_bag_val: [0, Validators.required],
             air_int_correction_val: [0, Validators.required],
             air_int_correction_type: ['Flat for Full Amendment', Validators.required],
+            visa_type: ['Flat for Full Booking', Validators.required],
+            visa_val: [0, Validators.required],
         });
 
         this.DetailFormGroupOne = this.builder.group({
@@ -286,8 +288,6 @@ export class MarkupProfileEntryComponent {
             hot_dom_val: [0, Validators.required],
             hot_int_type: ['Flat for Full Booking', Validators.required],
             hot_int_val: [0, Validators.required],
-            visa_type: ['Flat for Full Booking', Validators.required],
-            visa_val: [0, Validators.required],
             bus_type: ['Flat for Full Booking', Validators.required],
             bus_val: [0, Validators.required],
             ins_type: ['Flat for Full Booking', Validators.required],
@@ -367,8 +367,8 @@ export class MarkupProfileEntryComponent {
             markup_profile_id: [''],
             country: [''],
             cityfilter: [''],
-            visa_type: ['Flat for Full Booking', Validators.required],
-            visa_val: [0, Validators.required],
+            // visa_type: ['Flat for Full Booking', Validators.required],
+            // visa_val: [0, Validators.required],
         });
 
         this.SupplierFormGroup = this.builder.group({
@@ -910,7 +910,7 @@ export class MarkupProfileEntryComponent {
                         this.visaList.push(json);
                     }
                 }
-                this.toasterService.showToast('success', this.Detail == 'Save' ? 'Visa Saved' : 'Visa Created');
+                this.toasterService.showToast('success', this.Detail == 'Save' ? 'Visa Destination Saved' : 'Visa Destination Created');
                 this.Visa = 'Add';
                 this.VisaFormGroup.get('id').patchValue('');
                 this.VisaFormGroup.get('city_id').patchValue('');
@@ -928,6 +928,7 @@ export class MarkupProfileEntryComponent {
 
         this.Visa = 'Save';
     }
+
     deleteVisa(data: any) {
         this.markupprofileService.visaDelete(data.id).subscribe({
             next: res => {
@@ -942,7 +943,7 @@ export class MarkupProfileEntryComponent {
                     const indexOne = this.visaList.indexOf(this.visaList.find(x => x.id === data.id))
                     this.visaList.splice(indexOne, 1);
                 }
-                this.toasterService.showToast('success', 'Visa Deleted Successfully');
+                this.toasterService.showToast('success', 'Visa Destination Deleted Successfully');
             }, error: err => {
                 this.toasterService.showToast('error', err);
             }
