@@ -9,6 +9,10 @@ import { TechBusinessService } from 'app/services/tech-business.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Linq } from 'app/utils/linq';
+import { Routes } from 'app/common/const';
+import { EntityService } from 'app/services/entity.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sales-subreport',
@@ -25,13 +29,13 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
   styleUrls: ['./sales-subreport.component.scss']
 })
 export class SalesSubreportComponent extends BaseListingComponent {
-  dataList:any[] = [];
-  sortColumn:string = "";
-  record:any;
-  reqData:any = {};
+  dataList: any[] = [];
+  sortColumn: string = "";
+  record: any;
+  reqData: any = {};
   // originalDataList:any[] = [];
-  totalSaleAmount:number = 0;
-  isFilterShow:boolean = false;
+  totalSaleAmount: number = 0;
+  isFilterShow: boolean = false;
   mopList: any[] = ['Wallet', 'Online'];
 
   statusList = [
@@ -40,7 +44,7 @@ export class SalesSubreportComponent extends BaseListingComponent {
     { label: 'Waiting for Payment', value: 'Waiting for Payment' },
     { label: 'Confirmed', value: 'Confirmed' },
     { label: 'Completed', value: 'Completed' },
-    { label: 'Success', value: 'Success'},
+    { label: 'Success', value: 'Success' },
     { label: 'Offline Pending', value: 'Offline Pending' },
     { label: 'Confirmation Pending', value: 'Confirmation Pending' },
     { label: 'Payment Failed', value: 'Payment Failed' },
@@ -52,16 +56,18 @@ export class SalesSubreportComponent extends BaseListingComponent {
     { label: 'Partial Payment Completed', value: 'Partial Payment Completed' },
     { label: 'Assign To Refund', value: 'Assign To Refund' },
     { label: 'Account Audit', value: 'Account Audit' },
-];
+  ];
 
   constructor(
-     public matDialogRef: MatDialogRef<SalesSubreportComponent>,
-     @Inject(MAT_DIALOG_DATA) public data: any = {},
-     private techService: TechBusinessService,
-     public _filterService: CommonFilterService,
-  ){
+    public matDialogRef: MatDialogRef<SalesSubreportComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any = {},
+    private techService: TechBusinessService,
+    public _filterService: CommonFilterService,
+    private entityService: EntityService,
+    private router: Router,
+  ) {
     super("");
-    if(data){
+    if (data) {
       this.record = data;
       this.reqData = {
         rm_id: this.record.rm_id,
@@ -69,14 +75,14 @@ export class SalesSubreportComponent extends BaseListingComponent {
       }
     }
   };
-  
-  refreshItems(event?:any): void {
+
+  refreshItems(event?: any): void {
     let oldModel = this.getNewFilterReq(event);
     let reqObj = this.reqData;
-    let finalReq = {...reqObj, ...oldModel};
+    let finalReq = { ...reqObj, ...oldModel };
 
     this.techService.onSalesReport(finalReq).subscribe({
-      next: (resp:any) => {
+      next: (resp: any) => {
         this.dataList = resp.data;
         this.totalSaleAmount = resp.total_sale_price || 0;
         // this.originalDataList = resp.data;
@@ -89,7 +95,7 @@ export class SalesSubreportComponent extends BaseListingComponent {
       }
     });
   }
-  
+
 
   getStatusColor(status: string): string {
     if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending' || status == 'Partially Cancelled' || status == 'Hold Released') {
@@ -107,11 +113,62 @@ export class SalesSubreportComponent extends BaseListingComponent {
     }
   }
 
+  onAgentDetail(element: any) {
+    if (element && element?.agent_id) {
+      Linq.recirect(Routes.customers.agent_entry_route + '/' + element.agent_id + '/readonly')
+    }
+  }
+
+  onRefNoDetail(element: any) {
+    if (element?.booking_id) {
+      const refPrefix = element.refNo.slice(0, 3);
+
+      switch (refPrefix) {
+        case "FLT":
+          Linq.recirect(`/booking/flight/details/${element.booking_id}`);
+          break;
+        case "BUS":
+          Linq.recirect(`/booking/bus/details/${element.booking_id}`);
+          break;
+        case "VIS":
+          Linq.recirect(`/booking/visa/details/${element.booking_id}`);
+          break;
+        case "INS":
+          Linq.recirect(`/booking/insurance/details/${element.booking_id}`);
+          break;
+        case "AIR":
+          this.entityService.raiseAmendmentInfoCall({ data: element });
+          break;
+        case "HTL":
+          Linq.recirect(`/booking/hotel/details/${element.booking_id}`);
+          break;
+        case "PKG":
+          Linq.recirect(`/booking/holiday-lead/details/${element.booking_id}`);
+          break;
+        case "FRX":
+          this.router.navigate(['/booking/forex'])
+          setTimeout(() => {
+              this.entityService.raiseForexEntityCall({ data:element.booking_id, global_withdraw: true })
+          }, 300);
+          break;
+        case "CAB":
+          Linq.recirect(`/booking/cab/details/${element.booking_id}`);
+          break;
+        // case "PL":
+        //   Linq.recirect(`/booking/holiday-lead/details/${element.booking_id}`);
+        //   break;
+        default:
+          console.warn("Unknown refNo prefix:", refPrefix);
+      }
+    }
+  }
+
+
   getNodataText(): string {
     if (this.isLoading)
-        return 'Loading...';
+      return 'Loading...';
     else if (this.searchInputControl.value)
-        return `no search results found for \'${this.searchInputControl.value}\'.`;
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
   }
 }

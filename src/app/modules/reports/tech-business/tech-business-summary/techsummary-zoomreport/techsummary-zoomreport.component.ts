@@ -8,6 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { TechBusinessService } from 'app/services/tech-business.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { Linq } from 'app/utils/linq';
+import { Routes } from 'app/common/const';
 
 @Component({
   selector: 'app-techsummary-zoomreport',
@@ -30,23 +32,22 @@ export class TechsummaryZoomreportComponent extends BaseListingComponent {
   reqData: any = {};
   originalDataList: any[] = [];
   totalSaleAmount: number = 0;
-  isFilterShow:boolean = false;
+  isFilterShow: boolean = false;
 
   statusColors: { [key: string]: string } = {
-    Delivered: '#4CAF50',
-    Expired: '#F44336',
-    Pending: '#FFC107',
-    Blocked: '#B22222',
-    Confirmed: '#198754'
-  };
-
-  statusList: any[] = [
-    { label: "Delivered", value: "Delivered" },
-    { label: "Expired", value: "Expired" },
-    { label: "Pending", value: "Pending" },
-    { label: "Blocked", value: "Blocked" },
-    { label: "Confirmed", value: "Confirmed" }
-  ]
+    Delivered: '#4CAF50',   // Green
+    Expired: '#F44336',     // Red
+    Cancelled: '#F44336',   // Red (same as Expired)
+    Pending: '#FFC107',     // Yellow (Brighter for better visibility)
+    Blocked: '#B22222',     // Dark Red
+    Confirmed: '#198754',   // Green
+    "Sales Return": '#FF9800', // Orange
+    Cancel: '#D32F2F',       // Dark Red (Distinct from Cancelled)
+    Rejected: '#DC3545'      // Bright Red (Different from Expired/Cancelled)
+};
+  statusList:string[] = [];
+  totalOldStatusList: string[] = ["Blocked", "Pending", "Delivered", "Cancel", "Sales Return", "Cancelled", "Expired"];
+  newStatusList: string[] = ["Pending", "Confirmed", "Rejected"];
 
   constructor(
     public matDialogRef: MatDialogRef<TechsummaryZoomreportComponent>,
@@ -67,6 +68,13 @@ export class TechsummaryZoomreportComponent extends BaseListingComponent {
         type: this.record.type
       }
 
+      if(this.record.type == 'total'){
+        this.statusList = this.totalOldStatusList;
+      } else if(this.record.type == 'new'){
+        this.statusList = this.newStatusList;
+      } else if(this.record.type == 'old'){
+        this.statusList = this.totalOldStatusList;
+      }
       this.refreshItems();
     }
   }
@@ -95,6 +103,12 @@ export class TechsummaryZoomreportComponent extends BaseListingComponent {
 
   getStatusColor(status: string): string {
     return this.statusColors[status];
+  }
+
+  onAgentDetail(element:any){
+    if(element && element?.agent_id){
+      Linq.recirect(Routes.customers.agent_entry_route + '/' + element.agent_id + '/readonly')
+    }
   }
 
   getNodataText(): string {
