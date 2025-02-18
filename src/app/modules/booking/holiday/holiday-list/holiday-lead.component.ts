@@ -242,10 +242,10 @@ export class HolidayLeadComponent extends BaseListingComponent {
       Excel.export(
         'Holiday Lead',
         [
-          { header: 'Supplier', property: 'supplier_name' },
-          { header: 'Agent', property: 'agent_name' },
           { header: 'Ref. No.', property: 'reference_no' },
           { header: 'Status', property: 'lead_status' },
+          { header: 'Supplier', property: 'supplier_name' },
+          { header: 'Agent', property: 'agent_name' },
           { header: 'Start Date', property: 'start_date' },
           { header: 'End Date', property: 'end_date' },
           { header: 'No Of Nights', property: 'no_of_nights' },

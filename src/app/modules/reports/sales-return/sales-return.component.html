@@ -137,6 +137,12 @@
                     <th class="w-auto text-right" pSortableColumn="net_commission" pResizableColumn>
                         Net Commission <p-sortIcon field="net_commission" />
                     </th>
+                    <!-- <th pSortableColumn="cashback" pResizableColumn>
+                        Cashback<p-sortIcon field="cashback" />
+                    </th>
+                    <th pSortableColumn="cashback_tds" pResizableColumn>
+                        Cashback TDS<p-sortIcon field="cashback_tds" />
+                    </th> -->
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -255,10 +261,18 @@
                         <p-columnFilter type="numeric" field="tds_2" placeholder="Search by TDS 2"
                             ariaLabel="Filter TDS 2" />
                     </th>
-                    <th class="w-auto">
+                    <th>
                         <p-columnFilter type="numeric" field="net_commission" placeholder="Search by Net Commission"
                             ariaLabel="Filter Net Commission" />
                     </th>
+                    <!-- <th>
+                        <p-columnFilter type="numeric" field="cashback" placeholder="Search by Cashback"
+                            ariaLabel="Filter Cashback" />
+                    </th>
+                    <th class="w-auto">
+                        <p-columnFilter type="numeric" field="cashback_tds" placeholder="Search by Cashback TDS"
+                            ariaLabel="Filter Cashback TDS" />
+                    </th> -->
                 </tr>
             </ng-template>
 
@@ -288,14 +302,15 @@
                     <td class="text-right">{{element.refundable_price ? element.refundable_price.toFixed(2) : 0}}</td>
                     <td class="text-right">{{element.commission_2 ? element.commission_2.toFixed(2) : 0}}</td>
                     <td class="text-right">{{element.tds_2 ? element.tds_2.toFixed(2) : 0}}</td>
-                    <td class="w-auto text-right">{{element.net_commission ? element.net_commission.toFixed(2) : 0}}
-                    </td>
+                    <td class="text-right">{{element.net_commission ? element.net_commission.toFixed(2) : 0}}</td>
+                    <!-- <td class="text-right">{{element.cashback ? element.cashback.toFixed(2) : 0}}</td>
+                    <td class="w-auto text-right">{{element.cashback_tds ? element.cashback_tds.toFixed(2) : 0}}</td> -->
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-15">
-                    <td colspan="20" class="text-center font-semibold text-lg">
+                    <td colspan="23" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

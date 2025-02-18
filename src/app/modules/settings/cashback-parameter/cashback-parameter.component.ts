@@ -201,6 +201,7 @@ export class CashbackParameterComponent extends BaseListingComponent implements 
               }
 
               data.is_enable = !data.is_enable;
+              this.refreshItems()
 
             }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
           });
