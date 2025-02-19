@@ -36,9 +36,13 @@ export class CashbackParameterService {
         return this.http.post<any>(this.baseUrl + 'cashbackparameters/delete', { id: id });
     }
 
-    getCompanyCombo(filter: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Company/getCompanyCombo', { filter });
-    }
+    getAgentCombo(filter:string, is_master_agent:boolean): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/getAgentCombo', {filter:filter, is_master_agent:is_master_agent});
+      }
+      
+      getCompanyCombo(filter:string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Company/getCompanyCombo', {filter});
+      }
 
     // cashbackId subject to to get the last value of cashbackid;
     setCashbackId(id: any): void {

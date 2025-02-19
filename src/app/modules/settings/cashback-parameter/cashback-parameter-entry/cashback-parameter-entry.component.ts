@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { combineLatest, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, startWith, switchMap } from 'rxjs/operators';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { MatSidenav } from '@angular/material/sidenav';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
@@ -17,6 +17,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatOptionModule } from '@angular/material/core';
 import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 
 @Component({
   selector: 'app-cashback-parameter-entry',
@@ -36,13 +38,14 @@ import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
     MatTooltipModule,
     MatOptionModule,
     FuseDrawerComponent,
-    OnlyFloatDirective
+    OnlyFloatDirective,
+    NgxMatSelectSearchModule
   ],
   templateUrl: './cashback-parameter-entry.component.html',
   styleUrls: ['./cashback-parameter-entry.component.scss']
 })
 export class CashbackParameterEntryComponent {
-  @Output() modalClosed = new EventEmitter<any>(); 
+  @Output() modalClosed = new EventEmitter<any>();
   @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
   modalType: string | null = null;
   modalData: any;
@@ -53,7 +56,10 @@ export class CashbackParameterEntryComponent {
   private companySubscription: Subscription;
   cashbackId: any;
   formGroup: FormGroup;
-  tempCashBackId:any;
+  tempCashBackId: any;
+  agentList: any[] = [];
+  companyList: any[] = [];
+
 
   cashforList: any[] = [
     { label: 'Company', value: 'Company' },
@@ -70,6 +76,7 @@ export class CashbackParameterEntryComponent {
     private cashbackService: CashbackParameterService,
     private formBuilder: FormBuilder,
     private alertService: ToasterService,
+    private _filterService: CommonFilterService
   ) { }
 
   ngOnInit(): void {
@@ -78,23 +85,31 @@ export class CashbackParameterEntryComponent {
         this.settingsDrawer.toggle();
         this.modalType = modal.type;
         this.modalData = modal.data;
-
+        this.agentList = this._filterService.agentListById;
         if (this.modalData && this.modalData.data) {
           this.record = { ...this.modalData.data };
           this.formGroup.patchValue(this.record);
+          if(this.record.cashback_for == 'Agent') {
+            // let isAgentPresent = this.agentList.find((item:any) => item.id == this.record.cashback_for_id);
+
+            // if(!isAgentPresent){
+              this.getAgentList(this.record.agency_name);
+            // }
+            this.formGroup.get('cashback_for_id').patchValue(this.record.cashback_for_id);
+          }
         } else {
           this.formGroup?.reset(
             {
-              id:"",
-              cashback_for_id:"",
-              cashback_for:"",
-              transaction_type:"",
-              from_amount:0,
-              to_amount:0,
-              fix_cashback:0,
-              from_range:0,
-              to_range:0,
-              minimum_amount:0,
+              id: "",
+              cashback_for_id: "",
+              cashback_for: "",
+              transaction_type: "",
+              from_amount: 0,
+              to_amount: 0,
+              fix_cashback: 0,
+              from_range: 0,
+              to_range: 0,
+              minimum_amount: 0,
             }
           );
         }
@@ -114,9 +129,8 @@ export class CashbackParameterEntryComponent {
       this.cashbackId = id;
     });
 
-    this.companySubscription = this.cashbackService.companyList$.subscribe(data => {
-      this.cashforList = data;
-      this.tempCashBackId = data.find((item:any) => item.company_name == 'BONTON HOLIDAYS PVT. LTD.')?.company_id;
+    this.companySubscription = this.cashbackService.companyList$.subscribe((item:any) => {
+        this.companyList = item;
     })
 
     this.formGroup = this.formBuilder.group({
@@ -130,27 +144,65 @@ export class CashbackParameterEntryComponent {
       from_range: [0, [Validators.required]],
       to_range: [0, [Validators.required]],
       minimum_amount: [0, [Validators.required]],
+      agentfilter: [''],
+      companyfilter: [''],
     });
+
+    /*************Agent combo**************/
+    this.formGroup
+      .get('agentfilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        debounceTime(200),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          return this.cashbackService.getAgentCombo(value, true);
+        })
+      )
+      .subscribe({
+        next: data => {
+          this.agentList = data
+          this.formGroup.get("cashback_for_id").patchValue(this.agentList[0]);
+        }
+      });
+
+    /*************Company combo**************/
+    this.formGroup
+      .get('companyfilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        debounceTime(200),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          return this.cashbackService.getCompanyCombo(value);
+        })
+      )
+      .subscribe({
+        next: data => {
+          this.companyList = data
+          this.formGroup.get("cashback_for_id").patchValue(this.companyList[0].company_id);
+        }
+      });
 
     this.onUpdateCashbackValue();
 
     // Subscribe to value changes of the three inputs
-      combineLatest([
-        this.formGroup.get('from_range')!.valueChanges,
-        this.formGroup.get('to_range')!.valueChanges,
-        this.formGroup.get('minimum_amount')!.valueChanges
-      ]).pipe(
-        debounceTime(300)
-      ).subscribe(([fromRange, toRange, minAmount]) => {
-        if (fromRange && toRange && minAmount) {
-          this.formGroup.get('fix_cashback')?.reset(0);
-          this.formGroup.get('fix_cashback')?.disable();
-          this.formGroup.get('fix_cashback')?.clearValidators();
-        } else {
-          this.formGroup.get('fix_cashback')?.enable();
-          this.formGroup.get('fix_cashback')?.setValidators(Validators.required);
-        }
-      });
+    combineLatest([
+      this.formGroup.get('from_range')!.valueChanges,
+      this.formGroup.get('to_range')!.valueChanges,
+      this.formGroup.get('minimum_amount')!.valueChanges
+    ]).pipe(
+      debounceTime(300)
+    ).subscribe(([fromRange, toRange, minAmount]) => {
+      if (fromRange && toRange && minAmount) {
+        this.formGroup.get('fix_cashback')?.reset(0);
+        this.formGroup.get('fix_cashback')?.disable();
+        this.formGroup.get('fix_cashback')?.clearValidators();
+      } else {
+        this.formGroup.get('fix_cashback')?.enable();
+        this.formGroup.get('fix_cashback')?.setValidators(Validators.required);
+      }
+    });
   }
 
   // To change the value in form input based on selection of fix cashback
@@ -196,9 +248,9 @@ export class CashbackParameterEntryComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-    
-    const formData = this.formGroup.getRawValue();
-    if(formData.from_amount >= formData.to_amount){
+
+    let formData = this.formGroup.getRawValue();
+    if (formData.from_amount >= formData.to_amount) {
       this.alertService.showToast('error', 'From Amount cannot be greater or equal to To Amount', 'top-right', true);
       // this.formGroup.get('from_amount').reset();
       // this.formGroup.get('from_amount').markAsTouched();
@@ -206,9 +258,9 @@ export class CashbackParameterEntryComponent {
       // this.formGroup.get('to_amount').markAsTouched();
       return;
     }
-    
-    if(!formData.fix_cashback || formData.fix_cashback == 0){
-      if(formData.from_range >= formData.to_range){
+
+    if (!formData.fix_cashback || formData.fix_cashback == 0) {
+      if (formData.from_range >= formData.to_range) {
         this.alertService.showToast('error', 'From Range cannot be greater or equal to To Range', 'top-right', true);
         // this.formGroup.get('from_range').reset();
         // this.formGroup.get('from_range').markAsTouched();
@@ -216,10 +268,9 @@ export class CashbackParameterEntryComponent {
         // this.formGroup.get('to_range').markAsTouched();
         return;
       }
-      
+
     }
-    
-    formData.cashback_for_id = this.cashbackId || this.tempCashBackId;
+    // formData.cashback_for_id = this.cashbackId || this.tempCashBackId;
 
     this.cashbackService.create(formData).subscribe({
       next: (res: any) => {
@@ -236,7 +287,7 @@ export class CashbackParameterEntryComponent {
           }
           this.settingsDrawer.close();
           this.modalService.closeModal();
-           this.modalClosed.emit('call-api')
+          this.modalClosed.emit('call-api')
         }
       },
       error: (err) => {
@@ -249,6 +300,19 @@ export class CashbackParameterEntryComponent {
     this.modalService.closeModal();
     this.settingsDrawer.close();
   }
+
+  public compareWith(v1: any, v2: any) {
+    return v1 && v2 && v1.id === v2.id;
+  }
+
+  getAgentList(value: string) {
+		this.cashbackService.getAgentCombo(value, true).subscribe((data) => {
+			this.agentList = data;
+			for (let i in this.agentList) {
+				this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+			}
+		})
+	}
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
