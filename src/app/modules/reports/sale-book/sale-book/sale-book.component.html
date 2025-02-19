@@ -253,13 +253,13 @@
                         Payment Mode<p-sortIcon field="payment_mode" />
                     </th>
 
-                    <!-- <th pSortableColumn="cashback" pResizableColumn>
+                    <th pSortableColumn="cashback" pResizableColumn>
                         Cashback<p-sortIcon field="cashback" />
                     </th>
 
                     <th pSortableColumn="cashback_tds" pResizableColumn>
                         Cashback TDS<p-sortIcon field="cashback_tds" />
-                    </th> -->
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -563,14 +563,14 @@
                             placeholder="Search by Payment Mode" ariaLabel="Filter Payment Mode" />
                     </th>
 
-                    <!-- <th>
+                    <th>
                         <p-columnFilter type="numeric" field="cashback" placeholder="Search by Cashback"
                             ariaLabel="Filter Cashback" />
                     </th>
                     <th class="w-auto">
                         <p-columnFilter type="numeric" field="cashback_tds" placeholder="Search by Cashback TDS"
                             ariaLabel="Filter Cashback TDS" />
-                    </th> -->
+                    </th>
                 </tr>
             </ng-template>
 
@@ -690,8 +690,8 @@
                     <td>{{element.supplier_invoice_number || '-'}}</td>
 
                     <td>{{element.payment_mode || '-'}}</td>
-                    <!-- <td class="text-right">{{element.cashback ? element.cashback.toFixed(2) : 0}}</td>
-                    <td class="w-auto text-right">{{element.cashback_tds ? element.cashback_tds.toFixed(2) : 0}}</td> -->
+                    <td class="text-right">{{element.cashback ? element.cashback.toFixed(2) : 0}}</td>
+                    <td class="w-auto text-right">{{element.cashback_tds ? element.cashback_tds.toFixed(2) : 0}}</td>
                 </tr>
             </ng-template>
 
