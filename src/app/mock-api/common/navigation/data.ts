@@ -1043,14 +1043,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:square-3-stack-3d',
                 link: Routes.settings.caching_parameters_route
             },
-            // {
-            //     id: 'settings.cashbackparameters',
-            //     title: 'Cashback Parameters',
-            //     type: 'basic',
-            //     pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
-            //     icon: 'heroicons_outline:wallet',
-            //     link: Routes.settings.cashback_parameters_route
-            // }
+            {
+                id: 'settings.cashbackparameters',
+                title: 'Cashback Parameters',
+                type: 'basic',
+                pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
+                icon: 'heroicons_outline:wallet',
+                link: Routes.settings.cashback_parameters_route
+            }
         ]
     }
 ];
