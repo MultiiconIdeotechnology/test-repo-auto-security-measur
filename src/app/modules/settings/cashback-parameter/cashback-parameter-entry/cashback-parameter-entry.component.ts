@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { combineLatest, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -42,6 +42,7 @@ import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
   styleUrls: ['./cashback-parameter-entry.component.scss']
 })
 export class CashbackParameterEntryComponent {
+  @Output() modalClosed = new EventEmitter<any>(); 
   @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
   modalType: string | null = null;
   modalData: any;
@@ -224,17 +225,18 @@ export class CashbackParameterEntryComponent {
       next: (res: any) => {
         if (res && res['status']) {
           if (formData.id) {
-            this.cashbackService.updateCashbackItem(formData);
+            // this.cashbackService.updateCashbackItem(formData);
             this.alertService.showToast('success', 'Record has been modified', 'top-right', true);
           }
           else {
             formData.id = res['id'];
             // formData.cashback_for_id = this.tempCashBackId;
-            this.cashbackService.addCashbackItem(formData)
+            // this.cashbackService.addCashbackItem(formData)
             this.alertService.showToast('success', 'New record has been added', 'top-right', true);
           }
           this.settingsDrawer.close();
           this.modalService.closeModal();
+           this.modalClosed.emit('call-api')
         }
       },
       error: (err) => {

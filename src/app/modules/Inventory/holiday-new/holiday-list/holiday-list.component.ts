@@ -354,10 +354,7 @@ export class HolidayListComponent extends BaseListingComponent {
         if (!Security.hasPermission(inventoryHolidayPermissions.viewHolidayPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-
-        // const oldJSONn = JSON.parse(
-        //     localStorage.getItem('holiday-filters') || '{}'
-        // );
+        
         const queryParams = {
             id: record.id,
             // date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),

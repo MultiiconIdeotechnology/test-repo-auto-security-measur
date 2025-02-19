@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -51,11 +51,16 @@ export class CashbackParameterService {
     }
 
     updateCashbackItem(updatedItem: any): void {
-        const currentList = this.cashbackListSubject.value.map(item =>
-            item.id === updatedItem.id ? updatedItem : item
-        );
-        this.cashbackListSubject.next(currentList);
+        console.log("updateItem", updatedItem);
+        
+        this.cashbackListSubject.pipe(take(1)).subscribe(currentList => {
+            const updatedList = currentList.map(item =>
+                item.id === updatedItem.id ? updatedItem : item
+            );
+            this.cashbackListSubject.next(updatedList);
+        });
     }
+    
 
     addCashbackItem(newItem: any): void {
         const currentList = this.cashbackListSubject.value;
