@@ -152,9 +152,17 @@ export class SupplierEntryRightComponent {
         }
 
         if (!this.info) {
-          this.getCityCombo();
-          this.getCurrencyCombo();
-          this.getKycCombo();
+          if(this.cityList && !this.cityList.length) {
+            this.getCityCombo();
+          }
+
+          if(this.CurrencyList && !this.CurrencyList.length) {
+            this.getCurrencyCombo();
+          }
+
+          if(this.profileList && !this.profileList.length) {
+            this.getKycCombo();
+          }
         }
 
         this.edit = false;
@@ -217,6 +225,7 @@ export class SupplierEntryRightComponent {
 
   }
 
+  // Get Currency Combo
   getCurrencyCombo() {
     this.currencyService.getcurrencyCombo().subscribe({
       next: res => {
@@ -236,8 +245,9 @@ export class SupplierEntryRightComponent {
     })
   }
 
+  // Get KYC Combo
   getKycCombo() {
-    this, this.kycService.getkycprofileCombo("supplier").subscribe(data => {
+    this.kycService.getkycprofileCombo("supplier").subscribe(data => {
       this.profileList = data;
       this.AllprofileList = data;
       if (!this.record?.id)
@@ -250,25 +260,27 @@ export class SupplierEntryRightComponent {
       });
   }
 
-
+  // Get City Combo
   getCityCombo() {
+    this.cityService.getCityCombo('').subscribe({
+      next: data => {
+        this.cityList = data;
+      }
+    });
+
     this.formGroup.get('cityfilter').valueChanges.pipe(
-      filter(search => !!search),
-      startWith(''),
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((value: any) => {
         return this.cityService.getCityCombo(value);
-      })
+      }),
+      takeUntil(this._unsubscribeAll)
     ).subscribe({
       next: data => {
         this.cityList = data;
-        this.formGroup.get("city_id").patchValue(this.cityList[0].id);
       }
     });
   }
-
-
 
   filterMobileCode(value: string) {
     const Filter = this.mobilecodelist.filter(x =>
