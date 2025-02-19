@@ -51,8 +51,6 @@ export class CashbackParameterService {
     }
 
     updateCashbackItem(updatedItem: any): void {
-        console.log("updateItem", updatedItem);
-        
         this.cashbackListSubject.pipe(take(1)).subscribe(currentList => {
             const updatedList = currentList.map(item =>
                 item.id === updatedItem.id ? updatedItem : item
