@@ -145,10 +145,16 @@ export class SalesSubreportComponent extends BaseListingComponent {
         case "PKG":
           Linq.recirect(`/booking/holiday-lead/details/${element.booking_id}`);
           break;
+        case "AGI":
+          Linq.recirect(`/booking/group-inquiry/details/${element.booking_id}`);
+          break;
+        case "OSB":
+          Linq.recirect(`/booking/offline-service/entry/${element.booking_id}/readonly`);
+          break;
         case "FRX":
           this.router.navigate(['/booking/forex'])
           setTimeout(() => {
-              this.entityService.raiseForexEntityCall({ data:element.booking_id, global_withdraw: true })
+            this.entityService.raiseForexEntityCall({ data: element.booking_id, global_withdraw: true })
           }, 300);
           break;
         case "CAB":
