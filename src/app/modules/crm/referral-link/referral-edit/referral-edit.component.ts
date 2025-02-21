@@ -56,9 +56,10 @@ export class ReferralEditComponent {
     linkList: any[] = [
         { value: 'B2B Partner', viewValue: 'B2B Partner' },
         { value: 'WL', viewValue: 'WL' },
-        { value: 'Corporate', viewValue: 'Corporate' },
+        { value: 'BoostMyBrand', viewValue: 'Boost My Brand' },
+        // { value: 'Corporate', viewValue: 'Corporate' },
         { value: 'Supplier', viewValue: 'Supplier' },
-        { value: 'API', viewValue: 'API' },
+        // { value: 'API', viewValue: 'API' },
     ];
 
     constructor(
