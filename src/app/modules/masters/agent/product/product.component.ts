@@ -120,7 +120,6 @@ export class ProductComponent {
             next: (res) => {
                 this.dataSource.data = res.data;
                 this._paginator.length = res.total;
-                console.log("data>>>", res.data[0]?.currencySymbol)
                 if(res?.data && res.data?.length){
                     this.globalService.setCurrencySymbol(res.data[0]?.currencySymbol?.trim());
                 }
