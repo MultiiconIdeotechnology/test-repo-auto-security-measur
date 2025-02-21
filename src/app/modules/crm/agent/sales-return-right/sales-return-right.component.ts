@@ -17,6 +17,7 @@ import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 import { Routes } from 'app/common/const';
 import { CrmService } from 'app/services/crm.service';
 import { EntityService } from 'app/services/entity.service';
+import { GlobalSearchService } from 'app/services/global-search.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -85,8 +86,13 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
         public formBuilder: FormBuilder,
         public router: Router,
         public alertService: ToasterService,
-        private crmService: CrmService
+        private crmService: CrmService,
+        private globalService: GlobalSearchService,
     ) {
+        this.globalService.currencySymbol$.subscribe((item:any) => {
+            this.currencySymbol = item;
+        })
+        
         this.entityService.onCRMSalesReturnCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
                 this.settingsDrawer?.toggle();
