@@ -233,9 +233,16 @@
         </div>
 
 
-        <div class="flex space-x-3">
-            <div>Is Manual</div>
-            <mat-slide-toggle [(ngModel)]="is_manual_entry"></mat-slide-toggle>
+        <div class="flex flex-col gap-3">
+            <div class="flex gap-2">
+                <label>Is Manual</label>
+                <mat-slide-toggle [(ngModel)]="is_manual_entry"></mat-slide-toggle>
+            </div>
+
+            <div class="flex gap-2" *ngIf="amendmentType === 'Miscellaneous Quotation - Refund'">
+                <label>Flight Cancelled</label>
+                <mat-slide-toggle [(ngModel)]="is_flight_cancelled"></mat-slide-toggle>
+            </div>
         </div>
 
         <!-- <div *ngIf="amendmentType === 'Instant Cancellation'" class="flex justify-end pt-3">

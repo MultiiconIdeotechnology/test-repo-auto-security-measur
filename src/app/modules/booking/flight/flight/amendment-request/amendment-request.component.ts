@@ -54,6 +54,7 @@ export class AmendmentRequestComponent {
   amendmentfilter: string = '';
   title: string = 'Mr';
   is_manual_entry: boolean = false;
+  is_flight_cancelled:boolean = false;
   note: string = '';
   amendmentData: any;
   formDataList: any[] = [];
@@ -277,10 +278,16 @@ export class AmendmentRequestComponent {
       agent_remark: this.note,
       is_partial_seg: false,
       is_manual_entry: this.is_manual_entry,
+    
       // old_date: this.old_date,
       // new_date: this.concatenateTime(this.new_date, this.new_date_time),
       trip_segments: [],
     }
+
+    if(this.amendmentType == "Miscellaneous Quotation - Refund"){
+      json['is_flight_cancelled'] = this.is_flight_cancelled;
+    }
+
 
     for (let fd of this.formDataList) {
       if (fd.pax === true) {
