@@ -131,7 +131,7 @@ export class AgentProductInfoComponent {
         this.key = this.module_name;
         this.Mainmodule = this,
         this.record = data?.data ?? {}
-
+        this.currencySymbol = this.record?.currencySymbol; 
         this.agencyName = data?.agencyName ?? "";
         this.productId = this.record?.id;
         this.service_for_id = this.record?.service_for_id;
@@ -305,7 +305,7 @@ export class AgentProductInfoComponent {
             next: (res) => {
                 this.isLoading = false;
                 this.dataList = res[0];
-                this.currencySymbol = this.dataList?.['currencySymbol'];
+                // this.currencySymbol = this.dataList?.['currencySymbol'];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

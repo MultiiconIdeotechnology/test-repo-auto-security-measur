@@ -21,6 +21,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
+import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 import { FuseConfig, FuseConfigService, Scheme, Theme, Themes } from '@fuse/services/config';
 import { Routes } from 'app/common/const';
 import { JsonFile } from 'app/common/jsonFile';
@@ -82,7 +83,9 @@ import { Subject, takeUntil, Subscription } from 'rxjs';
         TitleCasePipe,
         MatAutocompleteModule,
         RouterOutlet,
-        MatOptionModule]
+        MatOptionModule,
+        OnlyFloatDirective
+    ]
 })
 export class ReceiptRightComponent implements OnInit, OnDestroy {
     config: FuseConfig;

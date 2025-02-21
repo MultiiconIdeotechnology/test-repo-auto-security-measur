@@ -95,6 +95,7 @@ export class PurchaseProductComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this.agentId = this.record?.agentid;
+        this.currencySymbol = this.record?.currencySymbol;
 
         this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
@@ -358,9 +359,9 @@ export class PurchaseProductComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data?.data;
-                if(this.dataList?.length){
-                    this.currencySymbol = this.dataList[0]?.['currencySymbol'];
-                }
+                // if(this.dataList?.length){
+                //     this.currencySymbol = this.dataList[0]?.['currencySymbol'];
+                // }
                 // this.dataList?.forEach((row) => {
                 //     row['count_product_list'] = row['item'].length;
                 //   });
@@ -378,7 +379,7 @@ export class PurchaseProductComponent {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
         this.matDialog.open(AgentProductInfoComponent, {
-            data: { data: record, agencyName: agencyName, readonly: true, purchase_product: true },
+            data: { data: record, agencyName: agencyName, readonly: true, purchase_product: true, currencySymbol:this.currencySymbol },
             disableClose: true
         });
     }
