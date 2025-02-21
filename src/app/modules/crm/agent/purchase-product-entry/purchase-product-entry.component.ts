@@ -28,6 +28,7 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { module_name } from 'app/security';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 
 @Component({
     selector: 'app-purchase-product-entry',
@@ -58,7 +59,8 @@ import { MatSort } from '@angular/material/sort';
         MatMenuModule,
         NgxMatTimepickerModule,
         MatDialogModule,
-        CommonModule
+        CommonModule,
+        OnlyFloatDirective
     ]
 })
 
@@ -106,7 +108,7 @@ export class PurchaseProductEntryComponent {
         this.record = data ?? {}
         this.editRecord = editData ?? {}
         if (!this.editRecord?.editFlag) {
-            this.getProducts();
+            // this.getProducts();
         }
         else {
             this.getProductDetail();
@@ -205,7 +207,7 @@ export class PurchaseProductEntryComponent {
     }
 
     getProducts() {
-        this.crmService.getProductNameList().subscribe({
+        this.crmService.getProductNameList({}).subscribe({
             next: (data) => {
                 this.productList = data;
                 if (this.record?.id1) {

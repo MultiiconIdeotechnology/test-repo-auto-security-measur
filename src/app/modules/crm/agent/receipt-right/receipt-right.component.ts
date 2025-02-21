@@ -1,6 +1,6 @@
 import { CdkDropList, CdkDrag, CdkDragPreview, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation, Pipe, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, Pipe, ViewChild, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -93,6 +93,7 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
     title = "Create Receipt";
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+    @Input() currencySymbol:any;
 
     readonly: boolean = false;
     record: any = {};

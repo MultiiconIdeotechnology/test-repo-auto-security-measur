@@ -13,6 +13,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
+import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 import { Routes } from 'app/common/const';
 import { CrmService } from 'app/services/crm.service';
 import { EntityService } from 'app/services/entity.service';
@@ -51,7 +52,8 @@ import { Subject, takeUntil } from 'rxjs';
         NgxMatTimepickerModule,
         RouterLink,
         RouterOutlet,
-        CommonModule
+        CommonModule,
+        OnlyFloatDirective
     ]
 })
 export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
@@ -66,6 +68,8 @@ export class CRMSalesReturnRightComponent implements OnInit, OnDestroy {
     btnLabel = "Submit";
     todayDateTime = new Date();
     @Input() salesReturnDetail: any;
+    @Input() currencySymbol:any;
+    // currencySymbol:any;
 
     ngOnInit(): void {
         this.formGroup = this.formBuilder.group({

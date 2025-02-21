@@ -18,7 +18,7 @@
                         <div class="px-[2px]">
                             <div class="flex flex-row">
                                 <mat-form-field class="flex-grow">
-                                    <mat-label class="text-base font-medium ">Amount</mat-label>
+                                    <mat-label class="text-base font-medium ">Amount ({{currencySymbol}})</mat-label>
                                     <input matInput required type="number" (keypress)="numberOnly($event)"
                                         formControlName="amount">
                                     <mat-error *ngIf="formGroup.get('amount').hasError('required')">

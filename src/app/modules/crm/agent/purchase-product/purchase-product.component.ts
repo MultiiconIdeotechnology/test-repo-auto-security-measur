@@ -77,6 +77,7 @@ export class PurchaseProductComponent {
     total = 0;
     record: any = {};
     agentId: any;
+    currencySymbol:any;
 
     constructor(
         private crmService: CrmService,
@@ -357,6 +358,9 @@ export class PurchaseProductComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data?.data;
+                if(this.dataList?.length){
+                    this.currencySymbol = this.dataList[0]?.['currencySymbol'];
+                }
                 // this.dataList?.forEach((row) => {
                 //     row['count_product_list'] = row['item'].length;
                 //   });

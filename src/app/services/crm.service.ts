@@ -64,8 +64,8 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductPurchaseMasterList', model);
     }
 
-    getProductNameList(): Observable<any> {
-        return this.http.get<any>(this.baseUrl + 'ProductPurchaseMaster/GetProductCombo', {});
+    getProductNameList(model:any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/GetProductCombo', model);
     }
 
     createPurchaseProduct(model: any): Observable<any> {

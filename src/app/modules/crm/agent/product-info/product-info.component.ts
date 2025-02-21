@@ -111,6 +111,7 @@ export class AgentProductInfoComponent {
     productId: any;
     service_for_id: any;
     getWLSettingList = [];
+    currencySymbol: any;
 
     constructor(
         // private matDialog: MatDialog,
@@ -304,6 +305,7 @@ export class AgentProductInfoComponent {
             next: (res) => {
                 this.isLoading = false;
                 this.dataList = res[0];
+                this.currencySymbol = this.dataList?.['currencySymbol'];
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
