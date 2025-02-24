@@ -362,7 +362,6 @@ export class PurchaseProductComponent {
                 if(this.dataList?.length && !this.currencySymbol){
                     this.currencySymbol = this.dataList[0]?.['currencySymbol'];
                 }
-                console.log("this.currencySymbol", this.currencySymbol)
                 // this.dataList?.forEach((row) => {
                 //     row['count_product_list'] = row['item'].length;
                 //   });
