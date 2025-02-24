@@ -71,6 +71,7 @@ export class CRMLeadEntryComponent {
             { value: 'B2B Partner', viewValue: 'B2B Partner' },
             { value: 'WL', viewValue: 'WL' },
             { value: 'Corporate', viewValue: 'Corporate' },
+            { value: 'BoostMyBrand', viewValue: 'Boost My Brand' },
             { value: 'Supplier', viewValue: 'Supplier' }
         ];
 

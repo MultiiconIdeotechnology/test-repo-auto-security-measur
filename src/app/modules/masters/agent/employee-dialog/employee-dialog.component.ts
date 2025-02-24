@@ -72,7 +72,7 @@ export class EmployeeDialogComponent {
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((value: any) => {
-        return this.employeeService.getemployeeCombo(value);
+        return this.employeeService.getEmployeeLeadAssignCombo(value);
       })
     ).subscribe(data => this.employeeList.next(data));
 
