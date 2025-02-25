@@ -229,14 +229,14 @@ export class InsuranceBookingDetailsComponent {
     })
   }
 
-  fileLogs() {
-    this.matDialog.open(FileLogsComponent, {
-      data: { id: this.mainData.id, send: 'Insurance' },
-      disableClose: true
-    }).afterClosed().subscribe(res => {
-      // if(res)
-      // this.refreshItems();
-    })
-  }
+  // fileLogs() {
+  //   this.matDialog.open(FileLogsComponent, {
+  //     data: { id: this.mainData.id, send: 'Insurance' },
+  //     disableClose: true
+  //   }).afterClosed().subscribe(res => {
+  //     // if(res)
+  //     // this.refreshItems();
+  //   })
+  // }
 
 }
