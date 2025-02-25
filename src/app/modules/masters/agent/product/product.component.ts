@@ -30,6 +30,7 @@ import { EntityService } from 'app/services/entity.service';
 import { agentPermissions, messages, Security } from 'app/security';
 import { PurchaseProductEntrySettingsComponent } from "../../../crm/agent/purchase-product-entry-settings/purchase-product-entry-settings.component";
 import { CRMSalesReturnRightComponent } from "../../../crm/agent/sales-return-right/sales-return-right.component";
+import { GlobalSearchService } from 'app/services/global-search.service';
 
 @Component({
     selector: 'app-product',
@@ -99,6 +100,7 @@ export class ProductComponent {
         private matDialog: MatDialog,
         private crmService: CrmService,
         private entityService: EntityService,
+        private globalService: GlobalSearchService
     ) {
 
     }
@@ -118,6 +120,9 @@ export class ProductComponent {
             next: (res) => {
                 this.dataSource.data = res.data;
                 this._paginator.length = res.total;
+                if(res?.data && res.data?.length){
+                    this.globalService.setCurrencySymbol(res.data[0]?.currencySymbol?.trim());
+                }
                 this.loading = false;
             }, error: err => {
                 this.alertService.showToast('error', err);

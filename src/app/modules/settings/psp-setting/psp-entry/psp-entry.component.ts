@@ -140,7 +140,9 @@ export class PspEntryComponent {
       .subscribe({
         next: data => {
           this.agentList = data
-          this.formGroup.get("psp_for_agent_id").patchValue(this.agentList[0].id);
+          if(this.agentList && this.agentList.length) {
+            this.formGroup.get("psp_for_agent_id").patchValue(this.agentList[0].id);
+          }
         }
       });
 
@@ -159,7 +161,9 @@ export class PspEntryComponent {
       .subscribe({
         next: data => {
           this.compnyList = data
-          this.formGroup.get("psp_for_company_id").patchValue(this.compnyList[0].company_id);
+          if(this.compnyList && this.compnyList.length) {
+            this.formGroup.get("psp_for_company_id").patchValue(this.compnyList[0].company_id);
+          }
         }
       });
 
@@ -220,9 +224,6 @@ export class PspEntryComponent {
 
       });
     }
-
-
-
   }
 
   copyLink(link: string): void {

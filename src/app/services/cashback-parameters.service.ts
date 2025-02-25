@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, take } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -36,9 +36,13 @@ export class CashbackParameterService {
         return this.http.post<any>(this.baseUrl + 'cashbackparameters/delete', { id: id });
     }
 
-    getCompanyCombo(filter: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Company/getCompanyCombo', { filter });
-    }
+    getAgentCombo(filter:string, is_master_agent:boolean): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/getAgentCombo', {filter:filter, is_master_agent:is_master_agent});
+      }
+      
+      getCompanyCombo(filter:string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Company/getCompanyCombo', {filter});
+      }
 
     // cashbackId subject to to get the last value of cashbackid;
     setCashbackId(id: any): void {
@@ -51,11 +55,14 @@ export class CashbackParameterService {
     }
 
     updateCashbackItem(updatedItem: any): void {
-        const currentList = this.cashbackListSubject.value.map(item =>
-            item.id === updatedItem.id ? updatedItem : item
-        );
-        this.cashbackListSubject.next(currentList);
+        this.cashbackListSubject.pipe(take(1)).subscribe(currentList => {
+            const updatedList = currentList.map(item =>
+                item.id === updatedItem.id ? updatedItem : item
+            );
+            this.cashbackListSubject.next(updatedList);
+        });
     }
+    
 
     addCashbackItem(newItem: any): void {
         const currentList = this.cashbackListSubject.value;

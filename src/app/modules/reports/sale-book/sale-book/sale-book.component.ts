@@ -441,6 +441,8 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 				{ header: 'Booking Type', property: 'booking_type' },
 				{ header: 'Supplier Invoice Number', property: 'supplier_invoice_number' },
 				{ header: 'Payment Mode', property: 'payment_mode' },
+				{ header: 'Cashback', property: 'cashback' },
+                { header: 'Cashback TDS', property: 'cashback_tds' },
 			],
 			this.tempData, "Sale Book", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
 		// });

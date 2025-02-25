@@ -70,37 +70,29 @@
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <!-- <th class="text-center left-[-1px]" pFrozenColumn>Supplier</th> -->
-
-                    <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="supplier_name"
-                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name"
-                        [ngClass]="{'left-0': !frozenObj?.supplier_name}">
-                        Supplier <p-sortIcon field="supplier_name" />
-                        <span class="float-right" (click)="isFrozenColumn('supplier_name');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.supplier_name" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.supplier_name" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-
-                    <!-- <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="reference_no"
-                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
+                    <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="reference_no" pResizableColumn 
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no"
                         [ngClass]="{'left-0': !frozenObj?.reference_no}">
                         Ref. No. <p-sortIcon field="reference_no" />
                         <span class="float-right" (click)="isFrozenColumn('reference_no');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.reference_no" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.reference_no" class="pi pi-lock icon-size-3"></i>
                         </span>
-                    </th> -->
+                    </th>
+
+                    <th pSortableColumn="lead_status" pResizableColumn>
+                        Status <p-sortIcon field="lead_status" />
+                    </th>
+
+                    <th  pSortableColumn="supplier_name"
+                        pResizableColumn >
+                        Supplier <p-sortIcon field="supplier_name" />
+                    </th>
 
                     <th pSortableColumn="agent_name" pResizableColumn>
                         Agent <p-sortIcon field="agent_name" />
                     </th>
-                    <th pSortableColumn="reference_no" pResizableColumn>
-                        Ref. No. <p-sortIcon field="reference_no" />
-                    </th>
-                    <th pSortableColumn="lead_status" pResizableColumn>
-                        Status <p-sortIcon field="lead_status" />
-                    </th>
+                  
                     <th pSortableColumn="start_date" pResizableColumn>
                         Start Date <p-sortIcon field="start_date" />
                     </th>
@@ -116,14 +108,24 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <!-- <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name">
-                        <p-columnFilter type="text" matchMode="contains" field="supplier_name"
-                            placeholder="Search by Supplier" ariaLabel="Filter Supplier" />
+                    
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
+                        <p-columnFilter type="text" matchMode="contains" field="reference_no"
+                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
                     </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agent_name"
-                            placeholder="Search by Agent" ariaLabel="Filter Agent" />
-                    </th> -->
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">
+                        <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="supplier_id_filters" matchMode="equals"
                             [showMenu]="false">
@@ -131,7 +133,7 @@
                                 <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
                                     [(ngModel)]="selectedAgent" [filter]="true" filterBy="company_name"
                                     (onFilter)="getSupplierList($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select City">
+                                    [showClear]="true" appendTo="body" placeholder="Select Supplier">
                                     <ng-template let-agent pTemplate="item">
                                         <div class="flex align-items-center gap-1">
                                             {{agent.company_name}}
@@ -157,24 +159,6 @@
                                                 <div class="text-sm text-slate-500">{{agent.email_address}}</div>
                                             </div>
                                         </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th >
-                        <p-columnFilter type="text" matchMode="contains" field="reference_no"
-                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
-                    </th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.lead_status">
-                        <p-columnFilter field="lead_status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
-                                    appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option}}</p>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
@@ -221,15 +205,7 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name">
-                        <span >
-                            {{element.supplier_name || "-"}}
-                        </span>
-                    </td>
-                    <td>
-                        {{element.agent_name || "-"}}
-                    </td>
-                    <td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no">
                         <span class="cursor-pointer border-b border-gray-500" (click)="view(element)">
                             {{element.reference_no || "-"}}
                         </span>
@@ -238,6 +214,14 @@
                         <span [ngClass]="getStatusColor(element.lead_status)">
                             {{element.lead_status || "-"}}
                         </span>
+                    </td>
+                    <td >
+                        <span >
+                            {{element.supplier_name || "-"}}
+                        </span>
+                    </td>
+                    <td>
+                        {{element.agent_name || "-"}}
                     </td>
                     <td>
                         {{(element.start_date | date:'dd-MM-yyyy') || "-"}}

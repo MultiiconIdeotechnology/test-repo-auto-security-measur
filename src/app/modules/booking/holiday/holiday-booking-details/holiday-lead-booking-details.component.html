@@ -113,7 +113,7 @@
                                         date:'dd-MM-yyyy HH:mm') || '-'}}</div>
                                 </div>
                             </div>
-                            <div class="flex">
+                            <div class="pb-3 flex">
                                 <div class="w-[50%]">
                                     <div class="text-md font-semibold text-secondary">Pax</div>
                                     <div class="text-base truncate pt-[2px]">{{bookingDetail?.no_of_adult || '0'}}
@@ -122,6 +122,18 @@
                                 <div class="w-[50%]">
                                     <div class="text-md font-semibold text-secondary">Nationality</div>
                                     <div class="text-base truncate pt-[2px]">{{bookingDetail?.nationality || '-'}}</div>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <div class="w-[50%]">
+                                    <div class="text-md font-semibold text-secondary">Supplier Name</div>
+                                    <div class="text-base truncate pt-[2px]">{{bookingDetail?.supplier_name || '-'}}
+                                    </div>
+                                </div>
+                                <div class="w-[50%]">
+                                    <div class="text-md font-semibold text-secondary">Type</div>
+                                    <div class="text-base truncate pt-[2px]">{{bookingDetail?.type || '-'}}
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -30,8 +30,7 @@
                         <div class="flex flex-row">
                             <mat-form-field class="flex-grow">
                                 <mat-label class="text-base font-medium dark:text-[#687798]">Product Price</mat-label>
-                                <input matInput required type="number" (keypress)="numberOnly($event)"
-                                    formControlName="price">
+                                <input matInput appOnlyFloat required type="number" formControlName="price">
                                 <mat-error *ngIf="formGroup.get('price').hasError('required')">
                                     Price is required
                                 </mat-error>
@@ -74,10 +73,10 @@
                                     </mat-form-field>
                                     <!-- [min]="i == 0 ? todayDateTime : installmentsArray[i - 1]?.installment_date" -->
                                     <!-- [min]="i == 0 ? todayDateTime : installment.maxDate" -->
-
+                            
                                     <mat-form-field class="flex-grow w-1/2">
                                         <mat-label class="text-base font-medium dark:text-[#687798]">Amount(₹)</mat-label>
-                                        <input matInput type="number" (keypress)="numberOnly($event)"
+                                        <input appOnlyFloat matInput type="number" 
                                             [(ngModel)]="installment.installment_amount"
                                             [ngModelOptions]="{standalone: true}" />
                                     </mat-form-field>

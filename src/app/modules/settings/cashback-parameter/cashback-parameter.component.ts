@@ -103,6 +103,12 @@ export class CashbackParameterComponent extends BaseListingComponent implements 
     });
   }
 
+  handleModalClose(key:any){
+    if(key == 'call-api'){
+      this.refreshItems()
+    }
+  }
+
   ngAfterViewInit() {
     // Defult Active filter show
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
@@ -201,6 +207,8 @@ export class CashbackParameterComponent extends BaseListingComponent implements 
               }
 
               data.is_enable = !data.is_enable;
+              this.cashbackService.setCashbackList(this.dataList);
+              // this.refreshItems()
 
             }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
           });

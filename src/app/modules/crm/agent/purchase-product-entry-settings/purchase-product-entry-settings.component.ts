@@ -1,6 +1,6 @@
 import { CdkDropList, CdkDrag, CdkDragPreview, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { AsyncPipe, CommonModule, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
+import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 import { Routes } from 'app/common/const';
 import { JsonFile } from 'app/common/jsonFile';
 import { UserService } from 'app/core/user/user.service';
@@ -34,6 +35,7 @@ import { GridUtils } from 'app/utils/grid/gridUtils';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { Subject, takeUntil } from 'rxjs';
+
 
 @Component({
     selector: 'purchase-product-entry-settings',
@@ -69,9 +71,12 @@ import { Subject, takeUntil } from 'rxjs';
         MatMenuModule,
         NgxMatSelectSearchModule,
         NgxMatTimepickerModule,
+        OnlyFloatDirective
     ]
 })
 export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy {
+    @Input('agentId') agentId:any;
+    @Input() currencySymbol:any;
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
@@ -117,6 +122,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
     proofAttachmentFlag: boolean = false;
     lowPriceFlag: boolean = false;
     searchCtrl = this.builder.control('');
+    // currencySymbol:any;
     
     constructor(
         public builder: FormBuilder,
@@ -181,7 +187,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                     this.record = item ?? {}
                     if (!item?.editFlag) {
                         this.proofAttachment = false;
-                        this.getProducts();
+                        // this.getProducts();
                         
                         this.searchCtrl.valueChanges.subscribe((searchTerm) => {
                             if (searchTerm) {
@@ -205,6 +211,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         this._userService.user$.pipe((takeUntil(this._unsubscribeAll))).subscribe((user: any) => {
             this.user = user;
         });
+
+        if(this.agentId){
+            if(this.productList && !this.productList?.length){
+                this.getProducts();
+            }
+        }
     }
 
     calculateDateBeforeDays(days: number): Date {
@@ -229,6 +241,10 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
             next: (data) => {
                 this.dataList = data.data;
+                // console.log("this.dataList>>>", this.dataList)
+                // if(this.dataList?.length){
+                //     this.currencySymbol = this.dataList[0]?.['currencySymbol'];
+                // }
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -339,7 +355,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
     getProducts() {
         this.productPurchaseMasterId = ""
-        this.crmService.getProductNameList().subscribe({
+        this.crmService.getProductNameList({AgentId :this.agentId}).subscribe({
             next: (data) => {
                 this.productList = data;
                 this.filteredProducts = [...this.productList]; // Initialize filtered list

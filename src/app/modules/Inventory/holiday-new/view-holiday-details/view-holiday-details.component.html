@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="flex w-full">
-            <div class="left w-full mr-[2%]">
+            <div class="left w-[71%] mr-[2%]">
                 
 
                 <!------Flight-------->
@@ -102,7 +102,7 @@
                                             </ngx-slick-carousel>
                                             <div *ngIf="ht.image.length === 0"
                                                 class="rounded-[10px] min-h-36 max-h-36 max-w-56 min-w-56 bg-[#EDEDED] p-5">
-                                                <img class="w-4/5 m-auto" src="assets/images/holidays/no_hotel.png">
+                                                <img class="w-4/5 m-auto" src="assets/icons/no_hotel.png">
                                             </div>
                                         </div>
 
@@ -139,106 +139,78 @@
                     </div>
                 </div>
 
-                <!------Day Wise Itinerary-------->
-                <div *ngIf="DisplayDetails?.ItineraryList?.length > 0" class="px-5 py-4 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
-                    <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
-                    <div class="flex items-center gap-3 ">
-                        <img class="w-6" src="assets/icons/Itinerary_holiday.svg">
-                        <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
-                            Day Wise Itinerary
-                        </div>
+               <!------Day Wise Itinerary-------->
+               <div *ngIf="DisplayDetails?.ItineraryList?.length > 0" class="px-5 py-4 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
+                <span class="h-7 w-1 bg-[#234977] absolute left-0"></span>
+                <div class="flex items-center gap-3 ">
+                    <img class="w-6" src="assets/icons/Itinerary_holiday.svg">
+                    <div class="text-xl font-semibold theme-black-text dark:text-gray-300">
+                        Day Wise Itinerary
                     </div>
-                    <div class="accordian">
-                        <div class="col">
-                            <div class="tabs">
-                                <div class="tab pl-22 relative" *ngFor="
-                                    let fl of DisplayDetails.ItineraryList;
-                                    let index = index
-                                ">
-                                    <div class="absolute left-0 top-4 flex">
-                                        <div class="w-16 flex flex-col">
-                                            <span class="primary-text font-semibold">Day {{ fl.dayNo }}</span>
-                                            <span class="primary-text font-medium text-xs">{{deppDate.plus({ days: index
-                                                }).toFormat("dd-MM-yyyy")}}</span>
-                                        </div>
-                                        <span
-                                            class="block w-4 h-4 bg-primary rounded-full border-2 border-white outline-2 outline primary-outline ng-star-inserted"></span>
+                </div>
+                <div class="accordian">
+                    <div class="col">
+                        <div class="tabs">
+                            <div class="tab pl-22 relative" *ngFor="
+                                let fl of DisplayDetails.ItineraryList;
+                                let index = index
+                            ">
+                                <div class="absolute left-0 top-4 flex">
+                                    <div class="w-16 flex flex-col">
+                                        <span class="primary-text font-semibold">Day {{ fl.dayNo }}</span>
+                                        <span class="primary-text font-medium text-xs">{{deppDate.plus({ days: index
+                                            }).toFormat("dd-MM-yyyy")}}</span>
                                     </div>
-                                    <div class="border-b border-gray-border">
-                                        <input type="checkbox" [id]="'chck' + index" class="hidden"
-                                            [checked]="fl.checked" />
-                                        <label class="tab-label flex flex-col relative" [for]="'chck' + index">
-                                            <span class="text-lg font-medium theme-black-text">
-                                                {{ fl.highlight }}
-                                            </span>
-                                            <!-- <span class="font-medium pb-2 text-gray text-sm">{{ fl.city }}</span> -->
+                                    <span
+                                        class="block w-4 h-4 bg-primary rounded-full border-2 border-white outline-2 outline primary-outline ng-star-inserted"></span>
+                                </div>
+                                <div class="border-b border-gray-border">
+                                    <input type="checkbox" [id]="'chck' + index" class="hidden"
+                                        [checked]="fl.checked" />
+                                    <label class="tab-label flex flex-col relative" [for]="'chck' + index">
+                                        <span class="font-medium theme-black-text">
+                                            {{ fl.highlight }}
+                                        </span>
+                                        <!-- <span class="font-medium pb-2 text-gray text-sm">{{ fl.city }}</span> -->
 
-                                            <mat-icon class="acc-arrow absolute right-3 top-3 text-[30px] font-light"
-                                                [style.transform]="
-                                                fl.checked
-                                                    ? 'rotate(90deg)'
-                                                    : ''
-                                            ">keyboard_arrow_down</mat-icon>
-                                        </label>
-                                        <div class="tab-content flex space-x-4 pt-0 rounded-xl">
-                                            <ngx-slick-carousel *ngIf="fl.image.length !== 0"
-                                                class="carousel Hotel_carousel view-holiday-small-carousel min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl"
-                                                #slickModal="slick-carousel" [config]="slideConfig">
-                                                <div ngxSlickItem *ngFor="
-                                                            let slide of fl.image
-                                                        " class="slide rounded-xl">
-                                                    <div *ngIf="fl.image.length > 0">
-                                                        <img [src]="slide.imageUrl" alt=""
-                                                            class="min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl" />
-                                                    </div>
+                                        <mat-icon class="acc-arrow absolute right-3 top-3 text-[30px] font-light"
+                                            [style.transform]="
+                                            fl.checked
+                                                ? 'rotate(90deg)'
+                                                : ''
+                                        ">keyboard_arrow_down</mat-icon>
+                                    </label>
+                                    <div class="tab-content flex space-x-4 pt-0 rounded-xl">
+                                        <ngx-slick-carousel *ngIf="fl.image.length !== 0"
+                                            class="carousel Hotel_carousel view-holiday-small-carousel min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl"
+                                            #slickModal="slick-carousel" [config]="slideConfig">
+                                            <div ngxSlickItem *ngFor="
+                                                        let slide of fl.image
+                                                    " class="slide rounded-xl">
+                                                <div *ngIf="fl.image.length > 0">
+                                                    <img [src]="slide.imageUrl" alt=""
+                                                        class="min-h-36 max-h-36 max-w-56 min-w-56 rounded-xl" />
                                                 </div>
-                                            </ngx-slick-carousel>
-                                            <!-- <div class="relative" *ngIf="fl.image.length > 0">
-                                                <ngx-slick-carousel class="carousel h-48 max-w-56 min-w-56 rounded-xl"
-                                                    *ngIf="fl.image.length > 0" #slickCarousels="slick-carousel"
-                                                    [config]="slideConfigforItenary">
-                                                    <div ngxSlickItem *ngFor="let slide of fl.image"
-                                                        class="slide rounded-xl">
-                                                        <img loading="lazy" [src]="slide.imageUrl" alt="Place Image"
-                                                            class="min-h-48 max-h-48 max-w-56 min-w-56 rounded-xl" />
-                                                    </div>
-                                                </ngx-slick-carousel>
-                                                <div mat-ripple *ngIf="fl.image.length > 1"
-                                                    class="flex flex-row justify-center items-center absolute h-5 w-5 white-bg rounded-full left-1 top-[90px] shadow-xl gray-border border cursor-pointer"
-                                                    (click)="slickPrev(index)">
-                                                    <mat-icon
-                                                        class="relative icon-size-3 pl-1 primary-text">arrow_back_ios</mat-icon>
-                                                </div>
-                                                <div mat-ripple *ngIf="fl.image.length > 1"
-                                                    class="flex flex-row justify-center items-center absolute h-5 w-5 white-bg rounded-full right-1 top-[90px] shadow-xl gray-border border cursor-pointer"
-                                                    (click)="slickNext(index)">
-                                                    <mat-icon
-                                                        class="primary-text icon-size-3">arrow_forward_ios</mat-icon>
-                                                </div>
-                                            </div> -->
-
-                                            <!-- w-[calc(100%-235px)] -->
-                                            <!-- <div class="text-gray ">
-                                                <span style="white-space: pre-line">{{fl.description}}</span>
-                                            </div> -->
-                                            <div class="text-gray ">
-                                                <div *ngIf="fl.description.length <= 540; else longContent">
-                                                    <p class="text-base font-normal break-all">{{ fl.description }}</p>
-                                                </div>
-                                                <ng-template #longContent>
-                                                    <div>
-                                                        <span class="text-base font-normal" *ngIf="!fl.expanded">{{
-                                                            fl.description.slice(0, 540) }}</span>
-                                                        <span class="text-base font-normal" *ngIf="fl.expanded">{{
-                                                            fl.description}}</span>
-                                                        <span
-                                                            class="text-base font-medium text-[#234977] dark:text-blue-300 cursor-pointer"
-                                                            (click)="toggleContent(fl)">
-                                                            Read {{ fl.expanded ? 'Less...' : 'More...'}}
-                                                        </span>
-                                                    </div>
-                                                </ng-template>
                                             </div>
+                                        </ngx-slick-carousel>
+                                
+                                        <div class="text-gray ">
+                                            <div *ngIf="fl.description.length <= 540; else longContent">
+                                                <p class="text-base font-normal break-all">{{ fl.description }}</p>
+                                            </div>
+                                            <ng-template #longContent>
+                                                <div>
+                                                    <span class="text-sm font-medium dark:text-gray-400" *ngIf="!fl.expanded">{{
+                                                        fl.description.slice(0, 540) }}</span>
+                                                    <span class="text-sm font-medium dark:text-gray-400" *ngIf="fl.expanded">{{
+                                                        fl.description}}</span>
+                                                    <span
+                                                        class="text-sm font-medium text-[#234977] dark:text-blue-300 cursor-pointer"
+                                                        (click)="toggleContent(fl)">
+                                                        Read {{ fl.expanded ? 'Less...' : 'More...'}}
+                                                    </span>
+                                                </div>
+                                            </ng-template>
                                         </div>
                                     </div>
                                 </div>
@@ -246,6 +218,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <!----------Sightseeing----------->
                 <div *ngIf="DisplayDetails?.sightseeingList?.length > 0" class="flex flex-col py-4 px-5 bg-card rounded-lg overflow-hidden mb-7 round-shadow relative">
@@ -699,7 +672,7 @@
                     </div>
                 </div> -->
             </div>
-            <!-- <div class="right w-[29%]">
+            <div class="right w-[29%]">
                 <div class="py-4 bg-card rounded-lg overflow-hidden mb-7 round-shadow">
                     <div class="text-xl mx-5 font-semibold pb-2 theme-black-text">
                         Booking Details
@@ -745,7 +718,7 @@
                             </div>
                             <div class="text-right">
                                 <div class="font-semibold text-primary text-xl">
-                                    {{holidayDetailAll?.product?.currency_symbol}} {{ ((((holidayDetailAll?.product?.sell_price + holidayDetailAll?.product?.tax) / (adult + child))) ||
+                                    {{holidayDetailAll?.product?.currency_symbol}} {{ ((((holidayDetailAll?.product?.purchase_price) / (adult + child))) ||
                                         0).toFixed(0)}}
                                 </div>
                                 <div class="text-gray -m-1 text-sm mr-1">
@@ -756,7 +729,7 @@
                     </div>
 
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </div>

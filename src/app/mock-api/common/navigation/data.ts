@@ -828,46 +828,46 @@ export const defaultNavigation: FuseNavigationItem[] = [
         type: 'group',
         icon: 'mat_outline:inventory',
         children: [
-            {
-                id: 'inventory.activity',
-                title: 'Activity',
-                type: 'basic',
-                pid: 'INVENTORY_ACTIVITY_VIEW',
-                icon: 'mat_outline:rowing',
-                link: Routes.inventory.activity_route
-            },
-            {
-                id: 'inventory.transfer',
-                title: 'Transfers',
-                type: 'basic',
-                pid: 'INVENTORY_TRANSFERS_VIEW',
-                icon: 'mat_outline:transfer_within_a_station',
-                link: Routes.inventory.transfer_route
-            },
-            {
-                id: 'inventory.holiday',
-                title: 'Holiday Products',
-                type: 'basic',
-                pid: 'INVENTORY_HOLIDAYPRODUCTS_VIEW',
-                icon: 'mat_outline:holiday_village',
-                link: Routes.inventory.holiday_route
-            },
-            {
-                id: 'inventory.vehicle',
-                title: 'Vehicle',
-                type: 'basic',
-                pid: 'INVENTORY_VEHICLE_VIEW',
-                icon: 'mat_outline:local_taxi',
-                link: Routes.inventory.vehicle_route
-            },
-            {
-                id: 'inventory.hotel',
-                title: 'Hotel',
-                type: 'basic',
-                pid: 'INVENTORY_HOTEL_VIEW',
-                icon: 'heroicons_outline:building-office-2',
-                link: Routes.inventory.hotel_route
-            },
+            // {
+            //     id: 'inventory.activity',
+            //     title: 'Activity',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_ACTIVITY_VIEW',
+            //     icon: 'mat_outline:rowing',
+            //     link: Routes.inventory.activity_route
+            // },
+            // {
+            //     id: 'inventory.transfer',
+            //     title: 'Transfers',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_TRANSFERS_VIEW',
+            //     icon: 'mat_outline:transfer_within_a_station',
+            //     link: Routes.inventory.transfer_route
+            // },
+            // {
+            //     id: 'inventory.holiday',
+            //     title: 'Holiday Products',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_HOLIDAYPRODUCTS_VIEW',
+            //     icon: 'mat_outline:holiday_village',
+            //     link: Routes.inventory.holiday_route
+            // },
+            // {
+            //     id: 'inventory.vehicle',
+            //     title: 'Vehicle',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_VEHICLE_VIEW',
+            //     icon: 'mat_outline:local_taxi',
+            //     link: Routes.inventory.vehicle_route
+            // },
+            // {
+            //     id: 'inventory.hotel',
+            //     title: 'Hotel',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_HOTEL_VIEW',
+            //     icon: 'heroicons_outline:building-office-2',
+            //     link: Routes.inventory.hotel_route
+            // },
             {
                 id: 'inventory.visa',
                 title: 'Visa',
@@ -878,20 +878,20 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
             {
                 id: 'inventory.holidayv2',
-                title: 'Holiday Products 2.0',
+                title: 'Holiday Products',
                 type: 'basic',
                 pid: 'INVENTORY_HOLIDAYPRODUCT2.0_VIEW',
                 icon: 'mat_outline:holiday_village',
                 link: Routes.inventory.holiday_v2_route
             },
-            {
-                id: 'inventory.cab',
-                title: 'Cab',
-                type: 'basic',
-                pid: 'INVENTORY_CAB_VIEW',
-                icon: 'heroicons_outline:newspaper',
-                link: Routes.inventory.cab_route
-            },
+            // {
+            //     id: 'inventory.cab',
+            //     title: 'Cab',
+            //     type: 'basic',
+            //     pid: 'INVENTORY_CAB_VIEW',
+            //     icon: 'heroicons_outline:newspaper',
+            //     link: Routes.inventory.cab_route
+            // },
             // {
             //     id: 'inventory.cab',
             //     title: 'Cab',
@@ -1043,14 +1043,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:square-3-stack-3d',
                 link: Routes.settings.caching_parameters_route
             },
-            // {
-            //     id: 'settings.cashbackparameters',
-            //     title: 'Cashback Parameters',
-            //     type: 'basic',
-            //     pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
-            //     icon: 'heroicons_outline:wallet',
-            //     link: Routes.settings.cashback_parameters_route
-            // }
+            {
+                id: 'settings.cashbackparameters',
+                title: 'Cashback Parameters',
+                type: 'basic',
+                pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
+                icon: 'heroicons_outline:wallet',
+                link: Routes.settings.cashback_parameters_route
+            }
         ]
     }
 ];

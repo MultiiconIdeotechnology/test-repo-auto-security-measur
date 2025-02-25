@@ -379,8 +379,11 @@ export class ViewHolidayDetailsComponent {
   }
 
   depDates(): void {
-    this.queryParams.date =DateTime.now().toFormat('yyyy-MM-dd');
-    this.params.date = DateTime.now().toFormat('yyyy-MM-dd');
+    // this.queryParams.date =DateTime.now().toFormat('yyyy-MM-dd');
+    // this.params.date = DateTime.now().toFormat('yyyy-MM-dd');
+
+    this.queryParams.date = DateTime.fromISO(this.DepatureformGroup.get('depDate').value).toFormat('yyyy-MM-dd');
+    this.params.date = DateTime.fromISO(this.DepatureformGroup.get('depDate').value).toFormat('yyyy-MM-dd');
     let navigationExtras: NavigationExtras = {
       queryParams: {
         "user": JSON.stringify(this.queryParams)
@@ -389,31 +392,11 @@ export class ViewHolidayDetailsComponent {
 
     
     this.router.navigate(['/inventory/holidayv2-products/view-details'], navigationExtras);
-    // this.router.navigate(['/holidays/detail-info'], navigationExtras);
-    this.queryParams = {
-      id: this.id,
-      date: DateTime.fromJSDate(new Date(this.deppDate.toJSDate())).toFormat('yyyy-MM-dd'),
-      adult: this.adult,
-      child: this.child,
-      // filter: this.filter
-    }
 
-    const Fdata = {
-      destination_id: this.id,
-      departure_date:DateTime.now().toFormat('yyyy-MM-dd'),
-      adult: this.adult,
-      child: this.child,
-    }
 
-    // this.holidayService.getProductPricing(Fdata).subscribe({
-    //   next: data => {
-    //     this.priceDetail = data.pricing
-    //   },
-    //   error: err => {
-    //     this.toasterService.showToast('error', err);
-    //     this.commanService.raiseLoader(false);
-    //   }
-    // })
+
+
+ 
   }
 
   editPax(): void {
@@ -436,23 +419,6 @@ export class ViewHolidayDetailsComponent {
         };
 
         this.router.navigate(['/inventory/holidayv2-products/view-details'], navigationExtras);
-
-        const Fdata = {
-          destination_id: this.id,
-          departure_date: DateTime.now().toFormat('yyyy-MM-dd'),
-          adult: this.adult,
-          child: this.child,
-        }
-
-        // this.holidayService.getProductPricing(Fdata).subscribe({
-        //   next: data => {
-        //     this.priceDetail = data.pricing
-        //   },
-        //   error: err => {
-        //     this.toasterService.showToast('error', err);
-        //     this.commanService.raiseLoader(false);
-        //   }
-        // })
       }
     })
   }

@@ -356,7 +356,9 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
                 { header: 'Refundable Price', property: 'refundable_price' },
                 { header: 'Commission 2', property: 'commission_2' },
                 { header: 'TDS 2', property: 'tds_2' },
-                { header: 'Net Commission', property: 'net_commission' }
+                { header: 'Net Commission', property: 'net_commission' },
+                { header: 'Cashback', property: 'cashback' },
+                { header: 'Cashback TDS', property: 'cashback_tds' },
             ],
             this.tempData, "Sales Return", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
         // });

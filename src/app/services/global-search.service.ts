@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ItemService } from './item.service';
 import { ProductService } from './product.service';
 
@@ -17,6 +17,12 @@ export class GlobalSearchService {
         private productService: ProductService
     ) { }
     private baseUrl = environment.apiUrl;
+    private currencySymbolSubject = new BehaviorSubject<any>("");
+    public currencySymbol$ = this.currencySymbolSubject.asObservable();
+
+    setCurrencySymbol(currencySymbol:any){
+        this.currencySymbolSubject.next(currencySymbol);
+    }
 
     getInputDetails(query: any): Observable<any> {
         return this.http.post<any[]>(`${this.baseUrl}GlobalSearch/getValuesGlobleSearch`, query);
