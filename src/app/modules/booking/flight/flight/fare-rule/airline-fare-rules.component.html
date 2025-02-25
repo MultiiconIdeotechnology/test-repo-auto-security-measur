@@ -1,0 +1,28 @@
+<div
+    class="flex flex-col max-w-240 min-w-240 max-h-[90vh] mobile:overflow-hidden -m-6 mobile:m-0 mobile:max-w-full mobile:min-w-full mobile:max-h-full">
+
+    <!-- Header -->
+    <div
+        class="flex white-text flex-0 items-center justify-between mobile:sticky mobile:top-0 h-16 px-4 py-2 bg-primary">
+        <div class="text-lg font-medium text-white">Fare Rules</div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="mobile:overflow-auto">
+        <div class="w-full relative p-4 mobile:px-3">
+            <div class="max-h-80 mobile:max-h-full overflow-y-auto">
+                <ng-container *ngIf="fareRuledata; else noData">
+                    <div [innerHTML]="fareRuledata" class="mobile:text-base"></div>
+                </ng-container>
+
+                <ng-template #noData>
+                    <div *ngIf="!isLoding" class="text-center py-3 text-lg font-semibold">
+                        No Data!
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>

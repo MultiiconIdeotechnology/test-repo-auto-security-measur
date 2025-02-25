@@ -52,6 +52,10 @@ export class FlightTabService {
     return this.http.post<any>(environment.apiUrl + "AirBooking/createSegment", model);
   }
 
+  fareRuleRes(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "Flight/fareRuleRes", model);
+  }
+  
   deleteSegment(id: string): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "AirBooking/deleteSegment", { id: id });
   }

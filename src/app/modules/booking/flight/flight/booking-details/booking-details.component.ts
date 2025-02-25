@@ -35,6 +35,7 @@ import { PaxComponent } from '../pax/pax.component';
 import { FuseAlertComponent } from '@fuse/components/alert';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { FileLogsComponent } from '../file-logs/file-logs.component';
+import { AirlineFareRulesComponent } from '../fare-rule/airline-fare-rules.component';
 
 @Component({
   selector: 'app-booking-details',
@@ -413,6 +414,13 @@ export class BookingDetailsComponent {
     }).afterClosed().subscribe(res => {
       // if(res)
       // this.refreshItems();
+    })
+  }
+
+  fareRules() {
+    this.matDialog.open(AirlineFareRulesComponent, {
+      data: { id: this.mainDataAll?.id },
+      disableClose: true
     })
   }
 
