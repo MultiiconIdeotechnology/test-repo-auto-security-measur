@@ -54,7 +54,7 @@ export class AmendmentRequestComponent {
   amendmentfilter: string = '';
   title: string = 'Mr';
   is_manual_entry: boolean = false;
-  is_flight_live:boolean = false;
+  is_flight_active:boolean = false;
   note: string = '';
   amendmentData: any;
   formDataList: any[] = [];
@@ -285,7 +285,7 @@ export class AmendmentRequestComponent {
     }
 
     if(this.amendmentType == "Miscellaneous Quotation - Refund"){
-      json['is_flight_live'] = this.is_flight_live;
+      json['is_flight_active'] = this.is_flight_active;
     }
 
 
