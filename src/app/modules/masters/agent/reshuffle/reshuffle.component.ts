@@ -117,7 +117,6 @@ export class ReshuffleComponent {
     ) {
         if (data)
             this.record = data;
-        console.log("this.record", this.record);
     }
 
     ngOnInit() {
