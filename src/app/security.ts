@@ -722,6 +722,7 @@ export const inventoryHolidayPermissions = {
     setasPopularPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
     copyProductPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
     viewHolidayPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'View Holiday', category_name: category_name.view },
+    auditUnauditPermissions: { module_name: module_name.inventoryHoliday, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
 }
 
 export const inventoryCabPermissions = {
