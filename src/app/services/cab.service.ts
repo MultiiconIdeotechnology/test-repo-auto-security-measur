@@ -42,17 +42,9 @@ export class CabService {
     return this.http.post<any[]>(this.baseUrl + 'cab/setPublishUnPublishBonton', { id: id });
   }
 
-  // getHolidaysSearchDetail(model: any): Observable<any> {
-  //   return this.http.post<any>(environment.apiUrl + "cab/holidayDetail", model);
-  // } 
-
-  // getHolidayProductDetails(id: string): Observable<any> {
-  //   return this.http.post<any>(this.baseUrl + 'HolidayProduct/getHolidayProductDetails', { id });
-  // } 
-
-  // getHolidayProductCombo(filter: string): Observable<any[]> {
-  //   return this.http.post<any[]>(this.baseUrl + 'HolidayProduct/getHolidayProductCombo', { filter: filter, is_active: true });
-  // }
+  getCabDetails(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "cab/getCabDetail", model);
+  } 
 
   downloadQuotation(model: any): Observable<any[]> {
     return this.http.post<any[]>(environment.apiUrl + 'HolidayLeads/downloadQuotation', model);

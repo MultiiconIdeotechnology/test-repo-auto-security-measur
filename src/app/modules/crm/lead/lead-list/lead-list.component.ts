@@ -196,6 +196,12 @@ export class CRMLeadListComponent implements OnDestroy {
         });
     }
 
+    onleadSubmit(key:string){
+        if(key == 'submit'){
+            this.inbox?.refreshItems()
+        }
+    }
+
     ngOnDestroy(): void {
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.unsubscribe();

@@ -1,6 +1,6 @@
 import { CdkDropList, CdkDrag, CdkDragPreview, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -85,6 +85,7 @@ export class LeadEntrySettingsComponent implements OnInit, OnDestroy {
     rmList: any[] = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+    @Output() leadSubmitEvent = new EventEmitter<any>();
 
     config: FuseConfig;
     layout: string;
@@ -156,26 +157,7 @@ export class LeadEntrySettingsComponent implements OnInit, OnDestroy {
                     this.title = "Add New Lead"
                     this.formGroup.get('mobile_code').setValue('91');
 
-                    this.formGroup
-                        .get('cityfilter')
-                        .valueChanges.pipe(
-                            filter((search) => !!search),
-                            startWith(''),
-                            debounceTime(200),
-                            distinctUntilChanged(),
-                            switchMap((value: any) => {
-                                return this.cityService.getCityCombo(value);
-                            })
-                        )
-                        .subscribe({
-                            next: (data) => {
-                                this.cityList = data;
-                                if (!this.record.city_id) {
-                                    this.formGroup.get("city_id").patchValue(data[0].id)
-                                    this.first = false;
-                                }
-                            }
-                        });
+                
 
                     // this.cityService.getMobileCodeCombo().subscribe((res: any) => {
                     //     this.MobileCodeList.next(res);
@@ -237,6 +219,27 @@ export class LeadEntrySettingsComponent implements OnInit, OnDestroy {
             mobilefilter: [''],
             cityfilter: [''],
             Is_Email_Whatsapp: [true]
+        });
+
+        this.formGroup
+        .get('cityfilter')
+        .valueChanges.pipe(
+            filter((search) => !!search),
+            startWith(''),
+            debounceTime(200),
+            distinctUntilChanged(),
+            switchMap((value: any) => {
+                return this.cityService.getCityCombo(value);
+            })
+        )
+        .subscribe({
+            next: (data) => {
+                this.cityList = data;
+                if (!this.record.city_id) {
+                    this.formGroup.get("city_id").patchValue(data[0].id)
+                    this.first = false;
+                }
+            }
         });
     }
 
@@ -307,13 +310,14 @@ export class LeadEntrySettingsComponent implements OnInit, OnDestroy {
                     if (res?.status == "Lead Already Exist") {
                         this.disableBtn = false;
                         this.alertService.showToast('error', res.status, 'top-right', true);
-                        this.entityService.raiserefreshleadEntityCall(true);
+                        // this.entityService.raiserefreshleadEntityCall(true);
                         this.settingsDrawer.close();
-
+                        
                     } else {
                         this.disableBtn = false;
                         this.alertService.showToast('success', 'Record modified', 'top-right', true);
-                        this.entityService.raiserefreshleadEntityCall(true);
+                        this.leadSubmitEvent.emit("submit");
+                        // this.entityService.raiserefreshleadEntityCall(true);
                         this.settingsDrawer.close();
                     }
                 },
@@ -341,12 +345,13 @@ export class LeadEntrySettingsComponent implements OnInit, OnDestroy {
                     if (res?.status == "Lead Already Exist") {
                         this.disableBtn = false;
                         this.alertService.showToast('error', res.status, 'top-right', true);
-                        this.entityService.raiserefreshleadEntityCall(true);
+                        // this.entityService.raiserefreshleadEntityCall(true);
                         this.settingsDrawer.close();
                     } else {
                         this.disableBtn = false;
                         this.alertService.showToast('success', 'New record added', 'top-right', true);
-                        this.entityService.raiserefreshleadEntityCall(true);
+                        // this.entityService.raiserefreshleadEntityCall(true);
+                        this.leadSubmitEvent.emit("submit");
                         this.settingsDrawer.close();
                     }
                 },

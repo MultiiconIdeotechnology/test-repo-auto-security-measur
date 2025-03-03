@@ -266,10 +266,15 @@ export class CabListComponent extends BaseListingComponent {
       });
   }
 
-  HolidayPublish(record): void {
+  cabPublish(record): void {
     // if (!Security.hasPermission(inventoryCabPermissions.publishUnpublishPermissions)) {
     //   return this.alertService.showToast('error', messages.permissionDenied);
     // }
+
+    if (!record.is_audited) {
+      this.alertService.showToast('error', 'Cab product must be audited before it can be published.');
+      return;
+    }
 
     const label: string = record.is_publish_for_bonton
       ? 'Unpublish'
@@ -400,21 +405,29 @@ export class CabListComponent extends BaseListingComponent {
 
     const queryParams = {
       id: record.id,
-      // date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),
-      date: DateTime.now().toFormat('yyyy-MM-dd'),
-      adult: 2,
-      child: 0,
-    };
+      trip_type: record.trip_type,
+      from_type: "city",
+      from_value: record?.from_city_id,
+      departure_date: DateTime.now().toFormat('yyyy-MM-dd'),
+      return_date: DateTime.now().plus({ days: 1 }).toFormat('yyyy-MM-dd'),
+      rental_hour: record?.included_hour,
+      rental_kms: record?.included_km
+    }
 
-    const navigationExtras: NavigationExtras = {
-      queryParams: {
-        "user": JSON.stringify(queryParams)
-      }
-    };
+    if(queryParams.trip_type !== 'Holiday Rental') {
+      queryParams['to_type'] =  "city";
+      queryParams['to_value'] =  record?.to_city_id;
+    }
+
+    // const navigationExtras: NavigationExtras = {
+    //   queryParams: {
+    //     "user": JSON.stringify(queryParams)
+    //   }
+    // };
 
     // Construct the URL using the Router
     const url = this.router.serializeUrl(
-      this.router.createUrlTree(['/inventory/cab/view-details'], navigationExtras)
+      this.router.createUrlTree(['/inventory/cab/view-details'], {queryParams})
     );
 
     // Open the URL in a new tab/window

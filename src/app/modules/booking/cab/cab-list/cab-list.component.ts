@@ -75,8 +75,20 @@ export class CabListComponent extends BaseListingComponent {
   agentList: any[];
   selectedAgent: any;
   _selectedColumns: any;
-  statusList = ['New', 'Completed', 'Rejected', 'Cancelled', 'Waiting for Token Payment', 'Token Payment Success', 'Token Payment Failed'];
+  statusList = ['New', 'Confirmed', 'Completed', 'Rejected', 'Cancelled', 'Waiting for Token Payment', 'Token Payment Success', 'Token Payment Failed'];
   typeList = ['Outstation One Way', 'Outstation Round Trip', 'Airport Transfer', 'Hourly Rental'];
+
+  STATUS_COLORS: { [key: string]: string } = {
+    'New': '#007bff', // Blue
+    'Completed': '#28a745', // Green
+    'Confirmed':'#28a745',
+    'Rejected': '#dc3545', // Red
+    'Cancelled': '#6c757d', // Gray
+    'Waiting for Token Payment': '#ffc107', // Yellow
+    'Token Payment Success': '#17a2b8', // Teal
+    'Token Payment Failed': '#ff5722' // Orange
+  };;
+  
 
   supplierList: any[] = [];
 
