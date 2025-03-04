@@ -95,7 +95,7 @@ export class PurchaseProductComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this.agentId = this.record?.agentid;
-        this.currencySymbol = this.record?.currencySymbol.trim();
+        this.currencySymbol = this.record?.currencySymbol;
 
         this.entityService.onrefreshproductPurchaseCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
