@@ -72,7 +72,7 @@ export class InsuranceComponent extends BaseListingComponent {
   total = 0;
   isFilterShow: boolean = false;
   _selectedColumns: Column[];
-  statusList = ['Pending', 'Confirmed', 'Payment Failed', 'Inprocess', 'Failed', 'Applied', 'Success', 'Rejected'];
+  statusList = ['Pending', 'Confirmed', 'Payment Failed', 'Inprocess', 'Failed', 'Applied', 'Success', 'Rejected', 'Partial Cancelled'];
 
   cols: any = [
     { field: 'pax', header: 'No of Pax', isDate: false, type: 'numeric', matchMode: 'equals' },
@@ -183,7 +183,7 @@ export class InsuranceComponent extends BaseListingComponent {
   }
 
   getStatusColor(status: string): string {
-    if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending' || status == 'Partially Cancelled' || status == 'Hold Released') {
+    if (status == 'Pending' || status == 'Offline Pending' || status == 'Confirmation Pending' || status == 'Partially Cancelled' || status == 'Partial Cancelled' || status == 'Hold Released') {
       return 'text-orange-600';
     } else if (status == 'Waiting for Payment' || status == 'Partial Payment Completed' || status == 'Assign To Refund' || status == 'Payment Completed') {
       return 'text-yellow-600';

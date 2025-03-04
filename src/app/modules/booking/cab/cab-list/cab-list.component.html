@@ -226,7 +226,7 @@
                         </span>
                     </td>
                     <td>
-                        <span [ngClass]="getStatusColor(element.lead_status)">
+                        <span [style.color]="STATUS_COLORS[element?.lead_status]">
                             {{element.lead_status || "-"}}
                         </span>
                     </td>

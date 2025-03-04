@@ -1,6 +1,6 @@
 import { CdkDropList, CdkDrag, CdkDragPreview, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { AsyncPipe, DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation, Pipe, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, Pipe, ViewChild, Input } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
+import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 import { FuseConfig, FuseConfigService, Scheme, Theme, Themes } from '@fuse/services/config';
 import { Routes } from 'app/common/const';
 import { JsonFile } from 'app/common/jsonFile';
@@ -82,7 +83,9 @@ import { Subject, takeUntil, Subscription } from 'rxjs';
         TitleCasePipe,
         MatAutocompleteModule,
         RouterOutlet,
-        MatOptionModule]
+        MatOptionModule,
+        OnlyFloatDirective
+    ]
 })
 export class ReceiptRightComponent implements OnInit, OnDestroy {
     config: FuseConfig;
@@ -93,6 +96,7 @@ export class ReceiptRightComponent implements OnInit, OnDestroy {
     title = "Create Receipt";
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     @ViewChild('settingsDrawer') public settingsDrawer: MatSidenav;
+    @Input() currencySymbol:any;
 
     readonly: boolean = false;
     record: any = {};

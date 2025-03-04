@@ -48,6 +48,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { WalletService } from 'app/services/wallet.service';
 import { UserService } from 'app/core/user/user.service';
+import { InfoWalletComponent } from 'app/modules/account/wallet/info-wallet/info-wallet.component';
 
 @Component({
     selector: 'app-receipt-list',
@@ -391,8 +392,7 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
         }
         else if (record?.transaction_ref_no?.substring(0, 3) == 'AGI') {
             Linq.recirect('/booking/group-inquiry/details/' + record.product_id);
-        }
-        else if (record?.service_for == 'Product Purchase') {
+        } else if (record?.service_for == 'Product Purchase') {
             this.matDialog.open(AgentProductInfoComponent, {
                 data: {
                     data: record,
@@ -402,11 +402,14 @@ export class ReceiptListComponent extends BaseListingComponent implements OnDest
                 },
                 disableClose: true,
             });
-        }
-        else if (record?.transaction_ref_no?.substring(0, 3) == 'OSB') {
+        } else if (record?.transaction_ref_no?.substring(0, 3) == 'REC') {
+            this.matDialog.open(InfoWalletComponent, {
+                data: { data: record?.product_id, readonly: true },
+                disableClose: true
+            })
+        } else if (record?.transaction_ref_no?.substring(0, 3) == 'OSB') {
             Linq.recirect('/booking/offline-service/entry/' + record.product_id + '/readonly');
         }
-
     }
 
     viewAgentData(data): void {

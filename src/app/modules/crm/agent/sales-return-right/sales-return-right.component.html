@@ -14,8 +14,8 @@
             <div class="flex flex-wrap bg-card overflow-hidden">
                 <form class="flex flex-col flex-auto pt-3 overflow-y-auto" [formGroup]="formGroup">
                     <mat-form-field class="w-full">
-                        <mat-label>Amount</mat-label>
-                        <input matInput type="number" (keypress)="numberOnly($event)" required
+                        <mat-label>Amount ({{currencySymbol}})</mat-label>
+                        <input appOnlyFloat matInput type="number" required
                             formControlName="sales_return_amount" />
                         <mat-error *ngIf="formGroup.get('sales_return_amount').hasError('required')">
                             Amount is required

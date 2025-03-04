@@ -271,7 +271,8 @@
                                 <mat-icon class="mat-18">check_circle</mat-icon>
                                 <span style="font-weight: 600;">UnAudit</span>
                             </button>
-                            <button mat-menu-item (click)="HolidayPublish(element)">
+                            <!-- [ngClass]="{'opacity-20': !element?.is_audited}" -->
+                            <button mat-menu-item (click)="cabPublish(element)" *ngIf="element?.is_audited">
                                 <mat-icon class="mat-18">
                                     {{element.is_publish_for_bonton ? "highlight_off" : "check_circle"}}
                                 </mat-icon>

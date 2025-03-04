@@ -84,7 +84,7 @@
                                 (onChange)="filter($event.value)" placeholder="Select Status" appendTo="body"
                                 [showClear]="true">
                                 <ng-template let-option pTemplate="item">
-                                    <p>{{option.value}}</p>
+                                    <p>{{option}}</p>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
@@ -99,10 +99,15 @@
 
         <ng-template pTemplate="body" let-element let-columns="columns">
             <tr>
-                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service">{{element.refNo || "-"}}</td>
+                <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.refNo">{{element.refNo || "-"}}</td>
                 <td>{{element.productCode || "-"}}</td>
                 <td>{{element.agentCode || "-"}}</td>
-                <td>{{element.agency || "-"}}</td>
+                <td>
+                    <span (click)="element.agency ? onAgentDetail(element): null"
+                     [ngClass]="element.agency ? 'cursor-pointer underline': ''">
+                        {{element.agency || "-"}}
+                    </span>
+                </td>
                 <td><span [style.color]="getStatusColor(element.status)">
                         {{ element.status }}
                     </span></td>

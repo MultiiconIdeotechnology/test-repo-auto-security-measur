@@ -319,9 +319,9 @@ export class HolidayListComponent extends BaseListingComponent {
     // }
 
     Audit(data: any): void {
-		// if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
-		// 	return this.alertService.showToast('error', messages.permissionDenied);
-		// }
+		if (!Security.hasPermission(inventoryHolidayPermissions.auditUnauditPermissions)) {
+			return this.alertService.showToast('error', messages.permissionDenied);
+		}
 
 		const label: string = data.is_audited ? 'UnAudit Holiday Product' : 'Audit Holiday Product';
 		this.conformationService.open({

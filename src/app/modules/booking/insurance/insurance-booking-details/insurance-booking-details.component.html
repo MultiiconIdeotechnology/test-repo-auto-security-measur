@@ -56,12 +56,20 @@
                                     <span class="text-md leading-none ml-2">Invoice</span>
                                 </div>
 
-                                <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer" (click)="logs()">
+                                <div class="px-2 py-1 mr-2 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer" (click)="logs()">
                                     <div>
                                         <img src="assets/icons/logs.svg" alt="">
                                     </div>
                                     <span class="text-md leading-none ml-2">Logs</span>
                                 </div>
+
+                                <!-- <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center secondary-text cursor-pointer "
+                                    (click)="fileLogs()">
+                                    <div>
+                                        <img src="assets/icons/logs.svg" alt="">
+                                    </div>
+                                    <span class="text-md leading-none ml-2">File Logs</span>
+                                </div> -->
 
                             </div>
                             <div>
@@ -75,11 +83,16 @@
                                     <mat-icon class="secondary-text text-2xl">watch_later</mat-icon>
                                     <span class="text-md font-semibold ml-2 leading-none theme-black-text">Your Insurance Process is Pending</span>
                                 </div>
-                                <div *ngIf="Status === 'Payment Failed' || Status === 'Booking Failed' || Status === 'Failed' || Status === 'Cancelled'"
+                                <div *ngIf="Status === 'Payment Failed' || Status === 'Booking Failed' || Status === 'Failed'"
                                     class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
                                     <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
                                     <span class="text-md font-semibold ml-2 leading-none">Your Insurance is Failed</span>
                                 </div>
+                                <div *ngIf="Status === 'Partial Cancelled' || Status === 'Cancelled'"
+                                class="pl-2 pr-3 py-1 rounded-lg bg-[rgba(255,0,0,0.1)] flex items-center border bonton-red-border">
+                                <mat-icon class="text-2xl bonton-red-text">warning</mat-icon>
+                                <span class="text-md font-semibold ml-2 leading-none">{{Status}}</span>
+                            </div>
                             </div>
                         </div>
                     </div>

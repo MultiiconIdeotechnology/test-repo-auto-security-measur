@@ -165,5 +165,5 @@
         [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
     </mat-paginator>
 </div>
-<purchase-product-entry-settings></purchase-product-entry-settings>
-<app-crm-sales-return-right></app-crm-sales-return-right>
+<purchase-product-entry-settings [agentId]="agentId" [currencySymbol]="currencySymbol"></purchase-product-entry-settings>
+<app-crm-sales-return-right [currencySymbol]="currencySymbol"></app-crm-sales-return-right>

@@ -9,6 +9,8 @@ import { TechBusinessService } from 'app/services/tech-business.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Linq } from 'app/utils/linq';
+import { Routes } from 'app/common/const';
 
 @Component({
   selector: 'app-onboard-subreport',
@@ -26,14 +28,14 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 })
 export class OnboardSubreportComponent extends BaseListingComponent {
 
-  dataList:any[] = [];
-  sortColumn:string = "";
-  record:any;
-  reqData:any = {};
-  originalDataList:any[] = [];
-  isFilterShow:boolean = false;
+  dataList: any[] = [];
+  sortColumn: string = "";
+  record: any;
+  reqData: any = {};
+  originalDataList: any[] = [];
+  isFilterShow: boolean = false;
 
-  statusList:any[] = ["Active", "New", "Inactive", "Dormant"];
+  statusList: any[] = ["Active", "New", "Inactive", "Dormant"];
   statusColors: { [key: string]: string } = {
     Active: '#28a745',
     New: '#007bff',
@@ -42,26 +44,26 @@ export class OnboardSubreportComponent extends BaseListingComponent {
   };
 
   constructor(
-     public matDialogRef: MatDialogRef<OnboardSubreportComponent>,
-     @Inject(MAT_DIALOG_DATA) public data: any = {},
-     private techService: TechBusinessService,
-     public _filterService: CommonFilterService,
-  ){
+    public matDialogRef: MatDialogRef<OnboardSubreportComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any = {},
+    private techService: TechBusinessService,
+    public _filterService: CommonFilterService,
+  ) {
     super("");
   };
 
   ngOnInit(): void {
-    if(this.data){
+    if (this.data) {
       this.record = this.data;
 
-      if(this.record.type == 'onboard' || this.record.type == 'activation'){
+      if (this.record.type == 'onboard' || this.record.type == 'activation') {
         this.reqData = {
-          rm_id:  this.record.rm_id,
+          rm_id: this.record.rm_id,
           from_date: this.record.date,
           type: this.record.type,
           columeFilters: {},
-          Filter:""
-        } 
+          Filter: ""
+        }
       } else {
         this.reqData = {
           rm_id: this.record.rm_id,
@@ -73,13 +75,13 @@ export class OnboardSubreportComponent extends BaseListingComponent {
       this.refreshItems();
     }
   }
-  
-  refreshItems(event?:any): void {
-    if(this.record.type == 'onboard' || this.record.type == 'activation'){
+
+  refreshItems(event?: any): void {
+    if (this.record.type == 'onboard' || this.record.type == 'activation') {
       this.techService.onboardReport(this.reqData).subscribe({
-        next: (resp:any) => {
+        next: (resp: any) => {
           this.dataList = resp.data;
-          this.dataList.forEach((item:any) => item.signup = new Date(item.signup))
+          this.dataList.forEach((item: any) => item.signup = new Date(item.signup))
           this.originalDataList = resp.data;
           this.totalRecords = resp.total;
           this.isLoading = false;
@@ -89,11 +91,11 @@ export class OnboardSubreportComponent extends BaseListingComponent {
           this.isLoading = false;
         }
       });
-    } else if(this.record.type == 'new_partner' || this.record.type == 'first_partner'){
+    } else if (this.record.type == 'new_partner' || this.record.type == 'first_partner') {
       this.techService.onSummaryReport(this.reqData).subscribe({
-        next: (resp:any) => {
+        next: (resp: any) => {
           this.dataList = resp.data;
-          this.dataList.forEach((item:any) => item.signup = new Date(item.signup))
+          this.dataList.forEach((item: any) => item.signup = new Date(item.signup))
           this.originalDataList = resp.data;
           this.totalRecords = resp.total;
           this.isLoading = false;
@@ -106,8 +108,8 @@ export class OnboardSubreportComponent extends BaseListingComponent {
     }
   }
 
-  onGlobalFilterSearch(val:any){
-    this.dataList = this.originalDataList.filter((item:any) =>
+  onGlobalFilterSearch(val: any) {
+    this.dataList = this.originalDataList.filter((item: any) =>
       JSON.stringify(item).toLowerCase().includes(val.toLowerCase())
     );
   }
@@ -116,11 +118,17 @@ export class OnboardSubreportComponent extends BaseListingComponent {
     return this.statusColors[status];
   }
 
+  onAgentDetail(element: any) {
+    if (element && element?.agent_id) {
+      Linq.recirect(Routes.customers.agent_entry_route + '/' + element.agent_id + '/readonly')
+    }
+  }
+
   getNodataText(): string {
     if (this.isLoading)
-        return 'Loading...';
+      return 'Loading...';
     else if (this.searchInputControl.value)
-        return `no search results found for \'${this.searchInputControl.value}\'.`;
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
     else return 'No data to display';
   }
 }

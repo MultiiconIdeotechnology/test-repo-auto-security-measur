@@ -94,8 +94,8 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agent"
-                            placeholder="Search by Agent" ariaLabel="Filter Agent" />
+                        <p-columnFilter type="text" matchMode="contains" field="agent" placeholder="Search by Agent"
+                            ariaLabel="Filter Agent" />
                     </th>
                     <th>
                         <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
@@ -105,8 +105,7 @@
                                     [options]="_filterService.dateRangeList" optionLabel="label"
                                     placeholder="Select Option" appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <div
-                                            (click)="_filterService.onOptionClick(option, primengTable, 'book_date')">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'book_date')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
@@ -153,9 +152,19 @@
             <ng-template pTemplate="body" let-element>
                 <tr>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service">{{element.service || "-"}}</td>
-                    <td>{{element.refNo || "-"}}</td>
+                    <td>
+                        <span (click)="element.refNo ? onRefNoDetail(element): null"
+                        [ngClass]="element.refNo ? 'cursor-pointer underline': ''">
+                            {{element.refNo || "-"}}
+                        </span>
+                    </td>
                     <td><span [ngClass]="getStatusColor(element.status)">{{element.status || "-"}}</span></td>
-                    <td>{{element.agent || "-"}}</td>
+                    <td>
+                        <span (click)="element.agent ? onAgentDetail(element): null"
+                            [ngClass]="element.agent ? 'cursor-pointer underline': ''">
+                            {{element.agent || "-"}}
+                        </span>
+                    </td>
                     <td>{{element.book_date ? (element.book_date | date: 'dd-MM-yyyy HH:mm:ss') : "-"}}</td>
                     <td class="text-right">{{element.salePrice || "-"}}</td>
                     <td>{{element.mop || "-"}}</td>

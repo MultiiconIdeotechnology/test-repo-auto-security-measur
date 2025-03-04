@@ -513,8 +513,13 @@ export class ReshuffleComponent {
                 return;
             }
         }else{
+            let rmColumFilter: any;
+            if(this.record.columeFilters?.columeFilters?.rm_id_filters) {
+                rmColumFilter = { relationship_manager_id: this.record.columeFilters?.columeFilters?.rm_id_filters }
+                delete this.record.columeFilters?.columeFilters?.rm_id_filters;
+            }
             mode = {
-                "columeFilters" : this.record.columeFilters.columeFilters, 
+                "columeFilters" : {...this.record.columeFilters.columeFilters, ...rmColumFilter}, 
                 "Filter" : this.record.columeFilters.Filter, 
                 "Status": json3.Status,
                 "ToId": json3.ToId,

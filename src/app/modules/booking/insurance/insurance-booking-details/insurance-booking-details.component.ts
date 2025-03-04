@@ -30,6 +30,7 @@ import { TravellerInfoComponent } from '../traveller-info/traveller-info.compone
 import { CommonUtils } from 'app/utils/commonutils';
 import { LogsComponent } from '../../flight/flight/logs/logs.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { FileLogsComponent } from '../../flight/flight/file-logs/file-logs.component';
 
 @Component({
   selector: 'app-insurance-booking-details',
@@ -125,7 +126,7 @@ export class InsuranceBookingDetailsComponent {
     this.toastr.showToast('success', 'Copied');
   }
 
-  viewPolicy(data){
+  viewPolicy(data) {
     window.open(data, '_blank')
     // Linq.recirect(data);
   }
@@ -151,7 +152,7 @@ export class InsuranceBookingDetailsComponent {
     })
       .afterClosed()
       .subscribe((res) => {
-        if(res){
+        if (res) {
           // this.refreshData()
         }
       });
@@ -176,7 +177,7 @@ export class InsuranceBookingDetailsComponent {
       Linq.recirect(route + this.mainDataAll?.insurance_for_id);
     }
   }
-  
+
   print(val): void {
 
     this.conformationService.open({
@@ -227,5 +228,15 @@ export class InsuranceBookingDetailsComponent {
       // this.refreshItems();
     })
   }
+
+  // fileLogs() {
+  //   this.matDialog.open(FileLogsComponent, {
+  //     data: { id: this.mainData.id, send: 'Insurance' },
+  //     disableClose: true
+  //   }).afterClosed().subscribe(res => {
+  //     // if(res)
+  //     // this.refreshItems();
+  //   })
+  // }
 
 }

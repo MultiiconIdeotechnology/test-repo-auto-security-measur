@@ -133,10 +133,15 @@
                 <tr>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">{{element.code}}</td>
                     <!-- <td>{{element.company || "-"}}</td> -->
-                    <td>{{element.agency || "-"}}</td>
+                    <td>
+                        <span (click)="element.agency ? onAgentDetail(element): null"
+                            [ngClass]="element.agency ? 'cursor-pointer underline': ''">
+                            {{element.agency || "-"}}
+                        </span>
+                    </td>
                     <td><span [style.color]="getStatusColor(element.status)">
-                        {{ element.status || "-" }}
-                    </span></td>
+                            {{ element.status || "-" }}
+                        </span></td>
                     <td>{{element.email || "-"}}</td>
                     <td>{{element.mobile || "-"}}</td>
                     <td>{{element.city || "-"}}</td>
