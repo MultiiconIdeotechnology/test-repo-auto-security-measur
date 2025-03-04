@@ -6,6 +6,7 @@ import { ThisReceiver } from '@angular/compiler';
 import { ToasterService } from 'app/services/toaster.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { CommanService } from 'app/services/comman.service';
 
 @Component({
   selector: 'app-cab-view-details',
@@ -21,11 +22,13 @@ import { MatButtonModule } from '@angular/material/button';
 export class CabViewDetailsComponent implements OnInit {
   payload:any = {};
   cabDisplayData:any = {};
+  loading: boolean = false;
 
   constructor(
     private cabService: CabService,
     private activatedRoute: ActivatedRoute,
     private toasterService: ToasterService,
+    // private commanService: CommanService,
   ){
 
   }
@@ -43,17 +46,20 @@ export class CabViewDetailsComponent implements OnInit {
 
   // Cab Details api call
   getCabDetails(){
+    this.loading = true;
     this.cabService.getCabDetails(this.payload).subscribe({
       next:(res) => {
         if(res){
           this.cabDisplayData = res;
           this.cabDisplayData.departure_date = this.payload.departure_date,
           this.cabDisplayData.return_date = this.payload?.return_date
+          this.loading = false;
         }
         console.log("cabDetails", res)
       },
       error:(err) => {
-        this.toasterService.showToast('error', err)
+        this.toasterService.showToast('error', err);
+        this.loading = false;
       }
     })
   }

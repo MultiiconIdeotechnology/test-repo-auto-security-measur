@@ -1,17 +1,17 @@
 
-<div class="mx-auto container">
+<div class="mx-auto container" *ngIf="!loading">
     <div class="w-full sticky top-[10px] z-49">
-        <div class="dark:bg-[#064e48] bg-[#5eb5ad] rounded-md flex justify-between mobile:min-w-full mobile:max-w-full min-w-[1300px] max-w-[1300px] px-4 mobile:px-3 py-5 white-text items-center">
-            <div class="font-semibold text-2xl mobile:text-base mobile:font-medium mobile:min-w-[150px]">Review your Booking</div>
+        <div class="dark:bg-[#064e48] bg-[#5eb5ad] rounded-md flex justify-between px-4 py-5 white-text items-center">
+            <div class="lg:font-semibold lg:text-2xl text-base font-medium">Review your Booking</div>
             <div>
-                <div class="mobile:text-sm mobile:font-medium flex">
+                <div class="md:text-base text-sm font-medium flex">
                     <div class="items-center gap-2  flex">
                         <span>{{cabDisplayData?.from}}</span>
                         <mat-icon *ngIf="cabDisplayData?.to" class="text-white icon-size-4"
                             svgIcon="heroicons_outline:arrow-right"></mat-icon>
                         <span>{{cabDisplayData?.to}}</span>
                     </div>
-                    <span class="border-r border-gray-border mx-2 mobile:mx-1 mobile:text-sm mobile:font-medium"></span>
+                    <span class="border-r border-gray-border mx-2"></span>
                     {{cabDisplayData?.trip_type}}
                 </div>
             </div>
@@ -23,9 +23,9 @@
     </div>
     
     <div class="pt-10 w-full">
-        <div class=" flex justify-center">
+        <div class=" lg:flex lg:flex-row lg:gap-3 gap-2 flex-col justify-center">
         
-            <div class="flex flex-col w-[69%] mr-[1%] mobile:w-full mobile:mr-0">
+            <div class="flex flex-col lg:w-[69%] w-full">
                 <div class="rounded-lg shadow-md bg-white dark:bg-gray-800 mb-5 relative">
                     <div class="p-4 flex justify-between">
                         <div><img class="w-auto" src="assets/icons/no-cars.svg"></div>
@@ -227,7 +227,7 @@
                 </div>
             </div>
         
-            <div class="w-[29%] ml-[1%] mobile:w-full mobile:ml-0">
+            <div class="lg:w-[29%] w-full ml-0">
                 <div class="info relative flex flex-col mb-5 bg-white dark:bg-gray-800 rounded-md round-shadow">
                     <span class="text-xl font-semibold px-4 py-3 border-b border-gray-border dark:border-gray-300">Price Information</span>
                     <div class="px-4 py-3 border-b border-dashed border-gray-border dark:border-gray-300">
