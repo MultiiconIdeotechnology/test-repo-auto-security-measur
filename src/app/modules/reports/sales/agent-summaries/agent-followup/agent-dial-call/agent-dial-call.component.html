@@ -1,0 +1,28 @@
+
+<div class="flex flex-col flex-auto overflow-hidden bg-card shadow rounded-2xl -m-6">
+
+    <div class="border-b">
+        <div class="flex flex-raw overflow-hidden overflow-x-auto rounded-[10px] mt-4 ml-4 mr-4">
+            <div class="w-full">
+                <form class="flex flex-col flex-auto overflow-hidden" [formGroup]="formGroup">
+                        <div class="flex flex-row px-[9px]">
+                            <mat-form-field class="flex-grow">
+                                <mat-label
+                                    class="text-base text-secondary font-medium dark:text-[#687798]">Remark</mat-label>
+                                <textarea matInput rows="1" formControlName="rm_remark"></textarea>
+                                <mat-error *ngIf="formGroup.get('rm_remark').hasError('required')">
+                                    Remark is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div  class="flex items-center justify-end mt-4 sm:mt-1 pr-6 py-3 space-x-3">
+        <button mat-stroked-button (click)="matDialogRef.close()"> Close </button>
+        <button [disabled]="formGroup.invalid"  mat-flat-button [color]="'primary'" (click)="submit()" >
+            Submit
+        </button>
+    </div>
+</div>

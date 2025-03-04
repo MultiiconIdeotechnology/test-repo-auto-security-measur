@@ -38,5 +38,6 @@ export class CallHisoryRemarkComponent {
         @Inject(MAT_DIALOG_DATA) public data: any = {}
     ) {
         this.record = data;
+        console.log("this.record remark", this.record)
     }
 }

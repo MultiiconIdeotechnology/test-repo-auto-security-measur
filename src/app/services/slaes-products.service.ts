@@ -19,4 +19,8 @@ export class SalesProductsService {
     getAgentSummaryReport(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'AccountReport/getAgentSummaryReport', model);
     }
+
+    createFollowupRemark(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CallHistory/create', model);
+    }
 }

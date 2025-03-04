@@ -30,7 +30,7 @@ import { Linq } from 'app/utils/linq';
 import { Routes } from 'app/common/const';
 import { DialAgentCallListComponent } from 'app/modules/crm/agent/dial-call-list/dial-call-list.component';
 import { MatDialog } from '@angular/material/dialog';
-import { AgentSummaryCallHistoryComponent } from '../agent-summary-call-history/agent-summary-call-history.component';
+import { AgentFollowupComponent } from '../agent-followup/agent-followup.component';
 
 @Component({
     selector: 'app-agent-summary',
@@ -186,7 +186,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
         if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        this.matDialog.open(AgentSummaryCallHistoryComponent, {
+        this.matDialog.open(AgentFollowupComponent, {
             data: { data: record, readonly: true, agencyName: record?.agent_name },
             disableClose: true,
         });
