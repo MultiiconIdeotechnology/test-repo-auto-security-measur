@@ -25,6 +25,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { ToasterService } from 'app/services/toaster.service';
 import { module_name } from 'app/security';
 import { AppConfig } from 'app/config/app-config';
+import { SalesProductsService } from 'app/services/slaes-products.service';
 
 
 @Component({
@@ -84,7 +85,8 @@ export class AgentFollowupComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any = {},
-    public matDialogRef: MatDialogRef<AgentSummaryCallHistoryComponent>
+    public matDialogRef: MatDialogRef<AgentSummaryCallHistoryComponent>,
+    private salesProductService: SalesProductsService,
   ) {
     // this.key = this.module_name;
     this.Mainmodule = this,
@@ -100,6 +102,7 @@ export class AgentFollowupComponent {
       this.tab = 'Call History';
       this.selectedTabIndex = 1;
       this.callHistoryComponent.refreshItems();
+      this.salesProductService.setRemarkAdd();
     }
   }
 }

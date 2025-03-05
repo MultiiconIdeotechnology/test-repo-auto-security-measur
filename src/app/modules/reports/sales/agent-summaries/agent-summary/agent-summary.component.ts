@@ -100,7 +100,9 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
         this.agentList = this._filterService.agentListByValue;
         this.employeeList = this._filterService.rmListByValue;
 
-        
+        this.salesProductsService.remarkAdd$.subscribe(() => {
+            this.refreshItems();
+        })
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
