@@ -92,7 +92,7 @@ export class MainListComponent extends BaseListingComponent {
     { field: 'contact_person', header: 'Contact Person', type: 'text' },
   ];
 
-  statusList =  [ 'New', 'Converted', 'Live', 'Kyc Pending']
+  statusList =  [ 'New', 'Converted', 'Live', 'Kyc Pending', 'Kyc Rejected']
 
   constructor(
     private conformationService: FuseConfirmationService,
@@ -112,11 +112,9 @@ export class MainListComponent extends BaseListingComponent {
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
-    this.userService.user$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((user: any) => {
-        this.user = user;
-      });
+    this.userService.user$.pipe(takeUntil(this._unsubscribeAll)).subscribe((user: any) => {
+      this.user = user;
+    });
   }
 
   ngOnInit() {
