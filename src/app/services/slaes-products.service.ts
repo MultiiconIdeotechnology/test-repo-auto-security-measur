@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -9,6 +9,9 @@ import { Observable } from 'rxjs';
 export class SalesProductsService {
 
     private baseUrl = environment.apiUrl;
+
+    private remarkAddSubject = new Subject<void>();
+            remarkAdd$ = this.remarkAddSubject.asObservable();
 
     constructor(private http: HttpClient) { }
 
@@ -22,5 +25,9 @@ export class SalesProductsService {
 
     createFollowupRemark(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'CallHistory/create', model);
+    }
+
+    setRemarkAdd(){
+        this.remarkAddSubject.next();
     }
 }
