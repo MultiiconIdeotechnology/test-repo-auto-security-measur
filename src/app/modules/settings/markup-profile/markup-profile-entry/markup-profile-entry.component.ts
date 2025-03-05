@@ -153,7 +153,7 @@ export class MarkupProfileEntryComponent {
 
     type_list_three:any[] = [
         { value: 'Flat for Full Booking', viewValue: 'Flat for Full Booking' },
-        { value: 'Percentage(%) For Full Booking', viewValue: 'Percentage(%) For Full Booking' },
+        { value: 'Percentage(%) for Full Booking', viewValue: 'Percentage(%) for Full Booking' },
     ]
 
     typeAir_list: any[] = [
