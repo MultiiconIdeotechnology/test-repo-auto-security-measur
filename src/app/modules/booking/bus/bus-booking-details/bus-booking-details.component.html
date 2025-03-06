@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-
+        
         <button mat-raised-button color="primary" (click)="close()">
             Close
         </button>
@@ -106,6 +106,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        <button *ngIf="Status == 'Confirmed'" mat-raised-button color="primary" class="mb-3" (click)="onBusTicketRefund()">Refund</button>
                     </div>
 
                     <!--Booking By--->

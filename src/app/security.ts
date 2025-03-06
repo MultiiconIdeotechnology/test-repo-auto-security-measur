@@ -680,6 +680,7 @@ export const busBookingPermissions = {
     voucherPermissions: { module_name: module_name.bookingsBus, group_name: group_name.detailPage, operation_type: 'Voucher', category_name: category_name.print },
     amendmentPermissions: { module_name: module_name.bookingsBus, group_name: group_name.detailPage, operation_type: 'Amendment', category_name: category_name.entry },
     invoicePermissions: { module_name: module_name.bookingsBus, group_name: group_name.detailPage, operation_type: 'Invoice', category_name: category_name.print },
+    refundPermission: { module_name: module_name.bookingsBus, group_name: group_name.detailPage, operation_type: 'Refund Bus Ticket', category_name: category_name.action },
 }
 
 export const bookingsHotelPermissions = {

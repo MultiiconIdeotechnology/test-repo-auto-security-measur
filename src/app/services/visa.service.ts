@@ -107,4 +107,8 @@ export class VisaService {
     printInvoice(invoiceId: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Visa/printInvoice', {invoiceId});
     }
+
+    visaRejectRefund(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'VisaBookingPax/visaReject', { id: id });
+    }
 }

@@ -23,4 +23,8 @@ export class BusService {
   getBusCityCombo(filter?: string): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'BusCity/getBusCityCombo', { filter });
   }
+
+  onBusRefund(id: any): Observable<any>{
+    return this.http.post<any>(this.baseUrl + 'bus/busFullRefund', {id:id});
+  }
 }

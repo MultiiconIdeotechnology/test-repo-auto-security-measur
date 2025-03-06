@@ -24,6 +24,11 @@
                     <div class="flex relative flex-col mb-3">
                         <div class="flex justify-between">
                             <div class="flex space-x-3">
+                                <button
+                                    *ngIf="bookingDetail.status == 'Documents Rejected' || bookingDetail.status ==  'Rejected'"
+                                    mat-raised-button color="primary"
+                                    (click)="onVisaRejectRefund()">Refund</button>
+
                                 <div *ngIf="bookingDetail.invoice_id"
                                     class="px-2 py-1 border rounded-lg flex items-center primary-text  cursor-pointer"
                                     (click)="printInvoice()">
@@ -93,7 +98,7 @@
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Type</span>
                             <div class="truncate">
-                                <span class="text-base truncate" [matTooltip]="bookingBy?.type"> 
+                                <span class="text-base truncate" [matTooltip]="bookingBy?.type">
                                     {{bookingBy?.type || ' - '}}</span>
                             </div>
                         </div>
@@ -142,8 +147,7 @@
                         <div class="w-1/2">
                             <span class="text-md font-semibold text-secondary">Reference Number</span>
                             <div class="truncate">
-                                <span class="text-base truncate"
-                                    [matTooltip]="mainDataAll?.booking_ref_no">
+                                <span class="text-base truncate" [matTooltip]="mainDataAll?.booking_ref_no">
                                     {{mainDataAll?.booking_ref_no || ' - '}}</span>
                             </div>
                         </div>
@@ -190,24 +194,21 @@
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Validity</span>
                             <div class="truncate">
-                                <span class="text-base truncate"
-                                    [matTooltip]="mainDataAll?.validity_period">
+                                <span class="text-base truncate" [matTooltip]="mainDataAll?.validity_period">
                                     {{mainDataAll?.validity_period || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Processing Time</span>
                             <div class="truncate">
-                                <span class="text-base truncate"
-                                    [matTooltip]="mainDataAll?.processing_time">
+                                <span class="text-base truncate" [matTooltip]="mainDataAll?.processing_time">
                                     {{mainDataAll?.processing_time || ' - '}}</span>
                             </div>
                         </div>
                         <div class="flex flex-col ">
                             <span class="text-md font-semibold text-secondary">Length of Stay</span>
                             <div class="truncate">
-                                <span class="text-base truncate"
-                                    [matTooltip]="mainDataAll?.length_of_stay">
+                                <span class="text-base truncate" [matTooltip]="mainDataAll?.length_of_stay">
                                     {{mainDataAll?.length_of_stay || ' - '}}</span>
                             </div>
                         </div>

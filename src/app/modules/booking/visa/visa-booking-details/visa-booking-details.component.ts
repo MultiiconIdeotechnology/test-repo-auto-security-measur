@@ -172,6 +172,44 @@ export class VisaBookingDetailsComponent {
         });
     }
 
+    onVisaRejectRefund(){
+        //    if (!Security.hasPermission(busBookingPermissions.refundPermission)) {
+        //       return this.alertService.showToast('error', messages.permissionDenied);
+        //     }
+        
+            this.conformationService.open({
+              title: 'Refund Visa Application.',
+              message: `Are you sure want to refund this visa application?`,
+              actions    : {
+                confirm: {
+                    show : true,
+                    label: 'Yes, Refund',
+                    color: 'primary',
+                },
+                cancel : {
+                    show : true,
+                    label: 'Cancel',
+                },
+            },
+            })
+              .afterClosed().subscribe((res) => {
+                if (res === 'confirmed') {
+                    this.visaService.visaRejectRefund(this.Id).subscribe({
+                      next: (res) => {
+                        if(res && res['status']){
+                          this.toastr.showToast('success', 'Visa application refunded successfully');
+                          this.getVisaBookingRecord();
+                        }
+                      },
+                      error: (err) => {
+                        this.toastr.showToast('error', err, 'top-right', true);
+                      },
+        
+                    })
+                  }
+              })
+    }
+
     refund() {
         const label: string = 'Refund';
         this.conformationService

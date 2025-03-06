@@ -96,29 +96,33 @@ export class BusBookingDetailsComponent {
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-
-      this.busService.getBusBookingRecord(id).subscribe({
-        next: res => {
-          this.mainData = res.data;
-          this.bookingBy = res.data.bookingByInfo;
-          this.paymentBy = res.data.paymentByInfo;
-          this.bookingDetail = res.data;
-          this.mainDataAll = res.data;
-          this.accountDatail = res.data.account
-          this.Status = res.data.status
-          this.priceDetails = res.data.priceDetail
-          this.priceDetails = Linq.groupBy(this.priceDetails, x => x.box)
-          // this.segmentList = data.data[0].segments;
-          this.travellerDataList = res.data.travellerInfos;
-          // this.baggageDataList = data.data[0].mealBaggages;
-        }, error: err => {
-          this.toastr.showToast('error', err)
-        }
-      })
+      this.id = params.get('id');
+      this.fetchBookingDetails(id);
     })
 
     this.classy.toggleNavigation('mainNavigation');
 
+  }
+
+  fetchBookingDetails(id: string) {
+    this.busService.getBusBookingRecord(id).subscribe({
+      next: res => {
+        this.mainData = res.data;
+        this.bookingBy = res.data.bookingByInfo;
+        this.paymentBy = res.data.paymentByInfo;
+        this.bookingDetail = res.data;
+        this.mainDataAll = res.data;
+        this.accountDatail = res.data.account
+        this.Status = res.data.status
+        this.priceDetails = res.data.priceDetail
+        this.priceDetails = Linq.groupBy(this.priceDetails, x => x.box)
+        // this.segmentList = data.data[0].segments;
+        this.travellerDataList = res.data.travellerInfos;
+        // this.baggageDataList = data.data[0].mealBaggages;
+      }, error: err => {
+        this.toastr.showToast('error', err)
+      }
+    })
   }
 
   print(val): void {
@@ -193,6 +197,44 @@ export class BusBookingDetailsComponent {
 
   close() {
     this.router.navigate([this.busRoute])
+  }
+
+  onBusTicketRefund(){
+    if (!Security.hasPermission(busBookingPermissions.refundPermission)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.conformationService.open({
+      title: 'Refund Bus Ticket.',
+      message: `Are you sure want to refund this bus ticket?`,
+      actions    : {
+        confirm: {
+            show : true,
+            label: 'Yes, Refund',
+            color: 'primary',
+        },
+        cancel : {
+            show : true,
+            label: 'Cancel',
+        },
+    },
+    })
+      .afterClosed().subscribe((res) => {
+        if (res === 'confirmed') {
+            this.busService.onBusRefund(this.id).subscribe({
+              next: (res) => {
+                if(res && res['status']){
+                  this.alertService.showToast('success', 'Bus ticket refunded successfully');
+                  this.fetchBookingDetails(this.id);
+                }
+              },
+              error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+              },
+
+            })
+          }
+      });
   }
 
   checkStatus() {
