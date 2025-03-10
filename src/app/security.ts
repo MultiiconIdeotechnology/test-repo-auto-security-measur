@@ -521,6 +521,10 @@ export const agentPermissions = {
     // techCallHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline Call History', category_name: category_name.operation }
 }
 
+export const partnerRegisterPermissions = {
+    callHistoryFollowupPermissions: { module_name: module_name.agentSummary, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation },
+}
+
 export const techCollectionPermissions = {
     dailCallPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Dail Call', category_name: category_name.operation },
     callHistoryPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation }

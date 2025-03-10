@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { messages, module_name, Security, saleProductPermissions, filter_module_name, agentPermissions } from 'app/security';
+import { messages, module_name, Security, saleProductPermissions, filter_module_name, agentPermissions, partnerRegisterPermissions } from 'app/security';
 import { SalesProductsService } from 'app/services/slaes-products.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { GridUtils } from 'app/utils/grid/gridUtils';
@@ -187,7 +187,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
     }
 
     callHistory(record): void {
-        if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
+        if (!Security.hasPermission(partnerRegisterPermissions.callHistoryFollowupPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
         this.matDialog.open(AgentFollowupComponent, {
