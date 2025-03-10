@@ -33,6 +33,10 @@ export class CabService {
     return this.http.post<any>(this.baseUrl + 'HolidayProduct/CopyProduct', { id: id });
   }
 
+  setLeadStatus(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "cableads/setLeadStatus", model);
+  }
+
   // //----
   // setCabPopular(id: string): Observable<any> {
   //   return this.http.post<any[]>(this.baseUrl + 'cab/setPopular', { id: id });
