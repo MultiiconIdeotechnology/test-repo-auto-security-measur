@@ -55,7 +55,6 @@ export class CabViewDetailsComponent implements OnInit {
           this.cabDisplayData.return_date = this.payload?.return_date
           this.loading = false;
         }
-        console.log("cabDetails", res)
       },
       error:(err) => {
         this.toasterService.showToast('error', err);

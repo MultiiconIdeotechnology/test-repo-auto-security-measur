@@ -207,7 +207,6 @@ export class AgentSummaryCallHistoryComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
-                console.log("this.datalist", this.dataList);
                 // this._paginator.length = data.total;
             },
             error: (err) => {
