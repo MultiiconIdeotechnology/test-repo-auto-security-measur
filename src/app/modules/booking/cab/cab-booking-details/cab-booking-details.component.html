@@ -28,7 +28,7 @@
                             <div>
                                 <div class="flex space-x-3"
                                     *ngIf="bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'">
-                                    <div *ngIf="(bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success') && bontonPanel.isB2B()"
+                                    <div *ngIf="bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'"
                                         class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-secondary cursor-pointer"
                                         (click)="getCopy('agent')">
                                         <mat-icon class="primary-text pr-1 text-xl"
@@ -37,7 +37,7 @@
                                             Copy</span>
                                     </div>
 
-                                    <div *ngIf="(bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success') && bontonPanel.isB2B()"
+                                    <div *ngIf="bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'"
                                         class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-secondary cursor-pointer"
                                         (click)="getCopy('customer')">
                                         <mat-icon class="primary-text pr-1 text-xl"
@@ -121,8 +121,8 @@
                                                     <img class="icon-size-4" src="assets/icons/gray-cancellation.svg">
                                                     <span
                                                         class="text-secondary font-medium text-base w-24">Cancellation</span>
-                                                    <span
-                                                        class="primary-text font-medium text-base cursor-pointer border-b primary-border">View
+                                                    <span (click)="viewPolicy()"
+                                                        class="primary-text font-medium text-base text-[#1674E6] border-[#1674E6] cursor-pointer border-b primary-border">View
                                                         Policy</span>
                                                 </div>
                                             </div>
@@ -230,6 +230,17 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="flex gap-3"
+                        *ngIf="bookingDetail?.lead_status == 'New' || bookingDetail?.lead_status === 'Token Payment Success'">
+                        <button class="w-1/2" mat-flat-button [color]="'primary'" (click)="status(bookingDetail, 1)">
+                            Complete
+                        </button>
+                        <button class="w-1/2" mat-stroked-button (click)="Rejected(bookingDetail, 3)">
+                            Reject
+                        </button>
+                        <!-- Save as draft -->
                     </div>
                 </div>
             </div>

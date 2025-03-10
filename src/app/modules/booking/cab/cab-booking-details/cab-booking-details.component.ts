@@ -22,6 +22,8 @@ import { ToasterService } from 'app/services/toaster.service';
 import { Linq } from 'app/utils/linq';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
+import { CancellationPolicyComponent } from '../../bus/cancellation-policy/cancellation-policy.component';
 
 @Component({
   selector: 'app-cab-booking-details',
@@ -90,6 +92,66 @@ export class CabBookingDetailsComponent {
 
   close() {
     this.router.navigate([this.cabRoute])
+  }
+
+  viewPolicy() {
+    this.matDialog.open(CancellationPolicyComponent, {
+      data: { data: this.bookingDetail.cancellatioon_policy, send: 'Cab' },
+      disableClose: true
+    })
+  }
+
+  status(record: any, code: any): void {
+    const label: string = code == 1 ? 'Holiday Completed' : 'Holiday Cancelled';
+    this.conformationService.open({
+      title: label,
+      message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+    }).afterClosed().subscribe({
+      next: (res) => {
+        if (res === 'confirmed') {
+          const Fdata = {}
+          Fdata['id'] = record.id,
+            Fdata['status_code'] = code,
+            Fdata['note'] = '',
+            this.cabService.setLeadStatus(Fdata).subscribe({
+              next: (res) => {
+                if (res) {
+                  this.alertService.showToast('success', code == 1 ? 'Holiday Completed' : 'Holiday Cancelled', "top-right", true);
+                  this.bookingDetail.lead_status = 'Completed'
+                }
+              }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+            });
+        }
+      }
+    })
+  }
+
+  Rejected(record: any, code: any): void {
+
+    this.matDialog.open(RejectReasonComponent, {
+      disableClose: true,
+      data: record,
+      panelClass: 'full-dialog'
+    }).afterClosed().subscribe({
+      next: (res) => {
+        if (res) {
+          const Fdata = {}
+          Fdata['id'] = record.id,
+            Fdata['status_code'] = code,
+            Fdata['note'] = res,
+            this.cabService.setLeadStatus(Fdata).subscribe({
+              next: (response) => {
+                if (response) {
+                  this.alertService.showToast('success', "Holiday Reject", "top-right", true);
+                  this.bookingDetail.lead_status = 'Rejected'
+                  this.bookingDetail.reject_reason = res
+                }
+              },
+              error: (err) => this.alertService.showToast('error', err, "top-right", true)
+            })
+        }
+      }
+    })
   }
 
 }

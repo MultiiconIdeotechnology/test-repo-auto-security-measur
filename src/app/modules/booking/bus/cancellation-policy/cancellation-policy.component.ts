@@ -25,15 +25,19 @@ import { RouterOutlet } from '@angular/router';
 export class CancellationPolicyComponent {
 
   dataList: any[] = [];
+  send:any
 
   constructor(
     public matDialogRef: MatDialogRef<CancellationPolicyComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    console.log("data", data);
+    this.send = this.data.send
   }
 
   ngOnInit() {
-    this.dataList = this.data;
+    this.dataList = this.data.data;
+    console.log("40", this.dataList);
   }
 
 }
