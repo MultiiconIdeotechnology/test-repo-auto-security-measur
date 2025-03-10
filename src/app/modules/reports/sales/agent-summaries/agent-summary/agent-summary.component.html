@@ -80,6 +80,9 @@
                     <th pSortableColumn="agent_name" pResizableColumn>
                         Agency Name <p-sortIcon field="agent_name" />
                     </th>
+                    <th pSortableColumn="followup" pResizableColumn>
+                        Calls <p-sortIcon field="followup" />
+                    </th>
                     <th pSortableColumn="rm" pResizableColumn>
                         RM <p-sortIcon field="rm" />
                     </th>
@@ -94,9 +97,6 @@
                     </th>
                     <th pSortableColumn="tech_gp" pResizableColumn class="text-right">
                         Tech GP <p-sortIcon field="tech_gp" />
-                    </th>
-                    <th pSortableColumn="followup" pResizableColumn>
-                        Followup <p-sortIcon field="followup" />
                     </th>
                     <th pSortableColumn="last_call_date" pResizableColumn>
                         Last Fowllowup Date <p-sortIcon field="last_call_date" />
@@ -148,6 +148,10 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
+                    <th alignFrozen="left">
+                        <p-columnFilter type="numeric" field="followup" placeholder="Search by Follow up"
+                            ariaLabel="Filter Follow up" />
+                    </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -197,10 +201,6 @@
                     <th alignFrozen="left">
                         <p-columnFilter type="numeric" field="tech_gp" placeholder="Search by Tech GP"
                             ariaLabel="Filter Tech GP" />
-                    </th>
-                    <th alignFrozen="left">
-                        <p-columnFilter type="numeric" field="followup" placeholder="Search by Follow up"
-                            ariaLabel="Filter Follow up" />
                     </th>
                     <th>
                         <p-columnFilter field="last_call_date" type="date">
@@ -262,6 +262,11 @@
                         </a>
                     </td>
 
+                    <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup">
+                        <span class="inline-block cursor-pointer border-b border-gray-500"
+                            (click)="callHistory(element)">{{(element.followup) || 0}}</span>
+                    </td>
+
                     <td>{{element.rm || "-"}}</td>
                     <td>
                         <span class="text-center justify-left"
@@ -279,11 +284,6 @@
 
                     <td class="text-right">{{element.tech_gp ? element.tech_gp.toFixed(2) : '0'}}</td>
                     <!-- <td class="text-center">{{element.followup ? element.followup : '0'}}</td> -->
-
-                    <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup">
-                        <span class="inline-block cursor-pointer border-b border-gray-500"
-                            (click)="callHistory(element)">{{(element.followup) || 0}}</span>
-                    </td>
 
                     <td>
                         {{(element.last_call_date | date: 'dd-MM-yyyy') || "-"}}
