@@ -258,6 +258,7 @@ export const module_name = {
     offlineService: 'Offline Service',
     walletCredit: 'Wallet Credit',
     agentBalance: 'Agent Balance Register',
+    supplierWalletBalance: 'Supplier Wallet Balance',
     agentLedgerWalletMissmatch: 'Agent Ledger/Wallet Missmatch',
     walletOutstanding: 'Wallet Outstanding',
     pgRefund: 'PG Refund',
@@ -415,6 +416,7 @@ export const filter_module_name = {
     tech_business_summary: 'tech_business_summary',
     tech_rm_monthly_report:'tech_rm_monthly_report',
     tech_product_monthly_report:'tech_product_monthly_report',
+    supplier_wallet_balance:'supplier_wallet_balance',
 
     //Inventory
     activity: "activity",
