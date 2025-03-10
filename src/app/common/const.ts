@@ -284,8 +284,8 @@ export const Routes = {
 
         purchase_register_path: 'account/purchase_register',
         purchase_register_route: 'account/purchase_register',
-
         
+      
     },
 
     leads:{
@@ -442,6 +442,9 @@ export const Routes = {
     
         pg_refund_path: 'account/pg_refund',
         pg_refund_route: 'account/pg_refund',
+
+        supplier_balance_path: 'reports/supplier-balance',
+        supplier_balance_route: 'reports/supplier-balance',
     },
 
     settings: {

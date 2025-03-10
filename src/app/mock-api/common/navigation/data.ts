@@ -494,6 +494,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         pid: 'REPORTS-ACCOUNTS_WALLET-OUTSTANDING_VIEW',
                         icon: '',
                         link: Routes.account.wallet_outstanding_route
+                    },
+                    {
+                        id: 'reports.supplier_balance',
+                        title: 'Wallet Outstanding',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_SUPPLIER-BALANCE_VIEW',
+                        icon: '',
+                        link: Routes.reports.supplier_balance_route
                     }
                     // {
                     //     id: 'reports.transaction',
