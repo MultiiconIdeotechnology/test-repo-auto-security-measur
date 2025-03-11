@@ -19,7 +19,7 @@ export class SupplierWalletBalanceService {
   }
 
   balanceSync(){
-    return this.http.get<any>(this.baseUrl + 'cronjob/editSupplierBalance ');
+    return this.http.get<any>(this.baseUrl + 'cronjob/collectSupplierBalance');
   }
 
   getSupplierCombo(filter: string, type?: string): Observable<any[]> {

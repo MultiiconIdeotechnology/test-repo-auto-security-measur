@@ -90,6 +90,9 @@ export class HolidayListComponent extends BaseListingComponent {
             if (resp['table_config']['entry_date_time'].value) {
                 resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
             }
+            if (resp['table_config']['last_price_date'].value) {
+                resp['table_config']['last_price_date'].value = new Date(resp['table_config']['last_price_date'].value);
+            }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -144,6 +147,9 @@ export class HolidayListComponent extends BaseListingComponent {
             }
             if (filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            }
+            if (filterData['table_config']['last_price_date'].value) {
+                filterData['table_config']['last_price_date'].value = new Date(filterData['table_config']['last_price_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
         }
