@@ -23,7 +23,7 @@ export class SupplierWalletBalanceService {
   }
 
   getSupplierCombo(filter: string, type?: string): Observable<any[]> {
-    return this.http.post<any[]>(this.baseUrl + 'Supplier/getSupplierCombo', { filter: filter, type: type });
+    return this.http.post<any[]>(this.baseUrl + 'Supplier/getProviderBalanceSupplierCombo', { filter: filter, type: type });
   }
 
 
