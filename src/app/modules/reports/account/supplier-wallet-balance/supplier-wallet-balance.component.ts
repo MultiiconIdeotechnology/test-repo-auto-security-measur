@@ -1,31 +1,19 @@
-import { DatePipe, CommonModule, NgClass } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name, supplierWalletBalancePermissions } from 'app/security';
 import { Excel } from 'app/utils/export/excel';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SupplierWalletBalanceService } from 'app/services/supplier-wallet-balance.service';
-import { SupplierService } from 'app/services/supplier.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
     selector: 'app-supplier-wallet-balance',
@@ -37,26 +25,15 @@ import { SupplierService } from 'app/services/supplier.service';
         ReactiveFormsModule,
         MatFormFieldModule,
         MatIconModule,
-        MatMenuModule,
-        MatTableModule,
-        MatSortModule,
-        MatPaginatorModule,
         MatInputModule,
         MatButtonModule,
-        MatTooltipModule,
-        NgClass,
+        MatMenuModule,
         RouterOutlet,
-        MatProgressSpinnerModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatSelectModule,
-        NgxMatSelectSearchModule,
-        MatTabsModule,
         PrimeNgImportsModule],
     templateUrl: './supplier-wallet-balance.component.html',
     styleUrls: ['./supplier-wallet-balance.component.scss']
 })
-export class SupplierWalletBalanceComponent extends BaseListingComponent {
+export class SupplierWalletBalanceComponent extends BaseListingComponent implements OnDestroy {
     dataList = [];
     total = 0;
     module_name = module_name.supplierWalletBalance;
@@ -68,7 +45,6 @@ export class SupplierWalletBalanceComponent extends BaseListingComponent {
 
     constructor(
         private supplierWalletService: SupplierWalletBalanceService,
-        private supplierService: SupplierService,
         public _filterService: CommonFilterService
     ) {
         super(module_name.supplierWalletBalance)
@@ -141,7 +117,7 @@ export class SupplierWalletBalanceComponent extends BaseListingComponent {
     }
 
     getSupplier(value: string) {
-        this.supplierService.getSupplierCombo(value, '').subscribe((data) => {
+        this.supplierWalletService.getSupplierCombo(value, '').subscribe((data) => {
             this.supplierList = data;
 
             for (let i in this.supplierList) {

@@ -127,7 +127,7 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th alignFrozen="left" [frozen]="frozenObj?.followup">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup">
                         <p-columnFilter type="numeric" field="followup" placeholder="Search by Follow up"
                             ariaLabel="Filter Follow up" />
                     </th>
