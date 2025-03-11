@@ -68,6 +68,14 @@
 
             <ng-template pTemplate="header">
                 <tr>
+                    <th pSortableColumn="followup" pResizableColumn  alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup"
+                    [ngClass]="{'left-0': !frozenObj?.followup}">
+                        Calls <p-sortIcon field="followup" />
+                        <span class="float-right" (click)="isFrozenColumn('followup');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.followup" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.followup" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
                     <th class="min-w-[160px]  dark:bg-[#1e293b]" pSortableColumn="agent_code" pResizableColumn
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code"
                         [ngClass]="{'left-0': !frozenObj?.agent_code}">
@@ -79,9 +87,6 @@
                     </th>
                     <th pSortableColumn="agent_name" pResizableColumn>
                         Agency Name <p-sortIcon field="agent_name" />
-                    </th>
-                    <th pSortableColumn="followup" pResizableColumn>
-                        Calls <p-sortIcon field="followup" />
                     </th>
                     <th pSortableColumn="rm" pResizableColumn>
                         RM <p-sortIcon field="rm" />
@@ -122,6 +127,10 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" [frozen]="frozenObj?.followup">
+                        <p-columnFilter type="numeric" field="followup" placeholder="Search by Follow up"
+                            ariaLabel="Filter Follow up" />
+                    </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
                         <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
                             ariaLabel="Filter Agent Code" />
@@ -147,10 +156,6 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
-                    </th>
-                    <th alignFrozen="left">
-                        <p-columnFilter type="numeric" field="followup" placeholder="Search by Follow up"
-                            ariaLabel="Filter Follow up" />
                     </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
@@ -252,6 +257,10 @@
 
             <ng-template pTemplate="body" let-element>
                 <tr>
+                    <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup">
+                        <span class="inline-block cursor-pointer border-b border-gray-500"
+                            (click)="callHistory(element)">{{(element.followup) || 0}}</span>
+                    </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
                         {{element.agent_code || "-"}}
                     </td>
@@ -262,10 +271,6 @@
                         </a>
                     </td>
 
-                    <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup">
-                        <span class="inline-block cursor-pointer border-b border-gray-500"
-                            (click)="callHistory(element)">{{(element.followup) || 0}}</span>
-                    </td>
 
                     <td>{{element.rm || "-"}}</td>
                     <td>

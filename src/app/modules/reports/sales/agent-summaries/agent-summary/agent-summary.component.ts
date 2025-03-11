@@ -221,6 +221,16 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
                 this.dataList = data.data;
                 this.totalRecords = data.total;
                 this.isLoading = false;
+
+                if (this.dataList && this.dataList.length) {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['followup']);
+                    }, 200);
+                } else {
+                    setTimeout(() => {
+                        this.isFrozenColumn('', ['agent_code'], true);
+                    }, 200);
+                }
             }, error: (err) => {
                 this.alertService.showToast('error', err)
                 this.isLoading = false

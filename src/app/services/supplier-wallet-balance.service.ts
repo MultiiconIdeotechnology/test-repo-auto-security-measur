@@ -15,7 +15,7 @@ export class SupplierWalletBalanceService {
   constructor(private http: HttpClient) { }
 
   getSupplierBalance(model: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'AccountReport/supplireWiseCurrentBalance', model);
+    return this.http.post<any>(this.baseUrl + 'AccountReport/getProviderBalance', model);
   }
 
   balanceSync(){
