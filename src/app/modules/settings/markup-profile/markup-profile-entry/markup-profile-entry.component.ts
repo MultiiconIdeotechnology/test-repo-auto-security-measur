@@ -31,6 +31,7 @@ import { Linq } from 'app/utils/linq';
 import { SupplierService } from 'app/services/supplier.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { UserService } from 'app/core/user/user.service';
+import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 
 @Component({
     selector: 'app-markup-profile-entry',
@@ -62,6 +63,7 @@ import { UserService } from 'app/core/user/user.service';
         MatMenuModule,
         NgxMatSelectSearchModule,
         NgxMatTimepickerModule,
+        OnlyFloatDirective
     ],
 })
 export class MarkupProfileEntryComponent {
