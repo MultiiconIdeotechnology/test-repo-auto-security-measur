@@ -117,11 +117,11 @@ export class SupplierWalletBalanceComponent extends BaseListingComponent impleme
     }
 
     getSupplier(value: string) {
-        this.supplierWalletService.getSupplierCombo(value, '').subscribe((data) => {
+        this.supplierWalletService.getSupplierCombo(value).subscribe((data) => {
             this.supplierList = data;
 
             for (let i in this.supplierList) {
-                this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+                this.supplierList[i].id_by_value = this.supplierList[i]?.company_name;
             }
         });
     }
