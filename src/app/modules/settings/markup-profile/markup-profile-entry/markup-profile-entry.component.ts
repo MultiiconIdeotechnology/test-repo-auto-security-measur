@@ -2,7 +2,7 @@ import { Routes } from 'app/common/const';
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ReplaySubject, debounceTime, distinctUntilChanged, filter, startWith, switchMap } from 'rxjs';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { NgIf, NgClass, DatePipe, AsyncPipe, NgFor } from '@angular/common';
 import { CityService } from 'app/services/city.service';
 import { DestinationService } from 'app/services/destination.service';
@@ -205,75 +205,75 @@ export class MarkupProfileEntryComponent {
             markup_profile_id: [''],
             profile_type: [''],
             air_dom_ow_type: ['Flat for Full Booking', Validators.required],
-            air_dom_ow_val: [0, Validators.required],
+            air_dom_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_dom_rt_type: ['Flat for Full Booking', Validators.required],
-            air_dom_rt_val: [0, Validators.required],
+            air_dom_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_ow_type: ['Flat for Full Booking', Validators.required],
-            air_int_ow_val: [0, Validators.required],
+            air_int_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_rt_type: ['Flat for Full Booking', Validators.required],
-            air_int_rt_val: [0, Validators.required],
+            air_int_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
             hol_dom_type: ['Flat for Full Booking', Validators.required],
-            hol_dom_val: [0, Validators.required],
+            hol_dom_val: [0, [Validators.required, this.floatNumberValidator()]],
             hol_int_type: ['Flat for Full Booking', Validators.required],
-            hol_int_val: [0, Validators.required],
+            hol_int_val: [0, [Validators.required, this.floatNumberValidator()]],
             hot_dom_type: ['Flat for Full Booking', Validators.required],
-            hot_dom_val: [0, Validators.required],
+            hot_dom_val: [0, [Validators.required, this.floatNumberValidator()]],
             hot_int_type: ['Flat for Full Booking', Validators.required],
-            hot_int_val: [0, Validators.required],
+            hot_int_val: [0, [Validators.required, this.floatNumberValidator()]],
             bus_type: ['Flat Per Pax', Validators.required],
-            bus_val: [0, Validators.required],
+            bus_val: [0, [Validators.required, this.floatNumberValidator()]],
             bus_cancel_type: ['Flat Per Pax', Validators.required],
-            bus_cancel_val: [0, Validators.required],
+            bus_cancel_val: [0, [Validators.required, this.floatNumberValidator()]],
             ins_type: ['Flat for Full Booking', Validators.required],
-            ins_val: [0, Validators.required],
+            ins_val: [0, [Validators.required, this.floatNumberValidator()]],
             ins_can_type: ['Flat for Full Booking', Validators.required],
-            ins_can_val: [0, Validators.required],
+            ins_can_val: [0, [Validators.required, this.floatNumberValidator()]],
             act_type: ['Flat for Full Booking', Validators.required],
-            act_val: [0, Validators.required],
+            act_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_can_type: ['Flat for Full Booking', Validators.required],
-            air_can_val: [0, Validators.required],
+            air_can_val: [0, [Validators.required, this.floatNumberValidator()]],
             cab_type: ['Flat for Full Booking', Validators.required],
-            cab_val: [0, Validators.required],
+            cab_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_ins_can_type: ['Flat for Full Booking', Validators.required],
-            air_ins_can_val: [0, Validators.required],
+            air_ins_can_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_reissue_type: ['Flat for Full Booking', Validators.required],
-            air_reissue_val: [0, Validators.required],
+            air_reissue_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_no_show_type: ['Flat for Full Booking', Validators.required],
-            air_no_show_val: [0, Validators.required],
+            air_no_show_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_void_type: ['Flat for Full Booking', Validators.required],
-            air_void_val: [0, Validators.required],
+            air_void_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_meal_type: ['Flat for Full Booking', Validators.required],
-            air_meal_val: [0, Validators.required],
+            air_meal_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_bag_type: ['Flat for Full Booking', Validators.required],
-            air_bag_val: [0, Validators.required],
+            air_bag_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_correction_type: ['Flat for Full Amendment', Validators.required],
-            air_correction_val: [0, Validators.required],
+            air_correction_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_can_type: ['Flat for Full Amendment', Validators.required],
-            air_int_can_val: [0, Validators.required],
+            air_int_can_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_ins_can_type: ['Flat for Full Amendment', Validators.required],
-            air_int_ins_can_val: [0, Validators.required],
+            air_int_ins_can_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_reissue_type: ['Flat for Full Amendment', Validators.required],
-            air_int_reissue_val: [0, Validators.required],
+            air_int_reissue_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_misc_type: ['Flat for Full Amendment', Validators.required],
-            air_misc_val: [0, Validators.required],
+            air_misc_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_misc_type: ['Flat for Full Amendment', Validators.required],
-            air_int_misc_val: [0, Validators.required],
+            air_int_misc_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_misc_refund_type: ['Flat for Full Amendment', Validators.required],
-            air_misc_refund_val: [0, Validators.required],
+            air_misc_refund_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_misc_refund_type: ['Flat for Full Amendment', Validators.required],
-            air_int_misc_refund_val: [0, Validators.required],
+            air_int_misc_refund_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_no_show_type: ['Flat for Full Amendment', Validators.required],
-            air_int_no_show_val: [0, Validators.required],
+            air_int_no_show_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_void_type: ['Flat for Full Amendment', Validators.required],
-            air_int_void_val: [0, Validators.required],
+            air_int_void_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_meal_type: ['Flat for Full Amendment', Validators.required],
-            air_int_meal_val: [0, Validators.required],
+            air_int_meal_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_bag_type: ['Flat for Full Amendment', Validators.required],
-            air_int_bag_val: [0, Validators.required],
-            air_int_correction_val: [0, Validators.required],
+            air_int_bag_val: [0, [Validators.required, this.floatNumberValidator()]],
+            air_int_correction_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_correction_type: ['Flat for Full Amendment', Validators.required],
             visa_type: ['Flat for Full Booking', Validators.required],
-            visa_val: [0, Validators.required],
+            visa_val: [0, [Validators.required, this.floatNumberValidator()]],
         });
 
         this.DetailFormGroupOne = this.builder.group({
@@ -282,43 +282,43 @@ export class MarkupProfileEntryComponent {
             markup_profile_id: [''],
             profile_type: [''],
             air_dom_ow_type: ['Flat for Full Booking', Validators.required],
-            air_dom_ow_val: [0, Validators.required],
+            air_dom_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_dom_rt_type: ['Flat for Full Booking', Validators.required],
-            air_dom_rt_val: [0, Validators.required],
+            air_dom_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_ow_type: ['Flat for Full Booking', Validators.required],
-            air_int_ow_val: [0, Validators.required],
+            air_int_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_rt_type: ['Flat for Full Booking', Validators.required],
-            air_int_rt_val: [0, Validators.required],
+            air_int_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
             hol_dom_type: ['Flat for Full Booking', Validators.required],
-            hol_dom_val: [0, Validators.required],
+            hol_dom_val: [0, [Validators.required, this.floatNumberValidator()]],
             hol_int_type: ['Flat for Full Booking', Validators.required],
-            hol_int_val: [0, Validators.required],
+            hol_int_val: [0, [Validators.required, this.floatNumberValidator()]],
             hot_dom_type: ['Flat for Full Booking', Validators.required],
-            hot_dom_val: [0, Validators.required],
+            hot_dom_val: [0, [Validators.required, this.floatNumberValidator()]],
             hot_int_type: ['Flat for Full Booking', Validators.required],
-            hot_int_val: [0, Validators.required],
+            hot_int_val: [0, [Validators.required, this.floatNumberValidator()]],
             bus_type: ['Flat for Full Booking', Validators.required],
-            bus_val: [0, Validators.required],
+            bus_val: [0, [Validators.required, this.floatNumberValidator()]],
             ins_type: ['Flat for Full Booking', Validators.required],
-            ins_val: [0, Validators.required],
+            ins_val: [0, [Validators.required, this.floatNumberValidator()]],
             act_type: ['Flat for Full Booking', Validators.required],
-            act_val: [0, Validators.required],
+            act_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_can_type: ['Flat for Full Booking', Validators.required],
-            air_can_val: [0, Validators.required],
+            air_can_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_ins_can_type: ['Flat for Full Booking', Validators.required],
-            air_ins_can_val: [0, Validators.required],
+            air_ins_can_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_reissue_type: ['Flat for Full Booking', Validators.required],
-            air_reissue_val: [0, Validators.required],
+            air_reissue_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_misc_type: ['Flat for Full Booking', Validators.required],
-            air_misc_val: [0, Validators.required],
+            air_misc_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_no_show_type: ['Flat for Full Booking', Validators.required],
-            air_no_show_val: [0, Validators.required],
+            air_no_show_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_void_type: ['Flat for Full Booking', Validators.required],
-            air_void_val: [0, Validators.required],
+            air_void_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_meal_type: ['Flat for Full Booking', Validators.required],
-            air_meal_val: [0, Validators.required],
+            air_meal_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_bag_type: ['Flat for Full Booking', Validators.required],
-            air_bag_val: [0, Validators.required],
+            air_bag_val: [0, [Validators.required, this.floatNumberValidator()]],
         });
 
         this.AirlineFormGroup = this.builder.group({
@@ -329,13 +329,13 @@ export class MarkupProfileEntryComponent {
             airline_id: ['', Validators.required],
             airline_name: [''],
             air_dom_ow_type: ['Flat for Full Booking', Validators.required],
-            air_dom_ow_val: [0, Validators.required],
+            air_dom_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_dom_rt_type: ['Flat for Full Booking', Validators.required],
-            air_dom_rt_val: [0, Validators.required],
+            air_dom_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_ow_type: ['Flat for Full Booking', Validators.required],
-            air_int_ow_val: [0, Validators.required],
+            air_int_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_rt_type: ['Flat for Full Booking', Validators.required],
-            air_int_rt_val: [0, Validators.required],
+            air_int_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
             airlinefilter: ['']
         });
 
@@ -345,13 +345,13 @@ export class MarkupProfileEntryComponent {
             markup_profile_id: [''],
             profile_type: [''],
             giAir_dom_ow_type: ['Flat for Full Booking', Validators.required],
-            giAir_dom_ow_val: [0, Validators.required],
+            giAir_dom_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             giAir_dom_rt_type: ['Flat for Full Booking', Validators.required],
-            giAir_dom_rt_val: [0, Validators.required],
+            giAir_dom_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
             giAir_int_ow_type: ['Flat for Full Booking', Validators.required],
-            giAir_int_ow_val: [0, Validators.required],
+            giAir_int_ow_val: [0, [Validators.required, this.floatNumberValidator()]],
             giAir_int_rt_type: ['Flat for Full Booking', Validators.required],
-            giAir_int_rt_val: [0, Validators.required],
+            giAir_int_rt_val: [0, [Validators.required, this.floatNumberValidator()]],
         });
 
         this.DestinationFormGroup = this.builder.group({
@@ -360,7 +360,7 @@ export class MarkupProfileEntryComponent {
             destination_id: ['', Validators.required],
             profile_type: ['B2B', Validators.required],
             markup_type: ['Flat for Full Booking', Validators.required],
-            markup_value: [0, Validators.required],
+            markup_value: [0, [Validators.required, this.floatNumberValidator()]],
             markup_profile_id: [''],
             destinationfilter: ['']
         });
@@ -372,12 +372,12 @@ export class MarkupProfileEntryComponent {
             country_code: [''],
             profile_type: ['B2B', Validators.required],
             markup_type: ['Flat for Full Booking', Validators.required],
-            markup_value: [0, Validators.required],
+            markup_value: [0, [Validators.required, this.floatNumberValidator()]],
             markup_profile_id: [''],
             country: [''],
             cityfilter: [''],
             // visa_type: ['Flat for Full Booking', Validators.required],
-            // visa_val: [0, Validators.required],
+            // visa_val: [0, [Validators.required, this.floatNumberValidator()]],
         });
 
         this.SupplierFormGroup = this.builder.group({
@@ -386,7 +386,7 @@ export class MarkupProfileEntryComponent {
             supplierfilter: [''],
             profile_type: ['B2B', Validators.required],
             markup_type: ['Flat for Full Booking', Validators.required],
-            markup_val: [0, Validators.required],
+            markup_val: [0, [Validators.required, this.floatNumberValidator()]],
             markup_profile_id: [''],
 
         });
@@ -1004,11 +1004,13 @@ export class MarkupProfileEntryComponent {
             }
         })
     }
+
     editSupplier(data: any) {
         this.SupplierFormGroup.patchValue(data);
         this.SupplierFormGroup.get('supplierfilter').patchValue(data.suppler_name);
         this.Supplier = 'Save';
     }
+
     deleteSupplier(data: any) {
         this.markupprofileService.supplierDelete(data.id).subscribe({
             next: res => {
@@ -1029,6 +1031,18 @@ export class MarkupProfileEntryComponent {
             }
         })
     }
+
+    floatNumberValidator(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+          const value = (control.value).toString();
+    console.log("value", value)
+          if (value && value?.endsWith('.')) {
+            return { invalidFloat: true }; // Return error if the value ends with a dot
+          }
+    
+          return null; // No errors
+        };
+      }
 
     submit(): void {
         if (!this.formGroup.valid) {
