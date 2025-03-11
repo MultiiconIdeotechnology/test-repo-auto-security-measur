@@ -59,51 +59,50 @@
                     <mat-icon>arrow_downward</mat-icon>
                     <span>Export Excel</span>
                 </button>
+                <button mat-menu-item (click)="syncBalance()">
+                    <mat-icon svgIcon="heroicons_outline:arrow-path-rounded-square"></mat-icon>
+                    <span style="font-weight: 600">Sync Balance</span>
+                </button>
             </mat-menu>
         </div>
     </div>
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_name', 'balance', 'credit', 'rm', 'mobile', 'email', 'due_date', 'last_top_up']"
+            [globalFilterFields]="['provider_name', 'balance']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="agent_name" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_name"
-                        [ngClass]="{'left-0': !frozenObj?.agent_name}">
-                        Supplier <p-sortIcon field="agent_name" />
-                        <span class="float-right" (click)="isFrozenColumn('agent_name');$event.stopPropagation()">
-                            <i *ngIf="frozenObj?.agent_name" class="pi pi-lock icon-size-3"></i>
-                            <i *ngIf="!frozenObj?.agent_name" class="pi pi-lock-open icon-size-3"></i>
-                        </span>
+                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="provider_name" pResizableColumn>
+                        Supplier <p-sortIcon field="provider_name" />
                     </th>
-                    <th class="w-full" [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'" pSortableColumn="last_top_up" pResizableColumn>
-                        Current Balance <p-sortIcon field="last_top_up" />
+                    <th class="w-full"  pSortableColumn="balance" pResizableColumn>
+                        Current Balance <p-sortIcon field="balance" />
                     </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_name">
-                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="provider_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                    <ng-template let-agent pTemplate="item">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList"
+                                    [(ngModel)]="selectedSupplier" optionLabel="company_name" [filter]="true"
+                                    filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true"
+                                    appendTo="body" placeholder="Select Supplier">
+                                    <ng-template let-supplier pTemplate="item">
                                         <div class="flex align-items-center gap-1">
-                                            <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
-                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
+                                            <div [value]="supplier.company_name">
+                                                <div class="m-0">
+                                                    {{supplier.company_name}}
+                                                </div>
                                             </div>
                                         </div>
                                     </ng-template>
@@ -111,22 +110,25 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th></th>
+                    <th>
+                        <p-columnFilter type="numeric" field="balance" placeholder="Search by Balance"
+                            ariaLabel="Filter by Balance" /> 
+                    </th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element>
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_name">
-                        {{element.agent_name || "-"}}
+                    <td>
+                        {{element.provider_name || "-"}}
                     </td>
-                    <td>{{element.currency || "-"}} {{element.balance.toFixed(2) || "-"}}</td>
+                    <td>{{element.balance ? element.balance.toFixed(2) : 0}}</td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="9" class="text-center font-semibold text-lg">
+                    <td colspan="2" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

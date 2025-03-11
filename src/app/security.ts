@@ -655,8 +655,6 @@ export const forexPermissions = {
     statusPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Status', category_name: category_name.status },
 }
 
-
-
 export const bookingsFlightPermissions = {
     importPNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Import PNR', category_name: category_name.entry },
     offlinePNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Offline PNR', category_name: category_name.entry },
@@ -675,7 +673,6 @@ export const amendmentRequestsPermissions = {
     confirmByTAPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Confirm By TA', category_name: category_name.action },
     sendMailToSupplierPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Send Mail To Supplier', category_name: category_name.action },
 }
-
 
 export const groupInquiryPermissions = {
     updateChargePermissions: { module_name: module_name.groupInquiry, group_name: group_name.listingPage, operation_type: 'Update Charge', category_name: category_name.entry },
@@ -736,6 +733,10 @@ export const inventoryCabPermissions = {
     setasPopularPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
     copyProductPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
     viewCabPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'View Cab', category_name: category_name.view },
+}
+
+export const supplierWalletBalancePermissions = {
+    supplierBalanceSyncPermissions: { module_name: module_name.supplierWalletBalance, group_name: group_name.listingPage, operation_type: 'Sync', category_name: category_name.entry },
 }
 
 export const vehiclePermissions = {
