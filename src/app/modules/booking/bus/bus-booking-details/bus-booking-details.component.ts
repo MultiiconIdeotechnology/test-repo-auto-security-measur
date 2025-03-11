@@ -160,7 +160,7 @@ export class BusBookingDetailsComponent {
 
   cancellationPolicy(record) {
     this.matDialog.open(CancellationPolicyComponent, {
-      data: record,
+      data: {data:record, send: 'Bus'},
       disableClose: true
     })
   }

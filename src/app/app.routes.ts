@@ -132,6 +132,7 @@ export const appRoutes: Route[] = [
             { path: Routes.account.purchase_register_path, loadChildren: () => import('app/modules/reports/account/purchase-register/purchase-register.routes') },
             { path: Routes.account.agent_wise_service_wise_path, loadChildren: () => import('app/modules/reports/account/agent-wise-service-wise/agent-wise-service-wise.component.routes') },
             { path: Routes.account.agent_ledger_wallet_missmatch_path, loadChildren: () => import('app/modules/reports/account/agent-ledger-wallet-missmatch/agent-ledger-wallet-missmatch.component.routes') },
+            
 
 
             //Inventory
@@ -168,6 +169,7 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.tech_summary_path, loadChildren: () => import('app/modules/reports/tech-business/tech-business-summary/tech-business-summary.routes') },
             { path: Routes.reports.tech_rm_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/rm-monthly-analytics/rm-monthly-analytics.routes') },
             { path: Routes.reports.tech_product_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/product-monthly-analytics/product-monthly-analytics.routes') },
+            { path: Routes.reports.supplier_balance_path, loadChildren: () => import('app/modules/reports/account/supplier-wallet-balance/supplier-wallet.routes')},
 
 
             // MY BOOKINGS

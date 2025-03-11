@@ -1,5 +1,5 @@
 import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -72,6 +72,7 @@ import { Subject } from 'rxjs';
     ]
 })
 export class AgentSummaryCallHistoryComponent {
+    @Input() record:any;
     dataList = [];
     MasterId: any;
     searchInputControl = new FormControl('');
@@ -92,7 +93,6 @@ export class AgentSummaryCallHistoryComponent {
     appConfig = AppConfig;
     // data: any
     filter: any = {}
-    record: any = {};
     is_schedule_call: FormControl;
 
     columns = [
@@ -121,7 +121,7 @@ export class AgentSummaryCallHistoryComponent {
             tooltip: true,
         },
         {
-            key: 'master_call_purpose',
+            key: 'call_purpose',
             name: 'Purpose',
             is_date: false,
             date_formate: '',
@@ -175,18 +175,12 @@ export class AgentSummaryCallHistoryComponent {
     agencyName: any;
 
     constructor(
-        public matDialogRef: MatDialogRef<AgentSummaryCallHistoryComponent>,
         private crmService: CrmService,
         private alertService: ToasterService,
         private matDialog: MatDialog,
-        @Inject(MAT_DIALOG_DATA) public data: any = {}
     ) {
         this.key = this.module_name;
-        this.Mainmodule = this,
-        this.record = data?.data ?? {}
-
-        this.MasterId = this.record?.agent_code_enc;
-        this.agencyName = this.record?.agent_name;
+        this.Mainmodule = this;
     }
 
     ngOnInit(): void {
@@ -206,7 +200,8 @@ export class AgentSummaryCallHistoryComponent {
             this._sort,
             this.searchInputControl.value, "entry_date_time", 1
         );
-        filterReq['MasterId'] = this.MasterId ? this.MasterId : ""
+        let masterId = this.record?.agent_code_enc;
+        filterReq['MasterId'] = masterId ? masterId : ""
         filterReq['MasterFor'] = "agent_signup"
         this.crmService.getCallHistoryList(filterReq).subscribe({
             next: (data) => {
@@ -230,9 +225,11 @@ export class AgentSummaryCallHistoryComponent {
     }
 
     remark(data: any) {
+        
         this.matDialog.open(CallHisoryRemarkComponent, {
-            data: data,
-            disableClose: true
+            data: {rm_remark:data},
+            disableClose: true,
+            panelClass: 'remark-dialog-container'
         }).afterClosed().subscribe(res => {
             if (!res) {
                 return

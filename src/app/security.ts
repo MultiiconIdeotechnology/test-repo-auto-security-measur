@@ -258,6 +258,7 @@ export const module_name = {
     offlineService: 'Offline Service',
     walletCredit: 'Wallet Credit',
     agentBalance: 'Agent Balance Register',
+    supplierWalletBalance: 'Supplier Wallet Balance',
     agentLedgerWalletMissmatch: 'Agent Ledger/Wallet Missmatch',
     walletOutstanding: 'Wallet Outstanding',
     pgRefund: 'PG Refund',
@@ -415,6 +416,7 @@ export const filter_module_name = {
     tech_business_summary: 'tech_business_summary',
     tech_rm_monthly_report:'tech_rm_monthly_report',
     tech_product_monthly_report:'tech_product_monthly_report',
+    supplier_wallet_balance:'supplier_wallet_balance',
 
     //Inventory
     activity: "activity",
@@ -517,6 +519,10 @@ export const agentPermissions = {
     deleteProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Delete', category_name: category_name.operation },
     // techServicePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Tech Service', category_name: category_name.operation },
     // techCallHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline Call History', category_name: category_name.operation }
+}
+
+export const partnerRegisterPermissions = {
+    callHistoryFollowupPermissions: { module_name: module_name.agentSummary, group_name: group_name.listingPage, operation_type: 'Call History', category_name: category_name.operation },
 }
 
 export const techCollectionPermissions = {
@@ -649,8 +655,6 @@ export const forexPermissions = {
     statusPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Status', category_name: category_name.status },
 }
 
-
-
 export const bookingsFlightPermissions = {
     importPNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Import PNR', category_name: category_name.entry },
     offlinePNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Offline PNR', category_name: category_name.entry },
@@ -669,7 +673,6 @@ export const amendmentRequestsPermissions = {
     confirmByTAPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Confirm By TA', category_name: category_name.action },
     sendMailToSupplierPermissions: { module_name: module_name.amendmentRequests, group_name: group_name.detailPage, operation_type: 'Send Mail To Supplier', category_name: category_name.action },
 }
-
 
 export const groupInquiryPermissions = {
     updateChargePermissions: { module_name: module_name.groupInquiry, group_name: group_name.listingPage, operation_type: 'Update Charge', category_name: category_name.entry },
@@ -731,6 +734,10 @@ export const inventoryCabPermissions = {
     setasPopularPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
     copyProductPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
     viewCabPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'View Cab', category_name: category_name.view },
+}
+
+export const supplierWalletBalancePermissions = {
+    supplierBalanceSyncPermissions: { module_name: module_name.supplierWalletBalance, group_name: group_name.listingPage, operation_type: 'Sync', category_name: category_name.entry },
 }
 
 export const vehiclePermissions = {
