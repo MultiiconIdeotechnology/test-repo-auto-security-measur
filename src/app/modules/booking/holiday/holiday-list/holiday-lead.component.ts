@@ -75,7 +75,7 @@ export class HolidayLeadComponent extends BaseListingComponent {
   agentList: any[];
   selectedAgent: any;
   _selectedColumns: any;
-  statusList = ['New', 'Completed', 'Rejected', 'Cancelled', 'Waiting for Token Payment', 'Token Payment Success', 'Token Payment Failed'];
+  statusList = ['New', 'Completed', 'Confirmed', 'Rejected', 'Cancelled', 'Waiting for Token Payment', 'Token Payment Success', 'Token Payment Failed'];
   supplierList: any[] = [];
   // leadFromList = ['WEB', 'android', 'ios'];
   bookingByList = ['B2B', 'B2C']
