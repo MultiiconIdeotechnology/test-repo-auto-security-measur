@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CabService } from 'app/services/cab.service';
 import { ActivatedRoute } from '@angular/router';
-import { ThisReceiver } from '@angular/compiler';
 import { ToasterService } from 'app/services/toaster.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { CommanService } from 'app/services/comman.service';
 
 @Component({
   selector: 'app-cab-view-details',
