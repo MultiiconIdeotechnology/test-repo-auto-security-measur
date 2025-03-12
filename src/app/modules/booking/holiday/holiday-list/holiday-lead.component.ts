@@ -212,7 +212,7 @@ export class HolidayLeadComponent extends BaseListingComponent {
   getStatusColor(status: string): string {
     if (status == 'New' || status == 'Waiting for Token Payment') {
       return 'text-orange-600';
-    } else if (status == 'Completed' || status == 'Token Payment Success' || status == 'confirmed') {
+    } else if (status == 'Completed' || status == 'Token Payment Success' || status == 'Confirmed') {
       return 'text-green-600';
     } else if (status == 'Cancelled' || status == 'Rejected' || status == 'Token Payment Failed') {
       return 'text-red-600';
