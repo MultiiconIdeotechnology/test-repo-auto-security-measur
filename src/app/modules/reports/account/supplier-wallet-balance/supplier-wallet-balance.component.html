@@ -69,7 +69,7 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="1" [resizableColumns]="true"
             columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
