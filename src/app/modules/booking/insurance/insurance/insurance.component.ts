@@ -283,6 +283,7 @@ export class InsuranceComponent extends BaseListingComponent {
           { header: 'Policy No', property: 'policyNumber' },
           { header: 'Purchase Price', property: 'purchase_price' },
           { header: 'Type', property: 'user_type' },
+          { header: 'Device', property: 'device' },
           { header: 'MOP', property: 'mop' },
           { header: 'Agent', property: 'agent_name' },
           { header: 'Travel From Date', property: 'startDate' },

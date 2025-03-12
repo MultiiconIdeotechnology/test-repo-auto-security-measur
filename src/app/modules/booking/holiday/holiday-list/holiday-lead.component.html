@@ -215,7 +215,7 @@
                     </th>
 
                     <th>
-                        <p-columnFilter field="lead_from" matchMode="equals" [showMenu]="false">
+                        <!-- <p-columnFilter field="lead_from" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="leadFromList"
                                     (onChange)="filter($event.value)" placeholder="Select Lead Source" [showClear]="true"
@@ -225,7 +225,9 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter>
+                        </p-columnFilter> -->
+                        <p-columnFilter type="text" matchMode="contains" field="lead_from"
+                            placeholder="Search by Lead From" ariaLabel="Filter Lead From" />
                     </th>
 
                     <th>

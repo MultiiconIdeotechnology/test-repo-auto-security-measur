@@ -114,6 +114,9 @@
                     <th pSortableColumn="user_type" pResizableColumn>
                         Type <p-sortIcon field="user_type" />
                     </th>
+                    <th pSortableColumn="payment_gateway" pResizableColumn>
+                        PG <p-sortIcon field="payment_gateway" />
+                    </th>
                     <th pSortableColumn="mop" pResizableColumn>
                         MOP <p-sortIcon field="mop" />
                     </th>
@@ -132,8 +135,8 @@
                     <th pSortableColumn="pax" pResizableColumn>
                         Pax <p-sortIcon field="pax" />
                     </th>
-                    <th pSortableColumn="payment_gateway" pResizableColumn>
-                        PG <p-sortIcon field="payment_gateway" />
+                    <th pSortableColumn="device" pResizableColumn>
+                        Device <p-sortIcon field="device" />
                     </th>
                     <th class="w-full min-w-[200px]" pSortableColumn="ip_address" pResizableColumn>
                         IP Address <p-sortIcon field="ip_address" />
@@ -224,6 +227,10 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="user_type" placeholder="Search by Type"
                             ariaLabel="Filter Type" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="device" placeholder="Search by Device"
+                            ariaLabel="Filter Device" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="mop" placeholder="Search by MOP"
@@ -346,6 +353,9 @@
                         {{element.user_type || "-"}}
                     </td>
                     <td>
+                        {{element.payment_gateway || "-"}}
+                    </td>
+                    <td>
                         {{element.mop || "-"}}
                     </td>
                     <td>
@@ -364,7 +374,7 @@
                         {{element.pax || "-"}}
                     </td>
                     <td>
-                        {{element.payment_gateway || "-"}}
+                        {{element.device || "-"}}
                     </td>
                     <td>
                         {{element.ip_address || "-"}}
@@ -384,7 +394,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="16" class="text-center font-semibold text-lg">
+                    <td colspan="17" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

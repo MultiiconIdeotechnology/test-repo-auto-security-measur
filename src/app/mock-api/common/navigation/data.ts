@@ -497,7 +497,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     },
                     {
                         id: 'reports.supplier_balance',
-                        title: 'Wallet Outstanding',
+                        title: 'Supplier Wallet Balance',
                         type: 'basic',
                         pid: 'REPORTS-ACCOUNTS_SUPPLIER-BALANCE_VIEW',
                         icon: '',

@@ -115,6 +115,9 @@
                     <th pSortableColumn="user_type" pResizableColumn>
                         Type <p-sortIcon field="user_type" />
                     </th>
+                    <th pSortableColumn="device" pResizableColumn>
+                        Device <p-sortIcon field="device" />
+                    </th>
                     <th pSortableColumn="mop" pResizableColumn>
                         MOP <p-sortIcon field="mop" />
                     </th>
@@ -213,6 +216,10 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="user_type" placeholder="Search by Type"
                             ariaLabel="Filter Type" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="device" placeholder="Search by Device"
+                            ariaLabel="Filter Device" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="payment_mode"
@@ -331,6 +338,9 @@
                     </td>
                     <td>
                         {{element.user_type || "-"}}
+                    </td>
+                    <td>
+                        {{element.device || "-"}}
                     </td>
                     <td>
                         {{element.mop || "-"}}
