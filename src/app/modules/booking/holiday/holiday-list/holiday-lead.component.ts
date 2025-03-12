@@ -77,6 +77,8 @@ export class HolidayLeadComponent extends BaseListingComponent {
   _selectedColumns: any;
   statusList = ['New', 'Completed', 'Rejected', 'Cancelled', 'Waiting for Token Payment', 'Token Payment Success', 'Token Payment Failed'];
   supplierList: any[] = [];
+  leadFromList = ['WEB', 'android', 'ios'];
+  bookingByList = ['B2B', 'B2C']
 
 
   constructor(
@@ -244,12 +246,16 @@ export class HolidayLeadComponent extends BaseListingComponent {
         [
           { header: 'Ref. No.', property: 'reference_no' },
           { header: 'Status', property: 'lead_status' },
+          { header: 'Product Name', property: 'product_name' },
           { header: 'Supplier', property: 'supplier_name' },
           { header: 'Agent', property: 'agent_name' },
           { header: 'Start Date', property: 'start_date' },
           { header: 'End Date', property: 'end_date' },
           { header: 'No Of Nights', property: 'no_of_nights' },
           { header: 'Created', property: 'entry_date_time' },
+          { header: 'Lead From', property: 'lead_from' },
+          { header: 'Booking By', property: 'booking_by' },
+
         ],
         data.data, "Holiday Lead", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
     });
