@@ -25,6 +25,8 @@ import { AgentService } from 'app/services/agent.service';
 import { EntityService } from 'app/services/entity.service';
 import { ForexService } from 'app/services/forex.service';
 import { HolidayLeadService } from 'app/services/holiday-lead.service';
+import { SupplierApiService } from 'app/services/supplier-api.service';
+import { SupplierService } from 'app/services/supplier.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
 import { Linq } from 'app/utils/linq';
@@ -83,13 +85,10 @@ export class HolidayLeadComponent extends BaseListingComponent {
 
   constructor(
     private HolidayLeadService: HolidayLeadService,
-    private matDialog: MatDialog,
     private agentService: AgentService,
     private toasterService: ToasterService,
-    private forexService: ForexService,
+    // private supplierService: SupplierService,
     public _filterService: CommonFilterService,
-    private conformationService: FuseConfirmationService,
-    private entityService: EntityService,
   ) {
     super(module_name.holiday_lead);
     this.key = this.module_name;
@@ -177,7 +176,7 @@ export class HolidayLeadComponent extends BaseListingComponent {
 
   // Api to get the Supplier list data
   getSupplierList(value: string, bool = true) {
-    this.forexService.getSupplierForexCombo(value).subscribe((data: any) => {
+    this.HolidayLeadService.getSupplierCombo(value, 'Holiday').subscribe((data: any) => {
       this.supplierList = data;
     });
   }
