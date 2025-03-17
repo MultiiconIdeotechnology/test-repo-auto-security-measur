@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { ToasterService } from 'app/services/toaster.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { CancellationPolicyComponent } from 'app/modules/booking/bus/cancellation-policy/cancellation-policy.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-cab-view-details',
@@ -26,6 +28,7 @@ export class CabViewDetailsComponent implements OnInit {
     private cabService: CabService,
     private activatedRoute: ActivatedRoute,
     private toasterService: ToasterService,
+    public matDialog: MatDialog,
     // private commanService: CommanService,
   ){
 
@@ -58,6 +61,13 @@ export class CabViewDetailsComponent implements OnInit {
         this.toasterService.showToast('error', err);
         this.loading = false;
       }
+    })
+  }
+
+  viewPolicy() {
+    this.matDialog.open(CancellationPolicyComponent, {
+      data: { data: this.cabDisplayData?.cancellationPolicy, send: 'Cab' },
+      disableClose: true
     })
   }
 
