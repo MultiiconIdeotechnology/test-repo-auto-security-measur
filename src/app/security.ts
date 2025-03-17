@@ -226,6 +226,7 @@ export const module_name = {
     forex: 'Forex',
     holiday_lead: 'Holiday',
     cab_lead: 'Cab',
+    sent_mail: 'Sent Mail',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -417,6 +418,8 @@ export const filter_module_name = {
     tech_rm_monthly_report:'tech_rm_monthly_report',
     tech_product_monthly_report:'tech_product_monthly_report',
     supplier_wallet_balance:'supplier_wallet_balance',
+    sent_mail: "sent_mail",
+
 
     //Inventory
     activity: "activity",
