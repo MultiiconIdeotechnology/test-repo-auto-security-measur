@@ -194,7 +194,7 @@ export class VisaBookingDetailsComponent {
             })
               .afterClosed().subscribe((res) => {
                 if (res === 'confirmed') {
-                    this.visaService.visaRejectRefund(this.Id).subscribe({
+                    this.visaService.visaamendmentRefund(this.Id).subscribe({
                       next: (res) => {
                         if(res && res['status']){
                           this.toastr.showToast('success', 'Visa application refunded successfully');

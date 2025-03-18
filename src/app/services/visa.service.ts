@@ -111,4 +111,8 @@ export class VisaService {
     visaRejectRefund(id: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'VisaBookingPax/visaReject', { id: id });
     }
+    
+    visaamendmentRefund(id: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Visa/visaamendment', { id: id });
+    }
 }
