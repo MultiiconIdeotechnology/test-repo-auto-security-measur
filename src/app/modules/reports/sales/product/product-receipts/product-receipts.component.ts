@@ -75,6 +75,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     isLoading = false;
     dataList = [];
     total_amount: any = 0;
+    total_actual_amount:any = 0;
     isFilterShow: boolean = false;
     selectedAgent: any;
     agentList: any[] = [];
@@ -269,8 +270,9 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         this.accountService.getReceiptList(model).subscribe({
             next: (data) => {
                 this.dataList = data.data;
-                this.totalRecords = data.total;
-                this.total_amount = data.total_amount || 0;
+                this.totalRecords = data?.total;
+                this.total_amount = data?.total_amount || 0;
+                this.total_actual_amount = data?.total_actual_amount || 0;
                 this.isLoading = false;
                 if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
