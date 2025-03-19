@@ -14,7 +14,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { Routes, visaStatus } from 'app/common/const';
-import { ClassyLayoutComponent } from 'app/layout/layouts/vertical/classy/classy.component';
 import { SubAgentInfoComponent } from 'app/modules/masters/agent/sub-agent-info/sub-agent-info.component';
 import { ToasterService } from 'app/services/toaster.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -22,7 +21,6 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { VisaService } from 'app/services/visa.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSliderModule } from '@angular/material/slider';
-import { DocumentDetailsComponent } from './document-details/document-details.component';
 import { SuccessDocumentDialogComponent } from './success-document-dialog/success-document-dialog.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { PaxInfoComponent } from './pax-info/pax-info.component';
@@ -173,9 +171,9 @@ export class VisaBookingDetailsComponent {
     }
 
     onVisaRejectRefund(){
-        //    if (!Security.hasPermission(busBookingPermissions.refundPermission)) {
-        //       return this.alertService.showToast('error', messages.permissionDenied);
-        //     }
+           if (!Security.hasPermission(bookingsVisaPermissions.refundPermission)) {
+              return this.toastr.showToast('error', messages.permissionDenied);
+            }
         
             this.conformationService.open({
               title: 'Refund Visa Application.',

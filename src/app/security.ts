@@ -704,6 +704,7 @@ export const bookingsVisaPermissions = {
     rejectVisaPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Reject Visa', category_name: category_name.action },
     viewDocumentsPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'View Documents', category_name: category_name.view },
     viewOnlyAssignedPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+    refundPermission: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Refund Visa', category_name: category_name.action },
 }
 
 export const bookingsInsurancePermissions = {
