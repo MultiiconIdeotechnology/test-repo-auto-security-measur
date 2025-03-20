@@ -43,6 +43,7 @@ import { EntityService } from 'app/services/entity.service';
 import { ChangeEmailNumberComponent } from '../sub-agent/change-email-number/change-email-number.component';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { SetDisplayCurrencyComponent } from '../set-display-currency/set-display-currency.component';
 
 @Component({
     selector: 'app-agent-list',
@@ -805,6 +806,30 @@ export class AgentListComponent extends BaseListingComponent {
                 this.agentService.setBaseCurrency(record.id, res.base_currency_id).subscribe({
                     next: () => {
                         this.alertService.showToast('success', "The base currency has been set!", "top-right", true);
+                        this.refreshItems();
+                    },
+                    error: (err) => {
+                        this.alertService.showToast('error', err, 'top-right', true);
+
+                    },
+                })
+            }
+        });
+    }
+
+    setDisplayCurrency(record): void {
+        if (!Security.hasPermission(agentsPermissions.setDisplayCurrencyPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog.open(SetDisplayCurrencyComponent, {
+            data: record,
+            disableClose: true
+        }).afterClosed().subscribe(res => {
+            if (res) {
+                this.agentService.setDisplayCurrency(record.id, res.display_currency_id).subscribe({
+                    next: () => {
+                        this.alertService.showToast('success', "The Display currency has been set!", "top-right", true);
                         this.refreshItems();
                     },
                     error: (err) => {

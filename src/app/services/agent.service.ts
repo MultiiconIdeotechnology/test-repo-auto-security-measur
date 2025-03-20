@@ -83,6 +83,10 @@ export class AgentService {
         return this.http.post<any>(this.baseUrl + 'Agent/changeBaseCurrency', { id: id, base_currency_id: base_currency_id });
     }
 
+    setDisplayCurrency(id: string, display_currency_id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/setDisplayCurrency', { id: id, display_currency_id: display_currency_id });
+    }
+
     setReferralLink(id: string, transactionId: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Agent/setReferralLink', { id: id, transactionId: transactionId });
     }
