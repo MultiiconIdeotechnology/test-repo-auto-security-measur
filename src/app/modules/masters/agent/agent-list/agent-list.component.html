@@ -501,6 +501,10 @@
                             <button mat-menu-item (click)="setCurrency(element)">
                                 <mat-icon [svgIcon]="'heroicons_outline:currency-rupee'" class="icon-size-5"></mat-icon>
                                 <span style="font-weight: 500">Change Currency</span>
+                            </button> 
+                            <button *ngIf="element.is_master_agent" mat-menu-item (click)="setDisplayCurrency(element)">
+                                <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
+                                <span style="font-weight: 500">Display Currency</span>
                             </button>
                             <button mat-menu-item (click)="setMarkupProfile(element)">
                                 <mat-icon class="mat-18 icon-size-5">person</mat-icon>

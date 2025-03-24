@@ -163,7 +163,8 @@
                     (click)="element.first_transaction_partner ? openOnSubReport('first_partner', element): null">
                         {{ element.first_transaction_partner || 0 }}
                     </td>
-                    <td class="text-right">
+                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.activated}"
+                    (click)="element.activated ? openOnSubReport('activated', element): null">
                         {{ element.activated || 0 }}
                     </td>
 

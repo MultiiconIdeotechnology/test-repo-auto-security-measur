@@ -125,25 +125,25 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
   }
 
   //open a subreport for sales 
-  openOnSubReport(key:string,element: any) {
-    let reportComponent:any = TechsummaryZoomreportComponent;
-    if(key == 'total' || key == 'new' || key == 'old'){
+  openOnSubReport(key: string, element: any) {
+    let reportComponent: any = TechsummaryZoomreportComponent;
+    if (key == 'total' || key == 'new' || key == 'old') {
       reportComponent = TechsummaryZoomreportComponent
-    } else if( key == 'new_partner' || key == 'first_partner'){
-       reportComponent =  OnboardSubreportComponent;
+    } else if (key == 'new_partner' || key == 'first_partner' || key == 'activated') {
+      reportComponent = OnboardSubreportComponent;
     }
-    
+
     this.matDialog.open(reportComponent, {
       data: {
         rm_id: element.rm_id,
         rm_name: element.rm_name,
         from_date: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
-        to_date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'), 
+        to_date: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd'),
         type: key
       },
       panelClass: 'custom-dialog-modal',
       backdropClass: 'custom-dialog-backdrop',
-      disableClose: true 
+      disableClose: true
     }).afterClosed().subscribe(res => {
       if (res) {
         // this.refreshItems();
@@ -156,147 +156,147 @@ export class TechBusinessSummaryComponent extends BaseListingComponent implement
   //   return `01-${formattedMonth}-${year}`;
   // }
 
-dateRangeChange(start, end): void {
-  if(start.value && end.value) {
-  this.StartDate = start.value;
-  this.EndDate = end.value;
-  this.refreshItems();
-}
+  dateRangeChange(start, end): void {
+    if (start.value && end.value) {
+      this.StartDate = start.value;
+      this.EndDate = end.value;
+      this.refreshItems();
+    }
   }
 
-getNodataText(): string {
-  if (this.isLoading)
-    return 'Loading...';
-  else if (this.searchInputControl.value)
-    return `no search results found for \'${this.searchInputControl.value}\'.`;
-  else return 'No data to display';
-}
+  getNodataText(): string {
+    if (this.isLoading)
+      return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
 
-exportExcel(): void {
-  // if (!Security.hasExportDataPermission(module_name.tech_business_summary)) {
-  //   return this.alertService.showToast('error', messages.permissionDenied);
-  // }
-  const filterReq = this.getNewFilterReq({});
-  filterReq['From_Date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
-  filterReq['To_Date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
-  filterReq['Take'] = this.totalRecords;
+  exportExcel(): void {
+    // if (!Security.hasExportDataPermission(module_name.tech_business_summary)) {
+    //   return this.alertService.showToast('error', messages.permissionDenied);
+    // }
+    const filterReq = this.getNewFilterReq({});
+    filterReq['From_Date'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    filterReq['To_Date'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+    filterReq['Take'] = this.totalRecords;
 
-  this.techService.getTechSummary(filterReq).subscribe(data => {
-    const formattedData = data.data;
+    this.techService.getTechSummary(filterReq).subscribe(data => {
+      const formattedData = data.data;
 
-    // Define the columns for the Excel export
-    const columns = [
-      { header: 'RM', property: 'rm_name' },
-      { header: 'New', property: 'new_partner' },
-      { header: '1st Transaction', property: 'first_transaction_partner' },
-      { header: 'Activated', property: 'activated' },
-      { header: 'Total Business', property: 'total_business' },
-      { header: 'Total New', property: 'total_new' },
-      { header: 'Total Old', property: 'total_old' },
-    ];
+      // Define the columns for the Excel export
+      const columns = [
+        { header: 'RM', property: 'rm_name' },
+        { header: 'New', property: 'new_partner' },
+        { header: '1st Transaction', property: 'first_transaction_partner' },
+        { header: 'Activated', property: 'activated' },
+        { header: 'Total Business', property: 'total_business' },
+        { header: 'Total New', property: 'total_new' },
+        { header: 'Total Old', property: 'total_old' },
+      ];
 
-    // Create a shortened, dynamic sheet name
-    const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
-    const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
-    const sheetName = `Tech Business Summary ${fromDate} to ${toDate}`.substring(0, 45);
+      // Create a shortened, dynamic sheet name
+      const fromDate = DateTime.fromJSDate(this.startDate.value).toFormat('dd-MM-yyyy');
+      const toDate = DateTime.fromJSDate(this.endDate.value).toFormat('dd-MM-yyyy');
+      const sheetName = `Tech Business Summary ${fromDate} to ${toDate}`.substring(0, 45);
 
-    // Export the data using the custom Excel utility
-    Excel.export(
-      'Tech Business Summary',  // File name
-      columns,            // Columns definition
-      formattedData,      // Data rows
-      sheetName,          // Sheet name (limited to 31 characters)
-      [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }], // Optional merge (if required)
-      false
-    );
-  });
-}
+      // Export the data using the custom Excel utility
+      Excel.export(
+        'Tech Business Summary',  // File name
+        columns,            // Columns definition
+        formattedData,      // Data rows
+        sheetName,          // Sheet name (limited to 31 characters)
+        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }], // Optional merge (if required)
+        false
+      );
+    });
+  }
 
 
 
   public updateDate(event: any, isRefresh: boolean = true): void {
-  if(event === dateRangeContracting.today) {
-  this.StartDate = new Date();
-  this.EndDate = new Date();
-  this.StartDate.setDate(this.StartDate.getDate());
-  this.startDate.patchValue(this.StartDate);
-  this.endDate.patchValue(this.EndDate);
-}
+    if (event === dateRangeContracting.today) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(this.StartDate.getDate());
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
     else if (event === dateRangeContracting.lastWeek) {
-  this.StartDate = new Date();
-  this.EndDate = new Date();
-  const dt = new Date(); // current date of week
-  const currentWeekDay = dt.getDay();
-  const lessDays = currentWeekDay === 0 ? 6 : currentWeekDay - 1;
-  const wkStart = new Date(new Date(dt).setDate(dt.getDate() - lessDays));
-  const wkEnd = new Date(new Date(wkStart).setDate(wkStart.getDate() + 6));
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      const dt = new Date(); // current date of week
+      const currentWeekDay = dt.getDay();
+      const lessDays = currentWeekDay === 0 ? 6 : currentWeekDay - 1;
+      const wkStart = new Date(new Date(dt).setDate(dt.getDate() - lessDays));
+      const wkEnd = new Date(new Date(wkStart).setDate(wkStart.getDate() + 6));
 
-  this.StartDate = wkStart;
-  this.EndDate = new Date();
-  this.startDate.patchValue(this.StartDate);
-  this.endDate.patchValue(this.EndDate);
-}
-else if (event === dateRangeContracting.previousMonth) {
-  this.StartDate = new Date();
-  this.EndDate = new Date();
-  this.StartDate.setDate(1);
-  this.StartDate.setMonth(this.StartDate.getMonth() - 1);
-  this.startDate.patchValue(this.StartDate);
-  this.EndDate.setDate(1)
-  this.EndDate.setDate(this.EndDate.getDate() - 1)
-  this.endDate.patchValue(this.EndDate);
+      this.StartDate = wkStart;
+      this.EndDate = new Date();
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.previousMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 1);
+      this.startDate.patchValue(this.StartDate);
+      this.EndDate.setDate(1)
+      this.EndDate.setDate(this.EndDate.getDate() - 1)
+      this.endDate.patchValue(this.EndDate);
 
-}
-else if (event === dateRangeContracting.lastMonth) {
-  this.StartDate = new Date();
-  this.EndDate = new Date();
-  this.StartDate.setDate(1);
-  this.StartDate.setMonth(this.StartDate.getMonth());
-  this.startDate.patchValue(this.StartDate);
-  this.endDate.patchValue(this.EndDate);
-}
-else if (event === dateRangeContracting.last3Month) {
-  this.StartDate = new Date();
-  this.EndDate = new Date();
-  this.StartDate.setDate(1);
-  this.StartDate.setMonth(this.StartDate.getMonth() - 3);
-  this.startDate.patchValue(this.StartDate);
-  this.endDate.patchValue(this.EndDate);
-}
-else if (event === dateRangeContracting.last6Month) {
-  this.StartDate = new Date();
-  this.EndDate = new Date();
-  this.StartDate.setDate(1);
-  this.StartDate.setMonth(this.StartDate.getMonth() - 6);
-  this.startDate.patchValue(this.StartDate);
-  this.endDate.patchValue(this.EndDate);
-}
-else if (event === dateRangeContracting.setCustomDate) {
-  this.StartDate = new Date();
-  this.EndDate = new Date();
-  this.startDate.patchValue(this.StartDate);
-  this.endDate.patchValue(this.EndDate);
-}
-if (isRefresh)
-  this.refreshItems();
+    }
+    else if (event === dateRangeContracting.lastMonth) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth());
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.last3Month) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 3);
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.last6Month) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.StartDate.setDate(1);
+      this.StartDate.setMonth(this.StartDate.getMonth() - 6);
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    else if (event === dateRangeContracting.setCustomDate) {
+      this.StartDate = new Date();
+      this.EndDate = new Date();
+      this.startDate.patchValue(this.StartDate);
+      this.endDate.patchValue(this.EndDate);
+    }
+    if (isRefresh)
+      this.refreshItems();
   }
 
-dateRangeContractingChange(start, end): void {
-  if(start.value && end.value) {
-  this.StartDate = start.value;
-  this.EndDate = end.value;
-  this.refreshItems();
-}
+  dateRangeContractingChange(start, end): void {
+    if (start.value && end.value) {
+      this.StartDate = start.value;
+      this.EndDate = end.value;
+      this.refreshItems();
+    }
   }
 
-cancleDate() {
-  this.date.patchValue('Today');
-  this.updateDate(dateRangeContracting.today);
-}
+  cancleDate() {
+    this.date.patchValue('Today');
+    this.updateDate(dateRangeContracting.today);
+  }
 
-ngOnDestroy(): void {
-  this.settingsUpdatedSubscription.unsubscribe()
-}
+  ngOnDestroy(): void {
+    this.settingsUpdatedSubscription.unsubscribe()
+  }
 
 }
 

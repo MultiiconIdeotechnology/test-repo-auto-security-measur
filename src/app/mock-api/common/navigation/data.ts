@@ -577,7 +577,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                                 icon: '',
                                 link: Routes.leads.leads_register_route
                             }
-                            
+
                             // {
                             //     id: 'reports.products',
                             //     title: 'Summary',
@@ -792,6 +792,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     },
                 ]
             },
+            {
+                id: 'reports.sentmail',
+                title: 'Sent Mail',
+                type: 'basic',
+                pid: 'REPORTS_SENTMAIL_VIEW',
+                icon: 'mat_outline:speaker_notes',
+                link: Routes.reports.sent_mail_route
+            }
             // {
             //     id: 'reports.techBusiness',
             //     title: 'Tech Business',

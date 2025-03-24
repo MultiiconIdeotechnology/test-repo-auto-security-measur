@@ -91,7 +91,7 @@ export class OnboardSubreportComponent extends BaseListingComponent {
           this.isLoading = false;
         }
       });
-    } else if (this.record.type == 'new_partner' || this.record.type == 'first_partner') {
+    } else if (this.record.type == 'new_partner' || this.record.type == 'first_partner' || this.record.type == 'activated') {
       this.techService.onSummaryReport(this.reqData).subscribe({
         next: (resp: any) => {
           this.dataList = resp.data;

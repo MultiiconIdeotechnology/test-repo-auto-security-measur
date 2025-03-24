@@ -226,6 +226,7 @@ export const module_name = {
     forex: 'Forex',
     holiday_lead: 'Holiday',
     cab_lead: 'Cab',
+    sent_mail: 'Sent Mail',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
     productfixdeparture: 'Product Fix Departure',
@@ -417,6 +418,8 @@ export const filter_module_name = {
     tech_rm_monthly_report:'tech_rm_monthly_report',
     tech_product_monthly_report:'tech_product_monthly_report',
     supplier_wallet_balance:'supplier_wallet_balance',
+    sent_mail: "sent_mail",
+
 
     //Inventory
     activity: "activity",
@@ -562,6 +565,7 @@ export const agentsPermissions = {
     verifyEmailPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Verify Email', category_name: category_name.operation },
     verifyMobilePermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Verify Mobile', category_name: category_name.operation },
     setCurrencyPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Set Currency', category_name: category_name.entry },
+    setDisplayCurrencyPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Display Currency', category_name: category_name.entry },
     convertToWLPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Convert To WL', category_name: category_name.operation },
     viewOnlyAssignedPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
     removeAllSubagentPermissions: { module_name: module_name.agent, group_name: group_name.listingPage, operation_type: 'Remove All Subagent', category_name: category_name.delete },
@@ -701,6 +705,7 @@ export const bookingsVisaPermissions = {
     rejectVisaPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Reject Visa', category_name: category_name.action },
     viewDocumentsPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'View Documents', category_name: category_name.view },
     viewOnlyAssignedPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
+    refundPermission: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Refund Visa', category_name: category_name.action },
 }
 
 export const bookingsInsurancePermissions = {

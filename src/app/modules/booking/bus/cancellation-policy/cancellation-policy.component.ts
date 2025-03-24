@@ -35,7 +35,7 @@ export class CancellationPolicyComponent {
   }
 
   ngOnInit() {
-    this.dataList = this.data.data;
+    this.dataList = this.data?.data;
   }
 
 }

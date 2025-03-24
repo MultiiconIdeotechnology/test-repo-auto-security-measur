@@ -430,6 +430,9 @@ export const Routes = {
 
         agents_rmwise_agents_path: 'reports/partner-summary',
         agents_rmwise_agents_route: 'reports/partner-summary',
+        
+        sent_mail_path: 'reports/sent-mail',
+        sent_mail_route: 'reports/sent-mail',
 
         leads_rmwise_path: 'reports/lead-summary',
         leads_rmwise_route: 'reports/lead-summary',

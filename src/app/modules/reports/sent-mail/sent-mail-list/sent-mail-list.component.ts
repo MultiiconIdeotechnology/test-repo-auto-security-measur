@@ -1,10 +1,9 @@
+import { Component } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -16,28 +15,24 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { MatDialog } from '@angular/material/dialog';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { filter_module_name, messages, module_name, Security } from 'app/security';
+import { module_name, filter_module_name } from 'app/security';
 import { AgentService } from 'app/services/agent.service';
 import { EntityService } from 'app/services/entity.service';
-import { ForexService } from 'app/services/forex.service';
-import { HolidayLeadService } from 'app/services/holiday-lead.service';
-import { SupplierApiService } from 'app/services/supplier-api.service';
-import { SupplierService } from 'app/services/supplier.service';
+import { SendMailService } from 'app/services/sent-mail.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { Excel } from 'app/utils/export/excel';
-import { Linq } from 'app/utils/linq';
-import { DateTime } from 'luxon';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subscription } from 'rxjs';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
+import { ViewTemplateComponent } from '../view-template/view-template.component';
 
 @Component({
-  selector: 'app-holiday-lead-list',
-  templateUrl: './holiday-lead.component.html',
-  styleUrls: ['./holiday-lead.component.css'],
+  selector: 'app-sent-mail-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -63,12 +58,14 @@ import { Subscription } from 'rxjs';
     MatSelectModule,
     NgxMatSelectSearchModule,
     PrimeNgImportsModule,
-  ]
+  ],
+  templateUrl: './sent-mail-list.component.html',
+  styleUrls: ['./sent-mail-list.component.scss']
 })
-export class HolidayLeadComponent extends BaseListingComponent {
+export class SentMailListComponent extends BaseListingComponent {
 
-  module_name = module_name.holiday_lead;
-  filter_table_name = filter_module_name.holiday_lead_service_booking;
+  module_name = module_name.sent_mail;
+  filter_table_name = filter_module_name.sent_mail;
   private settingsUpdatedSubscription: Subscription;
   dataList = [];
   total = 0;
@@ -77,30 +74,27 @@ export class HolidayLeadComponent extends BaseListingComponent {
   agentList: any[];
   selectedAgent: any;
   _selectedColumns: any;
-  statusList = ['New', 'Completed', 'Confirmed', 'Rejected', 'Cancelled', 'Waiting for Token Payment', 'Token Payment Success', 'Token Payment Failed'];
-  supplierList: any[] = [];
-  // leadFromList = ['WEB', 'android', 'ios'];
-  bookingByList = ['B2B', 'B2C']
 
+  statusList = ['Success', 'Pending', 'Failed']
 
   constructor(
-    private HolidayLeadService: HolidayLeadService,
+    private matDialog: MatDialog,
     private agentService: AgentService,
+    private sendMailService: SendMailService,
     private toasterService: ToasterService,
-    // private supplierService: SupplierService,
     public _filterService: CommonFilterService,
+    private conformationService: FuseConfirmationService,
+    private entityService: EntityService,
   ) {
-    super(module_name.holiday_lead);
+    super(module_name.sent_mail);
     this.key = this.module_name;
-    this.sortColumn = 'entry_date_time';
+    this.sortColumn = 'send_date_time';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit() {
-    this.getSupplierList('');
-
     this.agentList = this._filterService.agentListById;
 
     // common filter
@@ -150,56 +144,23 @@ export class HolidayLeadComponent extends BaseListingComponent {
     }
   }
 
-  view(record): void {
-    if (!Security.hasViewDetailPermission(module_name.bookingsHoliday)) {
-      return this.alertService.showToast('error', messages.permissionDenied);
-    }
-    Linq.recirect('/booking/holiday-lead/details/' + record.id);
-  }
-
-  ngOnDestroy(): void {
-    if (this.settingsUpdatedSubscription) {
-      this.settingsUpdatedSubscription.unsubscribe();
-      this._filterService.activeFiltData = {};
-    }
-  }
-
-  getAgent(value: string) {
-    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
-      this.agentList = data;
-
-      for (let i in this.agentList) {
-        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
-      }
-    });
-  }
-
-  // Api to get the Supplier list data
-  getSupplierList(value: string, bool = true) {
-    this.HolidayLeadService.getSupplierCombo(value, 'Holiday').subscribe((data: any) => {
-      this.supplierList = data;
-    });
-  }
-
   refreshItems(event?: any) {
     this.isLoading = true;
-    // let extraModel = this.getFilter();
     let model = this.getNewFilterReq(event)
-    // var model = { ...extraModel, ...newModel };
-    this.HolidayLeadService.getHolidayLeads(model).subscribe({
+    this.sendMailService.getSendEmailSmsList(model).subscribe({
       next: (data) => {
         this.isLoading = false;
         this.dataList = data.data;
         this.totalRecords = data.total;
-        if (this.dataList && this.dataList.length) {
-          setTimeout(() => {
-            this.isFrozenColumn('', ['is_read_by_supplier', 'reference_no']);
-          }, 200);
-        } else {
-          setTimeout(() => {
-            this.isFrozenColumn('', ['is_read_by_supplier', 'reference_no'], true);
-          }, 200);
-        }
+        // if (this.dataList && this.dataList.length) {
+        //   setTimeout(() => {
+        //     this.isFrozenColumn('', ['', 'reference_no']);
+        //   }, 200);
+        // } else {
+        //   setTimeout(() => {
+        //     this.isFrozenColumn('', ['', 'reference_no'], true);
+        //   }, 200);
+        // }
       },
       error: (err) => {
         this.toasterService.showToast('error', err)
@@ -208,17 +169,26 @@ export class HolidayLeadComponent extends BaseListingComponent {
     });
   }
 
+  template(record: any){
+    this.matDialog.open(ViewTemplateComponent, {
+      panelClass: 'app-view-for-template',
+      data: record,
+      disableClose: true,
+    });
+  }
+
   getStatusColor(status: string): string {
-    if (status == 'New' || status == 'Waiting for Token Payment') {
+    if (status == 'Pending') {
       return 'text-orange-600';
-    } else if (status == 'Completed' || status == 'Token Payment Success' || status == 'Confirmed') {
+    } else if (status == 'Success') {
       return 'text-green-600';
-    } else if (status == 'Cancelled' || status == 'Rejected' || status == 'Token Payment Failed') {
+    } else if (status == 'Failed') {
       return 'text-red-600';
     } else {
       return '';
     }
   }
+
 
   getNodataText(): string {
     if (this.isLoading) return 'Loading...';
@@ -229,35 +199,24 @@ export class HolidayLeadComponent extends BaseListingComponent {
 
   exportExcel(): void {
 
-    // let extraModel = this.getFilter();
     let newModel = this.getNewFilterReq({})
-    // const filterReq = { ...extraModel, ...newModel };
     newModel['Take'] = this.totalRecords;
 
-    this.HolidayLeadService.getHolidayLeads(newModel).subscribe(data => {
+    this.sendMailService.getSendEmailSmsList(newModel).subscribe(data => {
       for (var dt of data.data) {
-        dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
-        dt.start_date = dt.start_date ? DateTime.fromISO(dt.start_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
-        dt.end_date = dt.end_date ? DateTime.fromISO(dt.end_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.send_date_time = dt.entry_date_time ? DateTime.fromISO(dt.send_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }
       Excel.export(
-        'Holiday Lead',
+        'Sent Mail',
         [
-          { header: 'Ref. No.', property: 'reference_no' },
-          { header: 'Status', property: 'lead_status' },
-          { header: 'Product Name', property: 'product_name' },
-          { header: 'Supplier', property: 'supplier_name' },
-          { header: 'Agent', property: 'agent_name' },
-          { header: 'Start Date', property: 'start_date' },
-          { header: 'End Date', property: 'end_date' },
-          { header: 'No Of Nights', property: 'no_of_nights' },
-          { header: 'Created', property: 'entry_date_time' },
-          { header: 'Lead From', property: 'lead_from' },
-          { header: 'Booking By', property: 'booking_by' },
-
+          { header: 'Sender Email', property: 'sender_email_address' },
+          { header: 'Status', property: 'status' },
+          { header: 'Email Send To', property: 'email_send_to' },
+          { header: 'Subject', property: 'msg_subject' },
+          { header: 'Fail Reason', property: 'fail_reason' },
+          { header: 'Send Date Time', property: 'send_date_time' },
         ],
-        data.data, "Holiday Lead", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
+        data.data, "Sent Mail", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
     });
   }
-
 }

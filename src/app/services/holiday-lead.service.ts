@@ -31,4 +31,8 @@ export class HolidayLeadService {
   downloadQuotationV2(id: string): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "holidayBookingLeads/downloadQuotationV2", {id:id});
   }
+
+  getSupplierCombo(filter: string, type?: string): Observable<any[]> {
+    return this.http.post<any[]>(environment.apiUrl + 'Supplier/getSupplierCombo', { filter: filter, type: type });
+  }
 }

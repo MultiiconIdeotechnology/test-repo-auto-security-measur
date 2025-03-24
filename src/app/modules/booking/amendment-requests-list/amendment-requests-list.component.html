@@ -119,6 +119,10 @@
                     <th pSortableColumn="pnr" pResizableColumn>
                         PNR <p-sortIcon field="pnr" />
                     </th>
+                    
+                    <th pSortableColumn="gds_pnr" pResizableColumn>
+                       GDS PNR <p-sortIcon field="gds_pnr" />
+                    </th>
 
                     <th pResizableColumn>
                         Refund Mode
@@ -286,6 +290,10 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
                             ariaLabel="Filter PNR" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="gds_pnr" placeholder="Search by GDS PNR"
+                            ariaLabel="Filter GDS PNR" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="refund_mode" placeholder="Search by Refund Mode"
@@ -488,6 +496,9 @@
                     </td>
                     <td>
                         {{element.pnr || "-"}}
+                    </td>
+                    <td>
+                        {{element.gds_pnr || "-"}}
                     </td>
                     <td>
                         {{element.refund_amount ? (element.refund_mode || "-") : ' - '}}
