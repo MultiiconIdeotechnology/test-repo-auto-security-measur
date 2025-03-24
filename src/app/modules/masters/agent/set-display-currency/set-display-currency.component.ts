@@ -51,7 +51,7 @@ export class SetDisplayCurrencyComponent {
     ngOnInit(): void {
       this.formGroup = this.builder.group({
         id: [''],
-        base_currency_id: [''],
+        display_currency_id: [''],
         currencyfilter: [""],
       });
   
@@ -66,9 +66,9 @@ export class SetDisplayCurrencyComponent {
         this.CurrencyList = this.CurrencyListAll.filter(x => x.currency_short_code.toLowerCase().includes(data.toLowerCase()));
       })
   
-      if(this.record.base_currency_id) {
+      if(this.record.display_currency_id) {
         this.formGroup.get('currencyfilter').patchValue(this.record.display_currency);
-        this.formGroup.get('base_currency_id').patchValue(this.record.display_currency_id);
+        this.formGroup.get('display_currency_id').patchValue(this.record.display_currency_id);
       }
       
     }
