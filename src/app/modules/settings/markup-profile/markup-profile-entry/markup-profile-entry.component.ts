@@ -1035,7 +1035,6 @@ export class MarkupProfileEntryComponent {
     floatNumberValidator(): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
           const value = (control.value).toString();
-    console.log("value", value)
           if (value && value?.endsWith('.')) {
             return { invalidFloat: true }; // Return error if the value ends with a dot
           }
