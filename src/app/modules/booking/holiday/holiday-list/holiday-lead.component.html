@@ -84,6 +84,10 @@
                         Status <p-sortIcon field="lead_status" />
                     </th>
 
+                    <th pSortableColumn="product_name" pResizableColumn>
+                        Product Name <p-sortIcon field="product_name" />
+                    </th>
+
                     <th  pSortableColumn="supplier_name"
                         pResizableColumn >
                         Supplier <p-sortIcon field="supplier_name" />
@@ -102,8 +106,14 @@
                     <th pSortableColumn="no_of_nights" pResizableColumn>
                         No of Nights <p-sortIcon field="no_of_nights" />
                     </th>
-                    <th class="w-full" pSortableColumn="entry_date_time" pResizableColumn>
+                    <th  pSortableColumn="entry_date_time" pResizableColumn>
                         Created <p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th pSortableColumn="lead_from" pResizableColumn>
+                        Lead From <p-sortIcon field="lead_from" />
+                    </th>
+                    <th class="w-full" pSortableColumn="booking_by" pResizableColumn>
+                        Booking By <p-sortIcon field="booking_by" />
                     </th>
                 </tr>
 
@@ -125,6 +135,10 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="product_name"
+                            placeholder="Search by Product Name" ariaLabel="Filter Product Name" />
                     </th>
                     <th>
                         <p-columnFilter class="searchableDropdown" field="supplier_id_filters" matchMode="equals"
@@ -200,6 +214,36 @@
                         </p-columnFilter>
                     </th>
 
+                    <th>
+                        <!-- <p-columnFilter field="lead_from" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="leadFromList"
+                                    (onChange)="filter($event.value)" placeholder="Select Lead Source" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter> -->
+                        <p-columnFilter type="text" matchMode="contains" field="lead_from"
+                            placeholder="Search by Lead From" ariaLabel="Filter Lead From" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter field="booking_by" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="bookingByList"
+                                    (onChange)="filter($event.value)" placeholder="Select Booking By" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+
                 </tr>
             </ng-template>
 
@@ -214,6 +258,9 @@
                         <span [ngClass]="getStatusColor(element.lead_status)">
                             {{element.lead_status || "-"}}
                         </span>
+                    </td>
+                    <td>
+                        {{element.product_name || "-"}}
                     </td>
                     <td >
                         <span >
@@ -235,12 +282,18 @@
                     <td>
                         {{(element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
+                    <td>
+                        {{element.lead_from  || "-"}}
+                    </td>
+                    <td>
+                        {{element.booking_by  || "-"}}
+                    </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="20" class="text-center font-semibold text-lg">
+                    <td colspan="22" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

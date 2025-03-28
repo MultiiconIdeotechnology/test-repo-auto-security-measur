@@ -170,6 +170,7 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.tech_rm_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/rm-monthly-analytics/rm-monthly-analytics.routes') },
             { path: Routes.reports.tech_product_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/product-monthly-analytics/product-monthly-analytics.routes') },
             { path: Routes.reports.supplier_balance_path, loadChildren: () => import('app/modules/reports/account/supplier-wallet-balance/supplier-wallet.routes')},
+            { path: Routes.reports.sent_mail_path, loadChildren: () => import('app/modules/reports/sent-mail/sent-mail-list/sent-mail-list.routes')},
 
 
             // MY BOOKINGS

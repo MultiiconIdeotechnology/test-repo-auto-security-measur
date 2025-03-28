@@ -388,6 +388,7 @@ export class BusComponent extends BaseListingComponent {
           { header: 'Ticket No', property: 'ticket_no' },
           { header: 'Agency', property: 'agent_name' },
           { header: 'Type', property: 'user_type' },
+          { header: 'Device', property: 'device' },
           { header: 'MOP', property: 'mop' },
           { header: 'Supplier', property: 'supplier' },
           { header: 'Purchase Price', property: 'purchase_price' },

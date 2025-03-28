@@ -131,7 +131,7 @@ export class AgentProductInfoComponent {
         this.key = this.module_name;
         this.Mainmodule = this,
         this.record = data?.data ?? {}
-        this.currencySymbol = this.record?.currencySymbol.trim(); 
+        this.currencySymbol = this.record?.currencySymbol?.trim(); 
         this.agencyName = data?.agencyName ?? "";
         this.productId = this.record?.id;
         this.service_for_id = this.record?.service_for_id;

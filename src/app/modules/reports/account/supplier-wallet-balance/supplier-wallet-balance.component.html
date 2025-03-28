@@ -83,9 +83,10 @@
                     <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="provider_name" pResizableColumn>
                         Supplier <p-sortIcon field="provider_name" />
                     </th>
-                    <th class="w-full"  pSortableColumn="balance" pResizableColumn>
+                    <th class="text-right"  pSortableColumn="balance" pResizableColumn>
                         Current Balance <p-sortIcon field="balance" />
                     </th>
+                    <th class="w-full"></th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -110,10 +111,12 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th>
+                    <th class="text-right">
                         <p-columnFilter type="numeric" field="balance" placeholder="Search by Balance"
                             ariaLabel="Filter by Balance" /> 
                     </th>
+                    <th></th>
+
                 </tr>
             </ng-template>
 
@@ -122,7 +125,8 @@
                     <td>
                         {{element.provider_name || "-"}}
                     </td>
-                    <td>{{element.balance ? element.balance.toFixed(2) : 0}}</td>
+                    <td class="text-right"> {{element.balance ? (element.balance.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td></td>
                 </tr>
             </ng-template>
 

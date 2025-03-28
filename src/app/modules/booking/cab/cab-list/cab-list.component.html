@@ -219,7 +219,7 @@
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
-                <tr class="">
+                <tr>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.reference_no" >
                         <span class="border-b border-gray-500 cursor-pointer" (click)="confirmdetail(element.id)">
                             {{element.reference_no || "-"}}
