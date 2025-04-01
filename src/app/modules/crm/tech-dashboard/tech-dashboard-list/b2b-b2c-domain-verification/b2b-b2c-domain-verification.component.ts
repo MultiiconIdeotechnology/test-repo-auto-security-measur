@@ -63,6 +63,21 @@ export class B2bB2cDomainVerificationComponent {
     
   }
 
+  onStepComplete(completedStepNumber: number) {
+    // Update current step to completed
+    this.stepperData.forEach(step => {
+      step.isCompleted = step.step <= completedStepNumber;
+      step.isActive = step.step === completedStepNumber + 1;
+    });
+
+    this.activeStepperId = completedStepNumber+1;
+
+    // Ensure we don't go beyond the last step
+    if (completedStepNumber >= this.stepperData.length) {
+      this.stepperData[this.stepperData.length - 1].isActive = true;
+    }
+  }
+
   onVerify(){
     this.FirstStepFormComponent.add()
   }

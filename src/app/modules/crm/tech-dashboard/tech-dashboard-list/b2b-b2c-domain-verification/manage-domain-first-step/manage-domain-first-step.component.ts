@@ -29,7 +29,7 @@ import { ToasterService } from 'app/services/toaster.service';
 })
 export class ManageDomainFirstStepComponent {
   @Input() data:any;
-  @Output() formEvent = new EventEmitter<any>(); 
+  @Output() stepCompleted = new EventEmitter<number>();
 
   formGroup !:FormGroup
 
@@ -45,6 +45,7 @@ export class ManageDomainFirstStepComponent {
     this.formGroup = this.builder.group({
       id: [''],
       agent_id: [''],
+      product_id:[''],
       partner_panel_url: [''],
       b2c_portal_url:[''],
       api_url: ['', Validators.required],
@@ -68,12 +69,8 @@ export class ManageDomainFirstStepComponent {
   add(formDirective: FormGroupDirective) {
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentid;
+    payloadData.product_id = this.data?.subid;
 
-    if(this.data?.item_name.includes('B2C')){
-      delete payloadData.partner_panel_url
-    } else if(this.data?.item_name?.includes('B2B')) {
-      delete payloadData.b2c_portal_url
-    }
     console.log("this.payloadData", payloadData);
     this.domainVarifyService.create(payloadData).subscribe({
       next: (res) => {
@@ -83,7 +80,9 @@ export class ManageDomainFirstStepComponent {
           
           } else {
             this.formGroup.get('id').patchValue(res.id);
-            this.alertService.showToast('success', 'Cancellation policy saved successfully');
+            this.alertService.showToast('success', 'Domain Created Successfully');
+            this.stepCompleted.emit(1);
+            this.domainVarifyService.createUpdateDomainSubject.next(res);
             formDirective.resetForm()
           }
         }

@@ -1147,9 +1147,9 @@ div:where(.swal2-container) button:where(.swal2-close) {
     // max-height: 80vh;
     // min-height: 80vh;
     overflow: auto;
-    max-width: 1260px !important;
-    min-width: 900px !important;
-
+    // max-width: 1260px !important;
+    // min-width: 820px !important;
+    width:811px;
     .mat-mdc-dialog-container .mdc-dialog__surface {
         padding: 0 !important;
         box-shadow: none !important;
@@ -1162,7 +1162,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
         // max-height: 95vh;
         overflow: auto;
         max-width: 90vw !important;
-        min-width: 900px;
+        min-width: 811px;
 
         .mat-mdc-dialog-container .mdc-dialog__surface {
             padding: 0 !important
