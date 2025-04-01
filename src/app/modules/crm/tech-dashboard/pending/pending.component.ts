@@ -36,11 +36,12 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
+import { B2bB2cDomainVerificationComponent } from '../tech-dashboard-list/b2b-b2c-domain-verification/b2b-b2c-domain-verification.component';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
     templateUrl: './pending.component.html',
-    styles: [],
+    styleUrls: ['./pending.component.scss'],
     standalone: true,
     imports: [
         NgIf,
@@ -263,26 +264,47 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         });
     }
 
-    wlSetting(record): void {
-        if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+    // wlSetting(record): void {
+    //     if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
+    //         return this.alertService.showToast('error', messages.permissionDenied);
+    //     }
 
-        this.crmService.getWLSettingList(record?.code).subscribe({
-            next: (data) => {
-                this.isLoading = false;
-                this.getWLSettingList = data[0];
+    //     this.crmService.getWLSettingList(record?.code).subscribe({
+    //         next: (data) => {
+    //             this.isLoading = false;
+    //             this.getWLSettingList = data[0];
 
-                this.matDialog.open(PendingWLSettingComponent, {
-                    data: { data: record, wlsetting: this.getWLSettingList },
-                    disableClose: true,
-                });
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-                this.isLoading = false;
-            },
-        });
+    //             this.matDialog.open(PendingWLSettingComponent, {
+    //                 data: { data: record, wlsetting: this.getWLSettingList },
+    //                 disableClose: true,
+    //             });
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //             this.isLoading = false;
+    //         },
+    //     });
+    // }
+
+    wlSetting(record:any){
+        // if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
+        //     //         return this.alertService.showToast('error', messages.permissionDenied);
+        //     //     }
+
+        this.matDialog.open(B2bB2cDomainVerificationComponent, {
+            disableClose: true,
+            data: record,
+            panelClass: ['custom-dialog-modal-md'],
+            autoFocus: false,
+          }).afterClosed().subscribe(res => {
+            if (res && res.data) {
+              // this.dataList.unshift(res.data);
+              // this.totalRecords++;
+              this.refreshItems()
+              // this.refreshItems();
+            }
+          });
+
     }
 
     link(record): void {

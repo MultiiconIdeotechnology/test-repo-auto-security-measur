@@ -1,0 +1,10 @@
+.custom-domainPointing-modal {
+    overflow: auto;
+    max-width: 1260px !important;
+    min-width: 845px !important;
+
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+}

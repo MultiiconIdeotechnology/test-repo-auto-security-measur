@@ -1,0 +1,72 @@
+<div class="header border-b border-[#324154] flex items-center justify-between p-4">
+    <span class="dark:text-white text-black">Domain Pointing Details</span>
+    <button type="button" mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1" class="absolute right-[12px]">
+        <mat-icon class="text-current text-[#374252] dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+    </button>
+</div>
+
+<div class="body p-4 flex flex-col gap-4">
+    <ul class="list-disc leading-8 list-inside">
+        <li>Login to Your Domain Panel :- Access your domain registrar's dashboard.</li>
+        <li>Navigate to DNS Settings :- Find the section for managing DNS records</li>
+        <li>Add a New Record :- Choose the appropriate record type <span class="text-[#F49A19]">(A, CNAME, TXT, MX, etc.)</span></li>
+        <li>Enter Details :- Fill in the hostname, value, TTL, and other necessary details</li>
+    </ul>
+
+    <p-table class="custom-primeng-table" [value]="firstTableData"
+        [scrollable]="true">
+        <ng-template pTemplate="header">
+            <tr>
+                <th scope="col">Domain</th>
+                <th scope="col">Record Type</th>
+                <th scope="col">Name</th>
+                <th scope="col">Value</th>
+                <th scope="col">TTL</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-element let-expanded="expanded" let-i="rowIndex">
+            <tr>
+                <td>{{element?.domain || "-"}}</td>
+                <td>{{element?.recordType || "-"}}</td>
+                <td>{{element?.name || "-"}}</td>
+                <td>{{element?.value || "-"}}</td>
+                <td>{{element?.ttl || "-"}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+
+    <p-table class="custom-primeng-table" [value]="secondTableData"
+        [scrollable]="true">
+        <ng-template pTemplate="header">
+            <tr>
+                <th scope="col">Domain</th>
+                <th scope="col">Record Type</th>
+                <th scope="col">Name</th>
+                <th scope="col">Value</th>
+                <th scope="col">TTL</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-element let-expanded="expanded" let-i="rowIndex">
+            <tr>
+                <td>{{element?.domain || "-"}}</td>
+                <td>{{element?.recordType || "-"}}</td>
+                <td>{{element?.name || "-"}}</td>
+                <td>{{element?.value || "-"}}</td>
+                <td>{{element?.ttl || "-"}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <ul class="list-disc leading-8 list-inside">
+        <li>Save & Propagate :- Save changes and allow time for DNS propagation</li>
+    </ul>
+</div>
+
+
+
+<!-- <div class="footer border-t border-[#324154] p-4">
+
+</div> -->
