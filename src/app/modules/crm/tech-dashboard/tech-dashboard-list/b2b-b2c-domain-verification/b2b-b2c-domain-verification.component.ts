@@ -7,6 +7,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ManageDomainFirstStepComponent } from './manage-domain-first-step/manage-domain-first-step.component';
 import { VerifyDomainSecondStepComponent } from './verify-domain-second-step/verify-domain-second-step.component';
 import { VerifySslThirdStepComponent } from './verify-ssl-third-step/verify-ssl-third-step.component';
+import { P } from '@angular/cdk/keycodes';
+import { TitleStrategy } from '@angular/router';
 
 @Component({
   selector: 'app-b2b-b2c-domain-verification',
@@ -46,21 +48,18 @@ export class B2bB2cDomainVerificationComponent {
   }
 
   onStepper(val:any){
-    // if(!val.isCompleted){
-    //   return;
-    // }
+    if(!val.isCompleted){
+      return;
+    }
 
+    this.activeStepperId = val.id;
     this.stepperData.forEach((item:any) => {
       if(item.id == val.id){
         item.isActive = true;
-        this.activeStepperId = item.id;
-        // item.isCompleted = true;
       } else {
         item.isActive = false;
       }
-    });
-
-    
+    })
   }
 
   onStepComplete(completedStepNumber: number) {
@@ -75,6 +74,24 @@ export class B2bB2cDomainVerificationComponent {
     // Ensure we don't go beyond the last step
     if (completedStepNumber >= this.stepperData.length) {
       this.stepperData[this.stepperData.length - 1].isActive = true;
+    }
+
+    console.log("stepperData", this.stepperData)
+  }
+
+  onPreviousPage(id:number){
+    let isCompleted = this.stepperData.find((item:any) => item.id == id)?.isCompleted;
+    console.log("isCompleted", isCompleted)
+    if(isCompleted){
+      this.activeStepperId = id;
+
+      this.stepperData.forEach((item:any) => {
+        if(item.id == id){
+          item.isActive = true;
+        } else {
+          item.isActive = false;
+        }
+      })
     }
   }
 

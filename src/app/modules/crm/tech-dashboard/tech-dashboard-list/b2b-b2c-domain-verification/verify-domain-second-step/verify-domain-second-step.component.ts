@@ -27,6 +27,7 @@ export class VerifyDomainSecondStepComponent {
   wlId:any;
   @Input() data:any;
   @Output() stepCompleted = new EventEmitter<number>();
+  @Output() previousPage = new EventEmitter<number>();
 
   constructor(
     private matDialog: MatDialog,
@@ -79,8 +80,8 @@ export class VerifyDomainSecondStepComponent {
     })
   }
 
-  previousPage() {
-
+  onPreviousPage() {
+    this.previousPage.emit(1);
   }
 
   stepTwoCompleted(){

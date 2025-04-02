@@ -5,14 +5,15 @@
             <div class="flex items-center">
                 <div class="flex flex-col relative gap-2 items-center">
                      <!-- Step Circle -->
-                    <div class="mr-2 cursor-pointer" [ngClass]="{
+                    <div class="mr-2 outline-none" [ngClass]="{
                         'active-circle':item.isActive,
                         'non-active-circle':!item.isActive && !item.isCompleted,
-                        'completed-circle': item.isCompleted
+                        'completed-circle': item.isCompleted,
+                        'completed-active-circle': item.isActive && item.isCompleted
                     }" 
                     (click)="onStepper(item)">
                         <span *ngIf="!item.isCompleted">{{item.step}}</span>
-                        <span *ngIf="item.isCompleted"><i class="material-icons text-base">check</i></span>
+                        <span *ngIf="item.isCompleted"><i class="material-icons text-base translate-y-[2px]">check</i></span>
                     </div>
 
                     <!-- Step Label -->
@@ -36,9 +37,21 @@
     </div>
 
     <div class="body p-5">
-        <app-manage-domain-first-step *ngIf="activeStepperId === 1" #firstStepForm [data]="data" (stepCompleted)="onStepComplete(1)"></app-manage-domain-first-step>
-        <app-verify-domain-second-step *ngIf="activeStepperId === 2" (stepCompleted)="onStepComplete(2)" [data]="data"></app-verify-domain-second-step>
-        <app-verify-ssl-third-step *ngIf="activeStepperId === 3" (stepCompleted)="onStepComplete(3)"></app-verify-ssl-third-step>
+        <app-manage-domain-first-step *ngIf="activeStepperId === 1" 
+        #firstStepForm [data]="data" 
+        (stepCompleted)="onStepComplete(1)">
+        </app-manage-domain-first-step>
+
+        <app-verify-domain-second-step *ngIf="activeStepperId === 2" 
+        [data]="data"
+        (stepCompleted)="onStepComplete(2)"
+        (previousPage)="onPreviousPage(1)"> 
+        </app-verify-domain-second-step>
+
+        <app-verify-ssl-third-step *ngIf="activeStepperId === 3"
+         (stepCompleted)="onStepComplete(3)"
+         (previousPage)="onPreviousPage(2)">
+        </app-verify-ssl-third-step>
     </div>
 
     <div *ngIf="activeStepperId === 1" class="footer h-[5rem] border-t border-[#324154] p-5 flex justify-end items-center">

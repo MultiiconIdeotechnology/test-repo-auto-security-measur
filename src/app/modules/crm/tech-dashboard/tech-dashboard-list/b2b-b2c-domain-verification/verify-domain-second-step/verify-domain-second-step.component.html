@@ -12,25 +12,28 @@
                 <img *ngIf="!data?.pointed && !isLoading" src="assets/icons/danger-icon.svg" alt="Info Icon"
                     class="w-[20px] h-[19px]">
                 <img *ngIf="isLoading" src="assets/icons/loader.svg" alt="Loader Icon" class="w-[20px] h-[19px]">
-                <i *ngIf="data?.pointed && !isLoading" class="material-icons text-[20px] text-primaryColor text-medium">check</i>
+                <i *ngIf="data?.pointed && !isLoading"
+                    class="material-icons text-[20px] text-primaryColor text-medium">check</i>
                 <span class="font-normal text-[14px]">{{data?.domain || "-"}}</span>
             </div>
         </div>
     </div>
 
     <div class="footer h-[5rem] p-5 flex justify-end items-center">
-        
-        <button
-        class=" dark:text-white rounded-full min-w-[100px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
-        (click)="previousPage()">
-        Previous
-    </button>
 
-    <button *ngIf="!isDomainFalse" mat-flat-button [color]="'primary'" class="flex items-center min-w-[100px]" (click)="stepTwoCompleted()">
-        Next
-    </button>
-    
-        <button *ngIf="isDomainFalse" mat-flat-button  [color]="'primary'" class="flex items-center min-w-[100px]" (click)="onDomainVerify()">
+        <button
+            class=" dark:text-white rounded-full min-w-[100px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
+            (click)="onPreviousPage()">
+            Previous
+        </button>
+
+        <button *ngIf="!isDomainFalse" mat-flat-button [color]="'primary'" class="flex items-center min-w-[100px]"
+            (click)="stepTwoCompleted()">
+            Next
+        </button>
+
+        <button *ngIf="isDomainFalse" mat-flat-button [color]="'primary'" class="flex items-center min-w-[100px]"
+            (click)="onDomainVerify()">
             Verify
         </button>
     </div>

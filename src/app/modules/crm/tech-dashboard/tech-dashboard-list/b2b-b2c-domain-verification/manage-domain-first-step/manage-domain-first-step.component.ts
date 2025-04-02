@@ -83,7 +83,7 @@ export class ManageDomainFirstStepComponent {
             this.alertService.showToast('success', 'Domain Created Successfully');
             this.stepCompleted.emit(1);
             this.domainVarifyService.createUpdateDomainSubject.next(res);
-            formDirective.resetForm()
+            // formDirective.resetForm()
           }
         }
 
