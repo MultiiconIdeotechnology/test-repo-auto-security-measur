@@ -7,8 +7,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ManageDomainFirstStepComponent } from './manage-domain-first-step/manage-domain-first-step.component';
 import { VerifyDomainSecondStepComponent } from './verify-domain-second-step/verify-domain-second-step.component';
 import { VerifySslThirdStepComponent } from './verify-ssl-third-step/verify-ssl-third-step.component';
-import { P } from '@angular/cdk/keycodes';
-import { TitleStrategy } from '@angular/router';
 
 @Component({
   selector: 'app-b2b-b2c-domain-verification',

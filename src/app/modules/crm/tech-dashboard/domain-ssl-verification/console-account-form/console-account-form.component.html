@@ -1,0 +1,36 @@
+<form [formGroup]="formGroup">
+    <div class="pb-3 text-[18px] font-bold">Open Play Console Account</div>
+    <div class="grid grid-cols-12 gap-4 h-full">
+        <mat-form-field class="col-span-6">
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
+                Console Account Name
+                <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
+                matTooltip="It will be displayed under app name in google play store">info_outline</i>
+            </mat-label>
+            <input matInput formControlName="account_name">
+        </mat-form-field>
+
+        <mat-form-field class="col-span-6">
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
+                Console Account Id
+                <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
+                matTooltip="It will be displayed inside google play console's home page">info_outline</i>
+            </mat-label>
+            <input matInput formControlName="txn_id">
+        </mat-form-field>
+
+        <mat-form-field class="col-span-6">
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
+                Transaction Id
+                <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
+                matTooltip="For our personal need. Might be used to transfer app to owner's account">info_outline</i>
+            </mat-label>
+            <input matInput formControlName="api_url">
+        </mat-form-field>
+    </div>
+
+    <mat-checkbox formControlName="is_account_active" [color]="'primary'" class="text-[#ffffffde]">
+        Invitation send successfully for account access
+    </mat-checkbox>
+    
+</form>

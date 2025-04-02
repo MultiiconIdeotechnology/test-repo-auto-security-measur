@@ -1,0 +1,88 @@
+<section class="flex flex-col gap-3">
+    <div class="header h-[5rem] border-b border-[#324154] p-5 pt-3 pb-6 flex items-center justify-center gap-3">
+        <div class="stepper flex flex-col items-center"
+            *ngFor="let item of stepperData; let idx = index; let isLast = last">
+            <div class="flex items-center">
+                <div class="flex flex-col relative gap-2 items-center">
+                     <!-- Step Circle -->
+                    <div class="mr-2 outline-none" [ngClass]="{
+                        'active-circle':item.isActive,
+                        'non-active-circle':!item.isActive && !item.isCompleted,
+                        'completed-circle': item.isCompleted,
+                        'completed-active-circle': item.isActive && item.isCompleted
+                    }" 
+                    (click)="onStepper(item)">
+                        <span *ngIf="!item.isCompleted">{{item.step}}</span>
+                        <span *ngIf="item.isCompleted"><i class="material-icons text-base translate-y-[2px]">check</i></span>
+                    </div>
+
+                    <!-- Step Label -->
+                    <div class="text-primary absolute bottom-[-26px] text-[14px]"
+                        [ngStyle]="{ 'min-width': item.minWidth + 'rem' }"
+                        [ngClass]="{'text-primary': item.isActive, 'text-white': item.isCompleted, 'text-[#5A7290]': !item.isActive && !item.isCompleted}"
+                        >
+                        {{item.name}}
+                    </div>
+                </div>
+
+                <!-- Step Divider -->
+                <div *ngIf="!isLast" class="stepper-line w-[146px] border px-2"></div>
+            </div>
+        </div>
+
+        <button type="button" mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1" class="absolute right-[12px]">
+            <mat-icon class="text-current text-[#374252] dark:text-white"
+                [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="body p-5">
+        <app-manage-domain-form *ngIf="!(record?.item_name?.toLowerCase().includes('android') ||
+        record?.item_name?.toLowerCase().includes('ios'))" 
+        [hidden]="(activeStepperId == 2) || (activeStepperId == 3) || (activeStepperId == 4)" 
+        #manageDomainForm 
+        [data]="record" 
+        [wlSettingData]="wlSettingData"
+        (stepCompleted)="onStepComplete(1)">
+        </app-manage-domain-form>
+
+        <app-manage-mobile-app-domain-form *ngIf="record?.item_name?.toLowerCase().includes('android') ||
+        record?.item_name?.toLowerCase().includes('ios')"
+         [hidden]="(activeStepperId == 2) || (activeStepperId == 3) || (activeStepperId == 4)" 
+        #manageMobileAppForm 
+        [data]="record" 
+        [wlSettingData]="wlSettingData"
+        (stepCompleted)="onStepComplete(1)">
+        </app-manage-mobile-app-domain-form>
+
+        <app-console-account-form *ngIf="record?.item_name?.toLowerCase().includes('android') ||
+        record?.item_name?.toLowerCase().includes('ios')" 
+        [hidden]="(activeStepperId == 1) || (activeStepperId == 3) || (activeStepperId == 4)"
+        (previousPage)="onPreviousPage(1)" 
+        #consoleAccountForm >
+        </app-console-account-form>
+        
+        <app-verify-domain *ngIf="activeStepperId === 3" 
+        [data]="record"
+        (stepCompleted)="onStepComplete(3)"
+        (previousPage)="onPreviousPage($event)"> 
+        </app-verify-domain>
+
+        <app-verify-ssl *ngIf="activeStepperId === 4"
+         (stepCompleted)="onStepComplete(4)"
+         (previousPage)="onPreviousPage($event)">
+        </app-verify-ssl>
+    </div>
+
+    <div  class="footer h-[5rem] border-t border-[#324154] p-5 flex justify-end items-center">
+        <button *ngIf="activeStepperId === 2"
+            class=" dark:text-white rounded-full min-w-[100px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
+            (click)="onPrevious()">
+            Previous
+        </button>
+
+        <button *ngIf="activeStepperId === 1 || activeStepperId === 2" mat-flat-button [color]="'primary'" class="flex items-center min-w-[100px]" (click)="onVerify()">
+            Next 
+        </button>
+    </div>
+</section>

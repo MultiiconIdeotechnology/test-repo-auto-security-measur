@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { DomainPointingDetailsComponent } from '../domain-pointing-details/domain-pointing-details.component';
+import { DomainPointingDetailsComponent } from '../../../domain-ssl-verification/domain-pointing-details/domain-pointing-details.component';
 import { DomainVerificationService } from 'app/services/domain-verification.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';

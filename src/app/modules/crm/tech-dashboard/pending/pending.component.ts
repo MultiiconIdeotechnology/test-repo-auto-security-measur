@@ -36,7 +36,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
-import { B2bB2cDomainVerificationComponent } from '../tech-dashboard-list/b2b-b2c-domain-verification/b2b-b2c-domain-verification.component';
+import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
@@ -296,7 +296,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
 
-                this.matDialog.open(B2bB2cDomainVerificationComponent, {
+                this.matDialog.open(DomainSslVerificationComponent, {
                     disableClose: true,
                     data: {record:record, wlSettingList:this.getWLSettingList},
                     panelClass: ['custom-dialog-modal-md'],

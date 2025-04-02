@@ -1,0 +1,65 @@
+<form [formGroup]="formGroup">
+    <div class="grid grid-cols-12 gap-4 h-full">
+        <mat-form-field class="col-span-6" *ngIf="data?.item_name?.includes('B2C')">
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">B2C Portal URL</mat-label>
+            <input matInput formControlName="b2c_portal_url">
+        </mat-form-field>
+
+        <mat-form-field class="col-span-6" *ngIf="data?.item_name?.includes('B2B')">
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Partner Panel URL</mat-label>
+            <input matInput formControlName="partner_panel_url">
+        </mat-form-field>
+
+        <mat-form-field class="col-span-6">
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Api URL</mat-label>
+            <input matInput formControlName="api_url">
+        </mat-form-field>
+    </div>
+
+    <div class="py-3 text-[18px] font-bold">App Details</div>
+
+    <div class="grid grid-cols-2 gap-4 h-full border-b border-dashed">
+        <mat-form-field>
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
+                App Name
+                <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
+                matTooltip="Name displayed under your app in device">info_outline</i>
+            </mat-label>
+            <input matInput formControlName="app_name">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
+                App Store Name
+                <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
+                matTooltip="Name displyed in google play store">info_outline</i>
+            </mat-label>
+            <input matInput formControlName="store_app_name">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
+                Support Email
+                <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
+                matTooltip="Support Email for play store. It will be used to raise any queries by the users of app">info_outline</i>
+            </mat-label>
+            <input matInput formControlName="support_email">
+        </mat-form-field>
+    </div>
+
+    <div class="grid grid-cols-2 pt-4 gap-4 h-full">
+        <mat-form-field>
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
+                Gmail Id
+                <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
+                matTooltip="For firebase integration">info_outline</i>
+            </mat-label>
+            <input matInput formControlName="gmail_id">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Password</mat-label>
+            <input matInput formControlName="password">
+        </mat-form-field>
+    </div>
+</form>

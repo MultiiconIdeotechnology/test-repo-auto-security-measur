@@ -1,0 +1,20 @@
+
+<form [formGroup]="formGroup" class="grid grid-cols-12 gap-4 h-full">
+    <mat-form-field class="col-span-6"
+    *ngIf="data?.item_name.includes('B2C')">
+        <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">B2C Portal URL</mat-label>
+        <input matInput formControlName="b2c_portal_url">
+    </mat-form-field>
+
+    <mat-form-field class="col-span-6"
+     *ngIf= "data?.item_name.includes('B2B')" >
+        <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Partner Panel URL</mat-label>
+        <input matInput formControlName="partner_panel_url">
+    </mat-form-field>
+
+    <mat-form-field class="col-span-6">
+        <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Api URL</mat-label>
+        <input matInput formControlName="api_url">
+    </mat-form-field>
+</form>
+
