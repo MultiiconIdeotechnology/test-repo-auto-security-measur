@@ -37,13 +37,15 @@
     </div>
 
     <div class="body p-5">
-        <app-manage-domain-first-step *ngIf="activeStepperId === 1" 
-        #firstStepForm [data]="data" 
+        <app-manage-domain-first-step [hidden]="(activeStepperId == 2) || (activeStepperId == 3)" 
+        #firstStepForm 
+        [data]="record" 
+        [wlSettingData]="wlSettingData"
         (stepCompleted)="onStepComplete(1)">
         </app-manage-domain-first-step>
 
         <app-verify-domain-second-step *ngIf="activeStepperId === 2" 
-        [data]="data"
+        [data]="record"
         (stepCompleted)="onStepComplete(2)"
         (previousPage)="onPreviousPage(1)"> 
         </app-verify-domain-second-step>

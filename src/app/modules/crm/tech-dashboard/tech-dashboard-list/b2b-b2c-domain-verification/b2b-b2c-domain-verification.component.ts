@@ -28,6 +28,8 @@ import { TitleStrategy } from '@angular/router';
 export class B2bB2cDomainVerificationComponent {
   @ViewChild('firstStepForm') FirstStepFormComponent:any;
   activeStepperId:number = 1;
+  record:any;
+  wlSettingData:any;
 
   stepperData = [
     {id:1, step:1, isActive:true, name:'Manage Domain', minWidth:7, isCompleted:false},
@@ -38,9 +40,10 @@ export class B2bB2cDomainVerificationComponent {
   constructor(
     public matDialogRef: MatDialogRef<B2bB2cDomainVerificationComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any = {},
-
   ){
     console.log("data", data)
+    this.record = data?.record;
+    this.wlSettingData = data?.wlSettingList;
   }
 
   ngOnInit():void {

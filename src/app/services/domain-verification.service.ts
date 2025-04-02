@@ -33,6 +33,10 @@ export class DomainVerificationService {
       
         return this.http.post(`${this.baseUrl}SSL/generate-install?${params.toString()}`, {});
     }
+
+    getWLSettingList(agentId: any): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?agent_id=${agentId}`);
+    }
       
  
 }

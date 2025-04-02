@@ -42,6 +42,7 @@ export class VerifyDomainSecondStepComponent {
       this.domainPointingData = res?.pointed_domains;
       this.wlId = res?.wl_id
       this.isDomainFalse = this.isDomainPointing();
+      console.log("isDomainFalse", this.isDomainFalse)
     })
   }
 
@@ -74,7 +75,6 @@ export class VerifyDomainSecondStepComponent {
       error: (err) => {
         this.alertService.showToast('error', err)
         this.isLoading = false;
-        this.isDomainFalse = false;
       }
        
     })

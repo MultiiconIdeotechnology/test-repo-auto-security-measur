@@ -29,6 +29,7 @@ import { ToasterService } from 'app/services/toaster.service';
 })
 export class ManageDomainFirstStepComponent {
   @Input() data:any;
+  @Input() wlSettingData:any
   @Output() stepCompleted = new EventEmitter<number>();
 
   formGroup !:FormGroup
@@ -41,6 +42,11 @@ export class ManageDomainFirstStepComponent {
     
   }
 
+  ngOnChanges(){
+    console.log("wlSettingData on ngOnchanges", this.wlSettingData);
+
+  }
+
   ngOnInit():void {
     this.formGroup = this.builder.group({
       id: [''],
@@ -51,22 +57,35 @@ export class ManageDomainFirstStepComponent {
       api_url: ['', Validators.required],
     });
 
-    console.log("data in manage domain first step", this.data)
-    if(this.data?.item_name.includes('B2c')){
+    console.log("wlSettingData", this.wlSettingData);
+
+    if(this.data?.item_name.includes('B2C')){
       this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);
       this.formGroup.get('partner_panel_url')?.clearValidators();
+      this.formGroup.get('b2c_portal_url').patchValue(this.wlSettingData?.partner_panel_url);
     } else if(this.data?.item_name.includes('B2B')){
       this.formGroup.get('partner_panel_url').setValidators([Validators.required]);
       this.formGroup.get('b2c_portal_url')?.clearValidators();
+      this.formGroup.get('partner_panel_url').patchValue(this.wlSettingData?.partner_panel_url);
     }
 
      // Update the validity status of the controls
      this.formGroup.get('b2c_portal_url')?.updateValueAndValidity();
      this.formGroup.get('partner_panel_url')?.updateValueAndValidity();
+
+     this.formGroup.get('api_url').patchValue(this.wlSettingData?.api_url);
   }
 
+  // get the 
 
-  add(formDirective: FormGroupDirective) {
+
+  add() {
+    if(this.formGroup.invalid){
+      this.alertService.showToast('error', 'Fill up required field to proceed');
+      this.formGroup.markAllAsTouched();
+      return;
+    }
+
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentid;
     payloadData.product_id = this.data?.subid;

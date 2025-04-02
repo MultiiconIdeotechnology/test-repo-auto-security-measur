@@ -291,20 +291,30 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         //     //         return this.alertService.showToast('error', messages.permissionDenied);
         //     //     }
 
-        this.matDialog.open(B2bB2cDomainVerificationComponent, {
-            disableClose: true,
-            data: record,
-            panelClass: ['custom-dialog-modal-md'],
-            autoFocus: false,
-          }).afterClosed().subscribe(res => {
-            if (res && res.data) {
-              // this.dataList.unshift(res.data);
-              // this.totalRecords++;
-              this.refreshItems()
-              // this.refreshItems();
-            }
-          });
+        this.crmService.getWLSettingList(record?.code).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data[0];
 
+                this.matDialog.open(B2bB2cDomainVerificationComponent, {
+                    disableClose: true,
+                    data: {record:record, wlSettingList:this.getWLSettingList},
+                    panelClass: ['custom-dialog-modal-md'],
+                    autoFocus: false,
+                  }).afterClosed().subscribe(res => {
+                    if (res && res.data) {
+                      // this.dataList.unshift(res.data);
+                      // this.totalRecords++;
+                      this.refreshItems()
+                      // this.refreshItems();
+                    }
+                  });
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
     }
 
     link(record): void {
