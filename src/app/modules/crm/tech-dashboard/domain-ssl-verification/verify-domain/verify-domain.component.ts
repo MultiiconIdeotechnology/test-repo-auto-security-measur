@@ -21,7 +21,7 @@ import { DomainPointingDetailsComponent } from '../domain-pointing-details/domai
   styleUrls: ['./verify-domain.component.scss']
 })
 export class VerifyDomainComponent {
-   domainPointingData: any = [];
+    domainPointingData: any = [];
     isLoading: boolean = false;
     isDomainFalse:boolean = false;
     wlId:any;
@@ -58,7 +58,7 @@ export class VerifyDomainComponent {
     }
   
     isDomainPointing(){
-      return this.domainPointingData.some((item:any) => !item?.pointed)
+      return this.domainPointingData?.some((item:any) => !item?.pointed)
     }
   
     onDomainVerify() {
@@ -71,7 +71,7 @@ export class VerifyDomainComponent {
                 this.domainPointingData = res['pointed_domains']
               }
               this.isLoading = false
-              this.isDomainFalse = false;
+              this.isDomainFalse = this.isDomainPointing()
           }
         }, 
         error: (err) => {

@@ -29,7 +29,6 @@ export class VerifySslComponent {
   @Output() previousPage = new EventEmitter<number>();
 
   constructor(
-    private matDialog: MatDialog,
     private domainVarifyService: DomainVerificationService,
     private alertService: ToasterService,
   ) {
@@ -41,7 +40,7 @@ export class VerifySslComponent {
   }
 
   isSslPointing() {
-    return this.sslDomainsData.some((item: any) => !item?.ssl_generated)
+    return this.sslDomainsData?.some((item: any) => !item?.ssl_generated)
   }
 
   onDomainVerify() {
@@ -54,7 +53,7 @@ export class VerifySslComponent {
             this.sslDomainsData = res['ssl_domains']
           }
           this.isLoading = false
-          this.isDomainFalse = false;
+          this.isDomainFalse = this.isSslPointing();
         }
       },
       error: (err) => {
@@ -71,7 +70,7 @@ export class VerifySslComponent {
       this.data?.item_name?.toLowerCase().includes('ios')) {
       this.previousPage.emit(3);
     } else {
-      this.previousPage.emit(2);
+      this.previousPage.emit(3);
     }
   }
 
