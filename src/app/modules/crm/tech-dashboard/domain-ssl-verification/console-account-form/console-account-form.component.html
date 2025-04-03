@@ -6,8 +6,7 @@
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account Name</ng-container>
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Appstore Connect Account Name</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
-                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 
-                'It will be displayed under app name in google play store':'It will be displayed under app name in apple play store'">info_outline</i>
+                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed under app name in google play store':'It will be displayed under app name in apple play store'">info_outline</i>
             </mat-label>
             <input matInput formControlName="account_name">
         </mat-form-field>
@@ -17,8 +16,7 @@
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account Id</ng-container>
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Apple developer account ID</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
-                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 
-                'It will be displayed inside google play console's home page': 'For profile creation in Xcode'">
+                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed inside google play console\'s home page': 'For profile creation in Xcode'">
                 info_outline
                 </i>
             </mat-label>
@@ -31,8 +29,7 @@
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">UDID Number (iPhone UDID)</ng-container>
                 
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
-                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ?
-                'For our personal need. Might be used to transfer app to owner's account':'For profile creation in Xcode'">
+                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'For our personal need. Might be used to transfer app to owner\'s account':'For profile creation in Xcode'">
                 info_outline
                 </i>
             </mat-label>
