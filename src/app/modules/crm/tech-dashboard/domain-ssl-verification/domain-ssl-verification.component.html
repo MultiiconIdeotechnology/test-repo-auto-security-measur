@@ -9,7 +9,7 @@
                         'active-circle':item.isActive,
                         'non-active-circle':!item.isActive && !item.isCompleted,
                         'completed-circle': item.isCompleted,
-                        'completed-active-circle': item.isActive && item.isCompleted
+                        'completed-active-circle': item.isActive && item.isCompleted && item.isAllowed
                     }" 
                     (click)="onStepper(item)">
                         <span *ngIf="!item.isCompleted">{{item.step}}</span>
@@ -37,29 +37,32 @@
     </div>
 
     <div class="body p-5">
-        <app-manage-domain-form *ngIf="!(record?.item_name?.toLowerCase().includes('android') ||
-        record?.item_name?.toLowerCase().includes('ios'))" 
+        <app-manage-domain-form *ngIf="!(record?.item_name?.toLowerCase()?.includes('android') ||
+        record?.item_name?.toLowerCase()?.includes('ios'))" 
         [hidden]="(activeStepperId == 2) || (activeStepperId == 3) || (activeStepperId == 4)" 
         #manageDomainForm 
         [data]="record" 
         [wlSettingData]="wlSettingData"
-        (stepCompleted)="onStepComplete(1)">
+        (stepCompleted)="onStepComplete(1)"
+        (stepAllowed)="onStepAllowed($event)">
         </app-manage-domain-form>
 
-        <app-manage-mobile-app-domain-form *ngIf="record?.item_name?.toLowerCase().includes('android') ||
-        record?.item_name?.toLowerCase().includes('ios')"
+        <app-manage-mobile-app-domain-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
+        record?.item_name?.toLowerCase()?.includes('ios')"
          [hidden]="(activeStepperId == 2) || (activeStepperId == 3) || (activeStepperId == 4)" 
         #manageMobileAppForm 
         [data]="record" 
         [wlSettingData]="wlSettingData"
-        (stepCompleted)="onStepComplete(1)">
+        (stepCompleted)="onStepComplete(1)"
+        (stepAllowed)="onStepAllowed($event)">
         </app-manage-mobile-app-domain-form>
 
-        <app-console-account-form *ngIf="record?.item_name?.toLowerCase().includes('android') ||
-        record?.item_name?.toLowerCase().includes('ios')" 
+        <app-console-account-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
+        record?.item_name?.toLowerCase()?.includes('ios')" 
         [hidden]="(activeStepperId == 1) || (activeStepperId == 3) || (activeStepperId == 4)"
         [data]="record" 
-        (previousPage)="onPreviousPage(1)" 
+        (previousPage)="onPreviousPage(1)"
+        (stepAllowed)="onStepAllowed($event)" 
         #consoleAccountForm >
         </app-console-account-form>
         
@@ -67,14 +70,16 @@
         [hidden]="(activeStepperId == 1) || (activeStepperId == 2) || (activeStepperId == 4)"
         [data]="record"
         (stepCompleted)="onStepComplete(3)"
-        (previousPage)="onPreviousPage($event)"> 
+        (previousPage)="onPreviousPage($event)" 
+        (stepAllowed)="onStepAllowed($event)">
         </app-verify-domain>
 
         <app-verify-ssl
         [hidden]="(activeStepperId == 1) || (activeStepperId == 2) || (activeStepperId == 3)"
          (stepCompleted)="onStepComplete(4)"
          [data]="record"
-         (previousPage)="onPreviousPage($event)">
+         (previousPage)="onPreviousPage($event)"
+         (stepAllowed)="onStepAllowed($event)">
         </app-verify-ssl>
     </div>
 

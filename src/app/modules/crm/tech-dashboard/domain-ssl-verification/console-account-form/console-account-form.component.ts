@@ -32,6 +32,7 @@ export class ConsoleAccountFormComponent {
   @Input() data:any;
   @Input() wlSettingData:any
   @Output() stepCompleted = new EventEmitter<number>();
+  @Output() stepAllowed = new EventEmitter<number>();
 
   formGroup !:FormGroup
 
@@ -94,6 +95,7 @@ export class ConsoleAccountFormComponent {
             this.formGroup.get('id').patchValue(res.id);
             this.alertService.showToast('success', 'Domain Created Successfully');
             this.stepCompleted.emit(1);
+            this.stepAllowed.emit(3);
             this.domainVarifyService.createUpdateDomainSubject.next(res);
             // formDirective.resetForm()
           }

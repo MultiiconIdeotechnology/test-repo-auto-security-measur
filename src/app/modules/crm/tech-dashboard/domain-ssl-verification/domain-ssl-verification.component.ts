@@ -9,6 +9,7 @@ import { VerifyDomainComponent } from './verify-domain/verify-domain.component';
 import { VerifySslComponent } from './verify-ssl/verify-ssl.component';
 import { ConsoleAccountFormComponent } from './console-account-form/console-account-form.component';
 import { ManageMobileAppDomainFormComponent } from './manage-mobile-app-domain-form/manage-mobile-app-domain-form.component';
+import { TitleStrategy } from '@angular/router';
 
 @Component({
   selector: 'app-domain-ssl-verification',
@@ -38,13 +39,13 @@ export class DomainSslVerificationComponent {
   stepperData:any = [];
 
   stepperDataWeb = [
-    { id: 1, step: 1, isActive: true, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed:false },
+    { id: 1, step: 1, isActive: true, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed:true },
     { id: 3, step: 2, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false, isAllowed:false },
     { id: 4, step: 3, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false, isAllowed:false },
   ];
 
   stepperDataAndroidIos = [
-    { id: 1, step: 1, isActive: true, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed: false },
+    { id: 1, step: 1, isActive: true, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed: true },
     { id: 2, step: 2, isActive: false, name: 'Play Console Account', minWidth: 10, isCompleted: false, isAllowed: false },
     { id: 3, step: 3, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false, isAllowed: false },
     { id: 4, step: 4, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false, isAllowed: false },
@@ -69,9 +70,10 @@ export class DomainSslVerificationComponent {
   }
 
   onStepper(val: any) {
-    if(!val.isAllowed) {
-      return;
-    }
+    // if(!val.isAllowed) {
+    //   return;
+    // }
+    return;
     
     this.activeStepperId = val.id;
     this.stepperData.forEach((item: any) => {
@@ -107,8 +109,6 @@ export class DomainSslVerificationComponent {
       }
     }
   
-    console.log("Active Step ID:", this.activeStepperId);
-    console.log("Stepper Data:", this.stepperData);
   }
 
   onPreviousPage(id: number) {
@@ -145,6 +145,11 @@ export class DomainSslVerificationComponent {
     }
   }
 
-
-
+  onStepAllowed(idx:number){
+    this.stepperData.forEach((item:any) => {
+       if(item.id == idx){
+        item.isAllowed = true;
+       }
+    })
+  }
 }

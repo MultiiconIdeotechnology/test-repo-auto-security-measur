@@ -31,6 +31,7 @@ export class ManageDomainFormComponent {
     @Input() data:any;
     @Input() wlSettingData:any
     @Output() stepCompleted = new EventEmitter<number>();
+    @Output() stepAllowed = new EventEmitter<number>();
   
     formGroup !:FormGroup
   
@@ -57,8 +58,6 @@ export class ManageDomainFormComponent {
         api_url: ['', Validators.required],
       });
   
-      console.log("wlSettingData", this.wlSettingData);
-  
       if(this.data?.item_name?.includes('B2C')){
         this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);
         this.formGroup.get('partner_panel_url')?.clearValidators();
@@ -75,9 +74,6 @@ export class ManageDomainFormComponent {
   
        this.formGroup.get('api_url').patchValue(this.wlSettingData?.api_url);
     }
-  
-    // get the 
-  
   
     add() {
       if(this.formGroup.invalid){
@@ -101,6 +97,7 @@ export class ManageDomainFormComponent {
               this.formGroup.get('id').patchValue(res.id);
               this.alertService.showToast('success', 'Domain Created Successfully');
               this.stepCompleted.emit(1);
+              this.stepAllowed.emit(3);
               this.domainVarifyService.createUpdateDomainSubject.next(res);
               // formDirective.resetForm()
             }

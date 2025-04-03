@@ -27,6 +27,7 @@ export class VerifySslComponent {
   @Input() data: any;
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() previousPage = new EventEmitter<number>();
+  @Output() stepAllowed = new EventEmitter<number>();
 
   constructor(
     private domainVarifyService: DomainVerificationService,
@@ -37,6 +38,9 @@ export class VerifySslComponent {
       this.wlId = res?.wl_id
       this.isDomainFalse = this.isSslPointing();
     })
+  }
+
+  ngOnInit(){
   }
 
   isSslPointing() {
