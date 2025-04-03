@@ -77,9 +77,6 @@ export class ManageMobileAppDomainFormComponent {
          this.formGroup.get('api_url')?.patchValue(this.wlSettingData?.api_url);
       }
     
-      // get the 
-    
-    
       add() {
         // this.stepCompleted.emit(1);
         if(this.formGroup.invalid){
