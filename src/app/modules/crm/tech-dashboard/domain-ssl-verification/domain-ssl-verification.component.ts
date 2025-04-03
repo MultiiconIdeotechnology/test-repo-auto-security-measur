@@ -135,6 +135,7 @@ export class DomainSslVerificationComponent {
   onVerify() {
     if(this.activeStepperId == 1 ){
       if(this.record?.item_name?.toLowerCase().includes('android') ||this.record?.item_name?.toLowerCase().includes('ios')){
+        console.log(">>>> in android ios next")
         this.manageMobileAppFormComponent.add();
       }else {
         this.manageDomainFormComponent.add()

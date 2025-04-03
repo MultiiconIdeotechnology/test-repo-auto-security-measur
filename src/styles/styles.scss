@@ -1171,3 +1171,11 @@ div:where(.swal2-container) button:where(.swal2-close) {
 }
 
 // custom-primeng-table css End 
+
+.light {
+    .non-active-circle {
+        background: white !important;
+        border: 1px solid rgba(182, 178, 178, 0.781) !important;
+        color:black !important;
+    }
+}

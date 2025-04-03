@@ -66,12 +66,16 @@ export class VerifyDomainComponent {
       this.domainVarifyService.pingAndBind(this.wlId, this.data?.subid).subscribe({
         next: (res) => {
           if (res) {
+            if(res && res?.['pointed_domains']){
+              this.domainPointingData = res['pointed_domains']
+            }
+            this.isLoading = false
+            this.isDomainFalse = this.isDomainPointing()
+            if(this.isDomainFalse){
+              this.alertService.showToast('error', 'Domain verification unsuccessful');
+            } else {
               this.alertService.showToast('success', 'Domain Verified Successfully');
-              if(res && res?.['pointed_domains']){
-                this.domainPointingData = res['pointed_domains']
-              }
-              this.isLoading = false
-              this.isDomainFalse = this.isDomainPointing()
+            }
           }
         }, 
         error: (err) => {

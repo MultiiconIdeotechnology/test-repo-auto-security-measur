@@ -18,6 +18,10 @@ export class DomainVerificationService {
         return this.http.post<any>(this.baseUrl + 'DomainConfiguration/create', model);
     }
 
+    createMobileDomain(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'DomainConfiguration/androidIOSConfiguration', model);
+    }
+
     pingAndBind(wl_id: string, product_id: string) {
         const params = new HttpParams()
           .set('wl_id', wl_id)

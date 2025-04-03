@@ -28,7 +28,7 @@ import { ToasterService } from 'app/services/toaster.service';
   styleUrls: ['./console-account-form.component.scss']
 })
 export class ConsoleAccountFormComponent {
-
+  wlId:any;
   @Input() data:any;
   @Input() wlSettingData:any
   @Output() stepCompleted = new EventEmitter<number>();
@@ -40,6 +40,12 @@ export class ConsoleAccountFormComponent {
     private domainVarifyService: DomainVerificationService,
     private alertService: ToasterService,
   ){
+
+    this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
+      // this.sslDomainsData = res?.ssl_domains;
+      this.wlId = res?.wl_id
+      // this.isDomainFalse = this.isSslPointing();
+    })
     
   }
 
@@ -50,14 +56,20 @@ export class ConsoleAccountFormComponent {
       account_name : ["", Validators.required],
       account_id : ["", Validators.required],
       password : [""],
-      is_account_active : [""],
+      is_account_active : ["", Validators.required],
       product_id : [""]
     });
 
+    if(this.data?.item_name?.toLowerCase().includes('ios')){
+      console.log("this.data.itemname", this.data.item_name)
+      this.formGroup.get('password').setValidators([Validators.required]);
+    } else {
+      this.formGroup.get('password')?.clearValidators();
+    }
+
+    this.formGroup.get('password')?.updateValueAndValidity();
+
   }
-
-  // get the 
-
 
   add() {
     if(this.formGroup.invalid){
@@ -69,6 +81,7 @@ export class ConsoleAccountFormComponent {
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentid;
     payloadData.product_id = this.data?.subid;
+    payloadData.wl_id = this.wlId;
 
     console.log("this.payloadData", payloadData);
     this.domainVarifyService.create(payloadData).subscribe({

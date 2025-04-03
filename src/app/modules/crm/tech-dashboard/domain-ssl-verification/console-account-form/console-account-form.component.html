@@ -3,7 +3,8 @@
     <div class="grid grid-cols-12 gap-4 h-full">
         <mat-form-field class="col-span-6">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
-                Console Account Name
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account Name</ng-container>
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Appstore Connect Account Name</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
                 matTooltip="It will be displayed under app name in google play store">info_outline</i>
             </mat-label>
@@ -12,20 +13,28 @@
 
         <mat-form-field class="col-span-6">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
-                Console Account Id
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account Id</ng-container>
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Apple developer account ID</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
                 matTooltip="It will be displayed inside google play console's home page">info_outline</i>
             </mat-label>
-            <input matInput formControlName="txn_id">
+            <input matInput formControlName="account_id">
         </mat-form-field>
 
         <mat-form-field class="col-span-6">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
-                Transaction Id
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Transaction Id</ng-container>
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">UDID Number (iPhone UDID)</ng-container>
+                
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
                 matTooltip="For our personal need. Might be used to transfer app to owner's account">info_outline</i>
             </mat-label>
-            <input matInput formControlName="api_url">
+            <input matInput formControlName="txn_id">
+        </mat-form-field>
+
+        <mat-form-field class="col-span-6" *ngIf="data?.item_name?.toLowerCase().includes('ios')">
+            <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Password</mat-label>
+            <input matInput formControlName="password">
         </mat-form-field>
     </div>
 

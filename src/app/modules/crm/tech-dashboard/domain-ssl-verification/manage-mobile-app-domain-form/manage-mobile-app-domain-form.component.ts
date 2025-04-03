@@ -42,11 +42,6 @@ export class ManageMobileAppDomainFormComponent {
         
       }
     
-      ngOnChanges(){
-        console.log("wlSettingData on ngOnchanges", this.wlSettingData);
-    
-      }
-    
       ngOnInit():void {
         this.formGroup = this.builder.group({
           id: [''],
@@ -78,42 +73,40 @@ export class ManageMobileAppDomainFormComponent {
          this.formGroup.get('b2c_portal_url')?.updateValueAndValidity();
          this.formGroup.get('partner_panel_url')?.updateValueAndValidity();
     
-         this.formGroup.get('api_url').patchValue(this.wlSettingData?.api_url);
+         this.formGroup.get('api_url')?.patchValue(this.wlSettingData?.api_url);
       }
     
       // get the 
     
     
       add() {
-        this.stepCompleted.emit(1);
-        // if(this.formGroup.invalid){
-        //   this.alertService.showToast('error', 'Fill up required field to proceed');
-        //   this.formGroup.markAllAsTouched();
-        //   return;
-        // }
+        if(this.formGroup.invalid){
+          this.alertService.showToast('error', 'Fill up required field to proceed');
+          this.formGroup.markAllAsTouched();
+          return;
+        }
     
-        // let payloadData = this.formGroup.value;
-        // payloadData.agent_id = this.data?.agentid;
-        // payloadData.product_id = this.data?.subid;
+        let payloadData = this.formGroup.value;
+        payloadData.agent_id = this.data?.agentid;
+        payloadData.product_id = this.data?.subid;
     
-        // console.log("this.payloadData", payloadData);
-        // this.domainVarifyService.create(payloadData).subscribe({
-        //   next: (res) => {
-        //     if (res) {
-        //       payloadData.id = res.id;
-        //       if (this.formGroup.get('id').value) {
+        console.log("this.payloadData", payloadData);
+        this.domainVarifyService.createMobileDomain(payloadData).subscribe({
+          next: (res) => {
+            if (res) {
+              payloadData.id = res.id;
+              if (this.formGroup.get('id').value) {
               
-        //       } else {
-        //         this.formGroup.get('id').patchValue(res.id);
-        //         this.alertService.showToast('success', 'Domain Created Successfully');
-        //         this.stepCompleted.emit(1);
-        //         this.domainVarifyService.createUpdateDomainSubject.next(res);
-        //         // formDirective.resetForm()
-        //       }
-        //     }
+              } else {
+                this.formGroup.get('id').patchValue(res.id);
+                this.alertService.showToast('success', 'Domain Created Successfully');
+                this.stepCompleted.emit(1);
+                this.domainVarifyService.createUpdateDomainSubject.next(res);
+              }
+            }
     
-        //   }, error: err => this.alertService.showToast('error', err)
-        // })
+          }, error: err => this.alertService.showToast('error', err)
+        })
       }
 
 }

@@ -54,6 +54,11 @@ export class VerifySslComponent {
           }
           this.isLoading = false
           this.isDomainFalse = this.isSslPointing();
+          if(this.isDomainFalse){
+            this.alertService.showToast('error', 'SSL verification unsuccessful');
+          } else {
+            this.alertService.showToast('success', 'SSL Verified Successfully');
+          }
         }
       },
       error: (err) => {

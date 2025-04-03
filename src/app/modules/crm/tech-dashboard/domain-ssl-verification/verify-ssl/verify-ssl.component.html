@@ -1,13 +1,13 @@
 <div class="flex flex-col gap-3">
     <div>SSL</div>
 
-    <div class="border dark:border-[#32415470] rounded-[12px] p-4">
+    <div class="border dark:border-[#32415470] border-gray-200 rounded-[12px] p-4">
         <div *ngFor="let data of sslDomainsData">
             <div class="flex items-center gap-3 pb-2">
                 <img *ngIf="!data?.pointed && !isLoading" src="assets/icons/danger-icon.svg" alt="Info Icon" class="w-[20px] h-[19px]">
                 <img *ngIf="isLoading" src="assets/icons/loader.svg" alt="Loader Icon" class="w-[20px] h-[19px]">
                 <i *ngIf="data?.pointed && !isLoading" class="material-icons text-[20px] text-primaryColor text-medium">check</i>
-                <span class="font-normal text-[14px] flex items-center">
+                <span class="font-normal text-[14px] flex items-center dark:text-white text-black">
                     {{data?.domain || "-"}} 
                     <ul *ngIf="data?.ssl_generated_date || data?.ssl_expiry_date " >
                         <li class="list-disc list-inside">
@@ -20,11 +20,9 @@
         </div>
     </div>
 
-    <div class="footer h-[5rem] p-5 flex justify-end items-center">
+    <div class="footer h-[5rem] p-5 flex justify-end items-center gap-3">
 
-        <button
-            class=" dark:text-white rounded-full min-w-[100px] min-h-11 text-lg mr-4 border dark:border-[#324154] font-Inter"
-            (click)="onPreviousPage()">
+        <button mat-stroked-button (click)="onPreviousPage()">
             Previous
         </button>
 
