@@ -329,6 +329,7 @@ export const filter_module_name = {
     leads_archive: "leads_archive",
     agents_inbox: "agents_inbox",
     agents_partners: "agents_partners",
+    agents_potential_lead: "agents_potential_lead",
     collections_tech: "collections_tech",
     collections_travel: "collections_travel",
     tech_dashboard_pending: "tech_dashboard_pending",
@@ -620,6 +621,7 @@ export const crmLeadPermissions = {
     archiveTabPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Archive Tab', category_name: category_name.view },
     agentInboxTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Inbox Tab', category_name: category_name.view },
     partnersTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Partners Tab', category_name: category_name.view },
+    potentailTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Potential Tab', category_name: category_name.view },
     techCollectionTabPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Tech Collection', category_name: category_name.view },
     travelCollectionPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Travel Collection', category_name: category_name.view }
 }
