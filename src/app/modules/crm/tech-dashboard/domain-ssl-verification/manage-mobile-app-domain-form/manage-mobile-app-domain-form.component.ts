@@ -63,7 +63,7 @@ export class ManageMobileAppDomainFormComponent {
         if(this.data?.item_name.includes('B2C')){
           this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);
           this.formGroup.get('partner_panel_url')?.clearValidators();
-          this.formGroup.get('b2c_portal_url').patchValue(this.wlSettingData?.partner_panel_url);
+          this.formGroup.get('b2c_portal_url').patchValue(this.wlSettingData?.b2c_portal_url);
         } else if(this.data?.item_name.includes('B2B')){
           this.formGroup.get('partner_panel_url').setValidators([Validators.required]);
           this.formGroup.get('b2c_portal_url')?.clearValidators();
@@ -74,7 +74,14 @@ export class ManageMobileAppDomainFormComponent {
          this.formGroup.get('b2c_portal_url')?.updateValueAndValidity();
          this.formGroup.get('partner_panel_url')?.updateValueAndValidity();
     
-         this.formGroup.get('api_url')?.patchValue(this.wlSettingData?.api_url);
+         this.formGroup.patchValue({
+          api_url:this.wlSettingData?.api_url,
+          app_name:this.wlSettingData?.app_name,
+          store_app_name:this.wlSettingData?.store_app_name,
+          support_email:this.wlSettingData?.support_email,
+          gmail_id:this.wlSettingData?.gmail_id,
+          password:this.wlSettingData?.password,
+         })
       }
     
       add() {
