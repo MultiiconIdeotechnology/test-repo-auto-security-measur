@@ -86,7 +86,7 @@ export class ConsoleAccountFormComponent {
       next: (res) => {
         if (res) {
             this.alertService.showToast('success', 'Domain Created Successfully');
-            this.stepCompleted.emit(1);
+            this.stepCompleted.emit(2);
             this.stepAllowed.emit(3);
             this.domainVarifyService.createUpdateDomainSubject.next(res);
             // formDirective.resetForm()
