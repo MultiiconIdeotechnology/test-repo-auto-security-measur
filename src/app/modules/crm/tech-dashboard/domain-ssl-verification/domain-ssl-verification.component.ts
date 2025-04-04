@@ -9,7 +9,6 @@ import { VerifyDomainComponent } from './verify-domain/verify-domain.component';
 import { VerifySslComponent } from './verify-ssl/verify-ssl.component';
 import { ConsoleAccountFormComponent } from './console-account-form/console-account-form.component';
 import { ManageMobileAppDomainFormComponent } from './manage-mobile-app-domain-form/manage-mobile-app-domain-form.component';
-import { TitleStrategy } from '@angular/router';
 
 @Component({
   selector: 'app-domain-ssl-verification',
