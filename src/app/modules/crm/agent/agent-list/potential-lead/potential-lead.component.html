@@ -34,12 +34,12 @@
                 <th pSortableColumn="offerings" pResizableColumn>
                     Offerings <p-sortIcon field="offerings" />
                 </th>
-                <th class="min-w-[100px]" pResizableColumn="callPurpose">
+                <th class="w-full" pResizableColumn="callPurpose">
                     Purpose of call <p-sortIcon field="offerings" />
                 </th>
-                <th class="min-w-[200px]" pSortableColumn="condition" pResizableColumn>
+                <!-- <th class="min-w-[200px]" pSortableColumn="condition" pResizableColumn>
                     Condition <p-sortIcon field="condition" />
-                </th>
+                </th> -->
                 <!-- <th class="min-w-[200px]" pSortableColumn="call_date_time" pResizableColumn>
                     Call Date <p-sortIcon field="call_date_time" />
                 </th>
@@ -53,7 +53,7 @@
             </tr>
 
             <tr *ngIf="isFilterShowPotential">
-                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th class="left-[-1px]" pFrozenColumn></th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.callCount" class="min-w-[110px]">
                     <p-columnFilter field="callCount" type="numeric" placeholder="Search by Count"
                         ariaLabel="Filter Count"></p-columnFilter>
@@ -112,10 +112,10 @@
                     <p-columnFilter type="text" matchMode="contains" field="callPurpose" placeholder="Search by Purpose"
                         ariaLabel="Filter Purpose" />
                 </th>
-                <th>
+                <!-- <th>
                     <p-columnFilter type="text" matchMode="contains" field="condition" placeholder="Search by Conditions"
                         ariaLabel="Filter Conditions" />
-                </th>
+                </th> -->
               
             </tr>
         </ng-template>
@@ -188,7 +188,7 @@
                         {{element.callPurpose || '-'}}
                     </ng-template>
                 </td>
-                <td>{{element?.condition || "-"}}</td>
+                <!-- <td>{{element?.condition || "-"}}</td> -->
             </tr>
         </ng-template>
 

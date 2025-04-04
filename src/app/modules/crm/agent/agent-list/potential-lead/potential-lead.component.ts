@@ -128,31 +128,7 @@ export class PotentialLeadComponent extends BaseListingComponent {
                       this.agentList.push(this.selectedAgent);
                   }
               }
-              // this.sortColumn = resp['sortColumn'];
-              // this.primengTable['_sortField'] = resp['sortColumn'];
-  
-              if (resp['table_config']['createdDate']?.value != null && resp['table_config']['createdDate'].value.length) {
-                  this._filterService.updateSelectedOption('custom_date_range');
-                  this._filterService.rangeDateConvert(resp['table_config']['createdDate']);
-              }
-  
-              if (resp['table_config']['lastTransaction']?.value != null && resp['table_config']['lastTransaction'].value.length) {
-                  this._filterService.updatedSelectionOptionTwo('custom_date_range');
-                  this._filterService.rangeDateConvert(resp['table_config']['lastTransaction']);
-              }
-  
-              if (resp['table_config']['call_date_time']?.value != null && resp['table_config']['call_date_time'].value.length) {
-                  this._filterService.updatedSelectedContracting('custom_date_range');
-                  this._filterService.rangeDateConvert(resp['table_config']['call_date_time']);
-              }
-  
-              if (resp['table_config']['first_login_date_time']?.value != null && resp['table_config']['first_login_date_time'].value.length) {
-                  this._filterService.rangeDateConvert(resp['table_config']['first_login_date_time']);
-              }
-  
-              if (resp['table_config']['first_transaction_date_time']?.value != null && resp['table_config']['first_transaction_date_time'].value.length) {
-                  this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
-              }
+         
               this.primengTable['filters'] = resp['table_config'];
               this.isFilterShowPotential = true;
               this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
@@ -176,21 +152,6 @@ export class PotentialLeadComponent extends BaseListingComponent {
                       }
                   }
               }, 1000);
-  
-              if (filterData['table_config']['createdDate']?.value != null && filterData['table_config']['createdDate'].value.length) {
-                  this._filterService.updateSelectedOption('custom_date_range');
-                  this._filterService.rangeDateConvert(filterData['table_config']['createdDate']);
-              }
-  
-              if (filterData['table_config']['lastTransaction']?.value != null && filterData['table_config']['lastTransaction'].value.length) {
-                  this._filterService.updatedSelectionOptionTwo('custom_date_range');
-                  this._filterService.rangeDateConvert(filterData['table_config']['lastTransaction']);
-              }
-  
-              if (filterData['table_config']['call_date_time']?.value != null && filterData['table_config']['call_date_time'].value.length) {
-                  this._filterService.updatedSelectedContracting('custom_date_range');
-                  this._filterService.rangeDateConvert(filterData['table_config']['call_date_time']);
-              }
               this.primengTable['filters'] = filterData['table_config'];
               // this.primengTable['_sortField'] = filterData['sortColumn'];
               // this.sortColumn = filterData['sortColumn'];
@@ -210,7 +171,6 @@ export class PotentialLeadComponent extends BaseListingComponent {
       }
   
       refreshItems(event?: any): void {
-        console.log(">>>>")
           this.isLoading = true;
           if (this.searchInputControlPotential.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
               event = {};
@@ -218,11 +178,13 @@ export class PotentialLeadComponent extends BaseListingComponent {
           }
           const filterReq = this.getNewFilterReq(event);
           filterReq['Filter'] = this.searchInputControlPotential.value;
-          this.crmService.getInboxAgentList(filterReq).subscribe({
+          this.crmService.getPotentialLeadAgentList(filterReq).subscribe({
               next: (data) => {
                   this.isLoading = false;
-                  this.dataList = data.data;
-                  this.totalRecords = data.total;
+                  if(data && data.length){
+                      this.dataList = data[0]?.value;
+                      this.totalRecords = data?.total;
+                  }
               },
               error: (err) => {
                   this.alertService.showToast('error', err, 'top-right', true);
@@ -232,20 +194,20 @@ export class PotentialLeadComponent extends BaseListingComponent {
       }
   
       // Get the last login date
-      getLastLogin(item: any): string {
-          const logins = [
-              item.iosLastLogin ? new Date(item.iosLastLogin) : null,
-              item.androidLastLogin ? new Date(item.androidLastLogin) : null,
-              item.webLastLogin ? new Date(item.webLastLogin) : null
-          ].filter(date => date !== null) as Date[];
+    //   getLastLogin(item: any): string {
+    //       const logins = [
+    //           item.iosLastLogin ? new Date(item.iosLastLogin) : null,
+    //           item.androidLastLogin ? new Date(item.androidLastLogin) : null,
+    //           item.webLastLogin ? new Date(item.webLastLogin) : null
+    //       ].filter(date => date !== null) as Date[];
   
-          if (logins.length === 0) {
-              return '';
-          }
+    //       if (logins.length === 0) {
+    //           return '';
+    //       }
   
-          const latestLogin = new Date(Math.max(...logins.map(date => date.getTime())));
-          return latestLogin.toISOString();
-      }
+    //       const latestLogin = new Date(Math.max(...logins.map(date => date.getTime())));
+    //       return latestLogin.toISOString();
+    //   }
   
       getNodataText(): string {
           if (this.isLoading)
@@ -279,15 +241,10 @@ export class PotentialLeadComponent extends BaseListingComponent {
           }
       }
   
-      dialCall(record): void {
+      dialCall(record:any): void {
           if (!Security.hasPermission(agentPermissions.dailCallPermissions)) {
               return this.alertService.showToast('error', messages.permissionDenied);
           }
-  
-          // this.matDialog.open(CRMDialCallEntryComponent, {
-          //     data: { data: record, readonly: true, agentDialCallFlag: true },
-          //     disableClose: true,
-          // });
   
           this.matDialog.open(DialAgentCallListComponent, {
               data: { data: record, readonly: true, agentDialCallFlag: true },
@@ -321,10 +278,7 @@ export class PotentialLeadComponent extends BaseListingComponent {
           if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
               return this.alertService.showToast('error', messages.permissionDenied);
           }
-          // this.matDialog.open(CallHistoryComponent, {
-          //     data: { data: record, readonly: true },
-          //     disableClose: true
-          // });
+
           this.matDialog.open(DialAgentCallListComponent, {
               data: { data: record, readonly: true, selectedTabIndex: 3 },
               disableClose: true,
@@ -353,12 +307,6 @@ export class PotentialLeadComponent extends BaseListingComponent {
           //     return this.alertService.showToast('error', messages.permissionDenied);
           // }
   
-          // this.matDialog.open(CRMAgentTimelineComponent, {
-          //     data: { data: record, readonly: true },
-          //     disableClose: true,
-          // });
-  
-          // this.router.navigate([Routes.customers.agent_entry_route + '/' + record.agentid + '/readonly'])
           Linq.recirect([Routes.customers.agent_entry_route + '/' + record.agentid + '/readonly']);
       }
   

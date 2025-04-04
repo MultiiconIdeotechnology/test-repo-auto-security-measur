@@ -60,6 +60,11 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'CRM/agent/agentListPartners', model);
     }
 
+    getPotentialLeadAgentList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CRM/agent/agentPotentialsDashboard', model);
+    }
+    
+
     getProductPurchaseMasterList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductPurchaseMasterList', model);
     }
