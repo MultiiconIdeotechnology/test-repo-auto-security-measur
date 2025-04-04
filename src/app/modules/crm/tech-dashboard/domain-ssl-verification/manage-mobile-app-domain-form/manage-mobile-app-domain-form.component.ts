@@ -53,7 +53,7 @@ export class ManageMobileAppDomainFormComponent {
       api_url: ['', Validators.required],
       app_name: ['', Validators.required],
       store_app_name: ['', Validators.required],
-      support_email: ['', Validators.required, this.customEmailRegexValidator()],
+      support_email: ['', [Validators.required, this.customEmailRegexValidator()]],
       gmail_id: ['', Validators.required],
       password: ['', Validators.required],
     });
@@ -103,6 +103,7 @@ export class ManageMobileAppDomainFormComponent {
     if (this.formGroup.invalid) {
       this.alertService.showToast('error', 'Fill up required field to proceed');
       this.formGroup.markAllAsTouched();
+      console.log("this.formGroup.value", this.formGroup.value)
       return;
     }
 

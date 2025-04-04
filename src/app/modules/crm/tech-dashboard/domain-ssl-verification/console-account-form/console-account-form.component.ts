@@ -88,17 +88,11 @@ export class ConsoleAccountFormComponent {
     this.domainVarifyService.create(payloadData).subscribe({
       next: (res) => {
         if (res) {
-          payloadData.id = res.id;
-          if (this.formGroup.get('id').value) {
-          
-          } else {
-            this.formGroup.get('id').patchValue(res.id);
             this.alertService.showToast('success', 'Domain Created Successfully');
             this.stepCompleted.emit(1);
             this.stepAllowed.emit(3);
             this.domainVarifyService.createUpdateDomainSubject.next(res);
             // formDirective.resetForm()
-          }
         }
 
       }, error: err => this.alertService.showToast('error', err)
