@@ -10,7 +10,7 @@
                 <span class="font-normal text-[14px] flex items-center gap-2 dark:text-white text-black">
                     {{data?.domain || "-"}} 
                     <ul *ngIf="data?.ssl_generated_date || data?.ssl_expiry_date " >
-                        <li class="list-disc list-inside">
+                        <li class="list-disc list-inside text-[10px] text-[#9CADD3]">
                             created:{{data?.ssl_generated_date ? (data.ssl_generated_date | date:'mediumDate') : "-"}} |
                             Expires:{{data?.ssl_generated_date ? (data.ssl_generated_date | date:'mediumDate'): "-"}}
                         </li>

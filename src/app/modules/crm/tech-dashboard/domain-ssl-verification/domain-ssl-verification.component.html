@@ -9,7 +9,7 @@
                         'active-circle':item.isActive,
                         'non-active-circle':!item.isActive && !item.isCompleted,
                         'completed-circle': item.isCompleted,
-                        'completed-active-circle': item.isActive && item.isCompleted && item.isAllowed
+                        'completed-active-circle': item.isActive && item.isCompleted
                     }" 
                     (click)="onStepper(item)">
                         <span *ngIf="!item.isCompleted">{{item.step}}</span>
