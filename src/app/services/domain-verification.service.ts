@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { BehaviorSubject, Observable, take } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, take } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +11,9 @@ export class DomainVerificationService {
 
     createUpdateDomainSubject = new BehaviorSubject<any>("");
     createUpdateDomain$ = this.createUpdateDomainSubject.asObservable();
+
+    verifyButtonSubject  = new Subject<boolean>();
+    verifyButton$ = this.verifyButtonSubject.asObservable();
 
     constructor(private http: HttpClient) { }
 

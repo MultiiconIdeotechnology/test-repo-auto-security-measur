@@ -44,6 +44,10 @@ export class VerifyDomainComponent {
       this.wlId = res?.wl_id
       // this.isDomainFalse = this.isDomainPointing();
     });
+
+    this.domainVarifyService.verifyButton$.subscribe((res:boolean) => {
+      this.isDomainFalse = res;
+    })
   }
 
   getHelp() {
@@ -91,13 +95,16 @@ export class VerifyDomainComponent {
   onPreviousPage() {
     if (this.data?.item_name?.toLowerCase().includes('android') || this.data?.item_name?.toLowerCase().includes('ios')) {
       this.previousPage.emit(2);
+      this.domainVarifyService.verifyButtonSubject.next(true);
     } else {
       this.previousPage.emit(1);
+      this.domainVarifyService.verifyButtonSubject.next(true);
     }
   }
 
   stepTwoCompleted() {
     this.stepCompleted.emit(3);
+    this.domainVarifyService.verifyButtonSubject.next(true);
   }
 
 

@@ -38,6 +38,10 @@ export class VerifySslComponent {
       this.wlId = res?.wl_id
       // this.isDomainFalse = this.isSslPointing();
     })
+
+    this.domainVarifyService.verifyButton$.subscribe((res:boolean) => {
+      this.isDomainFalse = res;
+    })
   }
 
   ngOnInit(){
@@ -78,8 +82,10 @@ export class VerifySslComponent {
     if (this.data?.item_name?.toLowerCase().includes('android') ||
       this.data?.item_name?.toLowerCase().includes('ios')) {
       this.previousPage.emit(3);
+      this.domainVarifyService.verifyButtonSubject.next(true);
     } else {
       this.previousPage.emit(3);
+      this.domainVarifyService.verifyButtonSubject.next(true);
     }
   }
 
