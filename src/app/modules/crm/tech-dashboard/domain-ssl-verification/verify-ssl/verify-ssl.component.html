@@ -4,15 +4,15 @@
     <div class="border dark:border-[#32415470] border-gray-200 rounded-[12px] p-4">
         <div *ngFor="let data of sslDomainsData">
             <div class="flex items-center gap-3 pb-2">
-                <img *ngIf="!data?.pointed && !isLoading" src="assets/icons/danger-icon.svg" alt="Info Icon" class="w-[20px] h-[19px]">
+                <img *ngIf="!data?.ssl_generated && !isLoading" src="assets/icons/danger-icon.svg" alt="Info Icon" class="w-[20px] h-[19px]">
                 <img *ngIf="isLoading" src="assets/images/gif/loader-round-2.gif" alt="Loader Icon" class="w-[20px] h-[19px] translate-y-[1px]">
-                <i *ngIf="data?.pointed && !isLoading" class="material-icons text-[20px] text-primaryColor text-medium">check</i>
+                <i *ngIf="data?.ssl_generated && !isLoading" class="material-icons text-[20px] text-primaryColor text-medium">check</i>
                 <span class="font-normal text-[14px] flex items-center gap-2 dark:text-white text-black">
                     {{data?.domain || "-"}} 
                     <ul *ngIf="data?.ssl_generated_date || data?.ssl_expiry_date " >
                         <li class="list-disc list-inside text-[10px] text-[#9CADD3]">
                             created:{{data?.ssl_generated_date ? (data.ssl_generated_date | date:'mediumDate') : "-"}} |
-                            Expires:{{data?.ssl_generated_date ? (data.ssl_generated_date | date:'mediumDate'): "-"}}
+                            Expires:{{data?.ssl_expiry_date ? (data.ssl_expiry_date | date:'mediumDate'): "-"}}
                         </li>
                     </ul>
                 </span>
