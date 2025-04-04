@@ -78,7 +78,6 @@ export class CRMAgentListComponent implements OnDestroy {
         public _filterService: CommonFilterService
     ) {
         if(!this.getTabsPermission('inbox')){
-            console.log("enter")
             this.tabNameStr = 'Partners'
             this.tab = 'partners';
         }
