@@ -233,12 +233,12 @@
                         {{element.agency_name || "-"}}
                     </td>
                     <td class="text-right">
-                        {{element.outstanding_on_due_date.toFixed(2) || "-"}}
+                        {{element.outstanding_on_due_date ? (element.outstanding_on_due_date.toFixed(2) | number:'1.2-2') : "0"}}
                     </td>
                     <td>{{element.employee_name || "-"}}</td>
                     <td>{{element.mobile_number || "-"}}</td>
                     <td>{{element.email_address || "-"}}</td>
-                    <td class="text-right">{{element.credit_balance || "-"}}</td>
+                    <td class="text-right">{{element.credit_balance ? (element.credit_balance.toFixed(2) | number:'1.2-2') : "0"}}</td>
                     <td>{{element.payment_cycle_policy || "-"}}</td>
                     <td>{{element.payment_cycle_policy_type || "-"}}</td>
                     <td>

@@ -154,7 +154,7 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service">{{element.service || "-"}}</td>
                     <td>
                         <span (click)="element.refNo ? onRefNoDetail(element): null"
-                        [ngClass]="element.refNo ? 'cursor-pointer underline': ''">
+                        [ngClass]="element.refNo ? 'cursor-pointer border-b dark:border-white border-black': ''">
                             {{element.refNo || "-"}}
                         </span>
                     </td>

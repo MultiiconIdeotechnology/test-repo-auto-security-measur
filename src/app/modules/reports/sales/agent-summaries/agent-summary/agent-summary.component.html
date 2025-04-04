@@ -279,7 +279,7 @@
                             {{element.status || "-"}}
                         </span>
                     </td>
-                    <td>{{element.volume || 0}}</td>
+                    <td>{{element.volume ? (element.volume.toFixed(2) | number:'1.2-2') : 0}}</td>
                     <td class="text-center">
                         <span class="text-center justify-left"
                             [ngClass]="element.tec_product == 'Yes' ? 'text-green-600' : element.status == 'N0' ? 'text-red-600' :'text-red-600'">
@@ -287,7 +287,7 @@
                         </span>
                     </td>
 
-                    <td class="text-right">{{element.tech_gp ? element.tech_gp.toFixed(2) : '0'}}</td>
+                    <td class="text-right">{{element.tech_gp ? (element.tech_gp.toFixed(2) | number:'1.2-2') : '0'}}</td>
                     <!-- <td class="text-center">{{element.followup ? element.followup : '0'}}</td> -->
 
                     <td>
