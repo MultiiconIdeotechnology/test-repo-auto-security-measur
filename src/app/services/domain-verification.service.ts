@@ -17,11 +17,11 @@ export class DomainVerificationService {
 
     constructor(private http: HttpClient) { }
 
-    create(model: any): Observable<any> {
+    createDomain(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'DomainConfiguration/create', model);
     }
 
-    createMobileDomain(model: any): Observable<any> {
+    androidIosConfig(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'DomainConfiguration/androidIOSConfiguration', model);
     }
 

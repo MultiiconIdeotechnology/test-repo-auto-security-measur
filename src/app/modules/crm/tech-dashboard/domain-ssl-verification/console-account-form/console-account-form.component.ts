@@ -43,9 +43,7 @@ export class ConsoleAccountFormComponent {
   ){
 
     this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
-      // this.sslDomainsData = res?.ssl_domains;
       this.wlId = res?.wl_id
-      // this.isDomainFalse = this.isSslPointing();
     })
     
   }
@@ -62,7 +60,6 @@ export class ConsoleAccountFormComponent {
     });
 
     if(this.data?.item_name?.toLowerCase().includes('ios')){
-      console.log("this.data.itemname", this.data.item_name)
       this.formGroup.get('password').setValidators([Validators.required]);
     } else {
       this.formGroup.get('password')?.clearValidators();
@@ -85,7 +82,7 @@ export class ConsoleAccountFormComponent {
     payloadData.wl_id = this.wlId;
 
     console.log("this.payloadData", payloadData);
-    this.domainVarifyService.create(payloadData).subscribe({
+    this.domainVarifyService.androidIosConfig(payloadData).subscribe({
       next: (res) => {
         if (res) {
             this.alertService.showToast('success', 'Domain Created Successfully');

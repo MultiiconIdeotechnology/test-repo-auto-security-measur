@@ -45,7 +45,6 @@ export class ManageMobileAppDomainFormComponent {
 
   ngOnInit(): void {
     this.formGroup = this.builder.group({
-      id: [''],
       agent_id: [''],
       product_id: [''],
       partner_panel_url: [''],
@@ -112,19 +111,13 @@ export class ManageMobileAppDomainFormComponent {
     payloadData.product_id = this.data?.subid;
 
     console.log("this.payloadData", payloadData);
-    this.domainVarifyService.createMobileDomain(payloadData).subscribe({
+    this.domainVarifyService.createDomain(payloadData).subscribe({
       next: (res) => {
         if (res) {
-          payloadData.id = res.id;
-          if (this.formGroup.get('id').value) {
-
-          } else {
-            this.formGroup.get('id').patchValue(res.id);
             this.alertService.showToast('success', 'Domain Created Successfully');
             this.stepCompleted.emit(1);
             this.stepAllowed.emit(2)
             this.domainVarifyService.createUpdateDomainSubject.next(res);
-          }
         }
 
       }, error: err => this.alertService.showToast('error', err)
