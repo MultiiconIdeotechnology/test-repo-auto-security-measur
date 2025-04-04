@@ -94,11 +94,13 @@
             <ng-template pTemplate="header">
 
                 <tr>
-                    <th pSortableColumn="agent_name" pResizableColumn rowspan="2">Agent <p-sortIcon field="agent_name" />
+                    <th pSortableColumn="agent_name" pResizableColumn rowspan="2">Agent <p-sortIcon
+                            field="agent_name" />
                     </th>
                     <th pSortableColumn="agent_id" pResizableColumn rowspan="2">Agent Id<p-sortIcon field="agent_id" />
                     </th>
-                    <th pSortableColumn="sales_person" pResizableColumn rowspan="2">Sales Person<p-sortIcon field="sales_person" /></th>
+                    <th pSortableColumn="sales_person" pResizableColumn rowspan="2">Sales Person<p-sortIcon
+                            field="sales_person" /></th>
                     <th class="text-center" colspan="3">Air</th>
                     <th class="text-center" colspan="3">Hotel</th>
                     <th class="text-center" colspan="3">Bus</th>
@@ -111,41 +113,60 @@
                 </tr>
                 <tr>
                     <!-- Total Columns -->
-                    <th class="text-right" pSortableColumn="air_volume" pResizableColumn>Volume <p-sortIcon field="air_volume" /></th>
-                    <th class="text-right" pSortableColumn="air_profit" pResizableColumn>Profit <p-sortIcon field="air_profit" /></th>
+                    <th class="text-right" pSortableColumn="air_volume" pResizableColumn>Volume <p-sortIcon
+                            field="air_volume" /></th>
+                    <th class="text-right" pSortableColumn="air_profit" pResizableColumn>Profit <p-sortIcon
+                            field="air_profit" /></th>
                     <th class="text-right" pSortableColumn="air_pax" pResizableColumn>Pax <p-sortIcon field="air_pax" />
                     </th>
                     <!-- Total Columns -->
-                    <th class="text-right" pSortableColumn="hotel_volume" pResizableColumn>Volume <p-sortIcon field="hotel_volume" /></th>
-                    <th class="text-right" pSortableColumn="hotel_profit" pResizableColumn>Profit <p-sortIcon field="hotel_profit" /></th>
-                    <th class="text-right" pSortableColumn="hotel_pax" pResizableColumn>Pax <p-sortIcon field="hotel_pax" />
+                    <th class="text-right" pSortableColumn="hotel_volume" pResizableColumn>Volume <p-sortIcon
+                            field="hotel_volume" /></th>
+                    <th class="text-right" pSortableColumn="hotel_profit" pResizableColumn>Profit <p-sortIcon
+                            field="hotel_profit" /></th>
+                    <th class="text-right" pSortableColumn="hotel_pax" pResizableColumn>Pax <p-sortIcon
+                            field="hotel_pax" />
                     </th>
                     <!-- Total Columns -->
-                    <th class="text-right" pSortableColumn="bus_volume" pResizableColumn>Volume <p-sortIcon field="bus_volume" /></th>
-                    <th class="text-right" pSortableColumn="bus_profit" pResizableColumn>Profit <p-sortIcon field="bus_profit" /></th>
+                    <th class="text-right" pSortableColumn="bus_volume" pResizableColumn>Volume <p-sortIcon
+                            field="bus_volume" /></th>
+                    <th class="text-right" pSortableColumn="bus_profit" pResizableColumn>Profit <p-sortIcon
+                            field="bus_profit" /></th>
                     <th class="text-right" pSortableColumn="bus_pax" pResizableColumn>Pax <p-sortIcon field="bus_pax" />
                     </th>
                     <!-- Total Columns -->
-                    <th class="text-right" pSortableColumn="visa_volume" pResizableColumn>Volume <p-sortIcon field="visa_volume" /></th>
-                    <th class="text-right" pSortableColumn="visa_profit" pResizableColumn>Profit <p-sortIcon field="visa_profit" /></th>
-                    <th class="text-right" pSortableColumn="visa_pax" pResizableColumn>Pax <p-sortIcon field="visa_pax" />
+                    <th class="text-right" pSortableColumn="visa_volume" pResizableColumn>Volume <p-sortIcon
+                            field="visa_volume" /></th>
+                    <th class="text-right" pSortableColumn="visa_profit" pResizableColumn>Profit <p-sortIcon
+                            field="visa_profit" /></th>
+                    <th class="text-right" pSortableColumn="visa_pax" pResizableColumn>Pax <p-sortIcon
+                            field="visa_pax" />
                     </th>
                     <!-- Total Columns -->
-                    <th class="text-right" pSortableColumn="other_service_volume" pResizableColumn>Volume <p-sortIcon field="other_service_volume" /></th>
-                    <th class="text-right" pSortableColumn="other_service_profit" pResizableColumn>Profit <p-sortIcon field="other_service_profit" /></th>
-                    <th class="text-right" pSortableColumn="other_service_pax" pResizableColumn>Pax <p-sortIcon field="other_service_pax" />
+                    <th class="text-right" pSortableColumn="other_service_volume" pResizableColumn>Volume <p-sortIcon
+                            field="other_service_volume" /></th>
+                    <th class="text-right" pSortableColumn="other_service_profit" pResizableColumn>Profit <p-sortIcon
+                            field="other_service_profit" /></th>
+                    <th class="text-right" pSortableColumn="other_service_pax" pResizableColumn>Pax <p-sortIcon
+                            field="other_service_pax" />
                     </th>
                     <!-- Total Columns -->
-                    <th class="text-right" pSortableColumn="tech_product_volume" pResizableColumn>Volume <p-sortIcon field="tech_product_volume" /></th>
-                    <th class="text-right" pSortableColumn="tech_product_profit" pResizableColumn>Profit <p-sortIcon field="tech_product_profit" /></th>
-                    <th class="text-right" pSortableColumn="tech_product_pax" pResizableColumn>Pax <p-sortIcon field="tech_product_pax" />
-                    </th> 
-                    <!-- Total Columns -->
-                    <th class="text-right" pSortableColumn="total_volume" pResizableColumn>Volume <p-sortIcon field="total_volume" /></th>
-                    <th class="text-right" pSortableColumn="total_profit" pResizableColumn>Profit <p-sortIcon field="total_profit" /></th>
-                    <th class="text-right" pSortableColumn="total_pax" pResizableColumn>Pax <p-sortIcon field="total_pax" />
+                    <th class="text-right" pSortableColumn="tech_product_volume" pResizableColumn>Volume <p-sortIcon
+                            field="tech_product_volume" /></th>
+                    <th class="text-right" pSortableColumn="tech_product_profit" pResizableColumn>Profit <p-sortIcon
+                            field="tech_product_profit" /></th>
+                    <th class="text-right" pSortableColumn="tech_product_pax" pResizableColumn>Pax <p-sortIcon
+                            field="tech_product_pax" />
                     </th>
-                 
+                    <!-- Total Columns -->
+                    <th class="text-right" pSortableColumn="total_volume" pResizableColumn>Volume <p-sortIcon
+                            field="total_volume" /></th>
+                    <th class="text-right" pSortableColumn="total_profit" pResizableColumn>Profit <p-sortIcon
+                            field="total_profit" /></th>
+                    <th class="text-right" pSortableColumn="total_pax" pResizableColumn>Pax <p-sortIcon
+                            field="total_pax" />
+                    </th>
+
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -163,99 +184,99 @@
                     </th>
 
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="air_volume" placeholder="Search by Air Volume"
-                            ariaLabel="Filter Air Volume" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="air_volume"
+                            placeholder="Search by Air Volume" ariaLabel="Filter Air Volume" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="air_profit" placeholder="Search by Air Profit"
-                            ariaLabel="Filter Air Profit" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="air_profit"
+                            placeholder="Search by Air Profit" ariaLabel="Filter Air Profit" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="air_pax" placeholder="Search by Air Pax"
-                            ariaLabel="Filter Air Pax" />
-                    </th>
-
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_volume" placeholder="Search by Hotel Volume"
-                            ariaLabel="Filter Hotel Volume" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_profit" placeholder="Search by Hotel Profit"
-                            ariaLabel="Filter Hotel Profit" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_pax" placeholder="Search by Hotel Pax"
-                            ariaLabel="Filter Hotel Pax" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="air_pax"
+                            placeholder="Search by Air Pax" ariaLabel="Filter Air Pax" />
                     </th>
 
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="bus_volume" placeholder="Search by Bus Volume"
-                            ariaLabel="Filter Bus Volume" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_volume"
+                            placeholder="Search by Hotel Volume" ariaLabel="Filter Hotel Volume" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="bus_profit" placeholder="Search by Bus Profit"
-                            ariaLabel="Filter Bus Profit" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_profit"
+                            placeholder="Search by Hotel Profit" ariaLabel="Filter Hotel Profit" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="bus_pax" placeholder="Search by Bus Pax"
-                            ariaLabel="Filter Bus Pax" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="hotel_pax"
+                            placeholder="Search by Hotel Pax" ariaLabel="Filter Hotel Pax" />
                     </th>
 
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="visa_volume" placeholder="Search by Visa Volume"
-                            ariaLabel="Filter Visa Volume" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="bus_volume"
+                            placeholder="Search by Bus Volume" ariaLabel="Filter Bus Volume" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="visa_profit" placeholder="Search by Visa Profit"
-                            ariaLabel="Filter Visa Profit" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="bus_profit"
+                            placeholder="Search by Bus Profit" ariaLabel="Filter Bus Profit" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="visa_pax" placeholder="Search by Visa Pax"
-                            ariaLabel="Filter Visa Pax" />
-                    </th>  
-                    
+                        <p-columnFilter type="numeric" matchMode="equals" field="bus_pax"
+                            placeholder="Search by Bus Pax" ariaLabel="Filter Bus Pax" />
+                    </th>
+
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_volume" placeholder="Search by Other Service Volume"
-                            ariaLabel="Filter Other Service Volume" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="visa_volume"
+                            placeholder="Search by Visa Volume" ariaLabel="Filter Visa Volume" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_profit" placeholder="Search by Other Service Profit"
-                            ariaLabel="Filter Other Service Profit" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="visa_profit"
+                            placeholder="Search by Visa Profit" ariaLabel="Filter Visa Profit" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_pax" placeholder="Search by Other Service Pax"
-                            ariaLabel="Filter Other Service Pax" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="visa_pax"
+                            placeholder="Search by Visa Pax" ariaLabel="Filter Visa Pax" />
                     </th>
-                    
+
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_volume" placeholder="Search by Tech Product Volume"
-                            ariaLabel="Filter Tech Product Volume" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_profit" placeholder="Search by Tech Product Profit"
-                            ariaLabel="Filter Tech Product Profit" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_volume"
+                            placeholder="Search by Other Service Volume" ariaLabel="Filter Other Service Volume" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_pax" placeholder="Search by Tech Product Pax"
-                            ariaLabel="Filter Tech Product Pax" />
-                    </th>
-                    
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="total_volume" placeholder="Search by Total Volume"
-                            ariaLabel="Filter Total Volume" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_profit"
+                            placeholder="Search by Other Service Profit" ariaLabel="Filter Other Service Profit" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="total_profit" placeholder="Search by Total Profit"
-                            ariaLabel="Filter Total Profit" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="other_service_pax"
+                            placeholder="Search by Other Service Pax" ariaLabel="Filter Other Service Pax" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_volume"
+                            placeholder="Search by Tech Product Volume" ariaLabel="Filter Tech Product Volume" />
                     </th>
                     <th>
-                        <p-columnFilter type="numeric" matchMode="equals" field="total_pax" placeholder="Search by Total Pax"
-                            ariaLabel="Filter Total Pax" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_profit"
+                            placeholder="Search by Tech Product Profit" ariaLabel="Filter Tech Product Profit" />
                     </th>
-                    
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="whitelabel" placeholder="Search by Whitelabel"
-                            ariaLabel="Filter Whitelabel" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="tech_product_pax"
+                            placeholder="Search by Tech Product Pax" ariaLabel="Filter Tech Product Pax" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="total_volume"
+                            placeholder="Search by Total Volume" ariaLabel="Filter Total Volume" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="total_profit"
+                            placeholder="Search by Total Profit" ariaLabel="Filter Total Profit" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="total_pax"
+                            placeholder="Search by Total Pax" ariaLabel="Filter Total Pax" />
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="whitelabel"
+                            placeholder="Search by Whitelabel" ariaLabel="Filter Whitelabel" />
                     </th>
 
                 </tr>
@@ -269,39 +290,54 @@
                     <td>{{ element.sales_person }}</td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.air_volume }}</td>
-                    <td class="text-right">{{ element.air_profit }}</td>
+                    <td class="text-right">{{ element.air_volume ? (element.air_volume.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
+                    <td class="text-right">{{ element.air_profit ? (element.air_profit.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
                     <td class="text-right">{{ element.air_pax }}</td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.hotel_volume }}</td>
-                    <td class="text-right">{{ element.hotel_profit }}</td>
+                    <td class="text-right">{{ element.hotel_volume ? (element.hotel_volume.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
+                    <td class="text-right">{{ element.hotel_profit ? (element.hotel_profit.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
                     <td class="text-right">{{ element.hotel_pax }}</td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.bus_volume }}</td>
-                    <td class="text-right">{{ element.bus_profit }}</td>
+                    <td class="text-right">{{ element.bus_volume ? (element.bus_volume.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
+                    <td class="text-right">{{ element.bus_profit ? (element.bus_profit.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
                     <td class="text-right">{{ element.bus_pax }}</td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.visa_volume }}</td>
-                    <td class="text-right">{{ element.visa_profit }}</td>
+                    <td class="text-right">{{ element.visa_volume ? (element.visa_volume.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
+                    <td class="text-right">{{ element.visa_profit ? (element.visa_profit.toFixed() | number:'1.2-2') : '0' }}
+                    </td>
                     <td class="text-right">{{ element.visa_pax }}</td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.other_service_volume }}</td>
-                    <td class="text-right">{{ element.other_service_profit }}</td>
+                    <td class="text-right">{{ element.other_service_volume ? (element.other_service_volume.toFixed() |
+                        number:'1.2-2') : '0' }}</td>
+                    <td class="text-right">{{ element.other_service_profit ? (element.other_service_profit.toFixed() |
+                        number:'1.2-2') : '0' }}</td>
                     <td class="text-right">{{ element.other_service_pax }}</td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.tech_product_volume }}</td>
-                    <td class="text-right">{{ element.tech_product_profit }}</td>
+                    <td class="text-right">{{ element.tech_product_volume ? (element.tech_product_volume.toFixed() |
+                        number:'1.2-2') : '0.00' }}</td>
+                    <td class="text-right">{{ element.tech_product_profit ? (element.tech_product_profit.toFixed() |
+                        number:'1.2-2') : '0.00' }}</td>
                     <td class="text-right">{{ element.tech_product_pax }}</td>
 
                     <!-- Total Columns -->
-                    <td class="text-right">{{ element.total_volume }}</td>
-                    <td class="text-right">{{ element.total_profit }}</td>
+                    <td class="text-right">{{ element.total_volume ? (element.total_volume.toFixed() | number:'1.2-2') : '0.00' }}
+                    </td>
+                    <td class="text-right">{{ element.total_profit ? (element.total_profit.toFixed() | number:'1.2-2') : '0.00' }}
+                    </td>
                     <td class="text-right">{{ element.total_pax }}</td>
+
 
                     <td>{{ element.whitelabel }}</td>
 

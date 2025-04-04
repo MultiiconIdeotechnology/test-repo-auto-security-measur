@@ -204,8 +204,8 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_name">
                         {{element.agent_name || "-"}}
                     </td>
-                    <td class="text-right">{{element.currency || "-"}} {{element.balance.toFixed(2) || "-"}}</td>
-                    <td class="text-right">{{element.credit.toFixed(2) || "-"}}</td>
+                    <td class="text-right">{{element.currency || "-"}} {{element.balance ? (element.balance.toFixed(2) | number:'1.2-2') : "0"}}</td>
+                    <td class="text-right">{{element.credit ? (element.credit.toFixed(2) | number:'1.2-2') : "0"}}</td>
                     <td>{{element.rm || "-"}}</td>
                     <td>{{element.mobile || "-"}}</td>
                     <td>{{element.email || "-"}}</td>
