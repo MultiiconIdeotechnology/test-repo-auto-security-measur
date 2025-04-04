@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { DomainVerificationService } from 'app/services/domain-verification.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { ToasterService } from 'app/services/toaster.service';
+import { DomainSslVerificationComponent } from '../domain-ssl-verification.component';
 
 @Component({
   selector: 'app-verify-ssl',
@@ -30,6 +31,7 @@ export class VerifySslComponent {
   @Output() stepAllowed = new EventEmitter<number>();
 
   constructor(
+    public matDialogRef: MatDialogRef<DomainSslVerificationComponent>,
     private domainVarifyService: DomainVerificationService,
     private alertService: ToasterService,
   ) {
