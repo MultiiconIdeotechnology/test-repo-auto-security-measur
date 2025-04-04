@@ -47,7 +47,7 @@
                 matTooltip="Support Email for play store. It will be used to raise any queries by the users of app">info_outline</i>
             </mat-label>
             <input matInput formControlName="support_email">
-            <mat-error *ngIf="formgroup.get('support_email').hasError('invalidEmail')">
+            <mat-error *ngIf="formGroup.get('support_email').hasError('invalidEmail')">
                 Please enter a valid email address.
             </mat-error>
         </mat-form-field>
