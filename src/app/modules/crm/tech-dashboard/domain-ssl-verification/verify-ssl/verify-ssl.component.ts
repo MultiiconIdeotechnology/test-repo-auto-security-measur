@@ -22,7 +22,7 @@ import { ToasterService } from 'app/services/toaster.service';
 export class VerifySslComponent {
   sslDomainsData: any = [];
   isLoading: boolean = false;
-  isDomainFalse: boolean = false;
+  isDomainFalse: boolean = true;
   wlId: any;
   @Input() data: any;
   @Output() stepCompleted = new EventEmitter<number>();
@@ -36,7 +36,7 @@ export class VerifySslComponent {
     this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
       this.sslDomainsData = res?.ssl_domains;
       this.wlId = res?.wl_id
-      this.isDomainFalse = this.isSslPointing();
+      // this.isDomainFalse = this.isSslPointing();
     })
   }
 

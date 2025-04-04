@@ -23,7 +23,7 @@ import { DomainPointingDetailsComponent } from '../domain-pointing-details/domai
 export class VerifyDomainComponent {
   domainPointingData: any = [];
   isLoading: boolean = false;
-  isDomainFalse: boolean = false;
+  isDomainFalse: boolean = true;
   wlId: any;
   @Input() data: any;
   @Output() stepCompleted = new EventEmitter<number>();
@@ -42,7 +42,7 @@ export class VerifyDomainComponent {
     this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
       this.domainPointingData = res?.pointed_domains;
       this.wlId = res?.wl_id
-      this.isDomainFalse = this.isDomainPointing();
+      // this.isDomainFalse = this.isDomainPointing();
     });
   }
 
