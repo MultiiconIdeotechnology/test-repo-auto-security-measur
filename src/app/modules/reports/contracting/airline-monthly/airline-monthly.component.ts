@@ -24,6 +24,7 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { DateTime } from 'luxon';
 import { Subscription } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 @Component({
   selector: 'app-airline-monthly',
@@ -49,7 +50,8 @@ import { Excel } from 'app/utils/export/excel';
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatTabsModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    IndianNumberPipe
   ],
   templateUrl: './airline-monthly.component.html',
   styleUrls: ['./airline-monthly.component.scss']

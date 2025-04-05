@@ -123,9 +123,9 @@
                     <td>{{ element.supplier }}</td>
 
                     <!-- Average Columns -->
-                        <td class="text-right">{{ element.avg_Volume }}</td>
-                        <td class="text-right" *ngIf="!hideDomVolume">{{ element.avg_Volume_Domestic }}</td>
-                        <td class="text-right" *ngIf="!hideDomVolume">{{ element.avg_Volume_International }}</td>
+                        <td class="text-right">{{ element.avg_Volume ? (element.avg_Volume | indianNumber): 0 }}</td>
+                        <td class="text-right" *ngIf="!hideDomVolume">{{ element.avg_Volume_Domestic ? (element.avg_Volume_Domestic | indianNumber): 0 }}</td>
+                        <td class="text-right" *ngIf="!hideDomVolume">{{ element.avg_Volume_International ? (element.avg_Volume_International | indianNumber) : 0 }}</td>
                         <td class="text-right">{{ element.avg_Growth }}%</td>
                         <td class="text-right" *ngIf="!hideDomVolume">{{ element.avg_Growth_Domestic }}%</td>
                         <td class="text-right" *ngIf="!hideDomVolume">{{ element.avg_Growth_International }}%</td>
@@ -136,9 +136,9 @@
                             <ng-container *ngIf="monthData.month === month">
                                 <td class="text-right">{{ monthData.volume }}</td>
                                 <td class="text-right">{{ monthData.growth }}%</td>
-                                <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.volume_Domestic }}</td>
+                                <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.volume_Domestic ? (monthData.volume_Domestic | indianNumber) : 0 }}</td>
                                 <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.growth_Domestic }}%</td>
-                                <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.volume_International}}</td>
+                                <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.volume_International ? (monthData.volume_International | indianNumber) : 0}}</td>
                                 <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.growth_International}}</td>
                             </ng-container>
                         </ng-container>
