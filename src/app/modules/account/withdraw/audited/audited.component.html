@@ -159,7 +159,7 @@
                     {{(element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') || '-'}}
                 </td>
                 <td class="text-right">
-                    {{element.currency_symbol}} {{element.withdraw_amount || '0'}}
+                    {{element.currency_symbol}} {{(element.withdraw_amount | indianNumber) || '0'}}
                 </td>
                 <td>
                     {{element.agent_Code || '-'}}

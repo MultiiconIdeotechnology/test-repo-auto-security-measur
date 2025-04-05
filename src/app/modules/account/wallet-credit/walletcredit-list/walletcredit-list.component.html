@@ -277,13 +277,13 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.master_agent_name">
                         {{element.master_agent_name}}
                     </td>
-                    <td class="text-right">{{element.credit_balance}}</td>
+                    <td class="text-right">{{element.credit_balance ? (element.credit_balance | indianNumber) : 0}}</td>
                     <td>
                         {{(element.expiry_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
                     <td>{{element.payment_cycle_policy_type}}</td>
                     <td>{{element.payment_cycle_policy}}</td>
-                    <td class="text-right">{{element.outstanding_on_due_date ? element.outstanding_on_due_date.toFixed(2) : 0 }}</td>
+                    <td class="text-right">{{element.outstanding_on_due_date ? (element.outstanding_on_due_date.toFixed(2) | number:'1.2-2') : 0 }}</td>
                     <td class="text-right">{{element.over_due_count}}</td>
                     <td>{{element.is_defaulter ? 'Yes': 'No'}}</td>
                     <td>
