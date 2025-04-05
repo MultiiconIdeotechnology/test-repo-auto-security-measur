@@ -111,10 +111,6 @@ export class DomainSslVerificationComponent {
   }
 
   onPreviousPage(id: number) {
-    console.log("id>>>", id)
-    // let isCompleted = this.stepperData.find((item: any) => item.id == id)?.isCompleted;
-    // console.log("isCompleted", isCompleted)
-    // if (isCompleted) {
       this.activeStepperId = id;
 
       this.stepperData.forEach((item: any) => {
@@ -124,7 +120,6 @@ export class DomainSslVerificationComponent {
           item.isActive = false;
         }
       })
-    // }
   }
 
   onPrevious(){
