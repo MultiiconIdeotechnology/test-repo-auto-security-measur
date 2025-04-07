@@ -1154,7 +1154,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
 }
 
 .custom-dialog-modal-md {
-    // max-height: 80vh;
+    max-height: 650px;
     // min-height: 80vh;
     overflow: auto;
     // max-width: 1260px !important;
@@ -1177,6 +1177,12 @@ div:where(.swal2-container) button:where(.swal2-close) {
         .mat-mdc-dialog-container .mdc-dialog__surface {
             padding: 0 !important
         }
+    }
+}
+
+@media screen and (max-height: 650px){
+    .custom-dialog-modal-md {
+        max-height: 90vh;
     }
 }
 

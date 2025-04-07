@@ -39,7 +39,5 @@ export class DomainPointingDetailsComponent {
       { domain: "www.partner.bontonholidays.com", recordType: "A", name: "www.partner.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
       { domain: "api.bontonholidays.com", recordType: "A", name: "api.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" }
     ];
-    
-    
 
 }

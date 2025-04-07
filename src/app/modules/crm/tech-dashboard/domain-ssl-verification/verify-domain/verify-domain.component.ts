@@ -59,7 +59,7 @@ export class VerifyDomainComponent {
       autoFocus: false,
       width: '860px',
       minWidth: '800px',
-      maxHeight: '900px'
+      maxHeight: '670px'
     })
   }
 

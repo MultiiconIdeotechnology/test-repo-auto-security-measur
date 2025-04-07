@@ -1,5 +1,5 @@
-<section class="flex flex-col">
-    <div class="header h-[5rem] border-b dark:border-[#324154] border-gray-200 p-5 pt-3 pb-6 flex items-center justify-center gap-3">
+<!-- <section class="flex flex-col"> -->
+    <div class="header h-[5rem] bg-white dark:bg-gray-800 z-99 border-b dark:border-[#324154] border-gray-200 p-5 pt-3 pb-6 flex items-center justify-center gap-3 sticky top-0">
         <div class="stepper flex flex-col items-center"
             *ngFor="let item of stepperData; let idx = index; let isLast = last">
             <div class="flex items-center">
@@ -84,7 +84,7 @@
         </app-verify-ssl>
     </div>
 
-    <div *ngIf="activeStepperId === 1 || activeStepperId == 2"  class="footer h-[5rem] border-t dark:border-[#324154] border-gray-200 p-5 flex justify-end items-center gap-3">
+    <div *ngIf="activeStepperId === 1 || activeStepperId == 2"  class="footer h-[5rem] sticky bottom-0 z-99 border-t bg-white dark:bg-gray-800 dark:border-[#324154] border-gray-200 p-5 flex justify-end items-center gap-3">
         <button *ngIf="activeStepperId === 2" mat-stroked-button (click)="onPrevious()">
             Previous
         </button>
@@ -93,4 +93,4 @@
             Next 
         </button>
     </div>
-</section>
+<!-- </section> -->
