@@ -291,7 +291,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         //     //         return this.alertService.showToast('error', messages.permissionDenied);
         //     //     }
 
-        this.crmService.getWLSettingList(record?.code).subscribe({
+        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data[0];
@@ -390,7 +390,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 this.isLoading = false;
                 this.getWLSettingList = data;
 
-                if (this.getWLSettingList && this.getWLSettingList.length > 0) {
+                if (this.getWLSettingList && this.getWLSettingList.length > 0 && !record?.item_name?.toLowerCase().includes('rise')) {
                     const label: string = 'Activate';
                     this.conformationService
                         .open({

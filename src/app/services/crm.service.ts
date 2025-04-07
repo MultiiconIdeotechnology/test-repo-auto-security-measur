@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, of } from 'rxjs';
@@ -184,6 +184,14 @@ export class CrmService {
     getWLSettingList(agentId: any): Observable<any> {
         return this.http.get<any>(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?agent_id=${agentId}`);
     }
+
+    getWLSettingListTwoParams(agentId: any, item_name: any) {
+            const params = new HttpParams()
+              .set('agent_id', agentId)
+              .set('item_name', item_name);
+          
+            return this.http.post(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?${params.toString()}`, {});
+        }
 
     updateStatus(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/updatestatus', model);
