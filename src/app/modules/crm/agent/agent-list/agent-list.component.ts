@@ -127,7 +127,6 @@ export class CRMAgentListComponent implements OnDestroy {
             case 'Potential':
                 this.tab = 'potential';
                 // if (this.isSecound) {
-                    console.log("enter potential", this.potential.filter_table_name)
                     this.potential?.refreshItems()
                 // }
                 break;

@@ -182,7 +182,7 @@ export class PotentialLeadComponent extends BaseListingComponent {
               next: (data) => {
                   this.isLoading = false;
                   if(data && data.length){
-                      this.dataList = data[0]?.value;
+                      let potentialLeadData = data[0]?.value;
                       this.totalRecords = data?.total;
                   }
               },
@@ -193,21 +193,13 @@ export class PotentialLeadComponent extends BaseListingComponent {
           });
       }
   
-      // Get the last login date
-    //   getLastLogin(item: any): string {
-    //       const logins = [
-    //           item.iosLastLogin ? new Date(item.iosLastLogin) : null,
-    //           item.androidLastLogin ? new Date(item.androidLastLogin) : null,
-    //           item.webLastLogin ? new Date(item.webLastLogin) : null
-    //       ].filter(date => date !== null) as Date[];
-  
-    //       if (logins.length === 0) {
-    //           return '';
-    //       }
-  
-    //       const latestLogin = new Date(Math.max(...logins.map(date => date.getTime())));
-    //       return latestLogin.toISOString();
-    //   }
+      getPotentialList(dataResponse:any){
+        for(let data of dataResponse){
+            for(let el of data.value){
+
+            }
+        }
+      }
   
       getNodataText(): string {
           if (this.isLoading)
