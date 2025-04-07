@@ -301,14 +301,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                     data: { record: record, wlSettingList: this.getWLSettingList },
                     panelClass: ['custom-dialog-modal-md'],
                     autoFocus: false,
-                }).afterClosed().subscribe(res => {
-                    if (res && res.data) {
-                        // this.dataList.unshift(res.data);
-                        // this.totalRecords++;
-                        this.refreshItems()
-                        // this.refreshItems();
-                    }
-                });
+                })
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
