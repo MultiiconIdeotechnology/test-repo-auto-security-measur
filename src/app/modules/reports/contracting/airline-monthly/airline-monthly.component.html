@@ -134,7 +134,7 @@
                     <ng-container *ngFor="let month of latestMonths">
                         <ng-container *ngFor="let monthData of element.monthData">
                             <ng-container *ngIf="monthData.month === month">
-                                <td class="text-right">{{ monthData.volume }}</td>
+                                <td class="text-right">{{ monthData.volume ? (monthData.volume | indianNumber) : 0 }}</td>
                                 <td class="text-right">{{ monthData.growth }}%</td>
                                 <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.volume_Domestic ? (monthData.volume_Domestic | indianNumber) : 0 }}</td>
                                 <td class="text-right" *ngIf="!hideDomVolume">{{ monthData.growth_Domestic }}%</td>

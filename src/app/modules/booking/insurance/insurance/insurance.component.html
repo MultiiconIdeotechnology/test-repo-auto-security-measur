@@ -334,7 +334,7 @@
                         {{element.policyNumber || "-"}}
                     </td>
                     <td class="text-right">
-                        {{element.purchase_price || "-"}}
+                        {{element.purchase_price ? (element.purchase_price.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
                     <td>
                         {{element.user_type || "-"}}

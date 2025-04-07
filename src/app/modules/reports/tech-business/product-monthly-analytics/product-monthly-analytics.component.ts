@@ -16,12 +16,12 @@ import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { filter_module_name, messages, module_name, Security } from 'app/security';
+import { module_name } from 'app/security';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { DateTime } from 'luxon';
-import { Subscription } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { TechBusinessService } from 'app/services/tech-business.service';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 
 @Component({
@@ -48,7 +48,8 @@ import { TechBusinessService } from 'app/services/tech-business.service';
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatTabsModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    IndianNumberPipe
   ],
   templateUrl: './product-monthly-analytics.component.html',
   styleUrls: ['./product-monthly-analytics.component.scss']

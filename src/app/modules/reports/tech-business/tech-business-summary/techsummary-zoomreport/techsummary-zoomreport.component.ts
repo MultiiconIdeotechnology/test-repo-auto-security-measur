@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { Linq } from 'app/utils/linq';
 import { Routes } from 'app/common/const';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 @Component({
   selector: 'app-techsummary-zoomreport',
@@ -20,7 +21,8 @@ import { Routes } from 'app/common/const';
     MatIconModule,
     NgIf, NgFor, DatePipe, NgClass,
     ReactiveFormsModule,
-    MatButtonModule
+    MatButtonModule,
+    IndianNumberPipe
   ],
   templateUrl: './techsummary-zoomreport.component.html',
   styleUrls: ['./techsummary-zoomreport.component.scss']
