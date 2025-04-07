@@ -1063,6 +1063,16 @@ div:where(.swal2-container) button:where(.swal2-close) {
     }
 }
 
+.domain-pointing-info-modal {
+    max-height: 670px;
+}
+
+@media screen and (max-height: 768px){
+    .domain-pointing-info-modal {
+        max-height:600px;
+    }
+}
+
 // custom-primeng table css --- START
 // common css for both dark and light theme 
 .custom-primeng-table {

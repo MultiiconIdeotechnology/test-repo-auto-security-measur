@@ -33,7 +33,7 @@
         </button>
 
         <button *ngIf="isDomainFalse" mat-flat-button [color]="'primary'" class="flex items-center min-w-[100px]"
-            (click)="onDomainVerify()">
+            (click)="onDomainVerify()" [disabled]="isLoading">
             Verify
         </button>
     </div>

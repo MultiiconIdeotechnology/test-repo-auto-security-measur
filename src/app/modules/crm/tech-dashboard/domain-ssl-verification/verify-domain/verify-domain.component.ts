@@ -55,11 +55,10 @@ export class VerifyDomainComponent {
     this.matDialog.open(DomainPointingDetailsComponent, {
       disableClose: true,
       data: null,
-      panelClass: 'zero-angular-dialog',
+      panelClass: ['zero-angular-dialog', 'domain-pointing-info-modal'],
       autoFocus: false,
       width: '860px',
       minWidth: '800px',
-      maxHeight: '670px'
     })
   }
 
