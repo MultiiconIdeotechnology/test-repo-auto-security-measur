@@ -15,7 +15,7 @@
                 <i *ngIf="data?.pointed && !isLoading"
                     class="material-icons text-[20px] text-primaryColor text-medium">check</i>
                 <span class="font-normal text-[14px]">
-                    {{data?.domain || "-"}} <span *ngIf="data?.pointed_ip">({{data?.pointed_ip}})</span>
+                    {{data?.domain || "-"}} <span *ngIf="data?.pointed_ip" class="text-sm text-[#9CADD3]">({{data?.pointed_ip}})</span>
                 </span>
             </div>
         </div>

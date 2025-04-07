@@ -78,7 +78,6 @@
 
         <app-verify-ssl
         [hidden]="(activeStepperId == 1) || (activeStepperId == 2) || (activeStepperId == 3)"
-         (stepCompleted)="onStepComplete(4)"
          [data]="record"
          (previousPage)="onPreviousPage($event)"
          (stepAllowed)="onStepAllowed($event)">
