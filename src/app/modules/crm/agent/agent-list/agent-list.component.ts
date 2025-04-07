@@ -151,7 +151,6 @@ export class CRMAgentListComponent implements OnDestroy {
         } else if(tabString == 'Potential'){
             this.potential?.refreshItems();
         }
-        
     }
 
     inboxRefresh(event) {
