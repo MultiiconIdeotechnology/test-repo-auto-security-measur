@@ -1090,7 +1090,13 @@ div:where(.swal2-container) button:where(.swal2-close) {
     }
 
     .p-datatable .p-datatable-tbody>tr:last-child>td {
-        border: none !important;
+        border-bottom: none !important;
+    }
+
+    .p-datatable .p-datatable-tbody>tr>td:last-child ,
+    .p-datatable .p-datatable-thead>tr>th:last-child
+    {
+        border-right:none !important
     }
 }
 
@@ -1103,6 +1109,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
             background: #334155 !important;
             color: #ADB3BB;
             padding: .4rem 1rem !important;
+            border-right: 1px solid #3F4B5A;
         }
 
         .p-datatable .p-datatable-tbody>tr>td {
@@ -1110,6 +1117,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
             border-width: 0 0 1px 0;
             background: #1E293B !important;
             padding: .3rem 1rem !important;
+            border-right: 1px solid #3F4B5A;
         }
 
         .p-datatable>.p-datatable-wrapper {
@@ -1126,6 +1134,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
         .p-datatable .p-datatable-thead>tr>th {
             background: #e5f1fd !important;
             color: black;
+            border-right:1px solid #a5a9ad73;
         }
 
         .p-datatable .p-datatable-tbody>tr>td {
@@ -1134,6 +1143,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
             background: #fff !important;
             color: black;
             padding: .3rem 1rem !important;
+            border-right: 1px solid #a5a9ad73;
         }
 
         .p-datatable>.p-datatable-wrapper {
