@@ -190,7 +190,7 @@ export class CrmService {
               .set('agent_id', agentId)
               .set('item_name', item_name);
           
-            return this.http.post(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?${params.toString()}`, {});
+            return this.http.get(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?${params.toString()}`);
         }
 
     updateStatus(model: any): Observable<any> {
