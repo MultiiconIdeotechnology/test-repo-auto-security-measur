@@ -98,7 +98,6 @@ export class ManageMobileAppDomainFormComponent {
   }
 
   add() {
-    // this.stepCompleted.emit(1);
     if (this.formGroup.invalid) {
       this.alertService.showToast('error', 'Fill up required field to proceed');
       this.formGroup.markAllAsTouched();

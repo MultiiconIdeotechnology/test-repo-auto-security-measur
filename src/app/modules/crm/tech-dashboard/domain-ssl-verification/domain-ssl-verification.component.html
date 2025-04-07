@@ -62,6 +62,7 @@
         [hidden]="(activeStepperId == 1) || (activeStepperId == 3) || (activeStepperId == 4)"
         [data]="record" 
         (previousPage)="onPreviousPage(1)"
+        (stepCompleted)="onStepComplete(2)"
         (stepAllowed)="onStepAllowed($event)" 
         #consoleAccountForm >
         </app-console-account-form>
