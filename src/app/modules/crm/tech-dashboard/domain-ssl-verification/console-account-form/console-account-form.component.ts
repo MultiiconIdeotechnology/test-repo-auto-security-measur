@@ -61,11 +61,19 @@ export class ConsoleAccountFormComponent {
 
     if(this.data?.item_name?.toLowerCase().includes('ios')){
       this.formGroup.get('password').setValidators([Validators.required]);
+      this.formGroup.get('password')?.patchValue(this.wlSettingData?.play_console_password)
     } else {
       this.formGroup.get('password')?.clearValidators();
     }
 
     this.formGroup.get('password')?.updateValueAndValidity();
+
+    this.formGroup.patchValue({
+      txn_id :this.wlSettingData?.txn_id,
+      account_name :this.wlSettingData?.account_name,
+      account_id :this.wlSettingData?.account_id,
+      is_account_active :this.wlSettingData?.is_account_active,
+    })
 
   }
 
