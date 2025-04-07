@@ -68,6 +68,8 @@ export class ConsoleAccountFormComponent {
 
     this.formGroup.get('password')?.updateValueAndValidity();
 
+    console.log("wl setting data in console account", this.wlSettingData)
+
     this.formGroup.patchValue({
       txn_id :this.wlSettingData?.txn_id,
       account_name :this.wlSettingData?.account_name,

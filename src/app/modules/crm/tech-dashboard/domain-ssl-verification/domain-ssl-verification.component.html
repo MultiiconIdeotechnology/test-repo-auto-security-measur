@@ -63,6 +63,7 @@
         [data]="record" 
         (previousPage)="onPreviousPage(1)"
         (stepCompleted)="onStepComplete(2)"
+        [wlSettingData]="wlSettingData"
         (stepAllowed)="onStepAllowed($event)" 
         #consoleAccountForm >
         </app-console-account-form>
