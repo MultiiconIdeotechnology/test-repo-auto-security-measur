@@ -36,6 +36,7 @@ export class VerifySslComponent {
     private alertService: ToasterService,
   ) {
     this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
+      console.log("res in verify ssl", res);
       this.sslDomainsData = res?.ssl_domains;
       this.wlId = res?.wl_id
       // this.isDomainFalse = this.isSslPointing();
