@@ -286,10 +286,10 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     //     });
     // }
 
-    wlSetting(record:any){
-        // if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
-        //     //         return this.alertService.showToast('error', messages.permissionDenied);
-        //     //     }
+    wlSetting(record: any) {
+        if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
         this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
             next: (data) => {
@@ -298,17 +298,17 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
 
                 this.matDialog.open(DomainSslVerificationComponent, {
                     disableClose: true,
-                    data: {record:record, wlSettingList:this.getWLSettingList},
+                    data: { record: record, wlSettingList: this.getWLSettingList },
                     panelClass: ['custom-dialog-modal-md'],
                     autoFocus: false,
-                  }).afterClosed().subscribe(res => {
+                }).afterClosed().subscribe(res => {
                     if (res && res.data) {
-                      // this.dataList.unshift(res.data);
-                      // this.totalRecords++;
-                      this.refreshItems()
-                      // this.refreshItems();
+                        // this.dataList.unshift(res.data);
+                        // this.totalRecords++;
+                        this.refreshItems()
+                        // this.refreshItems();
                     }
-                  });
+                });
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -390,7 +390,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 this.isLoading = false;
                 this.getWLSettingList = data;
                 const isRiseProduct = record?.item_name?.toLowerCase().includes('rise');
-                if (isRiseProduct  || (this.getWLSettingList && this.getWLSettingList.length > 0)) {
+                if (isRiseProduct || (this.getWLSettingList && this.getWLSettingList.length > 0)) {
                     const label: string = 'Activate';
                     this.conformationService
                         .open({
