@@ -182,7 +182,8 @@ export class PotentialLeadComponent extends BaseListingComponent {
               next: (data) => {
                   this.isLoading = false;
                   if(data && data.length){
-                      let potentialLeadData = data[0]?.value;
+                      let potentialLeadData = data;
+                      this.getPotentialList(potentialLeadData)
                       this.totalRecords = data?.total;
                   }
               },
@@ -195,8 +196,10 @@ export class PotentialLeadComponent extends BaseListingComponent {
   
       getPotentialList(dataResponse:any){
         for(let data of dataResponse){
-            for(let el of data.value){
-
+            if(data.value && Object.keys(data?.value)?.length){
+                for(let el of data?.value){
+                    this.dataList.unshift(el);
+                }
             }
         }
       }
