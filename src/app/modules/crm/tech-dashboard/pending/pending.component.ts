@@ -389,8 +389,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             next: (data) => {
                 this.isLoading = false;
                 this.getWLSettingList = data;
-
-                if (this.getWLSettingList && this.getWLSettingList.length > 0 && !record?.item_name?.toLowerCase().includes('rise')) {
+                const isRiseProduct = record?.item_name?.toLowerCase().startsWith('rise');
+                if (isRiseProduct || (this.getWLSettingList && this.getWLSettingList.length > 0)) {
                     const label: string = 'Activate';
                     this.conformationService
                         .open({
