@@ -51,7 +51,7 @@ import { Subscription } from 'rxjs';
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatTabsModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
   ],
   templateUrl: './airline-summary.component.html',
   styleUrls: ['./airline-summary.component.scss']

@@ -31,6 +31,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { UserService } from 'app/core/user/user.service';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 @Component({
   selector: 'app-waudited',
@@ -63,6 +64,7 @@ import { UserService } from 'app/core/user/user.service';
     MatSortModule,
     InfoWithdrawComponent,
     PrimeNgImportsModule,
+    IndianNumberPipe
   ],
 })
 export class WAuditedComponent extends BaseListingComponent {

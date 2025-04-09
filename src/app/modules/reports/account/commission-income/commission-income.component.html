@@ -189,10 +189,10 @@
                     </td>
                     <td>{{element.pnr ? element.pnr : 0}}</td>
                     <td>{{element.gds_pnr ? element.gds_pnr : '-'}}</td>
-                    <td class="text-right">{{element.purchase_commission ? element.purchase_commission.toFixed(2) : 0}}
+                    <td class="text-right">{{element.purchase_commission ? (element.purchase_commission.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
-                    <td class="text-right">{{element.tds ? element.tds.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.net_commission ? element.net_commission.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{element.tds ? (element.tds.toFixed(2) | number: '1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.net_commission ? (element.net_commission.toFixed(2) | number: '1.2-2') : 0}}</td>
                     <td>{{element.supplier ? element.supplier : '-'}}</td>
                 </tr>
             </ng-template>
@@ -202,11 +202,11 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td class="text-right">{{tablesTotal?.totalCommission ? tablesTotal?.totalCommission.toFixed(2) :
+                    <td class="text-right">{{tablesTotal?.totalCommission ? (tablesTotal?.totalCommission.toFixed(2) | number:'1.2-2') :
                         0}}</td>
-                    <td class="text-right">{{tablesTotal?.totalTds ? tablesTotal?.totalTds.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{tablesTotal?.totalTds ? (tablesTotal?.totalTds.toFixed(2) | number: '1.2-2') : 0}}</td>
                     <td class="text-right">{{tablesTotal?.totalNetCommission ?
-                        tablesTotal?.totalNetCommission.toFixed(2) : 0}}</td>
+                        (tablesTotal?.totalNetCommission.toFixed(2) | number: '1.2-2') : 0}}</td>
                     <td></td>
                 </tr>
             </ng-template>

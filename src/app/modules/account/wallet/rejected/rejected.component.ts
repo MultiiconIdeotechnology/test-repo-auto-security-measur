@@ -28,6 +28,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 @Component({
 	selector: 'app-rejected',
@@ -55,6 +56,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 		CommonModule,
 		MatTabsModule,
 		PrimeNgImportsModule,
+		IndianNumberPipe
 	],
 })
 export class RejectedComponent extends BaseListingComponent {

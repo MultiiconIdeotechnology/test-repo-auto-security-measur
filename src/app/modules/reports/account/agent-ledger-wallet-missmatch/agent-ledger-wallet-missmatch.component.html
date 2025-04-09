@@ -37,7 +37,8 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
@@ -97,7 +98,7 @@
                     <th class="text-right" pSortableColumn="mismatchAmount" pResizableColumn>
                         Missmatch Amount <p-sortIcon field="mismatchAmount" />
                     </th>
-                   
+
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -106,14 +107,12 @@
                             ariaLabel="Filter code" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" field="type" placeholder="Search by type"
-                            ariaLabel="Filter type" />
+                        <p-columnFilter type="text" field="type" placeholder="Search by type" ariaLabel="Filter type" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" field="name" placeholder="Search by name"
-                            ariaLabel="Filter name" />
-                    </th> 
-                     <th>
+                        <p-columnFilter type="text" field="name" placeholder="Search by name" ariaLabel="Filter name" />
+                    </th>
+                    <th>
                         <p-columnFilter type="numeric" field="ledgerBalance" placeholder="Search by ledgerBalance"
                             ariaLabel="Filter ledgerBalance" />
                     </th>
@@ -135,9 +134,15 @@
                     </td>
                     <td>{{element.type || "-"}}</td>
                     <td>{{element.name || "-"}}</td>
-                    <td class="text-right">{{element.ledgerBalance || "0"}}</td>
-                    <td class="text-right">{{element.walletBalance || "0"}}</td>
-                    <td class="text-right">{{element.mismatchAmount || "0"}}</td>
+                    <td class="text-right">{{element.ledgerBalance ? (element.ledgerBalance | number:'1.2-2':'en-IN') :
+                        "0"}}</td>
+                    <td class="text-right">
+                        {{ element.walletBalance ? (element.walletBalance | number:'1.2-2':'en-IN') : "0" }}
+                    </td>
+
+                    <td class="text-right">
+                        {{ element.mismatchAmount ? (element.mismatchAmount | number:'1.2-2':'en-IN') : "0" }}
+                    </td>
                 </tr>
             </ng-template>
 

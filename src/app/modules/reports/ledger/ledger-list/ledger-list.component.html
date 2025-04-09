@@ -171,11 +171,11 @@
                         <div *ngIf="!element.particular && !element.remark">-</div>
                     </td>
 
-                    <td class="text-right text-red-500">{{element.debit ? element.debit.toFixed(2) : "0"}}</td>
+                    <td class="text-right text-red-500">{{element.debit ? (element.debit.toFixed(2) | number:'1.2-2') : "0"}}</td>
 
-                    <td class="text-right text-green-500">{{element.credit ? element.credit.toFixed(2) : "0"}}</td>
+                    <td class="text-right text-green-500">{{element.credit ? (element.credit.toFixed(2) | number: '1.2-2') : "0"}}</td>
 
-                    <td class="text-right">{{element.balance ? element.balance.toFixed(2) : "0"}}</td>
+                    <td class="text-right">{{element.balance ? (element.balance.toFixed(2) | number: '1.2-2') : "0"}}</td>
                 </tr>
             </ng-template>
             <!-- <ng-template pTemplate="footer">

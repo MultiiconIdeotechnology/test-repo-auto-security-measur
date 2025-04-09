@@ -272,7 +272,7 @@
                         {{ element.payment_status || "-" }}
                     </td>
                     <td class="text-right" *ngIf="element.amount">
-                        {{element.amount ? element.amount.toFixed(2) : '-'}}
+                        {{element.amount ? (element.amount.toFixed(2) | number:'1.2-2') : '-'}}
                     </td>
                     <td>{{element.entry_by_name || "-"}}</td>
                     <td>

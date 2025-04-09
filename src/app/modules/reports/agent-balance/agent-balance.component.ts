@@ -197,6 +197,7 @@ export class AgentBalanceComponent extends BaseListingComponent implements OnDes
             Excel.export(
                 'Agent Balance Register',
                 [
+                    { header: 'Agent Code', property: 'agent_code' },
                     { header: 'Agent', property: 'agent_name' },
                     { header: 'Balance', property: 'balance' },
                     { header: 'Credit', property: 'credit' },

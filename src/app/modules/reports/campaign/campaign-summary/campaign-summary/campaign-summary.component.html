@@ -204,16 +204,16 @@
                     <td class="text-center">{{element.leads}}</td>
                     <td class="text-center">{{element.no_of_signup}}</td>
                     <td class="text-right">
-                        {{element.turnover}}
+                        {{element.turnover ? (element.turnover | number:'1.2-2'): 0}}
                     </td>
                     <td class="text-right">
-                        {{element.tech_GP ? element.tech_GP.toFixed(2) : element.tech_GP}}
+                        {{element.tech_GP ? (element.tech_GP.toFixed(2) | number:'1.2-2') : element.tech_GP}}
                     </td>
                     <td class="text-right">
-                        {{element.travel_GP ? element.travel_GP.toFixed(2) : element.travel_GP}}
+                        {{element.travel_GP ? (element.travel_GP.toFixed(2) | number:'1.2-2') : element.travel_GP}}
                     </td>
                     <td class="text-right">
-                        {{element.total_GP ? element.total_GP.toFixed(2) : element.total_GP}}
+                        {{element.total_GP ? (element.total_GP.toFixed(2) | number:'1.2-2') : element.total_GP}}
                     </td>
                 </tr>
             </ng-template>
@@ -223,17 +223,17 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td class="text-center">{{dataListTotals?.total_Leads ? dataListTotals?.total_Leads.toFixed(2) : 0}}
+                    <td class="text-center">{{dataListTotals?.total_Leads ? (dataListTotals?.total_Leads.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
-                    <td class="text-center">{{dataListTotals?.total_Signup ? dataListTotals?.total_Signup.toFixed(2) :
+                    <td class="text-center">{{dataListTotals?.total_Signup ? (dataListTotals?.total_Signup.toFixed(2) | number:'1.2-2') :
                         0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_Turnover ? dataListTotals?.total_Turnover.toFixed(2)
+                    <td class="text-right">{{dataListTotals?.total_Turnover ? (dataListTotals?.total_Turnover.toFixed(2) | number:'1.2-2')
                         : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_TechGP ? dataListTotals?.total_TechGP.toFixed(2) :
+                    <td class="text-right">{{dataListTotals?.total_TechGP ? (dataListTotals?.total_TechGP.toFixed(2) | number:'1.2-2') :
                         0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_TravelGP ? dataListTotals?.total_TravelGP.toFixed(2)
+                    <td class="text-right">{{dataListTotals?.total_TravelGP ? (dataListTotals?.total_TravelGP.toFixed(2) | number:'1.2-2')
                         : 0}}</td>
-                    <td class="text-right">{{dataListTotals?.total_GP ? dataListTotals?.total_GP.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{dataListTotals?.total_GP ? (dataListTotals?.total_GP.toFixed(2) | number:'1.2-2') : 0}}</td>
                 </tr>
             </ng-template>
 

@@ -827,8 +827,6 @@ export class AgentListComponent extends BaseListingComponent {
             disableClose: true
         }).afterClosed().subscribe(res => {
             if (res) {
-                console.log("res", res);
-                console.log("record", record.id);
                 this.agentService.setDisplayCurrency(record.id, res.display_currency_id).subscribe({
                     next: () => {
                         this.alertService.showToast('success', "The Display currency has been set!", "top-right", true);

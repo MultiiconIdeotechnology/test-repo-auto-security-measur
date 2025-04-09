@@ -30,6 +30,7 @@ import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { UserService } from 'app/core/user/user.service';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 @Component({
 	selector: 'app-pending',
@@ -57,7 +58,8 @@ import { UserService } from 'app/core/user/user.service';
 		CommonModule,
 		MatTabsModule,
 		PrimeNgImportsModule,
-		ClipboardModule
+		ClipboardModule,
+		IndianNumberPipe
 	],
 })
 export class PendingComponent extends BaseListingComponent {

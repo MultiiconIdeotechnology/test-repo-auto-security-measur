@@ -82,6 +82,9 @@
                     <th pSortableColumn="is_live" pResizableColumn>
                         Status <p-sortIcon field="is_live" />
                     </th>
+                    <th pSortableColumn="currency_code" pResizableColumn>
+                        Currency <p-sortIcon field="currency_code" />
+                    </th>
                     <th pSortableColumn="psp_for" pResizableColumn>
                         PSP For <p-sortIcon field="psp_for" />
                     </th>
@@ -111,6 +114,10 @@
                     <th>
                         <!-- <p-columnFilter type="text" matchMode="contains" field="is_live" placeholder="Search by Status"
                             ariaLabel="Filter Status" /> -->
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="currency_code" placeholder="Search by Currency"
+                            ariaLabel="Filter Currency" />
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="psp_for" placeholder="Search by PSP For"
@@ -168,6 +175,9 @@
                     <td>
                         <span *ngIf="element.is_live" class="text-green-500">LIVE</span>
                         <span *ngIf="!element.is_live" class="text-red-500">TEST</span>
+                    </td>
+                    <td>
+                        {{element.currency_code || "-" }}
                     </td>
                     <td>
                         {{element.psp_for || "-"}}

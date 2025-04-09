@@ -350,6 +350,21 @@
                     </div>
                 </div>
 
+                 <!----------Payment policy----------->
+                 <div *ngIf="DisplayDetails?.payment_Policy?.length > 0"
+                    class="flex flex-col py-4 px-5  rounded-lg overflow-hidden mb-7 round-shadow bg-card">
+                    <div class="text-xl font-semibold pb-2 theme-black-text">
+                        Payment Policy
+                    </div>
+                    <div *ngFor="let te of DisplayDetails.payment_Policy">
+                        <span class="flex py-[2px] text-lg">
+                            <mat-icon class="text-[#9D9D9D] icon-size-4 mt-[3px]"
+                                svgIcon="heroicons_solid:check-circle"></mat-icon>
+                            <span class="text-gray pl-2 text-base">{{ te.description }}</span>
+                        </span>
+                    </div>
+                </div>
+
                 <!----------Cancellation Policy----------->
                 <div *ngIf="DisplayDetails?.CancellationPolicyList?.length > 0"
                     class="flex flex-col py-4 px-5 bg-[#FFE7E8] dark:bg-[#f9979b38] rounded-lg overflow-hidden mb-7 round-shadow">
@@ -364,6 +379,8 @@
                         </span>
                     </div>
                 </div>
+
+               
 
                 <!-- <div *ngIf="DisplayDetails.FlightsList.length > 0"
                     class="py-4 white-bg rounded-lg overflow-hidden mb-7 round-shadow">

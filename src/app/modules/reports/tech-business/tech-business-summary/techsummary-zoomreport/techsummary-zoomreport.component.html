@@ -111,7 +111,7 @@
                 <td><span [style.color]="getStatusColor(element.status)">
                         {{ element.status }}
                     </span></td>
-                <td class="text-right">{{element.price || "-"}}</td>
+                <td class="text-right">{{element.price ? (element.price | indianNumber) : 0}}</td>
             </tr>
         </ng-template>
 
@@ -119,7 +119,7 @@
             <tr>
                 <td pFrozenColumn [frozen]="frozenObj?.service">Total</td>
                 <td *ngFor="let i of [1,2,3,4]"></td>
-                <td class="text-right">{{totalSaleAmount || 0}}</td>
+                <td class="text-right">{{totalSaleAmount ? (totalSaleAmount | indianNumber) : 0}}</td>
             </tr>
         </ng-template>
 

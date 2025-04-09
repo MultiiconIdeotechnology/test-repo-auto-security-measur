@@ -299,12 +299,12 @@
                     <td>{{element.pspName || "-"}}</td>
                     <td>{{element.pspRefNo || "-"}}</td>
                     <td class="text-red-600">{{element.type || "-"}}</td>
-                    <td class="text-right">{{element.amount || "-"}}</td>
+                    <td class="text-right">{{element.amount ? (element.amount.toFixed(2) | number:'1.2-2') : "0"}}</td>
                     <td>{{(element.requestDate | date: "dd-MM-yyyy HH:mm:ss") || "-"}}</td>
                     <td>
                         {{(element.refundDate | date: "dd-MM-yyyy HH:mm:ss") || "-"}}
                     </td>
-                    <td class="text-right">{{element.refundedAmount || "-"}}</td>
+                    <td class="text-right">{{element.refundedAmount ?  (element.refundedAmount.toFixed(2) | number:'1.2-2') : "0"}}</td>
                     <td>{{element.paymentMethod || "-"}}</td>
                 </tr>
             </ng-template>

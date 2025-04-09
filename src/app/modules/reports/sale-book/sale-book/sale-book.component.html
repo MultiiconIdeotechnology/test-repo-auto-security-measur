@@ -292,8 +292,6 @@
                         </p-columnFilter>
                     </th>
 
-                   
-
                     <th>
                         <p-columnFilter type="text" field="bill_to" placeholder="Search by Bill To"
                             ariaLabel="Filter Bill To" />
@@ -629,45 +627,45 @@
 
                     <td>{{element.gds_pnr || '-'}}</td>
 
-                    <td class="text-right">{{element.purchase_amount ? element.purchase_amount.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{element.purchase_amount ? (element.purchase_amount.toFixed(2) | number:'1.2-2') : 0}}</td>
 
-                    <td class="text-right">{{element.commission_income ? element.commission_income.toFixed(2) : 0 }}
+                    <td class="text-right">{{element.commission_income ? (element.commission_income.toFixed(2) | number:'1.2-2') : 0 }}
                     </td>
 
                     <td class="text-right">{{element.tds_on_commission_income ?
-                        element.tds_on_commission_income.toFixed(2) : 0 }}</td>
+                        (element.tds_on_commission_income.toFixed(2) | number:'1.2-2') : 0 }}</td>
 
-                    <td class="text-right">{{element.net_purchase ? element.net_purchase.toFixed(2) : 0 }}</td>
+                    <td class="text-right">{{element.net_purchase ? (element.net_purchase.toFixed(2) | number:'1.2-2') : 0 }}</td>
 
-                    <td class="text-right">{{element.service_charge ? element.service_charge.toFixed(2) : 0 }}</td>
+                    <td class="text-right">{{element.service_charge ? (element.service_charge.toFixed(2) | number:'1.2-2') : 0 }}</td>
 
-                    <td class="text-right">{{element.service_charge_tax ? element.service_charge_tax.toFixed(2) : 0 }}
+                    <td class="text-right">{{element.service_charge_tax ? (element.service_charge_tax.toFixed(2) | number:'1.2-2') : 0 }}
                     </td>
 
-                    <td class="text-right">{{element.sgst ? element.sgst.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.sgst ? (element.sgst.toFixed(2) | number:'1.2-2'): 0 }}</td>
 
-                    <td class="text-right">{{element.cgst ? element.cgst.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.cgst ? (element.cgst.toFixed(2) | number:'1.2-2'): 0 }}</td>
 
-                    <td class="text-right">{{element.igst ? element.igst.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.igst ? (element.igst.toFixed(2) | number:'1.2-2'): 0 }}</td>
 
-                    <td class="text-right">{{element.sale_price ? element.sale_price.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.sale_price ? (element.sale_price.toFixed(2) | number:'1.2-2'): 0 }}</td>
 
 
-                    <td class="text-right">{{element.commission_passedon ? element.commission_passedon.toFixed(2): 0 }}
+                    <td class="text-right">{{element.commission_passedon ? (element.commission_passedon.toFixed(2) | number:'1.2-2'): 0 }}
                     </td>
 
                     <td class="text-right">{{element.tds_on_commission_passedon ?
-                        element.tds_on_commission_passedon.toFixed(2): 0 }}</td>
+                        (element.tds_on_commission_passedon.toFixed(2) | number:'1.2-2'): 0 }}</td>
 
 
-                    <td class="text-right">{{element.commission_given ? element.commission_given.toFixed(2): 0 }}</td>
+                    <td class="text-right">{{element.commission_given ? (element.commission_given.toFixed(2) | number:'1.2-2'): 0 }}</td>
 
                     <td class="text-right">{{element.tds_on_commission_given ?
-                        element.tds_on_commission_given.toFixed(2): 0 }}</td>
+                        (element.tds_on_commission_given.toFixed(2) | number:'1.2-2'): 0 }}</td>
 
                     <td>{{element.booking_currency || '-'}}</td>
 
-                    <td class="text-right">{{element.roe ? element.roe.toFixed(2) : 0 }}</td>
+                    <td class="text-right">{{element.roe ? (element.roe.toFixed(2) | number:'1.2-2') : 0 }}</td>
 
                     <td>{{element.billing_company || '-'}}</td>
 
@@ -690,8 +688,8 @@
                     <td>{{element.supplier_invoice_number || '-'}}</td>
 
                     <td>{{element.payment_mode || '-'}}</td>
-                    <td class="text-right">{{element.cashback ? element.cashback.toFixed(2) : 0}}</td>
-                    <td class="w-auto text-right">{{element.cashback_tds ? element.cashback_tds.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{element.cashback ? (element.cashback.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="w-auto text-right">{{element.cashback_tds ? (element.cashback_tds.toFixed(2) | number:'1.2-2') : 0}}</td>
                 </tr>
             </ng-template>
 
