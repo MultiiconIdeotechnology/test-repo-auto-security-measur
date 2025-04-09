@@ -261,7 +261,7 @@ export class ViewHolidayDetailsComponent {
               if (data.cancellationPolicy?.length > 0) {
                 this.DisplayDetails.CancellationPolicyList = data.cancellationPolicy;
               }
-              if (data.payment_Policy.length > 0) {
+              if (data?.payment_Policy?.length > 0) {
                 this.DisplayDetails.payment_Policy = data.payment_Policy;
               }
               // this.DisplayDetails.CitiesList.forEach(x => {
