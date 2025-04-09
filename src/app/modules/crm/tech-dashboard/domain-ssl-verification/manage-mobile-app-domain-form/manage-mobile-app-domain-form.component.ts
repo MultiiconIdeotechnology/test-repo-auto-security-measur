@@ -31,7 +31,7 @@ export class ManageMobileAppDomainFormComponent {
   @Input() data: any;
   @Input() wlSettingData: any
   @Output() stepCompleted = new EventEmitter<number>();
-  @Output() stepAllowed = new EventEmitter<number>();
+  @Output() previousPage = new EventEmitter<number>();
 
   formGroup !: FormGroup
 
@@ -80,7 +80,8 @@ export class ManageMobileAppDomainFormComponent {
       support_email: this.wlSettingData?.support_email,
       gmail_id: this.wlSettingData?.gmail_id,
       password: this.wlSettingData?.password,
-    })
+    });
+
   }
 
   //email validation function
@@ -97,10 +98,10 @@ export class ManageMobileAppDomainFormComponent {
     };
   }
 
-  add() {
-    this.stepCompleted.emit(1);
+  onMobileAppDomainFormVerify() {
+    this.stepCompleted.emit(2);
     return;
-    
+
     if (this.formGroup.invalid) {
       this.alertService.showToast('error', 'Fill up required field to proceed');
       this.formGroup.markAllAsTouched();
@@ -117,13 +118,16 @@ export class ManageMobileAppDomainFormComponent {
       next: (res) => {
         if (res) {
             this.alertService.showToast('success', 'Domain Created Successfully');
-            this.stepCompleted.emit(1);
-            this.stepAllowed.emit(2)
+            this.stepCompleted.emit(2);
             this.domainVarifyService.createUpdateDomainSubject.next(res);
         }
 
       }, error: err => this.alertService.showToast('error', err)
     })
+  }
+
+  onPrevious(){
+    this.previousPage.emit(1);
   }
 
 }

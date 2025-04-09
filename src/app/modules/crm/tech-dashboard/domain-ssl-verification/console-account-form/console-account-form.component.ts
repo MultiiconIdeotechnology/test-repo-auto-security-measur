@@ -33,6 +33,7 @@ export class ConsoleAccountFormComponent {
   @Input() wlSettingData:any
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() stepAllowed = new EventEmitter<number>();
+  isConsoleAccount:boolean = false;
 
   formGroup !:FormGroup
 
@@ -75,15 +76,15 @@ export class ConsoleAccountFormComponent {
       account_name :this.wlSettingData?.account_name,
       account_id :this.wlSettingData?.account_id,
       is_account_active :this.wlSettingData?.is_account_active,
-    })
+    });
 
   }
 
-  add() {
-    this.stepCompleted.emit(2);
+  onConsoleFormVerify() {
+    this.stepCompleted.emit(1);
     return;
-    
-    if(this.formGroup.invalid){
+
+    if(this.formGroup.invalid && this.isConsoleAccount){
       this.alertService.showToast('error', 'Fill up required field to proceed');
       this.formGroup.markAllAsTouched();
       return;
@@ -99,13 +100,12 @@ export class ConsoleAccountFormComponent {
       next: (res) => {
         if (res) {
             this.alertService.showToast('success', 'Domain Created Successfully');
-            this.stepCompleted.emit(2);
-            this.stepAllowed.emit(3);
+            this.stepCompleted.emit(1);
+            this.stepAllowed.emit(2);
         }
 
       }, error: err => this.alertService.showToast('error', err)
     })
   }
-
 
 }

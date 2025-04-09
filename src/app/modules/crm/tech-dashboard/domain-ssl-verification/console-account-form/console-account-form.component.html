@@ -1,4 +1,22 @@
-<form [formGroup]="formGroup">
+<div class="flex flex-col gap-4 items-center justify-center py-4 px-5">
+    <div class="text-center">
+        <span class="text-xl font-semibold">How to open Play Console Account?</span>
+        <span class="text-[13px] text-[#8295AE] flex items-center gap-2">
+            Please follow our step-by-step guidelines to open an Apple Developer account
+            <span class="text-primaryColor cursor-pointer">View more details</span>
+            <img src="/assets/icons/more_details.svg" class="w-[13px] h-[13px] cursor-pointer" alt="more-details">
+        </span>
+    </div>
+
+    <mat-checkbox [(ngModel)]="isConsoleAccount" [color]="'primary'" class="text-[#D2D2D2] flex items-center">
+        <span (click)="$event.stopPropagation()">Yes, Play Console Account opened successfully and an invitation has been sent to (multiicon@gmail.com)
+        to access the account for further processing </span>
+        <span class="text-primaryColor ps-2 cursor-pointer">For more details</span> 
+        <img src="/assets/icons/more_details.svg" class="w-[13px] h-[13px] inline-block translate-y-[5px] translate-x-[4px] cursor-pointer" alt="more-details">
+    </mat-checkbox>
+</div>
+
+<form [formGroup]="formGroup" *ngIf="isConsoleAccount" class="p-5">
     <div class="pb-3 text-[18px] font-bold">Open Play Console Account</div>
     <div class="grid grid-cols-12 gap-4">
         <mat-form-field class="col-span-6">
@@ -6,9 +24,10 @@
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account Name</ng-container>
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Appstore Connect Account Name</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
-                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed under app name in google play store':'It will be displayed under app name in apple play store'">info_outline</i>
+                    [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed under app name in google play store':'It will be displayed under app name in apple play store'">info_outline</i>
             </mat-label>
-            <input matInput formControlName="account_name">
+            <input matInput formControlName="account_name" [placeholder]="'Enter Your Account Name'">
+            <mat-hint>Ex: Multicon</mat-hint>
         </mat-form-field>
 
         <mat-form-field class="col-span-6">
@@ -16,34 +35,52 @@
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account Id</ng-container>
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Apple developer account ID</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
-                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed inside google play console\'s home page': 'For profile creation in Xcode'">
-                info_outline
+                    [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed inside google play console\'s home page': 'For profile creation in Xcode'">
+                    info_outline
                 </i>
             </mat-label>
-            <input matInput formControlName="account_id">
+            <input matInput formControlName="account_id" placeholder="Enter Your Account ID">
+            <mat-hint>
+                <span *ngIf="data?.item_name?.toLowerCase().includes('android')">Ex: 709720453173XXXXXX</span> 
+                <span *ngIf="data?.item_name?.toLowerCase().includes('iox')">Ex: info@multiconindia.com</span>    
+            </mat-hint>
         </mat-form-field>
 
         <mat-form-field class="col-span-6">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Transaction Id</ng-container>
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">UDID Number (iPhone UDID)</ng-container>
-                
+
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
-                [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'For our personal need. Might be used to transfer app to owner\'s account':'For profile creation in Xcode'">
-                info_outline
+                    [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'For our personal need. Might be used to transfer app to owner\'s account':'For profile creation in Xcode'">
+                    info_outline
                 </i>
             </mat-label>
-            <input matInput formControlName="txn_id">
+            <input matInput formControlName="txn_id"
+            [placeholder]="data?.item_name?.toLowerCase().includes('android') ? 'Enter Your Transaction ID' : 'Enter Your UDID Number'">
+           
+            <mat-hint>
+                <span *ngIf="data?.item_name?.toLowerCase().includes('android')">Ex: 00008120-000E50C83XXXXXXXX</span> 
+                <span *ngIf="data?.item_name?.toLowerCase().includes('ios')">Ex: PDS.7697-9658-XXXX-XXXXX</span> 
+            </mat-hint>
         </mat-form-field>
 
         <mat-form-field class="col-span-6" *ngIf="data?.item_name?.toLowerCase().includes('ios')">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Password</mat-label>
-            <input matInput formControlName="password">
+            <input matInput formControlName="password"
+            placeholder="Enter Your Password">
         </mat-form-field>
     </div>
 
-    <mat-checkbox formControlName="is_account_active" [color]="'primary'" class="text-[#ffffffde]">
+    <mat-checkbox formControlName="is_account_active" [color]="'primary'" class="text-[#ffffffde] pt-2">
         Invitation send successfully for account access
     </mat-checkbox>
-    
+
 </form>
+
+<div class="footer h-[5rem] sticky bottom-0 z-99 border-t bg-white dark:bg-gray-800 dark:border-[#324154] border-gray-200 p-5 flex justify-end items-center gap-3">
+    <button [disabled]="!formGroup.valid || !isConsoleAccount" mat-flat-button (click)="onConsoleFormVerify()"
+        [color]="'primary'" class="flex items-center min-w-[100px]">
+        Next
+    </button>
+</div>

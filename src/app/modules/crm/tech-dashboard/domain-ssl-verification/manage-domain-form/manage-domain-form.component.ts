@@ -32,6 +32,7 @@ export class ManageDomainFormComponent {
     @Input() wlSettingData:any
     @Output() stepCompleted = new EventEmitter<number>();
     @Output() stepAllowed = new EventEmitter<number>();
+    @Output() step1WebForm = new EventEmitter<boolean>();
   
     formGroup !:FormGroup
   
@@ -73,9 +74,14 @@ export class ManageDomainFormComponent {
        this.formGroup.get('partner_panel_url')?.updateValueAndValidity();
   
        this.formGroup.get('api_url').patchValue(this.wlSettingData?.api_url);
+
+          // Emit validity whenever form status changes
+     this.formGroup.statusChanges.subscribe(() => {
+      this.step1WebForm.emit(this.formGroup.valid);
+    });
     }
   
-    add() {
+    onWebDomainFormVerify() {
       if(this.formGroup.invalid){
         this.alertService.showToast('error', 'Fill up required field to proceed');
         this.formGroup.markAllAsTouched();

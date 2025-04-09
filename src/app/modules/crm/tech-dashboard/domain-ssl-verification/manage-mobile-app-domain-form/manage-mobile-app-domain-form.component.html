@@ -1,24 +1,27 @@
-<form [formGroup]="formGroup">
+<form [formGroup]="formGroup" class="p-5">
     <div class="grid grid-cols-12 gap-4">
         <mat-form-field class="col-span-6" *ngIf="data?.item_name?.includes('B2C')">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">B2C Portal URL</mat-label>
             <input matInput formControlName="b2c_portal_url">
+            <!-- <mat-hint></mat-hint> -->
         </mat-form-field>
 
         <mat-form-field class="col-span-6" *ngIf="data?.item_name?.includes('B2B')">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Partner Panel URL</mat-label>
             <input matInput formControlName="partner_panel_url">
+            <mat-hint>Ex: partner.bontonholidays.com</mat-hint>
         </mat-form-field>
 
         <mat-form-field class="col-span-6">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500">Api URL</mat-label>
             <input matInput formControlName="api_url">
+            <mat-hint>Ex: api.partner.bontonholidays.com</mat-hint>
         </mat-form-field>
     </div>
 
     <div class="py-3 text-[18px] font-bold">App Details</div>
 
-    <div class="grid grid-cols-2 gap-4 h-full border-b border-dashed pb-3">
+    <div class="grid grid-cols-2 gap-4 h-full">
         <mat-form-field>
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
                 App Name
@@ -59,7 +62,9 @@
         </mat-form-field>
     </div>
 
-    <div class="grid grid-cols-2 pt-4 gap-4 h-full">
+    <div class="pb-3 text-[18px] font-bold pt-4">Firebase Integration</div>
+
+    <div class="grid grid-cols-2 gap-4 h-full">
         <mat-form-field>
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
                 Gmail Id
@@ -75,3 +80,15 @@
         </mat-form-field>
     </div>
 </form>
+
+<div
+    class="footer h-[5rem] sticky bottom-0 z-99 border-t bg-white dark:bg-gray-800 dark:border-[#324154] border-gray-200 p-5 flex justify-end items-center gap-3">
+    <button  mat-stroked-button (click)="onPrevious()">
+        Previous
+    </button>
+
+    <button [disabled]="!formGroup.valid" mat-flat-button (click)="onMobileAppDomainFormVerify()"
+        [color]="'primary'" class="flex items-center min-w-[100px]">
+        Next
+    </button>
+</div>

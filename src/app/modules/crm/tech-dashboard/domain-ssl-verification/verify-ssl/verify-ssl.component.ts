@@ -28,7 +28,6 @@ export class VerifySslComponent {
   @Input() data: any;
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() previousPage = new EventEmitter<number>();
-  @Output() stepAllowed = new EventEmitter<number>();
 
   constructor(
     public matDialogRef: MatDialogRef<DomainSslVerificationComponent>,
@@ -83,14 +82,8 @@ export class VerifySslComponent {
   }
 
   onPreviousPage() {
-    if (this.data?.item_name?.toLowerCase().includes('android') ||
-      this.data?.item_name?.toLowerCase().includes('ios')) {
       this.previousPage.emit(3);
       this.domainVarifyService.verifyButtonSubject.next(true);
-    } else {
-      this.previousPage.emit(3);
-      this.domainVarifyService.verifyButtonSubject.next(true);
-    }
   }
 
   onCompleteProcess() {

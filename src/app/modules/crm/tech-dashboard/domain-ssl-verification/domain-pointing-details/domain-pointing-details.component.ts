@@ -24,22 +24,31 @@ export class DomainPointingDetailsComponent {
       @Inject(MAT_DIALOG_DATA) public data: any = {},
     ){
       console.log("data domain pointing", data);
+
+      if(data && data?.length){
+        for(let el of data){
+          this.firstTableData.push({domain:el.domain, recordType:"A", name:'www', value:'', ttl:''});
+          this.secondTableData.push({domain:el.domain, recordType:"A", name:'www', value:'', ttl:''});
+        }
+      }
+
+
     }
 
-    firstTableData = [
-      { domain: "bontonholidays.com", recordType: "A", name: "@", value: "3.6.64.88", ttl: "1 Hour" },
-      { domain: "www.bontonholidays.com", recordType: "Cname", name: "www", value: "@", ttl: "1 Hour" },
-      { domain: "partner.bontonholidays.com", recordType: "Cname", name: "partner", value: "@", ttl: "1 Hour" },
-      { domain: "www.partner.bontonholidays.com", recordType: "Cname", name: "www.partner", value: "@", ttl: "1 Hour" },
-      { domain: "api.bontonholidays.com", recordType: "Cname", name: "api", value: "@", ttl: "1 Hour" }
+    firstTableData:any = [
+      // { domain: "bontonholidays.com", recordType: "A", name: "@", value: "3.6.64.88", ttl: "1 Hour" },
+      // { domain: "www.bontonholidays.com", recordType: "Cname", name: "www", value: "@", ttl: "1 Hour" },
+      // { domain: "partner.bontonholidays.com", recordType: "Cname", name: "partner", value: "@", ttl: "1 Hour" },
+      // { domain: "www.partner.bontonholidays.com", recordType: "Cname", name: "www.partner", value: "@", ttl: "1 Hour" },
+      // { domain: "api.bontonholidays.com", recordType: "Cname", name: "api", value: "@", ttl: "1 Hour" }
     ];
 
     secondTableData = [
-      { domain: "bontonholidays.com", recordType: "A", name: "bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      { domain: "www.bontonholidays.com", recordType: "A", name: "www.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      { domain: "partner.bontonholidays.com", recordType: "A", name: "partner.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      { domain: "www.partner.bontonholidays.com", recordType: "A", name: "www.partner.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      { domain: "api.bontonholidays.com", recordType: "A", name: "api.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" }
+      // { domain: "bontonholidays.com", recordType: "A", name: "bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
+      // { domain: "www.bontonholidays.com", recordType: "A", name: "www.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
+      // { domain: "partner.bontonholidays.com", recordType: "A", name: "partner.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
+      // { domain: "www.partner.bontonholidays.com", recordType: "A", name: "www.partner.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
+      // { domain: "api.bontonholidays.com", recordType: "A", name: "api.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" }
     ];
 
 }

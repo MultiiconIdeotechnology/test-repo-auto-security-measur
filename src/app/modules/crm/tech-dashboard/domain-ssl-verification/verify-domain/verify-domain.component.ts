@@ -28,7 +28,6 @@ export class VerifyDomainComponent {
   @Input() data: any;
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() previousPage = new EventEmitter<number>();
-  @Output() stepAllowed = new EventEmitter<number>();
 
   constructor(
     private matDialog: MatDialog,
@@ -80,7 +79,6 @@ export class VerifyDomainComponent {
             this.alertService.showToast('error', 'Domain verification unsuccessful');
           } else {
             this.alertService.showToast('success', 'Domain Verified Successfully');
-            this.stepAllowed.emit(4)
           }
         }
       },

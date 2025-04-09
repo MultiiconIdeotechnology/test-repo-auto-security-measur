@@ -29,9 +29,6 @@ import { ManageMobileAppDomainFormComponent } from './manage-mobile-app-domain-f
 })
 export class DomainSslVerificationComponent {
 
-  @ViewChild('manageDomainForm') manageDomainFormComponent: any;
-  @ViewChild('manageMobileAppForm') manageMobileAppFormComponent: any;
-  @ViewChild('consoleAccountForm') consoleAccountFormComponent: any;
   activeStepperId: number = 1;
   record: any;
   wlSettingData: any;
@@ -44,8 +41,8 @@ export class DomainSslVerificationComponent {
   ];
 
   stepperDataAndroidIos = [
-    { id: 1, step: 1, isActive: true, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed: true },
-    { id: 2, step: 2, isActive: false, name: 'Play Console Account', minWidth: 10, isCompleted: false, isAllowed: false },
+    { id: 1, step: 1, isActive: true, name: 'Open Devloper Account', minWidth: 10, isCompleted: false, isAllowed: true },
+    { id: 2, step: 2, isActive: false, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed: false },
     { id: 3, step: 3, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false, isAllowed: false },
     { id: 4, step: 4, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false, isAllowed: false },
   ];
@@ -54,7 +51,6 @@ export class DomainSslVerificationComponent {
     public matDialogRef: MatDialogRef<DomainSslVerificationComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any = {},
   ) {
-    console.log("data", data)
     this.record = data?.record;
     this.wlSettingData = data?.wlSettingList;
   }
@@ -66,22 +62,6 @@ export class DomainSslVerificationComponent {
     } else {
       this.stepperData = [...this.stepperDataWeb];
     }
-  }
-
-  onStepper(val: any) {
-    // if(!val.isAllowed) {
-    //   return;
-    // }
-    return;
-    
-    this.activeStepperId = val.id;
-    this.stepperData.forEach((item: any) => {
-      if (item.id == val.id) {
-        item.isActive = true;
-      } else {
-        item.isActive = false;
-      }
-    })
   }
 
   onStepComplete(completedStepId: number) {
@@ -126,23 +106,5 @@ export class DomainSslVerificationComponent {
     this.onPreviousPage(1);
   }
 
-  onVerify() {
-    if(this.activeStepperId == 1 ){
-      if(this.record?.item_name?.toLowerCase().includes('android') ||this.record?.item_name?.toLowerCase().includes('ios')){
-        this.manageMobileAppFormComponent.add();
-      }else {
-        this.manageDomainFormComponent.add()
-      }
-    } else if(this.activeStepperId == 2){
-      this.consoleAccountFormComponent.add()
-    }
-  }
-
-  onStepAllowed(idx:number){
-    this.stepperData.forEach((item:any) => {
-       if(item.id == idx){
-        item.isAllowed = true;
-       }
-    })
-  }
+  
 }
