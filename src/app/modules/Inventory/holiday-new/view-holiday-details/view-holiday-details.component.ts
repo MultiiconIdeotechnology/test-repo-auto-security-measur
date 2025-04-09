@@ -261,6 +261,9 @@ export class ViewHolidayDetailsComponent {
               if (data.cancellationPolicy?.length > 0) {
                 this.DisplayDetails.CancellationPolicyList = data.cancellationPolicy;
               }
+              if (data.payment_Policy.length > 0) {
+                this.DisplayDetails.payment_Policy = data.payment_Policy;
+              }
               // this.DisplayDetails.CitiesList.forEach(x => {
               //   data[0].hotel.forEach(h => {
               //     if (x.city_id == h.city_id) {

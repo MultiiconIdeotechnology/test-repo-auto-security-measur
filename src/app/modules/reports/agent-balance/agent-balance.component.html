@@ -74,11 +74,20 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_name', 'balance', 'credit', 'rm', 'mobile', 'email', 'due_date', 'last_top_up']"
+            [globalFilterFields]="['agent_code', 'agent_name', 'balance', 'credit', 'rm', 'mobile', 'email', 'due_date', 'last_top_up']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
+                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="agent_code" 
+                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code"
+                        [ngClass]="{'left-0': !frozenObj?.agent_code}">
+                        Agent Code <p-sortIcon field="agent_code" />
+                        <span class="float-right" (click)="isFrozenColumn('agent_code');$event.stopPropagation()">
+                            <i *ngIf="frozenObj?.agent_code" class="pi pi-lock icon-size-3"></i>
+                            <i *ngIf="!frozenObj?.agent_code" class="pi pi-lock-open icon-size-3"></i>
+                        </span>
+                    </th>
                     <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="agent_name" pResizableColumn
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_name"
                         [ngClass]="{'left-0': !frozenObj?.agent_name}">
@@ -112,6 +121,10 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
+                        <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
+                            ariaLabel="Filter Agent Code" />
+                    </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_name">
                         <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
                             [showMenu]="false">
@@ -201,6 +214,7 @@
 
             <ng-template pTemplate="body" let-element>
                 <tr>
+                    <td class="min-w-[155px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">{{element.agent_code || "-"}}</td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_name">
                         {{element.agent_name || "-"}}
                     </td>
