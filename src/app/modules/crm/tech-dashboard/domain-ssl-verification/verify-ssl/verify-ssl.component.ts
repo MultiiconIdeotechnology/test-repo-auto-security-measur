@@ -42,12 +42,13 @@ export class VerifySslComponent {
       // this.isDomainFalse = this.isSslPointing();
     })
 
-    this.domainVarifyService.verifyButton$.subscribe((res:boolean) => {
+    this.domainVarifyService.verifyButton$.subscribe((res: boolean) => {
       this.isDomainFalse = res;
     })
   }
 
-  ngOnInit(){
+  ngOnInit() {
+    console.log("data1234", this.data)
   }
 
   isSslPointing() {
@@ -65,7 +66,7 @@ export class VerifySslComponent {
           }
           this.isLoading = false
           this.isDomainFalse = this.isSslPointing();
-          if(this.isDomainFalse){
+          if (this.isDomainFalse) {
             this.alertService.showToast('error', 'SSL verification unsuccessful');
           } else {
             this.alertService.showToast('success', 'SSL Verified Successfully');
@@ -90,6 +91,29 @@ export class VerifySslComponent {
       this.previousPage.emit(3);
       this.domainVarifyService.verifyButtonSubject.next(true);
     }
+  }
+
+  onCompleteProcess() {
+    this.isLoading = true;
+    let payloadObj = {
+      id: this.data.id ? this.data.id : "",
+      is_activated: true,
+      agent_id: this.data?.agentid ? this.data?.agentid : ""
+    }
+    this.domainVarifyService.activate(payloadObj).subscribe({
+      next: (res) => {
+        if (res) {
+          this.alertService.showToast('success', 'Product activated Successfully!');
+          this.matDialogRef.close();
+          this.isLoading = false
+        }
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err)
+        this.isLoading = false;
+      }
+
+    })
   }
 
 }

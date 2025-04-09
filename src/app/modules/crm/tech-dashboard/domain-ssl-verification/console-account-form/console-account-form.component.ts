@@ -80,6 +80,9 @@ export class ConsoleAccountFormComponent {
   }
 
   add() {
+    this.stepCompleted.emit(2);
+    return;
+    
     if(this.formGroup.invalid){
       this.alertService.showToast('error', 'Fill up required field to proceed');
       this.formGroup.markAllAsTouched();

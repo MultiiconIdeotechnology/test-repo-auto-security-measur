@@ -17,16 +17,16 @@
                     </div>
 
                     <!-- Step Label -->
-                    <div class="text-primary absolute bottom-[-26px] text-[14px]"
+                    <!-- <div class="text-primary absolute bottom-[-26px] text-[14px]"
                         [ngStyle]="{ 'min-width': item.minWidth + 'rem' }"
                         [ngClass]="{'text-primary': item.isActive, 'dark:text-white text-black': item.isCompleted, 'text-[#5A7290]': !item.isActive && !item.isCompleted}"
                         >
                         {{item.name}}
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Step Divider -->
-                <div *ngIf="!isLast" class="stepper-line w-[146px] border px-2"></div>
+                <div *ngIf="!isLast" class="stepper-line w-[100px] border px-2"></div>
             </div>
         </div>
 
