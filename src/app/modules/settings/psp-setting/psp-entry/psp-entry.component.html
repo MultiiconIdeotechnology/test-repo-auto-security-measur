@@ -64,6 +64,20 @@
 
         <div class="flex space-x-3">
 
+            <mat-form-field class="w-full">
+                <mat-label>Currency</mat-label>
+                <mat-select required formControlName="currency_id">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching currency found'"
+                            [formControlName]="'currencyfilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of CurrencyList"
+                        [value]="ct.id">{{ct.currency_short_code}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
             <mat-form-field class="flex-grow w-full">
                 <mat-label>Merchant Code</mat-label>
                 <input matInput type="text" [readonly]="readonly" formControlName="merchant_code" />

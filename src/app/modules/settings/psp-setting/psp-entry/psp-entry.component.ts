@@ -20,6 +20,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { filter, startWith, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { J } from '@angular/cdk/keycodes';
 import { UserService } from 'app/core/user/user.service';
+import { CurrencyService } from 'app/services/currency.service';
 
 
 @Component({
@@ -60,6 +61,8 @@ export class PspEntryComponent {
   selectedList: any[] = []
   agentList: any[] = [];
   compnyList: any[] = [];
+  CurrencyList: any[] = [];
+  CurrencyListAll: any[] = [];
 
 
   pspList: any[] = [
@@ -75,6 +78,7 @@ export class PspEntryComponent {
     private pspsettingService: PspSettingService,
     private clipboard: Clipboard,
     private _userService: UserService,
+    private currencyService:CurrencyService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
     this.record = data?.data ?? {}
@@ -110,9 +114,9 @@ export class PspEntryComponent {
       schema_code: [''],
       // payment_modes: [[]],
       is_auto_surcharge: [false],
-      is_live: [false]
-
-
+      is_live: [false],
+      currency_id: [''],
+      currencyfilter:[""]
     });
 
     this.formGroup.get('psp_for').patchValue('Compnay')
@@ -189,6 +193,7 @@ export class PspEntryComponent {
               { name: 'Provider', value: data.provider },
               { name: 'PSP For', value: data.psp_for },
               { name: 'PSP For Name', value: data.psp_for_name },
+              { name: 'Currency', value: data.currency_code },
               { name: 'Merchant Code', value: data.merchant_code },
               { name: 'Panel URL', value: data.panel_url },
               { name: 'Panel User Id', value: data.panel_user_id },
@@ -224,6 +229,18 @@ export class PspEntryComponent {
 
       });
     }
+
+    this.currencyService.getcurrencyCombo().subscribe({
+      next: res => {
+        this.CurrencyList = res;
+        this.CurrencyListAll = res;
+      }
+    });
+
+    this.formGroup.get('currencyfilter').valueChanges.subscribe(data => {
+      this.CurrencyList = this.CurrencyListAll.filter(x => x.currency_short_code.toLowerCase().includes(data.toLowerCase()));
+    })
+
   }
 
   copyLink(link: string): void {
