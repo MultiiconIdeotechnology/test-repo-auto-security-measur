@@ -41,7 +41,7 @@ export class DomainSslVerificationComponent {
   ];
 
   stepperDataAndroidIos = [
-    { id: 1, step: 1, isActive: true, name: 'Open Devloper Account', minWidth: 10, isCompleted: false, isAllowed: true },
+    { id: 1, step: 1, isActive: true, name: 'Open Developer Account', minWidth: 11, isCompleted: false, isAllowed: true },
     { id: 2, step: 2, isActive: false, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed: false },
     { id: 3, step: 3, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false, isAllowed: false },
     { id: 4, step: 4, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false, isAllowed: false },
