@@ -202,7 +202,7 @@
                     {{element.currency || '-'}}
                 </td>
                 <td class="text-right">
-                    {{element.recharge_amount || '-'}}
+                    {{element.recharge_amount ? (element.recharge_amount | indianNumber) : 0}}
                 </td>
                 <td>
                     {{element.mop || '-'}}

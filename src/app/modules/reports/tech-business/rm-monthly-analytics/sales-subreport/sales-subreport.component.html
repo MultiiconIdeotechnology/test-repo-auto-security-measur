@@ -154,7 +154,7 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service">{{element.service || "-"}}</td>
                     <td>
                         <span (click)="element.refNo ? onRefNoDetail(element): null"
-                        [ngClass]="element.refNo ? 'cursor-pointer underline': ''">
+                        [ngClass]="element.refNo ? 'cursor-pointer border-b dark:border-white border-black': ''">
                             {{element.refNo || "-"}}
                         </span>
                     </td>
@@ -166,7 +166,7 @@
                         </span>
                     </td>
                     <td>{{element.book_date ? (element.book_date | date: 'dd-MM-yyyy HH:mm:ss') : "-"}}</td>
-                    <td class="text-right">{{element.salePrice || "-"}}</td>
+                    <td class="text-right">{{element.salePrice ? (element.salePrice | number:'1.2-2') : 0}}</td>
                     <td>{{element.mop || "-"}}</td>
                 </tr>
             </ng-template>
@@ -175,7 +175,7 @@
                 <tr>
                     <td pFrozenColumn [frozen]="frozenObj?.service">Total</td>
                     <td *ngFor="let i of [1,2,3,4]"></td>
-                    <td class="text-right">{{totalSaleAmount || 0}}</td>
+                    <td class="text-right">{{totalSaleAmount ? (totalSaleAmount | number:'1.2-2') : 0}}</td>
                     <td></td>
                 </tr>
             </ng-template>

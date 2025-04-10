@@ -89,8 +89,8 @@
     <!----------------Table----------------->
     <div class="table-container paginator-bottom tech-business-table">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" 
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [lazy]="true"
+            (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
             <!-- [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']" -->
 
@@ -156,32 +156,42 @@
 
                     <!-- Partner Columns -->
                     <td class="text-right" [ngClass]="{'underline cursor-pointer': element.new_partner}"
-                    (click)="element.new_partner ? openOnSubReport('new_partner', element): null">
+                        (click)="element.new_partner ? openOnSubReport('new_partner', element): null">
                         {{ element.new_partner || 0 }}
                     </td>
                     <td class="text-right" [ngClass]="{'underline cursor-pointer': element.first_transaction_partner}"
-                    (click)="element.first_transaction_partner ? openOnSubReport('first_partner', element): null">
+                        (click)="element.first_transaction_partner ? openOnSubReport('first_partner', element): null">
                         {{ element.first_transaction_partner || 0 }}
                     </td>
                     <td class="text-right" [ngClass]="{'underline cursor-pointer': element.activated}"
-                    (click)="element.activated ? openOnSubReport('activated', element): null">
+                        (click)="element.activated ? openOnSubReport('activated', element): null">
                         {{ element.activated || 0 }}
                     </td>
 
                     <!-- Business Columns -->
-                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_business}"
-                    (click)="element.total_business ? openOnSubReport('total', element): null">
-                    {{ element.total_business || 0 }}
+                    <td class="text-right" [ngClass]="{'cursor-pointer': element.total_business}"
+                        (click)="element.total_business ? openOnSubReport('total', element): null">
+                        <span [ngClass]="{'border-b dark:border-white': element?.total_business}">
+                            {{ element.total_business ? (element.total_business | number:'1.2-2') : 0 }}
+                        </span>
                     </td>
-                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_new}" 
-                    (click)="element.total_new ? openOnSubReport('new', element) : null">{{ element.total_new || 0 }}</td>
-                    <td class="text-right" [ngClass]="{'underline cursor-pointer': element.total_old}"
-                    (click)="element.total_old ? openOnSubReport('old', element) : null">{{ element.total_old || 0 }}</td>
+                    <td class="text-right" [ngClass]="{'cursor-pointer': element.total_new}"
+                        (click)="element.total_new ? openOnSubReport('new', element) : null">
+                        <span [ngClass]="{'border-b dark:border-white': element?.total_new}">
+                            {{ element.total_new ? (element.total_new | number: '1.2-2') : 0 }}
+                        </span>
+                    </td>
+                    <td class="text-right" [ngClass]="{'cursor-pointer': element.total_old}"
+                        (click)="element.total_old ? openOnSubReport('old', element) : null">
+                        <span [ngClass]="{'border-b dark:border-white': element?.total_old}">
+                            {{ element.total_old ? (element.total_old | number:'1.2-2') : 0 }}
+                        </span>
+                    </td>
 
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="footer" >
+            <ng-template pTemplate="footer">
                 <tr>
                     <td>Total</td>
 
@@ -191,9 +201,9 @@
                     <td class="text-right">{{ dataListTotals?.final_parther_active_total || 0 }}</td>
 
                     <!-- Business Columns -->
-                    <td class="text-right">{{ dataListTotals?.final_business_total || 0 }}</td>
-                    <td class="text-right">{{ dataListTotals?.final_business_new_total || 0 }}</td>
-                    <td class="text-right">{{ dataListTotals?.final_business_old_total || 0 }}</td>
+                    <td class="text-right">{{ dataListTotals?.final_business_total | number:'1.2-2' : 0 }}</td>
+                    <td class="text-right">{{ dataListTotals?.final_business_new_total | number:'1.2-2' : 0 }}</td>
+                    <td class="text-right">{{ dataListTotals?.final_business_old_total | number:'1.2-2' : 0 }}</td>
                 </tr>
             </ng-template>
 

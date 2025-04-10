@@ -26,6 +26,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { UserService } from 'app/core/user/user.service';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 
 @Component({
@@ -58,7 +59,8 @@ import { UserService } from 'app/core/user/user.service';
     MatDialogModule,
     MatTooltipModule,
     MatDividerModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    IndianNumberPipe
   ],
 })
 export class WalletcreditListComponent extends BaseListingComponent implements OnDestroy {

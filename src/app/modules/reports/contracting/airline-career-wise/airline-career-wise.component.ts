@@ -30,6 +30,7 @@ import { AirlineSummaryService } from 'app/services/airline-summary.service';
 import { CommonUtils } from 'app/utils/commonutils';
 import { DateTime } from 'luxon';
 import { Excel } from 'app/utils/export/excel';
+import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 
 @Component({
     selector: 'app-airline-career-wise',
@@ -56,6 +57,7 @@ import { Excel } from 'app/utils/export/excel';
         NgxMatSelectSearchModule,
         MatTabsModule,
         PrimeNgImportsModule,
+        IndianNumberPipe
     ],
     templateUrl: './airline-career-wise.component.html',
     styleUrls: ['./airline-career-wise.component.scss'],

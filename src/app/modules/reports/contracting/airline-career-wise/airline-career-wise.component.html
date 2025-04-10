@@ -113,30 +113,30 @@
                         <mat-icon *ngIf="!expandedRows[rowData.carrier]" class="icon-size-5" svgIcon="heroicons_outline:chevron-down"></mat-icon>
                         <mat-icon *ngIf="expandedRows[rowData.carrier]" class="icon-size-5" svgIcon="heroicons_outline:chevron-up"></mat-icon>
                     </td>
-                    <td class="text-right">{{ rowData.total }}</td>
+                    <td class="text-right">{{ rowData.total | indianNumber }}</td>
                     <td class="text-right"
                         [ngClass]="isMaxValue(rowData,rowData[col.field]) ? 'bg-green-500' : isMinValue(rowData,rowData[col.field]) ? 'bg-red-500' : ''"
-                        *ngFor="let col of supplierColumns">{{ rowData[col.field] }}</td>
+                        *ngFor="let col of supplierColumns">{{ rowData[col.field] | indianNumber }}</td>
                 </tr>
     
                 <!-- Domestic Row -->
                 <tr *ngIf="expandedRows[rowData.carrier] && rowData.type === 'Carrier'"
                     [ngClass]="{'domestic-row': true}">
                     <td>Domestic</td>
-                    <td class="text-right">{{ displayData[rowIndex + 1]?.total }}</td>
+                    <td class="text-right">{{ displayData[rowIndex + 1]?.total | indianNumber }}</td>
                     <td class="text-right"
                         [ngClass]="isMaxValue(displayData[rowIndex + 1], displayData[rowIndex + 1][col.field]) ? 'bg-green-500' : isMinValue(displayData[rowIndex + 1], displayData[rowIndex + 1][col.field]) ? 'bg-red-500' : ''"
-                        *ngFor="let col of supplierColumns">{{ displayData[rowIndex + 1]?.[col.field] }}</td>
+                        *ngFor="let col of supplierColumns">{{ displayData[rowIndex + 1]?.[col.field] | indianNumber }}</td>
                 </tr>
     
                 <!-- International Row -->
                 <tr *ngIf="expandedRows[rowData.carrier] && rowData.type === 'Carrier'"
                     [ngClass]="{'international-row': true}">
                     <td>International</td>
-                    <td class="text-right">{{ displayData[rowIndex + 2]?.total }}</td>
+                    <td class="text-right">{{ displayData[rowIndex + 2]?.total | indianNumber }}</td>
                     <td class="text-right"
                         [ngClass]="isMaxValue(displayData[rowIndex + 2], displayData[rowIndex + 2][col.field]) ? 'bg-green-500' : isMinValue(displayData[rowIndex + 2], displayData[rowIndex + 2][col.field]) ? 'bg-red-500' : ''"
-                        *ngFor="let col of supplierColumns">{{ displayData[rowIndex + 2]?.[col.field] }}</td>
+                        *ngFor="let col of supplierColumns">{{ displayData[rowIndex + 2]?.[col.field] | indianNumber }}</td>
                 </tr>
             </ng-template>
         </p-table>

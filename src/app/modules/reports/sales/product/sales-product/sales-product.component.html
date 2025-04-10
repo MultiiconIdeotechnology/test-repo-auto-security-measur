@@ -173,8 +173,8 @@
                     </td>
                     <td>{{element.agency_name || "-"}}</td>
                     <td>{{element.rm || "-"}}</td>
-                    <td class="text-right">{{element.Amount ? element.Amount.toFixed(2) : '0'}}</td>
-                    <td class="text-right">{{element.Due_amount ? element.Due_amount.toFixed(2) : '0'}}</td>
+                    <td class="text-right">{{element.Amount ? (element.Amount.toFixed(2) | number:'1.2-2') : '0'}}</td>
+                    <td class="text-right">{{element.Due_amount ? (element.Due_amount.toFixed(2) | number:'1.2-2') : '0'}}</td>
                     <!-- <td *ngFor="let item of element.itemCodes">
                         {{(item.value | date:'dd-MM-yyyy') || '-'}}
                     </td> -->

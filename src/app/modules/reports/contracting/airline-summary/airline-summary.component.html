@@ -199,20 +199,20 @@
                     <!-- Total Columns -->
                     <td class="text-right">{{ element.pax }}</td>
                     <td class="text-right">{{ element.pnr }}</td>
-                    <td class="text-right">{{ element.volume }}</td>
+                    <td class="text-right">{{ element.volume ? (element.volume.toFixed(2) | number:'1.2-2'): 0 }}</td>
                     <td class="text-right">{{ element.weightage }}%</td>
 
                     <!-- Domestic Columns -->
                     <td class="text-right">{{ element.domestic_Pax }}</td>
                     <td class="text-right">{{ element.domestic_PNR }}</td>
-                    <td class="text-right">{{ element.domestic_Volume }}</td>
+                    <td class="text-right">{{ element.domestic_Volume ? (element.domestic_Volume | number:'1.2-2') : 0 }}</td>
                     <td class="text-right">{{ element.domestic_Weightage }}%</td>
                     <td class="text-right">{{ element.domestic_Ratio }}%</td>
 
                     <!-- International Columns -->
                     <td class="text-right">{{ element.international_Pax }}</td>
                     <td class="text-right">{{ element.international_PNR }}</td>
-                    <td class="text-right">{{ element.international_Volume }}</td>
+                    <td class="text-right">{{ element.international_Volume ? (element.international_Volume | number:'1.2-2') : 0 }}</td>
                     <td class="text-right">{{ element.international_Weightage }}%</td>
                     <td class="text-right">{{ element.international_Ratio }}%</td>
                 </tr>

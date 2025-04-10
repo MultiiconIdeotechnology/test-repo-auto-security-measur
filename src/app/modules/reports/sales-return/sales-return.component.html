@@ -289,22 +289,22 @@
                     <td>{{element.air_ref_no || '-'}}</td>
                     <td>{{element.pan_numner || '-'}}</td>
                     <td>{{element.gst_numner || '-'}}</td>
-                    <td class="text-right">{{element.sup_service_charge ? element.sup_service_charge.toFixed(2) : 0}}
+                    <td class="text-right">{{element.sup_service_charge ? (element.sup_service_charge.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
-                    <td class="text-right">{{element.bonton_service_charge ? element.bonton_service_charge.toFixed(2) :
+                    <td class="text-right">{{element.bonton_service_charge ? (element.bonton_service_charge.toFixed(2) | number:'1.2-2') :
                         0}}</td>
                     <td class="text-right">{{element.refunded_amount || '0'}}</td>
-                    <td class="text-right">{{element.service_charge ? element.service_charge.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.tax ? element.tax.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.net_refund ? element.net_refund.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.commission ? element.commission.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.tds ? element.tds.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.refundable_price ? element.refundable_price.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.commission_2 ? element.commission_2.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.tds_2 ? element.tds_2.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.net_commission ? element.net_commission.toFixed(2) : 0}}</td>
-                    <td class="text-right">{{element.cashback ? element.cashback.toFixed(2) : 0}}</td>
-                    <td class="w-auto text-right">{{element.cashback_tds ? element.cashback_tds.toFixed(2) : 0}}</td>
+                    <td class="text-right">{{element.service_charge ? (element.service_charge.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.tax ? (element.tax.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.net_refund ? (element.net_refund.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.commission ? (element.commission.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.tds ? (element.tds.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.refundable_price ? (element.refundable_price.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.commission_2 ? (element.commission_2.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.tds_2 ? (element.tds_2.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.net_commission ? (element.net_commission.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.cashback ? (element.cashback.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="w-auto text-right">{{element.cashback_tds ? (element.cashback_tds.toFixed(2) | number:'1.2-2') : 0}}</td>
                 </tr>
             </ng-template>
 

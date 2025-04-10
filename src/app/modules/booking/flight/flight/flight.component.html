@@ -424,7 +424,7 @@
                         {{element.operating_carrier || "-"}}
                     </td>
                     <td class="text-right">
-                        {{element.purchase_price || "-"}}
+                        {{element.purchase_price ? (element.purchase_price.toFixed(2) | number: '1.2-2') : "-"}}
                     </td>
                     <td>
                         {{element.user_type || "-"}}
@@ -442,7 +442,7 @@
                         {{element.to_airport_code || "-"}}
                     </td>
                     <td>
-                        {{(element.travelDate | date:'dd-MM-yyyy HH:mm') || "-"}}
+                        {{(element.travelDate | date:'dd-MM-yyyy HH:mm') || 0}}
                     </td>
                     <td>
                         {{element.tripType || "-"}}
