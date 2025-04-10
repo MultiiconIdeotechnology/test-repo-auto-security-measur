@@ -25,7 +25,8 @@ export class VerifyDomainComponent {
   isLoading: boolean = false;
   isDomainFalse: boolean = true;
   wlId: any;
-  @Input() data: any;
+  @Input() data: any; 
+  @Input() wlSettingData:any;
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() previousPage = new EventEmitter<number>();
 
@@ -53,7 +54,7 @@ export class VerifyDomainComponent {
   getHelp() {
     this.matDialog.open(DomainPointingDetailsComponent, {
       disableClose: true,
-      data: this.domainPointingData,
+      data: {domainPointingData:this.domainPointingData, wlSettingData:this.wlSettingData},
       panelClass: ['zero-angular-dialog', 'domain-pointing-info-modal'],
       autoFocus: false,
       width: '860px',

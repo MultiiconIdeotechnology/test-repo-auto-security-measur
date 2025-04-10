@@ -18,37 +18,38 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
   styleUrls: ['./domain-pointing-details.component.scss']
 })
 export class DomainPointingDetailsComponent {
-
+    domainData:any;
+    wlSettingData:any;
     constructor(
       public matDialogRef: MatDialogRef<DomainPointingDetailsComponent>,  
       @Inject(MAT_DIALOG_DATA) public data: any = {},
     ){
-      console.log("data domain pointing", data);
+      this.domainData = data.domainPointingData;
+      this.wlSettingData = data.wlSettingData;
 
-      if(data && data?.length){
-        for(let el of data){
-          this.firstTableData.push({domain:el.domain, recordType:"A", name:'www', value:'', ttl:''});
-          this.secondTableData.push({domain:el.domain, recordType:"A", name:'www', value:'', ttl:''});
+      if(this.domainData && this.domainData?.length){
+        for(let el of this.domainData){
+          if(this.wlSettingData?.b2c_portal_url?.split('.')?.length === 3){
+            el['recordType']= 'A';
+            el['name'] = el.domain;
+            el['value'] = this.wlSettingData?.currentIPAddress;
+            el['ttl'] = '1 Hour'
+          } else {
+            if(el.domain == 'bontonholidays.com'){
+              el['recordType'] = 'A';
+              el['name'] = '@';
+              el['value'] = this.wlSettingData?.currentIPAddress;
+              el['ttl'] = '1 Hour';
+            } else {
+              el['recordType'] = 'Cname';
+              el['name'] = el.domain && el.domain.includes('bontonholidays.com') ? el.domain.split('bontonholidays.com')[0] : "-";
+              el['value'] = '@';
+              el['ttl'] = '1 Hour'
+            }
+          }
         }
       }
 
-
     }
-
-    firstTableData:any = [
-      // { domain: "bontonholidays.com", recordType: "A", name: "@", value: "3.6.64.88", ttl: "1 Hour" },
-      // { domain: "www.bontonholidays.com", recordType: "Cname", name: "www", value: "@", ttl: "1 Hour" },
-      // { domain: "partner.bontonholidays.com", recordType: "Cname", name: "partner", value: "@", ttl: "1 Hour" },
-      // { domain: "www.partner.bontonholidays.com", recordType: "Cname", name: "www.partner", value: "@", ttl: "1 Hour" },
-      // { domain: "api.bontonholidays.com", recordType: "Cname", name: "api", value: "@", ttl: "1 Hour" }
-    ];
-
-    secondTableData = [
-      // { domain: "bontonholidays.com", recordType: "A", name: "bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      // { domain: "www.bontonholidays.com", recordType: "A", name: "www.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      // { domain: "partner.bontonholidays.com", recordType: "A", name: "partner.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      // { domain: "www.partner.bontonholidays.com", recordType: "A", name: "www.partner.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" },
-      // { domain: "api.bontonholidays.com", recordType: "A", name: "api.bontonholidays.com", value: "3.6.64.88", ttl: "1 Hour" }
-    ];
 
 }

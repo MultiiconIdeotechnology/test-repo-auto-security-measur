@@ -65,6 +65,7 @@
     <app-verify-domain 
         [hidden]="activeStepperId !== 3"
         [data]="record" 
+        [wlSettingData]="wlSettingData"
         (stepCompleted)="onStepComplete(3)"
         (previousPage)="onPreviousPage($event)">
     </app-verify-domain>

@@ -13,7 +13,7 @@
         <li>Enter Details :- Fill in the hostname, value, TTL, and other necessary details</li>
     </ul>
 
-    <p-table class="custom-primeng-table" [value]="firstTableData"
+    <p-table class="custom-primeng-table" [value]="domainData"
         [scrollable]="true">
         <ng-template pTemplate="header">
             <tr>
@@ -37,7 +37,7 @@
     </p-table>
 
 
-    <p-table class="custom-primeng-table" [value]="secondTableData"
+    <!-- <p-table class="custom-primeng-table" [value]="secondTableData"
         [scrollable]="true">
         <ng-template pTemplate="header">
             <tr>
@@ -58,7 +58,7 @@
                 <td>{{element?.ttl || "-"}}</td>
             </tr>
         </ng-template>
-    </p-table>
+    </p-table> -->
 
     <ul class="list-disc leading-8 list-inside">
         <li>Save & Propagate :- Save changes and allow time for DNS propagation</li>
