@@ -120,55 +120,55 @@ export class PotentialLeadComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agencyName']?.value;
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
+        // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+        //     this.selectedAgent = resp['table_config']['agencyName']?.value;
+        //     if (this.selectedAgent && this.selectedAgent.id) {
+        //         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        //         if (!match) {
+        //             this.agentList.push(this.selectedAgent);
+        //         }
+        //     }
 
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShowPotential = true;
-            this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-            this.primengTable._filter();
-        });
+        //     this.primengTable['filters'] = resp['table_config'];
+        //     this.isFilterShowPotential = true;
+        //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
+        //     this.primengTable._filter();
+        // });
     }
 
     ngAfterViewInit() {
         // Defult Active filter show
-        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShowPotential = true;
-            this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            setTimeout(() => {
-                this.selectedAgent = filterData['table_config']['agencyName']?.value;
-                if (this.selectedAgent && this.selectedAgent.id) {
+        // if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        //     this.isFilterShowPotential = true;
+        //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
+        //     let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+        //     setTimeout(() => {
+        //         this.selectedAgent = filterData['table_config']['agencyName']?.value;
+        //         if (this.selectedAgent && this.selectedAgent.id) {
 
-                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                    if (!match) {
-                        this.agentList.push(this.selectedAgent);
-                    }
-                }
-            }, 1000);
-            this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
-        }
+        //             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        //             if (!match) {
+        //                 this.agentList.push(this.selectedAgent);
+        //             }
+        //         }
+        //     }, 1000);
+        //     this.primengTable['filters'] = filterData['table_config'];
+        //     // this.primengTable['_sortField'] = filterData['sortColumn'];
+        //     // this.sortColumn = filterData['sortColumn'];
+        // }
     }
 
     // Api function to get the agent List
-    getAgent(value: string, bool = true) {
-        this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
-            this.agentList = data;
+    // getAgent(value: string, bool = true) {
+    //     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+    //         this.agentList = data;
 
-            for (let i in this.agentList) {
-                this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-                this.agentList[i].id_by_value = this.agentList[i].agency_name;
-            }
-        })
-    }
+    //         for (let i in this.agentList) {
+    //             this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+    //             this.agentList[i].id_by_value = this.agentList[i].agency_name;
+    //         }
+    //     })
+    // }
 
     refreshItems(event?: any): void {
         this.isLoading = true;

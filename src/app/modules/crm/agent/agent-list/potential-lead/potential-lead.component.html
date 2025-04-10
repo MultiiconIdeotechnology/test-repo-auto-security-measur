@@ -28,26 +28,24 @@
                 <th pSortableColumn="agencyName" pResizableColumn>
                     partner <p-sortIcon field="agencyName" />
                 </th>
-                <th pSortableColumn="currentProduct" pResizableColumn>
-                    Current Product <p-sortIcon field="currentProduct" />
+                <th pResizableColumn>
+                    Current Product 
                 </th>
-                <th pSortableColumn="offerings" pResizableColumn>
-                    Offerings <p-sortIcon field="offerings" />
+                <th  pResizableColumn>
+                    Offerings
                 </th>
                 <th class="w-full" pSortableColumn="callPurpose" pResizableColumn="callPurpose">
                     Purpose of call <p-sortIcon field="callPurpose" />
                 </th>
             </tr>
 
-            <tr *ngIf="isFilterShowPotential">
+            <!-- <tr *ngIf="isFilterShowPotential">
                 <th class="left-[-1px]" pFrozenColumn></th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.callCount" class="min-w-[110px]">
                     <p-columnFilter field="callCount" type="numeric" placeholder="Search by Count"
                         ariaLabel="Filter Count"></p-columnFilter>
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="status" placeholder="Search by Status"
-                        ariaLabel="Filter Status" /> -->
                     <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
@@ -65,8 +63,6 @@
                         ariaLabel="Filter AC Code" />
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="agencyName" placeholder="Search by Agency"
-                        ariaLabel="Filter Agency" /> -->
                     <p-columnFilter class="searchableDropdown" field="agencyName" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
@@ -99,12 +95,7 @@
                     <p-columnFilter type="text" matchMode="contains" field="callPurpose" placeholder="Search by Purpose"
                         ariaLabel="Filter Purpose" />
                 </th>
-                <!-- <th>
-                    <p-columnFilter type="text" matchMode="contains" field="condition" placeholder="Search by Conditions"
-                        ariaLabel="Filter Conditions" />
-                </th> -->
-              
-            </tr>
+            </tr> -->
         </ng-template>
 
         <ng-template pTemplate="body" let-element let-i="rowIndex">
@@ -175,7 +166,6 @@
                         {{element.callPurpose || '-'}}
                     </ng-template>
                 </td>
-                <!-- <td>{{element?.condition || "-"}}</td> -->
             </tr>
         </ng-template>
 
