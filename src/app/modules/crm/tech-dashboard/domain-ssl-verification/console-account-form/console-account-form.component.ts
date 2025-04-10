@@ -33,7 +33,7 @@ export class ConsoleAccountFormComponent {
   @Input() wlSettingData:any
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() stepAllowed = new EventEmitter<number>();
-  isConsoleAccount:boolean = false;
+  is_account_active:boolean = false;
 
   formGroup !:FormGroup
 
@@ -56,7 +56,6 @@ export class ConsoleAccountFormComponent {
       account_name : ["", Validators.required],
       account_id : ["", Validators.required],
       password : [""],
-      is_account_active : ["", Validators.required],
       product_id : [""]
     });
 
@@ -81,10 +80,7 @@ export class ConsoleAccountFormComponent {
   }
 
   onConsoleFormVerify() {
-    this.stepCompleted.emit(1);
-    return;
-
-    if(this.formGroup.invalid && this.isConsoleAccount){
+    if(this.formGroup.invalid || !this.is_account_active){
       this.alertService.showToast('error', 'Fill up required field to proceed');
       this.formGroup.markAllAsTouched();
       return;
@@ -94,8 +90,11 @@ export class ConsoleAccountFormComponent {
     payloadData.agent_id = this.data?.agentid;
     payloadData.product_id = this.data?.subid;
     payloadData.wl_id = this.wlId;
+    payloadData.is_account_active = this.is_account_active;
 
     console.log("this.payloadData", payloadData);
+    this.stepCompleted.emit(1);
+return;
     this.domainVarifyService.androidIosConfig(payloadData).subscribe({
       next: (res) => {
         if (res) {

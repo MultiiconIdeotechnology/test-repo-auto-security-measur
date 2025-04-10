@@ -42,7 +42,7 @@
         [data]="record" 
         [wlSettingData]="wlSettingData"
         (stepCompleted)="onStepComplete(1)"
-        (step1WebForm)="isStep1WebFormValid = $event">
+>
     </app-manage-domain-form>
 
     <app-console-account-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
