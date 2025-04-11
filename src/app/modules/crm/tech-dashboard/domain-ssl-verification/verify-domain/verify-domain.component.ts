@@ -101,7 +101,7 @@ export class VerifyDomainComponent {
     }
   }
 
-  stepTwoCompleted() {
+  domainVerifyNext() {
     this.stepCompleted.emit(3);
     this.domainVarifyService.verifyButtonSubject.next(true);
   }
