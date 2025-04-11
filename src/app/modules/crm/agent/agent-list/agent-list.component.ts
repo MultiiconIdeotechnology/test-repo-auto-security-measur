@@ -99,16 +99,12 @@ export class CRMAgentListComponent implements OnDestroy {
     }
 
     ngAfterViewInit(){
-        console.log("this.potential", this.potential);
-        console.log("tis.inbox", this.inbox)
     }
 
     public tabChanged(event: any): void {
         const tabName = event?.tab?.ariaLabel;
         this.tabNameStr = tabName;
         this.tabName = tabName;
-
-        console.log("tabName", tabName);
 
         switch (tabName) {
             case 'Inbox':
