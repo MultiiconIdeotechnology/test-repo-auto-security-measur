@@ -102,9 +102,4 @@ export class DomainSslVerificationComponent {
       })
   }
 
-  onPrevious(){
-    this.onPreviousPage(1);
-  }
-
-  
 }

@@ -34,7 +34,7 @@
     <div class="grid grid-cols-12 gap-4">
         <mat-form-field class="col-span-6" [ngClass]="{'order-2':data?.item_name?.toLowerCase().includes('ios')}">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
-                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account Name</ng-container>
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Account Name</ng-container>
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Appstore Connect Account Name</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
                     [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed under app name in google play store':'It will be displayed under app name in apple play store'">info_outline</i>
@@ -45,7 +45,7 @@
 
         <mat-form-field class="col-span-6" [ngClass]="{'order-3':data?.item_name?.toLowerCase().includes('ios')}">
             <mat-label class="font-medium dark:text-[#ADB3BB] text-gray-500 relative">
-                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Console Account ID</ng-container>
+                <ng-container *ngIf="data?.item_name?.toLowerCase().includes('android')">Account ID</ng-container>
                 <ng-container *ngIf="data?.item_name?.toLowerCase().includes('ios')">Apple developer account ID</ng-container>
                 <i class="material-icons text-[15px] absolute right-[-26px] top-1/2 -translate-y-1/2 cursor-pointer"
                     [matTooltip]="data?.item_name?.toLowerCase().includes('android') ? 'It will be displayed inside google play console\'s home page': 'For profile creation in Xcode'">
