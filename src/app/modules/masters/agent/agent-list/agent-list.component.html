@@ -83,7 +83,7 @@
             [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_code', 'agency_name', 'status','relation_manager_name', 'email_address', 'mobile_number', 'currency', 'entry_date_time']"
+            [globalFilterFields]="['agent_code', 'agency_name', 'status','relation_manager_name', 'email_address', 'mobile_number', 'currency', 'is_cashback_enable', 'entry_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
@@ -121,6 +121,9 @@
                     </th>
                     <th pSortableColumn="currency" pResizableColumn>
                         Currency <p-sortIcon field="currency" />
+                    </th>
+                    <th pSortableColumn="is_cashback_enable" pResizableColumn>
+                        Cashback <p-sortIcon field="is_cashback_enable" />
                     </th>
                     <th class="min-w-[200px]" pSortableColumn="entry_date_time" pResizableColumn
                         [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
@@ -193,6 +196,19 @@
                                         <div class="flex align-items-center gap-2">
                                             <div>{{ currency.currency_short_code }}</div>
                                         </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="is_cashback_enable" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="cashbackList"
+                                    (onChange)="filter($event.value)" placeholder="Select Cashback" appendTo="body"
+                                    [showClear]="true">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
@@ -400,9 +416,10 @@
                             </ng-template>
                         </p-columnFilter>
 
-                 
+
                         <ng-container *ngIf="col.field == 'first_login_date_time'">
-                            <p-columnFilter *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
+                            <p-columnFilter
+                                *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
                                 field="first_login_date_time" matchMode="custom" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -417,14 +434,16 @@
                                     </p-dropdown>
                                 </ng-template>
                             </p-columnFilter>
-    
-                            <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
+
+                            <ng-container
+                                *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
                                 <div class="relative inline-block">
                                     <p-columnFilter field="first_login_date_time" matchMode="custom" [showMenu]="false">
                                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                             <p-calendar selectionMode="range" [ngModel]="value"
-                                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                                dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                                (ngModelChange)="onDateRangeChange($event, filter)"
+                                                [readonlyInput]="true" dateFormat="dd-mm-yy" appendTo="body"
+                                                placeholder="📅 Search by Date Range">
                                             </p-calendar>
                                         </ng-template>
                                     </p-columnFilter>
@@ -451,14 +470,17 @@
                                     </p-dropdown>
                                 </ng-template>
                             </p-columnFilter>
-    
-                            <ng-container *ngIf="(_filterService.selectionDateDropdownContracting$ | async) == 'custom_date_range'">
+
+                            <ng-container
+                                *ngIf="(_filterService.selectionDateDropdownContracting$ | async) == 'custom_date_range'">
                                 <div class="relative inline-block">
-                                    <p-columnFilter field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
+                                    <p-columnFilter field="first_transaction_date_time" matchMode="custom"
+                                        [showMenu]="false">
                                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                             <p-calendar selectionMode="range" [ngModel]="value"
-                                                (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                                dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                                (ngModelChange)="onDateRangeChange($event, filter)"
+                                                [readonlyInput]="true" dateFormat="dd-mm-yy" appendTo="body"
+                                                placeholder="📅 Search by Date Range">
                                             </p-calendar>
                                         </ng-template>
                                     </p-columnFilter>
@@ -501,7 +523,7 @@
                             <button mat-menu-item (click)="setCurrency(element)">
                                 <mat-icon [svgIcon]="'heroicons_outline:currency-rupee'" class="icon-size-5"></mat-icon>
                                 <span style="font-weight: 500">Change Currency</span>
-                            </button> 
+                            </button>
                             <button *ngIf="element.is_master_agent" mat-menu-item (click)="setDisplayCurrency(element)">
                                 <mat-icon svgIcon="heroicons_solid:currency-rupee"></mat-icon>
                                 <span style="font-weight: 500">Display Currency</span>
@@ -652,6 +674,7 @@
                         </span>
                     </td>
                     <td>{{element.currency || "-"}}</td>
+                    <td>{{element.is_cashback_enable ? 'Yes' : 'No'}}</td>
                     <td>
                         {{(element.entry_date_time | date: "dd-MM-yyyy") || "-"}}
                     </td>
