@@ -23,7 +23,7 @@ import { AppConfig } from 'app/config/app-config';
 import { Security, agentPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
 import { Linq } from 'app/utils/linq';
@@ -35,6 +35,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { DialAgentCallListComponent } from '../../dial-call-list/dial-call-list.component';
 import { ScheduleCallRemarkComponent } from '../../call-history/schedule-call-details/schedule-call-details.component';
 import { MarketingMaterialsComponent } from '../../marketing-materials/marketing-materials.component';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
     selector: 'app-potential-lead',
@@ -98,6 +99,7 @@ export class PotentialLeadComponent extends BaseListingComponent {
     formattedDate: string = '';
     agentList: any[] = [];
     selectedAgent!: any
+    user:any = {};
 
     constructor(
         private crmService: CrmService,
@@ -105,7 +107,8 @@ export class PotentialLeadComponent extends BaseListingComponent {
         private agentService: AgentService,
         private conformationService: FuseConfirmationService,
         private router: Router,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private userService: UserService
 
     ) {
         super(module_name.crmagent);
@@ -113,6 +116,12 @@ export class PotentialLeadComponent extends BaseListingComponent {
         this.sortColumn = 'priorityid';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+         this.userService.user$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((user: any) => {
+                    this.user = user;
+                });
     }
 
 
@@ -176,14 +185,19 @@ export class PotentialLeadComponent extends BaseListingComponent {
             event = {};
             event.first = event?.first || 0;
         }
+
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlPotential.value;
+
+        if (Security.hasPermission(agentPermissions.viewOnlyAssignedPermissions)) {
+            filterReq["relationmanagerId"] = this.user.id
+        }
+
         this.crmService.getPotentialLeadAgentList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 let potentialLeadData = data?.dynamicList;
                 this.getPotentialList(potentialLeadData)
-                console.log("data", data)
                 this.totalRecords = data?.total;
             },
             error: (err) => {
