@@ -483,5 +483,8 @@ export const Routes = {
 
         cashback_parameters_path: 'settings/cashback_parameters',
         cashback_parameters_route: '/settings/cashback_parameters',
+
+        psp_setup_path: 'settings/psp-setup',
+        psp_setup_route: '/settings/psp-setup',
     }
 }
