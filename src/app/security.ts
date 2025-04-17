@@ -321,6 +321,7 @@ export const module_name = {
     tech_rm_monthly_report: 'RM Monthly Anaytics',
     tech_product_monthly_report:'Product Monthly Analytics',
     cab_inventory: 'Cab',
+    psp_setup:'PSP Setup'
 };
 
 export const filter_module_name = {
@@ -440,6 +441,7 @@ export const filter_module_name = {
 
     //Settings
     psp: "psp",
+    psp_setup:'psp_setup',
     supplier_api: "supplier_api",
     message_templates: "message_templates",
     message_events: "message_events",

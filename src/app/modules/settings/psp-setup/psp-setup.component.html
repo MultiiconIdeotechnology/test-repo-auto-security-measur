@@ -28,20 +28,20 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                 (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                 (click)="_filterService.openDrawer(filter_table_name, primengTable)"
                  matTooltip="Saved Filter" [disabled]="isLoading">
                  <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
              </button>
 
             <!-- Select Columns Button and Select Box Code -->
-            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+            <!-- <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
                 <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
             </button>
             <p-overlayPanel #op>
-                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                <p-multiSelect [options]="cols" [(ngModel)]="_selectedColumns" optionLabel="header" class="overlay-panel"
                     [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
-            </p-overlayPanel>
+            </p-overlayPanel> -->
 
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
@@ -59,10 +59,10 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [columns]="selectedColumns" [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
             [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
             [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
-            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" 
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['provider', 'psp_for', 'psp_for_name']"
@@ -71,58 +71,28 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="provider" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.provider"
-                        [ngClass]="{'left-0': !frozenObj?.provider}">
-                        Provider <p-sortIcon field="provider" />
-                        <span class="float-right" (click)="isFrozenColumn('provider');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.provider" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.provider" class="pi pi-lock icon-size-3"></i>
-                        </span>
+                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="provider" pResizableColumn>
+                        Profile <p-sortIcon field="provider" />
                     </th>
-                    <th pSortableColumn="is_live" pResizableColumn>
-                        Status <p-sortIcon field="is_live" />
+                    <th class="w-full" pSortableColumn="is_live" pResizableColumn>
+                        Assigned <p-sortIcon field="is_live" />
                     </th>
-                    <th pSortableColumn="currency_code" pResizableColumn>
-                        Currency <p-sortIcon field="currency_code" />
-                    </th>
-                    <th pSortableColumn="psp_for" pResizableColumn>
-                        PSP For <p-sortIcon field="psp_for" />
-                    </th>
-                    <th class="min-w-[200px]" pSortableColumn="psp_for_name" pResizableColumn
-                        [ngClass]="{'w-full': !columns || (columns && !columns.length) }">
-                        PSP For Name <p-sortIcon field="psp_for_name" />
-                    </th>
-                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                    <!-- <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
                         [ngClass]="{'w-full': isLast }">
                         {{col.header}} <p-sortIcon [field]="col.field" />
-                    </th>
+                    </th> -->
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.provider">
-                        <p-columnFilter type="text" matchMode="contains" field="provider" placeholder="Search by Provider"
-                            ariaLabel="Filter Provider" />
-                    </th>
-                    <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="is_live" placeholder="Search by Status"
-                            ariaLabel="Filter Status" /> -->
-                    </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="currency_code" placeholder="Search by Currency"
                             ariaLabel="Filter Currency" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="psp_for" placeholder="Search by PSP For"
-                            ariaLabel="Filter PSP For" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="psp_for_name" placeholder="Search by PSP For Name"
-                            ariaLabel="Filter PSP For Name" />
-                    </th>
-                    <th *ngFor="let col of columns">
-                    </th>
+                    </th>>
+                    <!-- <th *ngFor="let col of columns">
+                    </th> -->
                 </tr>
             </ng-template>
 
@@ -152,14 +122,14 @@
                                 <mat-icon class="mat-18">check_circle</mat-icon>
                                 <span style="font-weight: 600">Set Default</span>
                             </button>
-                            <button mat-menu-item (click)="setActiveDeactive(element)">
+                            <button mat-menu-item (click)="bulkAssign(element)">
                                 <mat-icon class="mat-18">{{ element.is_active ? "highlight_off" :
                                     "check_circle"}}</mat-icon>
-                                <span style="font-weight: 600">{{ element.is_active ? "Deactive" : "Active" }}</span>
+                                    Bulk Assign
                             </button>
                         </mat-menu>
                     </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.provider">
+                    <td>
                         <span [matTooltip]="element['is_default'] ? 'Default' : ''"
                             class="w-2 h-2 inline-block rounded-full"
                             [ngClass]="element['is_default'] ? 'bg-green-500' : '-mr-3'">
@@ -167,19 +137,12 @@
                         {{element.provider || "-"}}
                     </td>
                     <td>
-                        <span *ngIf="element.is_live" class="text-green-500">LIVE</span>
-                        <span *ngIf="!element.is_live" class="text-red-500">TEST</span>
+                       <span [ngClass]="{'cursor-pointer': !element.assigned}"
+                        (click)="!element.assigned ? onAgentAssigned(element): null">{{element.assigned || 0}}</span>
                     </td>
-                    <td>
-                        {{element.currency_code || "-" }}
-                    </td>
-                    <td>
-                        {{element.psp_for || "-"}}
-                    </td>
-                    <td>{{element.psp_for_name || "-"}}</td>
-                    <td *ngFor="let col of columns">
+                    <!-- <td *ngFor="let col of columns">
                         {{element[col.field] || "-"}}
-                    </td>
+                    </td> -->
                 </tr>
             </ng-template>
 
