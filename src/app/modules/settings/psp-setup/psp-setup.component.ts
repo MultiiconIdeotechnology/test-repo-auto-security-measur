@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 import { UserService } from 'app/core/user/user.service';
 import { PspSetupService } from 'app/services/psp-setup.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
+import { PspSetupSidebarComponent } from './psp-setup-sidebar/psp-setup-sidebar.component';
 
 @Component({
   selector: 'app-psp-setup',
@@ -38,8 +39,9 @@ import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.ser
     MatDialogModule,
     MatTooltipModule,
     MatDividerModule,
-    PrimeNgImportsModule
-  ],
+    PrimeNgImportsModule,
+    PspSetupSidebarComponent
+],
   templateUrl: './psp-setup.component.html',
   styleUrls: ['./psp-setup.component.scss']
 })
@@ -243,7 +245,7 @@ export class PspSetupComponent extends BaseListingComponent  {
         });
     }
 
-    onAgentAssigned(record:any){
+    onAgentAssigned(id:any){
       //  this.matDialog.open(AgentAssignedZoominComponent, {
       //       data:record,
       //       panelClass: 'custom-dialog-modal',
@@ -254,7 +256,7 @@ export class PspSetupComponent extends BaseListingComponent  {
       //         // this.refreshItems();
       //       }
       //     })
-      this.sidenavService.openModal('agent-assigned-info', record)
+      this.sidenavService.openModal('Agents', id)
     }
   
     getNodataText(): string {

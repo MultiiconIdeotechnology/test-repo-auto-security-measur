@@ -132,7 +132,7 @@
                     </td>
                     <td>
                        <span [ngClass]="{'cursor-pointer border-b dark:border-white border-black': element.settings_count}" 
-                        (click)="element.settings_count ? onAgentAssigned(element): null">{{element.settings_count || 0}} Agent</span>
+                        (click)="element.settings_count ? onAgentAssigned(element?.id): null">{{element.settings_count || 0}} Agent</span>
                     </td>
                 </tr>
             </ng-template>
@@ -147,3 +147,5 @@
         </p-table>
     </div>
 </div>
+
+<app-psp-setup-sidebar></app-psp-setup-sidebar>

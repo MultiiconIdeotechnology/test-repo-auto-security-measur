@@ -16,6 +16,10 @@ export class PspSetupService {
     return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/pgProfiles', model);
   }
 
+  getAgentProfileFromId(id:string){
+    return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/pgProfile', {id: id});
+  }
+
   create(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'PaymentGateway/create', model);
   }

@@ -1,1 +1,29 @@
-<p>psp-setup-sidebar works!</p>
+<fuse-drawer class="w-screen min-w-screen sm:w-100 sm:min-w-100 z-999" fixed [mode]="'over'" [name]="'settingsDrawer'"
+    [position]="'right'" #settingsDrawer>
+
+    <div class="w-full">
+        <div class="flex flex-col w-[100%] gap-2 m-auto">
+            <!-- header -->
+            <div class="flex flex-row justify-between border-b-2 border-gray-border px-5 py-4 h-15">
+                <span class=" text-xl font-semibold">{{title}}</span>
+                <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                (click)="settingsDrawer.close()"></mat-icon>
+            </div>
+
+            <!-- body -->
+            <app-psp-setup-zoom-in *ngIf="title == 'Agents'" [agentId]="agentId"></app-psp-setup-zoom-in>
+            <app-psp-setup-info *ngIf="title == 'Info'"></app-psp-setup-info>
+       
+
+            <!-- footer -->
+            <!-- <div class="justify-end items-center flex sticky bottom-0 border-t-2 border-gray-border white-bg px-5 py-2 h-15">
+                <button class="mr-2" mat-stroked-button (click)="closeSidebar()">Close</button>
+            
+                <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid">
+                    {{btnLabel}}
+                </button>
+            </div> -->
+        </div>
+    </div>
+
+</fuse-drawer>
