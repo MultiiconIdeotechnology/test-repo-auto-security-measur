@@ -90,23 +90,23 @@
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-element let-columns="columns">
-                <tr [ngClass]="!element.is_enabled ? 'opacity-38' : ''">
+            <ng-template pTemplate="body" let-element let-columns="columns" let-i="rowIndex">
+                <tr [ngClass]="!element.is_enabledd ? 'opacity-38' : ''">
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
 
                         <mat-menu #optionMenu>
-                            <button mat-menu-item (click)="view(element)">
+                            <!-- <button mat-menu-item (click)="view(element)">
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Info</span>
-                            </button>
+                            </button> -->
                             <button mat-menu-item (click)="edit(element)">
                                 <mat-icon class="mat-18">edit</mat-icon>
                                 <span style="font-weight: 600">Edit</span>
                             </button>
-                            <button mat-menu-item (click)="delete(element)">
+                            <button mat-menu-item (click)="delete(element, i)">
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600">Delete</span>
                             </button>
@@ -115,6 +115,16 @@
                                 *ngIf="!element.is_default && element.psp_for != 'Agent'">
                                 <mat-icon class="mat-18">check_circle</mat-icon>
                                 <span style="font-weight: 600">Set Default</span>
+                            </button>
+                            <button mat-menu-item (click)="EnableDisable(element)">
+                                <mat-icon class="mat-18">{{
+                                    element.is_enabled
+                                    ? "highlight_off"
+                                    : "check_circle"
+                                    }}</mat-icon>
+                                <span style="font-weight: 600">{{
+                                    element.is_enabled ? "Disable" : "Enable"
+                                    }}</span>
                             </button>
                             <button mat-menu-item (click)="bulkAssign(element)">
                                 <mat-icon class="mat-18">{{ element.is_active ? "highlight_off" :

@@ -118,13 +118,15 @@ export class PspSetupComponent extends BaseListingComponent {
   }
 
   editInternal(record): void {
+    this.pspSetupService.editPgProfileSubject.next(record);
     this.router.navigate([
       Routes.settings.psp_setup_entry_route + '/' + record.id,
     ]);
   }
 
-  deleteInternal(record): void {
-    const label: string = 'Delete PSP';
+  deleteInternal(record:any, index:any): void {
+    console.log("index", index)
+    const label: string = 'Delete PSP Profile';
     this.conformationService
       .open({
         title: label,
@@ -132,46 +134,46 @@ export class PspSetupComponent extends BaseListingComponent {
           'Are you sure to ' +
           label.toLowerCase() +
           ' ' +
-          record.provider +
+          record.profile_name +
           ' ?',
       })
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
 
-          const executeMethod = () => {
-            this.pspsettingService.delete(record.id).subscribe({
-              next: () => {
-                this.toasterService.showToast(
-                  'success',
-                  'PSP has been Deleted!',
-                  'top-right',
-                  true
-                );
-                this.refreshItems();
+          // const executeMethod = () => {
+            this.pspSetupService.delete(record.id).subscribe({
+              next: (res:any) => {
+                console.log("res>>>", res)
+                if(res && res['status']){
+                  this.toasterService.showToast(
+                    'success',
+                    'PSP Profile has been Deleted!',
+                    'top-right',
+                    true
+                  );
+                  this.dataList.splice(index, 1);
+                  this.dataList = [...this.dataList];
+                } else {
+                  console.log("Response status is false")
+                }
               },
               error: (err) => {
                 this.toasterService.showToast('error', err)
                 this.isLoading = false;
               },
             });
-          }
-
-          // Method to execute a function after verifying OTP if needed
-          this._userService.verifyAndExecute(
-            { title: 'settings_psp_delete' },
-            () => executeMethod()
-          );
+          // }
         }
       });
   }
 
   SetDefault(record): void {
-    if (!Security.hasPermission(PSPPermissions.setDefaultPermissions)) {
-      return this.toasterService.showToast('error', messages.permissionDenied);
-    }
+    // if (!Security.hasPermission(PSPPermissions.setDefaultPermissions)) {
+    //   return this.toasterService.showToast('error', messages.permissionDenied);
+    // }
 
-    const label: string = 'Set Default PSP';
+    const label: string = 'Set Default PSP Profile';
     this.conformationService
       .open({
         title: label,
@@ -179,20 +181,20 @@ export class PspSetupComponent extends BaseListingComponent {
           'Are you sure to ' +
           label.toLowerCase() +
           ' ' +
-          record.provider +
+          record.profile_name +
           ' ?',
       })
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
 
-          const executeMethod = () => {
-            this.pspsettingService.setDefault(record.id).subscribe({
+          // const executeMethod = () => {
+            this.pspSetupService.setDefaultStatus(record.id).subscribe({
               next: () => {
                 this.refreshItems();
                 this.toasterService.showToast(
                   'success',
-                  'PSP as Default!'
+                  'PSP Profile Set as Default!'
                 );
               },
               error: (err) => {
@@ -200,17 +202,58 @@ export class PspSetupComponent extends BaseListingComponent {
                 this.isLoading = false;
               },
             });
-          }
-
-          // Method to execute a function after verifying OTP if needed
-          this._userService.verifyAndExecute(
-            { title: 'settings_psp_set_default' },
-            () => executeMethod()
-          );
+          // }
 
         }
       });
   }
+
+  EnableDisable(record): void {
+          // if (!Security.hasPermission(inventoryVisaPermissions.enableDisablePermissions)) {
+          //     return this.alertService.showToast('error', messages.permissionDenied);
+          // }
+  
+          const label: string = record.is_enabled ? 'Disable' : 'Enable';
+          this.conformationService
+              .open({
+                  title: label,
+                  message:
+                      'Are you sure to ' +
+                      label.toLowerCase() +
+                      ' ' +
+                      record.profile_name +
+                      ' ?',
+              })
+              .afterClosed()
+              .subscribe((res) => {
+                  if (res === 'confirmed') {
+                      this.pspSetupService
+                          .setEnableStatus(record.id)
+                          .subscribe({
+                              next: () => {
+                                  record.is_enabled = !record.is_enabled;
+                                  if (record.is_enabled) {
+                                      this.alertService.showToast(
+                                          'success',
+                                          'PSP Profile has been Enabled!',
+                                          'top-right',
+                                          true
+                                      );
+                                  } else {
+                                      this.alertService.showToast(
+                                          'success',
+                                          'PSP Profile has been Disabled!',
+                                          'top-right',
+                                          true
+                                      );
+                                  }
+                              }, error: (err) => {
+                                  this.alertService.showToast('error', err);
+                              }
+                          });
+                  }
+              });
+      }
 
   onAgentAssigned(id: any) {
     this.sidenavService.openModal('Agents', id)

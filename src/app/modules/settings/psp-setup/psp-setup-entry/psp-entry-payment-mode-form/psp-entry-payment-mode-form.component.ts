@@ -43,6 +43,7 @@ export class PspEntryPaymentModeFormComponent {
   istableDataLoading: boolean = false;
   isLoading: boolean = false;
   private destroy$ = new Subject<void>();
+  profileId:any
 
   constructor(
     private builder: FormBuilder,
@@ -55,10 +56,11 @@ export class PspEntryPaymentModeFormComponent {
   ngOnInit(): void {
 
     this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (res && res.status == 'success' && res?.id) {
-        this.formGroup.get('profile_id').patchValue(res.id);
-      }
-      console.log("thif.formGrolup.value", this.formGroup.value)
+      if(res && res.key == 'add'){
+        if (res && res.status == 'success' && res?.id) {
+          this.profileId = res?.id;
+        }
+      } 
     })
 
     this.formGroup = this.builder.group({
@@ -88,6 +90,8 @@ export class PspEntryPaymentModeFormComponent {
 
   submit() {
     this.isLoading = true;
+    let payload = this.formGroup.value;
+    payload.profile_id = this.profileId;
     this.pspSetupService
       .managePGSettings(this.formGroup.value)
       .subscribe({

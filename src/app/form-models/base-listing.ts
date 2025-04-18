@@ -302,9 +302,9 @@ export abstract class BaseListingComponent implements OnInit {
     //#region Delete Entry
 
     public delete(model?: any, index?:number): void {
-        if (!Security.hasDeleteEntryPermission(this.module)) {
-            return this.alertService.showToast('error', messages.permissionDenied);
-        }
+        // if (!Security.hasDeleteEntryPermission(this.module)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
 
         this.deleteInternal(model, index);
     }

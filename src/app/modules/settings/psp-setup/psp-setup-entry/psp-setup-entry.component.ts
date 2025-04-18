@@ -1,6 +1,6 @@
 import { Routes } from 'app/common/const';
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,11 +16,13 @@ import { PspEntyProfileFormComponent } from './psp-enty-profile-form/psp-enty-pr
 import { PspEntryPaymentModeFormComponent } from './psp-entry-payment-mode-form/psp-entry-payment-mode-form.component';
 import { PspSetupService } from 'app/services/psp-setup.service';
 import { takeUntil, Subject } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-psp-setup-entry',
   standalone: true,
   imports: [
+    CommonModule,
     RouterModule,
     MatButtonModule,
     MatIconModule,
@@ -34,6 +36,7 @@ import { takeUntil, Subject } from 'rxjs';
     NgxMatSelectSearchModule,
     PspEntyProfileFormComponent,
     PspEntryPaymentModeFormComponent,
+    RouterLink
   ],
   templateUrl: './psp-setup-entry.component.html',
   styleUrls: ['./psp-setup-entry.component.scss']
