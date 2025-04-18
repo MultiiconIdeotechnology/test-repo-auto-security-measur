@@ -131,7 +131,7 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
   
           // common filter
           this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedRM = resp['table_config']['relationship_manager_id']?.value;
+            this.selectedRM = resp['table_config']['relationship_manager_name']?.value;
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
             this.primengTable._filter();
@@ -143,7 +143,7 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
           this.isFilterShow = true;
           let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-          this.selectedRM = filterData['table_config']['relationship_manager_id']?.value;
+          this.selectedRM = filterData['table_config']['relationship_manager_name']?.value;
           this.primengTable['filters'] = filterData['table_config'];
           // this.primengTable['_sortField'] = filterData['sortColumn'];
           // this.sortColumn = filterData['sortColumn'];
