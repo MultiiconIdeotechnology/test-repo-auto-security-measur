@@ -9,6 +9,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PspSetupService } from 'app/services/psp-setup.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-psp-setup-zoom-in',
@@ -19,12 +20,14 @@ import { ToasterService } from 'app/services/toaster.service';
     MatButtonModule,
     FormsModule,
     MatInputModule,
+    MatDividerModule
   ],
   templateUrl: './psp-setup-zoom-in.component.html',
   styleUrls: ['./psp-setup-zoom-in.component.scss']
 })
 export class PspSetupZoomInComponent implements OnInit {
  agentAssignedList:any[] = [];
+ originalAgentList:any[] = [];
  searchText:any;
  isLoading:boolean = false;
  private destroy$ = new Subject<void>();
@@ -34,6 +37,7 @@ constructor(
       private sidenavService: SidebarCustomModalService,
       private pspSetupService: PspSetupService,
       private toasterService: ToasterService,
+
 ){}
 
  ngOnInit():void {
@@ -51,15 +55,11 @@ constructor(
   }
  }
 
- onFilterSearch(){
-    if (!this.searchText) return this.agentAssignedList;
-  
-    const search = this.searchText.toLowerCase();
-  
-    return this.agentAssignedList.filter(agent =>
-      Object.values(agent).some((value:any) =>
-        value.toLowerCase().includes(search)
-      )
+ onFilterSearch(val:any){
+    this.agentAssignedList = this.originalAgentList.filter((item: any) =>
+      item?.agent_code?.toString()?.toLowerCase().includes(val.toLowerCase()) ||
+      item?.agency_name?.toLowerCase().includes(val.toLowerCase()) ||
+      item?.email_address?.toLowerCase().includes(val.toLowerCase())
     );
  }
 
@@ -69,10 +69,13 @@ constructor(
   this.pspSetupService
     .getAgentProfileFromId(this.agentId)
     .subscribe({
-      next: (data) => {
+      next: (resp:any) => {
         this.isLoading = false;
-        this.agentAssignedList = data.data;
-        console.log("this.agentAssinged", this.agentAssignedList);
+        if(resp && resp.agents_list && resp.agents_list?.length){
+          this.agentAssignedList = resp?.agents_list;
+          this.originalAgentList = resp?.agents_list;
+        }
+        console.log("tghis.agentAssinged", resp.agents_list);
       },
       error: (err) => {
         this.toasterService.showToast('error', err)

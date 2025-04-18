@@ -1,14 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PspSetupService {
-
   private baseUrl = environment.apiUrl;
+
+  managePgProfileSubject = new BehaviorSubject<any>("");
+  managePgProfile$ = this.managePgProfileSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
@@ -19,6 +21,16 @@ export class PspSetupService {
   getAgentProfileFromId(id:string){
     return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/pgProfile', {id: id});
   }
+
+  managePgProfile(model:any){
+    return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/managePGProfile', model);
+  }
+
+  managePGSettings(model:any){
+    return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/managePGSettings ', model);
+  }
+
+  
 
   create(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'PaymentGateway/create', model);

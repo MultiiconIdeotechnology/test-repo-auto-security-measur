@@ -1,20 +1,21 @@
 
 
   <div class="px-3">
-    <div class="flex ctm_search bg-[#0F172A]">
-        <input matInput  [(ngModel)]="searchText"  [autocomplete]="'off'" [placeholder]="'Search'" (keyup.enter)="onFilterSearch()" />
-        <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="onFilterSearch()"></mat-icon>
+    <div class="flex ctm_search bg-[#0F172A] sticky top-0">
+        <input #inputRef matInput [autocomplete]="'off'" [placeholder]="'Search'" (input)="onFilterSearch($event.target.value)" />
+        <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'" (click)="onFilterSearch(inputRef.value)"></mat-icon>
     </div>
-
-    <div class="px-2 pt-3" *ngFor="let item of [1,2,3,4]">
-        <div class="flex flex-col">
+    <div class="px-2 pt-3" >
+        <div class="flex flex-col py-2" [ngClass]="{'border-b':!isLast}"
+         *ngFor="let item of agentAssignedList; let isLast=last">
             <span>
-                1902 - Keyur Vekariya
+                {{item?.agent_code || "No Code"}} - {{item?.agency_name}}
             </span>
-            <span>
-                keyur.vekariya@gmail.com
+            <span class="text-[12px] text-gray-400">
+              {{item?.email_address || "Email not available"}}
             </span>
         </div>
+
     </div>
   </div>
 
