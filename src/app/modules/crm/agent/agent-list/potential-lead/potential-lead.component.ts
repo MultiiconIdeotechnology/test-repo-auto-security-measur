@@ -36,6 +36,7 @@ import { DialAgentCallListComponent } from '../../dial-call-list/dial-call-list.
 import { ScheduleCallRemarkComponent } from '../../call-history/schedule-call-details/schedule-call-details.component';
 import { MarketingMaterialsComponent } from '../../marketing-materials/marketing-materials.component';
 import { UserService } from 'app/core/user/user.service';
+import { EmployeeService } from 'app/services/employee.service';
 
 @Component({
     selector: 'app-potential-lead',
@@ -100,6 +101,7 @@ export class PotentialLeadComponent extends BaseListingComponent {
     agentList: any[] = [];
     selectedAgent!: any
     user:any = {};
+    rmList:any = [];
 
     constructor(
         private crmService: CrmService,
@@ -108,7 +110,8 @@ export class PotentialLeadComponent extends BaseListingComponent {
         private conformationService: FuseConfirmationService,
         private router: Router,
         public _filterService: CommonFilterService,
-        private userService: UserService
+        private userService: UserService,
+        private employeeService: EmployeeService,
 
     ) {
         super(module_name.crmagent);
@@ -126,7 +129,8 @@ export class PotentialLeadComponent extends BaseListingComponent {
 
 
     ngOnInit(): void {
-        this.agentList = this._filterService.agentListByValue;
+        // this.agentList = this._filterService.agentListByValue;
+        // this.rmList = this._filterService.rmListByValue;
 
         // common filter
         // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
