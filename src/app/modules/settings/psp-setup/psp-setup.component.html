@@ -62,42 +62,36 @@
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1"
             [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
             [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
-            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" 
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" 
             [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['provider', 'psp_for', 'psp_for_name']"
+            [globalFilterFields]="['profile_name']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[155px] dark:bg-[#1e293b]" pSortableColumn="provider" pResizableColumn>
-                        Profile <p-sortIcon field="provider" />
+                    <th class="min-w-[200px] dark:bg-[#1e293b]" pSortableColumn="profile_name" pResizableColumn>
+                        Profile <p-sortIcon field="profile_name" />
                     </th>
-                    <th class="w-full" pSortableColumn="is_live" pResizableColumn>
-                        Assigned <p-sortIcon field="is_live" />
+                    <th class="w-full" pSortableColumn="settings_count" pResizableColumn>
+                        Applied On <p-sortIcon field="settings_count" />
                     </th>
-                    <!-- <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
-                        [ngClass]="{'w-full': isLast }">
-                        {{col.header}} <p-sortIcon [field]="col.field" />
-                    </th> -->
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="currency_code" placeholder="Search by Currency"
-                            ariaLabel="Filter Currency" />
+                        <p-columnFilter type="text" matchMode="contains" field="profile_name" placeholder="Search by Profile Name"
+                            ariaLabel="Filter Profile Name" />
                     </th>
                     <th>
                     </th>>
-                    <!-- <th *ngFor="let col of columns">
-                    </th> -->
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
-                <tr [ngClass]="!element.is_active ? 'opacity-38' : ''">
+                <tr [ngClass]="!element.is_enabled ? 'opacity-38' : ''">
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
@@ -134,15 +128,12 @@
                             class="w-2 h-2 inline-block rounded-full"
                             [ngClass]="element['is_default'] ? 'bg-green-500' : '-mr-3'">
                         </span>
-                        {{element.provider || "-"}}
+                        {{element.profile_name || "-"}}
                     </td>
                     <td>
-                       <span [ngClass]="{'cursor-pointer': !element.assigned}"
-                        (click)="!element.assigned ? onAgentAssigned(element): null">{{element.assigned || 0}}</span>
+                       <span [ngClass]="{'cursor-pointer border-b dark:border-white border-black': element.settings_count}" 
+                        (click)="element.settings_count ? onAgentAssigned(element): null">{{element.settings_count || 0}} Agent</span>
                     </td>
-                    <!-- <td *ngFor="let col of columns">
-                        {{element[col.field] || "-"}}
-                    </td> -->
                 </tr>
             </ng-template>
 
