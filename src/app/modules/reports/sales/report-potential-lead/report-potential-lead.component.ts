@@ -76,7 +76,7 @@ import { ScheduleCallRemarkComponent } from 'app/modules/crm/lead/call-history-t
 })
 export class ReportPotentialLeadComponent extends BaseListingComponent {
   module_name = module_name.crmagent;
-  filter_table_name = filter_module_name.agents_potential_lead;
+  filter_table_name = filter_module_name.report_potential_lead;
   private settingsUpdatedSubscription: Subscription;
   cols = [];
   dataList = [];
@@ -96,7 +96,7 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
   filter: any = {}
   formattedDate: string = '';
   agentList: any[] = [];
-  selectedAgent!: any
+  selectedRM!: any
   user:any = {};
   rmList:any = [];
 
@@ -130,42 +130,24 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
           this.rmList = this._filterService.rmListByValue;
   
           // common filter
-          // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-          //     this.selectedAgent = resp['table_config']['agencyName']?.value;
-          //     if (this.selectedAgent && this.selectedAgent.id) {
-          //         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-          //         if (!match) {
-          //             this.agentList.push(this.selectedAgent);
-          //         }
-          //     }
-  
-          //     this.primengTable['filters'] = resp['table_config'];
-          //     this.isFilterShowPotential = true;
-          //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-          //     this.primengTable._filter();
-          // });
+          this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedRM = resp['table_config']['relationship_manager_id']?.value;
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
       }
   
       ngAfterViewInit() {
-          // Defult Active filter show
-          // if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-          //     this.isFilterShowPotential = true;
-          //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-          //     let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-          //     setTimeout(() => {
-          //         this.selectedAgent = filterData['table_config']['agencyName']?.value;
-          //         if (this.selectedAgent && this.selectedAgent.id) {
-  
-          //             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-          //             if (!match) {
-          //                 this.agentList.push(this.selectedAgent);
-          //             }
-          //         }
-          //     }, 1000);
-          //     this.primengTable['filters'] = filterData['table_config'];
-          //     // this.primengTable['_sortField'] = filterData['sortColumn'];
-          //     // this.sortColumn = filterData['sortColumn'];
-          // }
+         // Defult Active filter show
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+          this.isFilterShow = true;
+          let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+          this.selectedRM = filterData['table_config']['relationship_manager_id']?.value;
+          this.primengTable['filters'] = filterData['table_config'];
+          // this.primengTable['_sortField'] = filterData['sortColumn'];
+          // this.sortColumn = filterData['sortColumn'];
+      }
       }
   
       // Api function to get the agent List

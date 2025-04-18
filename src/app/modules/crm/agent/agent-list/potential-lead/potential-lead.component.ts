@@ -133,42 +133,24 @@ export class PotentialLeadComponent extends BaseListingComponent {
         // this.rmList = this._filterService.rmListByValue;
 
         // common filter
-        // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        //     this.selectedAgent = resp['table_config']['agencyName']?.value;
-        //     if (this.selectedAgent && this.selectedAgent.id) {
-        //         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        //         if (!match) {
-        //             this.agentList.push(this.selectedAgent);
-        //         }
-        //     }
-
-        //     this.primengTable['filters'] = resp['table_config'];
-        //     this.isFilterShowPotential = true;
-        //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-        //     this.primengTable._filter();
-        // });
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowPotential = true;
+            this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
+            this.primengTable._filter();
+        });
     }
 
     ngAfterViewInit() {
         // Defult Active filter show
-        // if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        //     this.isFilterShowPotential = true;
-        //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-        //     let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        //     setTimeout(() => {
-        //         this.selectedAgent = filterData['table_config']['agencyName']?.value;
-        //         if (this.selectedAgent && this.selectedAgent.id) {
-
-        //             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        //             if (!match) {
-        //                 this.agentList.push(this.selectedAgent);
-        //             }
-        //         }
-        //     }, 1000);
-        //     this.primengTable['filters'] = filterData['table_config'];
-        //     // this.primengTable['_sortField'] = filterData['sortColumn'];
-        //     // this.sortColumn = filterData['sortColumn'];
-        // }
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowPotential = true;
+            this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     // Api function to get the agent List
