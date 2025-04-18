@@ -10,23 +10,23 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                <th pSortableColumn="callCount" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-                    class="dark:bg-[#1e293b]" [frozen]="frozenObj?.callCount"
-                    [ngClass]="{'left-0': !frozenObj?.callCount}">
-                    Calls <p-sortIcon field="callCount" />
-                    <span class="float-right" (click)="isFrozenColumn('callCount');$event.stopPropagation()">
-                        <i *ngIf="!frozenObj?.callCount" class="pi pi-lock-open icon-size-3"></i>
-                        <i *ngIf="frozenObj?.callCount" class="pi pi-lock icon-size-3"></i>
+                <th pSortableColumn="call_Count" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+                    class="dark:bg-[#1e293b]" [frozen]="frozenObj?.call_Count"
+                    [ngClass]="{'left-0': !frozenObj?.call_Count}">
+                    Calls <p-sortIcon field="call_Count" />
+                    <span class="float-right" (click)="isFrozenColumn('call_Count');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.call_Count" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.call_Count" class="pi pi-lock icon-size-3"></i>
                     </span>
                 </th>
                 <th pSortableColumn="status" pResizableColumn>
                     Status <p-sortIcon field="status" />
                 </th>
-                <th pSortableColumn="acCode" pResizableColumn>
-                    AC Code <p-sortIcon field="acCode" />
+                <th pSortableColumn="ac_code" pResizableColumn>
+                    AC Code <p-sortIcon field="ac_code" />
                 </th>
-                <th pSortableColumn="agencyName" pResizableColumn>
-                    Partner <p-sortIcon field="agencyName" />
+                <th pSortableColumn="agency_name" pResizableColumn>
+                    Partner <p-sortIcon field="agency_name" />
                 </th>
                 <!-- <th pSortableColumn="rm" pResizableColumn>
                     RM <p-sortIcon field="rm" />
@@ -44,12 +44,12 @@
 
             <tr *ngIf="isFilterShowPotential">
                 <th class="left-[-1px]" pFrozenColumn></th>
-                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.callCount" class="min-w-[110px]">
-                    <p-columnFilter field="CallCount" type="numeric" placeholder="Search by Count"
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.call_Count" class="min-w-[110px]">
+                    <p-columnFilter field="call_Count" type="numeric" placeholder="Search by Count"
                         ariaLabel="Filter Count"></p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter field="Status" matchMode="equals" [showMenu]="false">
+                    <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
                                 (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
@@ -62,11 +62,11 @@
                     </p-columnFilter>
                 </th>
                 <th>
-                    <p-columnFilter type="numeric" field="AcCode" placeholder="Search by AC Code"
+                    <p-columnFilter type="numeric" field="ac_code" placeholder="Search by AC Code"
                         ariaLabel="Filter AC Code" />
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="AgencyName" placeholder="Search by Partner"
+                    <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Partner"
                         ariaLabel="Filter Partner" />
                 </th>
                 <!-- <th>
@@ -92,7 +92,7 @@
                         ariaLabel="Filter Offerings" /> -->
                 </th>
                 <th>
-                    <p-columnFilter type="text" matchMode="contains" field="CallPurpose" placeholder="Search by Purpose"
+                    <p-columnFilter type="text" matchMode="contains" field="callPurpose" placeholder="Search by Purpose"
                         ariaLabel="Filter Purpose" />
                 </th>
                
@@ -125,21 +125,21 @@
                         </button>
                     </mat-menu>
                 </td>
-                <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.callCount">
+                <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.call_Count">
                     <span class="inline-block cursor-pointer border-b border-gray-500"
-                        (click)="callHistory(element)">{{(element.callCount) || 0}}</span>
+                        (click)="callHistory(element)">{{(element.call_Count) || 0}}</span>
                 </td>
                 <td>
                     <span [ngClass]="getStatusColor(element.status)">{{(element.status) || '-'}}</span>
                 </td>
                 <td>
-                    {{element.acCode || '0'}}
+                    {{element.ac_code || '0'}}
                 </td>
                 <td>
                     <!-- <span [matTooltip]="element.priorityText"
                         class="inline-block me-2 w-2 h-2 min-w-2 max-w-2 min-h-2 max-h-2 rounded-full mr-[6px]"
                         [ngClass]="getPriorityIndicatorClass(element.priorityText)"></span> -->
-                    {{element.agencyName || '-'}}
+                    {{element.agency_name || '-'}}
                 </td>
                 <!-- <td>
                     {{element.relationship_manager_name || '-'}}

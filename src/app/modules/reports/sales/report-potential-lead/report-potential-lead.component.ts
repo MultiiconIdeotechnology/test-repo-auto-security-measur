@@ -150,18 +150,6 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
       }
       }
   
-      // Api function to get the agent List
-      // getAgent(value: string, bool = true) {
-      //     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
-      //         this.agentList = data;
-  
-      //         for (let i in this.agentList) {
-      //             this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-      //             this.agentList[i].id_by_value = this.agentList[i].agency_name;
-      //         }
-      //     })
-      // }
-  
       refreshItems(event?: any): void {
           this.isLoading = true;
           const filterReq = this.getNewFilterReq(event);
@@ -171,11 +159,11 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
           }
   
           this.crmService.getPotentialLeadAgentList(filterReq).subscribe({
-              next: (data) => {
+              next: (resp:any) => {
                   this.isLoading = false;
-                  let potentialLeadData = data?.dynamicList;
-                  this.getPotentialList(potentialLeadData)
-                  this.totalRecords = data?.total;
+                  this.dataList = resp?.data;
+                //   this.getPotentialList(potentialLeadData)
+                  this.totalRecords = resp?.total;
               },
               error: (err) => {
                   this.alertService.showToast('error', err, 'top-right', true);
@@ -184,16 +172,16 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
           });
       }
   
-      getPotentialList(dataResponse: any) {
-          this.dataList = [];
-          for (let data of dataResponse) {
-              if (data.value && Object.keys(data?.value)?.length) {
-                  for (let el of data?.value) {
-                      this.dataList.unshift(el);
-                  }
-              }
-          }
-      }
+    //   getPotentialList(dataResponse: any) {
+    //       this.dataList = [];
+    //       for (let data of dataResponse) {
+    //           if (data.value && Object.keys(data?.value)?.length) {
+    //               for (let el of data?.value) {
+    //                   this.dataList.unshift(el);
+    //               }
+    //           }
+    //       }
+    //   }
   
       getNodataText(): string {
           if (this.isLoading)

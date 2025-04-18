@@ -180,11 +180,11 @@ export class PotentialLeadComponent extends BaseListingComponent {
         }
 
         this.crmService.getPotentialLeadAgentList(filterReq).subscribe({
-            next: (data) => {
+            next: (resp:any) => {
                 this.isLoading = false;
-                let potentialLeadData = data?.dynamicList;
-                this.getPotentialList(potentialLeadData)
-                this.totalRecords = data?.total;
+                this.dataList = resp?.data;
+                // this.getPotentialList(potentialLeadData)
+                this.totalRecords = resp?.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -193,16 +193,16 @@ export class PotentialLeadComponent extends BaseListingComponent {
         });
     }
 
-    getPotentialList(dataResponse: any) {
-        this.dataList = [];
-        for (let data of dataResponse) {
-            if (data.value && Object.keys(data?.value)?.length) {
-                for (let el of data?.value) {
-                    this.dataList.unshift(el);
-                }
-            }
-        }
-    }
+    // getPotentialList(dataResponse: any) {
+    //     this.dataList = [];
+    //     for (let data of dataResponse) {
+    //         if (data.value && Object.keys(data?.value)?.length) {
+    //             for (let el of data?.value) {
+    //                 this.dataList.unshift(el);
+    //             }
+    //         }
+    //     }
+    // }
 
     getNodataText(): string {
         if (this.isLoading)
