@@ -112,16 +112,16 @@ export class PspSetupComponent extends BaseListingComponent {
       });
   }
 
-
   createInternal(model): void {
+    this.pspSetupService.managePgProfileSubject.next({isProfileFormSuccess:false});
     this.router.navigate([Routes.settings.psp_setup_entry_route]);
   }
 
   editInternal(record): void {
+    this.pspSetupService.managePgProfileSubject.next({isProfileFormSuccess:true});
     this.pspSetupService.editPgProfileSubject.next(record);
-    this.router.navigate([
-      Routes.settings.psp_setup_entry_route + '/' + record.id,
-    ]);
+    this.router.navigate(
+      [Routes.settings.psp_setup_entry_route], {queryParams:{id:record.id, profile_name:record?.profile_name}});
   }
 
   deleteInternal(record:any, index:any): void {

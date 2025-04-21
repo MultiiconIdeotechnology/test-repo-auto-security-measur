@@ -59,10 +59,8 @@ export class PspSetupEntryComponent {
 
   ngOnInit(): void {
     this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if(res && res.status == 'success'){
-        this.isProfileFormSuccess = true;
+        this.isProfileFormSuccess = res?.isProfileFormSuccess;
         console.log("res", res)
-      }
     })
   }
 

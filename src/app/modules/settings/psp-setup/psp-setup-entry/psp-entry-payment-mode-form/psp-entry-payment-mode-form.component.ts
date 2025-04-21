@@ -12,6 +12,7 @@ import { PspSetupService } from 'app/services/psp-setup.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { WalletService } from 'app/services/wallet.service';
 import { takeUntil, Subject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-psp-entry-payment-mode-form',
@@ -50,17 +51,24 @@ export class PspEntryPaymentModeFormComponent {
     private pspSetupService: PspSetupService,
     private toasterService: ToasterService,
     private walletService: WalletService,
+    private activatedRoute: ActivatedRoute,
   ) { }
 
 
   ngOnInit(): void {
 
+    this.activatedRoute.queryParams.subscribe((params:any) => {
+       this.profileId = params['id'];
+       if(this.profileId){
+         this.getProfileById(this.profileId)
+       }
+    })
+
     this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if(res && res.key == 'add'){
         if (res && res.status == 'success' && res?.id) {
+          console.log("res?.id", res?.id)
           this.profileId = res?.id;
         }
-      } 
     })
 
     this.formGroup = this.builder.group({
@@ -86,6 +94,24 @@ export class PspEntryPaymentModeFormComponent {
       // 	this.pspList[i].id_by_value = this.pspList[i].provider;
       // }
     })
+  }
+
+  getProfileById(id:any){
+    this.isLoading = true;
+    this.pspSetupService.getAgentProfileFromId(id).subscribe({
+        next: (resp: any) => {
+          this.isLoading = false;
+          if (resp) {
+            console.log("resp", resp)
+            this.tableList = resp?.agents_list || [];
+            // this.toasterService.showToast('success', 'Profile name saved successfully');
+          }
+        },
+        error: (err) => {
+          this.toasterService.showToast('error', err)
+          this.isLoading = false;
+        },
+      });
   }
 
   submit() {

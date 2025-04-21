@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PspSetupService } from 'app/services/psp-setup.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { takeUntil, Subject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-psp-enty-profile-form',
@@ -26,29 +27,37 @@ export class PspEntyProfileFormComponent {
   formGroup: FormGroup;
   readonly: boolean = false;
   btnTitle: string = 'Save'
+  isQueryparams:boolean = false;
   isLoading: boolean = false;
-   private destroy$ = new Subject<void>();
-   record:any
-
+  isId:boolean = true;
+  private destroy$ = new Subject<void>();
+  record:any
 
   constructor(
     private builder: FormBuilder,
     private pspSetupService: PspSetupService,
-    private toasterService: ToasterService
-  ) { }
-
+    private toasterService: ToasterService,
+    private activatedRoute: ActivatedRoute,
+  ) {
+    this.formGroup = this.builder.group({
+      id: [''],
+      profile_name: ['', Validators.required],
+    });
+   }
 
   ngOnInit(): void {
-
+    this.activatedRoute.queryParams.subscribe((params:any) => {
+        if(params && params['id']){
+          this.isQueryparams = true;
+          this.formGroup.patchValue(params);
+        }
+    })
     // this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
     //     this.record = res;
     //     console.log("this.formGroup", this.formGroup)
     // })
 
-    this.formGroup = this.builder.group({
-      id: [''],
-      profile_name: ['', Validators.required],
-    });
+   
   }
 
   ngAfterViewInit(){
@@ -65,7 +74,10 @@ export class PspEntyProfileFormComponent {
         next: (resp: any) => {
           this.isLoading = false;
           if (resp) {
-            this.pspSetupService.managePgProfileSubject.next({ status: 'success', id: resp.id, key: 'add' });
+            if(!this.isQueryparams && this.isId){
+              this.pspSetupService.managePgProfileSubject.next({ status: 'success', id: resp.id, isProfileFormSuccess:true });
+              this.isId = false;
+            }
             this.toasterService.showToast('success', 'Profile name saved successfully');
           }
         },
