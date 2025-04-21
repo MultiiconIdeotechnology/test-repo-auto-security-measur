@@ -1,6 +1,6 @@
 import { Routes } from 'app/common/const';
 import { Component } from '@angular/core';
-import { RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,19 +48,30 @@ export class PspSetupEntryComponent {
   record: any = {};
   private destroy$ = new Subject<void>();
   isProfileFormSuccess:boolean = false;
-
+  profileId:any;
   formGroup: FormGroup;
 
   constructor(
     private builder: FormBuilder,
     private pspSetupService: PspSetupService,
-  ) { }
+    private activatedRoute: ActivatedRoute,
+  ) {
+    this.activatedRoute.queryParams.subscribe((params:any) => {
+       this.profileId = params['id'];
+      console.log(">>>", this.profileId)
+      if(this.profileId){
+        this.isProfileFormSuccess = true;
+      }
+   })
+   }
 
 
   ngOnInit(): void {
     this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      if(!this.profileId){
         this.isProfileFormSuccess = res?.isProfileFormSuccess;
-        console.log("res", res)
+      }
+        console.log("res >>>>", res)
     })
   }
 

@@ -24,6 +24,7 @@ import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.ser
 import { PspSetupSidebarComponent } from './psp-setup-sidebar/psp-setup-sidebar.component';
 import { Router } from '@angular/router';
 import { Routes } from 'app/common/const';
+import { BulkAssignDialogComponent } from './bulk-assign-dialog/bulk-assign-dialog.component';
 
 @Component({
   selector: 'app-psp-setup',
@@ -64,6 +65,7 @@ export class PspSetupComponent extends BaseListingComponent {
     private _userService: UserService,
     private sidenavService: SidebarCustomModalService,
     private router: Router,
+	private matDialog: MatDialog,
   ) {
     super(module_name.psp_setup);
     this.key = this.module_name;
@@ -113,18 +115,18 @@ export class PspSetupComponent extends BaseListingComponent {
   }
 
   createInternal(model): void {
-    this.pspSetupService.managePgProfileSubject.next({isProfileFormSuccess:false});
+    this.pspSetupService.managePgProfileSubject.next({ isProfileFormSuccess: false });
     this.router.navigate([Routes.settings.psp_setup_entry_route]);
   }
 
   editInternal(record): void {
-    this.pspSetupService.managePgProfileSubject.next({isProfileFormSuccess:true});
+    this.pspSetupService.managePgProfileSubject.next({ isProfileFormSuccess: true });
     this.pspSetupService.editPgProfileSubject.next(record);
     this.router.navigate(
-      [Routes.settings.psp_setup_entry_route], {queryParams:{id:record.id, profile_name:record?.profile_name}});
+      [Routes.settings.psp_setup_entry_route], { queryParams: { id: record.id, profile_name: record?.profile_name } });
   }
 
-  deleteInternal(record:any, index:any): void {
+  deleteInternal(record: any, index: any): void {
     console.log("index", index)
     const label: string = 'Delete PSP Profile';
     this.conformationService
@@ -142,27 +144,27 @@ export class PspSetupComponent extends BaseListingComponent {
         if (res === 'confirmed') {
 
           // const executeMethod = () => {
-            this.pspSetupService.delete(record.id).subscribe({
-              next: (res:any) => {
-                console.log("res>>>", res)
-                if(res && res['status']){
-                  this.toasterService.showToast(
-                    'success',
-                    'PSP Profile has been Deleted!',
-                    'top-right',
-                    true
-                  );
-                  this.dataList.splice(index, 1);
-                  this.dataList = [...this.dataList];
-                } else {
-                  console.log("Response status is false")
-                }
-              },
-              error: (err) => {
-                this.toasterService.showToast('error', err)
-                this.isLoading = false;
-              },
-            });
+          this.pspSetupService.delete(record.id).subscribe({
+            next: (res: any) => {
+              console.log("res>>>", res)
+              if (res && res['status']) {
+                this.toasterService.showToast(
+                  'success',
+                  'PSP Profile has been Deleted!',
+                  'top-right',
+                  true
+                );
+                this.dataList.splice(index, 1);
+                this.dataList = [...this.dataList];
+              } else {
+                console.log("Response status is false")
+              }
+            },
+            error: (err) => {
+              this.toasterService.showToast('error', err)
+              this.isLoading = false;
+            },
+          });
           // }
         }
       });
@@ -189,19 +191,19 @@ export class PspSetupComponent extends BaseListingComponent {
         if (res === 'confirmed') {
 
           // const executeMethod = () => {
-            this.pspSetupService.setDefaultStatus(record.id).subscribe({
-              next: () => {
-                this.refreshItems();
-                this.toasterService.showToast(
-                  'success',
-                  'PSP Profile Set as Default!'
-                );
-              },
-              error: (err) => {
-                this.toasterService.showToast('error', err)
-                this.isLoading = false;
-              },
-            });
+          this.pspSetupService.setDefaultStatus(record.id).subscribe({
+            next: () => {
+              this.refreshItems();
+              this.toasterService.showToast(
+                'success',
+                'PSP Profile Set as Default!'
+              );
+            },
+            error: (err) => {
+              this.toasterService.showToast('error', err)
+              this.isLoading = false;
+            },
+          });
           // }
 
         }
@@ -209,51 +211,55 @@ export class PspSetupComponent extends BaseListingComponent {
   }
 
   EnableDisable(record): void {
-          // if (!Security.hasPermission(inventoryVisaPermissions.enableDisablePermissions)) {
-          //     return this.alertService.showToast('error', messages.permissionDenied);
-          // }
-  
-          const label: string = record.is_enabled ? 'Disable' : 'Enable';
-          this.conformationService
-              .open({
-                  title: label,
-                  message:
-                      'Are you sure to ' +
-                      label.toLowerCase() +
-                      ' ' +
-                      record.profile_name +
-                      ' ?',
-              })
-              .afterClosed()
-              .subscribe((res) => {
-                  if (res === 'confirmed') {
-                      this.pspSetupService
-                          .setEnableStatus(record.id)
-                          .subscribe({
-                              next: () => {
-                                  record.is_enabled = !record.is_enabled;
-                                  if (record.is_enabled) {
-                                      this.alertService.showToast(
-                                          'success',
-                                          'PSP Profile has been Enabled!',
-                                          'top-right',
-                                          true
-                                      );
-                                  } else {
-                                      this.alertService.showToast(
-                                          'success',
-                                          'PSP Profile has been Disabled!',
-                                          'top-right',
-                                          true
-                                      );
-                                  }
-                              }, error: (err) => {
-                                  this.alertService.showToast('error', err);
-                              }
-                          });
-                  }
-              });
-      }
+    // if (!Security.hasPermission(inventoryVisaPermissions.enableDisablePermissions)) {
+    //     return this.alertService.showToast('error', messages.permissionDenied);
+    // }
+
+    const label: string = record.is_enabled ? 'Disable' : 'Enable';
+    this.conformationService
+      .open({
+        title: label,
+        message:
+          'Are you sure to ' +
+          label.toLowerCase() +
+          ' ' +
+          record.profile_name +
+          ' ?',
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res === 'confirmed') {
+          this.pspSetupService
+            .setEnableStatus(record.id)
+            .subscribe({
+              next: () => {
+                record.is_enabled = !record.is_enabled;
+                if (record.is_enabled) {
+                  this.alertService.showToast(
+                    'success',
+                    'PSP Profile has been Enabled!',
+                    'top-right',
+                    true
+                  );
+                } else {
+                  this.alertService.showToast(
+                    'success',
+                    'PSP Profile has been Disabled!',
+                    'top-right',
+                    true
+                  );
+                }
+              }, error: (err) => {
+                this.alertService.showToast('error', err);
+              }
+            });
+        }
+      });
+  }
+
+  bulkAssign() {
+	this.matDialog.open(BulkAssignDialogComponent, {data:null, disableClose:true})
+  }
 
   onAgentAssigned(id: any) {
     this.sidenavService.openModal('Agents', id)
