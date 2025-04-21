@@ -24,8 +24,13 @@ export class PspSetupService {
   }
 
   getAgentProfileFromId(id:string){
+    return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/pgProfileAgents', {id: id});
+  }
+
+  getPgProfileFromId(id:string){
     return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/pgProfile', {id: id});
   }
+  
 
   managePgProfile(model:any){
     return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/managePGProfile', model);
