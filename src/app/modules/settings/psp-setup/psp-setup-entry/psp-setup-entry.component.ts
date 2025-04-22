@@ -101,7 +101,7 @@ export class PspSetupEntryComponent {
             id:resp?.id,
             profile_name:resp?.profile_name
           })
-          this.toasterService.showToast('success', 'Profile name saved successfully');
+          // this.toasterService.showToast('success', 'Profile name saved successfully');
         }
       },
       error: (err) => {
