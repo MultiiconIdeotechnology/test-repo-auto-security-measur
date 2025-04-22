@@ -11,7 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { PspSetupService } from 'app/services/psp-setup.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { WalletService } from 'app/services/wallet.service';
-import { takeUntil, Subject } from 'rxjs';
+import { takeUntil, Subject, ReplaySubject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -39,53 +39,62 @@ export class PspEntryPaymentModeFormComponent {
   disableBtn: boolean = false
   formGroup: FormGroup;
   readonly: boolean = false;
-  pgList: any[] = ["PG", "Credit Card", "Debit Card", "UPI", "Net Banking", "Internation Card"];
+  modeList: any[] = ["PG", "Credit Card", "Debit Card", "UPI", "Net Banking", "Internation Card"];
   pspList: any[] = [];
   pgFilter: FormControl = new FormControl('');
+  modeFilter: FormControl = new FormControl('');
   tableList: any = [];
   sortColumn: string = "";
   istableDataLoading: boolean = false;
   isLoading: boolean = false;
   private destroy$ = new Subject<void>();
-  profileId: any
+  profileId: any;
+  filteredPspList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+  filteredModeList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+
+  
 
   constructor(
     private builder: FormBuilder,
     private pspSetupService: PspSetupService,
     private toasterService: ToasterService,
-    private walletService: WalletService,
     private activatedRoute: ActivatedRoute,
     private conformationService: FuseConfirmationService,
-  ) { }
+  ) {
+    this.filteredModeList.next(this.modeList.slice());
+   }
 
 
   ngOnInit(): void {
 
-    this.activatedRoute.queryParams.subscribe((params: any) => {
-      this.profileId = params['id'];
-      console.log(">>>", this.profileId)
-      if (this.profileId) {
-         this.getPgProfileById(this.profileId)
-      }
-    })
+    // this.activatedRoute.queryParams.subscribe((params: any) => {
+    //   this.profileId = params['id'];
+    //   console.log(">>>", this.profileId)
+    //   if (this.profileId) {
+    //      this.getPgProfileById(this.profileId)
+    //   }
+    // })
 
-    this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (res && res.status == 'success' && res?.id) {
-        console.log("res?.id", res?.id)
-        this.profileId = res?.id;
-      }
-    })
+    // this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    //   if (res && res.status == 'success' && res?.id) {
+    //     console.log("res?.id", res?.id)
+    //     this.profileId = res?.id;
+    //   }
+    // })
+
 
     this.formGroup = this.builder.group({
       id: [''],
       profile_id: [''],
-      psp_name:[''],
+      psp_name: [''],
       psp_id: ['', Validators.required],
       mode: ['', Validators.required],
       description: ['', Validators.required],
     });
 
     this.getPSPList('');
+    this.onPspFilter();
+    this.onModeFilter();
   }
 
   public compareWith(v1: any, v2: any) {
@@ -93,13 +102,43 @@ export class PspEntryPaymentModeFormComponent {
   }
 
   getPSPList(value: string) {
-    this.walletService.getPaymentGatewayCombo(value).subscribe((data) => {
+    this.pspSetupService.getPaymentGatewayListCached(value).subscribe((data) => {
       this.pspList = data;
 
-      // for (let i in this.pspList) {
-      // 	this.pspList[i].id_by_value = this.pspList[i].provider;
-      // }
+      // update filtered list as well
+      this.filteredPspList.next(this.pspList.slice());
     })
+  }
+
+  // filtering the PSP Dropdown list
+  onPspFilter() {
+    this.pgFilter.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(search => {
+        const filtered = this.pspList.filter(pg =>
+          pg.provider.toLowerCase().includes(search.toLowerCase())
+        );
+        this.filteredPspList.next(filtered);
+      });
+  }
+
+  onModeFilter() {
+    this.modeFilter.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(search => {
+        const filtered = this.modeList.filter(mode =>
+          mode.toLowerCase().includes(search.toLowerCase())
+        );
+        this.filteredModeList.next(filtered);
+      });
   }
 
   getPgProfileById(id: any) {
@@ -123,51 +162,51 @@ export class PspEntryPaymentModeFormComponent {
   edit(record: any) {
     // this.formGroup.get('id').patchValue(record.id);
     console.log("record>>>", record)
-    if(record){
+    if (record) {
       this.formGroup.patchValue(record);
-      this.formGroup.get('psp_id').patchValue({id:record.psp_id, provider:record.psp_name})
+      this.formGroup.get('psp_id').patchValue({ id: record.psp_id, provider: record.psp_name })
     }
   }
 
-  deleteRow(record:any, index:number){
-      console.log("index", index)
-      const label: string = 'Delete PSP Settings';
-      this.conformationService.open({
-          title: label,
-          message:`Are you sure you want to delete PG Settings?`
-        })
-        .afterClosed()
-        .subscribe((res) => {
-          if (res === 'confirmed') {
-  
-            // const executeMethod = () => {
-            this.pspSetupService.deletePgSettings(record.id).subscribe({
-              next: (res: any) => {
-                console.log("res>>>", res)
-                if (res && res['status']) {
-                  this.toasterService.showToast(
-                    'success',
-                    'PSP Setting has been Deleted!',
-                    'top-right',
-                    true
-                  );
-                  this.tableList.splice(index, 1);
-                  this.tableList = [...this.tableList];
-                } else {
-                  console.log("Response status is false")
-                }
-              },
-              error: (err) => {
-                this.toasterService.showToast('error', err)
-                this.isLoading = false;
-              },
-            });
-            // }
-          }
-        });
+  deleteRow(record: any, index: number) {
+    console.log("index", index)
+    const label: string = 'Delete PSP Settings';
+    this.conformationService.open({
+      title: label,
+      message: `Are you sure you want to delete PG Settings?`
+    })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res === 'confirmed') {
+
+          // const executeMethod = () => {
+          this.pspSetupService.deletePgSettings(record.id).subscribe({
+            next: (res: any) => {
+              console.log("res>>>", res)
+              if (res && res['status']) {
+                this.toasterService.showToast(
+                  'success',
+                  'PSP Setting has been Deleted!',
+                  'top-right',
+                  true
+                );
+                this.tableList.splice(index, 1);
+                this.tableList = [...this.tableList];
+              } else {
+                console.log("Response status is false")
+              }
+            },
+            error: (err) => {
+              this.toasterService.showToast('error', err)
+              this.isLoading = false;
+            },
+          });
+          // }
+        }
+      });
   }
 
-  submit(formDirective:FormGroupDirective) {
+  submit(formDirective: FormGroupDirective) {
     this.isLoading = true;
     let pspObj = this.formGroup.get('psp_id')?.value;
     let tableObj = this.formGroup.value;

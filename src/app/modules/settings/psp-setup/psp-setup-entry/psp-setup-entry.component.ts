@@ -1,6 +1,6 @@
 import { Routes } from 'app/common/const';
-import { Component } from '@angular/core';
-import { ActivatedRoute, RouterLink, RouterModule } from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,8 @@ import { PspEntryPaymentModeFormComponent } from './psp-entry-payment-mode-form/
 import { PspSetupService } from 'app/services/psp-setup.service';
 import { takeUntil, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { ToasterService } from 'app/services/toaster.service';
+import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 
 @Component({
   selector: 'app-psp-setup-entry',
@@ -42,19 +44,25 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./psp-setup-entry.component.scss']
 })
 export class PspSetupEntryComponent {
+  @ViewChild('pspEntryProfile') pspEntryProfileComponent!: PspEntyProfileFormComponent;
+  @ViewChild('pspEntryPaymentMode') pspEntryPaymentModeComponent!: PspEntryPaymentModeFormComponent;
+
   disableBtn: boolean = false
   readonly: boolean = false;
   pspSetupRoute = Routes.settings.psp_setup_route;
   record: any = {};
   private destroy$ = new Subject<void>();
   isProfileFormSuccess:boolean = false;
+  profileFormData:any;
   profileId:any;
   formGroup: FormGroup;
 
   constructor(
-    private builder: FormBuilder,
     private pspSetupService: PspSetupService,
     private activatedRoute: ActivatedRoute,
+    private toasterService:ToasterService,
+    private router: Router,
+    private modalService: SidebarCustomModalService,
   ) {
     this.activatedRoute.queryParams.subscribe((params:any) => {
        this.profileId = params['id'];
@@ -67,12 +75,44 @@ export class PspSetupEntryComponent {
 
 
   ngOnInit(): void {
+    // -- get the localStorage data if the psp-entry-profile-form saved to reflect changes.
     this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if(!this.profileId){
-        this.isProfileFormSuccess = res?.isProfileFormSuccess;
+      if(res){
+        this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
       }
-        console.log("res >>>>", res)
     })
+
+    // check if the localStorage has profileFormData
+    this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
+    if(this.profileFormData && this.profileFormData?.id){
+      this.getPgProfileById(this.profileFormData?.id);
+    }
+
+    
+  }
+
+  getPgProfileById(id: any) {
+    this.pspSetupService.getPgProfileFromId(id).subscribe({
+      next: (resp: any) => {
+        if (resp) {
+          console.log("getprofilebyid", resp)
+          this.pspEntryPaymentModeComponent.tableList = resp?.payment_getway_settings || [];
+          this.pspEntryProfileComponent.formGroup.patchValue({
+            id:resp?.id,
+            profile_name:resp?.profile_name
+          })
+          this.toasterService.showToast('success', 'Profile name saved successfully');
+        }
+      },
+      error: (err) => {
+        this.toasterService.showToast('error', err)
+      },
+    });
+  }
+
+  onPspSetupRoute(){
+    this.modalService.closeModal();
+    this.router.navigate([this.pspSetupRoute])
   }
 
   ngOnDestroy() {

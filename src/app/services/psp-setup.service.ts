@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +12,10 @@ export class PspSetupService {
   managePgProfileSubject = new BehaviorSubject<any>("");
   managePgProfile$ = this.managePgProfileSubject.asObservable();
 
-  editPgProfileSubject = new BehaviorSubject<any>("");
-  editPgProfile$ = this.managePgProfileSubject.asObservable();
+  // editPgProfileSubject = new BehaviorSubject<any>("");
+  // editPgProfile$ = this.managePgProfileSubject.asObservable();
 
-
+  private pspListData: any = null;
 
   constructor(private http: HttpClient) { }
 
@@ -53,6 +53,20 @@ export class PspSetupService {
 
   deletePgSettings(id: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/deletePGSettings', {id: id});
+  }
+
+  getPaymentGatewayCombo(filter: string): Observable<any[]> {
+    return this.http.post<any[]>(this.baseUrl + 'PaymentGateway/getPaymentGatewayCombo', { filter });
+  }
+
+  getPaymentGatewayListCached(filter:string): Observable<any> {
+    if (this.pspListData) {
+      return of(this.pspListData); // return cached
+    } else {
+      return this.http.post<any[]>(this.baseUrl + 'PaymentGateway/getPaymentGatewayCombo', { filter }).pipe(
+        tap((res) => this.pspListData = res)
+      );
+    }
   }
 
 

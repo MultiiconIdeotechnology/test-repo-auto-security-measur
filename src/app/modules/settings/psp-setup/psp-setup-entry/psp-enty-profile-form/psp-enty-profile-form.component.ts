@@ -31,7 +31,8 @@ export class PspEntyProfileFormComponent {
   isLoading: boolean = false;
   isId:boolean = true;
   private destroy$ = new Subject<void>();
-  record:any
+  record:any;
+  profileFormData:any;
 
   constructor(
     private builder: FormBuilder,
@@ -46,12 +47,20 @@ export class PspEntyProfileFormComponent {
    }
 
   ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe((params:any) => {
-        if(params && params['id']){
-          this.isQueryparams = true;
-          this.formGroup.patchValue(params);
-        }
-    })
+    // this.activatedRoute.queryParams.subscribe((params:any) => {
+    //     if(params && params['id']){
+    //       this.isQueryparams = true;
+
+    //       // this.formGroup.patchValue(params);
+    //     }
+    //   })
+      
+      let profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
+
+      if(profileFormData){
+        this.formGroup.patchValue(profileFormData)
+      }
+    
     // this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
     //     this.record = res;
     //     console.log("this.formGroup", this.formGroup)
@@ -68,9 +77,16 @@ export class PspEntyProfileFormComponent {
         next: (resp: any) => {
           this.isLoading = false;
           if (resp) {
-            if(!this.isQueryparams && this.isId){
-              this.pspSetupService.managePgProfileSubject.next({ status: 'success', id: resp.id, isProfileFormSuccess:true });
-              this.isId = false;
+            // if(!this.isQueryparams && this.isId){
+            //   this.pspSetupService.profileFormData.next({ status: 'success', id: resp.id, isProfileFormSuccess:true });
+            //   this.isId = false;
+            //   localStorage.setItem('pspSetupProfile', JSON.stringify(resp))
+            // }
+
+            this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
+            if(!(this.profileFormData && this.profileFormData?.id)){
+              localStorage.setItem('pspSetupProfile', JSON.stringify({id:resp.id, profile_name:this.formGroup.get('profile_name')?.value}))
+              this.pspSetupService.managePgProfileSubject.next(true);
             }
             this.toasterService.showToast('success', 'Profile name saved successfully');
           }
