@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormGroupDirective } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +14,7 @@ import { WalletService } from 'app/services/wallet.service';
 import { takeUntil, Subject } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
 
 @Component({
   selector: 'app-psp-entry-payment-mode-form',
@@ -54,6 +55,7 @@ export class PspEntryPaymentModeFormComponent {
     private toasterService: ToasterService,
     private walletService: WalletService,
     private activatedRoute: ActivatedRoute,
+    private conformationService: FuseConfirmationService,
   ) { }
 
 
@@ -63,7 +65,7 @@ export class PspEntryPaymentModeFormComponent {
       this.profileId = params['id'];
       console.log(">>>", this.profileId)
       if (this.profileId) {
-        //  this.getProfileById(this.profileId)
+         this.getPgProfileById(this.profileId)
       }
     })
 
@@ -77,6 +79,7 @@ export class PspEntryPaymentModeFormComponent {
     this.formGroup = this.builder.group({
       id: [''],
       profile_id: [''],
+      psp_name:[''],
       psp_id: ['', Validators.required],
       mode: ['', Validators.required],
       description: ['', Validators.required],
@@ -99,14 +102,14 @@ export class PspEntryPaymentModeFormComponent {
     })
   }
 
-  getProfileById(id: any) {
+  getPgProfileById(id: any) {
     this.isLoading = true;
-    this.pspSetupService.getAgentProfileFromId(id).subscribe({
+    this.pspSetupService.getPgProfileFromId(id).subscribe({
       next: (resp: any) => {
         this.isLoading = false;
         if (resp) {
           console.log("getprofilebyid", resp)
-          this.tableList = resp?.agents_list || [];
+          this.tableList = resp?.payment_getway_settings || [];
           // this.toasterService.showToast('success', 'Profile name saved successfully');
         }
       },
@@ -118,14 +121,62 @@ export class PspEntryPaymentModeFormComponent {
   }
 
   edit(record: any) {
-    this.formGroup.get('id').patchValue(record.id);
+    // this.formGroup.get('id').patchValue(record.id);
+    console.log("record>>>", record)
+    if(record){
+      this.formGroup.patchValue(record);
+      this.formGroup.get('psp_id').patchValue({id:record.psp_id, provider:record.psp_name})
+    }
   }
 
-  submit() {
-    this.isLoading = true;
-    let payload = this.formGroup.value;
-    payload.profile_id = this.profileId;
+  deleteRow(record:any, index:number){
+      console.log("index", index)
+      const label: string = 'Delete PSP Settings';
+      this.conformationService.open({
+          title: label,
+          message:`Are you sure you want to delete PG Settings?`
+        })
+        .afterClosed()
+        .subscribe((res) => {
+          if (res === 'confirmed') {
+  
+            // const executeMethod = () => {
+            this.pspSetupService.deletePgSettings(record.id).subscribe({
+              next: (res: any) => {
+                console.log("res>>>", res)
+                if (res && res['status']) {
+                  this.toasterService.showToast(
+                    'success',
+                    'PSP Setting has been Deleted!',
+                    'top-right',
+                    true
+                  );
+                  this.tableList.splice(index, 1);
+                  this.tableList = [...this.tableList];
+                } else {
+                  console.log("Response status is false")
+                }
+              },
+              error: (err) => {
+                this.toasterService.showToast('error', err)
+                this.isLoading = false;
+              },
+            });
+            // }
+          }
+        });
+  }
 
+  submit(formDirective:FormGroupDirective) {
+    this.isLoading = true;
+    let pspObj = this.formGroup.get('psp_id')?.value;
+    let tableObj = this.formGroup.value;
+    let payload = this.formGroup.value;
+    payload.psp_id = payload.psp_id?.id;
+    payload.profile_id = this.profileId;
+    tableObj.psp_name = pspObj?.provider;
+
+    console.log("payload", payload)
     this.pspSetupService
       .managePGSettings(payload)
       .subscribe({
@@ -133,14 +184,19 @@ export class PspEntryPaymentModeFormComponent {
           if (payload?.id) {
             this.tableList.forEach((item: any, index: any) => {
               if (item.id == resp.id) {
-                this.tableList[index] = resp;
+                console.log("tableObj", tableObj)
+                this.tableList[index] = tableObj;
                 this.toasterService.showToast('success', 'Profile name updated successfully');
+                formDirective.resetForm();
               }
             })
 
           } else {
-            this.tableList.push(this.formGroup.value)
+            this.formGroup.get('id').patchValue(resp.id);
+            tableObj.id = resp.id;
+            this.tableList.push(tableObj)
             this.toasterService.showToast('success', 'Profile name saved successfully');
+            formDirective.resetForm();
           }
           this.isLoading = false;
         },

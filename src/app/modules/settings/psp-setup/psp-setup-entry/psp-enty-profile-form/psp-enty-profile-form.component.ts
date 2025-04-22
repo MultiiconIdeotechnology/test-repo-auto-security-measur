@@ -60,12 +60,6 @@ export class PspEntyProfileFormComponent {
    
   }
 
-  ngAfterViewInit(){
-    console.log(this.record)
-    if(this.record)
-    this.formGroup.patchValue(this.record)
-  }
-
   submit() {
     this.isLoading = true;
     this.pspSetupService

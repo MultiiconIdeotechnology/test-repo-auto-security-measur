@@ -1,4 +1,4 @@
-<form class=" p-8 pb-4  overflow-hidden" [formGroup]="formGroup">
+<form class=" p-8 pb-4  overflow-hidden" [formGroup]="formGroup" #formDirective="ngForm">
     <div class="flex items-center gap-2">
         <mat-form-field class="w-[20%]">
             <mat-label>Payment Gateway</mat-label>
@@ -8,7 +8,7 @@
                         noEntriesFoundLabel="'no matching payment gateway found'" [formControl]="pgFilter">
                     </ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let item of pspList" [value]="item.id">
+                <mat-option *ngFor="let item of pspList" [value]="item">
                     {{item.provider}}
                 </mat-option>
             </mat-select>
@@ -34,15 +34,15 @@
         </mat-form-field>
 
         <button class="ml-1 w-[6%]"  mat-stroked-button color="primary" *ngIf="!readonly" [disabled]="formGroup.invalid"
-            (click)="submit()">
-            Add
+            (click)="submit(formDirective)">
+            {{formGroup.get('id')?.value ? 'Save': 'Add'}}
         </button>
 
     </div>
 </form>
 
    <!----------------Table----------------->
-   <div class="table-container paginator-bottom  p-8 pb-4 ">
+   <div class="table-container paginator-bottom  p-8 pb-4 pt-2">
     <p-table #datatable [value]="tableList" [sortField]="sortColumn" [sortOrder]="-1"
         [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
         [loading]="istableDataLoading" styleClass="p-datatable-gridlines p-datatable-sm">
@@ -72,8 +72,8 @@
             </tr> -->
         </ng-template>
 
-        <ng-template pTemplate="body" let-element let-columns="columns">
-            <tr [ngClass]="!element.is_enabled ? 'opacity-38' : ''">
+        <ng-template pTemplate="body" let-element let-columns="columns" let-i="rowIndex">
+            <tr>
                 <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                     <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                         <mat-icon> more_vert </mat-icon>
@@ -84,19 +84,15 @@
                             <mat-icon class="mat-18">edit</mat-icon>
                             <span style="font-weight: 600">Edit</span>
                         </button>
-                        <button mat-menu-item (click)="delete(element)">
+                        <button mat-menu-item (click)="deleteRow(element, i)">
                             <mat-icon class="mat-18">delete</mat-icon>
                             <span style="font-weight: 600">Delete</span>
                         </button>
                     </mat-menu>
                 </td>
-                <td>
-                </td>
-                <td>
-                </td>
-                <td>
-                    
-                </td>
+                <td>{{element?.psp_name || "-"}}</td>
+                <td>{{element?.mode || "-"}}</td>
+                <td>{{element?.description || "-"}}</td>
             </tr>
         </ng-template>
 

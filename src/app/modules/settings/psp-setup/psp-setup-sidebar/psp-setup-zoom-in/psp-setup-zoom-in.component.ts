@@ -66,16 +66,13 @@ constructor(
  getAgentAssignedList(): void {
   console.log("this.agentId", this.agentId)
   this.isLoading = true;
-  this.pspSetupService
-    .getAgentProfileFromId(this.agentId)
-    .subscribe({
+  this.pspSetupService.getAgentProfileFromId(this.agentId).subscribe({
       next: (resp:any) => {
-        this.isLoading = false;
-        if(resp && resp.agents_list && resp.agents_list?.length){
-          this.agentAssignedList = resp?.agents_list;
-          this.originalAgentList = resp?.agents_list;
-        }
-        console.log("tghis.agentAssinged", resp.agents_list);
+          if(resp && resp.agents_list && resp.agents_list?.length){
+            this.agentAssignedList = resp?.agents_list;
+            this.originalAgentList = resp?.agents_list;
+          }
+          this.isLoading = false;
       },
       error: (err) => {
         this.toasterService.showToast('error', err)
