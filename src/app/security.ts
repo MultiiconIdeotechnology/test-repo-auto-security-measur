@@ -406,6 +406,7 @@ export const filter_module_name = {
     leads_rm_wise_leads: "leads_rm_wise_leads",
     report_sales_products: "report_sales_products",
     report_rm_wise_agents: "report_rm_wise_agents",
+    report_potential_lead: "report_potential_lead",
     airline_report: "airline_report",
     campaign_summary: "campaign_summary",
     report_sales_agent_summary: "report_sales_agent_summary",

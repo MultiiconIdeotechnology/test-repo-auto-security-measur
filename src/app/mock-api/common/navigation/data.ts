@@ -620,6 +620,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                                 pid: 'SALES-REPORTS_PARTNERREGISTER_VIEW',
                                 icon: '',
                                 link: Routes.reports.agent_summary_route
+                            },
+                            {
+                                id: 'reports.agentsummary',
+                                title: 'Potential Lead',
+                                type: 'basic',
+                                pid: 'SALES-REPORTS_REPORTPOTENTIALLEAD_VIEW',
+                                icon: '',
+                                link: Routes.reports.report_potential_lead_route
                             }
                             // {
                             //     id: 'reports.agentsummary',

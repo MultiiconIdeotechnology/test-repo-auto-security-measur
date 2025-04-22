@@ -57,17 +57,17 @@
                     alt="c">
             </button>
 
-            <!-- <button *ngIf="this.tabNameStr == 'Potential'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+            <button *ngIf="this.tabNameStr == 'Potential'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
                 matTooltip="Advanced Filter" [disabled]="isLoading"
                 (click)="isFilterShowPotential  = !isFilterShowPotential ">
                 <img *ngIf="!isFilterShowPotential" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
                 <img *ngIf="isFilterShowPotential " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
-            </button> -->
+            </button>
 
             <!------Common Filter------->
-            <button *ngIf="tabName !== 'Potential'" class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="openTabFiterDrawer()"
                 matTooltip="Saved Filter">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>

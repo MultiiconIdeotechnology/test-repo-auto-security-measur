@@ -36,6 +36,7 @@ import { DialAgentCallListComponent } from '../../dial-call-list/dial-call-list.
 import { ScheduleCallRemarkComponent } from '../../call-history/schedule-call-details/schedule-call-details.component';
 import { MarketingMaterialsComponent } from '../../marketing-materials/marketing-materials.component';
 import { UserService } from 'app/core/user/user.service';
+import { EmployeeService } from 'app/services/employee.service';
 
 @Component({
     selector: 'app-potential-lead',
@@ -100,6 +101,7 @@ export class PotentialLeadComponent extends BaseListingComponent {
     agentList: any[] = [];
     selectedAgent!: any
     user:any = {};
+    rmList:any = [];
 
     constructor(
         private crmService: CrmService,
@@ -108,7 +110,8 @@ export class PotentialLeadComponent extends BaseListingComponent {
         private conformationService: FuseConfirmationService,
         private router: Router,
         public _filterService: CommonFilterService,
-        private userService: UserService
+        private userService: UserService,
+        private employeeService: EmployeeService,
 
     ) {
         super(module_name.crmagent);
@@ -126,45 +129,28 @@ export class PotentialLeadComponent extends BaseListingComponent {
 
 
     ngOnInit(): void {
-        this.agentList = this._filterService.agentListByValue;
+        // this.agentList = this._filterService.agentListByValue;
+        // this.rmList = this._filterService.rmListByValue;
 
         // common filter
-        // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-        //     this.selectedAgent = resp['table_config']['agencyName']?.value;
-        //     if (this.selectedAgent && this.selectedAgent.id) {
-        //         const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        //         if (!match) {
-        //             this.agentList.push(this.selectedAgent);
-        //         }
-        //     }
-
-        //     this.primengTable['filters'] = resp['table_config'];
-        //     this.isFilterShowPotential = true;
-        //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-        //     this.primengTable._filter();
-        // });
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShowPotential = true;
+            this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
+            this.primengTable._filter();
+        });
     }
 
     ngAfterViewInit() {
         // Defult Active filter show
-        // if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        //     this.isFilterShowPotential = true;
-        //     this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
-        //     let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        //     setTimeout(() => {
-        //         this.selectedAgent = filterData['table_config']['agencyName']?.value;
-        //         if (this.selectedAgent && this.selectedAgent.id) {
-
-        //             const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        //             if (!match) {
-        //                 this.agentList.push(this.selectedAgent);
-        //             }
-        //         }
-        //     }, 1000);
-        //     this.primengTable['filters'] = filterData['table_config'];
-        //     // this.primengTable['_sortField'] = filterData['sortColumn'];
-        //     // this.sortColumn = filterData['sortColumn'];
-        // }
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowPotential = true;
+            this.isFilterShowPotentialChange.emit(this.isFilterShowPotential);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
     }
 
     // Api function to get the agent List
@@ -194,11 +180,11 @@ export class PotentialLeadComponent extends BaseListingComponent {
         }
 
         this.crmService.getPotentialLeadAgentList(filterReq).subscribe({
-            next: (data) => {
+            next: (resp:any) => {
                 this.isLoading = false;
-                let potentialLeadData = data?.dynamicList;
-                this.getPotentialList(potentialLeadData)
-                this.totalRecords = data?.total;
+                this.dataList = resp?.data;
+                // this.getPotentialList(potentialLeadData)
+                this.totalRecords = resp?.total;
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);
@@ -207,16 +193,16 @@ export class PotentialLeadComponent extends BaseListingComponent {
         });
     }
 
-    getPotentialList(dataResponse: any) {
-        this.dataList = [];
-        for (let data of dataResponse) {
-            if (data.value && Object.keys(data?.value)?.length) {
-                for (let el of data?.value) {
-                    this.dataList.unshift(el);
-                }
-            }
-        }
-    }
+    // getPotentialList(dataResponse: any) {
+    //     this.dataList = [];
+    //     for (let data of dataResponse) {
+    //         if (data.value && Object.keys(data?.value)?.length) {
+    //             for (let el of data?.value) {
+    //                 this.dataList.unshift(el);
+    //             }
+    //         }
+    //     }
+    // }
 
     getNodataText(): string {
         if (this.isLoading)

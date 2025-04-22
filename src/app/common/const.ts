@@ -442,6 +442,9 @@ export const Routes = {
 
         agent_summary_path: 'reports/partner-register',
         agent_summary_route: 'reports/partner-register',
+
+        report_potential_lead_path: 'reports/potential-lead',
+        report_potential_lead_route: 'reports/potential-lead',
     
         pg_refund_path: 'account/pg_refund',
         pg_refund_route: 'account/pg_refund',
