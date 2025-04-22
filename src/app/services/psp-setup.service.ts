@@ -69,6 +69,12 @@ export class PspSetupService {
     }
   }
 
+  assignPgProfile(model:any){
+    return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/assignPGProfile', model);
+  }
+
+  
+
 
 
 

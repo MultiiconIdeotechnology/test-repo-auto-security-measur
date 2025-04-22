@@ -1072,5 +1072,19 @@ div:where(.swal2-container) button:where(.swal2-close){
     max-height: 600px;
 }
 
+.zero-dialog {
+    overflow: auto;
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+}
+
+.md-dialog {
+    max-width: 1260px !important;
+    min-width: 600px !important; 
+}
+
   
 

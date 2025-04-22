@@ -51,6 +51,7 @@ export class PspEntryPaymentModeFormComponent {
   profileId: any;
   filteredPspList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filteredModeList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+  profileFormData:any;
 
   
 
@@ -81,6 +82,11 @@ export class PspEntryPaymentModeFormComponent {
     //     this.profileId = res?.id;
     //   }
     // })
+
+    this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
+    if(this.profileFormData && this.profileFormData?.id){
+      this.profileId = this.profileFormData?.id;
+    }
 
 
     this.formGroup = this.builder.group({

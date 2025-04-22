@@ -259,8 +259,14 @@ export class PspSetupComponent extends BaseListingComponent {
       });
   }
 
-  bulkAssign() {
-	this.matDialog.open(BulkAssignDialogComponent, {data:null, disableClose:true})
+  bulkAssign(record:any) {
+    	this.matDialog.open(BulkAssignDialogComponent, 
+        {
+          data:record,
+          disableClose:true,
+          panelClass:['zero-dialog', 'md-dialog']
+        }
+      )
   }
 
   onAgentAssigned(id: any) {

@@ -74,7 +74,7 @@ export class PspSetupEntryComponent {
    }
 
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     // -- get the localStorage data if the psp-entry-profile-form saved to reflect changes.
     this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if(res){
