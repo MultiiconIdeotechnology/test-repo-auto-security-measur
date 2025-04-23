@@ -262,7 +262,7 @@ export class PspSetupComponent extends BaseListingComponent {
   bulkAssign(record:any) {
     	this.matDialog.open(BulkAssignDialogComponent, 
         {
-          data:record,
+          data:{record:record, key:'bulk-assign', title:'Bulk Assign Profile'},
           disableClose:true,
           panelClass:['zero-dialog', 'md-dialog']
         }

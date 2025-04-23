@@ -44,6 +44,7 @@ import { ChangeEmailNumberComponent } from '../sub-agent/change-email-number/cha
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SetDisplayCurrencyComponent } from '../set-display-currency/set-display-currency.component';
+import { BulkAssignDialogComponent } from 'app/modules/settings/psp-setup/bulk-assign-dialog/bulk-assign-dialog.component';
 
 @Component({
     selector: 'app-agent-list',
@@ -894,6 +895,16 @@ export class AgentListComponent extends BaseListingComponent {
                 }
             });
     }
+
+    assignPspProfile(record:any) {
+            this.matDialog.open(BulkAssignDialogComponent, 
+            {
+              data:{record:record, key:'customer-agent', title: 'Profile Assign'},
+              disableClose:true,
+              panelClass:['zero-dialog', 'md-dialog']
+            }
+          )
+      }
 
     exportExcel(): void {
         if (!Security.hasExportDataPermission(this.module_name)) {
