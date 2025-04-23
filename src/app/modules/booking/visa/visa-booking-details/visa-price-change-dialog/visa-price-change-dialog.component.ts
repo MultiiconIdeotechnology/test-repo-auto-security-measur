@@ -42,13 +42,13 @@ export class VisaPriceChangeDialogComponent {
   ngOnInit(): void {
     this.formGroup = this.builder.group({
       id: [''],
-      base_fare: [0, Validators.required],
+      BaseFare: [0, Validators.required],
       markup: [0, Validators.required]
     })
 
     if(this.data){
       if(this.data?.basePrice){
-        this.formGroup.get('base_fare').patchValue(this.data.basePrice);
+        this.formGroup.get('BaseFare').patchValue(this.data.basePrice);
       }
 
       if(this.data?.markup){
@@ -58,21 +58,27 @@ export class VisaPriceChangeDialogComponent {
   }
 
   submit(){
+    if(this.formGroup.invalid){
+      this.toastr.showToast('error', 'Fill up required field');
+      return;
+    }
+
+
     this.conformationService.open({
       title: 'Price and Markup Change',
       message: `Are you sure you want to change Purchase price and Markup?`
   }).afterClosed().subscribe((res) => {
       if (res === 'confirmed') {
            let payload = this.formGroup.value;
-           payload.base_fare = parseFloat(payload.base_fare);
+           payload.BaseFare = parseFloat(payload.BaseFare);
            payload.markup = parseFloat(payload.markup);
            payload.id = this.data?.id;
            console.log("payload", payload)
           this.visaService.manageVisaRate(payload).subscribe({
               next: res => {
                   if (res && res['status']) {
-                      this.toastr.showToast('success', 'Purchase Price changed successfully!');
-                      this.matDialogRef.close();
+                      this.toastr.showToast('success', 'Visa Price change saved successfully!');
+                      this.matDialogRef.close(true);
                   }
               }, error: err => {
                   this.toastr.showToast('error', err)

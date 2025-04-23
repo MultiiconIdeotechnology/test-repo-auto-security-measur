@@ -10,7 +10,7 @@
     <form class="p-6 flex flex-col" [formGroup]="formGroup">
         <mat-form-field class="flex-grow">
             <mat-label>Base Fare</mat-label>
-            <input appOnlyFloat matInput type="text" formControlName="base_fare">
+            <input appOnlyFloat matInput type="text" formControlName="BaseFare">
           </mat-form-field>
 
           <mat-form-field class="flex-grow">
@@ -22,8 +22,8 @@
     <div class="flex items-center justify-end pt-4 sm:mt-0 pr-6 pb-4 space-x-3">
         <button mat-stroked-button (click)="matDialogRef.close()">Close</button>
 
-        <button *ngIf="data?.key !== 'bulk-assign'" mat-flat-button [color]="'primary'" (click)="submit()">
-            save
+        <button *ngIf="data?.key !== 'bulk-assign'" [disabled]="formGroup.invalid" mat-flat-button [color]="'primary'" (click)="submit()">
+            Save
         </button>
     </div>
 </div>

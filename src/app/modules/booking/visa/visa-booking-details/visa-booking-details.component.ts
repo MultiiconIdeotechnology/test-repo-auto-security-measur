@@ -430,7 +430,9 @@ export class VisaBookingDetailsComponent {
             })
             .afterClosed()
             .subscribe((res) => {
-                if (res) { }
+                if (res) { 
+                   this.getVisaBookingRecord(); 
+                }
             });
     }
 }
