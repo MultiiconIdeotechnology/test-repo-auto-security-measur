@@ -423,6 +423,7 @@ export class VisaBookingDetailsComponent {
             .open(VisaPriceChangeDialogComponent, {
                 data: null,
                 disableClose: true, 
+                panelClass:['zero-dialog', 'md-dialog']
             })
             .afterClosed()
             .subscribe((res) => {
