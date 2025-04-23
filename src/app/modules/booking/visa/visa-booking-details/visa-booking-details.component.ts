@@ -422,7 +422,7 @@ export class VisaBookingDetailsComponent {
         this.matDialog
             .open(VisaPriceChangeDialogComponent, {
                 data: null,
-                disableClose: true,
+                disableClose: true, 
             })
             .afterClosed()
             .subscribe((res) => {
