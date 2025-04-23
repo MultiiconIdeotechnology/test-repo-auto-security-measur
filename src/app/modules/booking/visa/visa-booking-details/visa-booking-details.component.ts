@@ -421,9 +421,9 @@ export class VisaBookingDetailsComponent {
         console.log("mainDataAll", this.mainDataAll)
         this.matDialog
             .open(VisaPriceChangeDialogComponent, {
-                data: null,
+                data: {...this.mainDataAll?.current_base_price, ...{id:this.Id} },
                 disableClose: true, 
-                panelClass:['zero-dialog', 'md-dialog']
+                panelClass:['zero-dialog', 'sm-dialog'],
             })
             .afterClosed()
             .subscribe((res) => {
