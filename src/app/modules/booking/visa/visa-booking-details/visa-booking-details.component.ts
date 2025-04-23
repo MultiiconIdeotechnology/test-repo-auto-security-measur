@@ -417,8 +417,11 @@ export class VisaBookingDetailsComponent {
         });
     }
 
-    priceChange() {
-        console.log("mainDataAll", this.mainDataAll)
+    managePrice() {
+        if (!Security.hasPermission(bookingsVisaPermissions.priceManagePermission)) {
+            return this.toastr.showToast('error', messages.permissionDenied);
+        }
+
         this.matDialog
             .open(VisaPriceChangeDialogComponent, {
                 data: {...this.mainDataAll?.current_base_price, ...{id:this.Id} },

@@ -64,11 +64,13 @@ export class VisaPriceChangeDialogComponent {
   }).afterClosed().subscribe((res) => {
       if (res === 'confirmed') {
            let payload = this.formGroup.value;
+           payload.base_fare = parseFloat(payload.base_fare);
+           payload.markup = parseFloat(payload.markup);
            payload.id = this.data?.id;
            console.log("payload", payload)
           this.visaService.manageVisaRate(payload).subscribe({
               next: res => {
-                  if (res) {
+                  if (res && res['status']) {
                       this.toastr.showToast('success', 'Purchase Price changed successfully!');
                       this.matDialogRef.close();
                   }
