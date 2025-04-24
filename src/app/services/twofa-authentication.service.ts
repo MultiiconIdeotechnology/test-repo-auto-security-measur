@@ -29,24 +29,24 @@ export class TwoFaAuthenticationService {
             is_selected: false,
             tfa_type: 'AuthApp'
         },
-        {
-            title: 'SMS/Text Message',
-            content: 'Get one-time codes sent to your phone via SMS to complete authentication requests.',
-            iconDark: 'assets/icons/messenger-dark.svg',
-            icon: 'messenger_outline',
-            is_enabled: false,
-            is_selected: false,
-            tfa_type: 'SMS'
-        },
-        {
-            title: 'WhatsApp Message',
-            content: 'Get one-time codes sent to your phone via WhatsApp to complete authentication requests.',
-            iconDark: 'assets/icons/whatsapp-dark.svg',
-            icon: 'whatsapp',
-            is_enabled: false,
-            is_selected: false,
-            tfa_type: 'Whatsapp'
-        },
+        // {
+        //     title: 'SMS/Text Message',
+        //     content: 'Get one-time codes sent to your phone via SMS to complete authentication requests.',
+        //     iconDark: 'assets/icons/messenger-dark.svg',
+        //     icon: 'messenger_outline',
+        //     is_enabled: false,
+        //     is_selected: false,
+        //     tfa_type: 'SMS'
+        // },
+        // {
+        //     title: 'WhatsApp Message',
+        //     content: 'Get one-time codes sent to your phone via WhatsApp to complete authentication requests.',
+        //     iconDark: 'assets/icons/whatsapp-dark.svg',
+        //     icon: 'whatsapp',
+        //     is_enabled: false,
+        //     is_selected: false,
+        //     tfa_type: 'Whatsapp'
+        // },
     ];
 
 
