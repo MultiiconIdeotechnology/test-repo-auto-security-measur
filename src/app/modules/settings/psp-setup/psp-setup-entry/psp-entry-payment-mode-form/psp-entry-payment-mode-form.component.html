@@ -2,7 +2,7 @@
     <div class="flex items-center gap-2">
         <mat-form-field class="w-[20%]">
             <mat-label>Payment Gateway</mat-label>
-            <mat-select formControlName="psp_id" required [compareWith]="compareWith">
+            <mat-select formControlName="psp_id" required [compareWith]="customCompareFn">
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search"
                         noEntriesFoundLabel="'no matching payment gateway found'" [formControl]="pgFilter">
@@ -16,7 +16,7 @@
 
         <mat-form-field class="w-[20%]">
             <mat-label>Mode</mat-label>
-            <mat-select formControlName="mode" required [compareWith]="compareWith">
+            <mat-select formControlName="mode" required>
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search"
                         noEntriesFoundLabel="'no matching payment gateway found'" [formControl]="modeFilter">

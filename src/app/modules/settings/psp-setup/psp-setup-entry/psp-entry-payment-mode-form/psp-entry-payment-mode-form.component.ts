@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormGroupDirective } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,7 +35,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
   styleUrls: ['./psp-entry-payment-mode-form.component.scss']
 })
 export class PspEntryPaymentModeFormComponent {
-
+  @ViewChild('formDirective') formDirective:FormGroupDirective;
   disableBtn: boolean = false
   formGroup: FormGroup;
   readonly: boolean = false;
@@ -170,6 +170,7 @@ export class PspEntryPaymentModeFormComponent {
     console.log("record>>>", record)
     if (record) {
       this.formGroup.patchValue(record);
+      this.formGroup.get('mode').patchValue(record.mode);
       this.formGroup.get('psp_id').patchValue({ id: record.psp_id, provider: record.psp_name })
     }
   }
@@ -198,6 +199,7 @@ export class PspEntryPaymentModeFormComponent {
                 );
                 this.tableList.splice(index, 1);
                 this.tableList = [...this.tableList];
+                this.formDirective.resetForm();
               } else {
                 console.log("Response status is false")
               }
@@ -251,6 +253,9 @@ export class PspEntryPaymentModeFormComponent {
         },
       });
   }
+
+  customCompareFn = (a: any, b: any) => a && b && a.id === b.id;
+
 
   ngOnDestroy() {
     this.destroy$.next();
