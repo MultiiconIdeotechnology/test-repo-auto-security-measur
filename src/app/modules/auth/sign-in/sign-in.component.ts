@@ -169,6 +169,7 @@ export class AuthSignInComponent implements OnInit {
                         if (res && res.authtype) {
                             this.isSignInShow = false; // need to do
                             this.is_auth_enabled = res.authtype;
+                            this._authService.setAuthEnabled(this.is_auth_enabled)
                             this.login_code = res.code;
                             this.json_data = json;
                         } else {
@@ -212,6 +213,7 @@ export class AuthSignInComponent implements OnInit {
                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
                 // Navigate to the redirect url
                 this._router.navigateByUrl(redirectURL);
+                console.log("extBody",  extBody.authtype)
 
                 // need to do
                 if (!extBody.authtype) {

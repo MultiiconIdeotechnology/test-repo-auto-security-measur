@@ -18,6 +18,7 @@ import { NgOtpInputModule } from 'ng-otp-input';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { UserService } from 'app/core/user/user.service';
 import { TwoFactorAuthComponent } from '../two-factor-auth/two-factor-auth.component';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
     selector: 'app-set-up-two-factor-auth',
@@ -59,6 +60,7 @@ export class SetUpTwoFactorAuthComponent {
         private sanitizer: DomSanitizer,
         private clipboard: Clipboard,
         private _userService: UserService,
+        private authService: AuthService,
     ) { }
 
     ngOnInit(): void {
@@ -148,6 +150,7 @@ export class SetUpTwoFactorAuthComponent {
                         }
 
                         this.twoFaAuthenticationService.isTfaEnabled = true;
+                        this.authService.setAuthEnabled(true);
                         this.disableBtn = false;
                         let message = mode == 'AuthApp' ? 'Two factor' : mode;
                         this.alertService.showToast('success', `${message} authentication successfull!`, 'top-right', true);
