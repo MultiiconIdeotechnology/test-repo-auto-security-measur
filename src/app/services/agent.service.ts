@@ -34,6 +34,10 @@ export class AgentService {
         return this.http.post<any>(this.baseUrl + 'Agent/getAgentList', model);
     }
 
+    getAgentListExport(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/getAgentListExport', model);
+    }
+
     getAgentDetailList(id: string): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Agent/getAgentEditList', { id: id });
     }

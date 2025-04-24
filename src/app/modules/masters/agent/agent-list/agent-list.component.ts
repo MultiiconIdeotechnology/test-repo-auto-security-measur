@@ -915,7 +915,7 @@ export class AgentListComponent extends BaseListingComponent {
             filterReq["relationmanagerId"] = this.user.id
         }
 
-        this.agentService.getAgentList(filterReq).subscribe(data => {
+        this.agentService.getAgentListExport(filterReq).subscribe(data => {
             for (var dt of data.data) {
                 // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
                 dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
