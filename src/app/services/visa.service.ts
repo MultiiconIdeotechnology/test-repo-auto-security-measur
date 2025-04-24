@@ -115,4 +115,8 @@ export class VisaService {
     visaamendmentRefund(id: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Visa/visaamendment', { id: id });
     }
+
+    manageVisaRate(model:any){
+        return this.http.post<any>(this.baseUrl + 'Visa/manageVisaRate', model);
+    }
 }

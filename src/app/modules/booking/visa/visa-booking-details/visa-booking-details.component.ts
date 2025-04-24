@@ -32,6 +32,7 @@ import { CommonUtils } from 'app/utils/commonutils';
 import { Linq } from 'app/utils/linq';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { MatRippleModule } from '@angular/material/core';
+import { VisaPriceChangeDialogComponent } from './visa-price-change-dialog/visa-price-change-dialog.component';
 
 @Component({
     selector: 'app-visa-booking-details',
@@ -170,42 +171,42 @@ export class VisaBookingDetailsComponent {
         });
     }
 
-    onVisaRejectRefund(){
-           if (!Security.hasPermission(bookingsVisaPermissions.refundPermission)) {
-              return this.toastr.showToast('error', messages.permissionDenied);
-            }
-        
-            this.conformationService.open({
-              title: 'Refund Visa Application.',
-              message: `Are you sure want to refund this visa application?`,
-              actions    : {
+    onVisaRejectRefund() {
+        if (!Security.hasPermission(bookingsVisaPermissions.refundPermission)) {
+            return this.toastr.showToast('error', messages.permissionDenied);
+        }
+
+        this.conformationService.open({
+            title: 'Refund Visa Application.',
+            message: `Are you sure want to refund this visa application?`,
+            actions: {
                 confirm: {
-                    show : true,
+                    show: true,
                     label: 'Yes, Refund',
                     color: 'primary',
                 },
-                cancel : {
-                    show : true,
+                cancel: {
+                    show: true,
                     label: 'Cancel',
                 },
             },
-            })
-              .afterClosed().subscribe((res) => {
+        })
+            .afterClosed().subscribe((res) => {
                 if (res === 'confirmed') {
                     this.visaService.visaamendmentRefund(this.Id).subscribe({
-                      next: (res) => {
-                        if(res && res['status']){
-                          this.toastr.showToast('success', 'Visa application refunded successfully');
-                          this.getVisaBookingRecord();
-                        }
-                      },
-                      error: (err) => {
-                        this.toastr.showToast('error', err, 'top-right', true);
-                      },
-        
+                        next: (res) => {
+                            if (res && res['status']) {
+                                this.toastr.showToast('success', 'Visa application refunded successfully');
+                                this.getVisaBookingRecord();
+                            }
+                        },
+                        error: (err) => {
+                            this.toastr.showToast('error', err, 'top-right', true);
+                        },
+
                     })
-                  }
-              })
+                }
+            })
     }
 
     refund() {
@@ -414,5 +415,24 @@ export class VisaBookingDetailsComponent {
                 })
             }
         });
+    }
+
+    managePrice() {
+        if (!Security.hasPermission(bookingsVisaPermissions.priceManagePermission)) {
+            return this.toastr.showToast('error', messages.permissionDenied);
+        }
+
+        this.matDialog
+            .open(VisaPriceChangeDialogComponent, {
+                data: {...this.mainDataAll?.current_base_price, ...{id:this.Id} },
+                disableClose: true, 
+                panelClass:['zero-dialog', 'sm-dialog'],
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res) { 
+                   this.getVisaBookingRecord(); 
+                }
+            });
     }
 }
