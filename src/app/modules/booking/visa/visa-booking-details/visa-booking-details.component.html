@@ -29,7 +29,7 @@
                                     mat-raised-button color="primary"
                                     (click)="onVisaRejectRefund()">Refund</button> -->
 
-                                 <button mat-raised-button color="primary"
+                                 <button *ngIf="!bookingDetail?.invoice_id" mat-raised-button color="primary"
                                     (click)="managePrice()">Manage Price</button>
 
                                 <div *ngIf="bookingDetail.invoice_id"
