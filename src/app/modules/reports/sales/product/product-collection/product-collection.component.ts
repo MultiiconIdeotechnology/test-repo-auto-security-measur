@@ -1,5 +1,5 @@
-import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { NgIf, DatePipe, CommonModule, NgClass } from '@angular/common';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -38,7 +38,6 @@ import { UserService } from 'app/core/user/user.service';
     templateUrl: './product-collection.component.html',
     imports: [
         NgIf,
-        NgFor,
         DatePipe,
         CommonModule,
         FormsModule,
@@ -50,26 +49,24 @@ import { UserService } from 'app/core/user/user.service';
         MatButtonModule,
         MatTooltipModule,
         NgClass,
-        RouterOutlet,
         MatProgressSpinnerModule,
         MatDatepickerModule,
         MatNativeDateModule,
         MatSelectModule,
         NgxMatSelectSearchModule,
         MatTabsModule,
-        ProductTabComponent,
         PrimeNgImportsModule
     ],
 })
 
 export class ProductCollectionComponent extends BaseListingComponent implements OnDestroy {
+    @Input() isFilterShow:boolean = false;
     module_name = module_name.products_collection;
     filter_table_name = filter_module_name.products_collection;
     private settingsUpdatedSubscription: Subscription;
     isLoading = false;
     dataList = [];
     totalsObj: any = {};
-    isFilterShow: boolean = false;
     selectedAgent: any;
     agentList: any[] = [];
     selectedRM: any;
@@ -113,6 +110,7 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
         // common filter
         this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            console.log("resp>>>", resp)
             this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agency_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -234,8 +232,10 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
 
     refreshItems(event?: any): void {
         this.isLoading = true;
+        console.log("event 2", event)
 
         let newModel = this.getNewFilterReq(event);
+        console.log("newModel", newModel)
 
         if (Security.hasPermission(poductCollectionPermissions.viewOnlyAssignedPermissions)) {
             newModel["relationmanagerId"] = this.user.id

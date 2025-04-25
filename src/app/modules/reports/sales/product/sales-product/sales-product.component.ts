@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Input } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +12,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { messages, module_name, Security, saleProductPermissions, filter_module_name } from 'app/security';
@@ -28,7 +27,6 @@ import { Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { ProductTabComponent } from '../product-tab/product-tab.component';
 
 @Component({
     selector: 'app-sales-product',
@@ -46,7 +44,7 @@ import { ProductTabComponent } from '../product-tab/product-tab.component';
         MatButtonModule,
         MatTooltipModule,
         NgClass,
-        RouterOutlet,
+        // RouterOutlet,
         MatProgressSpinnerModule,
         MatDatepickerModule,
         MatNativeDateModule,
@@ -55,12 +53,13 @@ import { ProductTabComponent } from '../product-tab/product-tab.component';
         MatTabsModule,
         PrimeNgImportsModule,
         DatePipe,
-        ProductTabComponent
+        // ProductTabComponent
     ],
     templateUrl: './sales-product.component.html',
     styleUrls: ['./sales-product.component.scss']
 })
 export class SalesProductComponent extends BaseListingComponent implements OnDestroy {
+    @Input() isFilterShow:boolean = false;
     dataList = [];
     total = 0;
     module_name = module_name.products;
@@ -73,7 +72,6 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     user: any = {};
     selectedToolTip: string = "";
     toolTipArray: any[] = [];
-    isFilterShow: boolean = false;
 
     constructor(
         private salesProductsService: SalesProductsService,

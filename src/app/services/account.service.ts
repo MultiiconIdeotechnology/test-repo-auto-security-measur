@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
+import { Observable,of } from 'rxjs';
+import { tap } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +11,9 @@ import { Observable } from 'rxjs';
 export class AccountService {
 
   private baseUrl = environment.apiUrl;
+  receiptDataList:any
+  isCollectionListLoaded:boolean = false;
+  isReceptionListLoaded:boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -37,7 +42,7 @@ export class AccountService {
   }
 
   getReceiptList(model: any): Observable<any> {
-    return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptList", model);
+      return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptList", model)
   }
   
   getCollectionList(model: any): Observable<any> {

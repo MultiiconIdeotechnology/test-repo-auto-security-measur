@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy,Input } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -44,7 +44,6 @@ import { UserService } from 'app/core/user/user.service';
     templateUrl: './product-receipts.component.html',
     imports: [
         NgIf,
-        NgFor,
         DatePipe,
         CommonModule,
         FormsModule,
@@ -56,19 +55,18 @@ import { UserService } from 'app/core/user/user.service';
         MatButtonModule,
         MatTooltipModule,
         NgClass,
-        RouterOutlet,
         MatProgressSpinnerModule,
         MatDatepickerModule,
         MatNativeDateModule,
         MatSelectModule,
         NgxMatSelectSearchModule,
         MatTabsModule,
-        ProductTabComponent,
         PrimeNgImportsModule
     ],
 })
 
 export class ProductReceiptsComponent extends BaseListingComponent implements OnDestroy {
+    @Input() isFilterShow:boolean = false;
     module_name = module_name.products_receipts;
     filter_table_name = filter_module_name.products_receipts;
     private settingsUpdatedSubscription: Subscription;
@@ -76,7 +74,6 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     dataList = [];
     total_amount: any = 0;
     total_actual_amount:any = 0;
-    isFilterShow: boolean = false;
     selectedAgent: any;
     agentList: any[] = [];
     selectedRM: any;
