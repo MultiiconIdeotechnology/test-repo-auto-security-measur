@@ -32,11 +32,11 @@ import { ReactiveFormsModule } from '@angular/forms';
     templateUrl: './product-tab.component.html'
 })
 export class ProductTabComponent extends BaseListingComponent {
-    // @ViewChild('productComponent') productComponent:SalesProductComponent;
-    // @ViewChild('collectionComponent') collectionComponent:ProductCollectionComponent;
-    // @ViewChild('receiptComponent') receiptComponent:ProductReceiptsComponent;
+    @ViewChild('productComponent') productComponent:SalesProductComponent;
+    @ViewChild('collectionComponent') collectionComponent:ProductCollectionComponent;
+    @ViewChild('receiptComponent') receiptComponent:ProductReceiptsComponent;
 
-    @ViewChildren('tabComp') tabComponents!:QueryList<any>
+    // @ViewChildren('tabComp') tabComponents!:QueryList<any>
 
     // @Input() activeTab: any;
     activeTab:any = 0;
@@ -76,24 +76,49 @@ export class ProductTabComponent extends BaseListingComponent {
     }
 
     onGlobalSearch(val:any){
-        this.tabComponents.toArray()[this.activeTab]?.searchInputControl.patchValue(val);
-        this.tabComponents.toArray()[this.activeTab]?.refreshItems();
+        if(this.activeTab == 0){
+            this.productComponent.searchInputControl.patchValue(val);
+            this.productComponent.refreshItems();
+        } else if (this.activeTab == 1){
+            this.collectionComponent.searchInputControl.patchValue(val);
+            this.collectionComponent.refreshItems();
+        } else if(this.activeTab == 2){
+            this.receiptComponent.searchInputControl.patchValue(val);
+            this.receiptComponent.refreshItems();
+        }
     }
 
     onRefreshData(){
-        this.tabComponents.toArray()[this.activeTab]?.refreshItems();
+        if(this.activeTab == 0){
+            this.productComponent.refreshItems();
+        } else if (this.activeTab == 1){
+            this.collectionComponent.refreshItems();
+        } else if(this.activeTab == 2){
+            this.receiptComponent.refreshItems();
+        }
     }
 
     onSaveFilter(){
-        let selectedPrimeNgTable = this.tabComponents.toArray()[this.activeTab]?.primengTable;
-        let selectedPrimeNgTable2 = this.tabComponents.toArray();
-
-        console.log('selectedPrimeNgTable', selectedPrimeNgTable2)
-        this._filterService.openDrawer(this.currentFilterModule, selectedPrimeNgTable);
+        
+        if(this.activeTab == 0){
+            this._filterService.openDrawer(this.currentFilterModule, this.productComponent.primengTable);;
+        } else if (this.activeTab == 1){
+            console.log("this.collectionComponent.primengTable", this.collectionComponent.primengTable)
+            this._filterService.openDrawer(this.currentFilterModule, this.collectionComponent.primengTable);;
+        } else if(this.activeTab == 2){
+            console.log("this.receiptComponent.primengTable", this.receiptComponent.primengTable)
+            this._filterService.openDrawer(this.currentFilterModule, this.receiptComponent.primengTable);;
+        }
     }
 
     exportExcel(){
-        this.tabComponents.toArray()[this.activeTab]?.exportExcel();
+        if(this.activeTab == 0){
+            this.productComponent.exportExcel();
+        } else if (this.activeTab == 1){
+            this.collectionComponent.exportExcel();
+        } else if(this.activeTab == 2){
+            this.receiptComponent.exportExcel();
+        }
     }
 
 }

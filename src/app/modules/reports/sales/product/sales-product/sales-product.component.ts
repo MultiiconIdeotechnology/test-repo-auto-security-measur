@@ -224,7 +224,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         else return 'No data to display';
     }
 
-    exportExcel(event): void {
+    exportExcel(): void {
         if (!Security.hasExportDataPermission(module_name.products)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
