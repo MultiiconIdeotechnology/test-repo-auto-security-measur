@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, of } from 'rxjs';
@@ -31,7 +31,7 @@ export class CrmService {
     getdeadLeadbyrm(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'leadmaster/getdeadLeadbyrm', model);
     }
-    
+
     startKycProces(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'AgentLead/startKYCProcess', model);
     }
@@ -69,7 +69,7 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/getProductPurchaseMasterList', model);
     }
 
-    getProductNameList(model:any): Observable<any> {
+    getProductNameList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/GetProductCombo', model);
     }
 
@@ -78,7 +78,7 @@ export class CrmService {
     }
 
     deletePurchaseProduct(id: string): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/delete', {id:id});
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseMaster/delete', { id: id });
     }
 
     expiryProduct(model: any): Observable<any> {
@@ -156,7 +156,7 @@ export class CrmService {
     startIntegration(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/startIntegration', model);
     }
-    
+
     googleClosedTesting(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/googleClosedTesting', model);
     }
@@ -188,6 +188,14 @@ export class CrmService {
 
     getWLSettingList(agentId: any): Observable<any> {
         return this.http.get<any>(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?agent_id=${agentId}`);
+    }
+
+    getWLSettingListTwoParams(agentId: any, item_name: any) {
+        const params = new HttpParams()
+            .set('agent_id', agentId)
+            .set('item_name', item_name);
+
+        return this.http.get(`${this.baseUrl}Dashboard/TecDashboard/GetWlSetting?${params}`);
     }
 
     updateStatus(model: any): Observable<any> {
