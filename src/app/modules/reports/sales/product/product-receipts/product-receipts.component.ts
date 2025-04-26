@@ -116,6 +116,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         // common filter
         this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            console.log("resp in recirpt filter", resp)
             this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {

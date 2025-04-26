@@ -67,11 +67,15 @@
         </mat-tab>
 
         <mat-tab label="Collection" [aria-label]="'Collection'">
-            <app-product-collection #collectionComponent *ngIf="isTabTwoLoaded" [hidden]="activeTab !== 1" [isFilterShow]="isFilterShow"></app-product-collection>
+            <app-product-collection #collectionComponent *ngIf="tabLoaded.isTabTwoLoaded" [hidden]="activeTab !== 1" [isFilterShow]="isFilterShow"></app-product-collection>
         </mat-tab>
 
         <mat-tab label="Receipts" [aria-label]="'Receipts'">
-            <app-product-receipts #receiptComponent *ngIf="isTabThreeLoaded" [hidden]="activeTab !== 2" [isFilterShow]="isFilterShow"></app-product-receipts>
+            <app-product-receipts #receiptComponent *ngIf="tabLoaded.isTabThreeLoaded" [hidden]="activeTab !== 2" [isFilterShow]="isFilterShow"></app-product-receipts>
+        </mat-tab>
+
+        <mat-tab label="Tech Service" [aria-label]="'Tech Service'">
+            <app-tech-service #techServiceComponent *ngIf="tabLoaded.isTabFourLoaded" [hidden]="activeTab !== 3" [isFilterShow]="isFilterShow"></app-tech-service>
         </mat-tab>
     </mat-tab-group>
 </div>

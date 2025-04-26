@@ -13,6 +13,7 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { module_name, Security, filter_module_name } from 'app/security';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TechServiceComponent } from '../tech-service/tech-service.component';
 
 @Component({
     selector: 'app-product-tab',
@@ -23,6 +24,7 @@ import { ReactiveFormsModule } from '@angular/forms';
         ProductReceiptsComponent,
         SalesProductComponent,
         ProductCollectionComponent,
+        TechServiceComponent,
         MatMenuModule,
         MatIconModule,
         MatButtonModule,
@@ -35,6 +37,8 @@ export class ProductTabComponent extends BaseListingComponent {
     @ViewChild('productComponent') productComponent:SalesProductComponent;
     @ViewChild('collectionComponent') collectionComponent:ProductCollectionComponent;
     @ViewChild('receiptComponent') receiptComponent:ProductReceiptsComponent;
+    @ViewChild('techServiceComponent') techServiceComponent:TechServiceComponent;
+
 
     // @ViewChildren('tabComp') tabComponents!:QueryList<any>
 
@@ -42,14 +46,19 @@ export class ProductTabComponent extends BaseListingComponent {
     activeTab:any = 0;
     isFilterShow:boolean = false;
     isLoading:boolean = false;
-    isTabOneLoaded:boolean = false;
-    isTabTwoLoaded:boolean = false;
-    isTabThreeLoaded:boolean = false;
+
+    tabLoaded:any = {
+        isTabOneLoaded : false,
+        isTabTwoLoaded : false,
+        isTabThreeLoaded : false,
+        isTabFourLoaded : false,
+    }
 
     moduleMap = [
         { module_name: 'products', filter_table_name: 'report_sales_products' },
         { module_name: 'products_collection', filter_table_name: 'products_collection' },
-        { module_name: 'products_receipts', filter_table_name: 'products_receipts' }
+        { module_name: 'products_receipts', filter_table_name: 'products_receipts' },
+        { module_name: 'products_tech_service', filter_table_name: 'products_tech_service' },
       ];
     
     currentModule:any = module_name[this.moduleMap[0].module_name];
@@ -69,10 +78,12 @@ export class ProductTabComponent extends BaseListingComponent {
         this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
         this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
         if(this.activeTab == 1){
-            this.isTabTwoLoaded = true;
+            this.tabLoaded.isTabTwoLoaded = true;
         } else if(this.activeTab == 2){
-            this.isTabThreeLoaded = true;
-        }
+            this.tabLoaded.isTabThreeLoaded = true;
+        } else if(this.activeTab == 3){
+            this.tabLoaded.isTabFourLoaded = true;
+        } 
     }
 
     onGlobalSearch(val:any){
@@ -85,6 +96,9 @@ export class ProductTabComponent extends BaseListingComponent {
         } else if(this.activeTab == 2){
             this.receiptComponent.searchInputControl.patchValue(val);
             this.receiptComponent.refreshItems();
+        } else if(this.activeTab == 3){
+            this.techServiceComponent.searchInputControl.patchValue(val);
+            this.techServiceComponent.refreshItems();
         }
     }
 
@@ -95,6 +109,8 @@ export class ProductTabComponent extends BaseListingComponent {
             this.collectionComponent.refreshItems();
         } else if(this.activeTab == 2){
             this.receiptComponent.refreshItems();
+        } else if(this.activeTab == 3){
+            this.techServiceComponent.refreshItems();
         }
     }
 
