@@ -256,10 +256,10 @@
                     <td></td>
                     <td></td>
                     <td class="text-right">
-                        {{totalsObj.totalInstallmentAmount}}
+                        {{totalsObj.totalInstallmentAmount ? ( totalsObj.totalInstallmentAmount.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
                     <td class="text-right">
-                        {{totalsObj.totalDueAmount}}
+                        {{totalsObj.totalDueAmount ? (totalsObj.totalDueAmount.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
                     <td></td>
                 </tr>

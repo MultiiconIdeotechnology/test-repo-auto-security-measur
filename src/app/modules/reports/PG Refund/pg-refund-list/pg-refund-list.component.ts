@@ -215,6 +215,8 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
         [
           { header: 'Ref. No.', property: 'refNo' },
           { header: 'Service', property: 'service' },
+          { header: 'Agent Code', property: 'agentCode' },
+          { header: 'Agent Name', property: 'agentName' },
           { header: 'PSP Name', property: 'pspName' },
           { header: 'PSP Ref. No.', property: 'pspRefNo' },
           { header: 'Type', property: 'type' },

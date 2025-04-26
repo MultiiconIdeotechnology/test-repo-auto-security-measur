@@ -21,6 +21,7 @@ import { InboxAgentComponent } from '../inbox/inbox-agent.component';
 import { PartnersComponent } from "../partners/partners.component";
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { PotentialLeadComponent } from './potential-lead/potential-lead.component';
 
 
 @Component({
@@ -47,13 +48,15 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         CommonModule,
         MatTabsModule,
         InboxAgentComponent,
-        PartnersComponent
+        PartnersComponent,
+        PotentialLeadComponent
     ]
 })
 
 export class CRMAgentListComponent implements OnDestroy {
     @ViewChild('inbox') inbox: InboxAgentComponent;
     @ViewChild('partners') partners: PartnersComponent;
+    @ViewChild('potentialLead') potential: PotentialLeadComponent;
 
     module_name = module_name.crmagent;
     filter_table_name = filter_module_name;
@@ -68,6 +71,7 @@ export class CRMAgentListComponent implements OnDestroy {
     searchInputControlInbox = new FormControl('');
     _unsubscribeAll: Subject<any> = new Subject<any>();
     searchInputControlpartners = new FormControl('');
+    searchInputControlpotential = new FormControl('');
 
     dataList = [];
     dataListpartners = [];
@@ -88,7 +92,13 @@ export class CRMAgentListComponent implements OnDestroy {
             return Security.hasPermission(crmLeadPermissions.agentInboxTabPermissions)
         }
         if (tab == 'partners')
-            return Security.hasPermission(crmLeadPermissions.partnersTabPermissions)
+            return Security.hasPermission(crmLeadPermissions.partnersTabPermissions);
+
+        if (tab == 'potential')
+            return Security.hasPermission(crmLeadPermissions.potentailTabPermissions)
+    }
+
+    ngAfterViewInit(){
     }
 
     public tabChanged(event: any): void {
@@ -109,6 +119,13 @@ export class CRMAgentListComponent implements OnDestroy {
                     this.isSecound = false
                 // }
                 break;
+
+            case 'Potential':
+                this.tab = 'potential';
+                // if (this.isSecound) {
+                    this.potential?.refreshItems()
+                // }
+                break;
         }
     }
 
@@ -117,14 +134,19 @@ export class CRMAgentListComponent implements OnDestroy {
             this._filterService.openDrawer(this.filter_table_name.agents_inbox, this.inbox.primengTable);
         } else if (this.tabNameStr == 'Partners') {
             this._filterService.openDrawer(this.filter_table_name.agents_partners, this.partners.primengTable);
+        } else if(this.tabName == 'Potential'){
+            this._filterService.openDrawer(this.filter_table_name.agents_potential_lead, this.potential.primengTable);
         }
     }
 
     refreshItemsTab(tabString: any): void {
-        if (tabString == 'Inbox')
+        if (tabString == 'Inbox'){
             this.inbox?.refreshItems();
-        else
+        } else if( tabString == 'Partners'){
             this.partners?.refreshItems();
+        } else if(tabString == 'Potential'){
+            this.potential?.refreshItems();
+        }
     }
 
     inboxRefresh(event) {
@@ -135,6 +157,11 @@ export class CRMAgentListComponent implements OnDestroy {
     partnersRefresh(event) {
         this.partners.searchInputControlpartners.patchValue(event)
         this.partners?.refreshItems();
+    }
+
+    potentialRefresh(event) {
+        this.potential.searchInputControlPotential.patchValue(event)
+        this.potential?.refreshItems();
     }
 
     ngOnDestroy(): void {

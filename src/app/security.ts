@@ -329,6 +329,7 @@ export const filter_module_name = {
     leads_archive: "leads_archive",
     agents_inbox: "agents_inbox",
     agents_partners: "agents_partners",
+    agents_potential_lead: "agents_potential_lead",
     collections_tech: "collections_tech",
     collections_travel: "collections_travel",
     tech_dashboard_pending: "tech_dashboard_pending",
@@ -404,6 +405,7 @@ export const filter_module_name = {
     leads_rm_wise_leads: "leads_rm_wise_leads",
     report_sales_products: "report_sales_products",
     report_rm_wise_agents: "report_rm_wise_agents",
+    report_potential_lead: "report_potential_lead",
     airline_report: "airline_report",
     campaign_summary: "campaign_summary",
     report_sales_agent_summary: "report_sales_agent_summary",
@@ -522,6 +524,7 @@ export const agentPermissions = {
     deleteProductPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Delete', category_name: category_name.operation },
     // techServicePermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Tech Service', category_name: category_name.operation },
     // techCallHistoryPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Timeline Call History', category_name: category_name.operation }
+    viewOnlyAssignedPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view }
 }
 
 export const partnerRegisterPermissions = {
@@ -620,6 +623,7 @@ export const crmLeadPermissions = {
     archiveTabPermissions: { module_name: module_name.lead, group_name: group_name.listingPage, operation_type: 'Archive Tab', category_name: category_name.view },
     agentInboxTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Inbox Tab', category_name: category_name.view },
     partnersTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Partners Tab', category_name: category_name.view },
+    potentailTabPermissions: { module_name: module_name.crmagent, group_name: group_name.listingPage, operation_type: 'Potential Tab', category_name: category_name.view },
     techCollectionTabPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Tech Collection', category_name: category_name.view },
     travelCollectionPermissions: { module_name: module_name.collections, group_name: group_name.listingPage, operation_type: 'Travel Collection', category_name: category_name.view }
 }
@@ -706,6 +710,7 @@ export const bookingsVisaPermissions = {
     viewDocumentsPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'View Documents', category_name: category_name.view },
     viewOnlyAssignedPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
     refundPermission: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Refund Visa', category_name: category_name.action },
+    priceManagePermission: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Manage Price', category_name: category_name.action },
 }
 
 export const bookingsInsurancePermissions = {

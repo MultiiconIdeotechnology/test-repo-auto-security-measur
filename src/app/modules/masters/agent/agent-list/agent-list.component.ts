@@ -122,6 +122,11 @@ export class AgentListComponent extends BaseListingComponent {
         { label: 'Dormant', value: 'Dormant' }
     ];
 
+    cashbackList = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false}
+    ]
+
     // blockList = [
     //     { label: 'All', value: 'All' },
     //     { label: 'Blocked', value: 'Blocked' },
@@ -910,7 +915,7 @@ export class AgentListComponent extends BaseListingComponent {
             filterReq["relationmanagerId"] = this.user.id
         }
 
-        this.agentService.getAgentList(filterReq).subscribe(data => {
+        this.agentService.getAgentListExport(filterReq).subscribe(data => {
             for (var dt of data.data) {
                 // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
                 dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
@@ -929,6 +934,7 @@ export class AgentListComponent extends BaseListingComponent {
                     { header: 'Email', property: 'email_address' },
                     { header: 'Mobile', property: 'mobile_number' },
                     { header: 'Currency', property: 'base_currency' },
+                    { header: 'Cashback', property: 'is_cashback_enable' },
                     { header: 'Signup', property: 'entry_date_time' },
                     { property: 'is_blocked', header: 'Blocked' },
                     { property: 'pan_number', header: 'PAN Number' },
