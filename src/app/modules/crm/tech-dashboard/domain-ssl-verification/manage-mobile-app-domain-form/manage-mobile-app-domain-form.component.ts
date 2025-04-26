@@ -99,8 +99,6 @@ export class ManageMobileAppDomainFormComponent {
   }
 
   onMobileAppDomainFormVerify() {
-    this.stepCompleted.emit(2);
-    return;
 
     if (this.formGroup.invalid) {
       this.alertService.showToast('error', 'Fill up required field to proceed');
@@ -117,7 +115,7 @@ export class ManageMobileAppDomainFormComponent {
     this.domainVarifyService.createDomain(payloadData).subscribe({
       next: (res) => {
         if (res) {
-            this.alertService.showToast('success', 'Domain Created Successfully');
+            this.alertService.showToast('success', 'Detail saved Successfully');
             this.stepCompleted.emit(2);
             this.domainVarifyService.createUpdateDomainSubject.next(res);
         }

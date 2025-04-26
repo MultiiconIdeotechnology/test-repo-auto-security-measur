@@ -34,7 +34,8 @@ export class ConsoleAccountFormComponent {
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() stepAllowed = new EventEmitter<number>();
   is_account_active:boolean = false;
-
+  androidLink:any = 'https://drive.google.com/file/d/1h_mtGMchG6QelEDspDWWpUUEa9h0jiR3/view?usp=drive_link';
+  iosLink:string = "";
   formGroup !:FormGroup
 
   constructor(
@@ -79,6 +80,16 @@ export class ConsoleAccountFormComponent {
 
   }
 
+  openMoreDetails(){
+    const itemName = this.data?.item_name?.toLowerCase();
+  
+    if (itemName?.includes('android')) {
+      window.open(this.androidLink, '_blank'); 
+    } else if (itemName?.includes('ios')){
+      window.open(this.iosLink, '_blank');
+    }
+  }
+
   onConsoleFormVerify() {
     if(this.formGroup.invalid || !this.is_account_active){
       this.alertService.showToast('error', 'Fill up required field to proceed');
@@ -93,14 +104,11 @@ export class ConsoleAccountFormComponent {
     payloadData.is_account_active = this.is_account_active;
 
     console.log("this.payloadData", payloadData);
-    this.stepCompleted.emit(1);
-return;
     this.domainVarifyService.androidIosConfig(payloadData).subscribe({
       next: (res) => {
         if (res) {
-            this.alertService.showToast('success', 'Domain Created Successfully');
+            this.alertService.showToast('success', 'Detail saved Successfully');
             this.stepCompleted.emit(1);
-            this.stepAllowed.emit(2);
         }
 
       }, error: err => this.alertService.showToast('error', err)

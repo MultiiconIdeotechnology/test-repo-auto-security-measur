@@ -48,7 +48,6 @@ export class VerifySslComponent {
   }
 
   ngOnInit() {
-    console.log("data1234", this.data)
   }
 
   isSslPointing() {
