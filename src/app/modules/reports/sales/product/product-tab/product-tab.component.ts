@@ -86,7 +86,9 @@ export class ProductTabComponent extends BaseListingComponent {
 
     onSaveFilter(){
         let selectedPrimeNgTable = this.tabComponents.toArray()[this.activeTab]?.primengTable;
-        console.log('selectedPrimeNgTable', selectedPrimeNgTable)
+        let selectedPrimeNgTable2 = this.tabComponents.toArray();
+
+        console.log('selectedPrimeNgTable', selectedPrimeNgTable2)
         this._filterService.openDrawer(this.currentFilterModule, selectedPrimeNgTable);
     }
 
