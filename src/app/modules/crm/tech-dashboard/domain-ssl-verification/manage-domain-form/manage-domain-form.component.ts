@@ -43,7 +43,6 @@ export class ManageDomainFormComponent {
     }
   
     ngOnChanges(){
-      console.log("wlSettingData on ngOnchanges", this.wlSettingData);
     }
   
     ngOnInit():void {
@@ -84,7 +83,6 @@ export class ManageDomainFormComponent {
       payloadData.agent_id = this.data?.agentid;
       payloadData.product_id = this.data?.subid;
   
-      console.log("this.payloadData", payloadData);
       this.domainVarifyService.createDomain(payloadData).subscribe({
         next: (res) => {
           if (res) {
