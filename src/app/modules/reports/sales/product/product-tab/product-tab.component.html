@@ -8,12 +8,6 @@
         </div>
         <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
             <span class="text-3xl">Product</span>
-            <span class="hidden max-sm:flex">
-                <!-- <button class="ml-4" mat-flat-button style="background-color: #5046E5;" (click)="create()">
-             <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-             <span class="ml-2 mr-1">Add</span>
-         </button> -->
-            </span>
         </div>
 
         <!-- Actions -->
@@ -61,21 +55,32 @@
 
     <mat-tab-group #matTabGroup class="custom-tab wlt_tab" [animationDuration]="'0'" [selectedIndex]="activeTab"
         (selectedTabChange)="tabChanged($event)">
-        <!-- *ngIf="getTabsPermission('pending')" -->
         <mat-tab label="Products" [aria-label]="'Products'">
             <app-sales-product #productComponent [hidden]="activeTab !== 0" [isFilterShow]="isFilterShow"></app-sales-product>
         </mat-tab>
 
         <mat-tab label="Collection" [aria-label]="'Collection'">
-            <app-product-collection #collectionComponent *ngIf="tabLoaded.isTabTwoLoaded" [hidden]="activeTab !== 1" [isFilterShow]="isFilterShow"></app-product-collection>
+            <app-product-collection #collectionComponent *ngIf="tabLoaded.isTabTwoLoaded" 
+            [hidden]="activeTab !== 1"
+            [isFilterShow]="isFilterShow"
+            >
+            </app-product-collection>
         </mat-tab>
 
         <mat-tab label="Receipts" [aria-label]="'Receipts'">
-            <app-product-receipts #receiptComponent *ngIf="tabLoaded.isTabThreeLoaded" [hidden]="activeTab !== 2" [isFilterShow]="isFilterShow"></app-product-receipts>
+            <app-product-receipts #receiptComponent *ngIf="tabLoaded.isTabThreeLoaded" 
+            [hidden]="activeTab !== 2"
+            [isFilterShow]="isFilterShow"
+            >
+            </app-product-receipts>
         </mat-tab>
 
         <mat-tab label="Tech Service" [aria-label]="'Tech Service'">
-            <app-tech-service #techServiceComponent *ngIf="tabLoaded.isTabFourLoaded" [hidden]="activeTab !== 3" [isFilterShow]="isFilterShow"></app-tech-service>
+            <app-tech-service #techServiceComponent *ngIf="tabLoaded.isTabFourLoaded" 
+            [hidden]="activeTab !== 3"
+            [isFilterShow]="isFilterShow"
+            >
+            </app-tech-service>
         </mat-tab>
     </mat-tab-group>
 </div>

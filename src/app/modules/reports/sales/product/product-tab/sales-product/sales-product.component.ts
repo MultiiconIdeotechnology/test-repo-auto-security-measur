@@ -102,22 +102,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.employeeList = this._filterService.rmListByValue;
 
         // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
-
-            this.selectedRM = resp['table_config']['rm']?.value;
-            // this.sortColumn = resp['sortColumn'];
-            // this.primengTable['_sortField'] = resp['sortColumn'];
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShow = true;
-            this.primengTable._filter();
-        });
+        this.startSubscription();
     }
 
     ngAfterViewInit() {
@@ -273,5 +258,35 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
             });
             return newAgent;
         });
+    }
+
+    startSubscription() {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            this.selectedRM = resp['table_config']['rm']?.value;
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+     }
+
+    stopSubscription() {
+        if (this.settingsUpdatedSubscription) {
+          this.settingsUpdatedSubscription.unsubscribe();
+          this.settingsUpdatedSubscription = undefined;
+        }
+    }
+
+
+
+    ngOnDestroy(): void {
+        this.stopSubscription();
     }
 }

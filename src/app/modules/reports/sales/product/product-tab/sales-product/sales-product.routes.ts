@@ -3,7 +3,7 @@ import { AuthGuard } from "app/core/auth/guards/auth.guard";
 import { SalesProductComponent } from "./sales-product.component";
 import { ProductCollectionComponent } from "../product-collection/product-collection.component";
 import { ProductReceiptsComponent } from "../product-receipts/product-receipts.component";
-import { ProductTabComponent } from "../product-tab/product-tab.component";
+import { ProductTabComponent } from "../product-tab.component";
 
 export default [
     {

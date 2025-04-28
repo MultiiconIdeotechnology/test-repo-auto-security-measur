@@ -1,10 +1,10 @@
-import { Component, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
-import { ProductReceiptsComponent } from '../product-receipts/product-receipts.component';
-import { SalesProductComponent } from '../sales-product/sales-product.component';
-import { ProductCollectionComponent } from '../product-collection/product-collection.component';
+import { ProductReceiptsComponent } from './product-receipts/product-receipts.component';
+import { SalesProductComponent } from './sales-product/sales-product.component';
+import { ProductCollectionComponent } from './product-collection/product-collection.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,7 @@ import { BaseListingComponent } from 'app/form-models/base-listing';
 import { module_name, Security, filter_module_name } from 'app/security';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TechServiceComponent } from '../tech-service/tech-service.component';
+import { TechServiceComponent } from './tech-service/tech-service.component';
 
 @Component({
     selector: 'app-product-tab',
@@ -39,13 +39,10 @@ export class ProductTabComponent extends BaseListingComponent {
     @ViewChild('receiptComponent') receiptComponent:ProductReceiptsComponent;
     @ViewChild('techServiceComponent') techServiceComponent:TechServiceComponent;
 
-
-    // @ViewChildren('tabComp') tabComponents!:QueryList<any>
-
-    // @Input() activeTab: any;
     activeTab:any = 0;
     isFilterShow:boolean = false;
     isLoading:boolean = false;
+    subscriptionArr:any[] = [];
 
     tabLoaded:any = {
         isTabOneLoaded : false,
@@ -64,7 +61,7 @@ export class ProductTabComponent extends BaseListingComponent {
     currentModule:any = module_name[this.moduleMap[0].module_name];
     currentFilterModule:any = filter_module_name[this.moduleMap[0].filter_table_name];
       
-      constructor(
+    constructor(
           private router: Router,
           private _filterService:CommonFilterService,
         ) { 
@@ -73,8 +70,26 @@ export class ProductTabComponent extends BaseListingComponent {
 
     public tabChanged(event: any): void {
         this.activeTab = event?.index;
+
+        const components = [
+            this.productComponent,
+            this.collectionComponent,
+            this.receiptComponent,
+            this.techServiceComponent,
+        ];
+
+        // manage subscription for saved filter data on tab
+        components.forEach((comp, idx) => {
+            if (comp) {
+              if (idx === this.activeTab) {
+                comp.startSubscription();
+              } else {
+                comp.stopSubscription();
+              }
+            }
+          });
+
         this.isFilterShow = false;
-        console.log("this.activeTab", this.activeTab)
         this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
         this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
         if(this.activeTab == 1){
@@ -86,6 +101,7 @@ export class ProductTabComponent extends BaseListingComponent {
         } 
     }
 
+    // Global Filter on respective component 
     onGlobalSearch(val:any){
         if(this.activeTab == 0){
             this.productComponent.searchInputControl.patchValue(val);
@@ -102,6 +118,7 @@ export class ProductTabComponent extends BaseListingComponent {
         }
     }
 
+    // Refresh Data on respective component
     onRefreshData(){
         if(this.activeTab == 0){
             this.productComponent.refreshItems();
@@ -114,22 +131,21 @@ export class ProductTabComponent extends BaseListingComponent {
         }
     }
 
+    // saved filter on respective component
     onSaveFilter(){
         
         if(this.activeTab == 0){
             this._filterService.openDrawer(this.currentFilterModule, this.productComponent.primengTable);;
         } else if (this.activeTab == 1){
-            console.log("this.collectionComponent.primengTable", this.collectionComponent.primengTable)
             this._filterService.openDrawer(this.currentFilterModule, this.collectionComponent.primengTable);;
         } else if(this.activeTab == 2){
-            console.log("this.receiptComponent.primengTable", this.receiptComponent.primengTable)
             this._filterService.openDrawer(this.currentFilterModule, this.receiptComponent.primengTable);;
         } else if(this.activeTab == 3){
-            console.log("this.techServiceComponent.primengTable", this.techServiceComponent.primengTable)
             this._filterService.openDrawer(this.currentFilterModule, this.techServiceComponent.primengTable);;
         }
     }
 
+    // export excel on respective component
     exportExcel(){
         if(this.activeTab == 0){
             this.productComponent.exportExcel();

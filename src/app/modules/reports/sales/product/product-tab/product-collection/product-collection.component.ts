@@ -1,5 +1,5 @@
-import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy,Input } from '@angular/core';
+import { NgIf, DatePipe, CommonModule, NgClass } from '@angular/common';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -15,13 +15,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import {
-    Security,
-    filter_module_name,
-    messages,
-    module_name,
-    saleProductPermissions,
-} from 'app/security';
+import { Security, filter_module_name, module_name, poductCollectionPermissions } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
@@ -34,14 +28,14 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { AgentService } from 'app/services/agent.service';
 import { Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { ProductTabComponent } from '../product-tab/product-tab.component';
+import { ProductTabComponent } from '../product-tab.component';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
 
 @Component({
-    selector: 'app-product-receipts',
+    selector: 'app-product-collection',
     standalone: true,
-    templateUrl: './product-receipts.component.html',
+    templateUrl: './product-collection.component.html',
     imports: [
         NgIf,
         DatePipe,
@@ -65,48 +59,46 @@ import { UserService } from 'app/core/user/user.service';
     ],
 })
 
-export class ProductReceiptsComponent extends BaseListingComponent implements OnDestroy {
+export class ProductCollectionComponent extends BaseListingComponent implements OnDestroy {
     @Input() isFilterShow:boolean = false;
-    module_name = module_name.products_receipts;
-    filter_table_name = filter_module_name.products_receipts;
+    module_name = module_name.products_collection;
+    filter_table_name = filter_module_name.products_collection;
     private settingsUpdatedSubscription: Subscription;
     isLoading = false;
     dataList = [];
-    total_amount: any = 0;
-    total_actual_amount:any = 0;
+    totalsObj: any = {};
     selectedAgent: any;
     agentList: any[] = [];
     selectedRM: any;
     employeeList: any = [];
     user: any = {};
 
-
     statusList: any[] = [
-        { label: 'Confirmed', value: 'Confirmed' },
+        { label: 'Inprocess', value: 'Inprocess' },
         { label: 'Pending', value: 'Pending' },
-        { label: 'Rejected', value: 'Rejected' },
+        { label: 'Blocked', value: 'Blocked' },
+        { label: 'Delivered', value: 'Delivered' },
     ];
 
     constructor(
         private accountService: AccountService,
         private agentService: AgentService,
         private matDialog: MatDialog,
-        private _userService: UserService,
-        public _filterService: CommonFilterService,
         private refferralService: RefferralService,
+        public _filterService: CommonFilterService,
+        public userService: UserService,
     ) {
-        super(module_name.products_receipts);
+        super(module_name.products_collection);
 
-        this.sortColumn = 'receipt_request_date';
+        this.sortColumn = 'installment_date';
         this.sortDirection = 'desc';
         this._filterService.applyDefaultFilter(this.filter_table_name);
 
-        //user login
-        this._userService.user$
-            .pipe((takeUntil(this._unsubscribeAll)))
-            .subscribe((user: any) => {
-                this.user = user;
-            });
+        this.userService.user$
+        .pipe(takeUntil(this._unsubscribeAll))
+        .subscribe((user: any) => {
+            this.user = user;
+        });
     }
 
     ngOnInit(): void {
@@ -114,28 +106,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         this.employeeList = this._filterService.rmListByValue;
 
         // common filter
-        this._filterService.updateSelectedOption('');
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            console.log("resp in recirpt filter", resp)
-            this._filterService.updateSelectedOption('');
-            this.selectedAgent = resp['table_config']['agent_name']?.value;
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
-            this.selectedRM = resp['table_config']['rm']?.value;
-
-            if (resp['table_config']['receipt_request_date']?.value && Array.isArray(resp['table_config']['receipt_request_date']?.value)) {
-                this._filterService.selectionDateDropdown = 'custom_date_range';
-                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
-            }
-
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShow = true;
-            this.primengTable._filter();
-        });
+        this.startSubscription();
     }
 
     ngAfterViewInit() {
@@ -143,8 +114,10 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            this.selectedAgent = filterData['table_config']['agent_name']?.value;
+            this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
+
+            
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -152,9 +125,9 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 }
             }
 
-            if (filterData['table_config']['receipt_request_date']?.value && Array.isArray(filterData['table_config']['receipt_request_date']?.value)) {
+            if (filterData['table_config']['installment_date']?.value && Array.isArray(filterData['table_config']['installment_date']?.value)) {
                 this._filterService.selectionDateDropdown = 'custom_date_range';
-                this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
+                this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
             }
 
             this.primengTable['filters'] = filterData['table_config'];
@@ -188,7 +161,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         this.matDialog.open(TimelineAgentProductInfoComponent, {
             data: {
                 data: record,
-                agencyName: record?.agent_name,
+                agencyName: record?.agency_name,
                 readonly: true,
                 account_receipt: true,
             },
@@ -217,36 +190,16 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         //         messages.permissionDenied
         //     );
         // }
-
-        if (record?.transaction_ref_no?.substring(0, 3) == 'FLT') {
-            Linq.recirect('/booking/flight/details/' + record.product_id);
-        }
-        else if (record?.transaction_ref_no?.substring(0, 3) == 'VIS') {
-            Linq.recirect('/booking/visa/details/' + record.product_id);
-        }
-        else if (record?.transaction_ref_no?.substring(0, 3) == 'BUS') {
-            Linq.recirect('/booking/bus/details/' + record.product_id);
-        }
-        else if (record?.transaction_ref_no?.substring(0, 3) == 'HTL') {
-            Linq.recirect('/booking/hotel/details/' + record.product_id);
-        }
-        else if (record?.transaction_ref_no?.substring(0, 3) == 'AGI') {
-            Linq.recirect('/booking/group-inquiry/details/' + record.product_id);
-        }
-        else if (record?.service_for == 'Product Purchase') {
-            this.matDialog.open(AgentProductInfoComponent, {
-                data: {
-                    data: record,
-                    agencyName: record?.agent_name,
-                    readonly: true,
-                    account_receipt: true,
-                },
-                disableClose: true,
-            });
-        }
-        else if (record?.transaction_ref_no?.substring(0, 3) == 'OSB') {
-            Linq.recirect('/booking/offline-service/entry/' + record.product_id + '/readonly');
-        }
+        record.agent_name = record.agency_name;
+        this.matDialog.open(AgentProductInfoComponent, {
+            data: {
+                data: record,
+                agencyName: record?.agency_name,
+                readonly: true,
+                account_receipt: true,
+            },
+            disableClose: true,
+        });
 
     }
 
@@ -256,25 +209,21 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-        let extraModel = {
-            service_for: "Product Purchase"
-        };
         let newModel = this.getNewFilterReq(event);
-        let model = { ...extraModel, ...newModel }
-        if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
-            model.relationmanagerId = this.user.id
+
+        if (Security.hasPermission(poductCollectionPermissions.viewOnlyAssignedPermissions)) {
+            newModel["relationmanagerId"] = this.user.id
         }
-        
-        this.accountService.getReceiptList(model).subscribe({
+
+        this.accountService.getCollectionList(newModel).subscribe({
             next: (data) => {
                 this.dataList = data.data;
-                this.totalRecords = data?.total;
-                this.total_amount = data?.total_amount || 0;
-                this.total_actual_amount = data?.total_actual_amount || 0;
+                this.totalRecords = data.total;
+                this.totalsObj = data.totals || 0;
                 this.isLoading = false;
                 if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
-                        this.isFrozenColumn('', ['receipt_ref_no']);
+                        // this.isFrozenColumn('', ['index', 'payment_attachment',]);
                     }, 200);
                 }
             },
@@ -285,39 +234,57 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         });
     }
 
-    exportExcel(): void {
-        if (!Security.hasExportDataPermission(this.module_name)) {
-            return this.alertService.showToast(
-                'error',
-                messages.permissionDenied
-            );
+    // Status
+    getStatusColor(status: string): string {
+        if (status == 'Pending') {
+          return 'text-blue-600';
+        } else if (status == 'Inprocess') {
+          return 'text-yellow-600';
+        } else if (status == 'Delivered') {
+          return 'text-green-600';
+        } else if (status == 'Blocked') {
+          return 'text-red-600';
+        } else {
+          return '';
         }
+      }
+
+    exportExcel(): void {
+        // if (!Security.hasExportDataPermission(this.module_name)) {
+        //     return this.alertService.showToast(
+        //         'error',
+        //         messages.permissionDenied
+        //     );
+        // }
 
         const filterReq = this.getNewFilterReq({});
 
         filterReq['Filter'] = this.searchInputControl.value;
         filterReq['Take'] = this.totalRecords;
-        filterReq['service_for'] = "Product Purchase";
 
-        this.accountService.getReceiptList(filterReq).subscribe((data) => {
+        if (Security.hasPermission(poductCollectionPermissions.viewOnlyAssignedPermissions)) {
+            filterReq["relationmanagerId"] = this.user.id
+        }
+
+        this.accountService.getCollectionList(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy') : '';
+                dt.installment_date = dt.installment_date ? DateTime.fromISO(dt.installment_date).toFormat('dd-MM-yyyy') : '';
             }
-            ['receipt_ref_no', 'agent_Code', 'agent_name', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']
+            ['agent_code', 'agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']
             Excel.export(
-                'Receipt',
+                'Collection',
                 [
-                    { header: 'Reference No.', property: 'receipt_ref_no' },
-                    { header: 'Agent Code', property: 'agent_Code' },
-                    { header: 'Agent', property: 'agent_name' },
-                    { header: 'RM', property: 'rm_name' },
-                    { header: 'Product name', property: 'product_name' },
-                    { header: 'Amount', property: 'payment_amount' },
-                    { header: 'Status', property: 'receipt_status' },
-                    { header: 'Date', property: 'receipt_request_date' },
+                    { header: 'Agent Code', property: 'agent_code' },
+                    { header: 'Agent', property: 'agency_name' },
+                    { header: 'RM', property: 'rm' },
+                    { header: 'Product name', property: 'product' },
+                    { header: 'Status', property: 'status' },
+                    { header: 'Amount', property: 'installment_amount' },
+                    { header: 'Due Amount', property: 'due_Amount' },
+                    { header: 'Installment Date', property: 'installment_date' },
                 ],
                 data.data,
-                'Receipt',
+                'Collection',
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
             );
         });
@@ -328,6 +295,38 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
+    }
+
+    startSubscription() {
+        if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
+            this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+                this._filterService.updateSelectedOption('');
+                this.selectedAgent = resp['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+                this.selectedRM = resp['table_config']['rm']?.value;
+    
+                if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
+                    this._filterService.selectionDateDropdown = 'custom_date_range';
+                    this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
+                }
+    
+                this.primengTable['filters'] = resp['table_config'];
+                this.isFilterShow = true;
+                this.primengTable._filter();
+            });
+        }
+      }
+
+    stopSubscription() {
+        if (this.settingsUpdatedSubscription) {
+          this.settingsUpdatedSubscription.unsubscribe();
+          this.settingsUpdatedSubscription = undefined;
+        }
     }
 
     ngOnDestroy(): void {

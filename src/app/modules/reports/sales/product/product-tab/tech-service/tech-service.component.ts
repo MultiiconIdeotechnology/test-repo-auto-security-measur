@@ -104,28 +104,8 @@ export class TechServiceComponent extends BaseListingComponent {
         this.agentList = this._filterService.agentListByValue;
         this.employeeList = this._filterService.rmListByValue;
 
-        // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
-            this.selectedRM = resp['table_config']['rm']?.value;
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
-
-            if (resp['table_config']['expiry_date']?.value != null && resp['table_config']['expiry_date'].value.length) {
-                this._filterService.updateSelectedOption('custom_date_range');
-                this._filterService.rangeDateConvert(resp['table_config']['expiry_date']);
-            }
-
-            // this.sortColumn = resp['sortColumn'];
-            // this.primengTable['_sortField'] = resp['sortColumn'];
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShow = true;
-            this.primengTable._filter();
-        });
+        // common filter subscription
+        this.startSubscription();
     }
 
     ngAfterViewInit() {
@@ -241,6 +221,35 @@ export class TechServiceComponent extends BaseListingComponent {
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 20 } }]
             );
         });
+    }
+
+    startSubscription() {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedRM = resp['table_config']['rm']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+
+            if (resp['table_config']['expiry_date']?.value != null && resp['table_config']['expiry_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['expiry_date']);
+            }
+
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+     }
+
+    stopSubscription() {
+        if (this.settingsUpdatedSubscription) {
+          this.settingsUpdatedSubscription.unsubscribe();
+          this.settingsUpdatedSubscription = undefined;
+        }
     }
 
     ngOnDestroy(): void {
