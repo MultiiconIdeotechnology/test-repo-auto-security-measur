@@ -69,13 +69,14 @@ export class TechServiceComponent extends BaseListingComponent {
     selectedToolTip: string = "";
     toolTipArray: any[] = [];
     productStatusList: any[] = ['Inprocess', 'Pending', 'Blocked', 'Delivered'];
-    productStatusColor: any = {
+    statusColorMap: any = {
         Inprocess: 'text-blue-600',
         Pending: 'text-yellow-600',
         Blocked: 'text-red-600',
-        Delivered: 'text-green-600'
+        Delivered: 'text-green-600',
+        Expired:'text-red-800'
     }
-    itemStatusList: any[] = [];
+    itemStatusList: any[] = ['Inprocess', 'Pending', 'Blocked', 'Delivered'];
     constructor(
         private productTechService: ProductTechService,
         private _userService: UserService,
@@ -160,7 +161,6 @@ export class TechServiceComponent extends BaseListingComponent {
         this.productTechService.getTechServiceReport(request).subscribe({
             next: (data) => {
                 this.dataList = data.data;
-                this.toolTipArray = data.itemArry;
                 this.totalRecords = data.total;
                 this.isLoading = false;
             }, error: (err) => {

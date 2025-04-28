@@ -20,8 +20,14 @@
                             <i *ngIf="frozenObj?.agent_code" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th pSortableColumn="agency_name" pResizableColumn>
-                        Agency Name <p-sortIcon field="agency_name" />
+                    <th pSortableColumn="agency_name" pResizableColumn 
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">
+                        Agency Name <p-sortIcon field="agency_name" 
+                        [ngClass]="{'left-0': !frozenObj?.agency_name}"/>
+                        <span class="float-right" (click)="isFrozenColumn('agency_name');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.agency_name" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.agency_name" class="pi pi-lock icon-size-3"></i>
+                        </span>
                     </th>
                     <th pSortableColumn="rm" pResizableColumn>
                         RM <p-sortIcon field="rm" />
@@ -57,7 +63,7 @@
                         <p-columnFilter type="numeric" field="agent_code" placeholder="Search by Agent Code"
                             ariaLabel="Filter Agent Code" />
                     </th>
-                    <th>
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -180,13 +186,16 @@
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
                         {{element.agent_code || "-"}}
                     </td>
-                    <td>{{element.agency_name || "-"}}</td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">{{element.agency_name || "-"}}</td>
                     <td>{{element.rm || "-"}}</td>
                     <td>{{element?.item_code || "-"}}</td>
                     <td>{{element?.item || "-"}}</td>
                     <td>{{element?.product || "-"}}</td>
-                    <td [ngClass]="productStatusColor[element.product_status]">
+                    <td [ngClass]="statusColorMap[element.product_status]">
                         {{element?.product_status || "-"}}
+                    </td>
+                    <td [ngClass]="statusColorMap[element.item_status]">
+                        {{element?.item_status || "-"}}
                     </td>
                     <td>{{element?.item_status || "-"}}</td>
                     <td>{{element.expiry_date ? (element.expiry_date | date:'dd-MM-yyyy'): "-"}}</td>
