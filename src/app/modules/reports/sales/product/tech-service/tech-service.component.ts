@@ -234,11 +234,16 @@ export class TechServiceComponent extends BaseListingComponent {
           req.take = this.totalRecords;
           const exportHeaderArr = [
               { header: 'Agent Code', property: 'agent_code' },
-              { header: 'Old Agent Code', property: 'old_agent_code' },
               { header: 'Agency Name', property: 'agency_name' },
               { header: 'RM', property: 'rm' },
-              { header: 'Amount', property: 'Amount' },
-              { header: 'Due Amount', property: 'Due_amount' }
+              { header: 'Item Code', property: 'old_agent_code' },
+              { header: 'Item', property: 'Amount' },
+              { header: 'Product', property: 'Due_amount' },
+              { header: 'Product Status', property: 'Due_amount' },
+              { header: 'Item Status', property: 'Due_amount' },
+              { header: 'Expiry Date', property: 'Due_amount' },
+              { header: 'Product Amount', property: 'Due_amount' },
+              { header: 'Due Amount', property: 'Due_amount' },
           ];
   
           if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {

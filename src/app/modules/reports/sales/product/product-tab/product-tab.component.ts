@@ -124,6 +124,9 @@ export class ProductTabComponent extends BaseListingComponent {
         } else if(this.activeTab == 2){
             console.log("this.receiptComponent.primengTable", this.receiptComponent.primengTable)
             this._filterService.openDrawer(this.currentFilterModule, this.receiptComponent.primengTable);;
+        } else if(this.activeTab == 3){
+            console.log("this.techServiceComponent.primengTable", this.techServiceComponent.primengTable)
+            this._filterService.openDrawer(this.currentFilterModule, this.techServiceComponent.primengTable);;
         }
     }
 
@@ -134,6 +137,8 @@ export class ProductTabComponent extends BaseListingComponent {
             this.collectionComponent.exportExcel();
         } else if(this.activeTab == 2){
             this.receiptComponent.exportExcel();
+        }else if(this.activeTab == 3){
+            this.techServiceComponent.exportExcel();
         }
     }
 
