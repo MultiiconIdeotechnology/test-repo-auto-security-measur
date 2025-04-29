@@ -241,6 +241,7 @@ export class TechServiceComponent extends BaseListingComponent {
 
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            console.log( 'this.isFilterShow', this.isFilterShow)
             this.primengTable._filter();
         });
      }

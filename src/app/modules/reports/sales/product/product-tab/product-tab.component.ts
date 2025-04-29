@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
@@ -70,6 +70,7 @@ export class ProductTabComponent extends BaseListingComponent {
 
     public tabChanged(event: any): void {
         this.activeTab = event?.index;
+        // this.isFilterShow = false;
 
         const components = [
             this.productComponent,
@@ -89,7 +90,6 @@ export class ProductTabComponent extends BaseListingComponent {
             }
           });
 
-        this.isFilterShow = false;
         this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
         this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
         if(this.activeTab == 1){
