@@ -148,7 +148,7 @@
                             <mat-icon class="mat-18">history</mat-icon>
                             <span style="font-weight: 600">Un-Block</span>
                         </button>
-                        <button mat-menu-item (click)="wlSetting(element)">
+                        <button *ngIf="!element?.product_name?.toLowerCase().includes('rise')" mat-menu-item (click)="wlSetting(element)">
                             <mat-icon class="mat-18">schedule</mat-icon>
                             <span style="font-weight: 600">WL Settings</span>
                         </button>
