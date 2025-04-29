@@ -1,0 +1,85 @@
+import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { DatePipe } from '@angular/common';
+import { BaseListingComponent } from 'app/form-models/base-listing';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { TechBusinessService } from 'app/services/tech-business.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Linq } from 'app/utils/linq';
+import { Routes } from 'app/common/const';
+import { WalletService } from 'app/services/wallet-credit.service';
+
+@Component({
+  selector: 'app-credit-logs',
+  standalone: true,
+  imports: [
+    CommonModule,
+    PrimeNgImportsModule,
+    MatIconModule,
+    DatePipe,
+    ReactiveFormsModule,
+    MatButtonModule
+  ],
+  templateUrl: './credit-logs.component.html',
+  styleUrls: ['./credit-logs.component.scss']
+})
+export class CreditLogsComponent extends BaseListingComponent {
+
+  dataList: any[] = [];
+  sortColumn: string = "activity_date_time";
+  record: any;
+  originalDataList: any[] = [];
+  // isFilterShow: boolean = false;
+
+  constructor(
+    public matDialogRef: MatDialogRef<CreditLogsComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any = {},
+    private techService: TechBusinessService,
+    private walletCreditService: WalletService,
+    public _filterService: CommonFilterService,
+  ) {
+    super("");
+  };
+
+  ngOnInit(): void {
+    if (this.data) {
+      this.record = this.data;
+      this.refreshItems();
+    }
+  }
+
+  refreshItems(event?: any): void {
+  
+      this.walletCreditService.getCreditActivity({"Id":"5OcmLIRUMeV9hh6ICxPCBAaC0$aC0$"}).subscribe({
+        next: (resp: any) => {
+          this.dataList = resp;
+          this.dataList.forEach((item: any) => item.activity_date_time = new Date(item.activity_date_time))
+          this.originalDataList = resp;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.alertService.showToast('error', err);
+          this.isLoading = false;
+        }
+      });
+  }
+
+  onGlobalFilterSearch(val: any) {
+    this.dataList = this.originalDataList.filter((item: any) =>
+      JSON.stringify(item).toLowerCase().includes(val.toLowerCase())
+    );
+  }
+
+  getNodataText(): string {
+    if (this.isLoading)
+      return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
+
+}

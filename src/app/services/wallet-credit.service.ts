@@ -32,5 +32,9 @@ export class WalletService {
     return this.http.post<any>(this.baseUrl + 'WalletCredit/delete', { id: id });
   }
 
+  getCreditActivity(model:any){
+    return this.http.post<any>(this.baseUrl + 'WalletCredit/getCreditLogs', model);
+  }
+
 
 }
