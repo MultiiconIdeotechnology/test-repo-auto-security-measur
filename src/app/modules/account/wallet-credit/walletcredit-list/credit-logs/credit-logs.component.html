@@ -12,13 +12,13 @@
                 </div>
 
                 <!-- Column Filter -->
-                <!-- <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                     [disabled]="isLoading" (click)="this.isFilterShow = !this.isFilterShow;">
                     <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                         alt="c">
                     <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                         alt="c">
-                </button> -->
+                </button>
 
                 <!-- close modal -->
                 <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
@@ -57,6 +57,30 @@
                     </th>
                     <th pSortableColumn="activity_date_time" pResizableColumn>
                         Date <p-sortIcon field="activity_date_time" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity">
+                        <p-columnFilter type="text" matchMode="equals" field="activity" placeholder="Search by Activity"
+                            ariaLabel="Filter Activity" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="description" placeholder="Search by Description"
+                            ariaLabel="Filter Description" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="login" placeholder="Search by Action By"
+                            ariaLabel="Filter Action By" />
+                    </th>
+                    <th>
+                        <p-columnFilter field="activity_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Login">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                 </tr>
             </ng-template>

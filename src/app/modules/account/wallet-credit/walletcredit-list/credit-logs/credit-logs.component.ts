@@ -33,14 +33,12 @@ export class CreditLogsComponent extends BaseListingComponent {
   sortColumn: string = "activity_date_time";
   record: any;
   originalDataList: any[] = [];
-  // isFilterShow: boolean = false;
+  isFilterShow: boolean = false;
 
   constructor(
     public matDialogRef: MatDialogRef<CreditLogsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any = {},
-    private techService: TechBusinessService,
     private walletCreditService: WalletService,
-    public _filterService: CommonFilterService,
   ) {
     super("");
   };
@@ -54,7 +52,7 @@ export class CreditLogsComponent extends BaseListingComponent {
 
   refreshItems(event?: any): void {
   
-      this.walletCreditService.getCreditActivity({"Id":"5OcmLIRUMeV9hh6ICxPCBAaC0$aC0$"}).subscribe({
+      this.walletCreditService.getCreditActivity({Id: this.record?.id}).subscribe({
         next: (resp: any) => {
           this.dataList = resp;
           this.dataList.forEach((item: any) => item.activity_date_time = new Date(item.activity_date_time))
