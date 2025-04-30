@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Input } from '@angular/core';
+import { Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -62,6 +62,7 @@ import { Routes } from 'app/common/const';
 })
 export class SalesProductComponent extends BaseListingComponent implements OnDestroy {
     @Input() isFilterShow: boolean = false;
+    @Output() isFilterShowEvent = new EventEmitter(false);
     dataList = [];
     total = 0;
     module_name = module_name.products;
@@ -120,6 +121,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
                     this.agentList.push(this.selectedAgent);
                 }
             }
+            this.isFilterShowEvent.emit(true)
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];

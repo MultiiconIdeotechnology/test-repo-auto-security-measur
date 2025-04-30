@@ -121,7 +121,6 @@ export class ProductTabComponent extends BaseListingComponent {
     // column filter search 
     onColumnFilter(){
         this.moduleMap[this.activeTab].isFiltershow = !this.moduleMap[this.activeTab].isFiltershow;
-        console.log("this.modulMap", this.moduleMap)
     }
 
     // Refresh Data on respective component

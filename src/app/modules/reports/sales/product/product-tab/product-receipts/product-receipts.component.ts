@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy,Input } from '@angular/core';
+import { Component, OnDestroy,Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -67,6 +67,7 @@ import { UserService } from 'app/core/user/user.service';
 
 export class ProductReceiptsComponent extends BaseListingComponent implements OnDestroy {
     @Input() isFilterShow:boolean = false;
+    @Output() isFilterShowEvent = new EventEmitter(false);
     module_name = module_name.products_receipts;
     filter_table_name = filter_module_name.products_receipts;
     private settingsUpdatedSubscription: Subscription;
@@ -136,7 +137,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
-
+            this.isFilterShowEvent.emit(true);
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
