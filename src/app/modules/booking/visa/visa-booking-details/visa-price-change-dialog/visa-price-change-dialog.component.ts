@@ -36,7 +36,6 @@ export class VisaPriceChangeDialogComponent {
     private visaService:VisaService,
     private toastr: ToasterService,
   ) {
-    console.log("data", data)
   }
 
   ngOnInit(): void {
@@ -73,7 +72,6 @@ export class VisaPriceChangeDialogComponent {
            payload.BaseFare = parseFloat(payload.BaseFare);
            payload.markup = parseFloat(payload.markup);
            payload.id = this.data?.id;
-           console.log("payload", payload)
           this.visaService.manageVisaRate(payload).subscribe({
               next: res => {
                   if (res && res['status']) {

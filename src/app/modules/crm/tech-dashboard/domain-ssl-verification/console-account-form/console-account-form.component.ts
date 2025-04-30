@@ -69,8 +69,6 @@ export class ConsoleAccountFormComponent {
 
     this.formGroup.get('password')?.updateValueAndValidity();
 
-    console.log("wl setting data in console account", this.wlSettingData)
-
     this.formGroup.patchValue({
       txn_id :this.wlSettingData?.txn_id,
       account_name :this.wlSettingData?.account_name,
@@ -103,7 +101,6 @@ export class ConsoleAccountFormComponent {
     payloadData.wl_id = this.wlId;
     payloadData.is_account_active = this.is_account_active;
 
-    console.log("this.payloadData", payloadData);
     this.domainVarifyService.androidIosConfig(payloadData).subscribe({
       next: (res) => {
         if (res) {
