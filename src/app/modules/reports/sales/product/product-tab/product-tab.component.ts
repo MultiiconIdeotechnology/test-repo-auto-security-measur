@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Router } from '@angular/router';
 import { ProductReceiptsComponent } from './product-receipts/product-receipts.component';
 import { SalesProductComponent } from './sales-product/sales-product.component';
 import { ProductCollectionComponent } from './product-collection/product-collection.component';
@@ -62,7 +61,6 @@ export class ProductTabComponent extends BaseListingComponent {
     currentFilterModule:any = filter_module_name[this.moduleMap[0].filter_table_name];
       
     constructor(
-          private router: Router,
           private _filterService:CommonFilterService,
         ) { 
             super('')
@@ -138,7 +136,6 @@ export class ProductTabComponent extends BaseListingComponent {
 
     // saved filter on respective component
     onSaveFilter(){
-        
         if(this.activeTab == 0){
             this._filterService.openDrawer(this.currentFilterModule, this.productComponent.primengTable);;
         } else if (this.activeTab == 1){

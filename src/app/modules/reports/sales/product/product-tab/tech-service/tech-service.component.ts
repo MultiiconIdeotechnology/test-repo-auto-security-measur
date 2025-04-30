@@ -115,7 +115,6 @@ export class TechServiceComponent extends BaseListingComponent {
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            console.log("this._filterService.activeFiltData.grid_config", this._filterService.activeFiltData.grid_config)
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
@@ -180,7 +179,6 @@ export class TechServiceComponent extends BaseListingComponent {
     }
 
      purchaseProductInfo(record:any): void {
-            console.log("record>>", record)
             // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
             //     return this.alertService.showToast('error', messages.permissionDenied);
             // }
