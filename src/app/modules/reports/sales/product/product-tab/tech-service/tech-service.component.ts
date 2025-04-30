@@ -26,6 +26,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { ProductTechService } from 'app/services/product-techService.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
+import { Linq } from 'app/utils/linq';
+import { Routes } from 'app/common/const';
 @Component({
     selector: 'app-tech-service',
     standalone: true,
@@ -77,7 +79,7 @@ export class TechServiceComponent extends BaseListingComponent {
         Pending: 'text-yellow-600',
         Blocked: 'text-red-600',
         Delivered: 'text-green-600',
-        Expired:'text-red-800'
+        Expired: 'text-red-800'
     }
     itemStatusList: any[] = ['Inprocess', 'Pending', 'Blocked', 'Delivered'];
     constructor(
@@ -140,9 +142,9 @@ export class TechServiceComponent extends BaseListingComponent {
     refreshItems(event?: any): void {
         this.isLoading = true;
         const request = this.getNewFilterReq(event);
-          if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
-              request.relationmanagerId = this.user.id
-          }
+        if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
+            request.relationmanagerId = this.user.id
+        }
         this.productTechService.getTechServiceReport(request).subscribe({
             next: (data) => {
                 this.dataList = data.data;
@@ -178,15 +180,15 @@ export class TechServiceComponent extends BaseListingComponent {
         });
     }
 
-     purchaseProductInfo(record:any): void {
-            // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
-            //     return this.alertService.showToast('error', messages.permissionDenied);
-            // }
-            this.matDialog.open(AgentProductInfoComponent, {
-                data: { data: record, agencyName: record?.agency_name, readonly: true, agentInfo: true, currencySymbol:record?.currencySymbol },
-                disableClose: true
-            });
-        }
+    purchaseProductInfo(record: any): void {
+        // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+        this.matDialog.open(AgentProductInfoComponent, {
+            data: { data: record, agencyName: record?.agency_name, readonly: true, agentInfo: true, currencySymbol: record?.currencySymbol },
+            disableClose: true
+        });
+    }
 
     getNodataText(): string {
         if (this.isLoading)
@@ -197,9 +199,9 @@ export class TechServiceComponent extends BaseListingComponent {
     }
 
     exportExcel(): void {
-          if (!Security.hasExportDataPermission(module_name.products)) {
-              return this.alertService.showToast('error', messages.permissionDenied);
-          }
+        if (!Security.hasExportDataPermission(module_name.products)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
         const filterReq = this.getNewFilterReq({});
         const req = Object.assign(filterReq);
         req.skip = 0;
@@ -238,6 +240,10 @@ export class TechServiceComponent extends BaseListingComponent {
         });
     }
 
+    viewInternal(record: any): void {
+        Linq.recirect(Routes.customers.agent_entry_route + '/' + record.agent_id + '/readonly')
+    }
+
     startSubscription() {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agency_name']?.value;
@@ -256,15 +262,15 @@ export class TechServiceComponent extends BaseListingComponent {
 
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
-            console.log( 'this.isFilterShow', this.isFilterShow)
+            console.log('this.isFilterShow', this.isFilterShow)
             this.primengTable._filter();
         });
-     }
+    }
 
     stopSubscription() {
         if (this.settingsUpdatedSubscription) {
-          this.settingsUpdatedSubscription.unsubscribe();
-          this.settingsUpdatedSubscription = undefined;
+            this.settingsUpdatedSubscription.unsubscribe();
+            this.settingsUpdatedSubscription = undefined;
         }
     }
 

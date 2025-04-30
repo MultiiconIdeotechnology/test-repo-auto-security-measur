@@ -38,7 +38,7 @@ export class DomainPointingDetailsComponent {
               el['ttl'] = '1 Hour';
             } else {
               el['recordType'] = 'CNAME';
-              el['name'] = el.domain && el.domain.includes(this.wlSettingData?.b2c_portal_url) ? el.domain.split(this.wlSettingData?.b2c_portal_url)[0] : '-';
+              el['name'] = el.domain && el.domain.includes(this.wlSettingData?.b2c_portal_url) ? el.domain.split(this.wlSettingData?.b2c_portal_url)[0]?.replace(/\.$/, '') : '-';
               el['value'] = '@';
               el['ttl'] = '1 Hour'
             }

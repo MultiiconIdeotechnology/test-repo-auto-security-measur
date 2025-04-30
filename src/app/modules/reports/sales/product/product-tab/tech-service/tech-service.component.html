@@ -183,10 +183,12 @@
 
             <ng-template pTemplate="body" let-element>
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
-                        {{element.agent_code || "-"}}
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code" (click)="view(element)">
+                        <span [ngClass]="{'border-b border-gray-500 cursor-pointer': element?.agent_code}">{{element.agent_code || "-"}}</span>
                     </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name">{{element.agency_name || "-"}}</td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agency_name" (click)="view(element)">
+                        <span [ngClass]="{'border-b border-gray-500 cursor-pointer': element?.agency_name}">{{element.agency_name || "-"}}</span>
+                    </td>
                     <td>{{element.rm || "-"}}</td>
                     <td>{{element?.item_code || "-"}}</td>
                     <td>{{element?.item || "-"}}</td>
