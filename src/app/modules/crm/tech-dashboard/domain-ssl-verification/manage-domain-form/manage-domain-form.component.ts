@@ -83,20 +83,16 @@ export class ManageDomainFormComponent {
       payloadData.agent_id = this.data?.agentid;
       payloadData.product_id = this.data?.subid;
   
+      console.log("payloaddata", payloadData)
       this.domainVarifyService.createDomain(payloadData).subscribe({
         next: (res) => {
           if (res) {
-            payloadData.id = res.id;
-            if (this.formGroup.get('id').value) {
-            
-            } else {
               this.formGroup.get('id').patchValue(res.id);
               this.alertService.showToast('success', 'Domain Created Successfully');
               this.stepCompleted.emit(1);
               this.domainVarifyService.createUpdateDomainSubject.next(res);
               // formDirective.resetForm()
             }
-          }
   
         }, error: err => this.alertService.showToast('error', err)
       })

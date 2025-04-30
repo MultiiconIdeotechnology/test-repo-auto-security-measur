@@ -36,7 +36,6 @@ export class VerifySslComponent {
     private alertService: ToasterService,
   ) {
     this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
-      console.log("res in verify ssl", res);
       this.sslDomainsData = res?.ssl_domains;
       this.wlId = res?.wl_id
       // this.isDomainFalse = this.isSslPointing();
@@ -91,7 +90,8 @@ export class VerifySslComponent {
     let payloadObj = {
       id: this.data.id ? this.data.id : "",
       is_activated: true,
-      agent_id: this.data?.agentid ? this.data?.agentid : ""
+      agent_id: this.data?.agentid ? this.data.agentid : "",
+      product_id: this.data?.subid
     }
     this.domainVarifyService.activate(payloadObj).subscribe({
       next: (res) => {

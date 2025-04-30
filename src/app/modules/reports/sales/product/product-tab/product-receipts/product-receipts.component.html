@@ -31,6 +31,10 @@
                         Agent <p-sortIcon field="agent_name" />
                     </th>
 
+                    <th pSortableColumn="campaign_code" pResizableColumn>
+                        Campaign Code <p-sortIcon field="campaign_code" />
+                    </th>
+
                     <th pSortableColumn="rm_name" pResizableColumn>
                         RM <p-sortIcon field="rm_name" />
                     </th>
@@ -87,6 +91,11 @@
                                 </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+                    </th>
+
+                    <th>
+                        <p-columnFilter type="text" field="campaign_code" placeholder="Search by Campaign code"
+                            ariaLabel="Filter Campaign code" />
                     </th>
 
                     <th>
@@ -188,7 +197,9 @@
                             {{element.agent_name}}
                         </a>
                     </td>
-
+                    <td>
+                        {{element.campaign_code || "-"}}
+                    </td>
                     
                     <td>
                         {{element.rm_name || "-"}}
@@ -230,6 +241,7 @@
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td class="text-right">
                         {{total_amount ? (total_amount?.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
@@ -243,7 +255,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="9" class="text-center font-semibold text-lg">
+                    <td colspan="10" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
