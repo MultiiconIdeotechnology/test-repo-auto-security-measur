@@ -52,10 +52,10 @@ export class ProductTabComponent extends BaseListingComponent {
     }
 
     moduleMap = [
-        { module_name: 'products', filter_table_name: 'report_sales_products' },
-        { module_name: 'products_collection', filter_table_name: 'products_collection' },
-        { module_name: 'products_receipts', filter_table_name: 'products_receipts' },
-        { module_name: 'products_tech_service', filter_table_name: 'products_tech_service' },
+        { module_name: 'products', filter_table_name: 'report_sales_products', isFiltershow:false },
+        { module_name: 'products_collection', filter_table_name: 'products_collection', isFiltershow:false },
+        { module_name: 'products_receipts', filter_table_name: 'products_receipts', isFiltershow:false },
+        { module_name: 'products_tech_service', filter_table_name: 'products_tech_service', isFiltershow:false },
       ];
     
     currentModule:any = module_name[this.moduleMap[0].module_name];
@@ -70,7 +70,6 @@ export class ProductTabComponent extends BaseListingComponent {
 
     public tabChanged(event: any): void {
         this.activeTab = event?.index;
-        // this.isFilterShow = false;
 
         const components = [
             this.productComponent,
@@ -92,6 +91,7 @@ export class ProductTabComponent extends BaseListingComponent {
 
         this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
         this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
+
         if(this.activeTab == 1){
             this.tabLoaded.isTabTwoLoaded = true;
         } else if(this.activeTab == 2){
@@ -116,6 +116,12 @@ export class ProductTabComponent extends BaseListingComponent {
             this.techServiceComponent.searchInputControl.patchValue(val);
             this.techServiceComponent.refreshItems();
         }
+    }
+
+    // column filter search 
+    onColumnFilter(){
+        this.moduleMap[this.activeTab].isFiltershow = !this.moduleMap[this.activeTab].isFiltershow;
+        console.log("this.modulMap", this.moduleMap)
     }
 
     // Refresh Data on respective component

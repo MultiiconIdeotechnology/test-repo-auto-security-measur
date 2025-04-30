@@ -99,10 +99,12 @@
 
             <ng-template pTemplate="body" let-element>
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code">
-                        {{element.agent_code || "-"}}
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_code" (click)="view(element)">
+                       <span [ngClass]="{'border-b border-gray-500 cursor-pointer': element?.agent_code}">{{element.agent_code || "-"}}</span>
                     </td>
-                    <td>{{element.agency_name || "-"}}</td>
+                    <td (click)="view(element)">
+                        <span [ngClass]="{'border-b border-gray-500 cursor-pointer': element?.agency_name}">{{element.agency_name || "-"}}</span>
+                    </td>
                     <td>{{element.rm || "-"}}</td>
                     <td class="text-right">{{element.Amount ? (element.Amount.toFixed(2) | number:'1.2-2') : '0'}}</td>
                     <td class="text-right">{{element.Due_amount ? (element.Due_amount.toFixed(2) | number:'1.2-2') : '0'}}</td>

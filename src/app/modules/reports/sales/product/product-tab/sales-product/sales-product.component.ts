@@ -27,6 +27,8 @@ import { Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { Linq } from 'app/utils/linq';
+import { Routes } from 'app/common/const';
 
 @Component({
     selector: 'app-sales-product',
@@ -59,7 +61,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     styleUrls: ['./sales-product.component.scss']
 })
 export class SalesProductComponent extends BaseListingComponent implements OnDestroy {
-    @Input() isFilterShow:boolean = false;
+    @Input() isFilterShow: boolean = false;
     dataList = [];
     total = 0;
     module_name = module_name.products;
@@ -180,6 +182,10 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         });
     }
 
+    viewInternal(record:any): void {
+        Linq.recirect(Routes.customers.agent_entry_route + '/' + record.agent_id + '/readonly')
+    }
+
     viewData(record, item): void {
         // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
         //     return this.alertService.showToast(
@@ -275,12 +281,12 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
             this.isFilterShow = true;
             this.primengTable._filter();
         });
-     }
+    }
 
     stopSubscription() {
         if (this.settingsUpdatedSubscription) {
-          this.settingsUpdatedSubscription.unsubscribe();
-          this.settingsUpdatedSubscription = undefined;
+            this.settingsUpdatedSubscription.unsubscribe();
+            this.settingsUpdatedSubscription = undefined;
         }
     }
 

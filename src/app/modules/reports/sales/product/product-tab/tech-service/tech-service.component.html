@@ -190,7 +190,9 @@
                     <td>{{element.rm || "-"}}</td>
                     <td>{{element?.item_code || "-"}}</td>
                     <td>{{element?.item || "-"}}</td>
-                    <td>{{element?.product || "-"}}</td>
+                    <td (click)="purchaseProductInfo(element)">
+                        <span class="border-b border-gray-500 cursor-pointer">{{element?.product || "-"}}</span>
+                    </td>
                     <td [ngClass]="statusColorMap[element.product_status]">
                         {{element?.product_status || "-"}}
                     </td>

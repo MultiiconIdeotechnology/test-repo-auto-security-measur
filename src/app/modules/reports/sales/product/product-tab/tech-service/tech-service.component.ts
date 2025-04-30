@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Input } from '@angular/core';
+import { Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +14,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { module_name, Security, saleProductPermissions, filter_module_name } from 'app/security';
+import { module_name, Security, saleProductPermissions, filter_module_name, messages } from 'app/security';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
@@ -24,6 +24,8 @@ import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { ProductTechService } from 'app/services/product-techService.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 @Component({
     selector: 'app-tech-service',
     standalone: true,
@@ -56,6 +58,7 @@ import { ProductTechService } from 'app/services/product-techService.service';
 })
 export class TechServiceComponent extends BaseListingComponent {
     @Input() isFilterShow: boolean = false;
+    @Output() isFilterShowEvent = new EventEmitter(false);
     dataList = [];
     total = 0;
     module_name = module_name.products_tech_service;
@@ -82,7 +85,8 @@ export class TechServiceComponent extends BaseListingComponent {
         private _userService: UserService,
         private agentService: AgentService,
         private refferralService: RefferralService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        public matDialog: MatDialog
     ) {
         super(module_name.products_tech_service)
         this.key = 'campaign_name';
@@ -111,6 +115,7 @@ export class TechServiceComponent extends BaseListingComponent {
     ngAfterViewInit() {
         // Defult Active filter show
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            console.log("this._filterService.activeFiltData.grid_config", this._filterService.activeFiltData.grid_config)
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
@@ -126,6 +131,7 @@ export class TechServiceComponent extends BaseListingComponent {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['expiry_date']);
             }
+            this.isFilterShowEvent.emit(true)
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
@@ -173,6 +179,17 @@ export class TechServiceComponent extends BaseListingComponent {
         });
     }
 
+     purchaseProductInfo(record:any): void {
+            console.log("record>>", record)
+            // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
+            //     return this.alertService.showToast('error', messages.permissionDenied);
+            // }
+            this.matDialog.open(AgentProductInfoComponent, {
+                data: { data: record, agencyName: record?.agency_name, readonly: true, agentInfo: true, currencySymbol:record?.currencySymbol },
+                disableClose: true
+            });
+        }
+
     getNodataText(): string {
         if (this.isLoading)
             return 'Loading...';
@@ -182,9 +199,9 @@ export class TechServiceComponent extends BaseListingComponent {
     }
 
     exportExcel(): void {
-        //   if (!Security.hasExportDataPermission(module_name.products)) {
-        //       return this.alertService.showToast('error', messages.permissionDenied);
-        //   }
+          if (!Security.hasExportDataPermission(module_name.products)) {
+              return this.alertService.showToast('error', messages.permissionDenied);
+          }
         const filterReq = this.getNewFilterReq({});
         const req = Object.assign(filterReq);
         req.skip = 0;
