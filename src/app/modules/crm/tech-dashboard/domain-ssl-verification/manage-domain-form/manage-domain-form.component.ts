@@ -77,7 +77,6 @@ export class ManageDomainFormComponent {
       payloadData.agent_id = this.data?.agentid;
       payloadData.product_id = this.data?.subid;
   
-      console.log("payloaddata", payloadData)
       this.domainVarifyService.createDomain(payloadData).subscribe({
         next: (res) => {
           if (res) {
