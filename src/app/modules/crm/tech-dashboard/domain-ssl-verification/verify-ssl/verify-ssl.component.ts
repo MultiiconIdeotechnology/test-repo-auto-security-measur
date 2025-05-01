@@ -27,6 +27,7 @@ export class VerifySslComponent {
   isDomainFalse: boolean = true;
   wlId: any;
   @Input() data: any;
+  @Input() fromKey:string = "";
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() previousPage = new EventEmitter<number>();
 
@@ -97,7 +98,7 @@ export class VerifySslComponent {
       next: (res) => {
         if (res) {
           this.alertService.showToast('success', 'Product activated Successfully!');
-          this.matDialogRef.close();
+          this.matDialogRef.close(this.fromKey);
           this.isLoading = false
         }
       },

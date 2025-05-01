@@ -4,7 +4,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { E } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-domain-pointing-details',

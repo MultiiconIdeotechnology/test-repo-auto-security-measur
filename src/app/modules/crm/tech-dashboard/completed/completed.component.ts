@@ -266,10 +266,14 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     
                     this.matDialog.open(DomainSslVerificationComponent, {
                         disableClose: true,
-                        data: {record:record, wlSettingList:this.getWLSettingList},
+                        data: {record:record, wlSettingList:this.getWLSettingList, from:'completed'},
                         panelClass: ['custom-dialog-modal-md'],
                         autoFocus: false,
-                      })
+                      }).afterClosed().subscribe((res:any) => {
+                        if(res && res == 'completed'){
+                            this.refreshItems();
+                        }
+                    })
                 },
                 error: (err) => {
                     this.alertService.showToast('error', err, 'top-right', true);

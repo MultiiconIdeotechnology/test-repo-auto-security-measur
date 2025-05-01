@@ -42,9 +42,6 @@ export class ManageDomainFormComponent {
       
     }
   
-    ngOnChanges(){
-    }
-  
     ngOnInit():void {
       this.formGroup = this.builder.group({
         id: [''],

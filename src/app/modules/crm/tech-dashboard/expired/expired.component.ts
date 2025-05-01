@@ -274,10 +274,14 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
 
                 this.matDialog.open(DomainSslVerificationComponent, {
                     disableClose: true,
-                    data: {record:record, wlSettingList:this.getWLSettingList},
+                    data: {record:record, wlSettingList:this.getWLSettingList, from:'expired'},
                     panelClass: ['custom-dialog-modal-md'],
                     autoFocus: false,
-                  })
+                  }).afterClosed().subscribe((res:any) => {
+                    if(res && res == 'expired'){
+                        this.refreshItems();
+                    }
+                })
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

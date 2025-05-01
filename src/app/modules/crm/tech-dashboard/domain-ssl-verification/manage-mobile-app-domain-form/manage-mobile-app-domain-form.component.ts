@@ -57,8 +57,6 @@ export class ManageMobileAppDomainFormComponent {
       password: ['', Validators.required],
     });
 
-    console.log("wlSettingData", this.wlSettingData);
-
     if (this.data?.item_name.includes('B2C')) {
       this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);
       this.formGroup.get('partner_panel_url')?.clearValidators();
@@ -103,7 +101,6 @@ export class ManageMobileAppDomainFormComponent {
     if (this.formGroup.invalid) {
       this.alertService.showToast('error', 'Fill up required field to proceed');
       this.formGroup.markAllAsTouched();
-      console.log("this.formGroup.value", this.formGroup.value)
       return;
     }
 
