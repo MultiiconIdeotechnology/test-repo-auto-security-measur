@@ -241,7 +241,7 @@ export class TechServiceComponent extends BaseListingComponent {
     }
 
     viewInternal(record: any): void {
-        Linq.recirect(Routes.customers.agent_entry_route + '/' + record.agent_id + '/readonly')
+        Linq.recirect(Routes.customers.agent_entry_route + '/' + record.agentid + '/readonly')
     }
 
     startSubscription() {
