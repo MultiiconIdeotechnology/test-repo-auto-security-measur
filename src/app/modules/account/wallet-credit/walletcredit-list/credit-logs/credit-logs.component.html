@@ -40,17 +40,17 @@
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <!-- <th class="  text-center left-[-1px]" pFrozenColumn>#</th> -->
-                    <th class="min-w-[110px] dark:bg-[#1e293b]" pSortableColumn="activity" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity"
-                        [ngClass]="{'left-0': !frozenObj?.activity}">
-                        Activity <p-sortIcon field="activity" />
-                        <span class="float-right" (click)="isFrozenColumn('activity');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.activity" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.activity" class="pi pi-lock icon-size-3"></i>
+                    <th class="min-w-[110px] dark:bg-[#1e293b]" pSortableColumn="activity_type" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity_type"
+                        [ngClass]="{'left-0': !frozenObj?.activity_type}">
+                        Activity <p-sortIcon field="activity_type" />
+                        <span class="float-right" (click)="isFrozenColumn('activity_type');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.activity_type" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.activity_type" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th pSortableColumn="description" pResizableColumn>
-                        Description <p-sortIcon field="description" />
+                    <th pSortableColumn="activity" pResizableColumn>
+                        Description <p-sortIcon field="activity" />
                     </th>
                     <th pSortableColumn="login" pResizableColumn>
                         Action By <p-sortIcon field="login" />
@@ -61,12 +61,12 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity">
-                        <p-columnFilter type="text" matchMode="equals" field="activity" placeholder="Search by Activity"
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity_type">
+                        <p-columnFilter type="text" matchMode="equals" field="activity_type" placeholder="Search by Activity"
                             ariaLabel="Filter Activity" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="description" placeholder="Search by Description"
+                        <p-columnFilter type="text" matchMode="contains" field="activity" placeholder="Search by Description"
                             ariaLabel="Filter Description" />
                     </th>
                     <th>
@@ -87,8 +87,8 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">{{element?.activity || "-"}}</td>
-                    <td>{{element?.description || "-"}}</td>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.activity_type">{{element?.activity_type || "-"}}</td>
+                    <td>{{element?.activity || "-"}}</td>
                     <td>{{element?.login || "-"}}</td>
                     <td>{{element.activity_date_time ? (element.activity_date_time | date: 'dd-MM-yyyy HH:mm:ss') : "-"}}</td>
                 </tr>
