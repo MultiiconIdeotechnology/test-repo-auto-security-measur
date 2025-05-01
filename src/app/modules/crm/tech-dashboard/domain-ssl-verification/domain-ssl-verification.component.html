@@ -64,6 +64,9 @@
         (stepCompleted)="onStepComplete($event)" >
     </app-manage-mobile-app-domain-form>
 
+    <!-- verify domain for both web and mobile
+       step 2 for web
+       step 3 for mobile -->
     <app-verify-domain 
         [hidden]="activeStepperId !== 3"
         [data]="record" 
@@ -72,6 +75,9 @@
         (previousPage)="onPreviousPage($event)">
     </app-verify-domain>
 
+    <!-- verify ssl for both web and mobile
+    step 3 for web
+    step 4 for mobile -->
     <app-verify-ssl 
         [hidden]="activeStepperId !== 4" 
         [data]="record"
