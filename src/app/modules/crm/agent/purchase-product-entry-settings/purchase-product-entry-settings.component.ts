@@ -241,10 +241,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         this.crmService.getProductPurchaseMasterList(filterReq).subscribe({
             next: (data) => {
                 this.dataList = data.data;
-                // console.log("this.dataList>>>", this.dataList)
-                // if(this.dataList?.length){
-                //     this.currencySymbol = this.dataList[0]?.['currencySymbol'];
-                // }
             },
             error: (err) => {
                 this.alertService.showToast('error', err, 'top-right', true);

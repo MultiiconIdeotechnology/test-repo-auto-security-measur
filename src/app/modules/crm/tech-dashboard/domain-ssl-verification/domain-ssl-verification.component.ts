@@ -33,18 +33,19 @@ export class DomainSslVerificationComponent {
   record: any;
   wlSettingData: any;
   stepperData:any = [];
+  fromKey:string = "";
 
   stepperDataWeb = [
-    { id: 1, step: 1, isActive: true, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed:true },
-    { id: 3, step: 2, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false, isAllowed:false },
-    { id: 4, step: 3, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false, isAllowed:false },
+    { id: 1, step: 1, isActive: true, name: 'Manage Domain', minWidth: 7, isCompleted: false },
+    { id: 3, step: 2, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false },
+    { id: 4, step: 3, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false },
   ];
 
   stepperDataAndroidIos = [
-    { id: 1, step: 1, isActive: true, name: 'Open Developer Account', minWidth: 11, isCompleted: false, isAllowed: true },
-    { id: 2, step: 2, isActive: false, name: 'Manage Domain', minWidth: 7, isCompleted: false, isAllowed: false },
-    { id: 3, step: 3, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false, isAllowed: false },
-    { id: 4, step: 4, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false, isAllowed: false },
+    { id: 1, step: 1, isActive: true, name: 'Open Developer Account', minWidth: 11, isCompleted: false },
+    { id: 2, step: 2, isActive: false, name: 'Manage Domain', minWidth: 7, isCompleted: false },
+    { id: 3, step: 3, isActive: false, name: 'Verify Domain Pointing', minWidth: 10, isCompleted: false },
+    { id: 4, step: 4, isActive: false, name: 'Verify SSL', minWidth: 5, isCompleted: false },
   ];
 
   constructor(
@@ -53,17 +54,21 @@ export class DomainSslVerificationComponent {
   ) {
     this.record = data?.record;
     this.wlSettingData = data?.wlSettingList;
+    this.fromKey = data?.from;
   }
 
   ngOnInit(): void {
+    // stepper data array assign as per mobile or web
     if (this.record?.item_name?.toLowerCase().includes('android') ||
       this.record?.item_name?.toLowerCase().includes('ios')) {
       this.stepperData = [...this.stepperDataAndroidIos];
     } else {
       this.stepperData = [...this.stepperDataWeb];
     }
+
   }
 
+  // on each step completion, changes in isActive step, isCompleted step
   onStepComplete(completedStepId: number) {
     this.stepperData.forEach(step => {
       step.isActive = false;
@@ -90,6 +95,7 @@ export class DomainSslVerificationComponent {
   
   }
 
+  // Logic for previous page 
   onPreviousPage(id: number) {
       this.activeStepperId = id;
 

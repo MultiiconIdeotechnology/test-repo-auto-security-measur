@@ -36,6 +36,7 @@
 </div>
 
 <div class="body">
+    <!-- domain form component for web only (web:step 1) -->
     <app-manage-domain-form *ngIf="!(record?.item_name?.toLowerCase()?.includes('android') ||
         record?.item_name?.toLowerCase()?.includes('ios'))"
         [hidden]="activeStepperId !== 1" 
@@ -44,6 +45,7 @@
         (stepCompleted)="onStepComplete(1)">
     </app-manage-domain-form>
 
+    <!-- console account form for mobile(android and ios) (mobile: step 1) -->
     <app-console-account-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
         record?.item_name?.toLowerCase()?.includes('ios')" 
         [hidden]="activeStepperId !== 1" 
@@ -52,6 +54,7 @@
         [wlSettingData]="wlSettingData">
     </app-console-account-form>
 
+    <!-- form for mobile(android and ios) only (mobile: step 2) -->
     <app-manage-mobile-app-domain-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
         record?.item_name?.toLowerCase()?.includes('ios')" 
         [hidden]="activeStepperId !== 2" 
@@ -61,6 +64,9 @@
         (stepCompleted)="onStepComplete($event)" >
     </app-manage-mobile-app-domain-form>
 
+    <!-- verify domain for both web and mobile
+       step 2 for web
+       step 3 for mobile -->
     <app-verify-domain 
         [hidden]="activeStepperId !== 3"
         [data]="record" 
@@ -69,9 +75,13 @@
         (previousPage)="onPreviousPage($event)">
     </app-verify-domain>
 
+    <!-- verify ssl for both web and mobile
+    step 3 for web
+    step 4 for mobile -->
     <app-verify-ssl 
         [hidden]="activeStepperId !== 4" 
         [data]="record"
+        [fromKey]="fromKey"
         (previousPage)="onPreviousPage($event)">
     </app-verify-ssl>
 </div>

@@ -36,6 +36,7 @@ export class CommonFilterComponent implements OnInit {
 
     ngOnInit(): void {
         this._filterService.showFilter$.subscribe(() => {
+            console.log("showFilterSubscribe")
             this.isEditable = this.checkIsEditable();
         });
     }
@@ -304,7 +305,7 @@ export class CommonFilterComponent implements OnInit {
                 const currentMatchMode = currentFiltData[key]?.matchMode;
 
                 // If any value or matchMode is different
-                if(currentFiltData[key].value && currentFiltData[key].value?.id) {
+                if(currentFiltData && currentFiltData[key]?.value && currentFiltData[key].value?.id) {
                     if (activeValue.id !== currentValue.id) {
                         return true;
                     }
