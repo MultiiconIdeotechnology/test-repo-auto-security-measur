@@ -5,13 +5,10 @@ import { DatePipe } from '@angular/common';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { TechBusinessService } from 'app/services/tech-business.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { Linq } from 'app/utils/linq';
-import { Routes } from 'app/common/const';
 import { WalletService } from 'app/services/wallet-credit.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-credit-logs',
@@ -22,7 +19,8 @@ import { WalletService } from 'app/services/wallet-credit.service';
     MatIconModule,
     DatePipe,
     ReactiveFormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule
   ],
   templateUrl: './credit-logs.component.html',
   styleUrls: ['./credit-logs.component.scss']
