@@ -85,8 +85,11 @@ export class PspEntyProfileFormComponent {
 
             this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
             if(!(this.profileFormData && this.profileFormData?.id)){
-              localStorage.setItem('pspSetupProfile', JSON.stringify({id:resp.id, profile_name:this.formGroup.get('profile_name')?.value}))
+              localStorage.setItem('pspSetupProfile', JSON.stringify({id:resp.id, profile_name:this.formGroup.get('profile_name')?.value}));
+              this.formGroup.get('id').patchValue(resp.id);
               this.pspSetupService.managePgProfileSubject.next(true);
+            } else {
+              localStorage.setItem('pspSetupProfile', JSON.stringify({id:this.profileFormData.id, profile_name:this.formGroup.get('profile_name')?.value}))
             }
             this.toasterService.showToast('success', 'Profile name saved successfully');
           }

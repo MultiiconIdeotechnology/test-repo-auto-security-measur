@@ -91,7 +91,7 @@
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns" let-i="rowIndex">
-                <tr [ngClass]="!element.is_enabledd ? 'opacity-38' : ''">
+                <tr [ngClass]="!element.is_enabled ? 'opacity-38' : ''">
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
