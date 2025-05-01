@@ -316,6 +316,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         data: record,
         panelClass:'zero-dialog',
         disableClose: true,
+        backdropClass:'custom-dialog-backdrop',
         maxWidth:'1260px',
         minWidth:'900px'
       })
