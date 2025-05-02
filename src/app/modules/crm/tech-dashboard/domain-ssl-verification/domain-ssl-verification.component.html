@@ -1,0 +1,87 @@
+<div
+    class="header h-[5rem] bg-white dark:bg-gray-800 z-99 border-b dark:border-[#324154] border-gray-200 p-5 pt-3 pb-6 flex items-center justify-center gap-3 sticky top-0">
+    <div class="stepper flex flex-col items-center"
+        *ngFor="let item of stepperData; let idx = index; let isLast = last">
+        <div class="flex items-center">
+            <div class="flex flex-col relative gap-2 items-center">
+                <!-- Step Circle -->
+                <div class="mr-2 outline-none" [ngClass]="{
+                        'active-circle':item.isActive,
+                        'non-active-circle':!item.isActive && !item.isCompleted,
+                        'completed-circle': item.isCompleted,
+                        'completed-active-circle': item.isActive && item.isCompleted
+                    }" (click)="onStepper(item)">
+                    <span *ngIf="!item.isCompleted">{{item.step}}</span>
+                    <span *ngIf="item.isCompleted"><i
+                            class="material-icons text-base translate-y-[2px]">check</i></span>
+                </div>
+
+                <!-- Step Label -->
+                <div class="text-primary absolute bottom-[-26px] text-[14px]"
+                    [ngStyle]="{ 'min-width': item.minWidth + 'rem' }"
+                    [ngClass]="{'text-primary': item.isActive, 'dark:text-white text-black': item.isCompleted, 'text-[#5A7290]': !item.isActive && !item.isCompleted}">
+                    {{item.name}}
+
+                </div>
+            </div>
+
+            <!-- Step Divider -->
+            <div *ngIf="!isLast" class="stepper-line w-[146px] border px-2"></div>
+        </div>
+    </div>
+
+    <button type="button" mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1" class="absolute right-[12px]">
+        <mat-icon class="text-current text-[#374252] dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+    </button>
+</div>
+
+<div class="body">
+    <!-- domain form component for web only (web:step 1) -->
+    <app-manage-domain-form *ngIf="!(record?.item_name?.toLowerCase()?.includes('android') ||
+        record?.item_name?.toLowerCase()?.includes('ios'))"
+        [hidden]="activeStepperId !== 1" 
+        [data]="record" 
+        [wlSettingData]="wlSettingData"
+        (stepCompleted)="onStepComplete(1)">
+    </app-manage-domain-form>
+
+    <!-- console account form for mobile(android and ios) (mobile: step 1) -->
+    <app-console-account-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
+        record?.item_name?.toLowerCase()?.includes('ios')" 
+        [hidden]="activeStepperId !== 1" 
+        [data]="record"
+        (stepCompleted)="onStepComplete(1)"
+        [wlSettingData]="wlSettingData">
+    </app-console-account-form>
+
+    <!-- form for mobile(android and ios) only (mobile: step 2) -->
+    <app-manage-mobile-app-domain-form *ngIf="record?.item_name?.toLowerCase()?.includes('android') ||
+        record?.item_name?.toLowerCase()?.includes('ios')" 
+        [hidden]="activeStepperId !== 2" 
+        [data]="record"
+        [wlSettingData]="wlSettingData"
+        (previousPage)="onPreviousPage(1)"
+        (stepCompleted)="onStepComplete($event)" >
+    </app-manage-mobile-app-domain-form>
+
+    <!-- verify domain for both web and mobile
+       step 2 for web
+       step 3 for mobile -->
+    <app-verify-domain 
+        [hidden]="activeStepperId !== 3"
+        [data]="record" 
+        [wlSettingData]="wlSettingData"
+        (stepCompleted)="onStepComplete(3)"
+        (previousPage)="onPreviousPage($event)">
+    </app-verify-domain>
+
+    <!-- verify ssl for both web and mobile
+    step 3 for web
+    step 4 for mobile -->
+    <app-verify-ssl 
+        [hidden]="activeStepperId !== 4" 
+        [data]="record"
+        [fromKey]="fromKey"
+        (previousPage)="onPreviousPage($event)">
+    </app-verify-ssl>
+</div>

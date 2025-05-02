@@ -310,6 +310,7 @@ export const module_name = {
     insurance: 'Insurance',
     products_collection: 'Collection',
     products_receipts: 'Receipts',
+    products_tech_service: 'Tech Service',
     supplier_kyc: 'Supplier',
     airline_summary: 'Airline Summary',
     agent_wise_service_wise: 'Agent Wise Service Wise',
@@ -412,6 +413,7 @@ export const filter_module_name = {
     report_sales_agent_summary: "report_sales_agent_summary",
     products_collection: 'products_collection',
     products_receipts: 'products_receipts',
+    products_tech_service: 'products_tech_service',
     airline_summary: 'airline_summary',
     airline_offline: 'airline_offline_tat_Analysis',
     airline_monthly: 'Airline Monthly Analysis',
@@ -712,6 +714,7 @@ export const bookingsVisaPermissions = {
     viewDocumentsPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'View Documents', category_name: category_name.view },
     viewOnlyAssignedPermissions: { module_name: module_name.bookingsVisa, group_name: group_name.listingPage, operation_type: 'View Only Assigned', category_name: category_name.view },
     refundPermission: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Refund Visa', category_name: category_name.action },
+    priceManagePermission: { module_name: module_name.bookingsVisa, group_name: group_name.detailPage, operation_type: 'Manage Price', category_name: category_name.action },
 }
 
 export const bookingsInsurancePermissions = {

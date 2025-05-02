@@ -103,7 +103,7 @@
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['refNo','service', 'pspName', 'pspRefNo', 'type', 'amount', 'requestDate', 'refundedAmount', 'refundDate', 'outstanding_on_refundDate', 'over_due_count']"
+            [globalFilterFields]="['refNo','agentCode','agentName', 'service', 'pspName', 'pspRefNo', 'type', 'amount', 'requestDate', 'refundedAmount', 'refundDate', 'outstanding_on_refundDate', 'over_due_count']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
@@ -119,6 +119,12 @@
                     </th>
                     <th class="w-auto" pSortableColumn="service">
                         Service <p-sortIcon field="service" />
+                    </th>
+                    <th pSortableColumn="agentCode" pResizableColumn>
+                        Agent Code <p-sortIcon field="agentCode" />
+                    </th>
+                    <th pSortableColumn="agentName" pResizableColumn>
+                        Agent Name <p-sortIcon field="agentName" />
                     </th>
                     <th pSortableColumn="pspName" pResizableColumn>
                         PSP Name <p-sortIcon field="pspName" />
@@ -176,6 +182,14 @@
                         </p-columnFilter> -->
                     </th>
                     <th>
+                        <p-columnFilter type="numeric" matchMode="contains" field="agentCode"
+                            placeholder="Search by Agent Code" ariaLabel="Filter Agent Code" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="agentName"
+                            placeholder="Search by Agent Name" ariaLabel="Filter Agent Name" />
+                    </th>
+                    <th>
                         <p-columnFilter type="text" matchMode="contains" field="pspName"
                             placeholder="Search by PSP Name" ariaLabel="Filter PSP Name" />
                     </th>
@@ -219,8 +233,7 @@
                                     [options]="_filterService.dateRangeContractingList" optionLabel="label"
                                     placeholder="Select Option" appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <div
-                                            (click)="onContractionOption(option, primengTable, 'requestDate')">
+                                        <div (click)="onContractionOption(option, primengTable, 'requestDate')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
@@ -296,6 +309,8 @@
                     <td>
                         {{element.service || "-"}}
                     </td>
+                    <td>{{element.agentCode || "-" }}</td>
+                    <td>{{element.agentName || "-" }}</td>
                     <td>{{element.pspName || "-"}}</td>
                     <td>{{element.pspRefNo || "-"}}</td>
                     <td class="text-red-600">{{element.type || "-"}}</td>
@@ -304,14 +319,15 @@
                     <td>
                         {{(element.refundDate | date: "dd-MM-yyyy HH:mm:ss") || "-"}}
                     </td>
-                    <td class="text-right">{{element.refundedAmount ?  (element.refundedAmount.toFixed(2) | number:'1.2-2') : "0"}}</td>
+                    <td class="text-right">{{element.refundedAmount ? (element.refundedAmount.toFixed(2) |
+                        number:'1.2-2') : "0"}}</td>
                     <td>{{element.paymentMethod || "-"}}</td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="11" class="text-center font-semibold text-lg">
+                    <td colspan="12" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

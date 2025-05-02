@@ -35,6 +35,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
+import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
 
 @Component({
     selector: 'app-crm-tech-dashboard-completed',
@@ -231,27 +232,55 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         })
     }
 
-    wlSetting(record): void {
+    // wlSetting(record): void {
+    //     if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
+    //         return this.alertService.showToast('error', messages.permissionDenied);
+    //     }
+
+    //     this.crmService.getWLSettingList(record?.code).subscribe({
+    //         next: (data) => {
+    //             this.isLoading = false;
+    //             this.getWLSettingList = data[0];
+
+    //             this.matDialog.open(PendingWLSettingComponent, {
+    //                 data: { data: record, wlsetting: this.getWLSettingList },
+    //                 disableClose: true,
+    //             });
+    //         },
+    //         error: (err) => {
+    //             this.alertService.showToast('error', err, 'top-right', true);
+    //             this.isLoading = false;
+    //         },
+    //     });
+    // }
+
+    wlSetting(record:any){
         if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-
-        this.crmService.getWLSettingList(record?.code).subscribe({
-            next: (data) => {
-                this.isLoading = false;
-                this.getWLSettingList = data[0];
-
-                this.matDialog.open(PendingWLSettingComponent, {
-                    data: { data: record, wlsetting: this.getWLSettingList },
-                    disableClose: true,
-                });
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-                this.isLoading = false;
-            },
-        });
-    }
+    
+            this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+                next: (data) => {
+                    this.isLoading = false;
+                    this.getWLSettingList = data[0];
+    
+                    this.matDialog.open(DomainSslVerificationComponent, {
+                        disableClose: true,
+                        data: {record:record, wlSettingList:this.getWLSettingList, from:'completed'},
+                        panelClass: ['custom-dialog-modal-md'],
+                        autoFocus: false,
+                      }).afterClosed().subscribe((res:any) => {
+                        if(res && res == 'completed'){
+                            this.refreshItems();
+                        }
+                    })
+                },
+                error: (err) => {
+                    this.alertService.showToast('error', err, 'top-right', true);
+                    this.isLoading = false;
+                },
+            });
+        }
 
     link(record): void {
         if (!Security.hasPermission(techDashPermissions.linkPermissions)) {

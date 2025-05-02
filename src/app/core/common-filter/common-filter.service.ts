@@ -120,6 +120,7 @@ export class CommonFilterService {
 
     // update Data
     updateDrawers(data: any) {
+        console.log("data>>,", data)
         this.drawersUpdated.next(data);
     }
 
