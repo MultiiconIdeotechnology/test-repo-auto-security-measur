@@ -35,6 +35,7 @@ export class ConsoleAccountFormComponent {
   @Output() stepAllowed = new EventEmitter<number>();
   is_account_active:boolean = false;
   androidLink:any = 'https://drive.google.com/file/d/1h_mtGMchG6QelEDspDWWpUUEa9h0jiR3/view?usp=drive_link';
+  adroidLinkVideoLink:string = "https://drive.google.com/file/d/1Q06Oi5CsLRKxxqAw65ONbi-PUtlSAUB9/view?usp=sharing";
   iosLink:string = "";
   formGroup !:FormGroup
 
@@ -76,6 +77,15 @@ export class ConsoleAccountFormComponent {
       is_account_active :this.wlSettingData?.is_account_active,
     });
 
+  }
+
+  openVideoLink(){
+    const itemName = this.data?.item_name?.toLowerCase();
+    if (itemName?.includes('android')) {
+      window.open(this.adroidLinkVideoLink, '_blank'); 
+    } else if (itemName?.includes('ios')){
+      window.open(this.iosLink, '_blank');
+    }
   }
 
   openMoreDetails(){

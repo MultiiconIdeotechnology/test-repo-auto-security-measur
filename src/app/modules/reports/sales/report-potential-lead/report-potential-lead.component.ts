@@ -219,9 +219,41 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
           if (!Security.hasPermission(agentPermissions.dailCallPermissions)) {
               return this.alertService.showToast('error', messages.permissionDenied);
           }
+
+          const mappedRecord = {
+            agentid: record.agent_id,
+            status: record.status,
+            acCode: record.ac_code,
+            agencyName: record.agency_name,
+            callPurpose: record.callPurpose,
+            currentProduct: record.currentProduct,
+            offerings: record.offerings,
+            priority_id: record.priority_id,
+            contactPerson: record.contact_Person,
+            contactPersonMobileCode: record.contact_Person_MobileCode,
+            mobileNumber: record.mobile_number,
+            emailAddress: record.email_Address,
+            rmName: record.relationship_manager_name,
+            callCount: record.call_Count,
+            masterID: record.masterID,
+            preferredLanguage: record.preferred_anguage,
+            serviceOffered_by_ta: record.serviceOffered_by_ta,
+            is_wl: record.is_wl,
+            // Optional: add defaults if missing
+            createdDate: record.createdDate || null,
+            webLastLogin: record.webLastLogin || null,
+            iosLastLogin: record.iosLastLogin || '',
+            androidLastLogin: record.androidLastLogin || '',
+            lastTransaction: record.lastTransaction || null,
+            lastCallDate: record.lastCallDate || null,
+            lastFeedback: record.lastFeedback || null,
+            first_login_date_time: record.first_login_date_time || null,
+            first_transaction_date_time: record.first_transaction_date_time || null,
+            currencySymbol: record.currencySymbol || '₹',
+        };
   
           this.matDialog.open(DialAgentCallListComponent, {
-              data: { data: record, readonly: true, agentDialCallFlag: true },
+              data: { data: mappedRecord, readonly: true, agentDialCallFlag: true },
               disableClose: true,
           }).afterClosed().subscribe({
               next: (res) => {
@@ -249,21 +281,53 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
       }
   
       callHistory(record: any): void {
-          if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
-              return this.alertService.showToast('error', messages.permissionDenied);
-          }
-  
-          this.matDialog.open(DialAgentCallListComponent, {
-              data: { data: record, readonly: true, selectedTabIndex: 3 },
-              disableClose: true,
-          }).afterClosed().subscribe({
-              next: (res) => {
-                  if (res) {
-                      this.refreshItems();
-                  }
-              }
-          });
-      }
+        if (!Security.hasPermission(agentPermissions.callHistoryPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
+    
+        const mappedRecord = {
+            agentid: record.agent_id,
+            status: record.status,
+            acCode: record.ac_code,
+            agencyName: record.agency_name,
+            callPurpose: record.callPurpose,
+            currentProduct: record.currentProduct,
+            offerings: record.offerings,
+            priority_id: record.priority_id,
+            contactPerson: record.contact_Person,
+            contactPersonMobileCode: record.contact_Person_MobileCode,
+            mobileNumber: record.mobile_number,
+            emailAddress: record.email_Address,
+            rmName: record.relationship_manager_name,
+            callCount: record.call_Count,
+            masterID: record.masterID,
+            preferredLanguage: record.preferred_anguage,
+            serviceOffered_by_ta: record.serviceOffered_by_ta,
+            is_wl: record.is_wl,
+            // Optional: add defaults if missing
+            createdDate: record.createdDate || null,
+            webLastLogin: record.webLastLogin || null,
+            iosLastLogin: record.iosLastLogin || '',
+            androidLastLogin: record.androidLastLogin || '',
+            lastTransaction: record.lastTransaction || null,
+            lastCallDate: record.lastCallDate || null,
+            lastFeedback: record.lastFeedback || null,
+            first_login_date_time: record.first_login_date_time || null,
+            first_transaction_date_time: record.first_transaction_date_time || null,
+            currencySymbol: record.currencySymbol || '₹',
+        };
+    
+        this.matDialog.open(DialAgentCallListComponent, {
+            data: { data: mappedRecord, readonly: true, selectedTabIndex: 3 },
+            disableClose: true,
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res) {
+                    this.refreshItems();
+                }
+            }
+        });
+    }
   
       marketingMaterials(record): void {
           if (!Security.hasPermission(agentPermissions.marketingMaterialPermissions)) {
@@ -281,7 +345,7 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
           //     return this.alertService.showToast('error', messages.permissionDenied);
           // }
   
-          Linq.recirect([Routes.customers.agent_entry_route + '/' + record.agentid + '/readonly']);
+          Linq.recirect([Routes.customers.agent_entry_route + '/' + record.agent_id + '/readonly']);
       }
   
       dormants(record): void {
@@ -297,13 +361,13 @@ export class ReportPotentialLeadComponent extends BaseListingComponent {
                       'Are you sure to '
                       + label.toLowerCase() +
                       ' ' +
-                      record.agencyName +
+                      record.agency_name +
                       ' ?',
               })
               .afterClosed()
               .subscribe((res) => {
                   if (res === 'confirmed') {
-                      this.crmService.dormant(record?.agentid).subscribe({
+                      this.crmService.dormant(record?.agent_id).subscribe({
                           next: (res) => {
                               this.alertService.showToast('success', 'Dormant has been completed!', 'top-right', true);
                               this.refreshItems();
