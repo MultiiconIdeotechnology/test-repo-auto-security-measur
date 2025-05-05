@@ -36,7 +36,6 @@ export class CommonFilterComponent implements OnInit {
 
     ngOnInit(): void {
         this._filterService.showFilter$.subscribe(() => {
-            console.log("showFilterSubscribe")
             this.isEditable = this.checkIsEditable();
         });
     }
