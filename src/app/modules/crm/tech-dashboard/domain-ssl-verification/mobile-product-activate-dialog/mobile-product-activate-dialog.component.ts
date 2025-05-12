@@ -45,7 +45,7 @@ export class MobileProductActivateDialogComponent {
     })
 
     // setting
-    if(this.record?.item_name.toLowerCase()?.includes('android')){
+    if (this.record?.item_name.toLowerCase()?.includes('android')) {
       this.formGroup.get('android_app_url').setValidators(Validators.required);
       this.formGroup.get('ios_app_url').clearValidators();
       this.formGroup.get('android_app_url').patchValue(this.getWLSettingList.android_app_url);
@@ -68,29 +68,48 @@ export class MobileProductActivateDialogComponent {
     const isRiseProduct = this.record?.item_name?.toLowerCase().includes('rise');
 
     if (isRiseProduct || this.getWLSettingList) {
-      let payloadData = this.formGroup.value;
-      payloadData.agent_id = this.record?.agentid;
-      payloadData.product_id = this.record?.subid;
-
-      this.domainVarifyService.createDomain(payloadData).subscribe({
-        next: (res) => {
-          if (res) {
-            this.alertService.showToast('success', 'Product activated Successfully!');
-            this.matDialogRef.close('pending');
-            this.isLoading = false;
-            // this.domainVarifyService.createUpdateDomainSubject.next(res);
-            // formDirective.resetForm()
-          }
-
-        }, error: (err) =>{
-              this.alertService.showToast('error', err);
-              this.isLoading = false;
-        } 
-      })
+      this.createDomain()
+      this.activateMobileProduct()
     } else {
       this.alertService.showToast('error', 'WL not found ', 'top-right', true);
       this.isLoading = false;
     }
 
   }
+
+  // api just to save app url
+  createDomain() {
+    let payloadData = this.formGroup.value;
+    payloadData.agent_id = this.record?.agentid;
+    payloadData.product_id = this.record?.subid;
+    this.domainVarifyService.createDomain(payloadData).subscribe({
+      next: (res) => {
+        if (res) {
+          console.log("App URL saved successfully");
+        }
+
+      }, error: (err) => {
+        this.alertService.showToast('error', err);
+      }
+    })
+  }
+
+  // final step to activate andoroid/ios product
+  activateMobileProduct() {
+    this.domainVarifyService.generateSSl(this.getWLSettingList?.wl_id, this.record?.subid).subscribe({
+      next: (res) => {
+        if (res) {
+          this.alertService.showToast('success', 'Product activated successfully');
+          this.matDialogRef.close('pending');
+          this.isLoading = false;
+        }
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err)
+        this.isLoading = false;
+      }
+
+    })
+  }
+
 }
