@@ -27,7 +27,7 @@ export class VerifySslComponent {
   isDomainFalse: boolean = true;
   wlId: any;
   @Input() data: any;
-  @Input() fromKey:string = "";
+  @Input() fromKey: string = "";
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() previousPage = new EventEmitter<number>();
 
@@ -82,11 +82,17 @@ export class VerifySslComponent {
   }
 
   onPreviousPage() {
-      this.previousPage.emit(3);
-      this.domainVarifyService.verifyButtonSubject.next(true);
+    this.previousPage.emit(3);
+    this.domainVarifyService.verifyButtonSubject.next(true);
   }
 
   onCompleteProcess() {
+    if (this.data?.item_name?.toLowerCase()?.includes('android') ||
+      this.data?.item_name?.toLowerCase()?.includes('ios')) {
+      this.matDialogRef.close(this.fromKey);
+      return;
+    }
+    
     this.isLoading = true;
     let payloadObj = {
       id: this.data.id ? this.data.id : "",

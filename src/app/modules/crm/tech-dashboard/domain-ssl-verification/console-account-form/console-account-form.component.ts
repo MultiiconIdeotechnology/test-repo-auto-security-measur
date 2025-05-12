@@ -28,7 +28,6 @@ import { ToasterService } from 'app/services/toaster.service';
   styleUrls: ['./console-account-form.component.scss']
 })
 export class ConsoleAccountFormComponent {
-  wlId:any;
   @Input() data:any;
   @Input() wlSettingData:any
   @Output() stepCompleted = new EventEmitter<number>();
@@ -44,10 +43,6 @@ export class ConsoleAccountFormComponent {
     private domainVarifyService: DomainVerificationService,
     private alertService: ToasterService,
   ){
-
-    this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
-      this.wlId = res?.wl_id
-    })
     
   }
 
@@ -108,7 +103,7 @@ export class ConsoleAccountFormComponent {
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentid;
     payloadData.product_id = this.data?.subid;
-    payloadData.wl_id = this.wlId;
+    payloadData.wl_id = this.wlSettingData?.wl_id;
     payloadData.is_account_active = this.is_account_active;
 
     this.domainVarifyService.androidIosConfig(payloadData).subscribe({
