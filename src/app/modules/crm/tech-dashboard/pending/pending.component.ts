@@ -37,6 +37,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
+import { MobileProductActivateDialogComponent } from '../domain-ssl-verification/mobile-product-activate-dialog/mobile-product-activate-dialog.component';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
@@ -298,11 +299,11 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
 
                 this.matDialog.open(DomainSslVerificationComponent, {
                     disableClose: true,
-                    data: { record: record, wlSettingList: this.getWLSettingList, from:'pending' },
+                    data: { record: record, wlSettingList: this.getWLSettingList, from: 'pending' },
                     panelClass: ['custom-dialog-modal-md'],
                     autoFocus: false,
-                }).afterClosed().subscribe((res:any) => {
-                    if(res && res == 'pending'){
+                }).afterClosed().subscribe((res: any) => {
+                    if (res && res == 'pending') {
                         this.refreshItems();
                     }
                 })
@@ -382,6 +383,31 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
 
+        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data[0];
+
+                this.matDialog.open(MobileProductActivateDialogComponent, {
+                    disableClose: true,
+                    data: { record: record, getWLSettingList: this.getWLSettingList, index: index },
+                    panelClass: ['zero-dialog'],
+                    autoFocus: false,
+                    width: '573px',
+                }).afterClosed().subscribe((res: any) => {
+                    if (res && res == 'pending') {
+                        this.refreshItems();
+                    }
+                });
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
+
+    getWlSettingList(record: any, index: any) {
         this.crmService.getWLSettingList(record?.code).subscribe({
             next: (data) => {
                 this.isLoading = false;

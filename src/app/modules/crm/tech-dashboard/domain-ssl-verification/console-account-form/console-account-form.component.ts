@@ -28,13 +28,13 @@ import { ToasterService } from 'app/services/toaster.service';
   styleUrls: ['./console-account-form.component.scss']
 })
 export class ConsoleAccountFormComponent {
-  wlId:any;
   @Input() data:any;
   @Input() wlSettingData:any
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() stepAllowed = new EventEmitter<number>();
   is_account_active:boolean = false;
   androidLink:any = 'https://drive.google.com/file/d/1h_mtGMchG6QelEDspDWWpUUEa9h0jiR3/view?usp=drive_link';
+  adroidLinkVideoLink:string = "https://drive.google.com/file/d/1Q06Oi5CsLRKxxqAw65ONbi-PUtlSAUB9/view?usp=sharing";
   iosLink:string = "";
   formGroup !:FormGroup
 
@@ -43,10 +43,6 @@ export class ConsoleAccountFormComponent {
     private domainVarifyService: DomainVerificationService,
     private alertService: ToasterService,
   ){
-
-    this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
-      this.wlId = res?.wl_id
-    })
     
   }
 
@@ -78,6 +74,15 @@ export class ConsoleAccountFormComponent {
 
   }
 
+  openVideoLink(){
+    const itemName = this.data?.item_name?.toLowerCase();
+    if (itemName?.includes('android')) {
+      window.open(this.adroidLinkVideoLink, '_blank'); 
+    } else if (itemName?.includes('ios')){
+      window.open(this.iosLink, '_blank');
+    }
+  }
+
   openMoreDetails(){
     const itemName = this.data?.item_name?.toLowerCase();
   
@@ -98,7 +103,7 @@ export class ConsoleAccountFormComponent {
     let payloadData = this.formGroup.value;
     payloadData.agent_id = this.data?.agentid;
     payloadData.product_id = this.data?.subid;
-    payloadData.wl_id = this.wlId;
+    payloadData.wl_id = this.wlSettingData?.wl_id;
     payloadData.is_account_active = this.is_account_active;
 
     this.domainVarifyService.androidIosConfig(payloadData).subscribe({

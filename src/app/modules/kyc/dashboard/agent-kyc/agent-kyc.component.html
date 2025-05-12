@@ -108,6 +108,9 @@
                     <th pSortableColumn="city_name" pResizableColumn>
                         City <p-sortIcon field="city_name" />
                     </th>
+                    <th pSortableColumn="pincode" pResizableColumn>
+                        Pincode <p-sortIcon field="pincode" />
+                    </th>
                     <th pSortableColumn="entry_date_time" pResizableColumn>
                         Date <p-sortIcon field="entry_date_time" />
                     </th>
@@ -173,6 +176,10 @@
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="city_name" placeholder="Search by City"
                             ariaLabel="Filter City" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="contains" field="pincode" placeholder="Search by Pincode"
+                            ariaLabel="Filter Pincode" />
                     </th>
                     <th>
                         <p-columnFilter field="entry_date_time" type="date">
@@ -246,6 +253,7 @@
                     <td>{{element.email_address || "-"}}</td>
                     <td>{{element.mobile_number || "-"}}</td>
                     <td>{{element.city_name || "-"}}</td>
+                    <td>{{element.pincode || "-"}}</td>
                     <td>
                         {{(element.entry_date_time | date: "dd-MM-yyyy HH:mm:ss") || "-"}}
                     </td>
