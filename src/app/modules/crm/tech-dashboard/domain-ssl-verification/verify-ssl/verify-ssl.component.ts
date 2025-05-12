@@ -89,7 +89,7 @@ export class VerifySslComponent {
   onCompleteProcess() {
     if (this.data?.item_name?.toLowerCase()?.includes('android') ||
       this.data?.item_name?.toLowerCase()?.includes('ios')) {
-      this.matDialogRef.close(this.fromKey);
+      this.matDialogRef.close();
       return;
     }
     
