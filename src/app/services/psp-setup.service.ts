@@ -73,14 +73,6 @@ export class PspSetupService {
     return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/assignPGProfile', model);
   }
 
-  
-
-  
-
-
-
-
-
   getPaymentModes(model:any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'PaymentGateway/getPaymentModes', model);
   }
