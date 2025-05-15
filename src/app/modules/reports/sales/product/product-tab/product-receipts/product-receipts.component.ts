@@ -295,6 +295,8 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                     { header: 'RM', property: 'rm_name' },
                     { header: 'Product name', property: 'product_name' },
                     { header: 'Amount', property: 'payment_amount' },
+                    { header: 'Actual Amount', property: 'actual_amount' },
+                    { header: 'Final Amount', property: 'final_amount' },
                     { header: 'Status', property: 'receipt_status' },
                     { header: 'Date', property: 'receipt_request_date' },
                 ],
