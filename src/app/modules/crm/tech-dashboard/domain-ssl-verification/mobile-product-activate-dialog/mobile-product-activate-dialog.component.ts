@@ -96,12 +96,18 @@ export class MobileProductActivateDialogComponent {
 
   // final step to activate andoroid/ios product
   activateMobileProduct() {
-    this.domainVarifyService.generateSSl(this.getWLSettingList?.wl_id, this.record?.subid).subscribe({
+    let payloadObj = {
+      id: this.record?.id,
+      is_activated: true,
+      agent_id: this.record?.agentid,
+      product_id: this.record?.product_id
+    }
+    this.domainVarifyService.activate(payloadObj).subscribe({
       next: (res) => {
         if (res) {
-          this.alertService.showToast('success', 'Product activated successfully');
+          this.alertService.showToast('success', 'Product activated Successfully!');
           this.matDialogRef.close('pending');
-          this.isLoading = false;
+          this.isLoading = false
         }
       },
       error: (err) => {
