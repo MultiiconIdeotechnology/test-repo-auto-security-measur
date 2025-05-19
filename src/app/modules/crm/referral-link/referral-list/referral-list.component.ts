@@ -13,7 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { RefferralService } from 'app/services/referral.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -24,6 +24,8 @@ import { takeUntil } from 'rxjs';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
+import { ReferralListInfoComponent } from './referral-list-info/referral-list-info.component';
 
 @Component({
     selector: 'app-referral-list',
@@ -49,7 +51,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         CommonModule,
         MatTabsModule,
         ReferralSettingsComponent,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        ReferralListInfoComponent,
     ]
 })
 export class ReferralListComponent extends BaseListingComponent {
@@ -61,6 +64,7 @@ export class ReferralListComponent extends BaseListingComponent {
     isFilterShow: boolean = false;
     employeeList: any[] = [];
     selectedRm: any;
+     selectedColumns: Column[];
 
     linkList: any[] = [
         { value: 'B2B Partner', label: 'B2B Partner' },
@@ -75,7 +79,12 @@ export class ReferralListComponent extends BaseListingComponent {
         { label: 'Deactive', value: false },
       ]
 
-    cols = [];
+    statusList:any[] = []
+
+    cols: Column[] = [
+        { field:'entry_by ', header: 'Entry By' },
+        { field:'referral_link_url', header: 'Link'}
+    ];
 
     constructor(
         public alertService: ToasterService,
@@ -84,22 +93,14 @@ export class ReferralListComponent extends BaseListingComponent {
         private refferralService: RefferralService,
         private clipboard: Clipboard,
         private entityService: EntityService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        private sidebarDialogService: SidebarCustomModalService
     ) {
         super(module_name.Referrallink)
         this.key = this.module_name;
-        // this.sortColumn = 'entry_date_time';
-        this.sortDirection = 'desc';
+        this.sortColumn = 'entry_date_time';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
-
-        this.entityService.onrefreshreferralEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
-            next: (item) => {
-                if (item) {
-                    this.refreshItems();
-                }
-            }
-        })
     }
 
     ngOnInit(): void {
@@ -108,7 +109,7 @@ export class ReferralListComponent extends BaseListingComponent {
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedRm = resp['table_config']['rm_id_filtres']?.value;
+            this.selectedRm = resp['table_config']['relationship_manager_id']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['entry_date_time'].value) {
@@ -128,7 +129,7 @@ export class ReferralListComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            this.selectedRm = filterData['table_config']['rm_id_filtres']?.value;
+            this.selectedRm = filterData['table_config']['relationship_manager_id']?.value;
             if (filterData['table_config']['entry_date_time'].value) {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
@@ -154,6 +155,10 @@ export class ReferralListComponent extends BaseListingComponent {
         })
     }
 
+    info(record:any){
+        this.sidebarDialogService.openModal('info', record);
+    }
+
     // Api to get the Employee list data
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
@@ -165,17 +170,6 @@ export class ReferralListComponent extends BaseListingComponent {
         if (!Security.hasEditEntryPermission(module_name.Referrallink)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        // this.matDialog
-        //     .open(ReferralEditComponent, {
-        //         data: { data: record, readonly: true },
-        //         disableClose: true,
-        //     })
-        //     .afterClosed()
-        //     .subscribe((res) => {
-        //         if (res) {
-        //             this.refreshItems();
-        //         }
-        //     });
         this.entityService.raisereferralEntityCall({ data: record, edit: true })
     }
 
@@ -183,20 +177,6 @@ export class ReferralListComponent extends BaseListingComponent {
         if (!Security.hasNewEntryPermission(module_name.Referrallink)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        // this.matDialog.open(ReferralEntryComponent,
-        //     { data: null })
-        //     .afterClosed()
-        //     .subscribe((res) => {
-        //         if (res) {
-        //             this.alertService.showToast(
-        //                 'success',
-        //                 'New record added',
-        //                 'top-right',
-        //                 true
-        //             );
-        //             this.refreshItems();
-        //         }
-        //     });
         this.entityService.raisereferralEntityCall({ create: true })
     }
 
@@ -257,6 +237,8 @@ export class ReferralListComponent extends BaseListingComponent {
 		})
 
 	}
+
+    exportExcel(){}
 
     getNodataText(): string {
         if (this.isLoading)
