@@ -73,15 +73,15 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [columns]="selectedColumns" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [columns]="selectedColumns" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             styleClass="p-datatable-gridlines p-datatable-sm">
             <!-- Link , No Of Signup -->
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="text-center left-[-1px] w-[2rem]" pFrozenColumn>#</th>
                     <th pSortableColumn="referral_code" pResizableColumn>
@@ -105,7 +105,7 @@
                     <th pSortableColumn="start_date" pResizableColumn>
                         Start Date <p-sortIcon field="start_date" />
                     </th>
-                    <th pSortableColumn="entry_date_time" pResizableColumn>
+                    <th [ngClass]="{'w-full': !selectedColumns?.length}" pSortableColumn="entry_date_time" pResizableColumn>
                         Entry Time <p-sortIcon field="entry_date_time" />
                     </th>
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
@@ -121,8 +121,17 @@
                             placeholder="Search by Code" ariaLabel="Filter Code" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="campaign_category"
-                            placeholder="Search by Category" ariaLabel="Filter Category" />
+                        <p-columnFilter field="campaign_category" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="campaignCategoryList"
+                                    (onChange)="filter($event.value)" placeholder="Select Category Type"
+                                    [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div>{{ option }}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter field="referral_link_for" matchMode="equals" [showMenu]="false">
@@ -144,7 +153,7 @@
                                     (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
                                     appendTo="body">
                                     <ng-template let-option pTemplate="item">
-                                        <div>{{ option }}</div>
+                                        <div>{{ option.value }}</div>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
@@ -203,7 +212,7 @@
                         </p-columnFilter>
                     </th>
                     <th *ngFor="let col of columns">
-                         <p-columnFilter type="text" matchMode="contains" [field]="col.field"
+                        <p-columnFilter type="text" matchMode="contains" [field]="col.field"
                             [placeholder]="'Search by '+col.header" [ariaLabel]="'Filter '+col.header" />
                     </th>
 
@@ -211,9 +220,10 @@
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
-                <tr [ngClass]="{'opacity-30': !element.is_enable}">
+                <!-- [ngClass]="{'opacity-30': !element.is_enable}" -->
+                <tr>
                     <td class="left-[-1px] bg-gray-50 dark:bg-gray-900" alignFrozen="left" pFrozenColumn>
-                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
 
@@ -230,13 +240,13 @@
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600;">Delete</span>
                             </button>
-                            <button mat-menu-item (click)="setReferalLinkEnable(element)">
+                            <button mat-menu-item (click)="changeStatus(element)">
                                 <mat-icon class="mat-18">check_circle</mat-icon>
                                 <span style="font-weight: 600;">
-                                    {{element.is_enable ? 'Live' : 'Pause'}}
+                                    {{element.status == "Live" ? 'Pause' : 'Live'}}
                                 </span>
                             </button>
-                            <button mat-menu-item (click)="delete(element)">
+                            <button mat-menu-item (click)="spent(element)">
                                 <i class="material-icons mr-[12px] text-gray-500">access_time_filled</i>
                                 <span style="font-weight: 600;">Spent</span>
                             </button>
@@ -244,10 +254,10 @@
                                 <mat-icon svgIcon="heroicons_outline:clipboard-document-check"> </mat-icon>
                                 <span style="font-weight: 600;">Copy Link</span>
                             </button>
-                            <button mat-menu-item (click)="statusChangeLog(element)">
+                            <!-- <button mat-menu-item (click)="statusChangeLog(element)">
                                 <img src="assets/icons/logs.svg" class="mr-[12px] w-[24px] h-[24px]" alt="Logs">
                                 <span style="font-weight: 600">Status Change Log</span>
-                            </button>
+                            </button> -->
                         </mat-menu>
                     </td>
                     <td>
@@ -256,13 +266,14 @@
                     <td>{{element.campaign_category || '-'}}</td>
                     <td>{{element.referral_link_for || '-'}}</td>
                     <td>{{element.status || '-'}}</td>
-                    <td>{{element.relationship_manager_id || '-'}}</td>
+                    <td>{{element.relationship_manager_name || '-'}}</td>
                     <td>{{element.campaign_name || '-'}}</td>
                     <td class="text-left">{{(element.start_date | date:'dd-MM-yyyy') || '-'}}</td>
                     <td class="text-left">{{(element.entry_date_time | date:'dd-MM-yyyy') || '-'}}</td>
 
                     <td *ngFor="let col of columns; let isLast=last">
-                        {{col.field || "-"}}
+
+                        {{col[field] || "-"}}
                     </td>
                     <!-- <td class="text-center justify-center">
                         <mat-icon svgIcon="heroicons_outline:clipboard-document-check"
@@ -284,5 +295,7 @@
         </p-table>
     </div>
 </div>
+
 <!-- <referral-settings></referral-settings> -->
- <app-referral-list-info></app-referral-list-info>
+<app-referral-list-info></app-referral-list-info>
+<app-referral-list-entry></app-referral-list-entry>

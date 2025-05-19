@@ -1,0 +1,76 @@
+<fuse-drawer class="min-w-[400px] z-999" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'"
+    #settingsDrawer>
+    <div class="w-full">
+        <div class="flex justify-between border-b-2 border-gray-border px-5 py-4 h-15 sticky top-0">
+            <span class="text-lg font-semibold">{{title}}</span>
+            <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer " (click)="settingsDrawer.close(null)"></mat-icon>
+        </div>
+
+        <div class="px-5 py-2 h-[calc(100vh-120px)] overflow-auto">
+            <form [formGroup]="formGroup" class="flex flex-col gap-2">
+                <mat-form-field class="flex-grow">
+                    <mat-label>Code</mat-label>
+                    <input placeholder="Enter unique code" matInput required formControlName="referral_code" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Category</mat-label>
+                    <mat-select formControlName="campaign_category">
+                        <mat-option *ngFor="let item of campaignCategoryList" [value]="item">{{item}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Type</mat-label>
+                    <mat-select formControlName="referral_link_for">
+                        <mat-option *ngFor="let item of referralLinkTypeList" [value]="item">{{item}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Title</mat-label>
+                    <input placeholder="Ex. Meta Performance, Organic Web" matInput required formControlName="campaign_name" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Relationship Manager</mat-label>
+                    <mat-select formControlName="relationship_manager_id">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'No matching RM found'" [formControl]="rmfilterCtrl">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option value="">Any</mat-option>
+                        <mat-option *ngFor="let item of filteredRmList" [value]="item">{{item.employee_name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="w-full ">
+                    <mat-label>Link</mat-label>
+                    <input matInput [formControlName]="'referral_link_url'">
+                </mat-form-field>
+
+                <mat-form-field class="w-full ">
+                    <mat-label>Remark</mat-label>
+                    <textarea matInput [formControlName]="'remark'" class="min-h-10"></textarea>
+                </mat-form-field>
+
+                <!-- <mat-form-field class="w-full">
+                    <mat-label>Start Date</mat-label>
+                    <input matInput [matDatepicker]="picker1" formControlName="start_date" />
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field> -->
+            </form>
+
+        </div>
+
+        <div class="flex items-center justify-end border-t px-5 py-4 gap-3 h-15 sticky bottom-0">
+            <button mat-stroked-button (click)="settingsDrawer.close(null)">Close</button>
+            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="">
+                {{buttonLabel}}
+            </button>
+        </div>
+
+    </div>
+</fuse-drawer>

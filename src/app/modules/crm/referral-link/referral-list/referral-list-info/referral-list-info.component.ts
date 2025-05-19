@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { Subject, takeUntil } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -26,16 +26,17 @@ export class ReferralListInfoComponent implements OnInit {
   infoDisplayData: any;
 
   fieldMap = [
-    { key: 'Code', field: 'referral_code' },
-    { key: 'Category', field: 'campaign_category' },
-    { key: 'Type', field: 'referral_link_for' },
-    { key: 'Status', field: 'status' },
-    { key: 'RM', field: 'relationship_manager_id' },
-    { key: 'Title', field: 'campaign_name' },
-    { key: 'Start Date', field: 'start_date' },
-    { key: 'Entry Time', field: 'entry_date_time' },
-    { key: 'Entry By', field: 'entry_by' },
-    { key: 'Link', field: 'referral_link_url' }
+    { key: 'Code', field: 'referral_code', type:'text' },
+    { key: 'Category', field: 'campaign_category', type:'text' },
+    { key: 'Type', field: 'referral_link_for', type:'text' },
+    { key: 'Status', field: 'status', type:'text' },
+    { key: 'RM', field: 'relationship_manager_name', type:'text' },
+    { key: 'Title', field: 'campaign_name', type:'text' },
+    { key: 'Start Date', field: 'start_date', type:'date' },
+    { key: 'Entry Time', field: 'entry_date_time', type:'date' },
+    { key: 'Entry By', field: 'entry_by', type:'text' },
+    { key: 'Link', field: 'referral_link_url', type:'text' },
+    { key: 'Description', field: 'remark', type:'text'}
   ];
 
   constructor(
@@ -44,19 +45,31 @@ export class ReferralListInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      console.log("res", res)
       if (res && res.data) {
-        this.infoData = res.data;
-        this.showInfoPopup(this.infoData)
-        this.settingsDrawer.open();
+        if(res['type'] == 'info'){
+          this.infoData = res.data;
+          this.showInfoPopup(this.infoData)
+          this.settingsDrawer.open();
+        }
       }
     })
   }
 
   showInfoPopup(referral_link: any) {
-    this.infoDisplayData = this.fieldMap.map(({ key, field }) => ({
-      key,
-      value: referral_link[field]
-    }));
+    this.infoDisplayData = this.fieldMap.map(({ key, field, type }) => {
+        let value = referral_link?.[field];
+
+        if(type == 'date'){
+          if(value){
+            value = formatDate(value, 'dd-MM-yyyy', 'en-US');
+          } else {
+            value = "-"
+          }
+        } 
+
+        return {key, value:value ?? '-'}
+    });
   }
 
   ngOnDestroy() {

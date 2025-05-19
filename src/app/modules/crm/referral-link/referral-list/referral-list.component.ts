@@ -20,12 +20,15 @@ import { ToasterService } from 'app/services/toaster.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { EntityService } from 'app/services/entity.service';
 import { ReferralSettingsComponent } from '../referral-entry-settings/referral-entry-settings.component';
-import { takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { ReferralListInfoComponent } from './referral-list-info/referral-list-info.component';
+import { ReferralListEntryComponent } from './referral-list-entry/referral-list-entry.component';
+import { DataManagerService } from 'app/services/data-manager.service';
+import { ReferralListSpentDialogComponent } from './referral-list-spent-dialog/referral-list-spent-dialog.component';
 
 @Component({
     selector: 'app-referral-list',
@@ -53,6 +56,7 @@ import { ReferralListInfoComponent } from './referral-list-info/referral-list-in
         ReferralSettingsComponent,
         PrimeNgImportsModule,
         ReferralListInfoComponent,
+        ReferralListEntryComponent,
     ]
 })
 export class ReferralListComponent extends BaseListingComponent {
@@ -64,7 +68,8 @@ export class ReferralListComponent extends BaseListingComponent {
     isFilterShow: boolean = false;
     employeeList: any[] = [];
     selectedRm: any;
-     selectedColumns: Column[];
+    selectedColumns: Column[];
+    destroy$ = new Subject<any>();
 
     linkList: any[] = [
         { value: 'B2B Partner', label: 'B2B Partner' },
@@ -74,16 +79,23 @@ export class ReferralListComponent extends BaseListingComponent {
         { value: 'API', label: 'API' },
     ];
 
-    actionList:any[] = [
+    campaignCategoryList: string[] = ['Performance', 'Organic', 'Direct', 'Influencer'];
+
+    actionList: any[] = [
         { label: 'Active', value: true },
         { label: 'Deactive', value: false },
-      ]
+    ]
 
-    statusList:any[] = []
+    statusList: any = [
+        { label: 'Live', value: 'Live' },
+        { label: 'Pause', value: 'Pause' }
+    ];
+
+    // statusList: any[] = []
 
     cols: Column[] = [
-        { field:'entry_by ', header: 'Entry By' },
-        { field:'referral_link_url', header: 'Link'}
+        { field: 'entry_by ', header: 'Entry By' },
+        { field: 'referral_link_url', header: 'Link' }
     ];
 
     constructor(
@@ -92,9 +104,10 @@ export class ReferralListComponent extends BaseListingComponent {
         private toasterService: ToasterService,
         private refferralService: RefferralService,
         private clipboard: Clipboard,
-        private entityService: EntityService,
         public _filterService: CommonFilterService,
-        private sidebarDialogService: SidebarCustomModalService
+        private sidebarDialogService: SidebarCustomModalService,
+        private dataManagerService: DataManagerService,
+        private matDialog: MatDialog,
     ) {
         super(module_name.Referrallink)
         this.key = this.module_name;
@@ -106,6 +119,11 @@ export class ReferralListComponent extends BaseListingComponent {
     ngOnInit(): void {
         // this.getEmployeeList("");
         this.employeeList = this._filterService.originalRmList;
+
+        this.dataManagerService.dataList$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+            console.log("res in list>>", res);
+            this.dataList = res;
+        })
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -148,6 +166,7 @@ export class ReferralListComponent extends BaseListingComponent {
             next: data => {
                 this.isLoading = false;
                 this.dataList = data.data;
+                this.dataManagerService.setInitialData(this.dataList);
                 this.totalRecords = data.total;
             }, error: err => {
                 this.isLoading = false;
@@ -155,7 +174,7 @@ export class ReferralListComponent extends BaseListingComponent {
         })
     }
 
-    info(record:any){
+    info(record: any) {
         this.sidebarDialogService.openModal('info', record);
     }
 
@@ -170,14 +189,14 @@ export class ReferralListComponent extends BaseListingComponent {
         if (!Security.hasEditEntryPermission(module_name.Referrallink)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        this.entityService.raisereferralEntityCall({ data: record, edit: true })
+        this.sidebarDialogService.openModal('edit', record)
     }
 
     createReferral(): void {
         if (!Security.hasNewEntryPermission(module_name.Referrallink)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        this.entityService.raisereferralEntityCall({ create: true })
+        this.sidebarDialogService.openModal('create', null)
     }
 
     deleteInternal(record): void {
@@ -194,51 +213,99 @@ export class ReferralListComponent extends BaseListingComponent {
                 this.refferralService.delete(record.id).subscribe({
                     next: () => {
                         this.alertService.showToast('success', "Referral Link has been deleted!", "top-right", true);
-                        this.refreshItems()
+                        let index = this.dataList.findIndex((item: any) => item.id == record.id);
+                        this.dataList.splice(index, 1);
                     }
                 })
             }
         })
     }
 
-    linkCopy(data:any) {
-        if(data.is_enable){
+    linkCopy(data: any) {
+        if (data.is_enable) {
             this.clipboard.copy(data.referral_link);
             this.toasterService.showToast('success', 'Copied');
         }
     }
 
-    setReferalLinkEnable(data: any): void {
-		// if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
-		// 	return this.alertService.showToast('error', messages.permissionDenied);
-		// }
+    spent(record:any) {
+        this.matDialog.open(ReferralListSpentDialogComponent,{
+            data: record,
+            panelClass: 'custom-dialog-modal',
+            backdropClass: 'custom-dialog-backdrop',
+            disableClose: true
+        }).afterClosed().subscribe(res => {
+            if (res) {
+                // this.refreshItems();
+            }
+        })
+    }
 
-		const label: string = data.is_enable ? 'Deactivate Referral Link' : 'Activate Referral Link';
-		this.conformationService.open({
-			title: label,
-			message: 'Are you sure to ' + label.toLowerCase() + ' ?'
-		}).afterClosed().subscribe({
-			next: (res) => {
-				if (res === 'confirmed') {
-						this.refferralService.setReferalLinkEnable(data.id).subscribe({
-							next: () => {
-                                if(!data.is_enable){
-                                    this.alertService.showToast('success', "Referral Link has been activated.", "top-right", true);
-                                } else {
-                                    this.alertService.showToast('success', "Referral Link has been deactivated.", "top-right", true);
-                                }
+    // setReferalLinkEnable(data: any): void {
+    //     // if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
+    //     // 	return this.alertService.showToast('error', messages.permissionDenied);
+    //     // }
 
-                                data.is_enable = !data.is_enable;
-                              
-							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-						});
-				}
-			}
-		})
+    //     const label: string = data.is_enable ? 'Deactivate Referral Link' : 'Activate Referral Link';
+    //     this.conformationService.open({
+    //         title: label,
+    //         message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+    //     }).afterClosed().subscribe({
+    //         next: (res) => {
+    //             if (res === 'confirmed') {
+    //                 this.refferralService.setReferalLinkEnable(data.id).subscribe({
+    //                     next: () => {
+    //                         if (!data.is_enable) {
+    //                             this.alertService.showToast('success', "Referral Link has been activated.", "top-right", true);
+    //                         } else {
+    //                             this.alertService.showToast('success', "Referral Link has been deactivated.", "top-right", true);
+    //                         }
 
-	}
+    //                         data.is_enable = !data.is_enable;
 
-    exportExcel(){}
+    //                     }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+    //                 });
+    //             }
+    //         }
+    //     })
+
+    // }
+
+    changeStatus(data: any): void {
+        // if (!Security.hasPermission(walletRechargePermissions.auditUnauditPermissions)) {
+        // 	return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        const isCurrentlyLive = data?.status === 'Live';
+        const newStatus = isCurrentlyLive ? 'Pause' : 'Live';
+
+        this.conformationService.open({
+            title: newStatus,
+            message: `Are you sure you want to update status to ${newStatus}?`
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    const payload = { id: data?.id, status: newStatus };
+
+                    this.refferralService.statusChange(payload).subscribe({
+                        next: () => {
+                            data.status = newStatus; // ✅ update the status directly
+                            this.alertService.showToast(
+                                'success',
+                                `Status set to ${newStatus}`,
+                                'top-right',
+                                true
+                            );
+                        },
+                        error: (err) => this.alertService.showToast('error', err, 'top-right', true)
+                    });
+                }
+            }
+        });
+
+    }
+
+    exportExcel() { }
 
     getNodataText(): string {
         if (this.isLoading)
@@ -253,5 +320,8 @@ export class ReferralListComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+
+        this.destroy$.next(null);
+        this.destroy$.complete();
     }
 }
