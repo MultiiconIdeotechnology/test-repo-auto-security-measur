@@ -29,6 +29,8 @@ import { ReferralListInfoComponent } from './referral-list-info/referral-list-in
 import { ReferralListEntryComponent } from './referral-list-entry/referral-list-entry.component';
 import { DataManagerService } from 'app/services/data-manager.service';
 import { ReferralListSpentDialogComponent } from './referral-list-spent-dialog/referral-list-spent-dialog.component';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
 
 @Component({
     selector: 'app-referral-list',
@@ -91,8 +93,8 @@ export class ReferralListComponent extends BaseListingComponent {
         { label: 'Pause', value: 'Pause' }
     ];
 
-    statusColorMap:any = {
-        'Live':'text-green-600',
+    statusColorMap: any = {
+        'Live': 'text-green-600',
         'Pause': 'text-red-600'
     }
 
@@ -159,7 +161,7 @@ export class ReferralListComponent extends BaseListingComponent {
             if (filterData['table_config']['start_date'].value) {
                 filterData['table_config']['start_date'].value = new Date(filterData['table_config']['start_date'].value);
             }
-           
+
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
@@ -234,8 +236,8 @@ export class ReferralListComponent extends BaseListingComponent {
         }
     }
 
-    spent(record:any) {
-        this.matDialog.open(ReferralListSpentDialogComponent,{
+    spent(record: any) {
+        this.matDialog.open(ReferralListSpentDialogComponent, {
             data: record,
             panelClass: 'custom-dialog-modal',
             backdropClass: 'custom-dialog-backdrop',
@@ -311,7 +313,39 @@ export class ReferralListComponent extends BaseListingComponent {
 
     }
 
-    exportExcel() { }
+    exportExcel() {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast( 'error', messages.permissionDenied);
+        }
+
+        const filterReq = this.getNewFilterReq({})
+        filterReq['Take'] = this.totalRecords;
+
+        this.refferralService.getReferralLinkList(filterReq).subscribe((resp) => {
+            for (var dt of resp.data) {
+                dt.start_date = dt.start_date ? DateTime.fromISO(dt.start_date).toFormat('dd-MM-yyyy') : '';
+                dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy') : '';
+            }
+            Excel.export(
+                'Referral Link',
+                [
+                    { header: 'Code', property: 'referral_code' },
+                    { header: 'Category', property: 'campaign_category' },
+                    { header: 'Type', property: 'referral_link_for' },
+                    { header: 'Status', property: 'status' },
+                    { header: 'RM', property: 'relationship_manager_name' },
+                    { header: 'Title', property: 'campaign_name' },
+                    { header: 'Start Date', property: 'start_date' },
+                    { header: 'Entry Time', property: 'entry_date_time' },
+                    { header: 'Entry By', property: 'entry_by_name' },
+                    { header: 'Link', property: 'referral_link' },
+                ],
+                resp.data,
+                'Referral Link',
+                [{ s: { r: 0, c: 0 }, e: { r: 0, c: 14 } }]
+            );
+        });
+    }
 
     getNodataText(): string {
         if (this.isLoading)

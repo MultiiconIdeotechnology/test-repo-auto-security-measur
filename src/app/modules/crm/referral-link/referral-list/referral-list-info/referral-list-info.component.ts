@@ -69,7 +69,13 @@ export class ReferralListInfoComponent implements OnInit {
           }
         } 
 
-        return {key, value:value ?? '-'}
+        if(key == 'RM'){
+          if(!value){
+            value = 'Any'
+          }
+        }
+
+        return {key, value:value || '-'}
     });
   }
 

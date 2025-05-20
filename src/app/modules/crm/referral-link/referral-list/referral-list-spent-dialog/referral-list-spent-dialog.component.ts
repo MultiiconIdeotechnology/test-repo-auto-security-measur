@@ -68,7 +68,6 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-
     this.refreshItems()
   }
 
