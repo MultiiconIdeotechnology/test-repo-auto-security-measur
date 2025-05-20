@@ -34,8 +34,8 @@ export class ReferralListInfoComponent implements OnInit {
     { key: 'Title', field: 'campaign_name', type:'text' },
     { key: 'Start Date', field: 'start_date', type:'date' },
     { key: 'Entry Time', field: 'entry_date_time', type:'date' },
-    { key: 'Entry By', field: 'entry_by', type:'text' },
-    { key: 'Link', field: 'referral_link_url', type:'text' },
+    { key: 'Entry By', field: 'entry_by_name', type:'text' },
+    { key: 'Link', field: 'referral_link', type:'text' },
     { key: 'Description', field: 'remark', type:'text'}
   ];
 
@@ -59,6 +59,7 @@ export class ReferralListInfoComponent implements OnInit {
   showInfoPopup(referral_link: any) {
     this.infoDisplayData = this.fieldMap.map(({ key, field, type }) => {
         let value = referral_link?.[field];
+        console.log("key, value", key, value)
 
         if(type == 'date'){
           if(value){

@@ -105,7 +105,8 @@
                     <th pSortableColumn="start_date" pResizableColumn>
                         Start Date <p-sortIcon field="start_date" />
                     </th>
-                    <th [ngClass]="{'w-full': !selectedColumns?.length}" pSortableColumn="entry_date_time" pResizableColumn>
+                    <th [ngClass]="{'w-full': !selectedColumns?.length}" pSortableColumn="entry_date_time"
+                        pResizableColumn>
                         Entry Time <p-sortIcon field="entry_date_time" />
                     </th>
                     <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
@@ -265,15 +266,21 @@
                     </td>
                     <td>{{element.campaign_category || '-'}}</td>
                     <td>{{element.referral_link_for || '-'}}</td>
-                    <td>{{element.status || '-'}}</td>
-                    <td>{{element.relationship_manager_name || '-'}}</td>
+                    <td [ngClass]="statusColorMap[element.status]">{{element.status || '-'}}</td>
+                    <td>{{element.relationship_manager_name || "Any"}}</td>
                     <td>{{element.campaign_name || '-'}}</td>
                     <td class="text-left">{{(element.start_date | date:'dd-MM-yyyy') || '-'}}</td>
                     <td class="text-left">{{(element.entry_date_time | date:'dd-MM-yyyy') || '-'}}</td>
 
                     <td *ngFor="let col of columns; let isLast=last">
-
-                        {{col[field] || "-"}}
+                        <ng-container *ngIf="col.field === 'referral_link'; else plainText">
+                            <a class="underline" [href]="element[col.field]" target="_blank" rel="noopener noreferrer">
+                                {{ element[col.field] || '-' }}
+                            </a>
+                        </ng-container>
+                        <ng-template #plainText>
+                            <span>{{ element[col.field] || '-' }}</span>
+                        </ng-template>
                     </td>
                     <!-- <td class="text-center justify-center">
                         <mat-icon svgIcon="heroicons_outline:clipboard-document-check"

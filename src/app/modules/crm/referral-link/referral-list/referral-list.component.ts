@@ -91,11 +91,16 @@ export class ReferralListComponent extends BaseListingComponent {
         { label: 'Pause', value: 'Pause' }
     ];
 
+    statusColorMap:any = {
+        'Live':'text-green-600',
+        'Pause': 'text-red-600'
+    }
+
     // statusList: any[] = []
 
     cols: Column[] = [
-        { field: 'entry_by ', header: 'Entry By' },
-        { field: 'referral_link_url', header: 'Link' }
+        { field: 'entry_by_name', header: 'Entry By' },
+        { field: 'referral_link', header: 'Link' }
     ];
 
     constructor(
@@ -154,6 +159,7 @@ export class ReferralListComponent extends BaseListingComponent {
             if (filterData['table_config']['start_date'].value) {
                 filterData['table_config']['start_date'].value = new Date(filterData['table_config']['start_date'].value);
             }
+           
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];

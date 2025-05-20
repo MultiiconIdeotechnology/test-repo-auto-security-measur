@@ -1,10 +1,10 @@
 <div class="flex flex-col max-h-screen supplier_info">
     <div class="sticky top-0 z-10 dark:bg-gray-900 bg-white">
-        <div class="flex items-center justify-between border-b border-gray-border p-3 h-[4rem]">
+        <div class="flex items-center justify-between border-b border-gray-border p-3 h-[4rem] dark:bg-gray-800 bg-gray-50">
             <span class="font-inter font-semibold text-lg dark:text-white">{{data?.campaign_name ? data.campaign_name: ''}}</span>
             <span class="flex items-center gap-2">
                 <!-- Global search in modal -->
-                <div class="flex ctm_search dark:bg-gray-800">
+                <div class="flex ctm_search dark:bg-gray-900 ">
                     <input #inputRef matInput [autocomplete]="'off'" [placeholder]="'Search'"
                         (keyup.enter)="onGlobalFilterSearch(inputRef.value)" />
                     <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
@@ -30,18 +30,18 @@
         <form [formGroup]="formGroup" #formDirective="ngForm" class=" p-3 pb-0 dark:bg-gray-900 h-[8rem]">
             <div class="flex items-center gap-2">
                 <mat-form-field class="flex-grow">
-                    <!-- pearance="outline" -->
+                    <!-- apearance="outline" -->
                     <!-- <mat-label>Spent On</mat-label> -->
                     <input placeholder="Enter Spent On" matInput required formControlName="spentOn" />
                 </mat-form-field>
     
-                <mat-form-field class="flex-grow" appear>
+                <mat-form-field class="flex-grow">
                     <!-- ance="outline" -->
                     <!-- <mat-label>Spent Amount</mat-label> -->
                     <input appOnlyFloat  placeholder="Enter Spent Amount" matInput required formControlName="spentAmount" />
                 </mat-form-field>
     
-                <mat-form-field class="flex-grow" appe>
+                <mat-form-field class="flex-grow">
                     <!-- arance="outline" -->
                     <!-- <mat-label>Start Date</mat-label> -->
                     <input placeholder="Select Start Date" matInput [matDatepicker]="picker1" formControlName="startDate" />
@@ -49,7 +49,7 @@
                     <mat-datepicker #picker1></mat-datepicker>
                 </mat-form-field>
     
-                <mat-form-field class="flex-grow" ap>
+                <mat-form-field class="flex-grow">
                     <!-- pearance="outline" -->
                     <!-- <mat-label>end_date</mat-label> -->
                     <input placeholder="Select End Date" matInput [matDatepicker]="picker2" formControlName="endDate" />

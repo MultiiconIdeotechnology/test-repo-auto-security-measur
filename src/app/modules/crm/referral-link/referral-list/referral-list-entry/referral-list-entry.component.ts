@@ -65,7 +65,7 @@ export class ReferralListEntryComponent {
       campaign_category: ['', Validators.required],
       referral_link_for: ['', Validators.required],
       campaign_name: ['', Validators.required],
-      relationship_manager_id: ['', Validators.required],
+      relationship_manager_id: [''],
       referral_link_url: ['', Validators.required],
       remark: ['']
     })
@@ -90,9 +90,16 @@ export class ReferralListEntryComponent {
           this.referralData = res?.data;
           this.buttonLabel = "Save";
           this.formGroup.patchValue(res?.data);
-          let obj = this.rmList.find((item: any) => item.id == res?.data?.relationship_manager_id);
-          console.log("obj>>", obj)
-          this.formGroup.get('relationship_manager_id').patchValue(obj)
+          this.formGroup.get('referral_link_url').patchValue(res?.data?.referral_link)
+          console.log("rmList", this.rmList)
+          if(res?.data?.relationship_manager_id){
+            let obj = this.rmList.find((item: any) => item.id == res?.data?.relationship_manager_id);
+            console.log("obj>>", obj)
+            this.formGroup.get('relationship_manager_id').patchValue(obj)
+          } else {
+            this.formGroup.get('relationship_manager_id').patchValue("");
+          }
+
         }
       }
 
