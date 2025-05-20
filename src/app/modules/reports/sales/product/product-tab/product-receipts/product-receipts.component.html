@@ -48,11 +48,11 @@
                     </th>
 
                     <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
-                        Actual Amount <p-sortIcon field="payment_amount" />
+                        Without Tax <p-sortIcon field="payment_amount" />
                     </th>
 
                     <th class="text-right" pSortableColumn="final_amount" pResizableColumn>
-                        Final Amount <p-sortIcon field="final_amount" />
+                        With Tax <p-sortIcon field="final_amount" />
                     </th>
                     
                     <th pSortableColumn="receipt_status" pResizableColumn>
@@ -226,11 +226,11 @@
                     </td>
 
                     <td class="text-right">
-                        {{element.actual_currency_symbol}} {{element.actual_amount.toFixed(2) || 0}}
+                        {{element.actual_currency_symbol}} {{element.actual_amount ? (element.actual_amount.toFixed(2) | number: '1.2-2') : 0}}
                     </td>
 
                     <td class="text-right">
-                        {{element.currencySymbol}} {{element.final_amount.toFixed(2) || 0}}
+                        {{element.currencySymbol}} {{element.final_amount ? (element.final_amount.toFixed(2) | number:'1.2-2'): 0}}
                     </td>
 
                     <td>
@@ -262,7 +262,7 @@
                         {{total_actual_amount ? (total_actual_amount?.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
                      <td class="text-right">
-                        {{total_final_amount ? (total_final_amount?.toFixed(2) | number:'1.2-2') : 0}}
+                        {{finalAmountTotal ? (finalAmountTotal?.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
                     <td></td>
                     <td></td>

@@ -75,12 +75,12 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     dataList = [];
     total_amount: any = 0;
     total_actual_amount:any = 0;
+    finalAmountTotal:number = 0;
     selectedAgent: any;
     agentList: any[] = [];
     selectedRM: any;
     employeeList: any = [];
     user: any = {};
-
 
     statusList: any[] = [
         { label: 'Confirmed', value: 'Confirmed' },
@@ -252,6 +252,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 this.totalRecords = data?.total;
                 this.total_amount = data?.total_amount || 0;
                 this.total_actual_amount = data?.total_actual_amount || 0;
+                this.finalAmountTotal = data?.finalAmountTotal || 0;
                 this.isLoading = false;
                 if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
