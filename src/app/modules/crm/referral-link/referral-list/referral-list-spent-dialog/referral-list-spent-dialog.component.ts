@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
 
 @Component({
   selector: 'app-referral-list-spent-dialog',
@@ -27,7 +28,8 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    OnlyFloatDirective
   ],
   templateUrl: './referral-list-spent-dialog.component.html',
   styleUrls: ['./referral-list-spent-dialog.component.scss']
@@ -41,6 +43,9 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
   originalDataList: any[] = [];
   isFilterShow: boolean = false;
   isLoading: boolean = false;
+  entry_date_time: any = new Date();
+  customScrollHeight: any;
+  tableStyleObj: any = {};
 
   constructor(
     public matDialogRef: MatDialogRef<ReferralListSpentDialogComponent>,
@@ -54,7 +59,7 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
 
     this.formGroup = this.builder.group({
       id: [''],
-      campaignId: ['', Validators.required],
+      campaignId: [''],
       spentOn: ['', Validators.required],
       spentAmount: ['', Validators.required],
       startDate: ['', Validators.required],
@@ -64,18 +69,31 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
+
+    this.refreshItems()
   }
 
   refreshItems(event?: any): void {
     this.isLoading = true;
     let payload = this.getNewFilterReq(event);
-    // payload.id = this.data.id;
+    payload.id = this.data.id;
     this.referralService.getSpentList(payload).subscribe({
       next: (resp: any) => {
         this.dataList = resp;
-        // this.dataList.forEach((item: any) => item.signup = new Date(item.signup))
-        this.originalDataList = resp.data;
-        this.totalRecords = resp?.total || resp?.data?.length;
+        this.dataList.forEach((item: any) => {
+          item.start_date = new Date(item.start_date);
+          item.end_date = new Date(item.end_date);
+          item.entry_date_time = new Date(item.entry_date_time);
+        })
+        this.originalDataList = resp;
+        // for(let i = 0; i < 15; i++){
+        //   this.originalDataList.push(resp[resp.length - 1])
+        // }
+        this.totalRecords = this.originalDataList?.length;
+        if(this.dataList && this.dataList?.length){
+          this.customScrollHeight = (window.innerHeight - 247 - 100) + 'px';
+          this.tableStyleObj = { 'min-width': '50rem'}
+        }
         this.isLoading = false;
       },
       error: (err) => {
@@ -92,6 +110,7 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
   }
 
   editRow(data: any): void {
+
     this.formGroup.patchValue({
       id: data?.id,
       campaignId: data?.campaign_id,
@@ -101,6 +120,8 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
       endDate: new Date(data?.end_date),
       remark: data?.remark
     });
+
+    this.entry_date_time = data?.entry_date_time;
   }
 
   deleteRow(data: any, index: any, formDirective: FormGroupDirective): void {
@@ -114,6 +135,7 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
             this.referralService.deleteSpentRowById(data.id).subscribe({
               next: () => {
                 this.dataList.splice(index, 1);
+                this.totalRecords--;
                 this.alertService.showToast('success', 'Row deleted successfully', 'top-right');
                 formDirective.resetForm();
               },
@@ -130,20 +152,27 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
   submit(formDirective: FormGroupDirective) {
     this.isLoading = true;
     const payloadData = this.formGroup.value;
+    payloadData.campaignId = this.data?.id;
     this.referralService.createSpent(payloadData).subscribe({
       next: (res) => {
         if (payloadData.id) {
           this.dataList.forEach((item: any, index: number) => {
-            if (item.id == res.id) {
-              this.dataList[index] = payloadData;
+            if (item.id == res.record_id) {
+              let tableData = this.convertPayload(payloadData);
+              tableData['entry_date_time'] = this.entry_date_time;
+              this.dataList[index] = tableData;
+              formDirective.resetForm()
             }
           })
 
         } else {
-          payloadData.id = res.id;
-          this.formGroup.get('id').patchValue(res.id);
-          this.dataList.push(payloadData);
-          this.alertService.showToast('success', 'Pricing Saved successfully.');
+          payloadData.id = res.record_id;
+          this.formGroup.get('id').patchValue(res.record_id);
+          let tableData = this.convertPayload(payloadData);
+          tableData['entry_date_time'] = new Date();
+          this.dataList.unshift(tableData);
+          this.totalRecords++;
+          this.alertService.showToast('success', 'Data Saved successfully.');
           formDirective.resetForm();
         }
         this.isLoading = false;
@@ -154,6 +183,18 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
       }
     });
 
+  }
+
+  convertPayload(data: any) {
+    return {
+      id: data?.id,
+      campaign_id: data?.campaignId,
+      spent_on: data?.spentOn,
+      spent_amount: data?.spentAmount,
+      start_date: data?.startDate,
+      end_date: data?.endDate,
+      remark: data?.remark,
+    };
   }
 
 

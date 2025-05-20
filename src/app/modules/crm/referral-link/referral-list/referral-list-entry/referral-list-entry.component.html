@@ -67,7 +67,7 @@
 
         <div class="flex items-center justify-end border-t px-5 py-4 gap-3 h-15 sticky bottom-0">
             <button mat-stroked-button (click)="settingsDrawer.close(null)">Close</button>
-            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="">
+            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid || isLoading">
                 {{buttonLabel}}
             </button>
         </div>

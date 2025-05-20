@@ -49,6 +49,7 @@ export class ReferralListEntryComponent {
   referralLinkTypeList: string[] = ['B2B Partner', 'WL', 'Corporate', 'Supplier'];
   buttonLabel: string = 'Create';
   referralData:any = {};
+  isLoading:boolean = false;
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
@@ -131,20 +132,21 @@ export class ReferralListEntryComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-
+  
+    this.isLoading = true;
     let payload = this.formGroup.value;
     let relationManagerObj = this.formGroup.get('relationship_manager_id')?.value;
     payload.relationship_manager_id = relationManagerObj?.id;
     this.referralService.create(payload).subscribe({
       next: (res: any) => {
         payload.relationship_manager_name = relationManagerObj?.employee_name;
-        console.log("payload >>>", payload)
         if (!this.formGroup.get('id')?.value) {
           payload.id = res?.record_id;
           this.formGroup.get('id').patchValue(res?.record_id);
           this.dataManagerService.addItem(payload);
           this.settingsDrawer.close();  
           this.alertService.showToast('success', 'Referral link added successfully');
+          this.isLoading = false;
         } else {
           payload.entry_date_time = this.referralData?.entry_date_time;
           payload.start_date = this.referralData?.start_date;
@@ -152,10 +154,12 @@ export class ReferralListEntryComponent {
           this.dataManagerService.updateItem(payload);
           this.settingsDrawer.close();
           this.alertService.showToast('success', 'Refferal link list updated successfully');
+          this.isLoading = false;
         }
       },
       error: (err) => {
         this.alertService.showToast('error', err, 'top-right', true);
+        this.isLoading = false;
       },
     });
   }

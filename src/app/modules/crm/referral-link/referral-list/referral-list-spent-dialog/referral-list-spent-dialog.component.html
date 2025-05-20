@@ -1,13 +1,13 @@
 <div class="flex flex-col max-h-screen supplier_info">
-    <div class="sticky top-0 z-10 bg-gray-900">
-        <div class="flex items-center justify-between border-b border-gray-border p-3">
-            <span class="font-inter font-semibold text-lg text-white">{{data?.rm_name ? data.rm_name: ''}}</span>
+    <div class="sticky top-0 z-10 dark:bg-gray-900 bg-white">
+        <div class="flex items-center justify-between border-b border-gray-border p-3 h-[4rem]">
+            <span class="font-inter font-semibold text-lg dark:text-white">{{data?.campaign_name ? data.campaign_name: ''}}</span>
             <span class="flex items-center gap-2">
                 <!-- Global search in modal -->
                 <div class="flex ctm_search dark:bg-gray-800">
                     <input #inputRef matInput [autocomplete]="'off'" [placeholder]="'Search'"
                         (keyup.enter)="onGlobalFilterSearch(inputRef.value)" />
-                    <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                         (click)="onGlobalFilterSearch(inputRef.value)"></mat-icon>
                 </div>
 
@@ -22,81 +22,76 @@
 
                 <!-- close modal -->
                 <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
-                    <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                    <mat-icon class="text-current dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
                 </button>
             </span>
         </div>
 
-        <form [formGroup]="formGroup" #formDirective="ngForm" class="flex items-center gap-2 p-3 pb-1">
-            <mat-form-field class="flex-grow" ap>
-                <!-- pearance="outline" -->
-                <!-- <mat-label>Spent On</mat-label> -->
-                <input placeholder="Enter Spent On" matInput required formControlName="spentOn" />
-            </mat-form-field>
+        <form [formGroup]="formGroup" #formDirective="ngForm" class=" p-3 pb-0 dark:bg-gray-900 h-[8rem]">
+            <div class="flex items-center gap-2">
+                <mat-form-field class="flex-grow">
+                    <!-- pearance="outline" -->
+                    <!-- <mat-label>Spent On</mat-label> -->
+                    <input placeholder="Enter Spent On" matInput required formControlName="spentOn" />
+                </mat-form-field>
+    
+                <mat-form-field class="flex-grow" appear>
+                    <!-- ance="outline" -->
+                    <!-- <mat-label>Spent Amount</mat-label> -->
+                    <input appOnlyFloat  placeholder="Enter Spent Amount" matInput required formControlName="spentAmount" />
+                </mat-form-field>
+    
+                <mat-form-field class="flex-grow" appe>
+                    <!-- arance="outline" -->
+                    <!-- <mat-label>Start Date</mat-label> -->
+                    <input placeholder="Select Start Date" matInput [matDatepicker]="picker1" formControlName="startDate" />
+                    <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                    <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+    
+                <mat-form-field class="flex-grow" ap>
+                    <!-- pearance="outline" -->
+                    <!-- <mat-label>end_date</mat-label> -->
+                    <input placeholder="Select End Date" matInput [matDatepicker]="picker2" formControlName="endDate" />
+                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+            </div>
 
-            <mat-form-field class="flex-grow" appear>
-                <!-- ance="outline" -->
-                <!-- <mat-label>Spent Amount</mat-label> -->
-                <input placeholder="Enter Spent Amount" matInput required formControlName="spentAmount" />
-            </mat-form-field>
-
-            <mat-form-field class="flex-grow" appe>
-                <!-- arance="outline" -->
-                <!-- <mat-label>Start Date</mat-label> -->
-                <input placeholder="Select Start Date" matInput [matDatepicker]="picker1" formControlName="startDate" />
-                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
-                <mat-datepicker #picker1></mat-datepicker>
-            </mat-form-field>
-
-            <mat-form-field class="flex-grow" ap>
-                <!-- pearance="outline" -->
-                <!-- <mat-label>end_date</mat-label> -->
-                <input placeholder="Select End Date" matInput [matDatepicker]="picker2" formControlName="endDate" />
-                <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
-                <mat-datepicker #picker2></mat-datepicker>
-            </mat-form-field>
-
-            <mat-form-field class="flex-grow" >
-                <!-- appearance="outline" -->
-                <!-- <mat-label>Remark</mat-label> -->
-                <input placeholder="Enter Remark" matInput required formControlName="remark" />
-            </mat-form-field>
-
-            <button class="translate-y-[-10px]" mat-flat-button [color]="'primary'" [disabled]="formGroup.invalid || isLoading" (click)="submit(formDirective)">
-               {{!formGroup.get('id')?.value ? 'Add': 'Modify'}}
-            </button>
+            <div class="flex items-center gap-2">
+                <mat-form-field class="w-full" >
+                    <!-- appearance="outline" -->
+                    <!-- <mat-label>Remark</mat-label> -->
+                    <input placeholder="Enter Remark" matInput required formControlName="remark" />
+                </mat-form-field>
+    
+                <button class="translate-y-[-10px]" mat-flat-button [color]="'primary'" [disabled]="formGroup.invalid || isLoading" (click)="submit(formDirective)">
+                   {{!formGroup.get('id')?.value ? 'Add': 'Modify'}}
+                </button>
+            </div>
         </form>
     </div>
 
     <div class="table-container modal-custom-table paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="10" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true"
-            (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            columnResizeMode="expand" [tableStyle]="{'min-width':'50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="10" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions" [scrollable]="true"
+            [scrollHeight]="customScrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['campaign_name', 'company', 'agency', 'status', 'email', 'mobile', 'city', 'currency', 'signup']"
+            [globalFilterFields]="['spent_on', 'spent_amount', 'remark', 'start_date', 'end_date', 'entry_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[110px] dark:bg-[#1e293b]" pSortableColumn="campaign_name" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaign_name"
-                        [ngClass]="{'left-0': !frozenObj?.campaign_name}">
-                        Campaign Name <p-sortIcon field="campaign_name" />
-                        <span class="float-right" (click)="isFrozenColumn('campaign_name');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.campaign_name" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.campaign_name" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
+                    <th class="text-center left-[-1px]" pFrozenColumn>#</th>
                     <th pSortableColumn="spent_on" pResizableColumn>
                         Spent On <p-sortIcon field="spent_on" />
                     </th>
                     <th pSortableColumn="spent_amount" pResizableColumn>
                         Spent Amount <p-sortIcon field="spent_amount" />
                     </th>
-                    <th pSortableColumn="remark" pResizableColumn>
+                    <th class="max-w-[24rem]" pSortableColumn="remark" pResizableColumn>
                         Remark <p-sortIcon field="remark" />
                     </th>
                     <th pSortableColumn="start_date" pResizableColumn>
@@ -110,54 +105,49 @@
                     </th>
                 </tr>
 
-                <!-- <tr *ngIf="isFilterShow">
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">
-                        <p-columnFilter type="numeric" matchMode="equals" field="code" placeholder="Search by Code"
-                            ariaLabel="Filter Code" />
+                <tr *ngIf="isFilterShow">
+                    
+                    <th alignFrozen="left" pFrozenColumn></th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="spent_on" placeholder="Search by Spent On"
+                            ariaLabel="Filter Spent On" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agency" placeholder="Search by Agency"
-                            ariaLabel="Filter Agency" />
+                        <p-columnFilter type="numeric" matchMode="equals" field="spent_amount" placeholder="Search by Spent Amount"
+                            ariaLabel="Filter Spent Amount" />
                     </th>
                     <th>
-                        <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Status" appendTo="body"
-                                    [showClear]="true">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option}}</p>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
+                        <p-columnFilter type="text" matchMode="contains" field="remark" placeholder="Search by Remark"
+                            ariaLabel="Filter Remark" />
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="email" placeholder="Search by Email"
-                            ariaLabel="Filter Email" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mobile" placeholder="Search by Mobile"
-                            ariaLabel="Filter Mobile" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="city" placeholder="Search by City"
-                            ariaLabel="Filter City" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="currency"
-                            placeholder="Search by Currency" ariaLabel="Filter Currency" />
-                    </th>
-                    <th>
-                        <p-columnFilter field="signup" type="date">
+                        <p-columnFilter field="start_date" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Signup">
+                                    [ngModel]="value" placeholder="Search by Start Date">
                                 </p-calendar>
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                </tr> -->
+                    <th>
+                        <p-columnFilter field="end_date" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by End Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Entry Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
@@ -170,14 +160,14 @@
                             (click)="deleteRow(element, i, formDirective)">delete</i>
                     </span>
                 </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">{{element.campaign_name}}</td>
+                    <!-- <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">{{element.campaign_name}}</td> -->
                     <td>
                         {{element.spent_on || "-"}}
                     </td>
                     <td>
                         {{ element.spent_amount || "-" }}
                     </td>
-                    <td>{{element.remark || "-"}}</td>
+                    <td class="break-lines">{{element.remark || "-"}}</td>
                     <td>{{element.start_date ? (element.start_date | date: 'dd-MM-yyyy') : "-"}}</td>
                     <td>{{element.end_date ? (element.end_date | date: 'dd-MM-yyyy') : "-"}}</td>
                     <td>{{element.entry_date_time ? (element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss') : "-"}}</td>

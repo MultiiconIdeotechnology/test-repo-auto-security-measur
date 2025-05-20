@@ -38,7 +38,7 @@ export class RefferralService {
 
     // spent api
     getSpentList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'CampaignSpent/list', model);
+        return this.http.post<any>(this.baseUrl + 'CampaignSpent/campaignwiselist', model);
     }
     
     createSpent(model:any){
