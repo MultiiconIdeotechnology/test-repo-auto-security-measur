@@ -45,7 +45,6 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
   isLoading: boolean = false;
   entry_date_time: any = new Date();
   customScrollHeight: any;
-  tableStyleObj: any = {};
 
   constructor(
     public matDialogRef: MatDialogRef<ReferralListSpentDialogComponent>,
@@ -92,7 +91,6 @@ export class ReferralListSpentDialogComponent extends BaseListingComponent {
         this.totalRecords = this.originalDataList?.length;
         if(this.dataList && this.dataList?.length){
           this.customScrollHeight = (window.innerHeight - 247 - 100) + 'px';
-          this.tableStyleObj = { 'min-width': '50rem'}
         }
         this.isLoading = false;
       },
