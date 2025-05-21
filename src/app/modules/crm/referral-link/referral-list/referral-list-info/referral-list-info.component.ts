@@ -45,7 +45,6 @@ export class ReferralListInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      console.log("res", res)
       if (res && res.data) {
         if(res['type'] == 'info'){
           this.infoData = res.data;
@@ -59,7 +58,6 @@ export class ReferralListInfoComponent implements OnInit {
   showInfoPopup(referral_link: any) {
     this.infoDisplayData = this.fieldMap.map(({ key, field, type }) => {
         let value = referral_link?.[field];
-        console.log("key, value", key, value)
 
         if(type == 'date'){
           if(value){
