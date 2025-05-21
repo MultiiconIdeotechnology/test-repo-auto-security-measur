@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-referral-list-spent-dialog',
@@ -29,7 +30,8 @@ import { OnlyFloatDirective } from '@fuse/directives/floatvalue.directive';
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    OnlyFloatDirective
+    OnlyFloatDirective,
+    MatTooltipModule,
   ],
   templateUrl: './referral-list-spent-dialog.component.html',
   styleUrls: ['./referral-list-spent-dialog.component.scss']
