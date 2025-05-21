@@ -547,7 +547,6 @@ export class AirlineComponent {
     }
 
     popInfo(data): void {
-        // console.log(data);
     }
 
     getNodataText(): string {
