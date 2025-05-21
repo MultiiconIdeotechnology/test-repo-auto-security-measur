@@ -106,7 +106,8 @@
                     <th pSortableColumn="last_call_date" pResizableColumn>
                         Last Followup Date <p-sortIcon field="last_call_date" />
                     </th>
-                    <th pSortableColumn="create_date" pResizableColumn>
+                    <th [ngClass]="{'min-w-[240px]':isFilterShow && (_filterService.selectionDateDropdown$ | async) == 'custom_date_range'}" 
+                    pSortableColumn="create_date" pResizableColumn>
                         Create Date <p-sortIcon field="create_date" />
                     </th>
                     <th pSortableColumn="last_login_time" pResizableColumn>
