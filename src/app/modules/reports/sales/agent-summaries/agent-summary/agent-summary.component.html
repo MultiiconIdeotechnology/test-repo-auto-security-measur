@@ -68,8 +68,8 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th pSortableColumn="followup" pResizableColumn  alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup"
-                    [ngClass]="{'left-0': !frozenObj?.followup}">
+                    <th pSortableColumn="followup" pResizableColumn alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.followup" [ngClass]="{'left-0': !frozenObj?.followup}">
                         Calls <p-sortIcon field="followup" />
                         <span class="float-right" (click)="isFrozenColumn('followup');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.followup" class="pi pi-lock-open icon-size-3"></i>
@@ -104,7 +104,7 @@
                         Tech GP <p-sortIcon field="tech_gp" />
                     </th>
                     <th pSortableColumn="last_call_date" pResizableColumn>
-                        Last Fowllowup Date <p-sortIcon field="last_call_date" />
+                        Last Followup Date <p-sortIcon field="last_call_date" />
                     </th>
                     <th pSortableColumn="create_date" pResizableColumn>
                         Create Date <p-sortIcon field="create_date" />
@@ -191,17 +191,17 @@
                     <th alignFrozen="left">
                         <!-- <p-columnFilter type="text" field="tec_product" placeholder="Search by Tech Product"
                             ariaLabel="Filter Tech Product" /> -->
-                            <p-columnFilter field="tec_product" matchMode="equals" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="techProductList"
-                                        (onChange)="filter($event.value)" placeholder="Select Product" [showClear]="true"
-                                        appendTo="body">
-                                        <ng-template let-option pTemplate="item">
-                                            <p>{{option.label}}</p>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
+                        <p-columnFilter field="tec_product" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="techProductList"
+                                    (onChange)="filter($event.value)" placeholder="Select Product" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th alignFrozen="left">
                         <p-columnFilter type="numeric" field="tech_gp" placeholder="Search by Tech GP"
@@ -217,13 +217,37 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter field="create_date" type="date">
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                            field="create_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                    appendTo="body" placeholder="Search by Last Create Date">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'create_date')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="create_date" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
                     <th>
                         <p-columnFilter field="last_login_time" type="date">
@@ -257,7 +281,8 @@
 
             <ng-template pTemplate="body" let-element>
                 <tr>
-                    <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.followup">
+                    <td class="text-center min-w-[110px]" alignFrozen="left" pFrozenColumn
+                        [frozen]="frozenObj?.followup">
                         <span class="inline-block cursor-pointer border-b border-gray-500"
                             (click)="callHistory(element)">{{(element.followup) || 0}}</span>
                     </td>
@@ -287,7 +312,8 @@
                         </span>
                     </td>
 
-                    <td class="text-right">{{element.tech_gp ? (element.tech_gp.toFixed(2) | number:'1.2-2') : '0'}}</td>
+                    <td class="text-right">{{element.tech_gp ? (element.tech_gp.toFixed(2) | number:'1.2-2') : '0'}}
+                    </td>
                     <!-- <td class="text-center">{{element.followup ? element.followup : '0'}}</td> -->
 
                     <td>

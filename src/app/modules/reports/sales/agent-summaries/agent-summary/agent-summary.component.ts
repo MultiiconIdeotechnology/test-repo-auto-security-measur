@@ -105,6 +105,7 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
         })
 
         // common filter
+         this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
@@ -118,8 +119,9 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             if (resp['table_config']['last_call_date']?.value) {
                 resp['table_config']['last_call_date'].value = new Date(resp['table_config']['last_call_date'].value);
             }
-            if (resp['table_config']['create_date']?.value) {
-                resp['table_config']['create_date'].value = new Date(resp['table_config']['create_date'].value);
+            if (resp['table_config']['create_date']?.value != null && resp['table_config']['create_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['create_date']);
             }
             if (resp['table_config']['last_login_time']?.value) {
                 resp['table_config']['last_login_time'].value = new Date(resp['table_config']['last_login_time'].value);
@@ -168,8 +170,9 @@ export class AgentSummaryComponent extends BaseListingComponent implements OnDes
             if (filterData['table_config']['last_call_date']?.value) {
                 filterData['table_config']['last_call_date'].value = new Date(filterData['table_config']['last_call_date'].value);
             }
-            if (filterData['table_config']['create_date']?.value) {
-                filterData['table_config']['create_date'].value = new Date(filterData['table_config']['create_date'].value);
+           if (filterData['table_config']['create_date']?.value != null && filterData['table_config']['create_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['create_date']);
             }
             if (filterData['table_config']['last_login_time']?.value) {
                 filterData['table_config']['last_login_time'].value = new Date(filterData['table_config']['last_login_time'].value);
