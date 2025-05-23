@@ -798,6 +798,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.reports.campaign_summary_path_route
                     },
+                      {
+                        id: 'reports.campaignregister',
+                        title: 'Campaign Register',
+                        type: 'basic',
+                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNREGISTER_VIEW',
+                        icon: '',
+                        link: Routes.reports.campaign_register_path_route
+                    },
                 ]
             },
             {

@@ -162,6 +162,7 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.bus_path, loadChildren: () => import('app/modules/reports/contracting/bus/bus.routes') },
             { path: Routes.reports.agents_rmwise_agents_path, loadChildren: () => import('app/modules/reports/agents/agent-rmwise/agent-rmwise.routes') },
             { path: Routes.reports.campaign_summary_path, loadChildren: () => import('app/modules/reports/campaign/campaign-summary/campaign-summary/campaign-summary.routes') },
+            { path: Routes.reports.campaign_register_path, loadChildren: () => import('app/modules/reports/campaign/campaign-register/campaign-register.routes')},
             { path: Routes.reports.leads_rmwise_path, loadChildren: () => import('app/modules/reports/leads/lead-rmwise/lead-rmwise.routes') },
             { path: Routes.reports.products_path, loadChildren: () => import('app/modules/reports/sales/product/product-tab/sales-product/sales-product.routes') },
             { path: Routes.reports.pg_refund_path, loadChildren: () => import('app/modules/reports/PG Refund/pg-refund-list/pg-refund.routes') },
@@ -172,8 +173,6 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.supplier_balance_path, loadChildren: () => import('app/modules/reports/account/supplier-wallet-balance/supplier-wallet.routes')},
             { path: Routes.reports.sent_mail_path, loadChildren: () => import('app/modules/reports/sent-mail/sent-mail-list/sent-mail-list.routes')},
             { path: Routes.reports.report_potential_lead_path, loadChildren: () => import('app/modules/reports/sales/report-potential-lead/report-potential-lead.route')},
-
-
 
             // MY BOOKINGS
             { path: Routes.booking.flight_path, loadChildren: () => import('app/modules/booking/flight/flight/flights.routes') },
