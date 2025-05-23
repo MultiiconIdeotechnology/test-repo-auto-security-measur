@@ -32,4 +32,22 @@ export class RefferralService {
         return this.http.post<any>(this.baseUrl + 'ReferralLink/setReferralLinkEnable', { id: id });
     }
 
+    statusChange(model:any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ReferralLink/statusChange', model);
+    }
+
+    // spent api
+    getSpentList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'CampaignSpent/campaignwiselist', model);
+    }
+    
+    createSpent(model:any){
+        return this.http.post<any>(this.baseUrl + 'CampaignSpent/create', model);
+    }
+
+    deleteSpentRowById(id:any){
+        return this.http.post<any>(this.baseUrl + 'CampaignSpent/delete', {id:id});
+    }
+
+
 }
