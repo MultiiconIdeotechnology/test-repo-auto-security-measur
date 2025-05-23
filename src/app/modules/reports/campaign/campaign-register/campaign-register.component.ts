@@ -27,6 +27,8 @@ import { GridUtils } from 'app/utils/grid/gridUtils';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Subscription } from 'rxjs';
+import { CampaignRegisterService } from 'app/services/campaign-register.service';
+import { RefferralService } from 'app/services/referral.service';
 
 
 @Component({
@@ -61,41 +63,38 @@ import { Subscription } from 'rxjs';
 })
 
 export class CampaignRegisterComponent extends BaseListingComponent {
+  @ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
   dataList = [];
-    dataListTotals = [];
-    total = 0;
-    module_name = module_name.campaign_summary
-    filter_table_name = filter_module_name.campaign_summary;
-    private settingsUpdatedSubscription: Subscription;
-    public dateRanges = [];
-    public date = new FormControl();
-    public startDate = new FormControl();
-    public endDate = new FormControl();
-    public StartDate: any;
-    public EndDate: any;
-    filterData: any;
-    DR = dateRange;
-    @ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
-  
-    constructor(
-      private confirmService: FuseConfirmationService,
-      private router: Router,
-      private campaignSummaryService: CampaignSummaryService,
-      private matDialog: MatDialog,
-      public _filterService: CommonFilterService
-      // private clipboard: Clipboard
-    ) {
-      super(module_name.campaign_summary)
-      // this.cols = this.columns.map(x => x.key);
-      this.key = 'campaign_name';
-      this.sortColumn = 'campaign_name';
-      this.Mainmodule = this;
-      this._filterService.applyDefaultFilter(this.filter_table_name);
-    }
+  dataListTotals = [];
+  total = 0;
+  module_name = module_name.campaign_register
+  filter_table_name = filter_module_name.campaign_register;
+  private settingsUpdatedSubscription: Subscription;
+  today = new Date();
+  public startDate = new FormControl(this.today);
+  public endDate = new FormControl(this.today);
+  filterData: any;
+  rmList: any = [];
 
-    isFilterShow: boolean = false;
-  
-    ngOnInit() {
+  constructor(
+    private confirmService: FuseConfirmationService,
+    private router: Router,
+    private campaignRegisterService: CampaignRegisterService,
+    private matDialog: MatDialog,
+    public _filterService: CommonFilterService,
+    private referralService: RefferralService,
+    // private clipboard: Clipboard
+  ) {
+    super(module_name.campaign_register)
+    this.sortColumn = 'campaignName';
+    this.Mainmodule = this;
+    this._filterService.applyDefaultFilter(this.filter_table_name);
+  }
+
+  isFilterShow: boolean = false;
+
+  ngOnInit() {
+    this.rmList = this._filterService.originalRmList;
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
@@ -103,94 +102,98 @@ export class CampaignRegisterComponent extends BaseListingComponent {
       this.isFilterShow = true;
       this.primengTable._filter();
     });
-    }
-  
-    ngAfterViewInit(){
-      // Defult Active filter show
-      if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-          this.isFilterShow = true;
-          let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-          this.primengTable['filters'] = filterData['table_config'];
+
+    this.endDate.valueChanges.subscribe((res: any) => {
+      if (res) {
+        this.refreshItems();
       }
+    })
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.primengTable['filters'] = filterData['table_config'];
     }
-  
-    refreshItems(event?:any): void {
-      this.isLoading = true;
-  
-      const request = this.getNewFilterReq(event);
-      request['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
-      request['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
-  
-      let extraModel = this.getFilter();
-          let newModel = this.getNewFilterReq(event);
-          let model = {...extraModel, ...newModel}
-  
-      this.campaignSummaryService.getcampaignReport(request).subscribe({
-        next: (data) => {
-          this.dataListTotals = data;
-          this.dataList = data.data;
-          // this.total = data.total;
-          this.totalRecords = data.total;
-          this.isLoading = false;
-        }, error: (err) => {
-          this.alertService.showToast('error', err)
-          this.isLoading = false
-        }
-      });
-    }
-  
-    getNodataText(): string {
-      if (this.isLoading)
-        return 'Loading...';
-      else if (this.searchInputControl.value)
-        return `no search results found for \'${this.searchInputControl.value}\'.`;
-      else return 'No data to display';
+  }
+
+  refreshItems(event?: any): void {
+    this.isLoading = true;
+
+    const request = this.getNewFilterReq(event);
+    request['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    request['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+
+    this.campaignRegisterService.getcampaignRegisterReport(request).subscribe({
+      next: (data) => {
+        this.dataListTotals = data;
+        this.dataList = data.data;
+        this.totalRecords = data.total;
+        this.isLoading = false;
+      }, error: (err) => {
+        this.alertService.showToast('error', err)
+        this.isLoading = false
+      }
+    });
+  }
+
+   // Api to get the Employee list data
+    getEmployeeList(value: string) {
+        this.referralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
+            this.rmList = data;
+        });
     }
 
-  
-    getFilter(): any {
-      const filterReq = GridUtils.GetFilterReq(
-        this._paginator,
-        this.sort,
-        this.searchInputControl.value,
-      );
-      return filterReq;
+  getNodataText(): string {
+    if (this.isLoading)
+      return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
+
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission(module_name.campaign_summary)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
-  
-    exportExcel(): void {
-      if (!Security.hasExportDataPermission(module_name.campaign_summary)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
-      }
-  
-      const filterReq = this.getNewFilterReq({});
-      filterReq['Take'] = this.totalRecords;
-      // filterReq['Filter'] = this.searchInputControl.value ? this.searchInputControl.value : ""
-      filterReq['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
-      filterReq['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
-  
-      this.campaignSummaryService.getcampaignReport(filterReq).subscribe(data => {
-        Excel.export(
-          'Campaign Summary',
-          [
-            { header: 'Name', property: 'campaign_name' },
-            { header: 'Type', property: 'campaign_type' },
-            { header: 'Code', property: 'campaign_code' },
-            { header: 'RM', property: 'relationship_manager_name' },
-            { header: 'Leads', property: 'leads' },
-            { header: 'Signup', property: 'signup' },
-            { header: 'Turnover', property: 'turnover' },
-            { header: 'Tech GP', property: 'tech_GP' },
-            { header: 'Travel GP', property: 'travel_GP' },
-            { header: 'Total GP', property: 'total_GP' }
-          ],
-          data.data, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
-      });
+
+    const filterReq = this.getNewFilterReq({});
+    filterReq['Take'] = this.totalRecords;
+    // filterReq['Filter'] = this.searchInputControl.value ? this.searchInputControl.value : ""
+    filterReq['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    filterReq['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+
+    this.campaignRegisterService.getcampaignRegisterReport(filterReq).subscribe(data => {
+      Excel.export(
+        'Campaign Register',
+        [
+          { header: 'Name', property: 'campaignName' },
+          { header: 'Category', property: 'campaignCategory' },
+          { header: 'Type', property: 'campaignType' },
+          { header: 'Code', property: 'referralCode' },
+          { header: 'RM', property: 'rm' },
+          { header: 'Total Spent', property: 'totalSpent' },
+          { header: 'Lead Cost', property: 'leadCost' },
+          { header: 'CAC', property: 'cac' },
+          { header: 'C. Ratio %', property: 'cRatio' },
+          { header: 'Advt. Ratio', property: 'advtRatio' },
+          { header: 'Leads', property: 'leads' },
+          { header: 'Sign Up', property: 'signUp' },
+          { header: 'Turnover', property: 'turnover' },
+          { header: 'Tech GP', property: 'techGP' },
+          { header: 'Travel GP', property: 'travelGP' },
+          { header: 'Total GP', property: 'totalGP' },
+        ],
+        data.data, "Campaign Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
     }
-  
-    ngOnDestroy() {
-      if (this.settingsUpdatedSubscription) {
-        this.settingsUpdatedSubscription.unsubscribe();
-        this._filterService.activeFiltData = {};
-      }
-    }
+  }
 }
