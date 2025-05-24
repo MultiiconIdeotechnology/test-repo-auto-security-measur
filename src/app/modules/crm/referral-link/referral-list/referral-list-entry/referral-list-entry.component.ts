@@ -48,8 +48,8 @@ export class ReferralListEntryComponent {
   campaignCategoryList: string[] = ['Performance', 'Organic', 'Direct', 'Influencer'];
   referralLinkTypeList: string[] = ['B2B Partner', 'WL', 'Corporate', 'Supplier'];
   buttonLabel: string = 'Create';
-  referralData:any = {};
-  isLoading:boolean = false;
+  referralData: any = {};
+  isLoading: boolean = false;
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
@@ -85,6 +85,7 @@ export class ReferralListEntryComponent {
           this.title = 'Create Link';
           this.buttonLabel = "Create";
         } else if (res['type'] == 'edit') {
+          console.log("res", res)
           this.settingsDrawer.open();
           this.title = `Campaign : ${res?.data?.referral_code}`;
           this.referralData = res?.data;
@@ -92,7 +93,7 @@ export class ReferralListEntryComponent {
           this.formGroup.patchValue(res?.data);
           this.formGroup.get('referral_link_url').patchValue(res?.data?.referral_link)
           console.log("rmList", this.rmList)
-          if(res?.data?.relationship_manager_id){
+          if (res?.data?.relationship_manager_id) {
             let obj = this.rmList.find((item: any) => item.id == res?.data?.relationship_manager_id);
             console.log("obj>>", obj)
             this.formGroup.get('relationship_manager_id').patchValue(obj)
@@ -139,7 +140,7 @@ export class ReferralListEntryComponent {
       this.formGroup.markAllAsTouched();
       return;
     }
-  
+
     this.isLoading = true;
     let payload = this.formGroup.value;
     let relationManagerObj = this.formGroup.get('relationship_manager_id')?.value;
@@ -149,15 +150,17 @@ export class ReferralListEntryComponent {
         payload.relationship_manager_name = relationManagerObj?.employee_name;
         if (!this.formGroup.get('id')?.value) {
           payload.id = res?.record_id;
+          payload.referral_link = payload.referral_link_url;
           this.formGroup.get('id').patchValue(res?.record_id);
           this.dataManagerService.addItem(payload);
-          this.settingsDrawer.close();  
+          this.settingsDrawer.close();
           this.alertService.showToast('success', 'Referral link added successfully');
           this.isLoading = false;
         } else {
           payload.entry_date_time = this.referralData?.entry_date_time;
           payload.start_date = this.referralData?.start_date;
           payload.status = this.referralData?.status;
+          payload.referral_link = payload.referral_link_url;
           this.dataManagerService.updateItem(payload);
           this.settingsDrawer.close();
           this.alertService.showToast('success', 'Refferal link list updated successfully');

@@ -791,20 +791,20 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:campaign',
                 children: [
                     {
+                      id: 'reports.campaignregister',
+                      title: 'Campaign Register',
+                      type: 'basic',
+                      pid: 'CAMPAIGN-REPORTS_CAMPAIGNREGISTER_VIEW',
+                      icon: '',
+                      link: Routes.reports.campaign_register_path_route
+                  },
+                    {
                         id: 'reports.campaignsummary',
                         title: 'Campaign Summary',
                         type: 'basic',
                         pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
                         icon: '',
                         link: Routes.reports.campaign_summary_path_route
-                    },
-                      {
-                        id: 'reports.campaignregister',
-                        title: 'Campaign Register',
-                        type: 'basic',
-                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNREGISTER_VIEW',
-                        icon: '',
-                        link: Routes.reports.campaign_register_path_route
                     },
                 ]
             },
