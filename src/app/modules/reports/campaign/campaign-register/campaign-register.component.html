@@ -29,7 +29,7 @@
             </div>
 
             <!-- Date Combo -->
-            <mat-form-field class="w-full translate-y-[12px] min-w-[10rem]">
+            <mat-form-field class="translate-y-[10px] min-w-[15rem]">
                 <mat-date-range-input [rangePicker]="picker">
                     <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
                     <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
@@ -163,7 +163,7 @@
                         <p-columnFilter class="searchableDropdown" field="relationship_manager_id" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
+                                <p-dropdown class="filter-dropdown" [options]="rmList" optionLabel="employee_name"
                                     [(ngModel)]="selectedRm" [filter]="true" filterBy="employee_name"
                                     (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
                                     placeholder="Select RM">
@@ -269,7 +269,8 @@
             </ng-template>
             <ng-template pTemplate="footer">
                 <tr>
-                    <td *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]"></td>
+                    <td>Total</td>
+                    <td *ngFor="let i of [1,2,3,4,5,6,7,8,9]"></td>
                     <td class="text-right">
                         {{ dataListTotals?.totalLeads ? (dataListTotals.totalLeads.toFixed(2) | number:'1.2-2') : 0 }}
                     </td>

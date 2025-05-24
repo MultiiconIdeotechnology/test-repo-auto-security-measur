@@ -75,15 +75,12 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   public endDate = new FormControl(this.today);
   filterData: any;
   rmList: any = [];
+  selectedRm: any;
 
   constructor(
-    private confirmService: FuseConfirmationService,
-    private router: Router,
     private campaignRegisterService: CampaignRegisterService,
-    private matDialog: MatDialog,
     public _filterService: CommonFilterService,
     private referralService: RefferralService,
-    // private clipboard: Clipboard
   ) {
     super(module_name.campaign_register)
     this.sortColumn = 'campaignName';
@@ -96,6 +93,7 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   ngOnInit() {
     this.rmList = this._filterService.originalRmList;
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.selectedRm = resp['table_config']['relationship_manager_id']?.value;
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.primengTable['filters'] = resp['table_config'];
@@ -115,6 +113,7 @@ export class CampaignRegisterComponent extends BaseListingComponent {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedRm = filterData['table_config']['relationship_manager_id']?.value;
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
@@ -139,12 +138,12 @@ export class CampaignRegisterComponent extends BaseListingComponent {
     });
   }
 
-   // Api to get the Employee list data
-    getEmployeeList(value: string) {
-        this.referralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
-            this.rmList = data;
-        });
-    }
+  // Api to get the Employee list data
+  getEmployeeList(value: string) {
+    this.referralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
+      this.rmList = data;
+    });
+  }
 
   getNodataText(): string {
     if (this.isLoading)
@@ -155,7 +154,7 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   }
 
   exportExcel(): void {
-    if (!Security.hasExportDataPermission(module_name.campaign_summary)) {
+    if (!Security.hasExportDataPermission(module_name.campaign_register)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
 
