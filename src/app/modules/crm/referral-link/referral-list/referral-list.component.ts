@@ -125,7 +125,7 @@ export class ReferralListComponent extends BaseListingComponent {
 
     ngOnInit(): void {
         // this.getEmployeeList("");
-        this.employeeList = this._filterService.originalRmList;
+        this.employeeList = this._filterService.rmListByValue;
 
         this.dataManagerService.dataList$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
             this.dataList = res;

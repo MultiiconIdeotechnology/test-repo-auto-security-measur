@@ -102,10 +102,10 @@
                     <th pSortableColumn="campaign_name" pResizableColumn>
                         Title <p-sortIcon field="campaign_name" />
                     </th>
-                    <th pSortableColumn="start_date" pResizableColumn>
+                    <th [ngClass]="{'min-w-[220px]': (_filterService.selectionDateDropdown$ | async) == 'custom_date_range'}" pSortableColumn="start_date" pResizableColumn>
                         Start Date <p-sortIcon field="start_date" />
                     </th>
-                    <th [ngClass]="{'w-full': !selectedColumns?.length}" pSortableColumn="entry_date_time"
+                    <th [ngClass]="{'w-full': !selectedColumns?.length, 'min-w-[220px]': selectedColumns?.length && (_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range' }" pSortableColumn="entry_date_time"
                         pResizableColumn>
                         Entry Time <p-sortIcon field="entry_date_time" />
                     </th>
@@ -162,7 +162,7 @@
                     </th>
 
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="relationship_manager_id" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="relationship_manager_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
