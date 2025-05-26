@@ -26,11 +26,9 @@ import { RefferralService } from 'app/services/referral.service';
 
 
 @Component({
-  selector: 'app-campaign-register',
+  selector: 'app-campaign-summary-report',
   standalone: true,
   imports: [
-    NgIf,
-    NgFor,
     DatePipe,
     CommonModule,
     FormsModule,
@@ -50,13 +48,11 @@ import { RefferralService } from 'app/services/referral.service';
     NgxMatSelectSearchModule,
     MatTabsModule,
     PrimeNgImportsModule
-
   ],
-  templateUrl: './campaign-register.component.html',
-  styleUrls: ['./campaign-register.component.scss']
+  templateUrl: './campaign-summary-report.component.html',
+  styleUrls: ['./campaign-summary-report.component.scss']
 })
-
-export class CampaignRegisterComponent extends BaseListingComponent {
+export class CampaignSummaryReportComponent extends BaseListingComponent {
   @ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
   dataList = [];
   dataListTotals = [];
@@ -71,6 +67,8 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   rmList: any = [];
   selectedRm: any;
   destroy$ = new Subject();
+  expandedRows = {};
+  subDataList:any = [];
 
   constructor(
     private campaignRegisterService: CampaignRegisterService,
@@ -86,8 +84,8 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   isFilterShow: boolean = false;
 
   ngOnInit() {
-    this._filterService.rmListSubject$.pipe(takeUntil(this.destroy$)).subscribe((res:any) => {
-        this.rmList = res;
+    this._filterService.rmListSubject$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.rmList = res;
     })
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -116,6 +114,16 @@ export class CampaignRegisterComponent extends BaseListingComponent {
     }
   }
 
+  // toggleRow(campaignName: any): void {
+  //   this.expandedRows[campaignName] = !this.expandedRows[campaignName];
+  // }
+
+  onExpandedTable(expanded: any) {
+    if (!expanded) {
+      console.log("calling api")
+    }
+  }
+
   refreshItems(event?: any): void {
     this.isLoading = true;
 
@@ -123,10 +131,28 @@ export class CampaignRegisterComponent extends BaseListingComponent {
     request['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
     request['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
 
-    this.campaignRegisterService.getcampaignRegisterReport(request).subscribe({
+    this.campaignRegisterService.getCampaignSummaryReport(request).subscribe({
       next: (data) => {
-        this.dataListTotals = data;
+        // this.dataListTotals = data;
         this.dataList = data.data;
+        this.totalRecords = data.total;
+        this.subTableData();
+        this.isLoading = false;
+      }, error: (err) => {
+        this.alertService.showToast('error', err)
+        this.isLoading = false
+      }
+    });
+  }
+
+  subTableData() {
+    let request = {};
+    request['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
+    request['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+    this.campaignRegisterService.getCampaignSummaryMonthwiseReport(request).subscribe({
+      next: (data) => {
+        // this.dataListTotals = data;
+        this.subDataList = data.data;
         this.totalRecords = data.total;
         this.isLoading = false;
       }, error: (err) => {

@@ -422,6 +422,9 @@ export const Routes = {
         campaign_summary_path: 'reports/campaign-summary',
         campaign_summary_path_route: 'reports/campaign-summary',
 
+        campaign_summary_report_path: 'reports/campaign-summary-report',
+        campaign_summary_report_path_route: 'reports/campaign-summary-report',
+
         campaign_register_path: 'reports/campaign-register',
         campaign_register_path_route: 'reports/campaign-register',
 

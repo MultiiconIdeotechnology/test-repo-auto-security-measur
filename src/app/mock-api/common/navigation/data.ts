@@ -806,6 +806,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.reports.campaign_summary_path_route
                     },
+                     {
+                        id: 'reports.campaignsummaryreport',
+                        title: 'Campaign Summary Report',
+                        type: 'basic',
+                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARYREPORT_VIEW',
+                        icon: '',
+                        link: Routes.reports.campaign_summary_report_path_route
+                    },
                 ]
             },
             {

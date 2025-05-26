@@ -9,10 +9,18 @@ import { Observable } from 'rxjs';
 export class CampaignRegisterService {
     private baseUrl = environment.apiUrl;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     getcampaignRegisterReport(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'ReferralLink/getCampaignRegister', model);
+    }
+
+    getCampaignSummaryReport(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ReferralLink/getCampaignSummary', model);
+    }
+
+    getCampaignSummaryMonthwiseReport(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ReferralLink/getCampaignSummaryMonthWise', model);
     }
 
 }
