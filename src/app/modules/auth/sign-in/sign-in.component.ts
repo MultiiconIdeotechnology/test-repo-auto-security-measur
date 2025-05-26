@@ -45,6 +45,7 @@ export class AuthSignInComponent implements OnInit {
     is_auth_enabled: any = "";
     login_code: any;
     authotp: any;
+    isMaster:boolean = false;
     /**
      * Constructor
      */
@@ -160,14 +161,18 @@ export class AuthSignInComponent implements OnInit {
                     // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
                     // to the correct page after a successful sign in. This way, that url can be set via
                     // routing file and we don't have to touch here.
+                    if(res?.isMaster){
+                        this.isMaster = res.isMaster;
+                    }
                     if (res.code) {
                         if (res && res.authtype) {
                             this.isSignInShow = false; // need to do
                             this.is_auth_enabled = res.authtype;
+                            this._authService.setAuthEnabled(this.is_auth_enabled)
                             this.login_code = res.code;
                             this.json_data = json;
                         } else {
-                            this.finalSignIn(res.code, json);
+                            this.finalSignIn(res.code, json, this.isMaster);
                         }
                     } else {
                         this._matDialog.open(OtpComponent, {
@@ -196,17 +201,18 @@ export class AuthSignInComponent implements OnInit {
     }
 
     // final SignIn
-    finalSignIn(code: any, json: any) {
+    finalSignIn(code: any, json: any, isMaster:boolean) {
         let extBody: any = {}
         if (this.authotp != null) { // Is Auth active to pass otp
             extBody.otp = this.authotp;
             extBody.authtype = this.is_auth_enabled;
         }
-        this._authService.Login(code, json, true, extBody).subscribe({
+        this._authService.Login(code, json, isMaster, extBody).subscribe({
             next: res => {
                 const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
                 // Navigate to the redirect url
                 this._router.navigateByUrl(redirectURL);
+                console.log("extBody",  extBody.authtype)
 
                 // need to do
                 if (!extBody.authtype) {
@@ -227,7 +233,7 @@ export class AuthSignInComponent implements OnInit {
     // OTP Verify and Login
     confirmAndLogin() {
         if (this.authotp && this.authotp.length >= 6) {
-            this.finalSignIn(this.login_code, this.json_data);
+            this.finalSignIn(this.login_code, this.json_data, this.isMaster);
         }
     }
 
@@ -235,7 +241,7 @@ export class AuthSignInComponent implements OnInit {
     onOtpChange(event: any) {
         this.authotp = event;
         if (this.authotp && this.authotp.length == 6 && this.isFirstTime) {
-            this.finalSignIn(this.login_code, this.json_data);
+            this.finalSignIn(this.login_code, this.json_data, this.isMaster);
             this.isFirstTime = false;
         }
     }
