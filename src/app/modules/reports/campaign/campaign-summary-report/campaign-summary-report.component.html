@@ -137,14 +137,15 @@
 
             <ng-template pTemplate="body" let-element let-expanded="expanded">
                 <tr>
-                    <td alignFrozen="left" class="flex justify-between items-center" pFrozenColumn
+                    <td alignFrozen="left" class="flex justify-between gap-3 items-center" pFrozenColumn
                         [frozen]="frozenObj?.campaignName" (click)="toggleRow(element.campaignName)">
                         <span>
                             {{element.campaignName || "-"}}
                         </span>
-                        <p-button type="button" pRipple [pRowToggler]="element" [text]="true" [rounded]="true"
-                            [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-                            (click)="onExpandedTable(expanded)" />
+                        <mat-icon *ngIf="!expandedRows[element.campaignName]" class="icon-size-4"
+                            svgIcon="heroicons_outline:chevron-down"></mat-icon>
+                        <mat-icon *ngIf="expandedRows[element.campaignName]" class="icon-size-4"
+                            svgIcon="heroicons_outline:chevron-up"></mat-icon>
                     </td>
                     <td>{{ element.campaignCategory || "-" }}</td>
                     <td class="text-right">
@@ -161,89 +162,52 @@
                     </td>
                     <td></td>
                 </tr>
+
+                <ng-container *ngIf="expandedRows[element.campaignName]">
+                <tr *ngFor="let el of element.monthWiseData" class="domestic-row">
+                    <td alignFrozen="left" class="flex justify-between items-center" pFrozenColumn
+                            [frozen]="frozenObj?.monthName">
+                            <span>
+                               {{el?.monthName || "-"}}
+                            </span>
+                        </td>
+                        <td>{{ el?.campaignCategory || "-" }}</td>
+                        <td class="text-right">
+                            {{ el.leads ? (el?.leads.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td class="text-right">
+                            {{ el.signUp ? (el?.signUp.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td class="text-right">
+                            {{ el.techGP ? (el?.techGP.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td class="text-right">
+                            {{ el.totalSpent ? (el?.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td></td>
+                </tr>
+                </ng-container>
+               
             </ng-template>
 
-
+<!-- 
             <ng-template pTemplate="rowexpansion" let-element>
                 <tr>
-                    <td colspan="7">
-                        <div class="p-3">
-                            <p-table [value]="element.orders" dataKey="id">
-                                <ng-template pTemplate="header">
-                <tr>
-                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="campaignName" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaignName"
-                        [ngClass]="{'left-0': !frozenObj?.campaignName}">
-                        Name <p-sortIcon field="campaignName" />
-                        <span class="float-right" (click)="isFrozenColumn('campaignName');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.campaignName" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.campaignName" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                    <th pSortableColumn="campaignCategory" pResizableColumn>
-                        Category <p-sortIcon field="campaignCategory" />
-                    </th>
-                    <th pSortableColumn="leads" pResizableColumn>
-                        Leads <p-sortIcon field="leads" />
-                    </th>
-                    <th pSortableColumn="signUp" pResizableColumn>
-                        Signup <p-sortIcon field="signUp" />
-                    </th>
-                    <th pSortableColumn="techGP" pResizableColumn>
-                        Tech GP <p-sortIcon field="techGP" />
-                    </th>
-                    <th pSortableColumn="totalSpent" pResizableColumn>
-                        Spent <p-sortIcon field="totalSpent" />
-                    </th>
-                    <th class="w-full"></th>
+                    <ng-template pTemplate="body" let-el>
+
+                    </ng-template>
+
                 </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-order>
-                <tr>
-                    <td alignFrozen="left" class="flex justify-between items-center" pFrozenColumn
-                        [frozen]="frozenObj?.campaignName" (click)="toggleRow(element.campaignName)">
-                        <span>
-                            {{element.campaignName || "-"}}
-                        </span>
-                        <p-button type="button" pRipple [pRowToggler]="element" [text]="true" [rounded]="true"
-                            [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-                            (click)="onExpandedTable(expanded)" />
-                    </td>
-                    <td>{{ element.campaignCategory || "-" }}</td>
-                    <td class="text-right">
-                        {{ element.leads ? (element.leads.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right">
-                        {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td></td>
-                </tr>
-            </ng-template>
+            </ng-template> -->
+
             <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="6">No data to display!</td>
+                <tr class="h-14">
+                    <td colspan="16" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
-    </td>
-    </tr>
-    </ng-template>
-
-    <ng-template pTemplate="emptymessage">
-        <tr class="h-14">
-            <td colspan="16" class="text-center font-semibold text-lg">
-                {{getNodataText()}}
-            </td>
-        </tr>
-    </ng-template>
-    </p-table>
-</div>
 
 </div>

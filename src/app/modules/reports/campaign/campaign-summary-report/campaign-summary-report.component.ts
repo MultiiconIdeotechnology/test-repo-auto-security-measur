@@ -114,9 +114,9 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     }
   }
 
-  // toggleRow(campaignName: any): void {
-  //   this.expandedRows[campaignName] = !this.expandedRows[campaignName];
-  // }
+  toggleRow(campaignName: any): void {
+    this.expandedRows[campaignName] = !this.expandedRows[campaignName];
+  }
 
   onExpandedTable(expanded: any) {
     if (!expanded) {
@@ -145,6 +145,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     });
   }
 
+  // api for mothwise sub table data(expanded table)
   subTableData() {
     let request = {};
     request['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
@@ -153,6 +154,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
       next: (data) => {
         // this.dataListTotals = data;
         this.subDataList = data.data;
+        this.manageSubTableData();
         this.totalRecords = data.total;
         this.isLoading = false;
       }, error: (err) => {
@@ -160,6 +162,19 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
         this.isLoading = false
       }
     });
+  }
+
+  // merging subTableData on main table data based on id match
+  manageSubTableData(){
+    for(let el of this.dataList){
+      el['monthWiseData'] = [];
+      for(let item of this.subDataList){
+        if(item.id == el.id){
+          el['monthWiseData'].push(item);
+        }
+      }
+    }
+    console.log("this.dataList>>>", this.dataList);
   }
 
   // Api to get the Employee list data
