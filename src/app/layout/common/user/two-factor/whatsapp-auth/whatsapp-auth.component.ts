@@ -170,9 +170,8 @@ export class WhatsappAuthComponent {
                                     }
                                 }
 
-                                console.log("res.data>>>", res.data)
                                 this.twoFaAuthenticationService.isTfaEnabled = res.data ? true: false;
-                                this.authService.setAuthEnabled(true);
+                                this.authService.setAuthEnabled(false);
                                 this.disableBtn = false;
                                 let message = mode == 'AuthApp' ? 'Two-factor' : mode;
                                 this.alertService.showToast('success', `${message} authentication disabled successfully!`, 'top-right', true);
