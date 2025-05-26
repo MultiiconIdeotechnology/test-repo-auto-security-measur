@@ -1,60 +1,4 @@
-<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
-    <!-- Header -->
-    <div
-        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
-        <!-- Loader -->
-        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
-            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
-        </div>
-        <!-- Title -->
-        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
-            <span class="text-3xl">{{module_name}}</span>
-        </div>
 
-        <!-- Actions -->
-        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4 max-sm:mt-2 max-sm:justify-between">
-            <!------Global Search------>
-            <div class="flex ctm_search">
-                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
-                    (keyup.enter)="refreshItems()" />
-                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
-                    (click)="refreshItems()"></mat-icon>
-            </div>
-
-            <!------Global filter------>
-            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
-                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
-                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
-                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
-            </button>
-
-            <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
-                [disabled]="isLoading">
-                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
-            </button>
-
-            <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
-                (click)="refreshItems()">
-                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-            </button>
-
-            <!------ Export Excel ------->
-            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
-                <mat-icon class="icon-size-6">more_vert</mat-icon>
-            </button>
-            <mat-menu #menu>
-                <button mat-menu-item (click)="exportExcel()">
-                    <mat-icon>arrow_downward</mat-icon>
-                    <span>Export Excel</span>
-                </button>
-            </mat-menu>
-        </div>
-    </div>
-
-    <app-product-tab [activeTab]="2"></app-product-tab>
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
@@ -87,6 +31,10 @@
                         Agent <p-sortIcon field="agent_name" />
                     </th>
 
+                    <th pSortableColumn="campaign_code" pResizableColumn>
+                        Campaign Code <p-sortIcon field="campaign_code" />
+                    </th>
+
                     <th pSortableColumn="rm_name" pResizableColumn>
                         RM <p-sortIcon field="rm_name" />
                     </th>
@@ -100,7 +48,11 @@
                     </th>
 
                     <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
-                        Actual Amount <p-sortIcon field="payment_amount" />
+                        Without Tax <p-sortIcon field="payment_amount" />
+                    </th>
+
+                    <th class="text-right" pSortableColumn="final_amount" pResizableColumn>
+                        With Tax <p-sortIcon field="final_amount" />
                     </th>
                     
                     <th pSortableColumn="receipt_status" pResizableColumn>
@@ -146,6 +98,11 @@
                     </th>
 
                     <th>
+                        <p-columnFilter type="text" field="campaign_code" placeholder="Search by Campaign code"
+                            ariaLabel="Filter Campaign code" />
+                    </th>
+
+                    <th>
                         <p-columnFilter class="searchableDropdown" field="rm_name" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
@@ -175,6 +132,11 @@
                     <th>
                         <p-columnFilter type="numeric" field="actual_amount" placeholder="Search by Actual Amount"
                             ariaLabel="Filter Actual Amount" />
+                    </th>
+
+                     <th>
+                        <p-columnFilter type="numeric" field="final_amount" placeholder="Search by Final Amount"
+                            ariaLabel="Filter Final Amount" />
                     </th>
 
                     <th>
@@ -244,7 +206,9 @@
                             {{element.agent_name}}
                         </a>
                     </td>
-
+                    <td>
+                        {{element.campaign_code || "-"}}
+                    </td>
                     
                     <td>
                         {{element.rm_name || "-"}}
@@ -262,7 +226,11 @@
                     </td>
 
                     <td class="text-right">
-                        {{element.actual_currency_symbol}} {{element.actual_amount.toFixed(2) || 0}}
+                        {{element.actual_currency_symbol}} {{element.actual_amount ? (element.actual_amount.toFixed(2) | number: '1.2-2') : 0}}
+                    </td>
+
+                    <td class="text-right">
+                        {{element.currencySymbol}} {{element.final_amount ? (element.final_amount.toFixed(2) | number:'1.2-2'): 0}}
                     </td>
 
                     <td>
@@ -286,11 +254,15 @@
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td class="text-right">
                         {{total_amount ? (total_amount?.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
                     <td class="text-right">
                         {{total_actual_amount ? (total_actual_amount?.toFixed(2) | number:'1.2-2') : 0}}
+                    </td>
+                     <td class="text-right">
+                        {{finalAmountTotal ? (finalAmountTotal?.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
                     <td></td>
                     <td></td>
@@ -299,12 +271,10 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="9" class="text-center font-semibold text-lg">
+                    <td colspan="11" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
-
-</div>

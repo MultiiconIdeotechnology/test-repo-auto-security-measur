@@ -27,6 +27,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { UserService } from 'app/core/user/user.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
+import { CreditLogsComponent } from './credit-logs/credit-logs.component';
 
 
 @Component({
@@ -301,6 +302,27 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
             { title: title },
             () => executeMethod()
           );
+        }
+      });
+  }
+
+  creditLogs(record:any) {
+    if (!Security.hasPermission(walletCreditPermissions.changeExpiryPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    this.matDialog
+      .open(CreditLogsComponent, {
+        data: record,
+        panelClass:'zero-dialog',
+        disableClose: true,
+        backdropClass:'custom-dialog-backdrop',
+        maxWidth:'1260px',
+        minWidth:'900px'
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
         }
       });
   }

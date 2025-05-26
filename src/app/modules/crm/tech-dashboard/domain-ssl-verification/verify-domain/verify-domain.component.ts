@@ -40,7 +40,6 @@ export class VerifyDomainComponent {
 
   ngOnInit() {
     this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
-      console.log("verify domain ", res)
       this.domainPointingData = res?.pointed_domains;
       this.wlId = res?.wl_id
       // this.isDomainFalse = this.isDomainPointing();

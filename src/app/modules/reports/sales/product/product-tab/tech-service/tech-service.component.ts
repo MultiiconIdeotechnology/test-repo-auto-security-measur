@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,15 +12,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { messages, module_name, Security, saleProductPermissions, filter_module_name } from 'app/security';
-import { MatDialog } from '@angular/material/dialog';
-import { SalesProductsService } from 'app/services/slaes-products.service';
+import { module_name, Security, saleProductPermissions, filter_module_name, messages } from 'app/security';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { GridUtils } from 'app/utils/grid/gridUtils';
-import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
@@ -28,10 +23,13 @@ import { Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { ProductTabComponent } from '../product-tab/product-tab.component';
-
+import { ProductTechService } from 'app/services/product-techService.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
+import { Linq } from 'app/utils/linq';
+import { Routes } from 'app/common/const';
 @Component({
-    selector: 'app-sales-product',
+    selector: 'app-tech-service',
     standalone: true,
     imports: [
         NgIf,
@@ -46,7 +44,7 @@ import { ProductTabComponent } from '../product-tab/product-tab.component';
         MatButtonModule,
         MatTooltipModule,
         NgClass,
-        RouterOutlet,
+        // RouterOutlet,
         MatProgressSpinnerModule,
         MatDatepickerModule,
         MatNativeDateModule,
@@ -55,16 +53,18 @@ import { ProductTabComponent } from '../product-tab/product-tab.component';
         MatTabsModule,
         PrimeNgImportsModule,
         DatePipe,
-        ProductTabComponent
+        // ProductTabComponent
     ],
-    templateUrl: './sales-product.component.html',
-    styleUrls: ['./sales-product.component.scss']
+    templateUrl: './tech-service.component.html',
+    styleUrls: ['./tech-service.component.scss']
 })
-export class SalesProductComponent extends BaseListingComponent implements OnDestroy {
+export class TechServiceComponent extends BaseListingComponent {
+    @Input() isFilterShow: boolean = false;
+    @Output() isFilterShowEvent = new EventEmitter(false);
     dataList = [];
     total = 0;
-    module_name = module_name.products;
-    filter_table_name = filter_module_name.report_sales_products;
+    module_name = module_name.products_tech_service;
+    filter_table_name = filter_module_name.products_tech_service;
     private settingsUpdatedSubscription: Subscription;
     agentList: any[] = [];
     employeeList: any[] = [];
@@ -73,17 +73,24 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
     user: any = {};
     selectedToolTip: string = "";
     toolTipArray: any[] = [];
-    isFilterShow: boolean = false;
-
+    productStatusList: any[] = ['Inprocess', 'Pending', 'Blocked', 'Delivered'];
+    statusColorMap: any = {
+        Inprocess: 'text-blue-600',
+        Pending: 'text-yellow-600',
+        Blocked: 'text-red-600',
+        Delivered: 'text-green-600',
+        Expired: 'text-red-800'
+    }
+    itemStatusList: any[] = ['Inprocess', 'Pending', 'Blocked', 'Delivered'];
     constructor(
-        private salesProductsService: SalesProductsService,
-        private matDialog: MatDialog,
+        private productTechService: ProductTechService,
         private _userService: UserService,
         private agentService: AgentService,
         private refferralService: RefferralService,
-        public _filterService: CommonFilterService
+        public _filterService: CommonFilterService,
+        public matDialog: MatDialog
     ) {
-        super(module_name.products)
+        super(module_name.products_tech_service)
         this.key = 'campaign_name';
         this.sortColumn = 'agent_code';
         this.sortDirection = 'desc';
@@ -103,23 +110,8 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         this.agentList = this._filterService.agentListByValue;
         this.employeeList = this._filterService.rmListByValue;
 
-        // common filter
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
-
-            this.selectedRM = resp['table_config']['rm']?.value;
-            // this.sortColumn = resp['sortColumn'];
-            // this.primengTable['_sortField'] = resp['sortColumn'];
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShow = true;
-            this.primengTable._filter();
-        });
+        // common filter subscription
+        this.startSubscription();
     }
 
     ngAfterViewInit() {
@@ -135,19 +127,16 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
                     this.agentList.push(this.selectedAgent);
                 }
             }
+
+            if (filterData['table_config']['expiry_date']?.value != null && filterData['table_config']['expiry_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(filterData['table_config']['expiry_date']);
+            }
+            this.isFilterShowEvent.emit(true)
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
         }
-    }
-
-    getFilter(): any {
-        const filterReq = GridUtils.GetFilterReq(
-            this._paginator,
-            this._sort,
-            this.searchInputControl.value,
-        );
-        return filterReq;
     }
 
     refreshItems(event?: any): void {
@@ -156,10 +145,9 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
             request.relationmanagerId = this.user.id
         }
-        this.salesProductsService.getProductReport(request).subscribe({
+        this.productTechService.getTechServiceReport(request).subscribe({
             next: (data) => {
                 this.dataList = data.data;
-                this.toolTipArray = data.itemArry;
                 this.totalRecords = data.total;
                 this.isLoading = false;
             }, error: (err) => {
@@ -181,11 +169,6 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         })
     }
 
-    // To get Tooltip over required header
-    getToolTip(val: any) {
-        this.selectedToolTip = this.toolTipArray.find((item) => item.item_code == val)?.item_name
-    }
-
     // Api to get the Employee list data
     getEmployeeList(value: string) {
         this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
@@ -197,25 +180,14 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         });
     }
 
-    viewData(record, item): void {
-        // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
-        //     return this.alertService.showToast(
-        //         'error',
-        //         messages.permissionDenied
-        //     );
+    purchaseProductInfo(record: any): void {
+        // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
-        if (item && item.value) {
-            this.matDialog.open(AgentProductInfoComponent, {
-                data: {
-                    data: record,
-                    agencyName: record?.data?.agency_name,
-                    item: item,
-                    readonly: true,
-                    sales_product: true
-                },
-                disableClose: true,
-            });
-        }
+        this.matDialog.open(AgentProductInfoComponent, {
+            data: { data: record, agencyName: record?.agency_name, readonly: true, agentInfo: true, currencySymbol: record?.currencySymbol },
+            disableClose: true
+        });
     }
 
     getNodataText(): string {
@@ -226,7 +198,7 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         else return 'No data to display';
     }
 
-    exportExcel(event): void {
+    exportExcel(): void {
         if (!Security.hasExportDataPermission(module_name.products)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -236,44 +208,73 @@ export class SalesProductComponent extends BaseListingComponent implements OnDes
         req.take = this.totalRecords;
         const exportHeaderArr = [
             { header: 'Agent Code', property: 'agent_code' },
-            { header: 'Old Agent Code', property: 'old_agent_code' },
             { header: 'Agency Name', property: 'agency_name' },
             { header: 'RM', property: 'rm' },
-            { header: 'Amount', property: 'Amount' },
-            { header: 'Due Amount', property: 'Due_amount' }
+            { header: 'Item Code', property: 'item_code' },
+            { header: 'Item', property: 'item' },
+            { header: 'Product', property: 'product' },
+            { header: 'Product Status', property: 'product_status' },
+            { header: 'Item Status', property: 'item_status' },
+            { header: 'Expiry Date', property: 'expiry_date' },
+            { header: 'Product Amount', property: 'product_amount' },
+            { header: 'Due Amount', property: 'due_amount' },
         ];
 
         if (Security.hasPermission(saleProductPermissions.viewOnlyAssignedPermissions)) {
             req.relationmanagerId = this.user.id
         }
-        this.salesProductsService.getProductReport(req).subscribe(data => {
-            let productData = this.transformData(data.data);
+        this.productTechService.getTechServiceReport(req).subscribe(data => {
+            let productData = data.data;
 
-            for (let i in productData[0].itemCodes) {
-                exportHeaderArr.push({ header: productData[0].itemCodes[i].key, property: productData[0].itemCodes[i].key })
-            }
+            productData.forEach((item: any) => {
+                item.expiry_date = item.expiry_date ? (DateTime.fromISO(item.expiry_date).toFormat('dd-MM-yyyy')) : '';
+            })
 
             Excel.export(
-                'Products',
+                'Tech-Service',
                 exportHeaderArr,
                 productData,
-                "Products",
+                "Product Tech Service",
                 [{ s: { r: 0, c: 0 }, e: { r: 0, c: 20 } }]
             );
         });
     }
 
-    transformData(data) {
-        return data.map(agent => {
-            let newAgent = { ...agent };
-            agent.itemCodes.forEach(item => {
-                if (item.value) {
-                    newAgent[item.key] = DateTime.fromISO(item.value).toFormat('dd-MM-yyyy');
-                } else {
-                    newAgent[item.key] = item.value || " "
+    viewInternal(record: any): void {
+        Linq.recirect(Routes.customers.agent_entry_route + '/' + record.agentid + '/readonly')
+    }
+
+    startSubscription() {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            this.selectedRM = resp['table_config']['rm']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
                 }
-            });
-            return newAgent;
+            }
+
+            if (resp['table_config']['expiry_date']?.value != null && resp['table_config']['expiry_date'].value.length) {
+                this._filterService.updateSelectedOption('custom_date_range');
+                this._filterService.rangeDateConvert(resp['table_config']['expiry_date']);
+            }
+
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
         });
     }
+
+    stopSubscription() {
+        if (this.settingsUpdatedSubscription) {
+            this.settingsUpdatedSubscription.unsubscribe();
+            this.settingsUpdatedSubscription = undefined;
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.settingsUpdatedSubscription.unsubscribe();
+    }
+
 }

@@ -104,6 +104,8 @@ export class AmendmentRequestsListComponent
         { label: "Completed", value: 'Completed' },
         { label: "Rejected", value: 'Rejected' },
         { label: "Cancelled", value: 'Cancelled' },
+        { label:"Cancellation Pending", value:"Cancellation Pending"},
+        { label:"Partial Cancellation Pending", value:"Partial Cancellation Pending"},
         { label: "Partial Payment Completed", value: 'Partial Payment Completed' },
         { label: "Account Rejected", value: 'Account Rejected' },
         { label: "Account Audit", value: 'Account Audit' }

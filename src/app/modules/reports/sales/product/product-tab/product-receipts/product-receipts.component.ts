@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy,Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -34,7 +34,7 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { AgentService } from 'app/services/agent.service';
 import { Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { ProductTabComponent } from '../product-tab/product-tab.component';
+import { ProductTabComponent } from '../product-tab.component';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
 
@@ -44,7 +44,6 @@ import { UserService } from 'app/core/user/user.service';
     templateUrl: './product-receipts.component.html',
     imports: [
         NgIf,
-        NgFor,
         DatePipe,
         CommonModule,
         FormsModule,
@@ -56,19 +55,19 @@ import { UserService } from 'app/core/user/user.service';
         MatButtonModule,
         MatTooltipModule,
         NgClass,
-        RouterOutlet,
         MatProgressSpinnerModule,
         MatDatepickerModule,
         MatNativeDateModule,
         MatSelectModule,
         NgxMatSelectSearchModule,
         MatTabsModule,
-        ProductTabComponent,
         PrimeNgImportsModule
     ],
 })
 
 export class ProductReceiptsComponent extends BaseListingComponent implements OnDestroy {
+    @Input() isFilterShow:boolean = false;
+    @Output() isFilterShowEvent = new EventEmitter(false);
     module_name = module_name.products_receipts;
     filter_table_name = filter_module_name.products_receipts;
     private settingsUpdatedSubscription: Subscription;
@@ -76,13 +75,12 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
     dataList = [];
     total_amount: any = 0;
     total_actual_amount:any = 0;
-    isFilterShow: boolean = false;
+    finalAmountTotal:number = 0;
     selectedAgent: any;
     agentList: any[] = [];
     selectedRM: any;
     employeeList: any = [];
     user: any = {};
-
 
     statusList: any[] = [
         { label: 'Confirmed', value: 'Confirmed' },
@@ -118,26 +116,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
 
         // common filter
         this._filterService.updateSelectedOption('');
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.updateSelectedOption('');
-            this.selectedAgent = resp['table_config']['agent_name']?.value;
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
-            this.selectedRM = resp['table_config']['rm']?.value;
-
-            if (resp['table_config']['receipt_request_date']?.value && Array.isArray(resp['table_config']['receipt_request_date']?.value)) {
-                this._filterService.selectionDateDropdown = 'custom_date_range';
-                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
-            }
-
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShow = true;
-            this.primengTable._filter();
-        });
+        this.startSubscription();
     }
 
     ngAfterViewInit() {
@@ -158,7 +137,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
             }
-
+            this.isFilterShowEvent.emit(true);
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
@@ -273,6 +252,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 this.totalRecords = data?.total;
                 this.total_amount = data?.total_amount || 0;
                 this.total_actual_amount = data?.total_actual_amount || 0;
+                this.finalAmountTotal = data?.finalAmountTotal || 0;
                 this.isLoading = false;
                 if (this.dataList && this.dataList.length) {
                     setTimeout(() => {
@@ -305,16 +285,19 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             for (var dt of data.data) {
                 dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy') : '';
             }
-            ['receipt_ref_no', 'agent_Code', 'agent_name', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']
+            ['receipt_ref_no', 'agent_Code', 'agent_name', 'campaign_code', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']
             Excel.export(
                 'Receipt',
                 [
                     { header: 'Reference No.', property: 'receipt_ref_no' },
                     { header: 'Agent Code', property: 'agent_Code' },
                     { header: 'Agent', property: 'agent_name' },
+                    { header: 'Campaign_code', property: 'campaign_code' },
                     { header: 'RM', property: 'rm_name' },
                     { header: 'Product name', property: 'product_name' },
                     { header: 'Amount', property: 'payment_amount' },
+                    { header: 'Actual Amount', property: 'actual_amount' },
+                    { header: 'Final Amount', property: 'final_amount' },
                     { header: 'Status', property: 'receipt_status' },
                     { header: 'Date', property: 'receipt_request_date' },
                 ],
@@ -330,6 +313,36 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
+    }
+
+    startSubscription() {
+         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.updateSelectedOption('');
+            this.selectedAgent = resp['table_config']['agent_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
+                }
+            }
+            this.selectedRM = resp['table_config']['rm']?.value;
+
+            if (resp['table_config']['receipt_request_date']?.value && Array.isArray(resp['table_config']['receipt_request_date']?.value)) {
+                this._filterService.selectionDateDropdown = 'custom_date_range';
+                this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
+            }
+
+            this.primengTable['filters'] = resp['table_config'];
+            this.isFilterShow = true;
+            this.primengTable._filter();
+        });
+      }
+
+    stopSubscription() {
+        if (this.settingsUpdatedSubscription) {
+          this.settingsUpdatedSubscription.unsubscribe();
+          this.settingsUpdatedSubscription = undefined;
+        }
     }
 
     ngOnDestroy(): void {

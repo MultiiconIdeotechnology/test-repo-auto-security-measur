@@ -951,6 +951,9 @@ export class AgentListComponent extends BaseListingComponent {
                     { property: 'city_name', header: 'City' },
                     { property: 'agent_assign_by', header: 'Assigned By' },
                     { property: 'agent_assign_by_date', header: 'Assigned by Date' },
+                    { property: 'address1', header: 'Address 1' },
+                    { property: 'address2', header: 'Address 2' },
+                    { property: 'pinCode', header: 'PinCode' },
                 ],
                 data.data, "Agents", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 17 } }]);
         });

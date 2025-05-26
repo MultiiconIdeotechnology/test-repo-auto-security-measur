@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -15,8 +16,8 @@ export class SalesProductsService {
 
     constructor(private http: HttpClient) { }
 
-    getProductReport(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'AccountReport/getProductReport', model);
+    getProductReport(model: any, forceRefresh:boolean = false): Observable<any> {
+            return this.http.post<any>(this.baseUrl + 'AccountReport/getProductReport', model)
     }
 
     getAgentSummaryReport(model: any): Observable<any> {

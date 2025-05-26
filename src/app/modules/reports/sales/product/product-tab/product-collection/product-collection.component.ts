@@ -1,5 +1,5 @@
-import { NgIf, NgFor, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { NgIf, DatePipe, CommonModule, NgClass } from '@angular/common';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -28,7 +28,7 @@ import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/pr
 import { AgentService } from 'app/services/agent.service';
 import { Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { ProductTabComponent } from '../product-tab/product-tab.component';
+import { ProductTabComponent } from '../product-tab.component';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
 
@@ -38,7 +38,6 @@ import { UserService } from 'app/core/user/user.service';
     templateUrl: './product-collection.component.html',
     imports: [
         NgIf,
-        NgFor,
         DatePipe,
         CommonModule,
         FormsModule,
@@ -50,26 +49,25 @@ import { UserService } from 'app/core/user/user.service';
         MatButtonModule,
         MatTooltipModule,
         NgClass,
-        RouterOutlet,
         MatProgressSpinnerModule,
         MatDatepickerModule,
         MatNativeDateModule,
         MatSelectModule,
         NgxMatSelectSearchModule,
         MatTabsModule,
-        ProductTabComponent,
         PrimeNgImportsModule
     ],
 })
 
 export class ProductCollectionComponent extends BaseListingComponent implements OnDestroy {
+    @Input() isFilterShow:boolean = false;
+    @Output() isFilterShowEvent = new EventEmitter(false);
     module_name = module_name.products_collection;
     filter_table_name = filter_module_name.products_collection;
     private settingsUpdatedSubscription: Subscription;
     isLoading = false;
     dataList = [];
     totalsObj: any = {};
-    isFilterShow: boolean = false;
     selectedAgent: any;
     agentList: any[] = [];
     selectedRM: any;
@@ -105,33 +103,11 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     }
 
     ngOnInit(): void {
-        // this.getAgent('');
         this.agentList = this._filterService.agentListByValue;
         this.employeeList = this._filterService.rmListByValue;
-        // this.getEmployeeList("");
 
         // common filter
-        this._filterService.updateSelectedOption('');
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-            this._filterService.updateSelectedOption('');
-            this.selectedAgent = resp['table_config']['agency_name']?.value;
-            if (this.selectedAgent && this.selectedAgent.id) {
-                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                if (!match) {
-                    this.agentList.push(this.selectedAgent);
-                }
-            }
-            this.selectedRM = resp['table_config']['rm']?.value;
-
-            if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
-                this._filterService.selectionDateDropdown = 'custom_date_range';
-                this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
-            }
-
-            this.primengTable['filters'] = resp['table_config'];
-            this.isFilterShow = true;
-            this.primengTable._filter();
-        });
+        this.startSubscription();
     }
 
     ngAfterViewInit() {
@@ -154,7 +130,7 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
                 this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
             }
-
+            this.isFilterShowEvent.emit(true);
             this.primengTable['filters'] = filterData['table_config'];
         }
     }
@@ -234,7 +210,6 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
 
     refreshItems(event?: any): void {
         this.isLoading = true;
-
         let newModel = this.getNewFilterReq(event);
 
         if (Security.hasPermission(poductCollectionPermissions.viewOnlyAssignedPermissions)) {
@@ -321,6 +296,38 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
         else if (this.searchInputControl.value)
             return `no search results found for \'${this.searchInputControl.value}\'.`;
         else return 'No data to display';
+    }
+
+    startSubscription() {
+        if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
+            this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+                this._filterService.updateSelectedOption('');
+                this.selectedAgent = resp['table_config']['agency_name']?.value;
+                if (this.selectedAgent && this.selectedAgent.id) {
+                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                    if (!match) {
+                        this.agentList.push(this.selectedAgent);
+                    }
+                }
+                this.selectedRM = resp['table_config']['rm']?.value;
+    
+                if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
+                    this._filterService.selectionDateDropdown = 'custom_date_range';
+                    this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
+                }
+    
+                this.primengTable['filters'] = resp['table_config'];
+                this.isFilterShow = true;
+                this.primengTable._filter();
+            });
+        }
+      }
+
+    stopSubscription() {
+        if (this.settingsUpdatedSubscription) {
+          this.settingsUpdatedSubscription.unsubscribe();
+          this.settingsUpdatedSubscription = undefined;
+        }
     }
 
     ngOnDestroy(): void {

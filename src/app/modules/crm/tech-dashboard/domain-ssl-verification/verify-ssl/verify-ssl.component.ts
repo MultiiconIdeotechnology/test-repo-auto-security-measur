@@ -27,6 +27,7 @@ export class VerifySslComponent {
   isDomainFalse: boolean = true;
   wlId: any;
   @Input() data: any;
+  @Input() fromKey: string = "";
   @Output() stepCompleted = new EventEmitter<number>();
   @Output() previousPage = new EventEmitter<number>();
 
@@ -36,7 +37,6 @@ export class VerifySslComponent {
     private alertService: ToasterService,
   ) {
     this.domainVarifyService.createUpdateDomain$.subscribe((res: any) => {
-      console.log("res in verify ssl", res);
       this.sslDomainsData = res?.ssl_domains;
       this.wlId = res?.wl_id
       // this.isDomainFalse = this.isSslPointing();
@@ -82,22 +82,29 @@ export class VerifySslComponent {
   }
 
   onPreviousPage() {
-      this.previousPage.emit(3);
-      this.domainVarifyService.verifyButtonSubject.next(true);
+    this.previousPage.emit(3);
+    this.domainVarifyService.verifyButtonSubject.next(true);
   }
 
   onCompleteProcess() {
+    if (this.data?.item_name?.toLowerCase()?.includes('android') ||
+      this.data?.item_name?.toLowerCase()?.includes('ios')) {
+      this.matDialogRef.close();
+      return;
+    }
+    
     this.isLoading = true;
     let payloadObj = {
       id: this.data.id ? this.data.id : "",
       is_activated: true,
-      agent_id: this.data?.agentid ? this.data?.agentid : ""
+      agent_id: this.data?.agentid ? this.data.agentid : "",
+      product_id: this.data?.product_id
     }
     this.domainVarifyService.activate(payloadObj).subscribe({
       next: (res) => {
         if (res) {
           this.alertService.showToast('success', 'Product activated Successfully!');
-          this.matDialogRef.close();
+          this.matDialogRef.close(this.fromKey);
           this.isLoading = false
         }
       },

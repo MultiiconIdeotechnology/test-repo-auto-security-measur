@@ -42,33 +42,27 @@ export class ManageDomainFormComponent {
       
     }
   
-    ngOnChanges(){
-    }
-  
     ngOnInit():void {
       this.formGroup = this.builder.group({
-        id: [''],
         agent_id: [''],
         product_id:[''],
-        partner_panel_url: [''],
+        partner_panel_url: ['', Validators.required],
         b2c_portal_url:[''],
         api_url: ['', Validators.required],
       });
   
       if(this.data?.item_name?.includes('B2C')){
         this.formGroup.get('b2c_portal_url').setValidators([Validators.required]);
-        this.formGroup.get('partner_panel_url')?.clearValidators();
         this.formGroup.get('b2c_portal_url').patchValue(this.wlSettingData?.b2c_portal_url);
       } else if(this.data?.item_name?.includes('B2B')){
-        this.formGroup.get('partner_panel_url').setValidators([Validators.required]);
         this.formGroup.get('b2c_portal_url')?.clearValidators();
-        this.formGroup.get('partner_panel_url').patchValue(this.wlSettingData?.partner_panel_url);
       }
-  
-       // Update the validity status of the controls
-       this.formGroup.get('b2c_portal_url')?.updateValueAndValidity();
-       this.formGroup.get('partner_panel_url')?.updateValueAndValidity();
-  
+      
+      // Update the validity status of the controls
+      this.formGroup.get('b2c_portal_url')?.updateValueAndValidity();
+      this.formGroup.get('partner_panel_url')?.updateValueAndValidity();
+      
+      this.formGroup.get('partner_panel_url').patchValue(this.wlSettingData?.partner_panel_url);
        this.formGroup.get('api_url').patchValue(this.wlSettingData?.api_url);
     }
   
@@ -86,17 +80,11 @@ export class ManageDomainFormComponent {
       this.domainVarifyService.createDomain(payloadData).subscribe({
         next: (res) => {
           if (res) {
-            payloadData.id = res.id;
-            if (this.formGroup.get('id').value) {
-            
-            } else {
-              this.formGroup.get('id').patchValue(res.id);
               this.alertService.showToast('success', 'Domain Created Successfully');
               this.stepCompleted.emit(1);
               this.domainVarifyService.createUpdateDomainSubject.next(res);
               // formDirective.resetForm()
             }
-          }
   
         }, error: err => this.alertService.showToast('error', err)
       })
