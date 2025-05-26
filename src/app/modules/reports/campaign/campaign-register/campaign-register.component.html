@@ -38,6 +38,18 @@
                 <mat-date-range-picker #picker></mat-date-range-picker>
             </mat-form-field>
 
+            <!-- <mat-form-field class="translate-y-[10px] min-w-[15rem]">
+                 <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
+                    <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+                <mat-datepicker #dp startView="multi-year" 
+                    panelClass="example-month-picker">
+                </mat-datepicker>
+            </mat-form-field> -->
+
+
             <!------Global filter------>
             <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
@@ -160,8 +172,7 @@
                             placeholder="Search by Code" ariaLabel="Filter Code" />
                     </th>
                     <th>
-                        <p-columnFilter class="searchableDropdown" field="relationship_manager_id" matchMode="equals"
-                            [showMenu]="false">
+                        <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="rmList" optionLabel="employee_name"
                                     [(ngModel)]="selectedRm" [filter]="true" filterBy="employee_name"

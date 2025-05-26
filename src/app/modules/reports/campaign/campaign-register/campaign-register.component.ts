@@ -26,7 +26,7 @@ import { Excel } from 'app/utils/export/excel';
 import { GridUtils } from 'app/utils/grid/gridUtils';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { CampaignRegisterService } from 'app/services/campaign-register.service';
 import { RefferralService } from 'app/services/referral.service';
 
@@ -76,6 +76,7 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   filterData: any;
   rmList: any = [];
   selectedRm: any;
+  destroy$ = new Subject();
 
   constructor(
     private campaignRegisterService: CampaignRegisterService,
@@ -91,9 +92,12 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   isFilterShow: boolean = false;
 
   ngOnInit() {
-    this.rmList = this._filterService.originalRmList;
+    this._filterService.rmListSubject$.pipe(takeUntil(this.destroy$)).subscribe((res:any) => {
+        this.rmList = res;
+    })
+
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this.selectedRm = resp['table_config']['relationship_manager_id']?.value;
+      this.selectedRm = resp['table_config']['rm']?.value;
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       this.primengTable['filters'] = resp['table_config'];
@@ -113,7 +117,7 @@ export class CampaignRegisterComponent extends BaseListingComponent {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      this.selectedRm = filterData['table_config']['relationship_manager_id']?.value;
+      this.selectedRm = filterData['table_config']['rm']?.value;
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
@@ -194,5 +198,8 @@ export class CampaignRegisterComponent extends BaseListingComponent {
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 }

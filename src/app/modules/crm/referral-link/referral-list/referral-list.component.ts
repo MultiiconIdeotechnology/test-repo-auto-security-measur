@@ -125,7 +125,9 @@ export class ReferralListComponent extends BaseListingComponent {
 
     ngOnInit(): void {
         // this.getEmployeeList("");
-        this.employeeList = this._filterService.rmListByValue;
+        this._filterService.rmListSubject$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+            this.employeeList = res;
+        })
 
         this.dataManagerService.dataList$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
             this.dataList = res;
@@ -135,10 +137,10 @@ export class ReferralListComponent extends BaseListingComponent {
         this._filterService.updateSelectedOption('');
         this._filterService.updatedSelectionOptionTwo('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.selectedRm = resp['table_config']['relationship_manager_id']?.value;
+            this.selectedRm = resp['table_config']['relationship_manager_name']?.value;
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-             if (resp['table_config']['start_date']?.value != null && resp['table_config']['start_date'].value.length) {
+            if (resp['table_config']['start_date']?.value != null && resp['table_config']['start_date'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['start_date']);
             }
@@ -157,7 +159,7 @@ export class ReferralListComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            this.selectedRm = filterData['table_config']['relationship_manager_id']?.value;
+            this.selectedRm = filterData['table_config']['relationship_manager_name']?.value;
             if (filterData['table_config']['start_date']?.value != null && filterData['table_config']['start_date'].value.length) {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['start_date']);

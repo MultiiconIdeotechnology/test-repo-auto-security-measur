@@ -27,6 +27,9 @@ export class CommonFilterService {
     private selectedOptionContracting = new BehaviorSubject<any>('');
     selectionDateDropdownContracting$ = this.selectedOptionContracting.asObservable();
 
+    private rmListSubject = new BehaviorSubject<any>('');
+    rmListSubject$ = this.rmListSubject.asObservable();
+
     // Public method to update the BehaviorSubject value
     updateSelectedOption(option: string): void {
         this.selectedOptionSubject.next(option);
@@ -232,7 +235,9 @@ export class CommonFilterService {
             this.rmListByValue = this.originalRmList.map((rm) => ({
                 ...rm,
                 id_by_value: rm.employee_name
-            }))
+            }));
+
+            this.rmListSubject.next(this.rmListByValue);
         });
     }
 
