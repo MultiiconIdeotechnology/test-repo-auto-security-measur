@@ -68,7 +68,22 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   selectedRm: any;
   destroy$ = new Subject();
   expandedRows = {};
-  subDataList:any = [];
+  subDataList: any = [];
+
+  monthColors = {
+    January: 'bg-blue-100 text-blue-900',
+    February: 'bg-pink-100 text-pink-900',
+    March: 'bg-green-100 text-green-900',
+    April: 'bg-yellow-100 text-yellow-900',
+    May: 'bg-purple-100 text-purple-900',
+    June: 'bg-red-100 text-red-900',
+    July: 'bg-orange-100 text-orange-900',
+    August: 'bg-emerald-100 text-emerald-900',
+    September: 'bg-indigo-100 text-indigo-900',
+    October: 'bg-rose-100 text-rose-900',
+    November: 'bg-lime-100 text-lime-900',
+    December: 'bg-teal-100 text-teal-900',
+  };
 
   constructor(
     private campaignRegisterService: CampaignRegisterService,
@@ -165,11 +180,11 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   }
 
   // merging subTableData on main table data based on id match
-  manageSubTableData(){
-    for(let el of this.dataList){
+  manageSubTableData() {
+    for (let el of this.dataList) {
       el['monthWiseData'] = [];
-      for(let item of this.subDataList){
-        if(item.id == el.id){
+      for (let item of this.subDataList) {
+        if (item.id == el.id) {
           el['monthWiseData'].push(item);
         }
       }
@@ -177,12 +192,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     console.log("this.dataList>>>", this.dataList);
   }
 
-  // Api to get the Employee list data
-  getEmployeeList(value: string) {
-    this.referralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
-      this.rmList = data;
-    });
-  }
+
 
   getNodataText(): string {
     if (this.isLoading)
@@ -199,32 +209,21 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
 
     const filterReq = this.getNewFilterReq({});
     filterReq['Take'] = this.totalRecords;
-    // filterReq['Filter'] = this.searchInputControl.value ? this.searchInputControl.value : ""
     filterReq['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
     filterReq['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
 
-    this.campaignRegisterService.getcampaignRegisterReport(filterReq).subscribe(data => {
+    this.campaignRegisterService.getCampaignSummaryReport(filterReq).subscribe(data => {
       Excel.export(
-        'Campaign Register',
+        'Campaign Summary',
         [
           { header: 'Name', property: 'campaignName' },
           { header: 'Category', property: 'campaignCategory' },
-          { header: 'Type', property: 'campaignType' },
-          { header: 'Code', property: 'referralCode' },
-          { header: 'RM', property: 'rm' },
-          { header: 'Total Spent', property: 'totalSpent' },
-          { header: 'Lead Cost', property: 'leadCost' },
-          { header: 'CAC', property: 'cac' },
-          { header: 'C. Ratio %', property: 'cRatio' },
-          { header: 'Advt. Ratio', property: 'advtRatio' },
           { header: 'Leads', property: 'leads' },
-          { header: 'Sign Up', property: 'signUp' },
-          { header: 'Turnover', property: 'turnover' },
+          { header: 'Signup', property: 'signUp' },
           { header: 'Tech GP', property: 'techGP' },
-          { header: 'Travel GP', property: 'travelGP' },
-          { header: 'Total GP', property: 'totalGP' },
+          { header: 'Total Spent', property: 'totalSpent' },
         ],
-        data.data, "Campaign Register", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
+        data.data, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
     });
   }
 

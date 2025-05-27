@@ -88,19 +88,19 @@
                             <i *ngIf="frozenObj?.campaignName" class="pi pi-lock icon-size-3"></i>
                         </span>
                     </th>
-                    <th pSortableColumn="campaignCategory" pResizableColumn>
+                    <th [ngClass]="{'min-w-[120px]': isFilterShow}" pSortableColumn="campaignCategory" pResizableColumn>
                         Category <p-sortIcon field="campaignCategory" />
                     </th>
-                    <th pSortableColumn="leads" pResizableColumn>
+                    <th [ngClass]="{'min-w-[120px]': isFilterShow}" pSortableColumn="leads" pResizableColumn>
                         Leads <p-sortIcon field="leads" />
                     </th>
-                    <th pSortableColumn="signUp" pResizableColumn>
+                    <th [ngClass]="{'min-w-[120px]': isFilterShow}" pSortableColumn="signUp" pResizableColumn>
                         Signup <p-sortIcon field="signUp" />
                     </th>
-                    <th pSortableColumn="techGP" pResizableColumn>
+                    <th [ngClass]="{'min-w-[120px]': isFilterShow}" pSortableColumn="techGP" pResizableColumn>
                         Tech GP <p-sortIcon field="techGP" />
                     </th>
-                    <th pSortableColumn="totalSpent" pResizableColumn>
+                    <th [ngClass]="{'min-w-[120px]': isFilterShow}" pSortableColumn="totalSpent" pResizableColumn>
                         Spent <p-sortIcon field="totalSpent" />
                     </th>
                     <th class="w-full"></th>
@@ -165,26 +165,26 @@
 
                 <ng-container *ngIf="expandedRows[element.campaignName]">
                 <tr *ngFor="let el of element.monthWiseData" class="domestic-row">
-                    <td alignFrozen="left" class="flex justify-between items-center" pFrozenColumn
-                            [frozen]="frozenObj?.monthName">
-                            <span>
-                               {{el?.monthName || "-"}}
-                            </span>
-                        </td>
-                        <td>{{ el?.campaignCategory || "-" }}</td>
-                        <td class="text-right">
-                            {{ el.leads ? (el?.leads.toFixed(2) | number:'1.2-2') : 0 }}
-                        </td>
-                        <td class="text-right">
-                            {{ el.signUp ? (el?.signUp.toFixed(2) | number:'1.2-2') : 0 }}
-                        </td>
-                        <td class="text-right">
-                            {{ el.techGP ? (el?.techGP.toFixed(2) | number:'1.2-2') : 0 }}
-                        </td>
-                        <td class="text-right">
-                            {{ el.totalSpent ? (el?.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
-                        </td>
-                        <td></td>
+                    <td alignFrozen="left" class="flex justify-between items-center dark:text-gray-400 text-gray-600" pFrozenColumn
+                            [frozen]="frozenObj?.monthName" >
+                        <span>
+                            {{el?.monthName || "-"}}
+                        </span>
+                    </td>
+                    <td>{{ el?.campaignCategory || "-" }}</td>
+                    <td class="text-right dark:text-gray-400 text-gray-600">
+                        {{ el.leads ? (el?.leads.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right dark:text-gray-400 text-gray-600">
+                        {{ el.signUp ? (el?.signUp.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right dark:text-gray-400 text-gray-600">
+                        {{ el.techGP ? (el?.techGP.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right dark:text-gray-400 text-gray-600">
+                        {{ el.totalSpent ? (el?.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td></td>
                 </tr>
                 </ng-container>
                
