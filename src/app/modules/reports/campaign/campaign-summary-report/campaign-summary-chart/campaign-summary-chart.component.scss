@@ -1,0 +1,21 @@
+.toggle-container {
+  display: flex;
+  background-color: #1f1f1f; /* Dark container */
+  border-radius: 9999px;
+  padding: 4px;
+  width: fit-content;
+}
+
+.toggle-option {
+  padding: 6px 16px;
+  border-radius: 9999px;
+  color: #ccc;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.toggle-option.active {
+  background-color: #444; /* Selected dark gray */
+  color: white;
+}

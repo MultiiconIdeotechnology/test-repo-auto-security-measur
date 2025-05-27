@@ -16,6 +16,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
 import { GlobalSearchComponent } from '../global_search/global-search.component';
 import { TwoFactorAuthComponent } from './two-factor/two-factor-auth/two-factor-auth.component';
 import { VerificationDialogComponent } from './two-factor/verification-dialog/verification-dialog.component';
+import { commonUseService } from 'app/services/common-use.service';
 
 @Component({
     selector: 'user',
@@ -48,9 +49,11 @@ export class UserComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _matdialog: MatDialog,
         private _userService: UserService,
+        private commonUseService: commonUseService,
         @Inject(DOCUMENT) private document: Document
     ) {
-        localStorage.getItem('theam')
+        let theme = localStorage.getItem('theam');
+        this.commonUseService.setTheme(theme)
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -148,7 +151,8 @@ export class UserComponent implements OnInit, OnDestroy {
  * @param scheme
  */
     setScheme(scheme: Scheme): void {
-        localStorage.setItem('theam',scheme)
+        localStorage.setItem('theam',scheme);
+        this.commonUseService.setTheme(scheme);
         // this.applyScheme(scheme);
 
         this._fuseConfigService.config = { scheme };

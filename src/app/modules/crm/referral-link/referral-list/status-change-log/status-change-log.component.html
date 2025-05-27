@@ -2,7 +2,7 @@
     <div class="sticky top-0 z-10 dark:bg-gray-900">
         <div class="flex items-center justify-between border-b border-gray-border p-3">
             <span
-                class="font-inter font-semibold text-lg text-white break-words max-w-[36rem]">{{data?.campaign_name}}</span>
+                class="font-inter font-semibold text-lg dark:text-white break-words max-w-[36rem]">{{data?.campaign_name}}</span>
             <span class="flex items-center gap-2">
                 <!-- Global search in modal -->
                 <div class="flex ctm_search dark:bg-gray-800">
@@ -23,7 +23,7 @@
 
                 <!-- close modal -->
                 <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
-                    <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                    <mat-icon class="text-current dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
                 </button>
             </span>
         </div>

@@ -23,7 +23,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { CampaignRegisterService } from 'app/services/campaign-register.service';
 import { RefferralService } from 'app/services/referral.service';
-
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { CampaignSummaryChartComponent } from './campaign-summary-chart/campaign-summary-chart.component';
 
 @Component({
   selector: 'app-campaign-summary-report',
@@ -47,7 +48,8 @@ import { RefferralService } from 'app/services/referral.service';
     MatSelectModule,
     NgxMatSelectSearchModule,
     MatTabsModule,
-    PrimeNgImportsModule
+    PrimeNgImportsModule,
+    MatDialogModule,
   ],
   templateUrl: './campaign-summary-report.component.html',
   styleUrls: ['./campaign-summary-report.component.scss']
@@ -57,8 +59,8 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   dataList = [];
   dataListTotals = [];
   total = 0;
-  module_name = module_name.campaign_register
-  filter_table_name = filter_module_name.campaign_register;
+  module_name = module_name.campaign_summary_report
+  filter_table_name = filter_module_name.campaign_summary_report;
   private settingsUpdatedSubscription: Subscription;
   today = new Date();
   public startDate = new FormControl(this.today);
@@ -88,7 +90,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   constructor(
     private campaignRegisterService: CampaignRegisterService,
     public _filterService: CommonFilterService,
-    private referralService: RefferralService,
+    private matDialog: MatDialog,
   ) {
     super(module_name.campaign_register)
     this.sortColumn = 'campaignName';
@@ -114,6 +116,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
 
     this.endDate.valueChanges.subscribe((res: any) => {
       if (res) {
+        this.subDataList = [];
         this.refreshItems();
       }
     })
@@ -133,11 +136,11 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     this.expandedRows[campaignName] = !this.expandedRows[campaignName];
   }
 
-  onExpandedTable(expanded: any) {
-    if (!expanded) {
-      console.log("calling api")
-    }
-  }
+  // onExpandedTable(expanded: any) {
+  //   if (!expanded) {
+  //     console.log("calling api")
+  //   }
+  // }
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -148,10 +151,15 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
 
     this.campaignRegisterService.getCampaignSummaryReport(request).subscribe({
       next: (data) => {
-        // this.dataListTotals = data;
+        this.dataListTotals = data;
         this.dataList = data.data;
         this.totalRecords = data.total;
-        this.subTableData();
+        console.log("this.subDataList", this.subDataList)
+        if (!this.subDataList?.length) {
+          this.subTableData();
+        } else {
+          this.dataList = this.manageSubTableData(this.dataList)
+        }
         this.isLoading = false;
       }, error: (err) => {
         this.alertService.showToast('error', err)
@@ -169,7 +177,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
       next: (data) => {
         // this.dataListTotals = data;
         this.subDataList = data.data;
-        this.manageSubTableData();
+        this.dataList = this.manageSubTableData(this.dataList);
         this.totalRecords = data.total;
         this.isLoading = false;
       }, error: (err) => {
@@ -180,8 +188,8 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   }
 
   // merging subTableData on main table data based on id match
-  manageSubTableData() {
-    for (let el of this.dataList) {
+  manageSubTableData(dataList:any) {
+    for (let el of dataList) {
       el['monthWiseData'] = [];
       for (let item of this.subDataList) {
         if (item.id == el.id) {
@@ -189,7 +197,26 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
         }
       }
     }
-    console.log("this.dataList>>>", this.dataList);
+
+    console.log("this.dataList>>>", dataList);
+    return dataList;
+  }
+
+  //refershing data
+  loadingTableData() {
+    // this.subDataList = [];
+    this.refreshItems();
+  }
+
+  onChart(record: any, key: string, name: string) {
+    this.matDialog.open(CampaignSummaryChartComponent, {
+      data: { record: record, key: key, hoverName: name },
+      panelClass: 'zero-dialog',
+      disableClose: true,
+      backdropClass: 'custom-dialog-backdrop',
+      maxWidth: '1260px',
+      minWidth: '900px'
+    });
   }
 
   getNodataText(): string {
@@ -201,28 +228,77 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   }
 
   exportExcel(): void {
-    if (!Security.hasExportDataPermission(module_name.campaign_register)) {
+    if (!Security.hasExportDataPermission(module_name.campaign_summary)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-
+    let dataList = [];
+    let monthDataList = [];
     const filterReq = this.getNewFilterReq({});
     filterReq['Take'] = this.totalRecords;
     filterReq['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
     filterReq['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
 
+    let monthPayload = {
+      fromDate: DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd'),
+      toDate: DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd')
+    }
+
     this.campaignRegisterService.getCampaignSummaryReport(filterReq).subscribe(data => {
-      Excel.export(
-        'Campaign Summary',
-        [
-          { header: 'Name', property: 'campaignName' },
-          { header: 'Category', property: 'campaignCategory' },
-          { header: 'Leads', property: 'leads' },
-          { header: 'Signup', property: 'signUp' },
-          { header: 'Tech GP', property: 'techGP' },
-          { header: 'Total Spent', property: 'totalSpent' },
-        ],
-        data.data, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
+      dataList = data.data;
+      dataList =  this.manageSubTableData(dataList);
+      // this.campaignRegisterService.getCampaignSummaryMonthwiseReport(monthPayload).subscribe((res: any) => {
+      //   monthDataList = res.data;
+      // });
+
+      const exportData = [];
+
+      for (let el of dataList) {
+        // Push main row
+        exportData.push({
+          rowType: 'Main',
+          id: el.id,
+          campaignName: el.campaignName,
+          campaignCategory: el.campaignCategory,
+          totalSpent: el.totalSpent,
+          leads: el.leads,
+          signUp: el.signUp,
+          techGP: el.techGP,
+          monthName: '',
+          year: ''
+        });
+
+        // Push each monthWise row
+        if (el.monthWiseData && el.monthWiseData.length) {
+          for (let month of el.monthWiseData) {
+            exportData.push({
+              rowType: 'Month',
+              id: month.id,
+              campaignName: month.monthName,
+              campaignCategory: month.campaignCategory,
+              totalSpent: month.totalSpent,
+              leads: month.leads,
+              signUp: month.signUp,
+              techGP: month.techGP,
+              monthName: month.monthName,
+              year: month.year
+            });
+          }
+        }
+      }
+           Excel.export(
+            'Campaign Summary',
+            [
+              { header: 'Name', property: 'campaignName' },
+              { header: 'Category', property: 'campaignCategory' },
+              { header: 'Leads', property: 'leads' },
+              { header: 'Signup', property: 'signUp' },
+              { header: 'Tech GP', property: 'techGP' },
+              { header: 'Total Spent', property: 'totalSpent' },
+            ],
+            exportData, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
+
     });
+
   }
 
   ngOnDestroy() {

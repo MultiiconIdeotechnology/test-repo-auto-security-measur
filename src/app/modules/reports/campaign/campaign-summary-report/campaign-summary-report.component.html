@@ -48,7 +48,7 @@
 
             <!------Refresh------>
             <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
-                (click)="refreshItems()">
+                (click)="loadingTableData()">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
@@ -148,57 +148,74 @@
                             svgIcon="heroicons_outline:chevron-up"></mat-icon>
                     </td>
                     <td>{{ element.campaignCategory || "-" }}</td>
-                    <td class="text-right">
-                        {{ element.leads ? (element.leads.toFixed(2) | number:'1.2-2') : 0 }}
+                    <td class="text-right" (click)="onChart(element, 'leads', 'Leads')">
+                        <span class="border-b border-gray-500 cursor-pointer">
+                            {{ element.leads ? (element.leads.toFixed(2) | number:'1.2-2') : 0 }}
+                        </span>
                     </td>
                     <td class="text-right">
-                        {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
+                        <span class="border-b border-gray-500 cursor-pointer" (click)="onChart(element, 'signUp')">
+                            {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
+                        </span>
                     </td>
                     <td class="text-right">
-                        {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
+                        <span class="border-b border-gray-500 cursor-pointer" (click)="onChart(element, 'techGP')">
+                            {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
+                        </span>
                     </td>
                     <td class="text-right">
-                        {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
+                        <span class="border-b border-gray-500 cursor-pointer" (click)="onChart(element, 'totalSpent')">
+                            {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
+                        </span>
                     </td>
                     <td></td>
                 </tr>
 
                 <ng-container *ngIf="expandedRows[element.campaignName]">
-                <tr *ngFor="let el of element.monthWiseData" class="domestic-row">
-                    <td alignFrozen="left" class="flex justify-between items-center dark:text-gray-400 text-gray-600" pFrozenColumn
-                            [frozen]="frozenObj?.monthName" >
-                        <span>
-                            {{el?.monthName || "-"}}
-                        </span>
-                    </td>
-                    <td>{{ el?.campaignCategory || "-" }}</td>
-                    <td class="text-right dark:text-gray-400 text-gray-600">
-                        {{ el.leads ? (el?.leads.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right dark:text-gray-400 text-gray-600">
-                        {{ el.signUp ? (el?.signUp.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right dark:text-gray-400 text-gray-600">
-                        {{ el.techGP ? (el?.techGP.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td class="text-right dark:text-gray-400 text-gray-600">
-                        {{ el.totalSpent ? (el?.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
-                    </td>
-                    <td></td>
-                </tr>
+                    <tr *ngFor="let el of element.monthWiseData" class="domestic-row">
+                        <td alignFrozen="left"
+                            class="flex justify-between items-center dark:text-gray-400 text-gray-600" pFrozenColumn
+                            [frozen]="frozenObj?.monthName">
+                            <span>
+                                {{el?.monthName || "-"}}
+                            </span>
+                        </td>
+                        <td>{{ el?.campaignCategory || "-" }}</td>
+                        <td class="text-right dark:text-gray-400 text-gray-600">
+                            {{ el.leads ? (el?.leads.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td class="text-right dark:text-gray-400 text-gray-600">
+                            {{ el.signUp ? (el?.signUp.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td class="text-right dark:text-gray-400 text-gray-600">
+                            {{ el.techGP ? (el?.techGP.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td class="text-right dark:text-gray-400 text-gray-600">
+                            {{ el.totalSpent ? (el?.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
+                        </td>
+                        <td></td>
+                    </tr>
                 </ng-container>
-               
+
             </ng-template>
 
-<!-- 
-            <ng-template pTemplate="rowexpansion" let-element>
+            <ng-template pTemplate="footer">
                 <tr>
-                    <ng-template pTemplate="body" let-el>
-
-                    </ng-template>
-
+                    <td>Total</td>
+                    <td></td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalLeads ? (dataListTotals.totalLeads.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalSignup ? (dataListTotals.totalSignup.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalTechGP ? (dataListTotals.totalTechGP.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td></td>
+                    <td></td>
                 </tr>
-            </ng-template> -->
+            </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">

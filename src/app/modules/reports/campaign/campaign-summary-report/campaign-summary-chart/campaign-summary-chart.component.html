@@ -1,0 +1,38 @@
+<div class="sticky top-0 z-10 dark:bg-gray-900">
+    <div class="flex items-center justify-between border-b border-gray-border p-3 px-6">
+        <span class="font-inter font-semibold text-lg dark:text-white break-words max-w-[36rem]">
+            <span *ngIf="data?.campaignCategory">{{record?.campaignCategory}}-</span>{{record.campaignName}}
+        </span>
+
+        <span class="flex items-center gap-3">
+            <div class="flex bg-black p-1 rounded-full w-fit">
+                <i class="material-icons text-white text-sm px-3 py-1 rounded-full cursor-pointer transition-colors"
+                    matTooltip="Area Chart"
+                    [ngClass]="selectedTab === 'area' ? 'bg-gray-700' : 'bg-transparent hover:bg-gray-800'"
+                    (click)="onTabChange('area')">
+                    area_chart
+                </i>
+                <i class="material-icons text-white text-sm px-3 py-1 rounded-full cursor-pointer transition-colors"
+                    matTooltip="Bar Chart"
+                    [ngClass]="selectedTab === 'bar' ? 'bg-gray-700' : 'bg-transparent hover:bg-gray-800'"
+                    (click)="onTabChange('bar')">
+                    bar_chart
+                </i>
+            </div>
+
+
+            <!-- close modal -->
+            <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                <mat-icon class="text-current dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+            </button>
+        </span>
+    </div>
+</div>
+
+<div class="px-8 py-2">
+    <apx-chart class="flex-auto w-full h-full" [chart]="areaChartConfig.chart" [colors]="areaChartConfig.colors"
+        [dataLabels]="areaChartConfig.dataLabels" [fill]="areaChartConfig.fill" [grid]="areaChartConfig.grid"
+        [series]="areaChartConfig.series" [yaxis]="areaChartConfig.yaxis" [stroke]="areaChartConfig.stroke"
+        [tooltip]="areaChartConfig.tooltip" [xaxis]="areaChartConfig.xaxis">
+    </apx-chart>
+</div>
