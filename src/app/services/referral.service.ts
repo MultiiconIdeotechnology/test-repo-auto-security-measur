@@ -33,7 +33,7 @@ export class RefferralService {
     }
 
     statusChange(model:any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'ReferralLink/statusChange', model);
+        return this.http.post<any>(this.baseUrl + 'StatusChangeLogs/getStatusChangeLogsList', model);
     }
 
     // spent api

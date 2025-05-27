@@ -192,8 +192,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     console.log("this.dataList>>>", this.dataList);
   }
 
-
-
   getNodataText(): string {
     if (this.isLoading)
       return 'Loading...';

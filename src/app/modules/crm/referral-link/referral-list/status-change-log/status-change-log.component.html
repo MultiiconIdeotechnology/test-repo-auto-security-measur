@@ -1,0 +1,109 @@
+<div class="flex flex-col max-h-screen supplier_info">
+    <div class="sticky top-0 z-10 dark:bg-gray-900">
+        <div class="flex items-center justify-between border-b border-gray-border p-3">
+            <span
+                class="font-inter font-semibold text-lg text-white break-words max-w-[36rem]">{{data?.campaign_name}}</span>
+            <span class="flex items-center gap-2">
+                <!-- Global search in modal -->
+                <div class="flex ctm_search dark:bg-gray-800">
+                    <input #inputRef matInput [autocomplete]="'off'" [placeholder]="'Search'"
+                        (input)="onGlobalFilterSearch(inputRef.value)" />
+                    <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                        (click)="onGlobalFilterSearch(inputRef.value)"></mat-icon>
+                </div>
+
+                <!-- Column Filter -->
+                <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                    [disabled]="isLoading" (click)="this.isFilterShow = !this.isFilterShow;">
+                    <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                        alt="c">
+                    <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                        alt="c">
+                </button>
+
+                <!-- close modal -->
+                <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+                    <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                </button>
+            </span>
+        </div>
+    </div>
+
+    <div class="table-container modal-custom-table paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="10" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['code', 'company', 'agency', 'status', 'email', 'mobile', 'city', 'currency', 'signup']"
+            styleClass="p-datatable-gridlines p-datatable-sm" class="contracting_rep">
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th pSortableColumn="current_status" pResizableColumn>
+                        Description <p-sortIcon field="current_status" />
+                    </th>
+                    <th [ngClass]="{'min-w-[200px]': isFilterShow}" pSortableColumn="status_remark" pResizableColumn>
+                        Remark <p-sortIcon field="status_remark" />
+                    </th>
+                    <!-- <th pSortableColumn="login" pResizableColumn>
+                        Action By <p-sortIcon field="login" />
+                    </th> -->
+                    <th class="w-full" pSortableColumn="entry_date_time" pResizableColumn>
+                        Date <p-sortIcon field="entry_date_time" />
+                    </th>
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th>
+                        <p-columnFilter field="current_status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div>{{ option.value }}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="status_remark"
+                            placeholder="Search by Remark" ariaLabel="Filter Remark" />
+                    </th>
+                    <!-- <th>
+                        <p-columnFilter type="text" matchMode="contains" field="login" placeholder="Search by Action By"
+                            ariaLabel="Filter Action By" />
+                    </th> -->
+                    <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                    [ngModel]="value" placeholder="Search by Entry Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element let-columns="columns">
+                <tr>
+                    <td [ngClass]="statusColorMap[element.current_status]">{{element?.current_status || "-"}}</td>
+                    <td>{{element?.status_remark || "-"}}</td>
+                    <!-- <td>{{element?.login || "-"}}</td> -->
+                    <td>{{element.entry_date_time ? (element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss') : "-"}}</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="18" class="text-center font-semibold text-lg">
+                        {{ getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

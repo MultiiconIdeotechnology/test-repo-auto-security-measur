@@ -31,6 +31,7 @@ import { DataManagerService } from 'app/services/data-manager.service';
 import { ReferralListSpentDialogComponent } from './referral-list-spent-dialog/referral-list-spent-dialog.component';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { StatusChangeLogComponent } from './status-change-log/status-change-log.component';
 
 @Component({
     selector: 'app-referral-list',
@@ -254,6 +255,21 @@ export class ReferralListComponent extends BaseListingComponent {
                 // this.refreshItems();
             }
         })
+    }
+
+    statusChangeLog(record): void {
+        // if (!Security.hasPermission(agentsPermissions.statusChangedLogsPermissions)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        this.matDialog.open(StatusChangeLogComponent, {
+            data: record,
+            panelClass: 'zero-dialog',
+            disableClose: true,
+            backdropClass: 'custom-dialog-backdrop',
+            maxWidth: '1260px',
+            minWidth: '900px'
+        });
     }
 
     // setReferalLinkEnable(data: any): void {
