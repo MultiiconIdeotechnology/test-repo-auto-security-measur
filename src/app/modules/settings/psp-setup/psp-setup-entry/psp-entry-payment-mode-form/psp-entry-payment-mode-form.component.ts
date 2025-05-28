@@ -35,7 +35,7 @@ import { FuseConfirmationService } from '@fuse/services/confirmation';
   styleUrls: ['./psp-entry-payment-mode-form.component.scss']
 })
 export class PspEntryPaymentModeFormComponent {
-  @ViewChild('formDirective') formDirective:FormGroupDirective;
+  @ViewChild('formDirective') formDirective: FormGroupDirective;
   disableBtn: boolean = false
   formGroup: FormGroup;
   readonly: boolean = false;
@@ -51,9 +51,9 @@ export class PspEntryPaymentModeFormComponent {
   profileId: any;
   filteredPspList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filteredModeList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
-  profileFormData:any;
+  profileFormData: any;
 
-  
+
 
   constructor(
     private builder: FormBuilder,
@@ -63,7 +63,7 @@ export class PspEntryPaymentModeFormComponent {
     private conformationService: FuseConfirmationService,
   ) {
     this.filteredModeList.next(this.modeList.slice());
-   }
+  }
 
 
   ngOnInit(): void {
@@ -84,7 +84,7 @@ export class PspEntryPaymentModeFormComponent {
     // })
 
     this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
-    if(this.profileFormData && this.profileFormData?.id){
+    if (this.profileFormData && this.profileFormData?.id) {
       this.profileId = this.profileFormData?.id;
     }
 
@@ -109,7 +109,9 @@ export class PspEntryPaymentModeFormComponent {
 
   getPSPList(value: string) {
     this.pspSetupService.getPaymentGatewayListCached(value).subscribe((data) => {
-      this.pspList = data;
+
+      this.pspList = [...new Map(data.map(item =>
+        [item.provider, item])).values()];
 
       // update filtered list as well
       this.filteredPspList.next(this.pspList.slice());

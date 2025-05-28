@@ -125,7 +125,7 @@ export class AgentListComponent extends BaseListingComponent {
 
     cashbackList = [
         { label: 'Yes', value: true },
-        { label: 'No', value: false}
+        { label: 'No', value: false }
     ]
 
     // blockList = [
@@ -207,12 +207,12 @@ export class AgentListComponent extends BaseListingComponent {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
-            
+
             if (resp['table_config']['first_transaction_date_time']?.value != null && resp['table_config']['first_transaction_date_time'].value.length) {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
             }
-            
+
             if (resp['table_config']['first_login_date_time']?.value != null && resp['table_config']['first_login_date_time'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['first_login_date_time']);
@@ -255,7 +255,7 @@ export class AgentListComponent extends BaseListingComponent {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['first_transaction_date_time']);
             }
-            
+
             if (filterData['table_config']['first_login_date_time']?.value != null && filterData['table_config']['first_login_date_time'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['first_login_date_time']);
@@ -594,57 +594,57 @@ export class AgentListComponent extends BaseListingComponent {
         }
     }
 
-     EnableDisable(record): void {
+    EnableDisable(record): void {
         if (!Security.hasPermission(agentsPermissions.enableDisablePermissions)) {
-          return this.alertService.showToast('error', messages.permissionDenied);
+            return this.alertService.showToast('error', messages.permissionDenied);
         }
-    
+
         const label: string = record.is_cashback_enable ? 'Disable' : 'Enable';
         let title = label == 'Disable' ? 'Cashback Disable' : 'Cashback Enable';
         this.conformationService
-          .open({
-            title: label,
-            message:
-              'Are you sure to ' +
-              label.toLowerCase() +
-              ' ' +
-              record.agency_name +
-              ' ?',
-          })
-          .afterClosed()
-          .subscribe((res) => {
-            if (res === 'confirmed') {
-    
-                this.agentService
-                  .setCashbackEnable(record.id)
-                  .subscribe({
-                    next: () => {
-                      record.is_cashback_enable = !record.is_cashback_enable;
-                      if (record.is_cashback_enable) {
-                        this.alertService.showToast(
-                          'success',
-                          'Cashback Enabled!',
-                          'top-right',
-                          true
-                        );
-                      } else {
-                        this.alertService.showToast(
-                          'success',
-                          'Cashback Disabled!',
-                          'top-right',
-                          true
-                        );
-                      }
-                      this.refreshItems();
+            .open({
+                title: label,
+                message:
+                    'Are you sure to ' +
+                    label.toLowerCase() +
+                    ' ' +
+                    record.agency_name +
+                    ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
 
-                    }, error: (err) => {
-                      this.alertService.showToast('error', err);
-                    }
-                  });
-                  
-            }
-          });
-      }
+                    this.agentService
+                        .setCashbackEnable(record.id)
+                        .subscribe({
+                            next: () => {
+                                record.is_cashback_enable = !record.is_cashback_enable;
+                                if (record.is_cashback_enable) {
+                                    this.alertService.showToast(
+                                        'success',
+                                        'Cashback Enabled!',
+                                        'top-right',
+                                        true
+                                    );
+                                } else {
+                                    this.alertService.showToast(
+                                        'success',
+                                        'Cashback Disabled!',
+                                        'top-right',
+                                        true
+                                    );
+                                }
+                                this.refreshItems();
+
+                            }, error: (err) => {
+                                this.alertService.showToast('error', err);
+                            }
+                        });
+
+                }
+            });
+    }
 
     relationahipManager(record): void {
         if (!Security.hasPermission(agentsPermissions.relationshipManagerPermissions)) {
@@ -827,7 +827,7 @@ export class AgentListComponent extends BaseListingComponent {
         if (!Security.hasPermission(agentsPermissions.setDisplayCurrencyPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        
+
         this.matDialog.open(SetDisplayCurrencyComponent, {
             data: record,
             disableClose: true
@@ -896,15 +896,17 @@ export class AgentListComponent extends BaseListingComponent {
             });
     }
 
-    assignPspProfile(record:any) {
-            this.matDialog.open(BulkAssignDialogComponent, 
+    assignPspProfile(record: any) {
+        this.matDialog.open(BulkAssignDialogComponent,
             {
-              data:{record:record, key:'customer-agent', title: 'Profile Assign'},
-              disableClose:true,
-              panelClass:['zero-dialog', 'md-dialog']
+                data: { record: record, key: 'customer-agent', title: 'Profile Assign' },
+                disableClose: true,
+                panelClass: ['zero-dialog'],
+                maxWidth: '600px',
+                minWidth: '470px'
             }
-          )
-      }
+        )
+    }
 
     exportExcel(): void {
         if (!Security.hasExportDataPermission(this.module_name)) {

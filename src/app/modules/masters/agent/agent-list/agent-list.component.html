@@ -455,7 +455,8 @@
                         </ng-container>
 
                         <ng-container *ngIf="col.field == 'first_transaction_date_time'">
-                            <p-columnFilter *ngIf="(_filterService.selectionDateDropdownContracting$ | async) != 'custom_date_range'"
+                            <p-columnFilter
+                                *ngIf="(_filterService.selectionDateDropdownContracting$ | async) != 'custom_date_range'"
                                 field="first_transaction_date_time" matchMode="custom" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -579,7 +580,7 @@
                             <button mat-menu-item (click)="assignPspProfile(element)">
                                 <mat-icon class="mat-18">{{ element.is_active ? "highlight_off" :
                                     "check_circle"}}</mat-icon>
-                                     Assign Profile
+                                Assign PSP Profile
                             </button>
 
                             <mat-divider></mat-divider>

@@ -66,12 +66,12 @@
         <!-- Save as draft -->
         <button *ngIf="data?.key == 'bulk-assign'" mat-flat-button [color]="'primary'" (click)="submit()"
             [disabled]="!(formGroup.get('is_all_agent')?.value || selectedListIds?.length)">
-            save
+            Save
         </button>
 
         <button *ngIf="data?.key !== 'bulk-assign'" mat-flat-button [color]="'primary'" (click)="submit()"
             [disabled]="!selectedListIds?.length">
-            save
+            Save
         </button>
     </div>
 </div>

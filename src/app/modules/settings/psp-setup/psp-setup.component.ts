@@ -264,7 +264,9 @@ export class PspSetupComponent extends BaseListingComponent {
         {
           data:{record:record, key:'bulk-assign', title:'Bulk Assign Profile'},
           disableClose:true,
-          panelClass:['zero-dialog', 'md-dialog']
+          panelClass:['zero-dialog'],
+          maxWidth:'600px',
+          minWidth: '470px'
         }
       )
   }

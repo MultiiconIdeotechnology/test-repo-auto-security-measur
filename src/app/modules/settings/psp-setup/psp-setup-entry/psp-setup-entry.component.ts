@@ -95,7 +95,6 @@ export class PspSetupEntryComponent {
     this.pspSetupService.getPgProfileFromId(id).subscribe({
       next: (resp: any) => {
         if (resp) {
-          console.log("getprofilebyid", resp)
           this.pspEntryPaymentModeComponent.tableList = resp?.payment_getway_settings || [];
           this.pspEntryProfileComponent.formGroup.patchValue({
             id:resp?.id,
