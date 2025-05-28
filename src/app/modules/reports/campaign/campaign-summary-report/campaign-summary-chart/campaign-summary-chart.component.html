@@ -4,22 +4,21 @@
             <span *ngIf="data?.campaignCategory">{{record?.campaignCategory}}-</span>{{record.campaignName}}
         </span>
 
-        <span class="flex items-center gap-3">
-            <div class="flex bg-black p-1 rounded-full w-fit">
-                <i class="material-icons text-white text-sm px-3 py-1 rounded-full cursor-pointer transition-colors"
+        <span class="flex items-center gap-3 ">
+            <div class="flex items-center h-[1.5rem] dark:bg-gray-800 bg-gray-300 rounded-full w-fit px-1">
+                <i class="material-icons dark:text-white text-primaryColor text-xl px-2 rounded-full cursor-pointer transition-colors"
                     matTooltip="Area Chart"
-                    [ngClass]="selectedTab === 'area' ? 'bg-gray-700' : 'bg-transparent hover:bg-gray-800'"
+                    [ngClass]="selectedTab === 'area' ? 'dark:bg-gray-600 bg-gray-200' : 'bg-transparent hover:dark:bg-gray-700'"
                     (click)="onTabChange('area')">
                     area_chart
                 </i>
-                <i class="material-icons text-white text-sm px-3 py-1 rounded-full cursor-pointer transition-colors"
+                <i class="material-icons dark:text-white text-primaryColor text-xl px-2 rounded-full cursor-pointer transition-colors"
                     matTooltip="Bar Chart"
-                    [ngClass]="selectedTab === 'bar' ? 'bg-gray-700' : 'bg-transparent hover:bg-gray-800'"
+                    [ngClass]="selectedTab === 'bar' ? 'dark:bg-gray-600 bg-gray-200' : 'bg-transparent hover:dark:bg-gray-700'"
                     (click)="onTabChange('bar')">
                     bar_chart
                 </i>
             </div>
-
 
             <!-- close modal -->
             <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
@@ -30,6 +29,15 @@
 </div>
 
 <div class="px-8 py-2">
+    <div class="flex justify-end" *ngIf="showDropdownYear">
+        <p-dropdown 
+         (onChange)="onYearSelect($event)"
+         [options]="uiqueYearArr" 
+         [(ngModel)]="selectedYear" 
+         placeholder="Select a Year" 
+        [showClear]="true"/>
+    </div>
+
     <apx-chart class="flex-auto w-full h-full" [chart]="areaChartConfig.chart" [colors]="areaChartConfig.colors"
         [dataLabels]="areaChartConfig.dataLabels" [fill]="areaChartConfig.fill" [grid]="areaChartConfig.grid"
         [series]="areaChartConfig.series" [yaxis]="areaChartConfig.yaxis" [stroke]="areaChartConfig.stroke"

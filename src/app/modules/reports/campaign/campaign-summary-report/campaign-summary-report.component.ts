@@ -72,21 +72,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   expandedRows = {};
   subDataList: any = [];
 
-  monthColors = {
-    January: 'bg-blue-100 text-blue-900',
-    February: 'bg-pink-100 text-pink-900',
-    March: 'bg-green-100 text-green-900',
-    April: 'bg-yellow-100 text-yellow-900',
-    May: 'bg-purple-100 text-purple-900',
-    June: 'bg-red-100 text-red-900',
-    July: 'bg-orange-100 text-orange-900',
-    August: 'bg-emerald-100 text-emerald-900',
-    September: 'bg-indigo-100 text-indigo-900',
-    October: 'bg-rose-100 text-rose-900',
-    November: 'bg-lime-100 text-lime-900',
-    December: 'bg-teal-100 text-teal-900',
-  };
-
   constructor(
     private campaignRegisterService: CampaignRegisterService,
     public _filterService: CommonFilterService,
@@ -132,8 +117,8 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     }
   }
 
-  toggleRow(campaignName: any): void {
-    this.expandedRows[campaignName] = !this.expandedRows[campaignName];
+  toggleRow(id: any): void {
+    this.expandedRows[id] = !this.expandedRows[id];
   }
 
   // onExpandedTable(expanded: any) {
@@ -154,7 +139,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
         this.dataListTotals = data;
         this.dataList = data.data;
         this.totalRecords = data.total;
-        console.log("this.subDataList", this.subDataList)
         if (!this.subDataList?.length) {
           this.subTableData();
         } else {
@@ -179,7 +163,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
         this.subDataList = data.data;
         this.dataList = this.manageSubTableData(this.dataList);
         this.totalRecords = data.total;
-        this.isLoading = false;
+        // this.isLoading = false;
       }, error: (err) => {
         this.alertService.showToast('error', err)
         this.isLoading = false
@@ -209,6 +193,10 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   }
 
   onChart(record: any, key: string, name: string) {
+    if(!record[key] && record[key] == 0){
+      return;
+    }
+     
     this.matDialog.open(CampaignSummaryChartComponent, {
       data: { record: record, key: key, hoverName: name },
       panelClass: 'zero-dialog',
@@ -232,7 +220,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
     let dataList = [];
-    let monthDataList = [];
     const filterReq = this.getNewFilterReq({});
     filterReq['Take'] = this.totalRecords;
     filterReq['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
@@ -246,9 +233,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     this.campaignRegisterService.getCampaignSummaryReport(filterReq).subscribe(data => {
       dataList = data.data;
       dataList =  this.manageSubTableData(dataList);
-      // this.campaignRegisterService.getCampaignSummaryMonthwiseReport(monthPayload).subscribe((res: any) => {
-      //   monthDataList = res.data;
-      // });
 
       const exportData = [];
 

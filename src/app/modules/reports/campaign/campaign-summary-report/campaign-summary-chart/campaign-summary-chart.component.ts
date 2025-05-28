@@ -7,6 +7,11 @@ import { ApexOptions } from "apexcharts";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { commonUseService } from 'app/services/common-use.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { DropdownModule } from 'primeng/dropdown';
+import { FormsModule } from '@angular/forms';
+import cloneDeep from "lodash/cloneDeep";
 
 @Component({
   selector: 'app-campaign-summary-chart',
@@ -16,7 +21,11 @@ import { commonUseService } from 'app/services/common-use.service';
     MatButtonModule,
     MatIconModule,
     NgApexchartsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    DropdownModule,
+    FormsModule
   ],
   templateUrl: './campaign-summary-chart.component.html',
   styleUrls: ['./campaign-summary-chart.component.scss']
@@ -32,17 +41,23 @@ export class CampaignSummaryChartComponent {
   xAxisData: any[] = [];
   yAxisData: any[] = [];
   theme: any = 'dark';
+  yearArr: any[] = [];
+  uiqueYearArr: any[] = [];
+  selectedYear: any;
+  showDropdownYear: boolean = false;
+  originalXAxisData: any = [];
+  originalYAxisData: any = [];
 
   chartThemeMap = {
     light: {
-      arrayColor:'#a7a2a287',
+      arrayColor: '#a7a2a287',
       borderColor: '#a7a2a287',
       fillColor: '#312E81',
       textColor: '#222831',
       tooltipTheme: 'light',
     },
     dark: {
-      arrayColor:'#818CF8',
+      arrayColor: '#818CF8',
       borderColor: '#334155',
       fillColor: '#312E81',
       textColor: '#ffffff',
@@ -73,11 +88,49 @@ export class CampaignSummaryChartComponent {
   manageData() {
     for (let el of this.montWiseData) {
       this.yAxisData.push(el[this.key]);
+      this.yearArr.push(el['year']);
       this.xAxisData.push(this.monthYearFormat(el['monthName'], el['year']));
     }
+
+    this.originalXAxisData = cloneDeep(this.xAxisData);
+    this.originalYAxisData = cloneDeep(this.yAxisData);
+    let maxYear = Math.max(...this.yearArr);
+    let minYear = Math.min(...this.yearArr);
+
+    if (maxYear != minYear) {
+      this.showDropdownYear = true;
+    }
+    this.uiqueYearArr = cloneDeep([...new Set(this.yearArr)]);
     this.initializingChart(this.selectedTab, this.theme);
-    console.log("yAxisData", this.yAxisData);
-    console.log("xAxisData", this.xAxisData);
+  }
+
+  onYearSelect(event: any) {
+    
+    this.xAxisData = [];
+    this.yAxisData = [];
+    if(event.value){
+      this.xAxisData = this.originalXAxisData.filter((item: any) => {
+        let slicedYear = item ? item.split('-')[1]: null;
+        return slicedYear === event.value.slice(-2);
+      });
+  
+      this.montWiseData.forEach((item: any) => {
+        if (item?.year == event.value) {
+          this.yAxisData.push(item[this.key]);
+        }
+      })
+
+    } else {
+      this.onClearYear()
+    }
+    this.initializingChart(this.selectedTab, this.theme);
+  }
+
+  onClearYear() {
+    this.xAxisData = this.originalXAxisData;
+    this.yAxisData = this.originalYAxisData;
+    this.selectedYear = '';
+    this.initializingChart(this.selectedTab, this.theme)
   }
 
   initializingChart(chartType: any, theme: 'light' | 'dark') {
@@ -86,10 +139,16 @@ export class CampaignSummaryChartComponent {
     this.areaChartConfig = {
       chart: {
         animations: {
-          speed: 400,
+          enabled: true,
+          speed: 800,
           animateGradually: {
-            enabled: false,
+            enabled: true,
+            delay: 50
           },
+          dynamicAnimation: {
+            enabled: true,
+            speed: 50
+          }
         },
         fontFamily: 'inherit',
         foreColor: 'inherit',
@@ -169,7 +228,10 @@ export class CampaignSummaryChartComponent {
 
 
   onTabChange(tabName: string) {
+    this.selectedYear = '';
     this.selectedTab = tabName;
+    this.xAxisData = this.originalXAxisData;
+    this.yAxisData = this.originalYAxisData;
     this.initializingChart(this.selectedTab, this.theme)
   }
 

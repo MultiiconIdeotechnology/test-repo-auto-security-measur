@@ -138,40 +138,40 @@
             <ng-template pTemplate="body" let-element let-expanded="expanded">
                 <tr>
                     <td alignFrozen="left" class="flex justify-between gap-3 items-center" pFrozenColumn
-                        [frozen]="frozenObj?.campaignName" (click)="toggleRow(element.campaignName)">
+                        [frozen]="frozenObj?.campaignName" (click)="toggleRow(element.id)">
                         <span>
                             {{element.campaignName || "-"}}
                         </span>
-                        <mat-icon *ngIf="!expandedRows[element.campaignName]" class="icon-size-4"
+                        <mat-icon *ngIf="!expandedRows[element.id]" class="icon-size-4"
                             svgIcon="heroicons_outline:chevron-down"></mat-icon>
-                        <mat-icon *ngIf="expandedRows[element.campaignName]" class="icon-size-4"
+                        <mat-icon *ngIf="expandedRows[element.id]" class="icon-size-4"
                             svgIcon="heroicons_outline:chevron-up"></mat-icon>
                     </td>
                     <td>{{ element.campaignCategory || "-" }}</td>
                     <td class="text-right" (click)="onChart(element, 'leads', 'Leads')">
-                        <span class="border-b border-gray-500 cursor-pointer">
+                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}">
                             {{ element.leads ? (element.leads.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
-                    <td class="text-right">
-                        <span class="border-b border-gray-500 cursor-pointer" (click)="onChart(element, 'signUp')">
+                    <td class="text-right" (click)="onChart(element, 'signUp', 'Signup')">
+                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}" >
                             {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
-                    <td class="text-right">
-                        <span class="border-b border-gray-500 cursor-pointer" (click)="onChart(element, 'techGP')">
+                    <td class="text-right" (click)="onChart(element, 'techGP', 'TechGp')">
+                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}" >
                             {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
-                    <td class="text-right">
-                        <span class="border-b border-gray-500 cursor-pointer" (click)="onChart(element, 'totalSpent')">
+                    <td class="text-right" (click)="onChart(element, 'totalSpent', 'Total Spent')">
+                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}" >
                             {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
                     <td></td>
                 </tr>
 
-                <ng-container *ngIf="expandedRows[element.campaignName]">
+                <ng-container *ngIf="expandedRows[element.id]">
                     <tr *ngFor="let el of element.monthWiseData" class="domestic-row">
                         <td alignFrozen="left"
                             class="flex justify-between items-center dark:text-gray-400 text-gray-600" pFrozenColumn
