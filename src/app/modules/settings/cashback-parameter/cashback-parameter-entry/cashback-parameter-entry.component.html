@@ -108,7 +108,7 @@
             </div>
 
             <!-- footer -->
-            <div class="justify-end items-center flex sticky bottom-0 border-t-2 border-gray-border white-bg px-5 py-2 h-15">
+            <div *ngIf="modalType != 'readOnly'" class="justify-end items-center flex sticky bottom-0 border-t-2 border-gray-border white-bg px-5 py-2 h-15">
                 <button class="mr-2" mat-stroked-button (click)="closeSidebar()">Close</button>
             
                 <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid">
