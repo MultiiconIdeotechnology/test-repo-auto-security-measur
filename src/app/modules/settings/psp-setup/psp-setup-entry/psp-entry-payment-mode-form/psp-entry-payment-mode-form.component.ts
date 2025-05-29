@@ -109,9 +109,9 @@ export class PspEntryPaymentModeFormComponent {
 
   getPSPList(value: string) {
     this.pspSetupService.getPaymentGatewayListCached(value).subscribe((data) => {
-
-      this.pspList = [...new Map(data.map(item =>
-        [item.provider, item])).values()];
+      this.pspList = data;
+      // this.pspList = [...new Map(data.map(item =>
+      //   [item.provider, item])).values()];
 
       // update filtered list as well
       this.filteredPspList.next(this.pspList.slice());
