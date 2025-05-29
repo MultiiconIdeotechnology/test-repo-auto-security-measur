@@ -5,7 +5,7 @@ import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
 import { environment } from 'environments/environment';
 import CryptoJS from 'crypto-js';
-import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { FuseNavigationItem, Navigations } from '@fuse/components/navigation';
 import { MatDialog } from '@angular/material/dialog';
 import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-password.component';
@@ -16,6 +16,13 @@ export class AuthService {
     private permissions: any[];
     baseUrl = environment.apiUrl;
     user: any = {};
+    authEnabled: any = "";
+
+    private isAuthEnabledSubject = new BehaviorSubject<boolean>(
+        JSON.parse(localStorage.getItem('isAuthEnabled'))
+    );
+    authEnabled$ = this.isAuthEnabledSubject.asObservable();
+
     /**
      * Constructor
      */
@@ -60,7 +67,7 @@ export class AuthService {
     // }
 
     forgotPassword(email: string): Observable<any[]> {
-        return this._httpClient.post<any[]>(this.baseUrl + 'auth/emp/forgotPassword', { email:email });
+        return this._httpClient.post<any[]>(this.baseUrl + 'auth/emp/forgotPassword', { email: email });
     }
 
     /**
@@ -77,11 +84,11 @@ export class AuthService {
 
     Login(code: any, credentials: any, is_master: any, twoFaAuth?: any): Observable<any> {
         let body: any = {
-            code: code, 
+            code: code,
             is_master: is_master
         }
 
-        if(twoFaAuth && twoFaAuth.authtype) {
+        if (twoFaAuth && twoFaAuth.authtype) {
             body.otp = twoFaAuth.otp;
             body.authtype = twoFaAuth.authtype;
         }
@@ -96,7 +103,7 @@ export class AuthService {
                 this.storeInfo(response, credentials.rememberMe)
                 // Store the user on the user service
                 const user = JSON.parse(this.decrypt(keys.permissionHash, response.user))
-                
+
                 this._userService.user = user;
                 // Return a new observable with the response
                 return of(response);
@@ -106,13 +113,13 @@ export class AuthService {
 
     private storeInfo(response, rememberMe): void {
         // if (rememberMe) {
-            localStorage.setItem('accessToken', response.token)
-            localStorage.setItem('user', response.user);
-            localStorage.setItem('permissions', response.permissions);
+        localStorage.setItem('accessToken', response.token)
+        localStorage.setItem('user', response.user);
+        localStorage.setItem('permissions', response.permissions);
 
-            sessionStorage.setItem('accessToken', response.token)
-            sessionStorage.setItem('user', response.user);
-            sessionStorage.setItem('permissions', response.permissions);
+        sessionStorage.setItem('accessToken', response.token)
+        sessionStorage.setItem('user', response.user);
+        sessionStorage.setItem('permissions', response.permissions);
         // } else {
         //     sessionStorage.setItem('accessToken', response.token)
         //     sessionStorage.setItem('user', response.user);
@@ -134,7 +141,7 @@ export class AuthService {
     }
 
     changeLogo(file: any): Observable<any> {
-        return this._httpClient.post<any>(environment.apiUrl + 'auth/b2c/changeLogo', {file});
+        return this._httpClient.post<any>(environment.apiUrl + 'auth/b2c/changeLogo', { file });
     }
 
     getWlLogo(): Observable<any> {
@@ -202,6 +209,7 @@ export class AuthService {
         localStorage.removeItem('permissions');
         sessionStorage.removeItem('permissions');
         localStorage.removeItem('filterData');
+        localStorage.removeItem('isAuthEnabled');
 
         this._userService.user = null;
         this.user = null;
@@ -315,6 +323,17 @@ export class AuthService {
     public hasListPermission(pid: string): boolean {
         const result = this.getPermissions().findIndex(p => p.pid === pid) > -1;
         return result;
+    }
+
+    // auth Enabled set response for totp 
+
+    getAuthEnabled(): boolean {
+        return this.isAuthEnabledSubject.value;
+    }
+
+    setAuthEnabled(enabled: boolean) {
+        localStorage.setItem('isAuthEnabled', JSON.stringify(enabled));
+        this.isAuthEnabledSubject.next(enabled);
     }
 
 }

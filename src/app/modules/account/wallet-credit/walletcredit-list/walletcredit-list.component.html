@@ -269,6 +269,10 @@
                                     element.is_enable ? "Disable" : "Enable"
                                     }}</span>
                             </button>
+                            <button mat-menu-item (click)="creditLogs(element)">
+                                <img src="assets/icons/logs.svg" class="mr-[12px] w-[24px] h-[24px]" alt="Logs">
+                                <span style="font-weight: 600">Logs</span>
+                            </button>
                         </mat-menu>
                     </td>
                     <td  alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.master_agent_code">

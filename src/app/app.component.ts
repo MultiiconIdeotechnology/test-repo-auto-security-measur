@@ -8,7 +8,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { FuseConfigService, Scheme } from '@fuse/services/config';
 import { MatDialog } from '@angular/material/dialog';
-import { Subject, takeUntil } from 'rxjs';
+import { combineLatest, Subject, takeUntil } from 'rxjs';
 import { UserService } from './core/user/user.service';
 import { SetPasswordComponent } from './layout/common/user/set-password/set-password.component';
 import { SidebarModule } from 'primeng/sidebar';
@@ -17,6 +17,7 @@ import { CommonFilterService } from './core/common-filter/common-filter.service'
 import { AuthService } from './core/auth/auth.service';
 import { TwoFaAuthenticationService } from './services/twofa-authentication.service';
 import { CityService } from './services/city.service';
+import { TwoFactorAuthComponent } from './layout/common/user/two-factor/two-factor-auth/two-factor-auth.component';
 
 @Component({
     selector: 'app-root',
@@ -47,7 +48,8 @@ export class AppComponent implements AfterViewInit {
 
     user: any;
     is_first: boolean;
-    _unsubscribeAll: Subject<any> = new Subject<any>()
+    _unsubscribeAll: Subject<any> = new Subject<any>();
+    authEnabled: any = false
 
     constructor(
         private injector: Injector,
@@ -57,7 +59,8 @@ export class AppComponent implements AfterViewInit {
         public _userService: UserService,
         public _filterService: CommonFilterService,
         private twoFaAuthenticationService: TwoFaAuthenticationService,
-        private cityService:CityService,
+        private cityService: CityService,
+        private authService: AuthService,
 
         @Inject(DOCUMENT) private document: Document
     ) {
@@ -81,7 +84,20 @@ export class AppComponent implements AfterViewInit {
                 this.showToast = true;
                 this.toastrMsg = msg;
             }
-        })
+        });
+
+        combineLatest([
+            this._userService.user$,
+            this.authService.authEnabled$
+          ])
+          .pipe(takeUntil(this._unsubscribeAll))
+          .subscribe(([user, isAuthEnabled]) => {
+            this.user = user;
+        
+            if (!isAuthEnabled && user) {
+              this.openAuthDialog();
+            }
+          });
     }
 
     ngAfterViewInit(): void {
@@ -91,19 +107,19 @@ export class AppComponent implements AfterViewInit {
                 this.user = user
                 this.is_first = user?.is_first;
 
-                if(user){
+                if (user) {
                     // calling agentcombo api 
-                    if(!this._filterService.originalAgentList?.length){
+                    if (!this._filterService.originalAgentList?.length) {
                         this._filterService.getAgent("");
                     }
-    
-                    if(!this._filterService.originalRmList?.length){
+
+                    if (!this._filterService.originalRmList?.length) {
                         // calling the employee/rm list api
                         this._filterService.getEmployeeList("");
                     }
 
                     if (!this.cityService.cityListV2Subject.getValue()?.length) {
-                        this.cityService.getCityListV2({skip:0, take:10, filter:''});
+                        this.cityService.getCityListV2({ skip: 0, take: 10, filter: '' });
                     }
 
                     // calling getTfaConfigList api
@@ -121,6 +137,8 @@ export class AppComponent implements AfterViewInit {
                         })
                     }, 1000);
                 }
+
+
             });
 
     }
@@ -133,6 +151,16 @@ export class AppComponent implements AfterViewInit {
             let themeName = scheme == 'light' ? "lara-light-blue" : "md-dark-indigo";
             themeLink.href = `assets/primeng-themes/${themeName}/theme.css`;
         }
+    }
+
+    openAuthDialog() {
+        this.matDialog.open(TwoFactorAuthComponent, {
+            width: '900px',
+            autoFocus: false,
+            disableClose: true,
+            closeOnNavigation: false,
+            data: {}
+        })
     }
 
     closeToast() {

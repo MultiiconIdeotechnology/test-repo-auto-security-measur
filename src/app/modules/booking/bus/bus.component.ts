@@ -130,7 +130,7 @@ export class BusComponent extends BaseListingComponent {
     this._filterService.updateSelectedOption('');
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
       this._filterService.updateSelectedOption('');
-      this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
+      this.selectedAgent = resp['table_config']['agent_name']?.value;
       this.selectedSupplier = resp['table_config']['supplier']?.value;
       this.selectedFromCity = resp['table_config']['from_id_filters']?.value;
       this.selectedToCity = resp['table_config']['to_id_filters']?.value;
@@ -173,7 +173,7 @@ export class BusComponent extends BaseListingComponent {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
+      this.selectedAgent = filterData['table_config']['agent_name']?.value;
       this.selectedSupplier = filterData['table_config']['supplier']?.value;
       this.selectedFromCity = filterData['table_config']['from_id_filters']?.value;
       this.selectedToCity = filterData['table_config']['to_id_filters']?.value;
@@ -204,7 +204,8 @@ export class BusComponent extends BaseListingComponent {
       this.agentList = data;
 
       for (let i in this.agentList) {
-        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+        this.agentList[i].id_by_value = this.agentList[i].agency_name;
       }
     });
   }

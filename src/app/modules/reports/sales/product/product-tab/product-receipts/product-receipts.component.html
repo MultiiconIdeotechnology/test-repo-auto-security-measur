@@ -48,7 +48,11 @@
                     </th>
 
                     <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
-                        Actual Amount <p-sortIcon field="payment_amount" />
+                        Without Tax <p-sortIcon field="payment_amount" />
+                    </th>
+
+                    <th class="text-right" pSortableColumn="final_amount" pResizableColumn>
+                        With Tax <p-sortIcon field="final_amount" />
                     </th>
                     
                     <th pSortableColumn="receipt_status" pResizableColumn>
@@ -128,6 +132,11 @@
                     <th>
                         <p-columnFilter type="numeric" field="actual_amount" placeholder="Search by Actual Amount"
                             ariaLabel="Filter Actual Amount" />
+                    </th>
+
+                     <th>
+                        <p-columnFilter type="numeric" field="final_amount" placeholder="Search by Final Amount"
+                            ariaLabel="Filter Final Amount" />
                     </th>
 
                     <th>
@@ -217,7 +226,11 @@
                     </td>
 
                     <td class="text-right">
-                        {{element.actual_currency_symbol}} {{element.actual_amount.toFixed(2) || 0}}
+                        {{element.actual_currency_symbol}} {{element.actual_amount ? (element.actual_amount.toFixed(2) | number: '1.2-2') : 0}}
+                    </td>
+
+                    <td class="text-right">
+                        {{element.currencySymbol}} {{element.final_amount ? (element.final_amount.toFixed(2) | number:'1.2-2'): 0}}
                     </td>
 
                     <td>
@@ -248,6 +261,9 @@
                     <td class="text-right">
                         {{total_actual_amount ? (total_actual_amount?.toFixed(2) | number:'1.2-2') : 0}}
                     </td>
+                     <td class="text-right">
+                        {{finalAmountTotal ? (finalAmountTotal?.toFixed(2) | number:'1.2-2') : 0}}
+                    </td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -255,7 +271,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="10" class="text-center font-semibold text-lg">
+                    <td colspan="11" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>

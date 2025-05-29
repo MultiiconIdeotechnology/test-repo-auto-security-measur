@@ -11,6 +11,7 @@ import { UserService } from 'app/core/user/user.service';
 import { Subject, takeUntil } from 'rxjs';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
     selector: 'app-whatsapp-auth',
@@ -38,6 +39,7 @@ export class WhatsappAuthComponent {
         private alertService: ToasterService,
         public _userService: UserService,
         private confirmationService: FuseConfirmationService,
+        private authService: AuthService,
     ) {
         if (data && data.tfa_type == 'Whatsapp' && data.key == 'whatsapp-disabled') {
             this.whatsappOtpsent();
@@ -167,8 +169,9 @@ export class WhatsappAuthComponent {
                                         }
                                     }
                                 }
+
                                 this.twoFaAuthenticationService.isTfaEnabled = res.data ? true: false;
-                                
+                                this.authService.setAuthEnabled(false);
                                 this.disableBtn = false;
                                 let message = mode == 'AuthApp' ? 'Two-factor' : mode;
                                 this.alertService.showToast('success', `${message} authentication disabled successfully!`, 'top-right', true);
