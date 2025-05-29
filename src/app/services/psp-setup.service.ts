@@ -16,6 +16,7 @@ export class PspSetupService {
   // editPgProfile$ = this.managePgProfileSubject.asObservable();
 
   private pspListData: any = null;
+  private companyList:any = null;
 
   constructor(private http: HttpClient) { }
 
@@ -68,6 +69,20 @@ export class PspSetupService {
       );
     }
   }
+
+  getCompanyComboCashed(filter:string):Observable<any> {
+     if (this.companyList) {
+      return of(this.companyList); // return cached
+    } else {
+      return this.http.post<any[]>(this.baseUrl + 'Company/getCompanyCombo', { filter }).pipe(
+        tap((res) => this.companyList = res)
+      );
+    }
+  }
+
+   getAgentCombo(filter:string, is_master_agent:boolean): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Agent/getAgentCombo', {filter:filter, is_master_agent:is_master_agent});
+      }
 
   assignPgProfile(model:any){
     return this.http.post<any>(this.baseUrl + 'PaymentGatewaySettings/assignPGProfile', model);
