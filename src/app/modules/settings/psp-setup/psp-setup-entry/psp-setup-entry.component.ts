@@ -44,7 +44,6 @@ import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.ser
   styleUrls: ['./psp-setup-entry.component.scss']
 })
 export class PspSetupEntryComponent {
-  @ViewChild('pspEntryProfile') pspEntryProfileComponent!: PspEntyProfileFormComponent;
   @ViewChild('pspEntryPaymentMode') pspEntryPaymentModeComponent!: PspEntryPaymentModeFormComponent;
 
   disableBtn: boolean = false
@@ -94,7 +93,6 @@ export class PspSetupEntryComponent {
         if (resp) {
           this.pspEntryPaymentModeComponent.tableList = resp?.payment_getway_settings || [];
           this.pspSetupService.editPgProfileSubject.next(resp);
-          this.toasterService.showToast('success', 'Profile name saved successfully');
         }
       },
       error: (err) => {
