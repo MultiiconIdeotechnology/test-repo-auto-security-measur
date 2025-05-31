@@ -66,7 +66,6 @@ export class PspSetupEntryComponent {
   ) {
     this.activatedRoute.queryParams.subscribe((params:any) => {
        this.profileId = params['id'];
-      console.log(">>>", this.profileId)
       if(this.profileId){
         this.isProfileFormSuccess = true;
       }
@@ -87,8 +86,6 @@ export class PspSetupEntryComponent {
     if(this.profileFormData && this.profileFormData?.id){
       this.getPgProfileById(this.profileFormData?.id);
     }
-
-    
   }
 
   getPgProfileById(id: any) {
@@ -96,11 +93,8 @@ export class PspSetupEntryComponent {
       next: (resp: any) => {
         if (resp) {
           this.pspEntryPaymentModeComponent.tableList = resp?.payment_getway_settings || [];
-          this.pspEntryProfileComponent.formGroup.patchValue({
-            id:resp?.id,
-            profile_name:resp?.profile_name
-          })
-          // this.toasterService.showToast('success', 'Profile name saved successfully');
+          this.pspSetupService.editPgProfileSubject.next(resp);
+          this.toasterService.showToast('success', 'Profile name saved successfully');
         }
       },
       error: (err) => {

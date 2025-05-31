@@ -81,8 +81,20 @@ export class BulkAssignDialogComponent implements OnInit {
 
     this.initAgentSearch();
     this.initMultiSelectAgentListener();
-    this.initProfileAgentSearch();
-    this.initProfileAgentSelection();
+    
+    if (this.data.key !== 'customer-agent') {
+      if (this.record?.agents_count) {
+        this.getAgentAssignedListbyId();
+      }
+    } else {
+      this.initProfileAgentSearch();
+      this.initProfileAgentSelection();
+      // this.profileAgentFilterCtrl.patchValue('bharat');
+      
+    }
+
+
+
   }
 
   // ========================
@@ -122,6 +134,23 @@ export class BulkAssignDialogComponent implements OnInit {
     return this.agentService.getAgentComboMaster(search, true);
   }
 
+  getAgentAssignedListbyId(): void {
+    this.pspSetupService.getAgentProfileFromId(this.record.id).subscribe({
+      next: (resp: any) => {
+        if (resp && resp.agents_list && resp.agents_list?.length) {
+          this.filteredAgentList = resp?.agents_list;
+          if (!resp.is_all_agent) {
+            this.agentListCtrl.patchValue(this.filteredAgentList)
+          }
+          this.formGroup.get('is_all_agent').patchValue(resp?.is_all_agent)
+        }
+      },
+      error: (err) => {
+        this.toasterService.showToast('error', err)
+      },
+    });
+  }
+
   // ==============================
   //  Single Profile Assign Section
   // ==============================
@@ -138,6 +167,9 @@ export class BulkAssignDialogComponent implements OnInit {
       )
       .subscribe((res: any[]) => {
         this.filteredProfileAgentList = res;
+
+        let obj = this.filteredAgentList.find((item) => item.id == this.data?.assignedPspAgentId)
+        this.profileAgentCtrl.patchValue(obj)
       });
   }
 
@@ -168,7 +200,6 @@ export class BulkAssignDialogComponent implements OnInit {
     this.pspSetupService.getPaymentGatewaySettingsList(payload).subscribe({
       next: (resp: any) => {
         if (resp?.data?.length) {
-          console.log("resp from bulk assign", resp);
           this.profileAgentList = resp.data;
           this.filteredProfileAgentList = resp.data;
         }
@@ -186,8 +217,8 @@ export class BulkAssignDialogComponent implements OnInit {
     let payload = this.formGroup.value;
 
     if (this.data.key == 'customer-agent') {
-      payload.profile_id = this.selectedListIds;
-      payload.agent_ids = this.record?.id;
+      payload.profile_id = this.selectedListIds[0];
+      payload.agent_ids = [this.record?.id];
     } else {
       payload.profile_id = this.record?.id;
       payload.agent_ids = this.selectedListIds;
@@ -200,10 +231,13 @@ export class BulkAssignDialogComponent implements OnInit {
           this.matDialogRef.close();
         }
       },
-      error: (err) => {
+      error: (err: any) => {
+        console.log("err", err);
         this.toasterService.showToast('error', err)
       },
     });
+
+
   }
 
 }

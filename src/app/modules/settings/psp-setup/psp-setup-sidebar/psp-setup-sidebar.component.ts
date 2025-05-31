@@ -45,7 +45,6 @@ export class PspSetupSidebarComponent {
   ngOnInit(): void {
 
     this.sidenavService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      console.log("res id >>>", res)
       if (res && res.type) {
         this.title = res.type;
       }
@@ -76,7 +75,6 @@ export class PspSetupSidebarComponent {
     this.title = '';
     this.agentId = '';
     // Add any other state reset logic (e.g., clear form, reset API data)
-    console.log('Drawer state reset');
   }
   
 
@@ -89,7 +87,6 @@ export class PspSetupSidebarComponent {
   }
 
   getAgentAssignedList(): void {
-    console.log("this.agentId", this.agentId)
     this.isLoading = true;
     this.pspSetupService.getAgentProfileFromId(this.agentId).subscribe({
       next: (resp: any) => {
@@ -107,7 +104,6 @@ export class PspSetupSidebarComponent {
   }
 
   ngOnDestroy() {
-    console.log("sidebar destroyed")
     this.destroy$.next();
     this.destroy$.complete();
   }

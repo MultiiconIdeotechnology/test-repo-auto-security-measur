@@ -14,7 +14,7 @@
 
         <mat-form-field class="flex-grow w-[30%]" *ngIf="this.formGroup.get('profile_for').value == 'Agent'">
             <mat-label>Agent</mat-label>
-            <mat-select formControlName="profile_for_id" required [compareWith]="compareWith">
+            <mat-select formControlName="profile_for_id">
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching agent found'"
                         [formControl]="agentCtrl">
@@ -24,9 +24,7 @@
                     <span><span *ngIf="ct.code">{{ ct.code }} - </span>{{ ct.agency_name }}<span
                             *ngIf="ct.master_agent_name"> ({{ ct.master_agent_name }})</span></span>
                     <div class="-mt-2">
-                        <span class="text-secondary text-sm">{{
-                            ct.email_address
-                            }}</span>
+                        <span class="text-secondary text-sm">{{ct.email_address}}</span>
                     </div>
                 </mat-option>
             </mat-select>
@@ -34,7 +32,7 @@
 
         <mat-form-field class="flex-grow w-[30%]" *ngIf="this.formGroup.get('profile_for').value !== 'Agent'">
             <mat-label>Company</mat-label>
-            <mat-select formControlName="profile_for_id" required [compareWith]="compareWith">
+            <mat-select formControlName="profile_for_id" >
                 <mat-option>
                     <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching Profile found'"
                         [formControl]="companyCtrl">
@@ -46,7 +44,7 @@
             </mat-select>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" *ngIf="!readonly" [disabled]=" disableBtn" (click)="submit()">
+        <button mat-raised-button color="primary" *ngIf="!readonly" [disabled]="formGroup.invalid || isLoading" (click)="submit()">
             {{ btnTitle }}
         </button>
     </div>

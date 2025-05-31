@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ThinLayoutComponent } from 'app/layout/layouts/vertical/thin/thin.component';
 import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { RefferralService } from 'app/services/referral.service';
@@ -26,6 +27,9 @@ export class CommonFilterService {
 
     private selectedOptionContracting = new BehaviorSubject<any>('');
     selectionDateDropdownContracting$ = this.selectedOptionContracting.asObservable();
+
+    agentListSubject = new BehaviorSubject<any>("");
+    agentList$ = this.agentListSubject.asObservable();
 
     // Public method to update the BehaviorSubject value
     updateSelectedOption(option: string): void {
@@ -222,6 +226,8 @@ export class CommonFilterService {
                 ...agent,
                 agent_info: `${agent.code}-${agent.agency_name}-${agent.email_address}`,
             }));
+
+            this.agentListSubject.next(this.agentListById);
         })
     }
 

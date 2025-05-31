@@ -12,8 +12,8 @@ export class PspSetupService {
   managePgProfileSubject = new BehaviorSubject<any>("");
   managePgProfile$ = this.managePgProfileSubject.asObservable();
 
-  // editPgProfileSubject = new BehaviorSubject<any>("");
-  // editPgProfile$ = this.managePgProfileSubject.asObservable();
+  editPgProfileSubject = new BehaviorSubject<any>("");
+  editPgProfile$ = this.editPgProfileSubject.asObservable();
 
   private pspListData: any = null;
   private companyList:any = null;
@@ -68,6 +68,10 @@ export class PspSetupService {
         tap((res) => this.pspListData = res)
       );
     }
+  }
+
+   getPgCombo(model): Observable<any> {
+    return this.http.post<any[]>(this.baseUrl + 'PaymentGateway/getPGCombo', model);
   }
 
   getCompanyComboCashed(filter:string):Observable<any> {

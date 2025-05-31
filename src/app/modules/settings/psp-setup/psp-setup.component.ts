@@ -65,7 +65,7 @@ export class PspSetupComponent extends BaseListingComponent {
     private _userService: UserService,
     private sidenavService: SidebarCustomModalService,
     private router: Router,
-	private matDialog: MatDialog,
+    private matDialog: MatDialog,
   ) {
     super(module_name.psp_setup);
     this.key = this.module_name;
@@ -114,33 +114,31 @@ export class PspSetupComponent extends BaseListingComponent {
       });
   }
 
-  createInternal(model:any): void {
+  createInternal(model: any): void {
     localStorage.removeItem('pspSetupProfile');
-    // this.pspSetupService.managePgProfileSubject.next({ isProfileFormSuccess: false });
+    this.pspSetupService.editPgProfileSubject.next("");
     this.router.navigate([Routes.settings.psp_setup_entry_route]);
   }
 
   editInternal(record): void {
-    localStorage.setItem('pspSetupProfile', JSON.stringify({id:record.id, profile_name:record?.profile_name}));
-    // this.pspSetupService.managePgProfileSubject.next({ isProfileFormSuccess: true });
+    localStorage.setItem('pspSetupProfile', JSON.stringify({ id: record.id, profile_for: record?.profile_for, profile_for_id:record?.profile_for_id }));
+    this.pspSetupService.managePgProfileSubject.next(null);
     // this.pspSetupService.editPgProfileSubject.next(record);
     this.router.navigate(
-      [Routes.settings.psp_setup_entry_route], { queryParams: { id: record.id} });
+      [Routes.settings.psp_setup_entry_route], { queryParams: { id: record.id } });
   }
 
   deleteInternal(record: any, index: any): void {
-    console.log("index", index)
     const label: string = 'Delete PSP Profile';
-    this.conformationService
-      .open({
-        title: label,
-        message:
-          'Are you sure to ' +
-          label.toLowerCase() +
-          ' ' +
-          record.profile_name +
-          ' ?',
-      })
+    this.conformationService.open({
+      title: label,
+      message:
+        'Are you sure to ' +
+        label.toLowerCase() +
+        ' ' +
+        record.profile_name +
+        ' ?',
+    })
       .afterClosed()
       .subscribe((res) => {
         if (res === 'confirmed') {
@@ -148,7 +146,6 @@ export class PspSetupComponent extends BaseListingComponent {
           // const executeMethod = () => {
           this.pspSetupService.delete(record.id).subscribe({
             next: (res: any) => {
-              console.log("res>>>", res)
               if (res && res['status']) {
                 this.toasterService.showToast(
                   'success',
@@ -159,7 +156,6 @@ export class PspSetupComponent extends BaseListingComponent {
                 this.dataList.splice(index, 1);
                 this.dataList = [...this.dataList];
               } else {
-                console.log("Response status is false")
               }
             },
             error: (err) => {
@@ -259,16 +255,16 @@ export class PspSetupComponent extends BaseListingComponent {
       });
   }
 
-  bulkAssign(record:any) {
-    	this.matDialog.open(BulkAssignDialogComponent, 
-        {
-          data:{record:record, key:'bulk-assign', title:'Bulk Assign Profile'},
-          disableClose:true,
-          panelClass:['zero-dialog'],
-          maxWidth:'600px',
-          minWidth: '470px'
-        }
-      )
+  bulkAssign(record: any) {
+    this.matDialog.open(BulkAssignDialogComponent,
+      {
+        data: { record: record, key: 'bulk-assign', title: 'Bulk Assign Profile' },
+        disableClose: true,
+        panelClass: ['zero-dialog'],
+        maxWidth: '600px',
+        minWidth: '470px'
+      }
+    )
   }
 
   onAgentAssigned(id: any) {

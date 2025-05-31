@@ -49,10 +49,12 @@ export class PspEntryPaymentModeFormComponent {
   isLoading: boolean = false;
   private destroy$ = new Subject<void>();
   profileId: any;
-  filteredPspList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
+  filteredPgList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   filteredModeList: ReplaySubject<any[]> = new ReplaySubject<any[]>(1);
   profileFormData: any;
-
+  entryFormValue: any = {};
+  pgList: any[] = [];
+  // filteredPgList: any[] = [];
 
 
   constructor(
@@ -68,24 +70,21 @@ export class PspEntryPaymentModeFormComponent {
 
   ngOnInit(): void {
 
-    // this.activatedRoute.queryParams.subscribe((params: any) => {
-    //   this.profileId = params['id'];
-    //   console.log(">>>", this.profileId)
-    //   if (this.profileId) {
-    //      this.getPgProfileById(this.profileId)
-    //   }
-    // })
-
-    // this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-    //   if (res && res.status == 'success' && res?.id) {
-    //     console.log("res?.id", res?.id)
-    //     this.profileId = res?.id;
-    //   }
-    // })
+    this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      if (res) {
+        this.getPgCombo({ psp_for: res.profile_for, psp_for_id: res.profile_for_id });
+      }
+    })
 
     this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
-    if (this.profileFormData && this.profileFormData?.id) {
-      this.profileId = this.profileFormData?.id;
+    if (this.profileFormData) {
+      if (this.profileFormData?.id) {
+        this.profileId = this.profileFormData?.id;
+      }
+
+      if (this.profileFormData.profile_for_id && this.profileFormData.profile_for) {
+        this.getPgCombo({ psp_for: this.profileFormData.profile_for, psp_for_id: this.profileFormData.profile_for_id });
+      }
     }
 
 
@@ -98,7 +97,7 @@ export class PspEntryPaymentModeFormComponent {
       description: ['', Validators.required],
     });
 
-    this.getPSPList('');
+    // this.getPSPList('');
     this.onPspFilter();
     this.onModeFilter();
   }
@@ -107,16 +106,23 @@ export class PspEntryPaymentModeFormComponent {
     return v1 && v2 && v1.id === v2.id;
   }
 
-  getPSPList(value: string) {
-    this.pspSetupService.getPaymentGatewayListCached(value).subscribe((data) => {
-      this.pspList = data;
-      // this.pspList = [...new Map(data.map(item =>
-      //   [item.provider, item])).values()];
-
-      // update filtered list as well
-      this.filteredPspList.next(this.pspList.slice());
+  getPgCombo(payload: any) {
+    this.pspSetupService.getPgCombo(payload).subscribe((resp: any) => {
+      this.pgList = resp;
+      this.filteredPgList.next(resp);
     })
   }
+
+  // getPSPList(value: string) {
+  //   this.pspSetupService.getPaymentGatewayListCached(value).subscribe((data) => {
+  //     this.pspList = data;
+  //     // this.pspList = [...new Map(data.map(item =>
+  //     //   [item.provider, item])).values()];
+
+  //     // update filtered list as well
+  //     this.filteredPspList.next(this.pspList.slice());
+  //   })
+  // }
 
   // filtering the PSP Dropdown list
   onPspFilter() {
@@ -127,10 +133,10 @@ export class PspEntryPaymentModeFormComponent {
         takeUntil(this.destroy$)
       )
       .subscribe(search => {
-        const filtered = this.pspList.filter(pg =>
+        const filtered = this.pgList.filter(pg =>
           pg.provider.toLowerCase().includes(search.toLowerCase())
         );
-        this.filteredPspList.next(filtered);
+        this.filteredPgList.next(filtered);
       });
   }
 
@@ -155,7 +161,6 @@ export class PspEntryPaymentModeFormComponent {
       next: (resp: any) => {
         this.isLoading = false;
         if (resp) {
-          console.log("getprofilebyid", resp)
           this.tableList = resp?.payment_getway_settings || [];
           // this.toasterService.showToast('success', 'Profile name saved successfully');
         }
@@ -169,7 +174,6 @@ export class PspEntryPaymentModeFormComponent {
 
   edit(record: any) {
     // this.formGroup.get('id').patchValue(record.id);
-    console.log("record>>>", record)
     if (record) {
       this.formGroup.patchValue(record);
       this.formGroup.get('mode').patchValue(record.mode);
@@ -178,7 +182,6 @@ export class PspEntryPaymentModeFormComponent {
   }
 
   deleteRow(record: any, index: number) {
-    console.log("index", index)
     const label: string = 'Delete PSP Settings';
     this.conformationService.open({
       title: label,
@@ -191,7 +194,6 @@ export class PspEntryPaymentModeFormComponent {
           // const executeMethod = () => {
           this.pspSetupService.deletePgSettings(record.id).subscribe({
             next: (res: any) => {
-              console.log("res>>>", res)
               if (res && res['status']) {
                 this.toasterService.showToast(
                   'success',
@@ -225,7 +227,6 @@ export class PspEntryPaymentModeFormComponent {
     payload.profile_id = this.profileId;
     tableObj.psp_name = pspObj?.provider;
 
-    console.log("payload", payload)
     this.pspSetupService
       .managePGSettings(payload)
       .subscribe({
@@ -233,7 +234,6 @@ export class PspEntryPaymentModeFormComponent {
           if (payload?.id) {
             this.tableList.forEach((item: any, index: any) => {
               if (item.id == resp.id) {
-                console.log("tableObj", tableObj)
                 this.tableList[index] = tableObj;
                 this.toasterService.showToast('success', 'Profile name updated successfully');
                 formDirective.resetForm();
@@ -257,7 +257,6 @@ export class PspEntryPaymentModeFormComponent {
   }
 
   customCompareFn = (a: any, b: any) => a && b && a.id === b.id;
-
 
   ngOnDestroy() {
     this.destroy$.next();

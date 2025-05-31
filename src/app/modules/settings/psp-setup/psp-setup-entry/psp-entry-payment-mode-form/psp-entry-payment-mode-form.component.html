@@ -8,7 +8,7 @@
                         noEntriesFoundLabel="'no matching payment gateway found'" [formControl]="pgFilter">
                     </ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let item of filteredPspList | async" [value]="item">
+                <mat-option *ngFor="let item of filteredPgList | async" [value]="item">
                     {{item.provider}}
                 </mat-option>
             </mat-select>

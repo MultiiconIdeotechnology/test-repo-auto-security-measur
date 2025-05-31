@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { ThinLayoutComponent } from 'app/layout/layouts/vertical/thin/thin.component';
 
 @Component({
   selector: 'app-psp-enty-profile-form',
@@ -42,11 +43,14 @@ export class PspEntyProfileFormComponent {
   agentCtrl: any = new FormControl('');
   companyList: any[] = [];
   agentList: any[] = [];
-
+  profileId:any;
   pspforList: any[] = [
     { label: 'Company', value: 'Company' },
     { label: 'Agent', value: 'Agent' }
   ]
+
+  profileData:any;
+
 
   constructor(
     private builder: FormBuilder,
@@ -64,30 +68,33 @@ export class PspEntyProfileFormComponent {
   }
 
   ngOnInit(): void {
-    // this.activatedRoute.queryParams.subscribe((params:any) => {
-    //     if(params && params['id']){
-    //       this.isQueryparams = true;
+    this._filterService.agentList$.pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
+      this.agentList = res;
+    })
 
-    //       // this.formGroup.patchValue(params);
-    //     }
-    //   })
-    this.agentList = this._filterService.agentListById;
+    this.pspSetupService.editPgProfile$.pipe((takeUntil(this.destroy$))).subscribe((res:any) => {
+      if(res){
+        this.profileData = res;
+        this.formGroup.patchValue(res);
+        if(this.formGroup.get('profile_for')?.value == 'Agent'){
+          this.agentCtrl.patchValue('sk');
+        }
+      }
+    })
+    
     this.agentFilterCtrl();
     this.companyFilterCtrl();
+    this.onProfileForValueChange();
+  }
 
-    let profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
-
-    if (profileFormData) {
-      this.formGroup.patchValue(profileFormData)
-    }
-
-
-    // this.pspSetupService.managePgProfile$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-    //     this.record = res;
-    //     console.log("this.formGroup", this.formGroup)
-    // })
-
-
+  onProfileForValueChange(){
+    this.formGroup.get('profile_for').valueChanges.subscribe((item:any) => {
+      if(item == 'Company'){
+        this.formGroup.get('profile_for_id').patchValue(this.companyList[0]?.company_id)
+       } else {
+        this.formGroup.get('profile_for_id').patchValue(this.agentList[0]?.id)
+       }
+    })
   }
 
   /*************Agent combo**************/
@@ -101,8 +108,10 @@ export class PspEntyProfileFormComponent {
       })
     ).subscribe({
       next: data => {
-        this.agentList = data
-        this.formGroup.get("profile_for_id").patchValue(this.agentList[0]);
+        this.agentList = data;
+        console.log("this.agentList>>", this.agentList);
+        // this.formGroup.get("profile_for_id").patchValue(this.agentList[0].id);
+        this.formGroup.get("profile_for_id").patchValue(this.profileData?.profile_for_id || this.agentList[0].id);
       }
     });
 
@@ -121,34 +130,34 @@ export class PspEntyProfileFormComponent {
     ).subscribe({
       next: data => {
         this.companyList = data
-        console.log("this.formGroup", this.formGroup)
-        this.formGroup.get("profile_for_id").patchValue(this.companyList[0].company_id);
+        this.formGroup.get("profile_for_id").patchValue(this.profileData?.profile_for_id);
       }
     });
-
   }
 
-  public compareWith(v1: any, v2: any) {
-    return v1 && v2 && v1.id === v2.id;
-  }
+  // public compareWith(v1: any, v2: any) {
+  //   return v1 && v2 && v1.id === v2.id;
+  // }
 
   submit() {
+    if (this.formGroup.invalid) {
+      this.toasterService.showToast('error', 'Fill up all required fields');
+      return;
+    }
+
     this.isLoading = true;
-    this.pspSetupService
-      .managePgProfile(this.formGroup.value)
-      .subscribe({
+    this.pspSetupService.managePgProfile(this.formGroup.value).subscribe({
         next: (resp: any) => {
           this.isLoading = false;
           if (resp) {
             this.profileFormData = JSON.parse(localStorage.getItem('pspSetupProfile'));
             if (!(this.profileFormData && this.profileFormData?.id)) {
-              // localStorage.setItem('pspSetupProfile', JSON.stringify({ id: resp.id, profile_name: this.formGroup.get('profile_name')?.value }));
               this.setLocalStorage(resp.id);
               this.formGroup.get('id').patchValue(resp.id);
-              this.pspSetupService.managePgProfileSubject.next(true);
+              this.pspSetupService.managePgProfileSubject.next(this.formGroup.value);
             } else {
-              // localStorage.setItem('pspSetupProfile', JSON.stringify({ id: this.profileFormData.id, profile_name: this.formGroup.get('profile_name')?.value }))
-              this.setLocalStorage(this.profileFormData.id)
+              this.setLocalStorage(this.profileFormData.id);
+              this.pspSetupService.managePgProfileSubject.next(this.formGroup.value);
             }
             this.toasterService.showToast('success', 'Profile name saved successfully');
           }
@@ -160,10 +169,10 @@ export class PspEntyProfileFormComponent {
       });
   }
 
-  setLocalStorage(id:any){
+  setLocalStorage(id: any) {
     let data = {};
     this.formGroup.get('id').patchValue(id);
-    data = this.formGroup.value();
+    data = this.formGroup.value;
     localStorage.setItem('pspSetupProfile', JSON.stringify(data))
   }
 
