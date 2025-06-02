@@ -216,7 +216,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   }
 
   exportExcel(): void {
-    if (!Security.hasExportDataPermission(module_name.campaign_summary)) {
+    if (!Security.hasExportDataPermission(module_name.campaign_summary_report)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
     let dataList = [];

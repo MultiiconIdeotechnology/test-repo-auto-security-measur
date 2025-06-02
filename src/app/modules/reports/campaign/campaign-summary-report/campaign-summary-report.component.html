@@ -154,17 +154,17 @@
                         </span>
                     </td>
                     <td class="text-right" (click)="onChart(element, 'signUp', 'Signup')">
-                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}" >
+                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.signUp && element.signUp != 0}" >
                             {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
                     <td class="text-right" (click)="onChart(element, 'techGP', 'TechGp')">
-                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}" >
+                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.techGP && element.techGP != 0}" >
                             {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
                     <td class="text-right" (click)="onChart(element, 'totalSpent', 'Total Spent')">
-                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}" >
+                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.totalSpent && element.totalSpent != 0}" >
                             {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
