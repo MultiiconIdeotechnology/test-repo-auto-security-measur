@@ -77,7 +77,7 @@ export class PspEntyProfileFormComponent {
         this.profileData = res;
         this.formGroup.patchValue(res);
         if(this.formGroup.get('profile_for')?.value == 'Agent'){
-          this.agentCtrl.patchValue('sk');
+          this.agentCtrl.patchValue(res?.profile_for_name);
         }
       }
     })
@@ -109,8 +109,7 @@ export class PspEntyProfileFormComponent {
     ).subscribe({
       next: data => {
         this.agentList = data;
-        console.log("this.agentList>>", this.agentList);
-        // this.formGroup.get("profile_for_id").patchValue(this.agentList[0].id);
+        console.log("profileData", this.profileData)
         this.formGroup.get("profile_for_id").patchValue(this.profileData?.profile_for_id || this.agentList[0].id);
       }
     });
