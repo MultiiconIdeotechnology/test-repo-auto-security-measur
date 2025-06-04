@@ -27,6 +27,9 @@ export class CommonFilterService {
     private selectedOptionContracting = new BehaviorSubject<any>('');
     selectionDateDropdownContracting$ = this.selectedOptionContracting.asObservable();
 
+    agentListSubject = new BehaviorSubject<any>("");
+    agentList$ = this.agentListSubject.asObservable();
+
     // Public method to update the BehaviorSubject value
     updateSelectedOption(option: string): void {
         this.selectedOptionSubject.next(option);
@@ -222,6 +225,8 @@ export class CommonFilterService {
                 ...agent,
                 agent_info: `${agent.code}-${agent.agency_name}-${agent.email_address}`,
             }));
+
+            this.agentListSubject.next(this.agentListById);
         })
     }
 
