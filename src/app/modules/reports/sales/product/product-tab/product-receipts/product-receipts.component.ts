@@ -133,9 +133,9 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                 }
             }
 
-            if (filterData['table_config']['receipt_request_date']?.value && Array.isArray(filterData['table_config']['receipt_request_date']?.value)) {
+            if (filterData['table_config']['audit_date_time']?.value && Array.isArray(filterData['table_config']['audit_date_time']?.value)) {
                 this._filterService.selectionDateDropdown = 'custom_date_range';
-                this._filterService.rangeDateConvert(filterData['table_config']['receipt_request_date']);
+                this._filterService.rangeDateConvert(filterData['table_config']['audit_date_time']);
             }
             this.isFilterShowEvent.emit(true);
             this.primengTable['filters'] = filterData['table_config'];
@@ -283,9 +283,9 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
 
         this.accountService.getReceiptList(filterReq).subscribe((data) => {
             for (var dt of data.data) {
-                dt.receipt_request_date = dt.receipt_request_date ? DateTime.fromISO(dt.receipt_request_date).toFormat('dd-MM-yyyy') : '';
+                dt.audit_date_time = dt.audit_date_time ? DateTime.fromISO(dt.audit_date_time).toFormat('dd-MM-yyyy') : '';
             }
-            ['receipt_ref_no', 'agent_Code', 'agent_name', 'campaign_code', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'receipt_request_date']
+            ['receipt_ref_no', 'agent_Code', 'agent_name', 'campaign_code', 'rm_name', 'product_name', 'payment_amount', 'receipt_status', 'audit_date_time']
             Excel.export(
                 'Receipt',
                 [
@@ -299,7 +299,7 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
                     { header: 'Actual Amount', property: 'actual_amount' },
                     { header: 'Final Amount', property: 'final_amount' },
                     { header: 'Status', property: 'receipt_status' },
-                    { header: 'Date', property: 'receipt_request_date' },
+                    { header: 'Date', property: 'audit_date_time' },
                 ],
                 data.data,
                 'Receipt',
