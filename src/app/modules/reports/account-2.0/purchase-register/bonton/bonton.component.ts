@@ -20,7 +20,7 @@ import { Linq } from 'app/utils/linq';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { AgentService } from 'app/services/agent.service';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
@@ -63,6 +63,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   selectedRM: any;
   employeeList: any = [];
   user: any = {};
+  destroy$:any = new Subject();
 
   statusList: any[] = [
     { label: 'Inprocess', value: 'Inprocess' },
@@ -108,6 +109,15 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   ngOnInit(): void {
     // common filter
     this.startSubscription();
+
+     this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
+            if (res && res.key == 'manager-service-status') {
+                let index = this.dataList.findIndex((item: any) => item.id == res.data.id);
+                if (index != -1) {
+                    this.dataList[index] = res.data;
+                } 
+            }
+        })
   }
 
   ngAfterViewInit() {
@@ -298,5 +308,8 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 }

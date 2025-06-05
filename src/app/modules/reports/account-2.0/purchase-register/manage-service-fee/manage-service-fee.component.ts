@@ -117,7 +117,7 @@ export class ManageServiceFeeComponent {
   //           purchase_base_price: payload.purchase_base_price,
   //           purchase_tax: payload.purchase_tax,
   //         }
-  //         this.sidebarDialogService.close({ data: resData, key: 'event-create-edit' });
+          // this.sidebarDialogService.close({ res:payload.id, key: 'manager-service-status' });
   //         this.settingsDrawer.close();
   //       }
   //       this.isLoading = false;
