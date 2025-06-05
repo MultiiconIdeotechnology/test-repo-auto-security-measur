@@ -132,8 +132,7 @@ export const appRoutes: Route[] = [
             { path: Routes.account.purchase_register_path, loadChildren: () => import('app/modules/reports/account/purchase-register/purchase-register.routes') },
             { path: Routes.account.agent_wise_service_wise_path, loadChildren: () => import('app/modules/reports/account/agent-wise-service-wise/agent-wise-service-wise.component.routes') },
             { path: Routes.account.agent_ledger_wallet_missmatch_path, loadChildren: () => import('app/modules/reports/account/agent-ledger-wallet-missmatch/agent-ledger-wallet-missmatch.component.routes') },
-            
-
+            { path: Routes.account.purchase_register_path_2, loadChildren: () => import('app/modules/reports/account-2.0/purchase-register/purchase-register.routes') },
 
             //Inventory
             { path: Routes.inventory.activity_path, loadChildren: () => import('app/modules/Inventory/activity/activity-list/activity-list.routes') },
@@ -172,7 +171,6 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.supplier_balance_path, loadChildren: () => import('app/modules/reports/account/supplier-wallet-balance/supplier-wallet.routes')},
             { path: Routes.reports.sent_mail_path, loadChildren: () => import('app/modules/reports/sent-mail/sent-mail-list/sent-mail-list.routes')},
             { path: Routes.reports.report_potential_lead_path, loadChildren: () => import('app/modules/reports/sales/report-potential-lead/report-potential-lead.route')},
-
 
 
             // MY BOOKINGS

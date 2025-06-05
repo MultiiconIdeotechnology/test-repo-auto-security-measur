@@ -521,6 +521,25 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     // },
                 ]
             },
+
+              {
+                id: 'reports.account2.0',
+                title: 'Accounts 2.0',
+                type: 'collapsable',
+                pid: 'REPORTS_ACCOUNTS-REPORT_VIEW',
+                icon: 'heroicons_outline:building-library',
+                // link: Routes.reports.account_route
+                children: [
+                    {
+                        id: 'reports.purchase_register',
+                        title: 'Purchase Register',
+                        type: 'basic',
+                        pid: 'REPORTS-ACCOUNTS_PURCHASEREGISTER_VIEW',
+                        icon: '',
+                        link: Routes.account.purchase_register_route_2
+                    },
+                ]
+            },
             // {
             //     id: 'reports.leads',
             //     title: 'Leads',
