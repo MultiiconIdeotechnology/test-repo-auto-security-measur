@@ -1,1 +1,59 @@
-<p>manage-service-fee works!</p>
+<fuse-drawer class="min-w-[400px] z-999" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'"
+    #settingsDrawer>
+    <div class="w-full">
+        <div class="flex justify-between border-b-2 border-gray-border px-5 py-4 h-15 sticky top-0">
+            <span class="text-lg font-semibold w-[320px] overflow-hidden whitespace-nowrap text-ellipsis truncate"
+                [matTooltip]="title">{{title}}</span>
+            <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                (click)="settingsDrawer.close(null)"></mat-icon>
+        </div>
+
+        <div class="px-5 py-4 h-[calc(100vh-120px)] overflow-auto">
+            <form [formGroup]="formGroup" class="flex flex-col gap-2">
+
+                <mat-form-field class="w-full">
+                    <mat-label>Service For</mat-label>
+                    <mat-select required formControlName="service_for" (valueChange)="onServiceFor($event)">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search"
+                                noEntriesFoundLabel="'no matching service for found'" [formControl]="serviceForCtrl">
+                            </ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option *ngFor="let item of serviceForList" [value]="item">
+                            {{item}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Purchase Base Price</mat-label>
+                    <input placeholder="Enter Description" matInput required formControlName="purchase_base_price" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Purchase Tax </mat-label>
+                    <input placeholder="Enter Description" matInput required formControlName="purchase_tax" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Supplier Service Fee </mat-label>
+                    <input placeholder="Enter Description" matInput required formControlName="suplier_service_charge" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-grow">
+                    <mat-label>Supplier Service GST</mat-label>
+                    <input placeholder="Enter Event Name" matInput required
+                        formControlName="suplier_service_charge_gst" />
+                </mat-form-field>
+            </form>
+        </div>
+
+        <div class="flex items-center justify-end border-t px-5 py-4 gap-3 h-15 sticky bottom-0">
+            <button mat-stroked-button (click)="settingsDrawer.close(null)">Close</button>
+            <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="formGroup.invalid || isLoading">
+                {{buttonLabel}}
+            </button>
+        </div>
+
+    </div>
+</fuse-drawer>

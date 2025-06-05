@@ -1,74 +1,73 @@
 <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['payment_ref_no','entry_date_time', 'agent_code', 'agency_name', 'service_for','booking_ref_no','pnr','gds_pnr','company_name','currency_short_code','payment_amount','booking_Type','company']"
-            styleClass="p-datatable-gridlines p-datatable-sm">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        [globalFilterFields]="['payment_ref_no','entry_date_time', 'agent_code', 'agency_name', 'service_for','booking_ref_no','pnr','gds_pnr','company_name','currency_short_code','payment_amount','booking_Type','company']"
+        styleClass="p-datatable-gridlines p-datatable-sm">
 
-            <ng-template pTemplate="header" let-columns>
-                <tr>
-                    <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last"
-                        [pSortableColumn]="el.field" pResizableColumn
-                        [ngClass]="{'min-w-[200px] dark:bg-[#1e293b] left-0': isFirst}"
-                        [frozen]="frozenObj?.invoice_date" pFrozenColumn alignFrozen="left">
-                        {{el.header}} <p-sortIcon [field]="el.field" />
-                        <span *ngIf="isFirst" class="float-right"
-                            (click)="isFrozenColumn('invoice_date');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.invoice_date" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.invoice_date" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                </tr>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th class="text-center w-[2rem]">#</th>
+                <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last"
+                    [pSortableColumn]="el.field" pResizableColumn
+                    [ngClass]="{'min-w-[200px] dark:bg-[#1e293b] left-0': isFirst}" [frozen]="frozenObj?.invoice_date"
+                    pFrozenColumn alignFrozen="left">
+                    {{el.header}} <p-sortIcon [field]="el.field" />
+                    <span *ngIf="isFirst" class="float-right"
+                        (click)="isFrozenColumn('invoice_date');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.invoice_date" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.invoice_date" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+            </tr>
 
-                <tr *ngIf="isFilterShow">
-                    <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last" alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.invoice_date">
-                        <p-columnFilter *ngIf="el.type == 'text' || el.type == 'numeric'" [type]="el.type"
-                            [matchMode]="el.matchMode" [field]="el.field" [placeholder]="'Search by ' + el.header"
-                            [ariaLabel]="'Filter '+ el.header" />
+            <tr *ngIf="isFilterShow">
+                <th></th>
+                <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last" alignFrozen="left"
+                    pFrozenColumn [frozen]="frozenObj?.invoice_date">
+                    <p-columnFilter *ngIf="el.type == 'text' || el.type == 'numeric'" [type]="el.type"
+                        [matchMode]="el.matchMode" [field]="el.field" [placeholder]="'Search by ' + el.header"
+                        [ariaLabel]="'Filter '+ el.header" />
 
-                        <ng-container *ngIf="el.type == 'custom'">
-                            <p-columnFilter
-                                *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
-                                field="entry_date_time" matchMode="custom" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                        [options]="_filterService.dateRangeList" optionLabel="label"
-                                        placeholder="Select Option" appendTo="body">
-                                        <ng-template let-option pTemplate="item">
-                                            <div
-                                                (click)="_filterService.onOptionClick(option, primengTable, 'entry_date_time')">
-                                                <div>{{option.label}}</div>
-                                            </div>
-                                        </ng-template>
-                                    </p-dropdown>
-                                </ng-template>
-                            </p-columnFilter>
+                    <ng-container *ngIf="el.type == 'custom'">
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                            field="entry_date_time" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'entry_date_time')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
 
-                            <ng-container
-                                *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
-                                <div class="relative inline-block">
-                                    <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
-                                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                            <p-calendar selectionMode="range" [ngModel]="value"
-                                                (ngModelChange)="onDateRangeChange($event, filter)"
-                                                [readonlyInput]="true" dateFormat="dd-mm-yy" appendTo="body"
-                                                placeholder="📅 Search by Date Range">
-                                            </p-calendar>
-                                        </ng-template>
-                                    </p-columnFilter>
-                                    <mat-icon class="icon-size-4 cursor-pointer absolute"
-                                        style="top:50%; transform: translatey(-50%); right: 25px;"
-                                        (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
-                                </div>
-                            </ng-container>
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                            </div>
                         </ng-container>
-                    </th>
+                    </ng-container>
+                </th>
 
-                    <!-- <th>
+                <!-- <th>
                         <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -88,7 +87,7 @@
                             </ng-template>
                         </p-columnFilter>
                     </th> -->
-                    <!-- <th>
+                <!-- <th>
                         <p-columnFilter class="searchableDropdown" field="company_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -109,7 +108,7 @@
                             </ng-template>
                         </p-columnFilter>
                     </th> -->
-                    <!-- <th>
+                <!-- <th>
                         <p-columnFilter field="booking_Type" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="typeList"
@@ -122,7 +121,7 @@
                             </ng-template>
                         </p-columnFilter>
                     </th> -->
-                    <!-- <th>
+                <!-- <th>
                         <p-columnFilter class="searchableDropdown" field="company" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -137,34 +136,46 @@
                             </ng-template>
                         </p-columnFilter>
                     </th> -->
-                </tr>
-            </ng-template>
+            </tr>
+        </ng-template>
 
-            <ng-template pTemplate="body" let-element let-columns="columns">
-                <tr>
-                    <td *ngFor="let el of tableFieldArr;" [ngClass]="{'text-right': el.type == 'numeric'}"
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.invoice_date">
-                        <ng-container *ngIf="el.type == 'text'">
-                            {{element[el.field] ? element[el.field] : '-'}}
-                        </ng-container>
+        <ng-template pTemplate="body" let-element let-columns="columns">
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
 
-                        <ng-container *ngIf="el.type == 'date'">
-                            {{element[el.field] ? (element[el.field] | date:'dd-MM-yyyy HH:mm:ss') : '-'}}
-                        </ng-container>
+                    <mat-menu #optionMenu>
+                        <button mat-menu-item (click)="manageService(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600"> Manage Service Fee</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <td *ngFor="let el of tableFieldArr;" [ngClass]="{'text-right': el.type == 'numeric'}"
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.invoice_date">
+                    <ng-container *ngIf="el.type == 'text'">
+                        {{element[el.field] ? element[el.field] : '-'}}
+                    </ng-container>
 
-                        <ng-container *ngIf="el.type == 'numeric'">
-                            {{element[el.field] ? ((+element[el.field]) | number: '1.2-2'): 0}}
-                        </ng-container>
-                    </td>
-                </tr>
-            </ng-template>
+                    <ng-container *ngIf="el.type == 'date'">
+                        {{element[el.field] ? (element[el.field] | date:'dd-MM-yyyy HH:mm:ss') : '-'}}
+                    </ng-container>
 
-            <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td [attr.colspan]="tableFieldArr.length" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
+                    <ng-container *ngIf="el.type == 'numeric'">
+                        {{element[el.field] ? ((+element[el.field]) | number: '1.2-2'): 0}}
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td [attr.colspan]="tableFieldArr.length" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

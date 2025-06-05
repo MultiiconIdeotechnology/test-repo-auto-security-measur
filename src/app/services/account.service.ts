@@ -101,5 +101,9 @@ export class AccountService {
     return this.http.post<any>(environment.apiUrl + "ContractReport/allServiceAnalysis", model);
   }
 
+  getBontonPurchaseRegister(model:any){
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterReport", model);
+  }
+
 
 }

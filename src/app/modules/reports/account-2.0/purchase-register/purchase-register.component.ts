@@ -26,6 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { BontonComponent } from './bonton/bonton.component';
 import { BontonDmccComponent } from './bonton-dmcc/bonton-dmcc.component';
+import { ManageServiceFeeComponent } from './manage-service-fee/manage-service-fee.component';
 
 @Component({
   selector: 'app-purchase-register-2.0',
@@ -49,7 +50,8 @@ import { BontonDmccComponent } from './bonton-dmcc/bonton-dmcc.component';
     MatTooltipModule,
     MatSelectModule,
     BontonComponent,
-    BontonDmccComponent
+    BontonDmccComponent,
+    ManageServiceFeeComponent
   ],
 })
 export class PurchaseRegisterComponent
@@ -104,9 +106,9 @@ export class PurchaseRegisterComponent
         components.forEach((item, idx) => {
             if (item.comp) {
               if (item.key === this.selectedTableKey) {
-                // item.comp.startSubscription();
+                item.comp.startSubscription();
               } else {
-                // item.comp.stopSubscription();
+                item.comp.stopSubscription();
               }
             }
           });

@@ -24,6 +24,7 @@ import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
+import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 
 @Component({
   selector: 'app-bonton',
@@ -94,6 +95,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     private accountService: AccountService,
     private agentService: AgentService,
     public _filterService: CommonFilterService,
+    private sidebarDialogService: SidebarCustomModalService,
   ) {
     super(module_name.products_collection);
 
@@ -143,6 +145,10 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
         this.agentList[i].id_by_value = this.agentList[i].agency_name;
       }
     })
+  }
+
+  manageService(record:any){
+    this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
   }
 
   // Api to get the Employee list data

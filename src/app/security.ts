@@ -424,6 +424,9 @@ export const filter_module_name = {
     supplier_wallet_balance:'supplier_wallet_balance',
     sent_mail: "sent_mail",
 
+    //report account 2.0
+    purchase_register_bonton: 'purchase_register_bonton',
+    purchase_register_bonton_dmcc:'purchase_register_bonton_dmcc',
 
     //Inventory
     activity: "activity",
