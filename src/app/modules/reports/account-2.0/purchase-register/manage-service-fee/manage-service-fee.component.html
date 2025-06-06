@@ -14,11 +14,6 @@
                 <mat-form-field class="w-full">
                     <mat-label>Service For</mat-label>
                     <mat-select formControlName="service_for">
-                        <!-- <mat-option>
-                            <ngx-mat-select-search placeholderLabel="Search"
-                                noEntriesFoundLabel="'no matching service for found'" [formControl]="serviceForCtrl">
-                            </ngx-mat-select-search>
-                        </mat-option> -->
                         <mat-option *ngFor="let item of serviceForList" [value]="item">
                             {{item}}
                         </mat-option>

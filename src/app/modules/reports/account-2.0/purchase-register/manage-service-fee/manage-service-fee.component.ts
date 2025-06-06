@@ -30,7 +30,6 @@ import { AccountService } from 'app/services/account.service';
     FormsModule,
     MatTooltipModule,
     MatSelectModule,
-    NgxMatSelectSearchModule,
     OnlyFloatDirective
   ],
   templateUrl: './manage-service-fee.component.html',
