@@ -89,9 +89,9 @@ export class ManageServiceFeeComponent {
     })
   }
 
-  onServiceFor(event: any) {
-    console.log("onServiceFor")
-  }
+  // onServiceFor(event: any) {
+  //   console.log("onServiceFor")
+  // }
 
   submit() {
   //   if (this.formGroup.invalid) {
