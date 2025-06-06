@@ -28,45 +28,47 @@ import { MatSelectModule } from '@angular/material/select';
 @Component({
   selector: 'app-bonton-dmcc',
   standalone: true,
-    imports: [
-      DatePipe,
-      CommonModule,
-      ReactiveFormsModule,
-      MatFormFieldModule,
-      MatIconModule,
-      MatInputModule,
-      MatButtonModule,
-      MatProgressBarModule,
-      MatMenuModule,
-      MatDialogModule,
-      MatDividerModule,
-      FormsModule,
-      PrimeNgImportsModule,
-      MatTooltipModule,
-      MatSelectModule,
-    ],
+  imports: [
+    DatePipe,
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatMenuModule,
+    MatDialogModule,
+    MatDividerModule,
+    FormsModule,
+    PrimeNgImportsModule,
+    MatTooltipModule,
+    MatSelectModule,
+  ],
   templateUrl: './bonton-dmcc.component.html',
   styleUrls: ['./bonton-dmcc.component.scss']
 })
 export class BontonDmccComponent extends BaseListingComponent
   implements OnDestroy {
-      module_name = module_name.purchaseRegister;
-   @Input() isFilterShow: boolean = false;
-   @Output() isFilterShowEvent = new EventEmitter(false);
-   filter_table_name = filter_module_name.products_collection;
-   private settingsUpdatedSubscription: Subscription;
-   isLoading = false;
-   dataList = [];
-   totalsObj: any = {};
- 
-   statusList: any[] = [
-     { label: 'Inprocess', value: 'Inprocess' },
-     { label: 'Pending', value: 'Pending' },
-     { label: 'Blocked', value: 'Blocked' },
-     { label: 'Delivered', value: 'Delivered' },
-   ];
- 
-   tableFieldArr: any[] =[
+  // module_name = module_name.purchaseRegister;
+  @Input() isFilterShow: boolean = false;
+  @Output() isFilterShowEvent = new EventEmitter(false);
+  @Input() startDate: any;
+  @Input() endDate: any;
+  filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
+  private settingsUpdatedSubscription: Subscription;
+  isLoading = false;
+  dataList = [];
+  totalsObj: any = {};
+
+  statusList: any[] = [
+    { label: 'Inprocess', value: 'Inprocess' },
+    { label: 'Pending', value: 'Pending' },
+    { label: 'Blocked', value: 'Blocked' },
+    { label: 'Delivered', value: 'Delivered' },
+  ];
+
+  tableFieldArr: any[] = [
     { field: 'invoice_master.invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
     { field: 'supplier_master.company_name', header: 'Name', type: 'text', matchMode: 'contains' },
     { field: 'invoice_number', header: 'Invoice No', type: 'text', matchMode: 'contains' },
@@ -80,150 +82,139 @@ export class BontonDmccComponent extends BaseListingComponent
     { field: 'total_purchase', header: 'Total Purchase', type: 'numeric', matchMode: 'equals' },
     { field: 'discount', header: 'Discount', type: 'numeric', matchMode: 'equals' }
   ];
- 
-   constructor(
-     private accountService: AccountService,
-     private agentService: AgentService,
-     public _filterService: CommonFilterService,
-   ) {
-     super(module_name.products_collection);
- 
-     this.sortColumn = 'installment_date';
-     this.sortDirection = 'desc';
-     this._filterService.applyDefaultFilter(this.filter_table_name);
- 
-   }
- 
-   ngOnInit(): void {
-     // common filter
-     this.startSubscription();
-   }
- 
-   ngAfterViewInit() {
-     // Defult Active filter show
-     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-       this.isFilterShow = true;
-       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
- 
-       if (filterData['table_config']['installment_date']?.value && Array.isArray(filterData['table_config']['installment_date']?.value)) {
-         this._filterService.selectionDateDropdown = 'custom_date_range';
-         this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
-       }
-       this.isFilterShowEvent.emit(true);
-       this.primengTable['filters'] = filterData['table_config'];
-     }
-   }
- 
-   refreshItems(event?: any): void {
-     this.isLoading = true;
-     let newModel = this.getNewFilterReq(event);
- 
-     this.accountService.getCollectionList(newModel).subscribe({
-       next: (data) => {
-         this.dataList = data.data;
-         this.totalRecords = data.total;
-         this.totalsObj = data.totals || 0;
-         this.isLoading = false;
-         if (this.dataList && this.dataList.length) {
-           setTimeout(() => {
-             // this.isFrozenColumn('', ['index', 'payment_attachment',]);
-           }, 200);
-         }
-       },
-       error: (err) => {
-         this.alertService.showToast('error', err);
-         this.isLoading = false;
-       },
-     });
-   }
- 
-   // Status
-   getStatusColor(status: string): string {
-     if (status == 'Pending') {
-       return 'text-blue-600';
-     } else if (status == 'Inprocess') {
-       return 'text-yellow-600';
-     } else if (status == 'Delivered') {
-       return 'text-green-600';
-     } else if (status == 'Blocked') {
-       return 'text-red-600';
-     } else {
-       return '';
-     }
-   }
- 
-   exportExcel(): void {
-     // if (!Security.hasExportDataPermission(this.module_name)) {
-     //     return this.alertService.showToast(
-     //         'error',
-     //         messages.permissionDenied
-     //     );
-     // }
- 
-     const filterReq = this.getNewFilterReq({});
- 
-     filterReq['Filter'] = this.searchInputControl.value;
-     filterReq['Take'] = this.totalRecords;
- 
-     this.accountService.getCollectionList(filterReq).subscribe((data) => {
-       for (var dt of data.data) {
-         dt.installment_date = dt.installment_date ? DateTime.fromISO(dt.installment_date).toFormat('dd-MM-yyyy') : '';
-       }
-       ['agent_code', 'agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']
-       Excel.export(
-         'Collection',
-         [
-           { header: 'Agent Code', property: 'agent_code' },
-           { header: 'Agent', property: 'agency_name' },
-           { header: 'RM', property: 'rm' },
-           { header: 'Product name', property: 'product' },
-           { header: 'Status', property: 'status' },
-           { header: 'Amount', property: 'installment_amount' },
-           { header: 'Due Amount', property: 'due_Amount' },
-           { header: 'Installment Date', property: 'installment_date' },
-         ],
-         data.data,
-         'Collection',
-         [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
-       );
-     });
-   }
- 
-   getNodataText(): string {
-     if (this.isLoading) return 'Loading...';
-     else if (this.searchInputControl.value)
-       return `no search results found for \'${this.searchInputControl.value}\'.`;
-     else return 'No data to display';
-   }
- 
-   startSubscription() {
-     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
-       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-         this._filterService.updateSelectedOption('');
- 
-         if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
-           this._filterService.selectionDateDropdown = 'custom_date_range';
-           this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
-         }
- 
-         this.primengTable['filters'] = resp['table_config'];
-         this.isFilterShow = true;
-         this.primengTable._filter();
-       });
-     }
-   }
- 
-   stopSubscription() {
-     if (this.settingsUpdatedSubscription) {
-       this.settingsUpdatedSubscription.unsubscribe();
-       this.settingsUpdatedSubscription = undefined;
-     }
-   }
- 
-   ngOnDestroy(): void {
-     if (this.settingsUpdatedSubscription) {
-       this.settingsUpdatedSubscription.unsubscribe();
-       this._filterService.activeFiltData = {};
-     }
-   }
+
+  constructor(
+    private accountService: AccountService,
+    private agentService: AgentService,
+    public _filterService: CommonFilterService,
+  ) {
+    super(module_name.products_collection);
+
+    this.sortColumn = 'installment_date';
+    this.sortDirection = 'desc';
+    this._filterService.applyDefaultFilter(this.filter_table_name);
+
+  }
+
+  ngOnInit(): void {
+    // common filter
+    this.startSubscription();
+  }
+
+  ngAfterViewInit() {
+    // Defult Active filter show
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShow = true;
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+
+      if (filterData['table_config']['installment_date']?.value && Array.isArray(filterData['table_config']['installment_date']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
+      }
+      this.isFilterShowEvent.emit(true);
+      this.primengTable['filters'] = filterData['table_config'];
+    }
+  }
+
+  refreshItems(event?: any): void {
+    this.isLoading = true;
+    let payload = this.getNewFilterReq(event);
+    console.log("startDate", this.startDate.value);
+    payload['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
+    payload['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
+
+    this.accountService.getCollectionList(payload).subscribe({
+      next: (data) => {
+        this.dataList = data.data;
+        this.totalRecords = data.total;
+        this.totalsObj = data.totals || 0;
+        this.isLoading = false;
+        if (this.dataList && this.dataList.length) {
+          setTimeout(() => {
+            // this.isFrozenColumn('', ['index', 'payment_attachment',]);
+          }, 200);
+        }
+      },
+      error: (err) => {
+        this.alertService.showToast('error', err);
+        this.isLoading = false;
+      },
+    });
+  }
+  
+  exportExcel(): void {
+    // if (!Security.hasExportDataPermission(this.module_name)) {
+    //     return this.alertService.showToast(
+    //         'error',
+    //         messages.permissionDenied
+    //     );
+    // }
+
+    const filterReq = this.getNewFilterReq({});
+
+    filterReq['Filter'] = this.searchInputControl.value;
+    filterReq['Take'] = this.totalRecords;
+
+    this.accountService.getCollectionList(filterReq).subscribe((data) => {
+      for (var dt of data.data) {
+        dt.installment_date = dt.installment_date ? DateTime.fromISO(dt.installment_date).toFormat('dd-MM-yyyy') : '';
+      }
+      ['agent_code', 'agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']
+      Excel.export(
+        'Collection',
+        [
+          { header: 'Agent Code', property: 'agent_code' },
+          { header: 'Agent', property: 'agency_name' },
+          { header: 'RM', property: 'rm' },
+          { header: 'Product name', property: 'product' },
+          { header: 'Status', property: 'status' },
+          { header: 'Amount', property: 'installment_amount' },
+          { header: 'Due Amount', property: 'due_Amount' },
+          { header: 'Installment Date', property: 'installment_date' },
+        ],
+        data.data,
+        'Collection',
+        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
+      );
+    });
+  }
+
+  getNodataText(): string {
+    if (this.isLoading) return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
+
+  startSubscription() {
+    if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
+      this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+        console.log("resP>>", resp)
+        this._filterService.updateSelectedOption('');
+
+        if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
+          this._filterService.selectionDateDropdown = 'custom_date_range';
+          this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
+        }
+
+        this.primengTable['filters'] = resp['table_config'];
+        this.isFilterShow = true;
+        this.primengTable._filter();
+      });
+    }
+  }
+
+  stopSubscription() {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this.settingsUpdatedSubscription = undefined;
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.settingsUpdatedSubscription) {
+      this.settingsUpdatedSubscription.unsubscribe();
+      this._filterService.activeFiltData = {};
+    }
+  }
 }

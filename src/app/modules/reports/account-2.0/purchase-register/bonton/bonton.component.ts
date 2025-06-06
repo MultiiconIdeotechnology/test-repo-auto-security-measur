@@ -16,15 +16,12 @@ import { AppConfig } from 'app/config/app-config';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
-import { Linq } from 'app/utils/linq';
-import { KycDocumentService } from 'app/services/kyc-document.service';
-import { PspSettingService } from 'app/services/psp-setting.service';
-import { AgentService } from 'app/services/agent.service';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
+import { SupplierService } from 'app/services/supplier.service';
 
 @Component({
   selector: 'app-bonton',
@@ -52,18 +49,17 @@ import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.ser
 export class BontonComponent extends BaseListingComponent implements OnDestroy {
   @Input() isFilterShow: boolean = false;
   @Output() isFilterShowEvent = new EventEmitter(false);
-  module_name = module_name.products_collection;
-  filter_table_name = filter_module_name.products_collection;
+  @Input() startDate: any;
+  @Input() endDate: any;
+  // module_name = module_name.products_collection;
+  filter_table_name = filter_module_name.purchase_register_bonton;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];
-  totalsObj: any = {};
-  selectedAgent: any;
-  agentList: any[] = [];
-  selectedRM: any;
   employeeList: any = [];
-  user: any = {};
-  destroy$:any = new Subject();
+  supplierList: any[] = [];
+  selectedSupplier: any;
+  destroy$: any = new Subject();
 
   statusList: any[] = [
     { label: 'Inprocess', value: 'Inprocess' },
@@ -74,90 +70,70 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
   tableFieldArr: any =
     [
-      { field: 'invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
-      { field: 'supplier_master.company_name', header: 'Name', type: 'text', matchMode: 'contains' },
-      { field: 'invoice_number', header: 'Invoice No', type: 'text', matchMode: 'contains' },
-      { field: 'supplier_reference_number', header: 'Supplier. Ref. No', type: 'text', matchMode: 'contains' },
-      { field: 'booking_reference_number', header: 'Ref. No', type: 'text', matchMode: 'contains' },
-      { field: 'pnr_number', header: 'PNR', type: 'text', matchMode: 'contains' },
-      { field: 'booking_price.purchase_base_price', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
-      { field: 'booking_price.purchase_tax', header: 'Airline Tax', type: 'numeric', matchMode: 'equals' },
-      { field: 'booking_price.supplier_service_charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
-      { field: 'booking_price.supplier_service_charge_gst', header: 'CGST', type: 'numeric', matchMode: 'equals' },
-      { field: 'booking_price.supplier_service_charge_gst', header: 'SGST', type: 'numeric', matchMode: 'equals' },
-      { field: 'booking_price.supplier_service_charge_gst', header: 'IGST', type: 'numeric', matchMode: 'equals' },
-      { field: 'total_purchase', header: 'Total Purchase', type: 'numeric', matchMode: 'equals', },
-      { field: 'booking_price.purchase_commission', header: 'Commission Income', type: 'numeric', matchMode: 'equals' },
-      { field: 'booking_price.purchase_tds', header: 'TDS', type: 'numeric', matchMode: 'equals' },
-      { field: 'net_payable', header: 'Net Payable', type: 'numeric', matchMode: 'equals', }
+      { field: 'date', header: 'Date', type: 'custom', matchMode: 'custom' },
+      { field: 'supplier_Name', header: 'Name', type: 'select', matchMode: 'in' },
+      { field: 'invoive_No', header: 'Invoice No', type: 'text', matchMode: 'contains' },
+      { field: 'supplier_Ref_No', header: 'Supplier. Ref. No', type: 'text', matchMode: 'contains' },
+      { field: 'ref_No', header: 'Ref. No', type: 'text', matchMode: 'contains' },
+      { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
+      { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
+      { field: 'airline_Tax', header: 'Airline Tax', type: 'numeric', matchMode: 'equals' },
+      { field: 'service_Charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
+      { field: 'cgst', header: 'CGST', type: 'numeric', matchMode: 'equals' },
+      { field: 'sgst', header: 'SGST', type: 'numeric', matchMode: 'equals' },
+      { field: 'igst', header: 'IGST', type: 'numeric', matchMode: 'equals' },
+      { field: 'total_Purchase', header: 'Total Purchase', type: 'numeric', matchMode: 'equals', },
+      { field: 'purchase_Commission', header: 'Commission Income', type: 'numeric', matchMode: 'equals' },
+      { field: 'purchase_TDS', header: 'TDS', type: 'numeric', matchMode: 'equals' },
+      { field: 'net_Payable', header: 'Net Payable', type: 'numeric', matchMode: 'equals', }
     ];
 
   constructor(
     private accountService: AccountService,
-    private agentService: AgentService,
+    private supplierService: SupplierService,
     public _filterService: CommonFilterService,
     private sidebarDialogService: SidebarCustomModalService,
   ) {
     super(module_name.products_collection);
 
-    this.sortColumn = 'installment_date';
-    this.sortDirection = 'desc';
+    this.sortColumn = 'date';
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
   }
 
   ngOnInit(): void {
+    this.getSupplier("");
     // common filter
     this.startSubscription();
 
-     this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
-            if (res && res.key == 'manager-service-status') {
-                let index = this.dataList.findIndex((item: any) => item.id == res.data.id);
-                if (index != -1) {
-                    this.dataList[index] = res.data;
-                } 
-            }
-        })
+    this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
+      if (res && res.key == 'manager-service-status') {
+        let index = this.dataList.findIndex((item: any) => item.id == res.data?.id);
+        if (index != -1) {
+          this.dataList[index] = res.data;
+        }
+      }
+    })
   }
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      this.selectedAgent = filterData['table_config']['agency_name']?.value;
-      this.selectedRM = filterData['table_config']['rm']?.value;
-
-
-      if (this.selectedAgent && this.selectedAgent.id) {
-        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-        if (!match) {
-          this.agentList.push(this.selectedAgent);
-        }
-      }
-
-      if (filterData['table_config']['installment_date']?.value && Array.isArray(filterData['table_config']['installment_date']?.value)) {
-        this._filterService.selectionDateDropdown = 'custom_date_range';
-        this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
+      console.log("filterData", filterData)
+      if (filterData['table_config']['date']?.value && Array.isArray(filterData['table_config']['date']?.value)) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['date']);
       }
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
 
-  // function to get the Agent list from api
-  getAgent(value: string) {
-    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
-      this.agentList = data;
 
-      for (let i in this.agentList) {
-        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
-        this.agentList[i].id_by_value = this.agentList[i].agency_name;
-      }
-    })
-  }
-
-  manageService(record:any){
+  manageService(record: any) {
     this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
   }
 
@@ -171,33 +147,18 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   //     }
   //   });
   // }
-
-
-  getStatusIndicatorClass(status: string): string {
-    if (status == 'Pending') {
-      return 'bg-yellow-600';
-    } else if (status == 'Audited') {
-      return 'bg-green-600';
-    } else if (status == 'Rejected') {
-      return 'bg-red-600';
-    } else if (status == 'Confirmed') {
-      return 'bg-green-600';
-    } else {
-      return 'bg-blue-600';
-    }
-  }
-
-
-
   refreshItems(event?: any): void {
     this.isLoading = true;
-    let newModel = this.getNewFilterReq(event);
+    let payload = this.getNewFilterReq(event);
+    console.log("startDate", this.startDate.value);
+    payload['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
+    payload['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
-    this.accountService.getCollectionList(newModel).subscribe({
+    this.accountService.getBontonPurchaseRegister(payload).subscribe({
       next: (data) => {
         this.dataList = data.data;
         this.totalRecords = data.total;
-        this.totalsObj = data.totals || 0;
+        // this.totalsObj = data.totals || 0;
         this.isLoading = false;
         if (this.dataList && this.dataList.length) {
           setTimeout(() => {
@@ -212,18 +173,10 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     });
   }
 
-  // Status
-  getStatusColor(status: string): string {
-    if (status == 'Pending') {
-      return 'text-blue-600';
-    } else if (status == 'Inprocess') {
-      return 'text-yellow-600';
-    } else if (status == 'Delivered') {
-      return 'text-green-600';
-    } else if (status == 'Blocked') {
-      return 'text-red-600';
-    } else {
-      return '';
+  onFrozenColumn(field: any, event: MouseEvent) {
+    if (field == 'date' || field == 'supplier_Name') {
+      this.isFrozenColumn(field);
+      event.stopPropagation();
     }
   }
 
@@ -239,28 +192,49 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
     filterReq['Filter'] = this.searchInputControl.value;
     filterReq['Take'] = this.totalRecords;
+    filterReq['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
+    filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
-    this.accountService.getCollectionList(filterReq).subscribe((data) => {
+
+    this.accountService.getBontonPurchaseRegister(filterReq).subscribe((data) => {
       for (var dt of data.data) {
-        dt.installment_date = dt.installment_date ? DateTime.fromISO(dt.installment_date).toFormat('dd-MM-yyyy') : '';
+        dt.date = dt.date ? DateTime.fromISO(dt.date).toFormat('dd-MM-yyyy') : '';
       }
-      ['agent_code', 'agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']
+
       Excel.export(
-        'Collection',
+        'Purchase Register(Bonton)',
         [
-          { header: 'Agent Code', property: 'agent_code' },
-          { header: 'Agent', property: 'agency_name' },
-          { header: 'RM', property: 'rm' },
-          { header: 'Product name', property: 'product' },
-          { header: 'Status', property: 'status' },
-          { header: 'Amount', property: 'installment_amount' },
-          { header: 'Due Amount', property: 'due_Amount' },
-          { header: 'Installment Date', property: 'installment_date' },
+          { header: 'Date', property: 'date' },
+          { header: 'Name', property: 'supplier_Name' },
+          { header: 'Invoice No', property: 'invoive_No' },
+          { header: 'Supplier. Ref. No', property: 'supplier_Ref_No' },
+          { header: 'Ref. No', property: 'ref_No' },
+          { header: 'PNR', property: 'pnr' },
+          { header: 'Base Fare', property: 'base_Fare' },
+          { header: 'Airline Tax', property: 'airline_Tax' },
+          { header: 'Service charge', property: 'service_Charge' },
+          { header: 'CGST', property: 'cgst' },
+          { header: 'SGST', property: 'sgst' },
+          { header: 'IGST', property: 'igst' },
+          { header: 'Total Purchase', property: 'total_Purchase' },
+          { header: 'Commission Income', property: 'purchase_Commission' },
+          { header: 'TDS', property: 'purchase_TDS' },
+          { header: 'Net Payable', property: 'net_Payable' },
         ],
         data.data,
-        'Collection',
+        'Purchase Register(Bonton)',
         [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
       );
+    });
+  }
+
+  getSupplier(value: string) {
+    this.supplierService.getSupplierCombo(value, '').subscribe((data) => {
+      this.supplierList = data;
+
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      }
     });
   }
 
@@ -275,18 +249,10 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
         this._filterService.updateSelectedOption('');
-        this.selectedAgent = resp['table_config']['agency_name']?.value;
-        if (this.selectedAgent && this.selectedAgent.id) {
-          const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-          if (!match) {
-            this.agentList.push(this.selectedAgent);
-          }
-        }
-        this.selectedRM = resp['table_config']['rm']?.value;
-
-        if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
+        if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
           this._filterService.selectionDateDropdown = 'custom_date_range';
-          this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
+          this._filterService.updateSelectedOption('custom_date_range');
+          this._filterService.rangeDateConvert(resp['table_config']['date']);
         }
 
         this.primengTable['filters'] = resp['table_config'];

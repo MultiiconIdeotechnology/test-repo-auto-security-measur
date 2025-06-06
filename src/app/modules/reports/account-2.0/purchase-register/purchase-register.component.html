@@ -50,25 +50,45 @@
         </div>
     </div>
 
-    <div
-        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between pt-4 px-6 md:px-8 border-b">
+    <div class="flex items-center gap-2 pt-4 px-6 border-b">
+        <mat-form-field class="w-[250px]">
+            <mat-date-range-input [rangePicker]="picker" (valueChange)="onDateRange($event)">
+                <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
+                <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
+            </mat-date-range-input>
+            <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
         <mat-form-field class="w-[250px]">
             <mat-select [(value)]="selectedTableKey" (valueChange)="onTableChange($event)">
                 <mat-option *ngFor="let item of tableTypeList;" [value]="item">{{item.label}}</mat-option>
             </mat-select>
         </mat-form-field>
+
+        <button *ngIf="tabLoaded.isTabTwoLoaded || isDateChange" class="translate-y-[-10px]" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+            (click)="onRefreshCall()">
+            <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+        </button>
     </div>
 
 
     <!----------------Table----------------->
-    <app-bonton #bontonTable  [hidden]="activeTab !== 0" 
-        [isFilterShow]="moduleMap[0].isFiltershow"
-        (isFilterShowEvent)="moduleMap[0].isFiltershow = $event">
+    <!-- *ngIf="activeTab == 0 && isApiCallAllowed"  -->
+    <app-bonton #bontonTable 
+    [hidden]="activeTab !== 0"
+    [isFilterShow]="moduleMap[0].isFiltershow" 
+    [startDate]="startDate" [endDate]="endDate"
+    (isFilterShowEvent)="moduleMap[0].isFiltershow = $event">
     </app-bonton>
 
-    <app-bonton-dmcc #dmccTable  [hidden]="activeTab !== 1"  *ngIf="tabLoaded.isTabTwoLoaded"
-        [isFilterShow]="moduleMap[1].isFiltershow"
-        (isFilterShowEvent)="moduleMap[1].isFiltershow = $event">
+    <!-- *ngIf="activeTab == 1 && tabLoaded.isTabTwoLoaded && isApiCallAllowed"  -->
+    <app-bonton-dmcc #dmccTable 
+    [hidden]="activeTab !== 1" 
+    *ngIf="tabLoaded.isTabTwoLoaded"
+    [isFilterShow]="moduleMap[1].isFiltershow"
+    [startDate]="startDate" [endDate]="endDate"
+    (isFilterShowEvent)="moduleMap[1].isFiltershow = $event">
     </app-bonton-dmcc>
 </div>
 

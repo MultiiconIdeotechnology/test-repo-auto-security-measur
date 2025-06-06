@@ -14,11 +14,11 @@
                 <mat-form-field class="w-full">
                     <mat-label>Service For</mat-label>
                     <mat-select formControlName="service_for">
-                        <mat-option>
+                        <!-- <mat-option>
                             <ngx-mat-select-search placeholderLabel="Search"
                                 noEntriesFoundLabel="'no matching service for found'" [formControl]="serviceForCtrl">
                             </ngx-mat-select-search>
-                        </mat-option>
+                        </mat-option> -->
                         <mat-option *ngFor="let item of serviceForList" [value]="item">
                             {{item}}
                         </mat-option>
@@ -27,22 +27,22 @@
 
                 <mat-form-field class="flex-grow">
                     <mat-label>Purchase Base Price</mat-label>
-                    <input placeholder="Enter Description" matInput required formControlName="purchase_base_price" />
+                    <input appOnlyFloat placeholder="Enter Description" matInput required formControlName="purchase_base_price" />
                 </mat-form-field>
 
                 <mat-form-field class="flex-grow">
                     <mat-label>Purchase Tax </mat-label>
-                    <input placeholder="Enter Description" matInput required formControlName="purchase_tax" />
+                    <input appOnlyFloat placeholder="Enter Description" matInput required formControlName="purchase_tax" />
                 </mat-form-field>
 
                 <mat-form-field class="flex-grow">
                     <mat-label>Supplier Service Fee </mat-label>
-                    <input placeholder="Enter Description" matInput required formControlName="suplier_service_charge" />
+                    <input appOnlyFloat placeholder="Enter Description" matInput required formControlName="suplier_service_charge" />
                 </mat-form-field>
 
                 <mat-form-field class="flex-grow">
                     <mat-label>Supplier Service GST</mat-label>
-                    <input placeholder="Enter Event Name" matInput required
+                    <input appOnlyFloat placeholder="Enter Event Name" matInput required
                         formControlName="suplier_service_charge_gst" />
                 </mat-form-field>
             </form>

@@ -1,7 +1,7 @@
 import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,6 +27,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { BontonComponent } from './bonton/bonton.component';
 import { BontonDmccComponent } from './bonton-dmcc/bonton-dmcc.component';
 import { ManageServiceFeeComponent } from './manage-service-fee/manage-service-fee.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-purchase-register-2.0',
@@ -45,6 +46,7 @@ import { ManageServiceFeeComponent } from './manage-service-fee/manage-service-f
     MatMenuModule,
     MatDialogModule,
     MatDividerModule,
+    MatDatepickerModule,
     FormsModule,
     PrimeNgImportsModule,
     MatTooltipModule,
@@ -66,8 +68,12 @@ export class PurchaseRegisterComponent
   isFilterShow: boolean = false;
   isLoading: boolean = false;
   subscriptionArr: any[] = [];
+  tempActiveTab: any = 0;
+  public startDate = new FormControl(new Date());
+  public endDate = new FormControl(new Date());
+  isDateChange: boolean = false;
 
-  tableTypeList: any = [{ label: 'Bonton', value: 'bonton', index:0 }, { label: 'Bonton DMCC', value: 'dmcc', index:1 }];
+  tableTypeList: any = [{ label: 'Bonton', value: 'bonton', index: 0 }, { label: 'Bonton DMCC', value: 'dmcc', index: 1 }];
 
   tabLoaded: any = {
     isTabOneLoaded: true,
@@ -75,94 +81,114 @@ export class PurchaseRegisterComponent
   }
 
   moduleMap = [
-    { module_name: 'Bonton', filter_table_name: 'purchase_register_bonton', isFiltershow: false},
+    { module_name: 'Bonton', filter_table_name: 'purchase_register_bonton', isFiltershow: false },
     { module_name: 'Bonton DMCC', filter_table_name: 'purchase_register_bonton_dmcc', isFiltershow: false },
   ];
 
   currentModule: any = module_name[this.moduleMap[0].module_name];
   currentFilterModule: any = filter_module_name[this.moduleMap[0].filter_table_name];
 
-   constructor(
-          private _filterService:CommonFilterService,
-        ) { 
-            super('')
-    }
+  constructor(
+    private _filterService: CommonFilterService,
+  ) {
+    super('')
+  }
 
-    ngOnInit(): void {
-      this.selectedTableKey = this.tableTypeList[0];
-    }
+  ngOnInit(): void {
+    this.selectedTableKey = this.tableTypeList[0];
 
-    public onTableChange(event: any): void {
-      console.log("event>>", event)
-        this.selectedTableKey = this.tableTypeList[event.index];
-        this.activeTab = event.index;
-        console.log("activeTab", this.activeTab);
-        const components = [
-           {comp: this.bontonTableComponent, key:'bonton'},
-           {comp: this.dmccTableComponent, key:'dmcc'},
-        ];
+    this.startDate.valueChanges.subscribe(start => {
+      console.log('Start date changed:', start);
+      this.isDateChange = true;
+    });
 
-        // manage subscription for saved filter data on tab
-        components.forEach((item, idx) => {
-            if (item.comp) {
-              if (item.key === this.selectedTableKey) {
-                item.comp.startSubscription();
-              } else {
-                item.comp.stopSubscription();
-              }
-            }
-          });
+    this.endDate.valueChanges.subscribe(end => {
+      console.log('End date changed:', end);
+      this.isDateChange = true;
+    });
+  }
 
-        this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
-        this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
+  onTableChange(event: any): void {
+    this.selectedTableKey = this.tableTypeList[event.index];
+    this.activeTab = event.index;
+    const components = [
+       this.bontonTableComponent,
+       this.dmccTableComponent
+    ];
 
-        if(this.activeTab == 1){
-            this.tabLoaded.isTabTwoLoaded = true;
-        } 
-    }
-
-    // Global Filter on respective component 
-    onGlobalSearch(val:any){
-        if(this.activeTab == 0){
-            this.bontonTableComponent.searchInputControl.patchValue(val);
-            this.bontonTableComponent.refreshItems();
-        } else if (this.activeTab == 1){
-            this.dmccTableComponent.searchInputControl.patchValue(val);
-            this.dmccTableComponent.refreshItems();
-        } 
-    }
-
-    // column filter search 
-    onColumnFilter(){
-        this.moduleMap[this.activeTab].isFiltershow = !this.moduleMap[this.activeTab].isFiltershow;
-    }
-
-    // Refresh Data on respective component
-    onRefreshData(){
-        if(this.activeTab == 0){
-            this.bontonTableComponent.refreshItems();
-        } else if (this.activeTab == 1){
-            this.dmccTableComponent.refreshItems();
-        } 
-    }
-
-    // saved filter on respective component
-    onSaveFilter(){
-        if(this.activeTab == 0){
-            this._filterService.openDrawer(this.currentFilterModule, this.bontonTableComponent.primengTable);;
-        } else if (this.activeTab == 1){
-            this._filterService.openDrawer(this.currentFilterModule, this.dmccTableComponent.primengTable);;
-        } 
-    }
-
-    // export excel on respective component
-    exportExcel(){
-        if(this.activeTab == 0){
-            this.bontonTableComponent.exportExcel();
-        } else if (this.activeTab == 1){
-            this.dmccTableComponent.exportExcel();
+    // manage subscription for saved filter data on tab
+    components.forEach((comp, idx) => {
+      if (comp) {
+        if (idx === this.activeTab) {
+          comp.startSubscription();
+        } else {
+          comp.stopSubscription();
         }
+      }
+    });
+
+    this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
+    this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
+
+    if (this.activeTab == 1) {
+      this.tabLoaded.isTabTwoLoaded = true;
     }
+  }
+
+  onDateRange(event: any) {
+    console.log("event", event)
+  }
+
+  onRefreshCall() {
+    if (this.activeTab == 0) {
+      this.bontonTableComponent.refreshItems();
+    } else if (this.activeTab == 1) {
+      this.dmccTableComponent.refreshItems();
+    }
+  }
+
+  // Global Filter on respective component 
+  onGlobalSearch(val: any) {
+    if (this.activeTab == 0) {
+      this.bontonTableComponent.searchInputControl.patchValue(val);
+      this.bontonTableComponent.refreshItems();
+    } else if (this.activeTab == 1) {
+      this.dmccTableComponent.searchInputControl.patchValue(val);
+      this.dmccTableComponent.refreshItems();
+    }
+  }
+
+  // column filter search 
+  onColumnFilter() {
+    this.moduleMap[this.activeTab].isFiltershow = !this.moduleMap[this.activeTab].isFiltershow;
+  }
+
+  // Refresh Data on respective component
+  onRefreshData() {
+    if (this.activeTab == 0) {
+      this.bontonTableComponent.refreshItems();
+    } else if (this.activeTab == 1) {
+      this.dmccTableComponent.refreshItems();
+    }
+  }
+
+  // saved filter on respective component
+  onSaveFilter() {
+    if (this.activeTab == 0) {
+      this._filterService.openDrawer(this.currentFilterModule, this.bontonTableComponent.primengTable);;
+    } else if (this.activeTab == 1) {
+      this._filterService.openDrawer(this.currentFilterModule, this.dmccTableComponent.primengTable);;
+    }
+  }
+
+  // export excel on respective component
+  exportExcel() {
+    if (this.activeTab == 0) {
+      this.bontonTableComponent.exportExcel();
+    } else if (this.activeTab == 1) {
+      this.dmccTableComponent.exportExcel();
+    }
+  }
 
   //   dmccBontonTableArr: any[] = [
   //   { field: 'invoice_master.invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },

@@ -101,8 +101,13 @@ export class AccountService {
     return this.http.post<any>(environment.apiUrl + "ContractReport/allServiceAnalysis", model);
   }
 
+  // account 2.0
   getBontonPurchaseRegister(model:any){
     return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterReport", model);
+  }
+
+  manageServiceFee(model){
+    return this.http.post<any>(environment.apiUrl + "AirBooking/manageServiceFee", model);
   }
 
 
