@@ -16,14 +16,16 @@ import { AppConfig } from 'app/config/app-config';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
-import { Linq } from 'app/utils/linq';
-import { KycDocumentService } from 'app/services/kyc-document.service';
-import { PspSettingService } from 'app/services/psp-setting.service';
-import { AgentService } from 'app/services/agent.service';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
+import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
+import { SupplierService } from 'app/services/supplier.service';
+import { Linq } from 'app/utils/linq';
+import { EntityService } from 'app/services/entity.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-bonton-dmcc',
@@ -55,18 +57,15 @@ export class BontonDmccComponent extends BaseListingComponent
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
   @Input() endDate: any;
+  // module_name = module_name.products_collection;
   filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];
-  totalsObj: any = {};
-
-  statusList: any[] = [
-    { label: 'Inprocess', value: 'Inprocess' },
-    { label: 'Pending', value: 'Pending' },
-    { label: 'Blocked', value: 'Blocked' },
-    { label: 'Delivered', value: 'Delivered' },
-  ];
+  employeeList: any = [];
+  supplierList: any[] = [];
+  selectedSupplier: any;
+  destroy$: any = new Subject();
 
   tableFieldArr: any[] = [
     { field: 'invoice_master.invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
@@ -85,34 +84,111 @@ export class BontonDmccComponent extends BaseListingComponent
 
   constructor(
     private accountService: AccountService,
-    private agentService: AgentService,
+    private supplierService: SupplierService,
     public _filterService: CommonFilterService,
+    private sidebarDialogService: SidebarCustomModalService,
+    private entityService: EntityService,
+    private router: Router,
   ) {
     super(module_name.products_collection);
 
-    this.sortColumn = 'installment_date';
-    this.sortDirection = 'desc';
+    this.sortColumn = 'date';
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
   }
 
   ngOnInit(): void {
+    this.getSupplier("");
     // common filter
     this.startSubscription();
+
+    this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
+      if (res && res.key == 'manager-service-status') {
+        let index = this.dataList.findIndex((item: any) => (item.service_For == res.data?.service_For && item.service_For_Id == res?.data?.service_For_Id));
+        if (index != -1) {
+          this.dataList[index] = res.data;
+        }
+      }
+    })
   }
 
   ngAfterViewInit() {
     // Defult Active filter show
+    this._filterService.updateSelectedOption('');
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-
-      if (filterData['table_config']['installment_date']?.value && Array.isArray(filterData['table_config']['installment_date']?.value)) {
-        this._filterService.selectionDateDropdown = 'custom_date_range';
-        this._filterService.rangeDateConvert(filterData['table_config']['installment_date']);
+      console.log("filterData", filterData)
+      if (filterData['table_config']['date']?.value && Array.isArray(filterData['table_config']['date']?.value)) {
+        this._filterService.updateSelectedOption('custom_date_range');
+        this._filterService.rangeDateConvert(filterData['table_config']['date']);
       }
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
+    }
+  }
+
+
+  manageService(record: any) {
+    this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
+  }
+
+  viewData(element: any): void {
+    // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
+    //     return this.alertService.showToast(
+    //         'error',
+    //         messages.permissionDenied
+    //     );
+    // }
+
+    if (element?.ref_No) {
+      const refPrefix = element.ref_No.slice(0, 3);
+      console.log("refPrefix", refPrefix)
+
+
+      switch (refPrefix) {
+        case "FLT":
+          Linq.recirect(`/booking/flight/details/${element.service_for_id}`);
+          break;
+        case "BUS":
+          Linq.recirect(`/booking/bus/details/${element.purchase_id}`);
+          break;
+        case "VIS":
+          Linq.recirect(`/booking/visa/details/${element.purchase_id}`);
+          break;
+        case "INS":
+          Linq.recirect(`/booking/insurance/details/${element.purchase_id}`);
+          break;
+        case "AIR":
+          this.entityService.raiseAmendmentInfoCall({ data: element });
+          break;
+        case "HTL":
+          Linq.recirect(`/booking/hotel/details/${element.purchase_id}`);
+          break;
+        case "PKG":
+          Linq.recirect(`/booking/holiday-lead/details/${element.purchase_id}`);
+          break;
+        case "AGI":
+          Linq.recirect(`/booking/group-inquiry/details/${element.purchase_id}`);
+          break;
+        case "OSB":
+          Linq.recirect(`/booking/offline-service/entry/${element.purchase_id}/readonly`);
+          break;
+        case "FRX":
+          this.router.navigate(['/booking/forex'])
+          setTimeout(() => {
+            this.entityService.raiseForexEntityCall({ data: element.purchase_id, global_withdraw: true })
+          }, 300);
+          break;
+        case "CAB":
+          Linq.recirect(`/booking/cab/details/${element.purchase_id}`);
+          break;
+        // case "PL":
+        //   Linq.recirect(`/booking/holiday-lead/details/${element.booking_id}`);
+        //   break;
+        default:
+          console.warn("Unknown refNo prefix:", refPrefix);
+      }
     }
   }
 
@@ -123,11 +199,11 @@ export class BontonDmccComponent extends BaseListingComponent
     payload['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
     payload['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
-    this.accountService.getCollectionList(payload).subscribe({
+    this.accountService.getBontonPurchaseRegister(payload).subscribe({
       next: (data) => {
         this.dataList = data.data;
         this.totalRecords = data.total;
-        this.totalsObj = data.totals || 0;
+        // this.totalsObj = data.totals || 0;
         this.isLoading = false;
         if (this.dataList && this.dataList.length) {
           setTimeout(() => {
@@ -141,7 +217,14 @@ export class BontonDmccComponent extends BaseListingComponent
       },
     });
   }
-  
+
+  onFrozenColumn(field: any, event: MouseEvent) {
+    if (field == 'date' || field == 'supplier_Name') {
+      this.isFrozenColumn(field);
+      event.stopPropagation();
+    }
+  }
+
   exportExcel(): void {
     // if (!Security.hasExportDataPermission(this.module_name)) {
     //     return this.alertService.showToast(
@@ -154,28 +237,49 @@ export class BontonDmccComponent extends BaseListingComponent
 
     filterReq['Filter'] = this.searchInputControl.value;
     filterReq['Take'] = this.totalRecords;
+    filterReq['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
+    filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
-    this.accountService.getCollectionList(filterReq).subscribe((data) => {
+
+    this.accountService.getBontonPurchaseRegister(filterReq).subscribe((data) => {
       for (var dt of data.data) {
-        dt.installment_date = dt.installment_date ? DateTime.fromISO(dt.installment_date).toFormat('dd-MM-yyyy') : '';
+        dt.date = dt.date ? DateTime.fromISO(dt.date).toFormat('dd-MM-yyyy') : '';
       }
-      ['agent_code', 'agency_name', 'rm', 'product', 'status', 'installment_amount', 'due_Amount', 'installment_date']
+
       Excel.export(
-        'Collection',
+        'Purchase Register(Bonton)',
         [
-          { header: 'Agent Code', property: 'agent_code' },
-          { header: 'Agent', property: 'agency_name' },
-          { header: 'RM', property: 'rm' },
-          { header: 'Product name', property: 'product' },
-          { header: 'Status', property: 'status' },
-          { header: 'Amount', property: 'installment_amount' },
-          { header: 'Due Amount', property: 'due_Amount' },
-          { header: 'Installment Date', property: 'installment_date' },
+          { header: 'Date', property: 'date' },
+          { header: 'Name', property: 'supplier_Name' },
+          { header: 'Invoice No', property: 'invoive_No' },
+          { header: 'Supplier. Ref. No', property: 'supplier_Ref_No' },
+          { header: 'Ref. No', property: 'ref_No' },
+          { header: 'PNR', property: 'pnr' },
+          { header: 'Base Fare', property: 'base_Fare' },
+          { header: 'Airline Tax', property: 'airline_Tax' },
+          { header: 'Service charge', property: 'service_Charge' },
+          { header: 'CGST', property: 'cgst' },
+          { header: 'SGST', property: 'sgst' },
+          { header: 'IGST', property: 'igst' },
+          { header: 'Total Purchase', property: 'total_Purchase' },
+          { header: 'Commission Income', property: 'purchase_Commission' },
+          { header: 'TDS', property: 'purchase_TDS' },
+          { header: 'Net Payable', property: 'net_Payable' },
         ],
         data.data,
-        'Collection',
+        'Purchase Register(Bonton)',
         [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
       );
+    });
+  }
+
+  getSupplier(value: string) {
+    this.supplierService.getSupplierCombo(value, '').subscribe((data) => {
+      this.supplierList = data;
+
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      }
     });
   }
 
@@ -189,12 +293,11 @@ export class BontonDmccComponent extends BaseListingComponent
   startSubscription() {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-        console.log("resP>>", resp)
         this._filterService.updateSelectedOption('');
-
-        if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
+        if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
           this._filterService.selectionDateDropdown = 'custom_date_range';
-          this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
+          this._filterService.updateSelectedOption('custom_date_range');
+          this._filterService.rangeDateConvert(resp['table_config']['date']);
         }
 
         this.primengTable['filters'] = resp['table_config'];
@@ -216,5 +319,8 @@ export class BontonDmccComponent extends BaseListingComponent
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+
+    this.destroy$.next(null);
+    this.destroy$.complete();
   }
 }
