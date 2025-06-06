@@ -28,6 +28,7 @@ import { BontonComponent } from './bonton/bonton.component';
 import { BontonDmccComponent } from './bonton-dmcc/bonton-dmcc.component';
 import { ManageServiceFeeComponent } from './manage-service-fee/manage-service-fee.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { AmendmentRequestEntryComponent } from 'app/modules/booking/amendment-requests-list/amendment-request-entry/amendment-request-entry.component';
 
 @Component({
   selector: 'app-purchase-register-2.0',
@@ -53,7 +54,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatSelectModule,
     BontonComponent,
     BontonDmccComponent,
-    ManageServiceFeeComponent
+    ManageServiceFeeComponent,
+    AmendmentRequestEntryComponent
   ],
 })
 export class PurchaseRegisterComponent

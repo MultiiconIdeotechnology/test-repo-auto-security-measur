@@ -22,6 +22,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { SupplierService } from 'app/services/supplier.service';
+import { Linq } from 'app/utils/linq';
+import { EntityService } from 'app/services/entity.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bonton',
@@ -93,6 +96,8 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     private supplierService: SupplierService,
     public _filterService: CommonFilterService,
     private sidebarDialogService: SidebarCustomModalService,
+    private entityService: EntityService,
+    private router: Router,
   ) {
     super(module_name.products_collection);
 
@@ -137,16 +142,65 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
   }
 
-  // Api to get the Employee list data
-  // getEmployeeList(value: string) {
-  //   this.refferralService.getEmployeeLeadAssignCombo(value).subscribe((data: any) => {
-  //     this.employeeList = data;
+  viewData(element:any): void {
+    // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
+    //     return this.alertService.showToast(
+    //         'error',
+    //         messages.permissionDenied
+    //     );
+    // }
 
-  //     for (let i in this.employeeList) {
-  //       this.employeeList[i].id_by_value = this.employeeList[i].employee_name;
-  //     }
-  //   });
-  // }
+   if (element?.ref_No) {
+      const refPrefix = element.ref_No.slice(0, 3);
+          console.log("refPrefix", refPrefix)
+
+
+      switch (refPrefix) {
+        case "FLT":
+          Linq.recirect(`/booking/flight/details/${element.service_for_id}`);
+          break;
+        case "BUS":
+          Linq.recirect(`/booking/bus/details/${element.purchase_id}`);
+          break;
+        case "VIS":
+          Linq.recirect(`/booking/visa/details/${element.purchase_id}`);
+          break;
+        case "INS":
+          Linq.recirect(`/booking/insurance/details/${element.purchase_id}`);
+          break;
+        case "AIR":
+          this.entityService.raiseAmendmentInfoCall({ data: element });
+          break;
+        case "HTL":
+          Linq.recirect(`/booking/hotel/details/${element.purchase_id}`);
+          break;
+        case "PKG":
+          Linq.recirect(`/booking/holiday-lead/details/${element.purchase_id}`);
+          break;
+        case "AGI":
+          Linq.recirect(`/booking/group-inquiry/details/${element.purchase_id}`);
+          break;
+        case "OSB":
+          Linq.recirect(`/booking/offline-service/entry/${element.purchase_id}/readonly`);
+          break;
+        case "FRX":
+          this.router.navigate(['/booking/forex'])
+          setTimeout(() => {
+            this.entityService.raiseForexEntityCall({ data: element.purchase_id, global_withdraw: true })
+          }, 300);
+          break;
+        case "CAB":
+          Linq.recirect(`/booking/cab/details/${element.purchase_id}`);
+          break;
+        // case "PL":
+        //   Linq.recirect(`/booking/holiday-lead/details/${element.booking_id}`);
+        //   break;
+        default:
+          console.warn("Unknown refNo prefix:", refPrefix);
+      }
+  }
+}
+
   refreshItems(event?: any): void {
     this.isLoading = true;
     let payload = this.getNewFilterReq(event);

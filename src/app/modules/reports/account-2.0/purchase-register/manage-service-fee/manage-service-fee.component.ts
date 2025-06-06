@@ -43,7 +43,7 @@ export class ManageServiceFeeComponent {
   formGroup: FormGroup;
   isLoading: boolean = false;
   buttonLabel: any = 'Create';
-  serviceForList: any[] = ['Airline', 'Visa', 'Bus'];
+  serviceForList: any[] = ['Airline', 'Bus', 'Hotel','Visa', 'Insurance', 'Holiday'];
   serviceForCtrl = new FormControl('');
   record:any;
 

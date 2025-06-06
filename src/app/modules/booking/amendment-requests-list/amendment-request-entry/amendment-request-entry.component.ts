@@ -89,6 +89,7 @@ export class AmendmentRequestEntryComponent {
     ) {
         this.entityService.onAmendmentInfoCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
             next: (item) => {
+                console.log("item", item)
                 this.record = item?.data ?? {}
                 // this.getData();
                 this.amendmentInfoDrawer.toggle();
