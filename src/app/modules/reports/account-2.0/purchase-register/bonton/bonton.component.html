@@ -46,14 +46,14 @@
 
                     <ng-container *ngIf="el.type == 'custom'">
                         <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
-                            field="entry_date_time" matchMode="custom" [showMenu]="false">
+                            field="date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
                                     [options]="_filterService.dateRangeList" optionLabel="label"
                                     placeholder="Select Option" appendTo="body">
                                     <ng-template let-option pTemplate="item">
                                         <div
-                                            (click)="_filterService.onOptionClick(option, primengTable, 'entry_date_time')">
+                                            (click)="_filterService.onOptionClick(option, primengTable, 'date')">
                                             <div>{{option.label}}</div>
                                         </div>
                                     </ng-template>
@@ -63,7 +63,7 @@
 
                         <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
-                                <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                                <p-columnFilter field="date" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-calendar selectionMode="range" [ngModel]="value"
                                             (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"

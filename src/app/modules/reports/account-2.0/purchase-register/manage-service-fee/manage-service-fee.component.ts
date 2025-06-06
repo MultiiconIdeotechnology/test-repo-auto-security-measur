@@ -55,7 +55,7 @@ export class ManageServiceFeeComponent {
     // private whatsappConfigService: WhatsappConfigService,
   ) {
     this.formGroup = this.builder.group({
-      service_for_id: ['', Validators.required],
+      service_for_id: [''],
       service_for: ['', Validators.required],
       suplier_service_charge: ['', Validators.required],
       suplier_service_charge_gst: ['', Validators.required],
@@ -70,9 +70,10 @@ export class ManageServiceFeeComponent {
         if (res['type'] === 'purchase-manage-service-fee') {
           this.buttonLabel = 'Save';
           this.record = res?.data;
+          console.log("res.data", res.data)
           this.formPatchValue(res?.data);
           this.title = 'Manage Service Fee';
-          this.settingsDrawer.open()
+          this.settingsDrawer.open();
         }
 
         // else if (res['type'] === 'whatsapp-event-edit') {
@@ -86,8 +87,8 @@ export class ManageServiceFeeComponent {
 
   formPatchValue(record: any) {
     this.formGroup.patchValue({
-      service_for_id: record.service_for_id,
-      service_for: record.service_for,
+      service_for_id: record.service_For_Id,
+      service_for: record.service_For,
       suplier_service_charge: record.service_Charge,
       suplier_service_charge_gst: record.sgst,
       purchase_base_price: record.base_Fare,
@@ -117,8 +118,8 @@ export class ManageServiceFeeComponent {
             this.alertService.showToast('success', 'Service fee saved successfully');
             let resData = {
               id : this.record?.id,
-              service_for_id: payload.service_for_id,
-              service_for: payload.service_for,
+              service_For_Id: payload.service_for_id,
+              service_For: payload.service_for,
               service_Charge: payload.suplier_service_charge,
               sgst: payload.suplier_service_charge_gst,
               base_Fare: payload.purchase_base_price,
