@@ -29,6 +29,9 @@ import { BontonDmccComponent } from './bonton-dmcc/bonton-dmcc.component';
 import { ManageServiceFeeComponent } from './manage-service-fee/manage-service-fee.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AmendmentRequestEntryComponent } from 'app/modules/booking/amendment-requests-list/amendment-request-entry/amendment-request-entry.component';
+import { SupplierService } from 'app/services/supplier.service';
+import { dateRange } from 'app/common/const';
+import { CommonUtils } from 'app/utils/commonutils';
 
 @Component({
   selector: 'app-purchase-register-2.0',
@@ -73,7 +76,11 @@ export class PurchaseRegisterComponent
   tempActiveTab: any = 0;
   public startDate = new FormControl(new Date());
   public endDate = new FormControl(new Date());
+  date: any = new FormControl('');
+  dateRangeList = dateRange;
+  dateRanges: any;
   isDateChange: boolean = false;
+  supplierList: any = [];
 
   tableTypeList: any = [{ label: 'Bonton', value: 'bonton', index: 0 }, { label: 'Bonton DMCC', value: 'dmcc', index: 1 }];
 
@@ -92,11 +99,16 @@ export class PurchaseRegisterComponent
 
   constructor(
     private _filterService: CommonFilterService,
+    private supplierService: SupplierService,
   ) {
-    super('')
+    super('');
+    this.dateRanges = CommonUtils.valuesArray(dateRange);
+    this.date.patchValue(dateRange.lastWeek);
+    this.updateDate(dateRange.lastWeek)
   }
 
   ngOnInit(): void {
+    // this.getSupplier("");
     this.selectedTableKey = this.tableTypeList[0];
 
     this.startDate.valueChanges.subscribe(start => {
@@ -114,8 +126,8 @@ export class PurchaseRegisterComponent
     this.selectedTableKey = this.tableTypeList[event.index];
     this.activeTab = event.index;
     const components = [
-       this.bontonTableComponent,
-       this.dmccTableComponent
+      this.bontonTableComponent,
+      this.dmccTableComponent
     ];
 
     // manage subscription for saved filter data on tab
@@ -132,19 +144,16 @@ export class PurchaseRegisterComponent
     this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
     this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
 
-    if (this.activeTab == 1) {
-      this.tabLoaded.isTabTwoLoaded = true;
-    }
-  }
-
-  onDateRange(event: any) {
-    console.log("event", event)
+    // if (this.activeTab == 1) {
+    //   this.tabLoaded.isTabTwoLoaded = true;
+    // }
   }
 
   onRefreshCall() {
     if (this.activeTab == 0) {
       this.bontonTableComponent.refreshItems();
     } else if (this.activeTab == 1) {
+      this.tabLoaded.isTabTwoLoaded = true;
       this.dmccTableComponent.refreshItems();
     }
   }
@@ -192,18 +201,79 @@ export class PurchaseRegisterComponent
     }
   }
 
-  //   dmccBontonTableArr: any[] = [
-  //   { field: 'invoice_master.invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
-  //   { field: 'supplier_master.company_name', header: 'Name', type: 'text', matchMode: 'contains' },
-  //   { field: 'invoice_number', header: 'Invoice No', type: 'text', matchMode: 'contains' },
-  //   { field: 'booking_reference_number', header: 'Ref. No', type: 'text', matchMode: 'contains' },
-  //   { field: 'pnr_number', header: 'PNR', type: 'text', matchMode: 'contains' },
-  //   { field: 'billing_company_currency', header: 'Currency', type: 'text', matchMode: 'contains' },
-  //   { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', },
-  //   { field: 'baseFare', header: 'Base Fare', type: 'numeric', matchMode: 'equals', },
-  //   { field: 'service_charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
-  //   { field: 'tax', header: 'TAX', type: 'numeric', matchMode: 'equals' },
-  //   { field: 'total_purchase', header: 'Total Purchase', type: 'numeric', matchMode: 'equals' },
-  //   { field: 'discount', header: 'Discount', type: 'numeric', matchMode: 'equals' }
-  // ];
+
+  getSupplier(value: string) {
+    this.supplierService.getSupplierCombo(value, '').subscribe((data) => {
+      this.supplierList = data;
+
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      }
+    });
+  }
+
+
+  public updateDate(event: any): void {
+    let start: Date;
+    let end: Date;
+
+    const today = new Date();
+
+    switch (event) {
+      case dateRange.today:
+        start = new Date(today);
+        end = new Date(today);
+        break;
+
+      case dateRange.last3Days:
+        start = new Date(today);
+        start.setDate(start.getDate() - 3);
+        end = new Date(today);
+        break;
+
+      case dateRange.lastWeek:
+        const dow = today.getDay(); // 0 (Sun) to 6 (Sat)
+        const offset = dow === 0 ? 6 : dow - 1;
+        start = new Date(today);
+        start.setDate(today.getDate() - offset);
+        end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        break;
+
+      case dateRange.lastMonth:
+        start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        end = new Date(today.getFullYear(), today.getMonth(), 0); // last day of last month
+        break;
+
+      case dateRange.last3Month:
+        start = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+        end = new Date(today);
+        break;
+
+      case dateRange.last6Month:
+        start = new Date(today.getFullYear(), today.getMonth() - 6, 1);
+        end = new Date(today);
+        break;
+
+      case dateRange.setCustomDate:
+        // Do not patch anything — user will select manually
+        return;
+    }
+
+    this.startDate.patchValue(start);
+    this.endDate.patchValue(end);
+  }
+
+  dateRangeChange(start, end): void {
+    if (start.value && end.value) {
+      this.startDate = start.value;
+      this.endDate = end.value;
+      // this.refreshItems();
+    }
+  }
+
+  cancleDate() {
+    this.date.patchValue('Today');
+    this.updateDate(dateRange.today);
+  }
 }

@@ -54,13 +54,14 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
   @Input() endDate: any;
+  @Input() supplierList:any = [];
   // module_name = module_name.products_collection;
   filter_table_name = filter_module_name.purchase_register_bonton;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];
   employeeList: any = [];
-  supplierList: any[] = [];
+  // supplierList: any[] = [];
   selectedSupplier: any;
   destroy$: any = new Subject();
 
@@ -107,7 +108,6 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getSupplier("");
     // common filter
     this.startSubscription();
 

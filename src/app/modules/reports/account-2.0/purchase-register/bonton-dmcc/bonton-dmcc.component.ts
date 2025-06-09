@@ -25,6 +25,7 @@ import { SupplierService } from 'app/services/supplier.service';
 import { Linq } from 'app/utils/linq';
 import { EntityService } from 'app/services/entity.service';
 import { Router } from '@angular/router';
+import { CurrencyService } from 'app/services/currency.service';
 
 
 @Component({
@@ -57,28 +58,30 @@ export class BontonDmccComponent extends BaseListingComponent
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
   @Input() endDate: any;
+  @Input() supplierList:any = [];
   // module_name = module_name.products_collection;
   filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
   dataList = [];
   employeeList: any = [];
-  supplierList: any[] = [];
   selectedSupplier: any;
   destroy$: any = new Subject();
+  currencyList:any[] = [];
+  selectedCurrency:any;
 
   tableFieldArr: any[] = [
-    { field: 'invoice_master.invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
-    { field: 'supplier_master.company_name', header: 'Name', type: 'text', matchMode: 'contains' },
-    { field: 'invoice_number', header: 'Invoice No', type: 'text', matchMode: 'contains' },
-    { field: 'booking_reference_number', header: 'Ref. No', type: 'text', matchMode: 'contains' },
-    { field: 'pnr_number', header: 'PNR', type: 'text', matchMode: 'contains' },
-    { field: 'billing_company_currency', header: 'Currency', type: 'text', matchMode: 'contains' },
+    { field: 'date', header: 'Date', type: 'custom', matchMode: 'custom' },
+    { field: 'name', header: 'Name', type: 'select', matchMode: 'contains' },
+    { field: 'invoiceNo', header: 'Invoice No', type: 'text', matchMode: 'contains' },
+    { field: 'refNo', header: 'Ref. No', type: 'text', matchMode: 'contains' },
+    { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
+    { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
     { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', },
     { field: 'baseFare', header: 'Base Fare', type: 'numeric', matchMode: 'equals', },
-    { field: 'service_charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
+    { field: 'serviceCharge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
     { field: 'tax', header: 'TAX', type: 'numeric', matchMode: 'equals' },
-    { field: 'total_purchase', header: 'Total Purchase', type: 'numeric', matchMode: 'equals' },
+    { field: 'totalPurchase', header: 'Total Purchase', type: 'numeric', matchMode: 'equals' },
     { field: 'discount', header: 'Discount', type: 'numeric', matchMode: 'equals' }
   ];
 
@@ -88,6 +91,7 @@ export class BontonDmccComponent extends BaseListingComponent
     public _filterService: CommonFilterService,
     private sidebarDialogService: SidebarCustomModalService,
     private entityService: EntityService,
+    private currencyService: CurrencyService,
     private router: Router,
   ) {
     super(module_name.products_collection);
@@ -98,7 +102,8 @@ export class BontonDmccComponent extends BaseListingComponent
   }
 
   ngOnInit(): void {
-    this.getSupplier("");
+    this.getCurrencyList();
+
     // common filter
     this.startSubscription();
 
@@ -141,8 +146,8 @@ export class BontonDmccComponent extends BaseListingComponent
     //     );
     // }
 
-    if (element?.ref_No) {
-      const refPrefix = element.ref_No.slice(0, 3);
+    if (element?.refNo) {
+      const refPrefix = element.refNo.slice(0, 3);
       console.log("refPrefix", refPrefix)
 
 
@@ -199,7 +204,7 @@ export class BontonDmccComponent extends BaseListingComponent
     payload['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
     payload['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
-    this.accountService.getBontonPurchaseRegister(payload).subscribe({
+    this.accountService.getPurchaseRegisterDMCCReport(payload).subscribe({
       next: (data) => {
         this.dataList = data.data;
         this.totalRecords = data.total;
@@ -219,11 +224,22 @@ export class BontonDmccComponent extends BaseListingComponent
   }
 
   onFrozenColumn(field: any, event: MouseEvent) {
-    if (field == 'date' || field == 'supplier_Name') {
+    if (field == 'date' || field == 'name') {
       this.isFrozenColumn(field);
       event.stopPropagation();
     }
   }
+
+  // Currency List api
+    getCurrencyList() {
+        this.currencyService.getcurrencyCombo().subscribe((data) => {
+            this.currencyList = data;
+
+            for (let i in this.currencyList) {
+                this.currencyList[i].id_by_value = this.currencyList[i].currency_short_code;
+            }
+        })
+    }
 
   exportExcel(): void {
     // if (!Security.hasExportDataPermission(this.module_name)) {
