@@ -141,8 +141,10 @@
                         {{element.profile_name || "-"}}
                     </td>
                     <td>
-                       <span [ngClass]="{'cursor-pointer border-b dark:border-white border-black': element.agents_count}" 
-                        (click)="element.agents_count ? onAgentAssigned(element?.id): null">{{element.agents_count || 0}} Agent</span>
+                       <span [ngClass]="{'cursor-pointer border-b dark:border-white border-black': element.agents_count && element.agents_count != -1}" 
+                        (click)="element.agents_count && element>agents_count != -1 ? onAgentAssigned(element?.id): null">
+                        {{element.agents_count ? (element.agents_count == -1 ? 'All': element.agents_count) : 0}} Agent
+                    </span>
                     </td>
                 </tr>
             </ng-template>

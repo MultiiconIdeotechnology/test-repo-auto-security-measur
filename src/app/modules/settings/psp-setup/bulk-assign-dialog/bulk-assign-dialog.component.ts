@@ -81,7 +81,7 @@ export class BulkAssignDialogComponent implements OnInit {
 
     this.initAgentSearch();
     this.initMultiSelectAgentListener();
-    
+
     if (this.data.key !== 'customer-agent') {
       if (this.record?.agents_count) {
         this.getAgentAssignedListbyId();
@@ -90,10 +90,8 @@ export class BulkAssignDialogComponent implements OnInit {
       this.initProfileAgentSearch();
       this.initProfileAgentSelection();
       // this.profileAgentFilterCtrl.patchValue('bharat');
-      
+
     }
-
-
 
   }
 
@@ -139,10 +137,10 @@ export class BulkAssignDialogComponent implements OnInit {
       next: (resp: any) => {
         if (resp && resp.agents_list && resp.agents_list?.length) {
           this.filteredAgentList = resp?.agents_list;
-          if (!resp.is_all_agent) {
+          if (resp?.assign_type != 'All') {
             this.agentListCtrl.patchValue(this.filteredAgentList)
           }
-          this.formGroup.get('is_all_agent').patchValue(resp?.is_all_agent)
+          this.formGroup.get('is_all_agent').patchValue(resp?.assign_type == 'All')
         }
       },
       error: (err) => {
@@ -228,7 +226,9 @@ export class BulkAssignDialogComponent implements OnInit {
       next: (resp: any) => {
         if (resp) {
           this.toasterService.showToast('success', 'Profile assigned successfully');
-          this.matDialogRef.close();
+          if (this.data.key == 'bulk-assign') {
+            this.matDialogRef.close({ key: 'bulk-assign', count: this.selectedListIds?.length });
+          }
         }
       },
       error: (err: any) => {

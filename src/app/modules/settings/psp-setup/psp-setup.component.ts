@@ -264,7 +264,11 @@ export class PspSetupComponent extends BaseListingComponent {
         maxWidth: '600px',
         minWidth: '470px'
       }
-    )
+    ).afterClosed().subscribe((res:any) => {
+      if(res){
+        record.agents_count = res?.count;
+      }
+    })
   }
 
   onAgentAssigned(id: any) {
