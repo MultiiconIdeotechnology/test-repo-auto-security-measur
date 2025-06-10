@@ -93,9 +93,11 @@ export class CampaignSummaryChartComponent {
     }
 
     this.originalXAxisData = cloneDeep(this.xAxisData);
+    console.log("originalXAxisData", this.originalXAxisData);
     this.originalYAxisData = cloneDeep(this.yAxisData);
     let maxYear = Math.max(...this.yearArr);
     let minYear = Math.min(...this.yearArr);
+    console.log("xAxisData", this.xAxisData);
 
     if (maxYear != minYear) {
       this.showDropdownYear = true;
@@ -208,6 +210,9 @@ export class CampaignSummaryChartComponent {
         categories: this.xAxisData,
         labels: {
           show: true,
+          rotate: -45,
+          rotateAlways: false,
+          hideOverlappingLabels: true,
           style: {
             colors: themeColors.textColor,
             fontSize: '12px',

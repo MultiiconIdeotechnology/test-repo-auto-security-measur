@@ -1,9 +1,9 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormControl, FormsModule, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepicker, MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -25,6 +25,19 @@ import { CampaignRegisterService } from 'app/services/campaign-register.service'
 import { RefferralService } from 'app/services/referral.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CampaignSummaryChartComponent } from './campaign-summary-chart/campaign-summary-chart.component';
+import { LuxonDateAdapter } from '@angular/material-luxon-adapter';
+
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'MM/yyyy',
+  },
+  display: {
+    dateInput: 'MM/yyyy',
+    monthYearLabel: 'MMM yyyy',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM yyyy',
+  },
+};
 
 @Component({
   selector: 'app-campaign-summary-report',
@@ -52,7 +65,15 @@ import { CampaignSummaryChartComponent } from './campaign-summary-chart/campaign
     MatDialogModule,
   ],
   templateUrl: './campaign-summary-report.component.html',
-  styleUrls: ['./campaign-summary-report.component.scss']
+  styleUrls: ['./campaign-summary-report.component.scss'],
+  providers:[
+     {
+      provide: DateAdapter,
+      useClass: LuxonDateAdapter,
+    },
+
+    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+  ]
 })
 export class CampaignSummaryReportComponent extends BaseListingComponent {
   @ViewChild(MatDatepickerToggle) toggle: MatDatepickerToggle<Date>;
@@ -63,14 +84,17 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   filter_table_name = filter_module_name.campaign_summary_report;
   private settingsUpdatedSubscription: Subscription;
   today = new Date();
-  public startDate = new FormControl(this.today);
-  public endDate = new FormControl(this.today);
+  // public startDate = new FormControl(this.today);
+  // public endDate = new FormControl(this.today);
   filterData: any;
   rmList: any = [];
   selectedRm: any;
   destroy$ = new Subject();
   expandedRows = {};
   subDataList: any = [];
+  maxDate = new FormControl(DateTime.now().startOf('month').toJSDate());
+  startDate = new FormControl(DateTime.now().startOf('month').minus({ months: 3 }).toJSDate());
+  endDate = new FormControl(DateTime.now().startOf('month').toJSDate());
 
   constructor(
     private campaignRegisterService: CampaignRegisterService,
@@ -120,6 +144,56 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   toggleRow(id: any): void {
     this.expandedRows[id] = !this.expandedRows[id];
   }
+
+
+  // setMonthAndYear(normalizedMonthAndYear: Date, datepicker: MatDatepicker<Date>) {
+  //   const ctrlValue = DateTime.fromJSDate(this.startDate.value!);
+  //   const updatedValue = ctrlValue
+  //     .set({ month: normalizedMonthAndYear.getMonth() + 1 })
+  //     .set({ year: normalizedMonthAndYear.getFullYear() })
+  //     .startOf('month');
+  //   this.startDate.setValue(updatedValue.toJSDate());
+  //   console.log("this.date", this.startDate.value)
+  //   datepicker.close();
+  // }
+
+  setMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
+  let dateTime: DateTime;
+  
+  if (normalizedMonthAndYear instanceof Date) {
+    dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
+  } else {
+    // Convert whatever format it is to DateTime
+    dateTime = DateTime.fromObject({
+      month: normalizedMonthAndYear.month + 1, // +1 if months are 0-indexed
+      year: normalizedMonthAndYear.year
+    });
+  }
+
+  const updatedValue = dateTime.startOf('month');
+  this.startDate.setValue(updatedValue.toJSDate());
+  datepicker.close();
+}
+
+setFromMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
+  let dateTime: DateTime;
+  
+  if (normalizedMonthAndYear instanceof Date) {
+    dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
+  } else {
+    // Convert whatever format it is to DateTime
+    dateTime = DateTime.fromObject({
+      month: normalizedMonthAndYear.month + 1, // +1 if months are 0-indexed
+      year: normalizedMonthAndYear.year
+    });
+  }
+
+  const updatedValue = dateTime.startOf('month');
+  this.endDate.setValue(updatedValue.toJSDate());
+  datepicker.close();
+}
+
+
 
   // onExpandedTable(expanded: any) {
   //   if (!expanded) {
@@ -172,7 +246,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   }
 
   // merging subTableData on main table data based on id match
-  manageSubTableData(dataList:any) {
+  manageSubTableData(dataList: any) {
     for (let el of dataList) {
       el['monthWiseData'] = [];
       for (let item of this.subDataList) {
@@ -193,10 +267,10 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   }
 
   onChart(record: any, key: string, name: string) {
-    if(!record[key] && record[key] == 0){
+    if (!record[key] && record[key] == 0) {
       return;
     }
-     
+
     this.matDialog.open(CampaignSummaryChartComponent, {
       data: { record: record, key: key, hoverName: name },
       panelClass: 'zero-dialog',
@@ -232,7 +306,7 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
 
     this.campaignRegisterService.getCampaignSummaryReport(filterReq).subscribe(data => {
       dataList = data.data;
-      dataList =  this.manageSubTableData(dataList);
+      dataList = this.manageSubTableData(dataList);
 
       const exportData = [];
 
@@ -269,17 +343,17 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
           }
         }
       }
-           Excel.export(
-            'Campaign Summary',
-            [
-              { header: 'Name', property: 'campaignName' },
-              { header: 'Category', property: 'campaignCategory' },
-              { header: 'Leads', property: 'leads' },
-              { header: 'Signup', property: 'signUp' },
-              { header: 'Tech GP', property: 'techGP' },
-              { header: 'Total Spent', property: 'totalSpent' },
-            ],
-            exportData, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
+      Excel.export(
+        'Campaign Summary',
+        [
+          { header: 'Name', property: 'campaignName' },
+          { header: 'Category', property: 'campaignCategory' },
+          { header: 'Leads', property: 'leads' },
+          { header: 'Signup', property: 'signUp' },
+          { header: 'Tech GP', property: 'techGP' },
+          { header: 'Total Spent', property: 'totalSpent' },
+        ],
+        exportData, "Campaign Summary", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }]);
 
     });
 

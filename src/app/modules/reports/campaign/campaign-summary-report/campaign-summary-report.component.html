@@ -23,14 +23,33 @@
             </div>
 
             <!-- Date Combo -->
-            <mat-form-field class="translate-y-[10px] min-w-[15rem]">
+            <!-- <mat-form-field class="translate-y-[10px] min-w-[15rem]">
                 <mat-date-range-input [rangePicker]="picker">
                     <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
                     <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
                 </mat-date-range-input>
                 <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>
-            </mat-form-field>
+            </mat-form-field> -->
+            <div class="flex items-center gap-1">
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
+                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">From Month</span>
+                    <input matInput [matDatepicker]="fromMonth" [formControl]="startDate" [max]="maxDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="fromMonth"></mat-datepicker-toggle>
+                    <mat-datepicker #fromMonth startView="multi-year"  (monthSelected)="setMonthAndYear($event, fromMonth)"
+                        panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+    
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
+                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">To Month</span>
+                    <input matInput [matDatepicker]="toMonth" [formControl]="endDate" [max]="maxDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="toMonth"></mat-datepicker-toggle>
+                    <mat-datepicker #toMonth startView="multi-year"  (monthSelected)="setFromMonthAndYear($event, toMonth)"
+                        panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+            </div>
 
             <!------Global filter------>
             <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
@@ -149,22 +168,26 @@
                     </td>
                     <td>{{ element.campaignCategory || "-" }}</td>
                     <td class="text-right" (click)="onChart(element, 'leads', 'Leads')">
-                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}">
+                        <span class="border-gray-500"
+                            [ngClass]="{'border-b cursor-pointer':element.leads && element.leads != 0}">
                             {{ element.leads ? (element.leads.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
                     <td class="text-right" (click)="onChart(element, 'signUp', 'Signup')">
-                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.signUp && element.signUp != 0}" >
+                        <span class="border-gray-500"
+                            [ngClass]="{'border-b cursor-pointer':element.signUp && element.signUp != 0}">
                             {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
                     <td class="text-right" (click)="onChart(element, 'techGP', 'TechGp')">
-                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.techGP && element.techGP != 0}" >
+                        <span class="border-gray-500"
+                            [ngClass]="{'border-b cursor-pointer':element.techGP && element.techGP != 0}">
                             {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
                     <td class="text-right" (click)="onChart(element, 'totalSpent', 'Total Spent')">
-                        <span class="border-gray-500" [ngClass]="{'border-b cursor-pointer':element.totalSpent && element.totalSpent != 0}" >
+                        <span class="border-gray-500"
+                            [ngClass]="{'border-b cursor-pointer':element.totalSpent && element.totalSpent != 0}">
                             {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
                         </span>
                     </td>
