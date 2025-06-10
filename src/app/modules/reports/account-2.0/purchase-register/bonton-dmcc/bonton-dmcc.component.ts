@@ -305,6 +305,7 @@ export class BontonDmccComponent extends BaseListingComponent
   startSubscription() {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+        console.log("resp", resp.table_config)
         this._filterService.updateSelectedOption('');
         if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
           this._filterService.selectionDateDropdown = 'custom_date_range';

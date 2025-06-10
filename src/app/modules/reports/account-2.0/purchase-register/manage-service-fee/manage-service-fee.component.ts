@@ -86,7 +86,7 @@ export class ManageServiceFeeComponent {
 
   formPatchValue(record: any) {
     this.formGroup.patchValue({
-      service_for_id: record.service_For_Id,
+      service_for_id: record.service_For_IdStr,
       service_for: record.service_For,
       suplier_service_charge: record.service_Charge,
       suplier_service_charge_gst: record.sgst,
@@ -126,7 +126,7 @@ export class ManageServiceFeeComponent {
             }
             this.sidebarDialogService.close({ data: resData, key: 'manager-service-status' });
           } else {
-            this.alertService.showToast('error', res.error_message)
+            this.alertService.showToast('error', res.error)
           }
           this.settingsDrawer.close();
         }

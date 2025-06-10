@@ -108,7 +108,7 @@ export class PurchaseRegisterComponent
   }
 
   ngOnInit(): void {
-    // this.getSupplier("");
+    this.getSupplier("");
     this.selectedTableKey = this.tableTypeList[0];
 
     this.startDate.valueChanges.subscribe(start => {
