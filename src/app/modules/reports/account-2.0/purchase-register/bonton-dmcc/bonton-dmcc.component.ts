@@ -58,7 +58,7 @@ export class BontonDmccComponent extends BaseListingComponent
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
   @Input() endDate: any;
-  @Input() supplierList:any = [];
+  @Input() supplierList: any = [];
   // module_name = module_name.products_collection;
   filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
   private settingsUpdatedSubscription: Subscription;
@@ -67,8 +67,8 @@ export class BontonDmccComponent extends BaseListingComponent
   employeeList: any = [];
   selectedSupplier: any;
   destroy$: any = new Subject();
-  currencyList:any[] = [];
-  selectedCurrency:any;
+  currencyList: any[] = [];
+  selectedCurrency: any;
 
   tableFieldArr: any[] = [
     { field: 'date', header: 'Date', type: 'custom', matchMode: 'custom' },
@@ -231,15 +231,15 @@ export class BontonDmccComponent extends BaseListingComponent
   }
 
   // Currency List api
-    getCurrencyList() {
-        this.currencyService.getcurrencyCombo().subscribe((data) => {
-            this.currencyList = data;
+  getCurrencyList() {
+    this.currencyService.getcurrencyCombo().subscribe((data) => {
+      this.currencyList = data;
 
-            for (let i in this.currencyList) {
-                this.currencyList[i].id_by_value = this.currencyList[i].currency_short_code;
-            }
-        })
-    }
+      for (let i in this.currencyList) {
+        this.currencyList[i].id_by_value = this.currencyList[i].currency_short_code;
+      }
+    })
+  }
 
   exportExcel(): void {
     // if (!Security.hasExportDataPermission(this.module_name)) {
@@ -257,33 +257,29 @@ export class BontonDmccComponent extends BaseListingComponent
     filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
 
-    this.accountService.getBontonPurchaseRegister(filterReq).subscribe((data) => {
+    this.accountService.getPurchaseRegisterDMCCReport(filterReq).subscribe((data) => {
       for (var dt of data.data) {
         dt.date = dt.date ? DateTime.fromISO(dt.date).toFormat('dd-MM-yyyy') : '';
       }
 
       Excel.export(
-        'Purchase Register(Bonton)',
+        'Purchase Register(DMCC)',
         [
-          { header: 'Date', property: 'date' },
-          { header: 'Name', property: 'supplier_Name' },
-          { header: 'Invoice No', property: 'invoive_No' },
-          { header: 'Supplier. Ref. No', property: 'supplier_Ref_No' },
-          { header: 'Ref. No', property: 'ref_No' },
-          { header: 'PNR', property: 'pnr' },
-          { header: 'Base Fare', property: 'base_Fare' },
-          { header: 'Airline Tax', property: 'airline_Tax' },
-          { header: 'Service charge', property: 'service_Charge' },
-          { header: 'CGST', property: 'cgst' },
-          { header: 'SGST', property: 'sgst' },
-          { header: 'IGST', property: 'igst' },
-          { header: 'Total Purchase', property: 'total_Purchase' },
-          { header: 'Commission Income', property: 'purchase_Commission' },
-          { header: 'TDS', property: 'purchase_TDS' },
-          { header: 'Net Payable', property: 'net_Payable' },
+          { header: 'Date', property: 'date'},
+          { header: 'Name', property: 'name'},
+          { header: 'Invoice No', property: 'invoiceNo'},
+          { header: 'Ref. No', property: 'refNo'},
+          { header: 'PNR', property: 'pnr'},
+          { header: 'Currency', property: 'currency'},
+          { header: 'ROE', property: 'roe'},
+          { header: 'Base Fare', property: 'baseFare'},
+          { header: 'Service charge', property: 'serviceCharge'},
+          { header: 'TAX', property: 'tax'},
+          { header: 'Total Purchase', property: 'totalPurchase'},
+          { header: 'Discount', property: 'discount' }
         ],
         data.data,
-        'Purchase Register(Bonton)',
+        'Purchase Register(DMCC)',
         [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
       );
     });

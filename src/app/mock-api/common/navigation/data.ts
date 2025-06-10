@@ -534,7 +534,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         id: 'reports.purchase_register',
                         title: 'Purchase Register',
                         type: 'basic',
-                        pid: 'REPORTS-ACCOUNTS_PURCHASEREGISTER_VIEW',
+                        pid: 'ACCOUNT2.0_PURCHASEREGISTER_VIEW',
                         icon: '',
                         link: Routes.account.purchase_register_route_2
                     },
