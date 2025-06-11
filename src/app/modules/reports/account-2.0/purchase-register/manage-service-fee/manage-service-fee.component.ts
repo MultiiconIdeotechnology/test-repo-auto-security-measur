@@ -113,7 +113,7 @@ export class ManageServiceFeeComponent {
     this.accountService.manageServiceFee(payload).subscribe({
       next: (res: any) => {
         if (res) {
-          if(res.status == true){
+          if(res.success == true){
             this.alertService.showToast('success', 'Service fee saved successfully');
             let resData = {
               id : this.record?.id,
@@ -125,10 +125,10 @@ export class ManageServiceFeeComponent {
               purchase_TDS: payload.purchase_tax,
             }
             this.sidebarDialogService.close({ data: resData, key: 'manager-service-status' });
+            this.settingsDrawer.close();
           } else {
             this.alertService.showToast('error', res.error)
           }
-          this.settingsDrawer.close();
         }
         this.isLoading = false;
       },

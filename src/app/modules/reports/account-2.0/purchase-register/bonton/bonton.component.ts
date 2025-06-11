@@ -157,40 +157,40 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
       switch (refPrefix) {
         case "FLT":
-          Linq.recirect(`/booking/flight/details/${element.service_for_id}`);
+          Linq.recirect(`/booking/flight/details/${element.service_For_IdStr}`);
           break;
         case "BUS":
-          Linq.recirect(`/booking/bus/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/bus/details/${element.service_For_IdStr}`);
           break;
         case "VIS":
-          Linq.recirect(`/booking/visa/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/visa/details/${element.service_For_IdStr}`);
           break;
         case "INS":
-          Linq.recirect(`/booking/insurance/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/insurance/details/${element.service_For_IdStr}`);
           break;
         case "AIR":
-          this.entityService.raiseAmendmentInfoCall({ data: element });
+          this.entityService.raiseAmendmentInfoCall({ data: {...element, id:element.service_For_IdStr} });
           break;
         case "HTL":
-          Linq.recirect(`/booking/hotel/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/hotel/details/${element.service_For_IdStr}`);
           break;
         case "PKG":
-          Linq.recirect(`/booking/holiday-lead/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/holiday-lead/details/${element.service_For_IdStr}`);
           break;
         case "AGI":
-          Linq.recirect(`/booking/group-inquiry/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/group-inquiry/details/${element.service_For_IdStr}`);
           break;
         case "OSB":
-          Linq.recirect(`/booking/offline-service/entry/${element.purchase_id}/readonly`);
+          Linq.recirect(`/booking/offline-service/entry/${element.service_For_IdStr}/readonly`);
           break;
         case "FRX":
           this.router.navigate(['/booking/forex'])
           setTimeout(() => {
-            this.entityService.raiseForexEntityCall({ data: element.purchase_id, global_withdraw: true })
+            this.entityService.raiseForexEntityCall({ data: element.service_For_IdStr, global_withdraw: true })
           }, 300);
           break;
         case "CAB":
-          Linq.recirect(`/booking/cab/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/cab/details/${element.service_For_IdStr}`);
           break;
         // case "PL":
         //   Linq.recirect(`/booking/holiday-lead/details/${element.booking_id}`);

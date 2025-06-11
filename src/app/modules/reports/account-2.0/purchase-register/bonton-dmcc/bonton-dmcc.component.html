@@ -48,7 +48,7 @@
                     matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [options]="currencyList"
-                                [(ngModel)]="selectedCurrency" optionLabel="currency_short_code" [filter]="true"
+                                [ngModel]="value" optionLabel="currency_short_code" [filter]="true"
                                 filterBy="currency_short_code" (onChange)="filter($event.value)" [showClear]="true"
                                 appendTo="body" placeholder="Select a Currency">
                                 <ng-template let-currency pTemplate="item">

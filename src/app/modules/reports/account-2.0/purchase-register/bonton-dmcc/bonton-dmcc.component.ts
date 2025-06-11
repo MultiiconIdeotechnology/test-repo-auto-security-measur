@@ -111,7 +111,7 @@ export class BontonDmccComponent extends BaseListingComponent
       if (res && res.key == 'manager-service-status') {
         let index = this.dataList.findIndex((item: any) => (item.service_For == res.data?.service_For && item.service_For_Id == res?.data?.service_For_Id));
         if (index != -1) {
-          this.dataList[index] = res.data;
+          this.dataList[index]['is_live_invoice'] = true;
         }
       }
     })
@@ -138,7 +138,7 @@ export class BontonDmccComponent extends BaseListingComponent
     this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
   }
 
-  viewData(element: any): void {
+  viewData(element:any): void {
     // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
     //     return this.alertService.showToast(
     //         'error',
@@ -146,47 +146,44 @@ export class BontonDmccComponent extends BaseListingComponent
     //     );
     // }
 
-    if (element?.refNo) {
+   if (element?.refNo) {
       const refPrefix = element.refNo.slice(0, 3);
-      console.log("refPrefix", refPrefix)
-
-
       switch (refPrefix) {
         case "FLT":
-          Linq.recirect(`/booking/flight/details/${element.service_for_id}`);
+          Linq.recirect(`/booking/flight/details/${element.service_For_IdStr}`);
           break;
         case "BUS":
-          Linq.recirect(`/booking/bus/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/bus/details/${element.service_For_IdStr}`);
           break;
         case "VIS":
-          Linq.recirect(`/booking/visa/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/visa/details/${element.service_For_IdStr}`);
           break;
         case "INS":
-          Linq.recirect(`/booking/insurance/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/insurance/details/${element.service_For_IdStr}`);
           break;
         case "AIR":
-          this.entityService.raiseAmendmentInfoCall({ data: element });
+          this.entityService.raiseAmendmentInfoCall({ data: {...element, id:element.service_For_IdStr} });
           break;
         case "HTL":
-          Linq.recirect(`/booking/hotel/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/hotel/details/${element.service_For_IdStr}`);
           break;
         case "PKG":
-          Linq.recirect(`/booking/holiday-lead/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/holiday-lead/details/${element.service_For_IdStr}`);
           break;
         case "AGI":
-          Linq.recirect(`/booking/group-inquiry/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/group-inquiry/details/${element.service_For_IdStr}`);
           break;
         case "OSB":
-          Linq.recirect(`/booking/offline-service/entry/${element.purchase_id}/readonly`);
+          Linq.recirect(`/booking/offline-service/entry/${element.service_For_IdStr}/readonly`);
           break;
         case "FRX":
           this.router.navigate(['/booking/forex'])
           setTimeout(() => {
-            this.entityService.raiseForexEntityCall({ data: element.purchase_id, global_withdraw: true })
+            this.entityService.raiseForexEntityCall({ data: element.service_For_IdStr, global_withdraw: true })
           }, 300);
           break;
         case "CAB":
-          Linq.recirect(`/booking/cab/details/${element.purchase_id}`);
+          Linq.recirect(`/booking/cab/details/${element.service_For_IdStr}`);
           break;
         // case "PL":
         //   Linq.recirect(`/booking/holiday-lead/details/${element.booking_id}`);
@@ -194,8 +191,8 @@ export class BontonDmccComponent extends BaseListingComponent
         default:
           console.warn("Unknown refNo prefix:", refPrefix);
       }
-    }
   }
+}
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -306,12 +303,15 @@ export class BontonDmccComponent extends BaseListingComponent
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
         console.log("resp", resp.table_config)
+      this.selectedCurrency = resp['table_config']['currency'].value || {};
         this._filterService.updateSelectedOption('');
         if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
           this._filterService.selectionDateDropdown = 'custom_date_range';
           this._filterService.updateSelectedOption('custom_date_range');
           this._filterService.rangeDateConvert(resp['table_config']['date']);
         }
+
+        console.log('this.primengTable filters', this.primengTable.filters)
 
         this.primengTable['filters'] = resp['table_config'];
         this.isFilterShow = true;

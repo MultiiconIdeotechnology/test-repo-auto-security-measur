@@ -81,6 +81,7 @@ export class PurchaseRegisterComponent
   dateRanges: any;
   isDateChange: boolean = false;
   supplierList: any = [];
+  selectedTab = 0;
 
   tableTypeList: any = [{ label: 'Bonton', value: 'bonton', index: 0 }, { label: 'Bonton DMCC', value: 'dmcc', index: 1 }];
 
@@ -151,9 +152,11 @@ export class PurchaseRegisterComponent
 
   onRefreshCall() {
     if (this.activeTab == 0) {
+      this.selectedTab = 0;
       this.bontonTableComponent.refreshItems();
     } else if (this.activeTab == 1) {
-      this.tabLoaded.isTabTwoLoaded = true;
+      // this.tabLoaded.isTabTwoLoaded = true;
+      this.selectedTab = 1;
       this.dmccTableComponent.refreshItems();
     }
   }

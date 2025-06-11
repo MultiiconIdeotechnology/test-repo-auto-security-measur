@@ -218,7 +218,6 @@ export class EntityService {
 
   // Amendment Request Info Drawer
   public raiseAmendmentInfoCall(item: any): void {
-    console.log("item", item)
     this.amendmentReqInfo.next(item);
   }
 
