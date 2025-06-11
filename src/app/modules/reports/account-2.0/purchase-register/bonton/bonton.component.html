@@ -111,7 +111,7 @@
                     </ng-container>
 
                     <ng-container *ngIf="el.type == 'custom'">
-                        {{element[el.field] ? (element[el.field] | date:'dd-MM-yyyy hh:mm:ss') : '-'}}
+                        {{element[el.field] ? (element[el.field] | date:'dd-MM-yyyy HH:mm:ss') : '-'}}
                     </ng-container>
 
                     <ng-container *ngIf="el.type == 'numeric'">

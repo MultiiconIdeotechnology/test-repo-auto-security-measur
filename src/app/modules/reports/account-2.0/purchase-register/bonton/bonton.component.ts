@@ -253,7 +253,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
     this.accountService.getBontonPurchaseRegister(filterReq).subscribe((data) => {
       for (var dt of data.data) {
-        dt.date = dt.date ? DateTime.fromISO(dt.date).toFormat('dd-MM-yyyy') : '';
+        dt.date = dt.date ? DateTime.fromISO(dt.date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }
 
       Excel.export(

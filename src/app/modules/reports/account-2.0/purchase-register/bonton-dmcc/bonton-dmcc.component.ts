@@ -241,7 +241,7 @@ export class BontonDmccComponent extends BaseListingComponent
 
     filterReq['Filter'] = this.searchInputControl.value;
     filterReq['Take'] = this.totalRecords;
-    filterReq['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
+    filterReq['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd HH:mm:ss');
     filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
 
