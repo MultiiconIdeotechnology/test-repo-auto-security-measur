@@ -107,14 +107,6 @@ export class BontonDmccComponent extends BaseListingComponent
     // common filter
     this.startSubscription();
 
-    this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
-      if (res && res.key == 'manager-service-status') {
-        let index = this.dataList.findIndex((item: any) => (item.service_For == res.data?.service_For && item.service_For_Id == res?.data?.service_For_Id));
-        if (index != -1) {
-          this.dataList[index]['is_live_invoice'] = true;
-        }
-      }
-    })
   }
 
   ngAfterViewInit() {

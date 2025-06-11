@@ -42,7 +42,7 @@ export class ManageServiceFeeComponent {
   formGroup: FormGroup;
   isLoading: boolean = false;
   buttonLabel: any = 'Create';
-  serviceForList: any[] = ['Airline', 'Air Amendment', 'Bus', 'Hotel','Visa', 'Insurance', 'Holiday', 'Forex', 'Cab'];
+  serviceForList: any[] = ['Airline', 'Air Amendment', 'Bus', 'Hotel','Visa', 'Insurance', 'Holiday', 'Forex', 'Cab', 'Bus Amendment'];
   serviceForCtrl = new FormControl('');
   record:any;
 
@@ -69,8 +69,10 @@ export class ManageServiceFeeComponent {
         if (res['type'] === 'purchase-manage-service-fee') {
           this.buttonLabel = 'Save';
           this.record = res?.data;
+
           console.log("res.data", res.data)
           this.formPatchValue(res?.data);
+          console.log("this.formGroup", this.formGroup)
           this.title = 'Manage Service Fee';
           this.settingsDrawer.open();
         }
@@ -85,9 +87,10 @@ export class ManageServiceFeeComponent {
   }
 
   formPatchValue(record: any) {
+    const isValidServiceFor = this.serviceForList.includes(record?.service_For);
     this.formGroup.patchValue({
       service_for_id: record.service_For_IdStr,
-      service_for: record.service_For,
+      service_for: isValidServiceFor ?  record.service_For : '',
       suplier_service_charge: record.service_Charge,
       suplier_service_charge_gst: record.sgst,
       purchase_base_price: record.base_Fare,
