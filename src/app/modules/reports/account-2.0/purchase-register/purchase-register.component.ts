@@ -113,12 +113,10 @@ export class PurchaseRegisterComponent
     this.selectedTableKey = this.tableTypeList[0];
 
     this.startDate.valueChanges.subscribe(start => {
-      console.log('Start date changed:', start);
       this.isDateChange = true;
     });
 
     this.endDate.valueChanges.subscribe(end => {
-      console.log('End date changed:', end);
       this.isDateChange = true;
     });
   }

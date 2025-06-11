@@ -77,8 +77,7 @@
                 <mat-form-field class="w-full">
                     <mat-date-range-input [rangePicker]="picker" >
                         <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
-                        <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd
-                            />
+                        <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
                     </mat-date-range-input>
                     <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-date-range-picker #picker></mat-date-range-picker>

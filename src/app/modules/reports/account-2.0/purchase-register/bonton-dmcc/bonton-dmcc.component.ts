@@ -229,7 +229,7 @@ export class BontonDmccComponent extends BaseListingComponent
 
   // Currency List api
   getCurrencyList() {
-    this.currencyService.getcurrencyCombo().subscribe((data) => {
+    this.currencyService.getCurrencyComboCashed().subscribe((data) => {
       this.currencyList = data;
 
       for (let i in this.currencyList) {
