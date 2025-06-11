@@ -215,6 +215,11 @@ export class PurchaseRegisterComponent
     });
   }
 
+  // onRangeInputClicked() {
+  //   const fakeMouseEvent = new MouseEvent('click');
+  //   this.toggle._open(fakeMouseEvent);
+  // }
+
 
   public updateDate(event: any): void {
     let start: Date;
@@ -267,13 +272,14 @@ export class PurchaseRegisterComponent
     this.endDate.patchValue(end);
   }
 
-  dateRangeChange(start, end): void {
-    if (start.value && end.value) {
-      this.startDate = start.value;
-      this.endDate = end.value;
-      // this.refreshItems();
-    }
-  }
+// dateRangeChange(start, end): void {
+//   if (start.value && end.value) {
+//     this.startDate.patchValue(start.value);
+//     this.endDate.patchValue(end.value);
+//     this.isDateChange = true;
+//     // this.refreshItems();
+//   }
+// }
 
   cancleDate() {
     this.date.patchValue('Today');
