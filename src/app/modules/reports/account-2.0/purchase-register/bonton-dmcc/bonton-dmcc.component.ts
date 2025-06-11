@@ -123,7 +123,6 @@ export class BontonDmccComponent extends BaseListingComponent
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      console.log("filterData", filterData)
       if (filterData['table_config']['date']?.value && Array.isArray(filterData['table_config']['date']?.value)) {
         this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['date']);
@@ -302,7 +301,6 @@ export class BontonDmccComponent extends BaseListingComponent
   startSubscription() {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-        console.log("resp", resp.table_config)
       this.selectedCurrency = resp['table_config']['currency'].value || {};
         this._filterService.updateSelectedOption('');
         if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
@@ -310,9 +308,6 @@ export class BontonDmccComponent extends BaseListingComponent
           this._filterService.updateSelectedOption('custom_date_range');
           this._filterService.rangeDateConvert(resp['table_config']['date']);
         }
-
-        console.log('this.primengTable filters', this.primengTable.filters)
-
         this.primengTable['filters'] = resp['table_config'];
         this.isFilterShow = true;
         this.primengTable._filter();
