@@ -11,7 +11,7 @@
             <!------Global Search------>
             <div class="flex ctm_search">
                 <input #inputRef matInput [formControl]="searchInputControl" [autocomplete]="'off'"
-                    [placeholder]="'Search'" (keyup.enter)="onGlobalSearch(inputRef.value)" />
+                    [placeholder]="'Search'" (input)="onInputChange(inputRef.value)" (keyup.enter)="onGlobalSearch(inputRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                     (click)="onGlobalSearch(inputRef.value)"></mat-icon>
             </div>

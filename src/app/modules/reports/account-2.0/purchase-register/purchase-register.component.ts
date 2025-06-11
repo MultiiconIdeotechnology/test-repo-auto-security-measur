@@ -174,6 +174,21 @@ export class PurchaseRegisterComponent
     }
   }
 
+  // Global on input change filter
+  onInputChange(val:any){
+    if (this.activeTab == 0) {
+      this.bontonTableComponent.searchInputControl.patchValue(val);
+      if(val == ''){
+        this.bontonTableComponent.refreshItems();
+      }
+    } else if (this.activeTab == 1) {
+      this.dmccTableComponent.searchInputControl.patchValue(val);
+      if(val == ''){
+        this.dmccTableComponent.refreshItems();
+      }
+    }
+  }
+
   // column filter search 
   onColumnFilter() {
     this.moduleMap[this.activeTab].isFiltershow = !this.moduleMap[this.activeTab].isFiltershow;
