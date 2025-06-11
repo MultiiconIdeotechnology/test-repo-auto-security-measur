@@ -66,13 +66,13 @@ export const MY_FORMATS = {
   ],
   templateUrl: './campaign-summary-report.component.html',
   styleUrls: ['./campaign-summary-report.component.scss'],
-  providers:[
-     {
+  providers: [
+    {
       provide: DateAdapter,
       useClass: LuxonDateAdapter,
     },
 
-    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
   ]
 })
 export class CampaignSummaryReportComponent extends BaseListingComponent {
@@ -158,40 +158,40 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
   // }
 
   setMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
-  let dateTime: DateTime;
-  
-  if (normalizedMonthAndYear instanceof Date) {
-    dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
-  } else {
-    // Convert whatever format it is to DateTime
-    dateTime = DateTime.fromObject({
-      month: normalizedMonthAndYear.month + 1, // +1 if months are 0-indexed
-      year: normalizedMonthAndYear.year
-    });
+    let dateTime: DateTime;
+
+    if (normalizedMonthAndYear instanceof Date) {
+      dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
+    } else {
+      // Convert whatever format it is to DateTime
+      dateTime = DateTime.fromObject({
+        month: normalizedMonthAndYear.month, // +1 if months are 0-indexed
+        year: normalizedMonthAndYear.year
+      });
+    }
+
+    const updatedValue = dateTime.startOf('month');
+    this.startDate.setValue(updatedValue.toJSDate());
+    datepicker.close();
   }
 
-  const updatedValue = dateTime.startOf('month');
-  this.startDate.setValue(updatedValue.toJSDate());
-  datepicker.close();
-}
+  setFromMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
+    let dateTime: DateTime;
 
-setFromMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
-  let dateTime: DateTime;
-  
-  if (normalizedMonthAndYear instanceof Date) {
-    dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
-  } else {
-    // Convert whatever format it is to DateTime
-    dateTime = DateTime.fromObject({
-      month: normalizedMonthAndYear.month + 1, // +1 if months are 0-indexed
-      year: normalizedMonthAndYear.year
-    });
+    if (normalizedMonthAndYear instanceof Date) {
+      dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
+    } else {
+      // Convert whatever format it is to DateTime
+      dateTime = DateTime.fromObject({
+        month: normalizedMonthAndYear.month, // +1 if months are 0-indexed
+        year: normalizedMonthAndYear.year
+      });
+    }
+
+    const updatedValue = dateTime.startOf('month');
+    this.endDate.setValue(updatedValue.toJSDate());
+    datepicker.close();
   }
-
-  const updatedValue = dateTime.startOf('month');
-  this.endDate.setValue(updatedValue.toJSDate());
-  datepicker.close();
-}
 
 
 
@@ -202,11 +202,31 @@ setFromMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>
   // }
 
   refreshItems(event?: any): void {
+    const fromDate = this.startDate.value;
+    const toDate = this.endDate.value;
+    const today = new Date();
+
+    if (!fromDate || !toDate) {
+      this.alertService.showToast('error', 'Please select both dates.');
+      return;
+    }
+
+    if (fromDate > toDate) {
+      this.alertService.showToast('error', 'From Date cannot be greater than To Date.');
+      return;
+    }
+
+    if (toDate > today) {
+      this.alertService.showToast('error', 'To Date cannot be in the future.');
+      return;
+    }
     this.isLoading = true;
 
     const request = this.getNewFilterReq(event);
     request['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
     request['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
+
+
 
     this.campaignRegisterService.getCampaignSummaryReport(request).subscribe({
       next: (data) => {
