@@ -77,7 +77,7 @@ export class BontonDmccComponent extends BaseListingComponent
     { field: 'refNo', header: 'Ref. No', type: 'text', matchMode: 'contains' },
     { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
     { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
-    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', },
+    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', isNotFixed:true },
     { field: 'baseFare', header: 'Base Fare', type: 'numeric', matchMode: 'equals', },
     { field: 'serviceCharge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
     { field: 'tax', header: 'TAX', type: 'numeric', matchMode: 'equals' },

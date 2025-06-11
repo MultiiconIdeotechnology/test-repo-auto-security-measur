@@ -151,11 +151,15 @@ export class PurchaseRegisterComponent
   onRefreshCall() {
     if (this.activeTab == 0) {
       this.selectedTab = 0;
-      this.bontonTableComponent.refreshItems();
+      if(this.bontonTableComponent){
+        this.bontonTableComponent.refreshItems();
+      }
     } else if (this.activeTab == 1) {
       // this.tabLoaded.isTabTwoLoaded = true;
       this.selectedTab = 1;
-      this.dmccTableComponent.refreshItems();
+      if(this.dmccTableComponent){
+        this.dmccTableComponent.refreshItems();
+      }
     }
   }
 
