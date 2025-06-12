@@ -169,9 +169,8 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     if (normalizedMonthAndYear instanceof Date) {
       dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
     } else {
-      // Convert whatever format it is to DateTime
       dateTime = DateTime.fromObject({
-        month: normalizedMonthAndYear.month, // +1 if months are 0-indexed
+        month: normalizedMonthAndYear.month, 
         year: normalizedMonthAndYear.year
       });
     }
@@ -187,9 +186,8 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     if (normalizedMonthAndYear instanceof Date) {
       dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
     } else {
-      // Convert whatever format it is to DateTime
       dateTime = DateTime.fromObject({
-        month: normalizedMonthAndYear.month, // +1 if months are 0-indexed
+        month: normalizedMonthAndYear.month, 
         year: normalizedMonthAndYear.year
       });
     }
