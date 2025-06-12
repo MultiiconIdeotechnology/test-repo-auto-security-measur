@@ -12,6 +12,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import cloneDeep from "lodash/cloneDeep";
+import { Subject, takeUntil } from 'rxjs';
+import { FuseConfig, FuseConfigService } from '@fuse/services/config';
 
 @Component({
   selector: 'app-campaign-summary-chart',
@@ -64,11 +66,13 @@ export class CampaignSummaryChartComponent {
       tooltipTheme: 'dark',
     }
   };
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
     // private refferralService: RefferralService,
     public matDialogRef: MatDialogRef<CampaignSummaryChartComponent>,
     private commonUseService: commonUseService,
+    private _fuseConfigService: FuseConfigService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
     this.record = data?.record;
@@ -77,12 +81,22 @@ export class CampaignSummaryChartComponent {
   }
 
   ngOnInit(): void {
-    this.commonUseService.currentTheme$.subscribe((theme: any) => {
-      this.theme = theme;
-      this.initializingChart(this.selectedTab, this.theme)
-    });
+     this._fuseConfigService.config$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe((config: FuseConfig) => {
+                    // Store the config
+                    this.theme= config.scheme;
+                    this.initializingChart(this.selectedTab, this.theme)
+      this.manageData();
+                });
+                
+    // this.commonUseService.currentTheme$.subscribe((theme: any) => {
+    //   console.log("theme1234", theme);
+      
+    //   this.theme = theme;
+      
+    // });
 
-    this.manageData();
   }
 
   manageData() {
@@ -137,6 +151,11 @@ export class CampaignSummaryChartComponent {
 
   initializingChart(chartType: any, theme: 'light' | 'dark') {
     const themeColors = this.chartThemeMap[theme];
+    console.log("chartType", chartType);
+    console.log("theme", theme);
+    console.log("themeColors", themeColors);
+
+    
 
     this.areaChartConfig = {
       chart: {
@@ -261,5 +280,11 @@ export class CampaignSummaryChartComponent {
     const shortYear = year.slice(-2);
     return `${shortMonth}-${shortYear}`;
   }
+
+      ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
+    }
 
 }
