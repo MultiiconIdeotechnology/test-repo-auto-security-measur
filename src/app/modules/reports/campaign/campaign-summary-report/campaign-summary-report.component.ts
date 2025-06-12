@@ -258,7 +258,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
         // this.dataListTotals = data;
         this.subDataList = data.data;
         this.dataList = this.manageSubTableData(this.dataList);
-        // this.totalRecords = data.total;
         // this.isLoading = false;
       }, error: (err) => {
         this.alertService.showToast('error', err)
@@ -277,8 +276,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
         }
       }
     }
-
-    console.log("this.dataList>>>", dataList);
     return dataList;
   }
 
