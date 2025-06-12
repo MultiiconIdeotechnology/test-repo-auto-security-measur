@@ -141,7 +141,6 @@ export class PurchaseRegisterComponent
         } else {
           comp.stopSubscription();
         }
-        console.log("this.lastSearchString>>>", this.lastSearchString);
       }
     });
 
@@ -160,14 +159,12 @@ export class PurchaseRegisterComponent
     if (this.activeTab == 0) {
       this.selectedTab = 0;
       if (this.bontonTableComponent) {
-        // this.bontonTableComponent.searchInputControl.patchValue(this.lastSearchString);
         this.bontonTableComponent.refreshItems();
       }
     } else if (this.activeTab == 1) {
       // this.tabLoaded.isTabTwoLoaded = true;
       this.selectedTab = 1;
       if (this.dmccTableComponent) {
-        // this.dmccTableComponent.searchInputControl.patchValue(this.lastSearchString);
         this.dmccTableComponent.refreshItems();
       }
     }
@@ -187,13 +184,15 @@ export class PurchaseRegisterComponent
   // Global on input change filter
   onInputChange(val: any) {
     if (this.activeTab == 0) {
-      this.lastSearchString.bontonFilter = val;
+      this.lastSearchString.bontonFilter = val;  // if global filter needed to save for each component differently then just save the value to only active tab component
+      this.lastSearchString.dmccFilter = val;    // remove this one if filter value need to be saved for bonton component
       this.bontonTableComponent.searchInputControl.patchValue(val);
       if (val == '') {
         this.bontonTableComponent.refreshItems();
       }
     } else if (this.activeTab == 1) {
-       this.lastSearchString.dmccFilter = val;
+      this.lastSearchString.bontonFilter = val; // remove this line if filter value needed to be saved for dmcc 
+       this.lastSearchString.dmccFilter = val;  
       this.dmccTableComponent.searchInputControl.patchValue(val);
       if (val == '') {
         this.dmccTableComponent.refreshItems();
