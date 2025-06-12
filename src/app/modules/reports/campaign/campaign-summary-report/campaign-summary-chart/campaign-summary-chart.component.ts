@@ -261,18 +261,18 @@ export class CampaignSummaryChartComponent {
 
   monthYearFormat(month: string, year: any): string {
     const monthMap: { [key: string]: string } = {
-      january: 'jan',
-      february: 'feb',
-      march: 'mar',
-      april: 'apr',
-      may: 'may',
-      june: 'jun',
-      july: 'jul',
-      august: 'aug',
-      september: 'sep',
-      october: 'oct',
-      november: 'nov',
-      december: 'dec'
+      january: 'Jan',
+      february: 'Feb',
+      march: 'Mar',
+      april: 'Apr',
+      may: 'May',
+      june: 'Jun',
+      july: 'Jul',
+      august: 'Aug',
+      september: 'Sep',
+      october: 'Oct',
+      november: 'Nov',
+      december: 'Dec'
     };
 
     const shortMonth = monthMap[month.toLowerCase()];
