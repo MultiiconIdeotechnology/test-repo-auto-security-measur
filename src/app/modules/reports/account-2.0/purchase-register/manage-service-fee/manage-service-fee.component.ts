@@ -69,10 +69,7 @@ export class ManageServiceFeeComponent {
         if (res['type'] === 'purchase-manage-service-fee') {
           this.buttonLabel = 'Save';
           this.record = res?.data;
-
-          console.log("res.data", res.data)
           this.formPatchValue(res?.data);
-          console.log("this.formGroup", this.formGroup)
           this.title = 'Manage Service Fee';
           this.settingsDrawer.open();
         }

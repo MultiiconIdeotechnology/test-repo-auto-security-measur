@@ -82,6 +82,10 @@ export class PurchaseRegisterComponent
   isDateChange: boolean = false;
   supplierList: any = [];
   selectedTab = 0;
+  lastSearchString:any = {
+    bontonFilter:'',
+    dmccFilter:''
+  }
 
   tableTypeList: any = [{ label: 'Bonton', value: 'bonton', index: 0 }, { label: 'Bonton DMCC', value: 'dmcc', index: 1 }];
 
@@ -137,27 +141,33 @@ export class PurchaseRegisterComponent
         } else {
           comp.stopSubscription();
         }
+        console.log("this.lastSearchString>>>", this.lastSearchString);
       }
     });
+
 
     this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
     this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
 
-    // if (this.activeTab == 1) {
-    //   this.tabLoaded.isTabTwoLoaded = true;
-    // }
+    if(this.activeTab == 0){
+      this.searchInputControl.patchValue(this.lastSearchString['bontonFilter']);
+    } else {
+      this.searchInputControl.patchValue(this.lastSearchString['dmccFilter']);
+    }
   }
 
   onRefreshCall() {
     if (this.activeTab == 0) {
       this.selectedTab = 0;
-      if(this.bontonTableComponent){
+      if (this.bontonTableComponent) {
+        // this.bontonTableComponent.searchInputControl.patchValue(this.lastSearchString);
         this.bontonTableComponent.refreshItems();
       }
     } else if (this.activeTab == 1) {
       // this.tabLoaded.isTabTwoLoaded = true;
       this.selectedTab = 1;
-      if(this.dmccTableComponent){
+      if (this.dmccTableComponent) {
+        // this.dmccTableComponent.searchInputControl.patchValue(this.lastSearchString);
         this.dmccTableComponent.refreshItems();
       }
     }
@@ -175,15 +185,17 @@ export class PurchaseRegisterComponent
   }
 
   // Global on input change filter
-  onInputChange(val:any){
+  onInputChange(val: any) {
     if (this.activeTab == 0) {
+      this.lastSearchString.bontonFilter = val;
       this.bontonTableComponent.searchInputControl.patchValue(val);
-      if(val == ''){
+      if (val == '') {
         this.bontonTableComponent.refreshItems();
       }
     } else if (this.activeTab == 1) {
+       this.lastSearchString.dmccFilter = val;
       this.dmccTableComponent.searchInputControl.patchValue(val);
-      if(val == ''){
+      if (val == '') {
         this.dmccTableComponent.refreshItems();
       }
     }
@@ -231,11 +243,6 @@ export class PurchaseRegisterComponent
       }
     });
   }
-
-  // onRangeInputClicked() {
-  //   const fakeMouseEvent = new MouseEvent('click');
-  //   this.toggle._open(fakeMouseEvent);
-  // }
 
 
   public updateDate(event: any): void {
@@ -288,15 +295,6 @@ export class PurchaseRegisterComponent
     this.startDate.patchValue(start);
     this.endDate.patchValue(end);
   }
-
-// dateRangeChange(start, end): void {
-//   if (start.value && end.value) {
-//     this.startDate.patchValue(start.value);
-//     this.endDate.patchValue(end.value);
-//     this.isDateChange = true;
-//     // this.refreshItems();
-//   }
-// }
 
   cancleDate() {
     this.date.patchValue('Today');

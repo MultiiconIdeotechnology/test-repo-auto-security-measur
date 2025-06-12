@@ -101,12 +101,12 @@
 
     <!----------------Table----------------->
     <app-bonton #bontonTable *ngIf="selectedTab == 0"  [isFilterShow]="moduleMap[0].isFiltershow"
-        [startDate]="startDate" [endDate]="endDate" [supplierList]="supplierList"
+        [startDate]="startDate" [endDate]="endDate" [supplierList]="supplierList" [lastSearchString]="lastSearchString"
         (isFilterShowEvent)="moduleMap[0].isFiltershow = $event">
     </app-bonton>
 
     <app-bonton-dmcc #dmccTable  *ngIf="selectedTab == 1"
-        [isFilterShow]="moduleMap[1].isFiltershow" [startDate]="startDate" [endDate]="endDate"
+        [isFilterShow]="moduleMap[1].isFiltershow" [startDate]="startDate" [endDate]="endDate" [lastSearchString]="lastSearchString"
         [supplierList]="supplierList" (isFilterShowEvent)="moduleMap[1].isFiltershow = $event">
     </app-bonton-dmcc>
 </div>

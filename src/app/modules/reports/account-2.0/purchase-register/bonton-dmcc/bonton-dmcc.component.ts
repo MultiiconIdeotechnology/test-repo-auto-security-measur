@@ -59,6 +59,7 @@ export class BontonDmccComponent extends BaseListingComponent
   @Input() startDate: any;
   @Input() endDate: any;
   @Input() supplierList: any = [];
+  @Input() lastSearchString = '';
   // module_name = module_name.products_collection;
   filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
   private settingsUpdatedSubscription: Subscription;
@@ -77,7 +78,7 @@ export class BontonDmccComponent extends BaseListingComponent
     { field: 'refNo', header: 'Ref. No', type: 'text', matchMode: 'contains' },
     { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
     { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
-    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', isNotFixed:true },
+    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', isNotFixed: true },
     { field: 'baseFare', header: 'Base Fare', type: 'numeric', matchMode: 'equals', },
     { field: 'serviceCharge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
     { field: 'tax', header: 'TAX', type: 'numeric', matchMode: 'equals' },
@@ -129,7 +130,7 @@ export class BontonDmccComponent extends BaseListingComponent
     this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
   }
 
-  viewData(element:any): void {
+  viewData(element: any): void {
     // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
     //     return this.alertService.showToast(
     //         'error',
@@ -137,7 +138,7 @@ export class BontonDmccComponent extends BaseListingComponent
     //     );
     // }
 
-   if (element?.refNo) {
+    if (element?.refNo) {
       const refPrefix = element.refNo.slice(0, 3);
       switch (refPrefix) {
         case "FLT":
@@ -153,7 +154,7 @@ export class BontonDmccComponent extends BaseListingComponent
           Linq.recirect(`/booking/insurance/details/${element.service_For_IdStr}`);
           break;
         case "AIR":
-          this.entityService.raiseAmendmentInfoCall({ data: {...element, id:element.service_For_IdStr} });
+          this.entityService.raiseAmendmentInfoCall({ data: { ...element, id: element.service_For_IdStr } });
           break;
         case "HTL":
           Linq.recirect(`/booking/hotel/details/${element.service_For_IdStr}`);
@@ -182,13 +183,13 @@ export class BontonDmccComponent extends BaseListingComponent
         default:
           console.warn("Unknown refNo prefix:", refPrefix);
       }
+    }
   }
-}
 
   refreshItems(event?: any): void {
     this.isLoading = true;
     let payload = this.getNewFilterReq(event);
-    console.log("startDate", this.startDate.value);
+    payload['Filter'] = this.lastSearchString['dmccFilter'];
     payload['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
     payload['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
@@ -239,7 +240,7 @@ export class BontonDmccComponent extends BaseListingComponent
 
     const filterReq = this.getNewFilterReq({});
 
-    filterReq['Filter'] = this.searchInputControl.value;
+    filterReq['Filter'] =  this.lastSearchString['dmccFilter'];
     filterReq['Take'] = this.totalRecords;
     filterReq['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd HH:mm:ss');
     filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
@@ -253,17 +254,17 @@ export class BontonDmccComponent extends BaseListingComponent
       Excel.export(
         'Purchase Register(DMCC)',
         [
-          { header: 'Date', property: 'date'},
-          { header: 'Name', property: 'name'},
-          { header: 'Invoice No', property: 'invoiceNo'},
-          { header: 'Ref. No', property: 'refNo'},
-          { header: 'PNR', property: 'pnr'},
-          { header: 'Currency', property: 'currency'},
-          { header: 'ROE', property: 'roe'},
-          { header: 'Base Fare', property: 'baseFare'},
-          { header: 'Service charge', property: 'serviceCharge'},
-          { header: 'TAX', property: 'tax'},
-          { header: 'Total Purchase', property: 'totalPurchase'},
+          { header: 'Date', property: 'date' },
+          { header: 'Name', property: 'name' },
+          { header: 'Invoice No', property: 'invoiceNo' },
+          { header: 'Ref. No', property: 'refNo' },
+          { header: 'PNR', property: 'pnr' },
+          { header: 'Currency', property: 'currency' },
+          { header: 'ROE', property: 'roe' },
+          { header: 'Base Fare', property: 'baseFare' },
+          { header: 'Service charge', property: 'serviceCharge' },
+          { header: 'TAX', property: 'tax' },
+          { header: 'Total Purchase', property: 'totalPurchase' },
           { header: 'Discount', property: 'discount' }
         ],
         data.data,
@@ -293,7 +294,7 @@ export class BontonDmccComponent extends BaseListingComponent
   startSubscription() {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-      this.selectedCurrency = resp['table_config']['currency'].value || {};
+        this.selectedCurrency = resp['table_config']['currency'].value || {};
         this._filterService.updateSelectedOption('');
         if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
           this._filterService.selectionDateDropdown = 'custom_date_range';

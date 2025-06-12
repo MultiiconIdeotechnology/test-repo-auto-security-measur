@@ -55,6 +55,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   @Input() startDate: any;
   @Input() endDate: any;
   @Input() supplierList:any = [];
+  @Input() lastSearchString = '';
   // module_name = module_name.products_collection;
   filter_table_name = filter_module_name.purchase_register_bonton;
   private settingsUpdatedSubscription: Subscription;
@@ -114,7 +115,6 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
      this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
       if (res && res.key == 'manager-service-status') {
         let index = this.dataList.findIndex((item: any) => (item.service_For == res.data?.service_For && item.service_For_IdStr == res?.data?.service_For_Id));
-        console.log("index", index)
         if (index != -1) {
           this.dataList[index]['is_live_invoice'] = true;
         }
@@ -128,7 +128,6 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      console.log("filterData", filterData)
       if (filterData['table_config']['date']?.value && Array.isArray(filterData['table_config']['date']?.value)) {
         this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['date']);
@@ -204,8 +203,9 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
   refreshItems(event?: any): void {
     this.isLoading = true;
+    console.log("bonton searchInputvalue", this.searchInputControl.value)
     let payload = this.getNewFilterReq(event);
-    console.log("startDate", this.startDate.value);
+    payload['Filter'] = this.lastSearchString['bontonFilter'];
     payload['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
     payload['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
@@ -245,7 +245,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
     const filterReq = this.getNewFilterReq({});
 
-    filterReq['Filter'] = this.searchInputControl.value;
+    filterReq['Filter'] = this.lastSearchString['bontonFilter'];
     filterReq['Take'] = this.totalRecords;
     filterReq['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
     filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
@@ -303,7 +303,6 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   startSubscription() {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-        console.log("resp", resp.table_config)
         this._filterService.updateSelectedOption('');
         if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
           this._filterService.selectionDateDropdown = 'custom_date_range';
