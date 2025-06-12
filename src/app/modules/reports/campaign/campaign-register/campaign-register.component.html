@@ -23,25 +23,34 @@
             </div>
 
             <!-- Date Combo -->
-            <mat-form-field class="translate-y-[10px] min-w-[15rem]">
+            <!-- <mat-form-field class="translate-y-[10px] min-w-[15rem]">
                 <mat-date-range-input [rangePicker]="picker">
                     <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
                     <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
                 </mat-date-range-input>
                 <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>
-            </mat-form-field>
-
-            <!-- <mat-form-field class="translate-y-[10px] min-w-[15rem]">
-                 <mat-date-range-input [rangePicker]="picker">
-                    <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
-                    <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
-                </mat-date-range-input>
-                <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
-                <mat-datepicker #dp startView="multi-year" 
-                    panelClass="example-month-picker">
-                </mat-datepicker>
             </mat-form-field> -->
+
+            <div class="flex items-center gap-1">
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
+                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">From Month</span>
+                    <input matInput [matDatepicker]="fromMonth" [formControl]="startDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="fromMonth"></mat-datepicker-toggle>
+                    <mat-datepicker #fromMonth startView="multi-year"  (monthSelected)="setMonthAndYear($event, fromMonth)"
+                        panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+    
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
+                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">To Month</span>
+                    <input matInput [matDatepicker]="toMonth" [formControl]="endDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="toMonth"></mat-datepicker-toggle>
+                    <mat-datepicker #toMonth startView="multi-year"  (monthSelected)="setFromMonthAndYear($event, toMonth)"
+                        panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+            </div>
 
 
             <!------Global filter------>

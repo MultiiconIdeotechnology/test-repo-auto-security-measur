@@ -151,11 +151,6 @@ export class CampaignSummaryChartComponent {
 
   initializingChart(chartType: any, theme: 'light' | 'dark') {
     const themeColors = this.chartThemeMap[theme];
-    console.log("chartType", chartType);
-    console.log("theme", theme);
-    console.log("themeColors", themeColors);
-
-    
 
     this.areaChartConfig = {
       chart: {

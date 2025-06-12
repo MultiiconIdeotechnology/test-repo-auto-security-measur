@@ -2,8 +2,8 @@ import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
+import { DateAdapter, MAT_DATE_FORMATS, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepicker, MatDatepickerModule, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -23,7 +23,19 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { CampaignRegisterService } from 'app/services/campaign-register.service';
 import { RefferralService } from 'app/services/referral.service';
+import { LuxonDateAdapter } from '@angular/material-luxon-adapter';
 
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'MM/yyyy',
+  },
+  display: {
+    dateInput: 'MM/yyyy',
+    monthYearLabel: 'MMM yyyy',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM yyyy',
+  },
+};
 
 @Component({
   selector: 'app-campaign-register',
@@ -53,7 +65,15 @@ import { RefferralService } from 'app/services/referral.service';
 
   ],
   templateUrl: './campaign-register.component.html',
-  styleUrls: ['./campaign-register.component.scss']
+  styleUrls: ['./campaign-register.component.scss'],
+  providers: [
+    {
+      provide: DateAdapter,
+      useClass: LuxonDateAdapter,
+    },
+
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  ]
 })
 
 export class CampaignRegisterComponent extends BaseListingComponent {
@@ -64,13 +84,13 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   module_name = module_name.campaign_register
   filter_table_name = filter_module_name.campaign_register;
   private settingsUpdatedSubscription: Subscription;
-  today = new Date();
-  public startDate = new FormControl(this.today);
-  public endDate = new FormControl(this.today);
+  // today = new Date();
   filterData: any;
   rmList: any = [];
   selectedRm: any;
   destroy$ = new Subject();
+  startDate = new FormControl(DateTime.now().startOf('month').minus({ months: 3 }).toJSDate());
+  endDate = new FormControl(DateTime.now().startOf('month').toJSDate());
 
   constructor(
     private campaignRegisterService: CampaignRegisterService,
@@ -86,8 +106,8 @@ export class CampaignRegisterComponent extends BaseListingComponent {
   isFilterShow: boolean = false;
 
   ngOnInit() {
-    this._filterService.rmListSubject$.pipe(takeUntil(this.destroy$)).subscribe((res:any) => {
-        this.rmList = res;
+    this._filterService.rmListSubject$.pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+      this.rmList = res;
     })
 
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
@@ -116,7 +136,61 @@ export class CampaignRegisterComponent extends BaseListingComponent {
     }
   }
 
+
+  setMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
+    let dateTime: DateTime;
+
+    if (normalizedMonthAndYear instanceof Date) {
+      dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
+    } else {
+      dateTime = DateTime.fromObject({
+        month: normalizedMonthAndYear.month,
+        year: normalizedMonthAndYear.year
+      });
+    }
+
+    const updatedValue = dateTime.startOf('month');
+    this.startDate.setValue(updatedValue.toJSDate());
+    datepicker.close();
+  }
+
+  setFromMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
+    let dateTime: DateTime;
+
+    if (normalizedMonthAndYear instanceof Date) {
+      dateTime = DateTime.fromJSDate(normalizedMonthAndYear);
+    } else {
+      dateTime = DateTime.fromObject({
+        month: normalizedMonthAndYear.month,
+        year: normalizedMonthAndYear.year
+      });
+    }
+
+    const updatedValue = dateTime.startOf('month');
+    this.endDate.setValue(updatedValue.toJSDate());
+    datepicker.close();
+  }
+
   refreshItems(event?: any): void {
+     const fromDate = this.startDate.value;
+    const toDate = this.endDate.value;
+    const today = new Date();
+
+    if (!fromDate || !toDate) {
+      this.alertService.showToast('error', 'Please select both dates.');
+      return;
+    }
+
+    if (fromDate > toDate) {
+      this.alertService.showToast('error', 'From Date cannot be greater than To Date.');
+      return;
+    }
+
+    if (toDate > today) {
+      this.alertService.showToast('error', 'To Date cannot be in the future.');
+      return;
+    }
+    
     this.isLoading = true;
 
     const request = this.getNewFilterReq(event);
@@ -135,6 +209,7 @@ export class CampaignRegisterComponent extends BaseListingComponent {
       }
     });
   }
+
 
   // Api to get the Employee list data
   getEmployeeList(value: string) {
