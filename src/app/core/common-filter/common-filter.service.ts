@@ -29,6 +29,8 @@ export class CommonFilterService {
 
     private rmListSubject = new BehaviorSubject<any>('');
     rmListSubject$ = this.rmListSubject.asObservable();
+    agentListSubject = new BehaviorSubject<any>("");
+    agentList$ = this.agentListSubject.asObservable();
 
     // Public method to update the BehaviorSubject value
     updateSelectedOption(option: string): void {
@@ -225,6 +227,8 @@ export class CommonFilterService {
                 ...agent,
                 agent_info: `${agent.code}-${agent.agency_name}-${agent.email_address}`,
             }));
+
+            this.agentListSubject.next(this.agentListById);
         })
     }
 
