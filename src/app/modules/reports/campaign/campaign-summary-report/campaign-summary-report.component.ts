@@ -123,6 +123,12 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
       this.primengTable._filter();
     });
 
+    this.startDate.valueChanges.subscribe((res:any) => {
+      if(res){
+        this.subDataList = [];
+      }
+    })
+
     this.endDate.valueChanges.subscribe((res: any) => {
       if (res) {
         this.subDataList = [];
@@ -225,8 +231,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     const request = this.getNewFilterReq(event);
     request['FromDate'] = DateTime.fromJSDate(this.startDate.value).toFormat('yyyy-MM-dd');
     request['ToDate'] = DateTime.fromJSDate(this.endDate.value).toFormat('yyyy-MM-dd');
-
-
 
     this.campaignRegisterService.getCampaignSummaryReport(request).subscribe({
       next: (data) => {
