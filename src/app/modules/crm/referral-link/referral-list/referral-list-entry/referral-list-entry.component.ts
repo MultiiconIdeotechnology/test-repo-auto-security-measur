@@ -85,17 +85,14 @@ export class ReferralListEntryComponent {
           this.title = 'Create Link';
           this.buttonLabel = "Create";
         } else if (res['type'] == 'edit') {
-          console.log("res", res)
           this.settingsDrawer.open();
           this.title = `Campaign : ${res?.data?.referral_code}`;
           this.referralData = res?.data;
           this.buttonLabel = "Save";
           this.formGroup.patchValue(res?.data);
           this.formGroup.get('referral_link_url').patchValue(res?.data?.referral_link)
-          console.log("rmList", this.rmList)
           if (res?.data?.relationship_manager_id) {
             let obj = this.rmList.find((item: any) => item.id == res?.data?.relationship_manager_id);
-            console.log("obj>>", obj)
             this.formGroup.get('relationship_manager_id').patchValue(obj)
           } else {
             this.formGroup.get('relationship_manager_id').patchValue("");

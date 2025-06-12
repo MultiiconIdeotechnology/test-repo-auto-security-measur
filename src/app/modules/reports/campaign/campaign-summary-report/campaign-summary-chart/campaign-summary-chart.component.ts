@@ -91,10 +91,7 @@ export class CampaignSummaryChartComponent {
                 });
                 
     // this.commonUseService.currentTheme$.subscribe((theme: any) => {
-    //   console.log("theme1234", theme);
-      
     //   this.theme = theme;
-      
     // });
 
   }
@@ -107,11 +104,9 @@ export class CampaignSummaryChartComponent {
     }
 
     this.originalXAxisData = cloneDeep(this.xAxisData);
-    console.log("originalXAxisData", this.originalXAxisData);
     this.originalYAxisData = cloneDeep(this.yAxisData);
     let maxYear = Math.max(...this.yearArr);
     let minYear = Math.min(...this.yearArr);
-    console.log("xAxisData", this.xAxisData);
 
     if (maxYear != minYear) {
       this.showDropdownYear = true;

@@ -19,7 +19,6 @@ export class DataManagerService {
   addItem(newItem: any) {
     const current = this.dataList.getValue();
     this.dataList.next([newItem, ...current]);
-    console.log("newItem", newItem)
   }
 
   // Update existing item

@@ -197,14 +197,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     datepicker.close();
   }
 
-
-
-  // onExpandedTable(expanded: any) {
-  //   if (!expanded) {
-  //     console.log("calling api")
-  //   }
-  // }
-
   refreshItems(event?: any): void {
     const fromDate = this.startDate.value;
     const toDate = this.endDate.value;
