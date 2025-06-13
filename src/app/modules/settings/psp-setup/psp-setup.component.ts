@@ -266,7 +266,14 @@ export class PspSetupComponent extends BaseListingComponent {
       }
     ).afterClosed().subscribe((res:any) => {
       if(res){
-        record.agents_count = res?.count;
+        console.log("res>>", res);
+        if(!res.is_all_agent){
+          record.agents_count = res?.count;
+        } else {
+          console.log("res.isallagent", res.is_all_agent);
+          record.agents_count = -1;
+        }
+        this.dataList = [...this.dataList];
       }
     })
   }

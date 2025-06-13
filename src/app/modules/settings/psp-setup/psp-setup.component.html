@@ -142,7 +142,7 @@
                     </td>
                     <td>
                        <span [ngClass]="{'cursor-pointer border-b dark:border-white border-black': element.agents_count && element.agents_count != -1}" 
-                        (click)="element.agents_count && element>agents_count != -1 ? onAgentAssigned(element?.id): null">
+                        (click)="element.agents_count && element.agents_count != -1 ? onAgentAssigned(element?.id): null">
                         {{element.agents_count ? (element.agents_count == -1 ? 'All': element.agents_count) : 0}} Agent
                     </span>
                     </td>

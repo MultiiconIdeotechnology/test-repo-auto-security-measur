@@ -227,7 +227,7 @@ export class BulkAssignDialogComponent implements OnInit {
         if (resp) {
           this.toasterService.showToast('success', 'Profile assigned successfully');
           if (this.data.key == 'bulk-assign') {
-            this.matDialogRef.close({ key: 'bulk-assign', count: this.selectedListIds?.length });
+            this.matDialogRef.close({ key: 'bulk-assign', count: this.selectedListIds?.length, is_all_agent:this.formGroup.get('is_all_agent')?.value });
           }
         }
       },
