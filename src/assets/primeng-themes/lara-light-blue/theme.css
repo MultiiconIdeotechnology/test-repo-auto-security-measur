@@ -2977,7 +2977,7 @@ p-treeselect.p-treeselect-clearable .p-treeselect-clear-icon {
 }
 .p-datatable.p-datatable-sm .p-datatable-tfoot > tr > td {
   padding: 0.5rem 0.8rem;
-  background:white;
+  background:#f3f1f1d9;
 }
 .p-datatable.p-datatable-sm .p-datatable-footer {
   padding: 0.5rem 0.5rem;
