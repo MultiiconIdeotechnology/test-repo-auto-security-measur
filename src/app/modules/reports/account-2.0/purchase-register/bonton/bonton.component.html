@@ -2,14 +2,14 @@
     <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
         columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
         [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="customScrollH"
         [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
         styleClass="p-datatable-gridlines p-datatable-sm">
 
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th class="text-center w-[2rem] left-[-1px]" pFrozenColumn alignFrozen="left">#</th>
+                <th class="text-center w-[2rem] left-[-1px]" pFrozenColumn alignFrozen="left" *ngIf="isSomeLiveInvoiceFalse"># </th>
                 <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last"
                     [pSortableColumn]="el.field" pResizableColumn
                     [ngClass]="{'min-w-[200px] dark:bg-[#1e293b]': el.field == 'date' || el.field == 'supplier_Name', 
@@ -27,12 +27,12 @@
             </tr>
 
             <tr *ngIf="isFilterShow">
-                <th class="dark:bg-[#1e293b] left-[-1px]" pFrozenColumn></th>
-                <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last" alignFrozen="left"
+                <th class="dark:bg-[#1e293b] left-[-1px]" pFrozenColumn *ngIf="isSomeLiveInvoiceFalse"></th>
+                <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last; let i = index;" alignFrozen="left"
                     pFrozenColumn [frozen]="frozenObj?.[el.field]">
                     <p-columnFilter *ngIf="el.type == 'text' || el.type == 'numeric'" [type]="el.type"
                         [matchMode]="el.matchMode" [field]="el.field" [placeholder]="'Search by ' + el.header"
-                        [ariaLabel]="'Filter '+ el.header"  mode="decimal"/>
+                        [ariaLabel]="'Filter '+ el.header" [minFractionDigits]="2"/>
 
                     <p-columnFilter *ngIf="el.type == 'select'" field="supplier_Name" matchMode="in" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -86,16 +86,14 @@
 
         <ng-template pTemplate="body" let-element let-columns="columns" let-i="rowIndex">
             <tr>
-                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
-                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer"
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn *ngIf="isSomeLiveInvoiceFalse">
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer" 
                         *ngIf="!element.is_live_invoice">
-                        <mat-icon> more_vert </mat-icon>
+                        <mat-icon> more_vert </mat-icon> 
                     </span>
 
                     <mat-menu #optionMenu>
                         <button mat-menu-item (click)="manageService(element)">
-                            <!-- <mat-icon class="mat-18">info</mat-icon>
-                            <span style="font-weight: 600"> Manage Service Fee</span> -->
                             <i class="material-icons mat-icon-no-color mr-3">manage_accounts</i>
                              <span style="font-weight: 600"> Manage Service Fee</span>
                         </button>

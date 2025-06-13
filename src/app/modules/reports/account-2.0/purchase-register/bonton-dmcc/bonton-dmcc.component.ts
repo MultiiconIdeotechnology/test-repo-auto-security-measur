@@ -1,5 +1,5 @@
 import { filter_module_name, messages, module_name, Security } from 'app/security';
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, Output } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -70,6 +70,7 @@ export class BontonDmccComponent extends BaseListingComponent
   destroy$: any = new Subject();
   currencyList: any[] = [];
   selectedCurrency: any;
+  customScrollH: any;
 
   tableFieldArr: any[] = [
     { field: 'date', header: 'Date', type: 'custom', matchMode: 'custom' },
@@ -103,6 +104,8 @@ export class BontonDmccComponent extends BaseListingComponent
   }
 
   ngOnInit(): void {
+    this.getCustomHeight();
+
     this.getCurrencyList();
 
     // common filter
@@ -123,6 +126,15 @@ export class BontonDmccComponent extends BaseListingComponent
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
     }
+  }
+
+  getCustomHeight() {
+    this.customScrollH = (window.innerHeight - 208) + 'px';
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.getCustomHeight();
   }
 
 
@@ -240,7 +252,7 @@ export class BontonDmccComponent extends BaseListingComponent
 
     const filterReq = this.getNewFilterReq({});
 
-    filterReq['Filter'] =  this.lastSearchString['dmccFilter'];
+    filterReq['Filter'] = this.lastSearchString['dmccFilter'];
     filterReq['Take'] = this.totalRecords;
     filterReq['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd HH:mm:ss');
     filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');

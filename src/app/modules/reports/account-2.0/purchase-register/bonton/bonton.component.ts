@@ -1,5 +1,5 @@
 import { filter_module_name, messages, module_name, Security } from 'app/security';
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, Output } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
@@ -65,6 +65,8 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   // supplierList: any[] = [];
   selectedSupplier: any;
   destroy$: any = new Subject();
+  isSomeLiveInvoiceFalse:boolean = false;
+  customScrollH:any = this.scrollHeightWTab
 
   statusList: any[] = [
     { label: 'Inprocess', value: 'Inprocess' },
@@ -108,7 +110,17 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
   }
 
+  getCustomHeight(){
+    this.customScrollH = (window.innerHeight - 200) + 'px';
+  }
+
+   @HostListener('window:resize', ['$event'])
+      onResize(event: any) {
+          this.getCustomHeight();
+  }
+
   ngOnInit(): void {
+    this.getCustomHeight();
     // common filter
     this.startSubscription();
 
@@ -152,8 +164,6 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
    if (element?.ref_No) {
       const refPrefix = element.ref_No.slice(0, 3);
-          console.log("refPrefix", refPrefix)
-
 
       switch (refPrefix) {
         case "FLT":
@@ -203,7 +213,6 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
   refreshItems(event?: any): void {
     this.isLoading = true;
-    console.log("bonton searchInputvalue", this.searchInputControl.value)
     let payload = this.getNewFilterReq(event);
     payload['Filter'] = this.lastSearchString['bontonFilter'];
     payload['fromDate'] = DateTime.fromJSDate(new Date(this.startDate.value)).toFormat('yyyy-MM-dd');
@@ -213,6 +222,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
       next: (data) => {
         this.dataList = data.data;
         this.totalRecords = data.total;
+        this.isSomeLiveInvoiceFalse = this.dataList.some((item:any) => !item.is_live_invoice)
         // this.totalsObj = data.totals || 0;
         this.isLoading = false;
         if (this.dataList && this.dataList.length) {
