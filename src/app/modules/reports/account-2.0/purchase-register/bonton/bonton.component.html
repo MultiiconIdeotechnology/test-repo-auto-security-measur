@@ -30,7 +30,7 @@
                     <p-columnFilter field="is_live_invoice" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                             <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
-                                (onChange)="filter($event.value)" placeholder="Is Editable?" [showClear]="true"
+                                (onChange)="filter($event.value)" placeholder="Is Editable" [showClear]="true"
                                 appendTo="body">
                                 <ng-template let-option pTemplate="item">
                                     <p>{{option.label}}</p>
