@@ -76,8 +76,8 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   ];
 
    actionList: any[] = [
-        { label: 'Yes', value: true },
-        { label: 'No', value: false },
+        { label: 'No', value: true },
+        { label: 'Yes', value: false },
     ]
 
   tableFieldArr: any =
