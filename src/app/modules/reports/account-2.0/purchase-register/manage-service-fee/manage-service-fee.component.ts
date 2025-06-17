@@ -42,9 +42,9 @@ export class ManageServiceFeeComponent {
   formGroup: FormGroup;
   isLoading: boolean = false;
   buttonLabel: any = 'Create';
-  serviceForList: any[] = ['Airline', 'Air Amendment', 'Bus', 'Hotel','Visa', 'Insurance', 'Holiday', 'Forex', 'Cab', 'Bus Amendment'];
+  serviceForList: any[] = ['Airline', 'Air Amendment', 'Bus', 'Hotel', 'Visa', 'Insurance', 'Holiday', 'Forex', 'Cab', 'Bus Amendment'];
   serviceForCtrl = new FormControl('');
-  record:any;
+  record: any;
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
@@ -87,7 +87,7 @@ export class ManageServiceFeeComponent {
     const isValidServiceFor = this.serviceForList.includes(record?.service_For);
     this.formGroup.patchValue({
       service_for_id: record.service_For_IdStr,
-      service_for: isValidServiceFor ?  record.service_For : '',
+      service_for: isValidServiceFor ? record.service_For : '',
       suplier_service_charge: record.service_Charge,
       suplier_service_charge_gst: (record?.sgst ?? 0) + (record?.cgst ?? 0) + (record?.igst ?? 0),
       purchase_base_price: record.base_Fare,
@@ -95,9 +95,10 @@ export class ManageServiceFeeComponent {
     })
   }
 
-  // onServiceFor(event: any) {
-  //   console.log("onServiceFor")
-  // }
+  onBackdropClick(event: MouseEvent): void {
+    // Don't do anything — prevent closing
+    event.stopPropagation();
+  }
 
   submit() {
     //   if (this.formGroup.invalid) {
@@ -113,10 +114,10 @@ export class ManageServiceFeeComponent {
     this.accountService.manageServiceFee(payload).subscribe({
       next: (res: any) => {
         if (res) {
-          if(res.success == true){
+          if (res.success == true) {
             this.alertService.showToast('success', 'Service fee saved successfully');
             let resData = {
-              id : this.record?.id,
+              id: this.record?.id,
               service_For_Id: payload.service_for_id,
               service_For: payload.service_for,
               service_Charge: payload.suplier_service_charge,

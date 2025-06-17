@@ -1,4 +1,4 @@
-<fuse-drawer class="min-w-[400px] z-999" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'"  [autoCollapse]="false"
+<fuse-drawer class="min-w-[400px] z-999" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'"  (backdropClick)="onBackdropClick($event)"
     #settingsDrawer>
     <div class="w-full">
         <div class="flex justify-between border-b-2 border-gray-border px-5 py-4 h-15 sticky top-0">
