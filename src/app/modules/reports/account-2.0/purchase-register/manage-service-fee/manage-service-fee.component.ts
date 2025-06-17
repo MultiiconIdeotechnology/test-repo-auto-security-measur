@@ -95,11 +95,6 @@ export class ManageServiceFeeComponent {
     })
   }
 
-  onBackdropClick(event: MouseEvent): void {
-    // Don't do anything — prevent closing
-    event.stopPropagation();
-  }
-
   submit() {
     //   if (this.formGroup.invalid) {
     //     this.alertService.showToast('error', 'Please fill up required fields');
