@@ -1,5 +1,5 @@
 <fuse-drawer class="min-w-[400px] z-999 no-close-on-outside" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'" 
-    #settingsDrawer>
+    #settingsDrawer [disableCloseOnOutsideClick]="true">
     <div class="w-full">
         <div class="flex justify-between border-b-2 border-gray-border px-5 py-4 h-15 sticky top-0">
             <span class="text-lg font-semibold w-[320px] overflow-hidden whitespace-nowrap text-ellipsis truncate"
