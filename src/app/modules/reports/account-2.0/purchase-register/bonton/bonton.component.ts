@@ -75,6 +75,11 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     { label: 'Delivered', value: 'Delivered' },
   ];
 
+   actionList: any[] = [
+        { label: 'Yes', value: true },
+        { label: 'No', value: false },
+    ]
+
   tableFieldArr: any =
     [
       { field: 'date', header: 'Date', type: 'custom', matchMode: 'custom' },
@@ -151,7 +156,9 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
 
   manageService(record: any) {
-    this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
+    if(!record?.is_live_invoice){
+      this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
+    }
   }
 
   viewData(element:any): void {
