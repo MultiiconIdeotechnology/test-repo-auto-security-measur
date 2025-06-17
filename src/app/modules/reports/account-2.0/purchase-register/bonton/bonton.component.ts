@@ -54,7 +54,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
   @Input() endDate: any;
-  @Input() supplierList:any = [];
+  @Input() supplierList: any = [];
   @Input() lastSearchString = '';
   // module_name = module_name.products_collection;
   filter_table_name = filter_module_name.purchase_register_bonton;
@@ -65,8 +65,8 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   // supplierList: any[] = [];
   selectedSupplier: any;
   destroy$: any = new Subject();
-  isSomeLiveInvoiceFalse:boolean = false;
-  customScrollH:any = this.scrollHeightWTab
+  isSomeLiveInvoiceFalse: boolean = false;
+  customScrollH: any = this.scrollHeightWTab
 
   statusList: any[] = [
     { label: 'Inprocess', value: 'Inprocess' },
@@ -75,10 +75,10 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     { label: 'Delivered', value: 'Delivered' },
   ];
 
-   actionList: any[] = [
-        { label: 'No', value: true },
-        { label: 'Yes', value: false },
-    ]
+  actionList: any[] = [
+    { label: 'Yes', value: false },
+    { label: 'No', value: true },
+  ]
 
   tableFieldArr: any =
     [
@@ -115,13 +115,13 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
   }
 
-  getCustomHeight(){
+  getCustomHeight() {
     this.customScrollH = (window.innerHeight - 200) + 'px';
   }
 
-   @HostListener('window:resize', ['$event'])
-      onResize(event: any) {
-          this.getCustomHeight();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.getCustomHeight();
   }
 
   ngOnInit(): void {
@@ -129,7 +129,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     // common filter
     this.startSubscription();
 
-     this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
+    this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
       if (res && res.key == 'manager-service-status') {
         let index = this.dataList.findIndex((item: any) => (item.service_For == res.data?.service_For && item.service_For_IdStr == res?.data?.service_For_Id));
         if (index != -1) {
@@ -156,12 +156,12 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
 
   manageService(record: any) {
-    if(!record?.is_live_invoice){
+    if (!record?.is_live_invoice) {
       this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
     }
   }
 
-  viewData(element:any): void {
+  viewData(element: any): void {
     // if (!Security.hasViewDetailPermission(module_name.bookingsFlight)) {
     //     return this.alertService.showToast(
     //         'error',
@@ -169,7 +169,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     //     );
     // }
 
-   if (element?.ref_No) {
+    if (element?.ref_No) {
       const refPrefix = element.ref_No.slice(0, 3);
 
       switch (refPrefix) {
@@ -186,7 +186,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
           Linq.recirect(`/booking/insurance/details/${element.service_For_IdStr}`);
           break;
         case "AIR":
-          this.entityService.raiseAmendmentInfoCall({ data: {...element, id:element.service_For_IdStr} });
+          this.entityService.raiseAmendmentInfoCall({ data: { ...element, id: element.service_For_IdStr } });
           break;
         case "HTL":
           Linq.recirect(`/booking/hotel/details/${element.service_For_IdStr}`);
@@ -215,8 +215,8 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
         default:
           console.warn("Unknown refNo prefix:", refPrefix);
       }
+    }
   }
-}
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -229,7 +229,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
       next: (data) => {
         this.dataList = data.data;
         this.totalRecords = data.total;
-        this.isSomeLiveInvoiceFalse = this.dataList.some((item:any) => !item.is_live_invoice)
+        this.isSomeLiveInvoiceFalse = this.dataList.some((item: any) => !item.is_live_invoice)
         // this.totalsObj = data.totals || 0;
         this.isLoading = false;
         if (this.dataList && this.dataList.length) {

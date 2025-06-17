@@ -89,7 +89,7 @@ export class ManageServiceFeeComponent {
       service_for_id: record.service_For_IdStr,
       service_for: isValidServiceFor ?  record.service_For : '',
       suplier_service_charge: record.service_Charge,
-      suplier_service_charge_gst: record.sgst,
+      suplier_service_charge_gst: (record?.sgst ?? 0) + (record?.cgst ?? 0) + (record?.igst ?? 0),
       purchase_base_price: record.base_Fare,
       purchase_tax: record.purchase_TDS,
     })
