@@ -116,7 +116,7 @@ export class ManageServiceFeeComponent {
               service_For_Id: payload.service_for_id,
               service_For: payload.service_for,
               service_Charge: payload.suplier_service_charge,
-              sgst: payload.suplier_service_charge_gst,
+              service_GST: payload.suplier_service_charge_gst,
               base_Fare: payload.purchase_base_price,
               purchase_TDS: payload.purchase_tax,
             }
