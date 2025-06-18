@@ -6,7 +6,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApexOptions } from "apexcharts";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { commonUseService } from 'app/services/common-use.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { DropdownModule } from 'primeng/dropdown';
@@ -66,12 +65,11 @@ export class CampaignSummaryChartComponent {
       tooltipTheme: 'dark',
     }
   };
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
     // private refferralService: RefferralService,
     public matDialogRef: MatDialogRef<CampaignSummaryChartComponent>,
-    private commonUseService: commonUseService,
     private _fuseConfigService: FuseConfigService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
@@ -81,21 +79,15 @@ export class CampaignSummaryChartComponent {
   }
 
   ngOnInit(): void {
-     this._fuseConfigService.config$
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe((config: FuseConfig) => {
-                    // Store the config
-                    this.theme= config.scheme;
-                    this.initializingChart(this.selectedTab, this.theme)
+    // get the current theme from fuse config using observables subscription
+    this._fuseConfigService.config$.pipe(takeUntil(this._unsubscribeAll)).subscribe((config: FuseConfig) => {
+      this.theme = config.scheme;
+      this.initializingChart(this.selectedTab, this.theme)
       this.manageData();
-                });
-                
-    // this.commonUseService.currentTheme$.subscribe((theme: any) => {
-    //   this.theme = theme;
-    // });
-
+    });
   }
 
+  // make the x and y axis data as per need and requirement of graph config.
   manageData() {
     for (let el of this.montWiseData) {
       this.yAxisData.push(el[this.key]);
@@ -111,20 +103,22 @@ export class CampaignSummaryChartComponent {
     if (maxYear != minYear) {
       this.showDropdownYear = true;
     }
-    this.uiqueYearArr = cloneDeep([...new Set(this.yearArr)]);
+    // find unique year value for dropdown
+    this.uiqueYearArr = cloneDeep([...new Set(this.yearArr)]); 
     this.initializingChart(this.selectedTab, this.theme);
   }
 
+  // get the graph for selected year 
   onYearSelect(event: any) {
-    
+
     this.xAxisData = [];
     this.yAxisData = [];
-    if(event.value){
+    if (event.value) {
       this.xAxisData = this.originalXAxisData.filter((item: any) => {
-        let slicedYear = item ? item.split('-')[1]: null;
+        let slicedYear = item ? item.split('-')[1] : null;
         return slicedYear === event.value.slice(-2);
       });
-  
+
       this.montWiseData.forEach((item: any) => {
         if (item?.year == event.value) {
           this.yAxisData.push(item[this.key]);
@@ -137,6 +131,7 @@ export class CampaignSummaryChartComponent {
     this.initializingChart(this.selectedTab, this.theme);
   }
 
+  // clear selected year to get graph on all data
   onClearYear() {
     this.xAxisData = this.originalXAxisData;
     this.yAxisData = this.originalYAxisData;
@@ -144,6 +139,7 @@ export class CampaignSummaryChartComponent {
     this.initializingChart(this.selectedTab, this.theme)
   }
 
+  // graph intialization logic for light and dark 
   initializingChart(chartType: any, theme: 'light' | 'dark') {
     const themeColors = this.chartThemeMap[theme];
 
@@ -240,7 +236,7 @@ export class CampaignSummaryChartComponent {
     };
   }
 
-
+// tab change logic to toggle area chart and bar chart
   onTabChange(tabName: string) {
     this.selectedYear = '';
     this.selectedTab = tabName;
@@ -249,6 +245,7 @@ export class CampaignSummaryChartComponent {
     this.initializingChart(this.selectedTab, this.theme)
   }
 
+  // function to format x axis month data in format of (shortMonth-shortmonth, ex:Mar-25)
   monthYearFormat(month: string, year: any): string {
     const monthMap: { [key: string]: string } = {
       january: 'Jan',
@@ -271,10 +268,10 @@ export class CampaignSummaryChartComponent {
     return `${shortMonth}-${shortYear}`;
   }
 
-      ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
-    }
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this._unsubscribeAll.next(null);
+    this._unsubscribeAll.complete();
+  }
 
 }
