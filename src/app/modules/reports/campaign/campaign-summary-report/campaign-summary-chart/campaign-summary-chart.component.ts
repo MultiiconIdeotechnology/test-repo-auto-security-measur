@@ -79,14 +79,15 @@ export class CampaignSummaryChartComponent {
   }
 
   ngOnInit(): void {
+    // get the current theme from fuse config using observables subscription
     this._fuseConfigService.config$.pipe(takeUntil(this._unsubscribeAll)).subscribe((config: FuseConfig) => {
-      // Store the config
       this.theme = config.scheme;
       this.initializingChart(this.selectedTab, this.theme)
       this.manageData();
     });
   }
 
+  // make the x and y axis data as per need and requirement of graph config.
   manageData() {
     for (let el of this.montWiseData) {
       this.yAxisData.push(el[this.key]);
@@ -102,10 +103,12 @@ export class CampaignSummaryChartComponent {
     if (maxYear != minYear) {
       this.showDropdownYear = true;
     }
-    this.uiqueYearArr = cloneDeep([...new Set(this.yearArr)]);
+    // find unique year value for dropdown
+    this.uiqueYearArr = cloneDeep([...new Set(this.yearArr)]); 
     this.initializingChart(this.selectedTab, this.theme);
   }
 
+  // get the graph for selected year 
   onYearSelect(event: any) {
 
     this.xAxisData = [];
@@ -128,6 +131,7 @@ export class CampaignSummaryChartComponent {
     this.initializingChart(this.selectedTab, this.theme);
   }
 
+  // clear selected year to get graph on all data
   onClearYear() {
     this.xAxisData = this.originalXAxisData;
     this.yAxisData = this.originalYAxisData;
@@ -135,6 +139,7 @@ export class CampaignSummaryChartComponent {
     this.initializingChart(this.selectedTab, this.theme)
   }
 
+  // graph intialization logic for light and dark 
   initializingChart(chartType: any, theme: 'light' | 'dark') {
     const themeColors = this.chartThemeMap[theme];
 
@@ -231,7 +236,7 @@ export class CampaignSummaryChartComponent {
     };
   }
 
-
+// tab change logic to toggle area chart and bar chart
   onTabChange(tabName: string) {
     this.selectedYear = '';
     this.selectedTab = tabName;
@@ -240,6 +245,7 @@ export class CampaignSummaryChartComponent {
     this.initializingChart(this.selectedTab, this.theme)
   }
 
+  // function to format x axis month data in format of (shortMonth-shortmonth, ex:Mar-25)
   monthYearFormat(month: string, year: any): string {
     const monthMap: { [key: string]: string } = {
       january: 'Jan',
