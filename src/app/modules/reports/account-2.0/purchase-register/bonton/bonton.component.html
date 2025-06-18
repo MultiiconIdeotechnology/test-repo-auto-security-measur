@@ -109,9 +109,9 @@
                              <span style="font-weight: 600"> Manage Service Fee</span>
                         </button>
                     </mat-menu> -->
-                    <i class="material-icons text-lg mat-icon-no-color" *ngIf="!element.is_live_invoice"
+                    <i class="material-icons text-lg text-gray-400" *ngIf="!element.is_live_invoice"
                         matTooltip="Manage Service Fee" (click)="manageService(element)">edit</i>
-                    <i class="material-icons text-lg mat-icon-no-color text-gray-500" *ngIf="element.is_live_invoice"
+                    <i class="material-icons text-lg mat-icon-no-color dark:text-gray-700 text-gray-300" *ngIf="element.is_live_invoice"
                         matTooltip="Manage Service Fee">edit_off</i>
                 </td>
                 <td *ngFor="let el of tableFieldArr;" [ngClass]="{'text-right': el.type == 'numeric'}"
