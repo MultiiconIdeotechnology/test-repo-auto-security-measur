@@ -244,10 +244,7 @@ export class BontonDmccComponent extends BaseListingComponent
 
   exportExcel(): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
-        return this.alertService.showToast(
-            'error',
-            messages.permissionDenied
-        );
+        return this.alertService.showToast('error',messages.permissionDenied);
     }
 
     const filterReq = this.getNewFilterReq({});

@@ -149,6 +149,10 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
 
   manageService(record: any) {
+    if (!Security.hasEditEntryPermission(this.module_name)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
     if (!record?.is_live_invoice) {
       this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
     }
@@ -247,10 +251,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
 
   exportExcel(): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
-        return this.alertService.showToast(
-            'error',
-            messages.permissionDenied
-        );
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
 
     const filterReq = this.getNewFilterReq({});
