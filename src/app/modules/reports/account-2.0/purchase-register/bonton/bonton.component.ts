@@ -56,7 +56,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   @Input() endDate: any;
   @Input() supplierList: any = [];
   @Input() lastSearchString = '';
-  // module_name = module_name.products_collection;
+  module_name = module_name.purchase_register_2;
   filter_table_name = filter_module_name.purchase_register_bonton;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
@@ -67,13 +67,6 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   destroy$: any = new Subject();
   isSomeLiveInvoiceFalse: boolean = false;
   customScrollH: any = this.scrollHeightWTab
-
-  statusList: any[] = [
-    { label: 'Inprocess', value: 'Inprocess' },
-    { label: 'Pending', value: 'Pending' },
-    { label: 'Blocked', value: 'Blocked' },
-    { label: 'Delivered', value: 'Delivered' },
-  ];
 
   actionList: any[] = [
     { label: 'Yes', value: false },
@@ -253,12 +246,12 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
   }
 
   exportExcel(): void {
-    // if (!Security.hasExportDataPermission(this.module_name)) {
-    //     return this.alertService.showToast(
-    //         'error',
-    //         messages.permissionDenied
-    //     );
-    // }
+    if (!Security.hasExportDataPermission(this.module_name)) {
+        return this.alertService.showToast(
+            'error',
+            messages.permissionDenied
+        );
+    }
 
     const filterReq = this.getNewFilterReq({});
 

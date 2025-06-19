@@ -324,6 +324,9 @@ export const module_name = {
     tech_rm_monthly_report: 'RM Monthly Anaytics',
     tech_product_monthly_report:'Product Monthly Analytics',
     cab_inventory: 'Cab',
+
+    // account2.0
+    purchase_register_2: 'Purchase Register-2',
 };
 
 export const filter_module_name = {
