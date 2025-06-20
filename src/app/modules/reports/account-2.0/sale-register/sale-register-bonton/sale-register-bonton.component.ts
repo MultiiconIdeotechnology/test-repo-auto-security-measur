@@ -25,32 +25,34 @@ import { SupplierService } from 'app/services/supplier.service';
 import { Linq } from 'app/utils/linq';
 import { EntityService } from 'app/services/entity.service';
 import { Router } from '@angular/router';
+import { AgentService } from 'app/services/agent.service';
+import { CurrencyService } from 'app/services/currency.service';
 
 @Component({
   selector: 'app-sale-register-bonton',
   standalone: true,
   imports: [
-      DatePipe,
-      CommonModule,
-      ReactiveFormsModule,
-      MatFormFieldModule,
-      MatIconModule,
-      MatInputModule,
-      MatButtonModule,
-      MatProgressBarModule,
-      MatMenuModule,
-      MatDialogModule,
-      MatDividerModule,
-      FormsModule,
-      PrimeNgImportsModule,
-      MatTooltipModule,
-      MatSelectModule,
-    ],
+    DatePipe,
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatMenuModule,
+    MatDialogModule,
+    MatDividerModule,
+    FormsModule,
+    PrimeNgImportsModule,
+    MatTooltipModule,
+    MatSelectModule,
+  ],
   templateUrl: './sale-register-bonton.component.html',
   styleUrls: ['./sale-register-bonton.component.scss']
 })
 export class SaleRegisterBontonComponent extends BaseListingComponent implements OnDestroy {
-   @Input() isFilterShow: boolean = false;
+  @Input() isFilterShow: boolean = false;
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
   @Input() endDate: any;
@@ -66,63 +68,61 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
   selectedSupplier: any;
   destroy$: any = new Subject();
   isSomeLiveInvoiceFalse: boolean = false;
-  customScrollH: any = this.scrollHeightWTab
+  customScrollH: any = this.scrollHeightWTab;
+  agentList: any[] = [];
+  currencyList: any[] = [];
+  selectedAgent: any;
 
-  statusList: any[] = [
-    { label: 'Inprocess', value: 'Inprocess' },
-    { label: 'Pending', value: 'Pending' },
-    { label: 'Blocked', value: 'Blocked' },
-    { label: 'Delivered', value: 'Delivered' },
-  ];
+  serviceTypeList: any[] = ['Airline', 'Air Amendment', 'Bus', 'Hotel', 'Visa', 'Insurance', 'Holiday', 'Forex', 'Cab', 'Bus Amendment'];
 
   actionList: any[] = [
     { label: 'Yes', value: false },
     { label: 'No', value: true },
   ]
 
- tableFieldArr: any[] = [
-  { field: 'invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
-  { field: 'code', header: 'Code', type: 'text', matchMode: 'contains' },
-  { field: 'name', header: 'Name', type: 'select', matchMode: 'contains' },
-  { field: 'gsT_No', header: 'GST No.', type: 'text', matchMode: 'contains' },
-  { field: 'state', header: 'State', type: 'text', matchMode: 'contains' },
-  { field: 'invoice_No', header: 'Invoice No', type: 'text', matchMode: 'contains' },
-  { field: 'ref_No', header: 'Ref. No', type: 'text', matchMode: 'contains' },
-  { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
-  { field: 'gdS_PNR', header: 'GDS PNR', type: 'text', matchMode: 'contains' },
-  { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
-  { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals' },
-  { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
-  { field: 'airline_Tax', header: 'Airline Tax', type: 'numeric', matchMode: 'equals' },
-  { field: 'service_Charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
-  { field: 'cgst', header: 'CGST', type: 'numeric', matchMode: 'equals' },
-  { field: 'sgst', header: 'SGST', type: 'numeric', matchMode: 'equals' },
-  { field: 'igst', header: 'IGST', type: 'numeric', matchMode: 'equals' },
-  { field: 'total_Sale', header: 'Total Sale', type: 'numeric', matchMode: 'equals' },
-  { field: 'pan', header: 'PAN', type: 'text', matchMode: 'contains' },
-  { field: 'commission_Passed_On', header: 'Commission Passed on', type: 'numeric', matchMode: 'equals' },
-  { field: 'tdS_On_CP', header: 'TDS on CP', type: 'numeric', matchMode: 'equals' },
-  { field: 'net_Receivable', header: 'Net Receivable', type: 'numeric', matchMode: 'equals' },
-  { field: 'commission_Given', header: 'Commission Given', type: 'numeric', matchMode: 'equals' },
-  { field: 'tdS_On_CG', header: 'TDS on CG', type: 'numeric', matchMode: 'equals' },
-  { field: 'cashback', header: 'Cashback', type: 'numeric', matchMode: 'equals' },
-  { field: 'tdS_On_CB', header: 'TDS on CB', type: 'numeric', matchMode: 'equals' },
-  { field: 'service_Type', header: 'Service Type', type: 'text', matchMode: 'contains' },
-  { field: 'sales_Type', header: 'Sales Type', type: 'text', matchMode: 'contains' },
-  { field: 'booking_Date', header: 'Booking Date', type: 'custom', matchMode: 'custom' },
-  { field: 'travel_Date', header: 'Travel Date', type: 'custom', matchMode: 'custom' },
-  { field: 'gsT_No_Passed_To_Supplier', header: 'GST No Passed to Supplier', type: 'text', matchMode: 'contains' },
-  { field: 'travel_Type', header: 'Travel Type', type: 'text', matchMode: 'contains' },
-  { field: 'booking_Type', header: 'Booking Type', type: 'text', matchMode: 'contains' }
-];
+  tableFieldArr: any[] = [
+    { field: 'invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
+    { field: 'code', header: 'Code', type: 'numeric', matchMode: 'equals' },
+    { field: 'name', header: 'Name', type: 'select', matchMode: 'contains' },
+    { field: 'gsT_No', header: 'GST No.', type: 'text', matchMode: 'contains' },
+    { field: 'state', header: 'State', type: 'text', matchMode: 'contains' },
+    { field: 'invoice_No', header: 'Invoice No', type: 'text', matchMode: 'contains' },
+    { field: 'ref_No', header: 'Ref. No', type: 'text', matchMode: 'contains' },
+    { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
+    { field: 'gdS_PNR', header: 'GDS PNR', type: 'text', matchMode: 'contains' },
+    { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
+    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals' },
+    { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
+    { field: 'airline_Tax', header: 'Airline Tax', type: 'numeric', matchMode: 'equals' },
+    { field: 'service_Charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
+    { field: 'cgst', header: 'CGST', type: 'numeric', matchMode: 'equals' },
+    { field: 'sgst', header: 'SGST', type: 'numeric', matchMode: 'equals' },
+    { field: 'igst', header: 'IGST', type: 'numeric', matchMode: 'equals' },
+    { field: 'total_Sale', header: 'Total Sale', type: 'numeric', matchMode: 'equals' },
+    { field: 'pan', header: 'PAN', type: 'text', matchMode: 'contains' },
+    { field: 'commission_Passed_On', header: 'Commission Passed on', type: 'numeric', matchMode: 'equals' },
+    { field: 'tdS_On_CP', header: 'TDS on CP', type: 'numeric', matchMode: 'equals' },
+    { field: 'net_Receivable', header: 'Net Receivable', type: 'numeric', matchMode: 'equals' },
+    { field: 'commission_Given', header: 'Commission Given', type: 'numeric', matchMode: 'equals' },
+    { field: 'tdS_On_CG', header: 'TDS on CG', type: 'numeric', matchMode: 'equals' },
+    { field: 'cashback', header: 'Cashback', type: 'numeric', matchMode: 'equals' },
+    { field: 'tdS_On_CB', header: 'TDS on CB', type: 'numeric', matchMode: 'equals' },
+    { field: 'service_Type', header: 'Service Type', type: 'static-select', matchMode: 'contains' },
+    { field: 'sales_Type', header: 'Sales Type', type: 'text', matchMode: 'contains' },
+    { field: 'booking_Date', header: 'Booking Date', type: 'custom', matchMode: 'custom' },
+    { field: 'travel_Date', header: 'Travel Date', type: 'custom', matchMode: 'custom' },
+    { field: 'gsT_No_Passed_To_Supplier', header: 'GST No Passed to Supplier', type: 'text', matchMode: 'contains' },
+    { field: 'travel_Type', header: 'Travel Type', type: 'text', matchMode: 'contains' },
+    { field: 'booking_Type', header: 'Booking Type', type: 'text', matchMode: 'contains' }
+  ];
 
 
   constructor(
     private accountService: AccountService,
-    private supplierService: SupplierService,
+    private agentService: AgentService,
     public _filterService: CommonFilterService,
-    private sidebarDialogService: SidebarCustomModalService,
     private entityService: EntityService,
+    private currencyService: CurrencyService,
     private router: Router,
   ) {
     super(module_name.products_collection);
@@ -143,6 +143,12 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
 
   ngOnInit(): void {
     this.getCustomHeight();
+
+    this._filterService.agentList$.subscribe((res: any) => {
+      this.agentList = res;
+    });
+
+    this.getCurrencyList();
     // common filter
     this.startSubscription();
 
@@ -162,6 +168,13 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.selectedAgent = filterData['table_config']['name']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
+      }
       if (filterData['table_config']['date']?.value && Array.isArray(filterData['table_config']['date']?.value)) {
         this._filterService.updateSelectedOption('custom_date_range');
         this._filterService.rangeDateConvert(filterData['table_config']['date']);
@@ -171,11 +184,26 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     }
   }
 
+  onOptionClick(option: any, primengTable: any, field: string) {
+    const value = option?.id_by_value ?? '';
+    const current = this.selectionMap();
+    this.selectionMap.set({ ...current, [field]: value });
 
-  manageService(record: any) {
-    if (!record?.is_live_invoice) {
-      this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
+    if (value && value !== 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
     }
+  }
+
+
+  // Currency List api
+  getCurrencyList() {
+    this.currencyService.getCurrencyComboCashed().subscribe((data) => {
+      this.currencyList = data;
+
+      for (let i in this.currencyList) {
+        this.currencyList[i].id_by_value = this.currencyList[i].currency_short_code;
+      }
+    })
   }
 
   viewData(element: any): void {
@@ -317,14 +345,16 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     });
   }
 
-  getSupplier(value: string) {
-    this.supplierService.getSupplierCombo(value, '').subscribe((data) => {
-      this.supplierList = data;
+  // function to get the Agent list from api
+  getAgent(value: string, bool = true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+      this.agentList = data;
 
-      for (let i in this.supplierList) {
-        this.supplierList[i].id_by_value = this.supplierList[i].company_name;
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+        this.agentList[i].id_by_value = this.agentList[i].agency_name;
       }
-    });
+    })
   }
 
   getNodataText(): string {
@@ -338,6 +368,13 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
         this._filterService.updateSelectedOption('');
+        this.selectedAgent = resp['table_config']['name']?.value;
+        if (this.selectedAgent && this.selectedAgent.id) {
+          const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+          if (!match) {
+            this.agentList.push(this.selectedAgent);
+          }
+        }
         if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
           this._filterService.selectionDateDropdown = 'custom_date_range';
           this._filterService.updateSelectedOption('custom_date_range');
