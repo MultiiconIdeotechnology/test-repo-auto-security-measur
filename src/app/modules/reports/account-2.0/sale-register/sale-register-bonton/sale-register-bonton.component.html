@@ -1,0 +1,138 @@
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="customScrollH"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        styleClass="p-datatable-gridlines p-datatable-sm">
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <!-- <th class="text-center w-[2rem] left-[-1px]" pFrozenColumn alignFrozen="left">#</th> -->
+                <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last"
+                    [pSortableColumn]="el.field" pResizableColumn 
+                    [ngClass]="{
+                              'min-w-[200px] dark:bg-[#1e293b]': el.field == 'invoice_date', 
+                              'min-w-[150px] dark:bg-[#1e293b]': el.field == 'code',
+                              'left-0': !frozenObj?.[el.field], 
+                              'w-full':isLast, 
+                              'text-right': el.type == 'numeric'}" 
+                    [frozen]="frozenObj?.[el.field]" pFrozenColumn
+                    alignFrozen="left">
+                    {{el.header}} <p-sortIcon [field]="el.field" />
+                    <span *ngIf="el.field == 'invoice_date' || el.field == 'code'" class="float-right"
+                        (click)="onFrozenColumn(el.field, $event)">
+                        <i *ngIf="!frozenObj?.[el.field]" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.[el.field]" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+            </tr>
+
+            <tr *ngIf="isFilterShow">
+                <!-- <th class="dark:bg-[#1e293b] left-[-1px]" pFrozenColumn>
+                    <p-columnFilter field="is_live_invoice" matchMode="equals" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                (onChange)="filter($event.value)" placeholder="Is Editable" [showClear]="true"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option.label}}</p>
+                                </ng-template>
+                            </p-dropdown>
+                        </ng-template>
+                    </p-columnFilter>
+                </th> -->
+                <th *ngFor="let el of tableFieldArr; let isFirst = first; let isLast = last; let i = index;"
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.[el.field]">
+                    <p-columnFilter *ngIf="el.type == 'text' || el.type == 'numeric'" [type]="el.type"
+                        [matchMode]="el.matchMode" [field]="el.field" [placeholder]="'Search by ' + el.header"
+                        [ariaLabel]="'Filter '+ el.header" [minFractionDigits]="2" />
+
+                    <p-columnFilter *ngIf="el.type == 'select'" field="supplier_Name" matchMode="in" [showMenu]="false">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
+                                placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
+                                <ng-template let-agent pTemplate="item">
+                                    <div>
+                                        {{agent.company_name}}
+                                    </div>
+                                </ng-template>
+                            </p-multiSelect>
+                        </ng-template>
+                    </p-columnFilter>
+
+                    <ng-container *ngIf="el.type == 'custom'">
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                            field="date" matchMode="custom" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'date')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="date" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-element let-columns="columns" let-i="rowIndex">
+            <tr>
+                <!-- <td class="bg-gray-50 dark:bg-gray-900 left-[-1px] text-center" alignFrozen="left" pFrozenColumn
+                    [ngClass]="{'cursor-not-allowed':element.is_live_invoice, 'cursor-pointer': !element.is_live_invoice}">
+                    <i class="material-icons text-lg text-gray-400" *ngIf="!element.is_live_invoice"
+                        matTooltip="Manage Service Fee" (click)="manageService(element)">edit</i>
+                    <i class="material-icons text-lg mat-icon-no-color dark:text-gray-700 text-gray-300" *ngIf="element.is_live_invoice"
+                        matTooltip="Manage Service Fee">edit_off</i>
+                </td> -->
+                <td *ngFor="let el of tableFieldArr;" [ngClass]="{'text-right': el.type == 'numeric'}"
+                    alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.[el.field]">
+                    <ng-container *ngIf="el.type == 'text' || el.type == 'select'">
+                        <span [ngClass]="{'border-b border-gray-400 cursor-pointer': el.field == 'ref_No'}"
+                            (click)="el.field == 'ref_No' ? viewData(element): null">
+                            {{element[el.field] ? element[el.field] : '-'}}
+                        </span>
+                    </ng-container>
+
+                    <ng-container *ngIf="el.type == 'custom'">
+                        {{element[el.field] ? (element[el.field] | date:'dd-MM-yyyy HH:mm:ss') : '-'}}
+                    </ng-container>
+
+                    <ng-container *ngIf="el.type == 'numeric'">
+                        {{element[el.field] ? ((+element[el.field]) | number: '1.2-2'): 0}}
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td [attr.colspan]="tableFieldArr.length + 1" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

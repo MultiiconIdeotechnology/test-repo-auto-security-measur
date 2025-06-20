@@ -102,6 +102,7 @@ export class AccountService {
   }
 
   // account 2.0
+  // purchase register
   getBontonPurchaseRegister(model: any) {
     return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterReport", model);
   }
@@ -112,6 +113,15 @@ export class AccountService {
 
   getPurchaseRegisterDMCCReport(model: any) {
     return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterDMCCReport", model);
+  }
+
+  // sale register
+  getBontonSaleRegister(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getSaleRegisterReport", model);
+  }
+
+  getSaleRegisterDMCCReport(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getSaleRegisterDMCCReport", model);
   }
 
 }

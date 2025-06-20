@@ -133,6 +133,8 @@ export const appRoutes: Route[] = [
             { path: Routes.account.agent_wise_service_wise_path, loadChildren: () => import('app/modules/reports/account/agent-wise-service-wise/agent-wise-service-wise.component.routes') },
             { path: Routes.account.agent_ledger_wallet_missmatch_path, loadChildren: () => import('app/modules/reports/account/agent-ledger-wallet-missmatch/agent-ledger-wallet-missmatch.component.routes') },
             { path: Routes.account.purchase_register_path_2, loadChildren: () => import('app/modules/reports/account-2.0/purchase-register/purchase-register.routes') },
+            { path: Routes.account.sale_register_path_2, loadChildren: () => import('app/modules/reports/account-2.0/sale-register/sale-register.routes') },
+
 
             //Inventory
             { path: Routes.inventory.activity_path, loadChildren: () => import('app/modules/Inventory/activity/activity-list/activity-list.routes') },
