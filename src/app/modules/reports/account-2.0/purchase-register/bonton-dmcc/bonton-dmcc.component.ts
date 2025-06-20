@@ -60,7 +60,7 @@ export class BontonDmccComponent extends BaseListingComponent
   @Input() endDate: any;
   @Input() supplierList: any = [];
   @Input() lastSearchString = '';
-  // module_name = module_name.products_collection;
+  module_name = module_name.purchase_register_2;
   filter_table_name = filter_module_name.purchase_register_bonton_dmcc;
   private settingsUpdatedSubscription: Subscription;
   isLoading = false;
@@ -243,12 +243,9 @@ export class BontonDmccComponent extends BaseListingComponent
   }
 
   exportExcel(): void {
-    // if (!Security.hasExportDataPermission(this.module_name)) {
-    //     return this.alertService.showToast(
-    //         'error',
-    //         messages.permissionDenied
-    //     );
-    // }
+    if (!Security.hasExportDataPermission(this.module_name)) {
+        return this.alertService.showToast('error',messages.permissionDenied);
+    }
 
     const filterReq = this.getNewFilterReq({});
 

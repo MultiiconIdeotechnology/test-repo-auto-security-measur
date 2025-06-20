@@ -151,18 +151,6 @@ export class CampaignSummaryReportComponent extends BaseListingComponent {
     this.expandedRows[id] = !this.expandedRows[id];
   }
 
-
-  // setMonthAndYear(normalizedMonthAndYear: Date, datepicker: MatDatepicker<Date>) {
-  //   const ctrlValue = DateTime.fromJSDate(this.startDate.value!);
-  //   const updatedValue = ctrlValue
-  //     .set({ month: normalizedMonthAndYear.getMonth() + 1 })
-  //     .set({ year: normalizedMonthAndYear.getFullYear() })
-  //     .startOf('month');
-  //   this.startDate.setValue(updatedValue.toJSDate());
-  //   console.log("this.date", this.startDate.value)
-  //   datepicker.close();
-  // }
-
   setMonthAndYear(normalizedMonthAndYear: any, datepicker: MatDatepicker<Date>) {
     let dateTime: DateTime;
 
