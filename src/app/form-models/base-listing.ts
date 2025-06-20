@@ -1,5 +1,5 @@
 // import { MasterService } from './../services/master.service';
-import { Component, OnInit, ViewChild, ElementRef, Inject, HostListener } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef, Inject, HostListener, signal } from "@angular/core";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort, Sort } from "@angular/material/sort";
@@ -63,6 +63,8 @@ export abstract class BaseListingComponent implements OnInit {
     scrollHeightWTab: string;
     //#endregion
     frozenObj: any = {};
+     // for Date dropdown custom logic
+    selectionMap = signal<Record<string, string>>({});
 
     protected masterService: MasterService;
     protected alertService: ToasterService;
