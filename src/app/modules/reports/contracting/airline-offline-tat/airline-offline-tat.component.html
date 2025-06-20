@@ -68,9 +68,9 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="ticketingTime" pResizableColumn
+                    <th class="min-w-[170px] dark:bg-[#1e293b]" pSortableColumn="ticketingTime" pResizableColumn
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime"
-                        [ngClass]="{'left-0': !frozenObj?.ticketingTime}">
+                        [ngClass]="{'left-0': !frozenObj?.ticketingTime, 'min-w-[250px]': isFilterShow}">
                         Ticketing Time <p-sortIcon field="ticketingTime" />
                         <span class="float-right" (click)="isFrozenColumn('ticketingTime');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.ticketingTime" class="pi pi-lock-open icon-size-3"></i>
@@ -89,16 +89,16 @@
                     <th pSortableColumn="bookingStatus" pResizableColumn>
                         Status <p-sortIcon field="bookingStatus" />
                     </th>
-                    <th pSortableColumn="startDate" pResizableColumn>
+                    <th pSortableColumn="startDate" pResizableColumn [ngClass]="{'min-w-[200px]': isFilterShow}">
                         Start Date <p-sortIcon field="startDate" />
                     </th>
-                    <th pSortableColumn="endDate" pResizableColumn>
+                    <th pSortableColumn="endDate" pResizableColumn [ngClass]="{'min-w-[200px]': isFilterShow}">
                         End Date <p-sortIcon field="endDate" />
                     </th>
                     <th pSortableColumn="tat" pResizableColumn>
                         TAT (In Min.) <p-sortIcon field="tat" />
                     </th>
-                    <th pSortableColumn="type" pResizableColumn>
+                    <th class="w-full" pSortableColumn="type" pResizableColumn>
                         Type <p-sortIcon field="type" />
                     </th>
                 </tr>
