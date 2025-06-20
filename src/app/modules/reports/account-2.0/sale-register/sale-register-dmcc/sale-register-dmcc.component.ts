@@ -151,7 +151,7 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
   }
 
 
-   // function to get the Agent list from api
+  // function to get the Agent list from api
   getAgent(value: string, bool = true) {
     this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
       this.agentList = data;
@@ -232,11 +232,11 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
         this.totalRecords = data.total;
         // this.totalsObj = data.totals || 0;
         this.isLoading = false;
-        if (this.dataList && this.dataList.length) {
-          setTimeout(() => {
-            this.isFrozenColumn('', ['invoice_date', 'code',]);
-          }, 200);
-        }
+        // if (this.dataList && this.dataList.length) {
+        //   setTimeout(() => {
+        //     this.isFrozenColumn('', ['invoice_date', 'code',]);
+        //   }, 200);
+        // }
       },
       error: (err) => {
         this.alertService.showToast('error', err);
@@ -281,27 +281,30 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
 
     this.accountService.getPurchaseRegisterDMCCReport(filterReq).subscribe((data) => {
       for (var dt of data.data) {
-        dt.date = dt.date ? DateTime.fromISO(dt.date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }
 
       Excel.export(
         'Purchase Register(DMCC)',
         [
-          { header: 'Date', property: 'date' },
-          { header: 'Name', property: 'name' },
-          { header: 'Invoice No', property: 'invoiceNo' },
-          { header: 'Ref. No', property: 'refNo' },
-          { header: 'PNR', property: 'pnr' },
-          { header: 'Currency', property: 'currency' },
-          { header: 'ROE', property: 'roe' },
-          { header: 'Base Fare', property: 'baseFare' },
-          { header: 'Service charge', property: 'serviceCharge' },
-          { header: 'TAX', property: 'tax' },
-          { header: 'Total Purchase', property: 'totalPurchase' },
-          { header: 'Discount', property: 'discount' }
+          { header: 'Date', property: 'invoice_date'},
+          { header: 'Agent ID', property: 'code'},
+          { header: 'Agent Name', property: 'name'},
+          { header: 'VAT No', property: 'vaT_No'},
+          { header: 'Invoice No', property: 'invoice_No'},
+          { header: 'Ref. No', property: 'ref_No'},
+          { header: 'PNR', property: 'pnr'},
+          { header: 'GDS PNR', property: 'gdS_PNR'},
+          { header: 'Currency', property: 'currency'},
+          { header: 'ROE', property: 'roe'},
+          { header: 'Base Fare', property: 'base_Fare'},
+          { header: 'Service charge', property: 'service_Charge'},
+          { header: 'TAX', property: 'tax'},
+          { header: 'Total Purchase', property: 'total_Sale'},
+          { header: 'Discount', property: 'discount'}
         ],
         data.data,
-        'Purchase Register(DMCC)',
+        'Sale Register Register(DMCC)',
         [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
       );
     });
