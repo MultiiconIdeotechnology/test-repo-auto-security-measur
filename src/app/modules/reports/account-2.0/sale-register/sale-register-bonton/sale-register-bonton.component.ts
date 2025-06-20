@@ -175,10 +175,9 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
           this.agentList.push(this.selectedAgent);
         }
       }
-      if (filterData['table_config']['date']?.value && Array.isArray(filterData['table_config']['date']?.value)) {
-        this._filterService.updateSelectedOption('custom_date_range');
-        this._filterService.rangeDateConvert(filterData['table_config']['date']);
-      }
+      this.restoreDateFilter('invoice_date', filterData['table_config']);
+      this.restoreDateFilter('booking_Date', filterData['table_config']);
+      this.restoreDateFilter('travel_date', filterData['table_config']);
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
     }
@@ -367,7 +366,6 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
   startSubscription() {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-        this._filterService.updateSelectedOption('');
         this.selectedAgent = resp['table_config']['name']?.value;
         if (this.selectedAgent && this.selectedAgent.id) {
           const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -375,11 +373,9 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
             this.agentList.push(this.selectedAgent);
           }
         }
-        if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
-          this._filterService.selectionDateDropdown = 'custom_date_range';
-          this._filterService.updateSelectedOption('custom_date_range');
-          this._filterService.rangeDateConvert(resp['table_config']['date']);
-        }
+        this.restoreDateFilter('invoice_date', resp['table_config']);
+        this.restoreDateFilter('booking_Date', resp['table_config']);
+        this.restoreDateFilter('travel_date', resp['table_config']);
 
         this.primengTable['filters'] = resp['table_config'];
         this.isFilterShow = true;

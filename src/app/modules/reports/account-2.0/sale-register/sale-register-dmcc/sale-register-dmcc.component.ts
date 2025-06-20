@@ -26,6 +26,7 @@ import { Linq } from 'app/utils/linq';
 import { EntityService } from 'app/services/entity.service';
 import { Router } from '@angular/router';
 import { CurrencyService } from 'app/services/currency.service';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
   selector: 'app-sale-register-dmcc',
@@ -52,7 +53,7 @@ import { CurrencyService } from 'app/services/currency.service';
 })
 export class SaleRegisterDmccComponent extends BaseListingComponent
   implements OnDestroy {
-   // module_name = module_name.purchaseRegister;
+  // module_name = module_name.purchaseRegister;
   @Input() isFilterShow: boolean = false;
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
@@ -67,33 +68,35 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
   employeeList: any = [];
   selectedSupplier: any;
   destroy$: any = new Subject();
-  currencyList: any[] = [];
   selectedCurrency: any;
   customScrollH: any;
+  agentList: any[] = [];
+  currencyList: any[] = [];
+  selectedAgent: any;
 
- tableFieldArr: any[] = [
-  { field: 'invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
-  { field: 'code', header: 'Agent ID', type: 'text', matchMode: 'contains' },
-  { field: 'name', header: 'Agent Name', type: 'select', matchMode: 'contains' },
-  { field: 'vaT_No', header: 'VAT No', type: 'text', matchMode: 'contains' },
-  { field: 'invoice_No', header: 'Invoice No', type: 'text', matchMode: 'contains' },
-  { field: 'ref_No', header: 'Ref. No', type: 'text', matchMode: 'contains' },
-  { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
-  { field: 'gdS_PNR', header: 'GDS PNR', type: 'text', matchMode: 'contains' },
-  { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
-  { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals' },
-  { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
-  { field: 'service_Charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
-  { field: 'tax', header: 'TAX', type: 'numeric', matchMode: 'equals' },
-  { field: 'total_Sale', header: 'Total Purchase', type: 'numeric', matchMode: 'equals' },
-  { field: 'discount', header: 'Discount', type: 'numeric', matchMode: 'equals' }
-];
+  tableFieldArr: any[] = [
+    { field: 'invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
+    { field: 'code', header: 'Agent ID', type: 'text', matchMode: 'contains' },
+    { field: 'name', header: 'Agent Name', type: 'select', matchMode: 'contains' },
+    { field: 'vaT_No', header: 'VAT No', type: 'numeric', matchMode: 'equals' },
+    { field: 'invoice_No', header: 'Invoice No', type: 'text', matchMode: 'contains' },
+    { field: 'ref_No', header: 'Ref. No', type: 'text', matchMode: 'contains' },
+    { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
+    { field: 'gdS_PNR', header: 'GDS PNR', type: 'text', matchMode: 'contains' },
+    { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
+    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals' },
+    { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
+    { field: 'service_Charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
+    { field: 'tax', header: 'TAX', type: 'numeric', matchMode: 'equals' },
+    { field: 'total_Sale', header: 'Total Purchase', type: 'numeric', matchMode: 'equals' },
+    { field: 'discount', header: 'Discount', type: 'numeric', matchMode: 'equals' }
+  ];
 
   constructor(
     private accountService: AccountService,
     private supplierService: SupplierService,
     public _filterService: CommonFilterService,
-    private sidebarDialogService: SidebarCustomModalService,
+    private agentService: AgentService,
     private entityService: EntityService,
     private currencyService: CurrencyService,
     private router: Router,
@@ -110,6 +113,10 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
 
     this.getCurrencyList();
 
+    this._filterService.agentList$.subscribe((res: any) => {
+      this.agentList = res;
+    });
+
     // common filter
     this.startSubscription();
 
@@ -121,10 +128,14 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
     if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
       this.isFilterShow = true;
       let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-      if (filterData['table_config']['date']?.value && Array.isArray(filterData['table_config']['date']?.value)) {
-        this._filterService.updateSelectedOption('custom_date_range');
-        this._filterService.rangeDateConvert(filterData['table_config']['date']);
+      this.selectedAgent = filterData['table_config']['name']?.value;
+      if (this.selectedAgent && this.selectedAgent.id) {
+        const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+        if (!match) {
+          this.agentList.push(this.selectedAgent);
+        }
       }
+      this.restoreDateFilter('invoice_date', filterData['table_config']);
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
     }
@@ -140,8 +151,16 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
   }
 
 
-  manageService(record: any) {
-    this.sidebarDialogService.openModal('purchase-manage-service-fee', record)
+   // function to get the Agent list from api
+  getAgent(value: string, bool = true) {
+    this.agentService.getAgentComboMaster(value, bool).subscribe((data) => {
+      this.agentList = data;
+
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
+        this.agentList[i].id_by_value = this.agentList[i].agency_name;
+      }
+    })
   }
 
   viewData(element: any): void {
@@ -152,8 +171,8 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
     //     );
     // }
 
-    if (element?.refNo) {
-      const refPrefix = element.refNo.slice(0, 3);
+    if (element?.ref_No) {
+      const refPrefix = element.ref_No.slice(0, 3);
       switch (refPrefix) {
         case "FLT":
           Linq.recirect(`/booking/flight/details/${element.service_For_IdStr}`);
@@ -308,13 +327,14 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
   startSubscription() {
     if (!this.settingsUpdatedSubscription || this.settingsUpdatedSubscription.closed) {
       this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-        this.selectedCurrency = resp['table_config']['currency'].value || {};
-        this._filterService.updateSelectedOption('');
-        if (resp['table_config']['date']?.value && Array.isArray(resp['table_config']['date']?.value)) {
-          this._filterService.selectionDateDropdown = 'custom_date_range';
-          this._filterService.updateSelectedOption('custom_date_range');
-          this._filterService.rangeDateConvert(resp['table_config']['date']);
+        this.selectedAgent = resp['table_config']['name']?.value;
+        if (this.selectedAgent && this.selectedAgent.id) {
+          const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+          if (!match) {
+            this.agentList.push(this.selectedAgent);
+          }
         }
+        this.restoreDateFilter('invoice_date', resp['table_config']);
         this.primengTable['filters'] = resp['table_config'];
         this.isFilterShow = true;
         this.primengTable._filter();
@@ -326,6 +346,16 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
     if (this.settingsUpdatedSubscription) {
       this.settingsUpdatedSubscription.unsubscribe();
       this.settingsUpdatedSubscription = undefined;
+    }
+  }
+
+  onOptionClick(option: any, primengTable: any, field: string) {
+    const value = option?.id_by_value ?? '';
+    const current = this.selectionMap();
+    this.selectionMap.set({ ...current, [field]: value });
+
+    if (value && value !== 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
     }
   }
 
