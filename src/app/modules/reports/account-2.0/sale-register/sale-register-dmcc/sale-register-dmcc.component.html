@@ -16,7 +16,7 @@
                     'min-w-[200px]': el.type != 'custom'  &&  isFilterShow,
                     'min-w-[250px]': el.type == 'custom' && isFilterShow,
                     'left-0': !frozenObj?.[el.field], 'w-full text-right': isLast,
-                    'text-right': el.type == 'numeric'}" [frozen]="frozenObj?.[el.field]" pFrozenColumn
+                    'text-right': el.type == 'numeric' && el.field != 'code'}" [frozen]="frozenObj?.[el.field]" pFrozenColumn
                     alignFrozen="left">
                     {{el.header}} <p-sortIcon [field]="el.field" />
                     <span *ngIf="el.field == 'invoice_date' || el.field == 'code'" class="float-right"
@@ -114,7 +114,7 @@
 
         <ng-template pTemplate="body" let-element let-columns="columns" let-i="rowIndex">
             <tr>
-                <td *ngFor="let el of tableFieldArr;" [ngClass]="{'text-right': el.type == 'numeric'}"
+                <td *ngFor="let el of tableFieldArr;" [ngClass]="{'text-right': el.type == 'numeric' && el.field != 'code'}"
                     alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.[el.field]">
                     <ng-container *ngIf="el.type == 'text' || el.type == 'select'">
                         <span [ngClass]="{'border-b border-gray-400 cursor-pointer': el.field == 'ref_No'}"
@@ -127,10 +127,14 @@
                         {{element[el.field] ? (element[el.field] | date:'dd-MM-yyyy HH:mm:ss') : '-'}}
                     </ng-container>
 
-                    <ng-container *ngIf="el.type == 'numeric'">
-                        {{element[el.field] ?
-                        !el.isNotFixed ? ((+element[el.field]) | number: '1.2-2') : element[el.field]
-                        : 0}}
+                     <ng-container *ngIf="el.type == 'numeric' && el.field != 'code'">
+                         {{element[el.field] ? 
+                            !el.isNotFixed ? ((+element[el.field]) | number: '1.2-2') : element[el.field] 
+                            : 0}}
+                    </ng-container>
+
+                    <ng-container *ngIf="el.type == 'numeric' && el.field == 'code'">
+                        {{element[el.field] || 0}}
                     </ng-container>
                 </td>
             </tr>

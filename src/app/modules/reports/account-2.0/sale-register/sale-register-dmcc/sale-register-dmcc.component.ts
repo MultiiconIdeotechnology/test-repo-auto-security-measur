@@ -76,7 +76,7 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
 
   tableFieldArr: any[] = [
     { field: 'invoice_date', header: 'Date', type: 'custom', matchMode: 'custom' },
-    { field: 'code', header: 'Agent ID', type: 'text', matchMode: 'contains' },
+    { field: 'code', header: 'Agent ID', type: 'numeric', matchMode: 'equals' },
     { field: 'name', header: 'Agent Name', type: 'select', matchMode: 'contains' },
     { field: 'vaT_No', header: 'VAT No', type: 'numeric', matchMode: 'equals' },
     { field: 'invoice_No', header: 'Invoice No', type: 'text', matchMode: 'contains' },
@@ -84,7 +84,7 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
     { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
     { field: 'gdS_PNR', header: 'GDS PNR', type: 'text', matchMode: 'contains' },
     { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
-    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals' },
+    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', isNotFixed: true },
     { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
     { field: 'service_Charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
     { field: 'tax', header: 'TAX', type: 'numeric', matchMode: 'equals' },
@@ -279,7 +279,7 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
     filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
 
-    this.accountService.getPurchaseRegisterDMCCReport(filterReq).subscribe((data) => {
+    this.accountService.getSaleRegisterDMCCReport(filterReq).subscribe((data) => {
       for (var dt of data.data) {
         dt.date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }

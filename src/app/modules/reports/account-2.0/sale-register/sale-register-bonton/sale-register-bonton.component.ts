@@ -91,7 +91,7 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     { field: 'pnr', header: 'PNR', type: 'text', matchMode: 'contains' },
     { field: 'gdS_PNR', header: 'GDS PNR', type: 'text', matchMode: 'contains' },
     { field: 'currency', header: 'Currency', type: 'select', matchMode: 'contains' },
-    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals' },
+    { field: 'roe', header: 'ROE', type: 'numeric', matchMode: 'equals', isNotFixed:true },
     { field: 'base_Fare', header: 'Base Fare', type: 'numeric', matchMode: 'equals' },
     { field: 'airline_Tax', header: 'Airline Tax', type: 'numeric', matchMode: 'equals' },
     { field: 'service_Charge', header: 'Service charge', type: 'numeric', matchMode: 'equals' },
@@ -314,7 +314,9 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
 
     this.accountService.getBontonPurchaseRegister(filterReq).subscribe((data) => {
       for (var dt of data.data) {
-        dt.date = dt.date ? DateTime.fromISO(dt.date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.date = dt.booking_Date ? DateTime.fromISO(dt.booking_Date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.date = dt.travel_Date ? DateTime.fromISO(dt.travel_Date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }
 
       Excel.export(

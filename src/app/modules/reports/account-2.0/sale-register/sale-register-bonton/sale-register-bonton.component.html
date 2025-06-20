@@ -176,7 +176,9 @@
                     </ng-container>
 
                     <ng-container *ngIf="el.type == 'numeric' && el.field != 'code'">
-                        {{element[el.field] ? ((+element[el.field]) | number: '1.2-2'): 0}}
+                           {{element[el.field] ? 
+                            !el.isNotFixed ? ((+element[el.field]) | number: '1.2-2') : element[el.field] 
+                            : 0}}
                     </ng-container>
 
                     <ng-container *ngIf="el.type == 'numeric' && el.field == 'code'">
