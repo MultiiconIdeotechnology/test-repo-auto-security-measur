@@ -393,6 +393,33 @@ export abstract class BaseListingComponent implements OnInit {
             filter([adjustedStartDate, adjustedEndDate]);
         } 
     }
+
+        // dynamic date dropdown logic 
+    getSelection(field: string) {
+        return this.selectionMap()[field] || '';
+    }
+   
+   rangeDateConvert(dateArr: any) {
+        dateArr.value[0] = new Date(dateArr.value[0]);
+        dateArr.value[1] = new Date(dateArr.value[1]);
+        dateArr.value.join(",");
+    }
+	
+	   // saved date range custom filter restore
+    restoreDateFilter(field: string, config: any) {
+        const fieldData = config?.[field];
+
+        if (fieldData?.value && fieldData.value.length) {
+            this.rangeDateConvert(fieldData);
+
+            const current = this.selectionMap();
+            this.selectionMap.set({ ...current, [field]: 'custom_date_range' });
+
+            setTimeout(() => {
+                this.primengTable.filter(fieldData.value, field, 'custom');
+            });
+        }
+    }
 }
 
 export interface IDataColumn {
