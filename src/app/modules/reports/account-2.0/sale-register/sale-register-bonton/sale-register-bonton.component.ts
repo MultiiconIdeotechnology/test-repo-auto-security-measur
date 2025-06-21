@@ -312,11 +312,11 @@ export class SaleRegisterBontonComponent extends BaseListingComponent implements
     filterReq['toDate'] = DateTime.fromJSDate(new Date(this.endDate.value)).toFormat('yyyy-MM-dd');
 
 
-    this.accountService.getBontonPurchaseRegister(filterReq).subscribe((data) => {
+    this.accountService.getBontonSaleRegister(filterReq).subscribe((data) => {
       for (var dt of data.data) {
-        dt.date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
-        dt.date = dt.booking_Date ? DateTime.fromISO(dt.booking_Date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
-        dt.date = dt.travel_Date ? DateTime.fromISO(dt.travel_Date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.invoice_date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.booking_Date = dt.booking_Date ? DateTime.fromISO(dt.booking_Date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.travel_Date = dt.travel_Date ? DateTime.fromISO(dt.travel_Date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }
 
       Excel.export(

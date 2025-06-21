@@ -281,11 +281,11 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
 
     this.accountService.getSaleRegisterDMCCReport(filterReq).subscribe((data) => {
       for (var dt of data.data) {
-        dt.date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.invoice_date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy HH:mm:ss') : '';
       }
 
       Excel.export(
-        'Purchase Register(DMCC)',
+        'Sale Register (DMCC)',
         [
           { header: 'Date', property: 'invoice_date'},
           { header: 'Agent ID', property: 'code'},
@@ -304,7 +304,7 @@ export class SaleRegisterDmccComponent extends BaseListingComponent
           { header: 'Discount', property: 'discount'}
         ],
         data.data,
-        'Sale Register Register(DMCC)',
+        'Sale Register (DMCC)',
         [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
       );
     });
