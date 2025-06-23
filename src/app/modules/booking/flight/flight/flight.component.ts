@@ -17,7 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { Routes } from 'app/common/const';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, bookingsFlightPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Excel } from 'app/utils/export/excel';
@@ -66,6 +66,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
     ],
 })
 export class FlightComponent extends BaseListingComponent {
+    types = Types;
+    cols: Column[] = [];
     flightFilter: any;
     module_name = module_name.flight;
     filter_table_name = filter_module_name.flight_booking;
@@ -77,13 +79,13 @@ export class FlightComponent extends BaseListingComponent {
     supplierList: any[] = [];
     total = 0;
     isFilterShow: boolean = false;
-    _selectedColumns: Column[];
+    selectedColumns: Column[] = [];
 
     public startDate = new FormControl();
     public endDate = new FormControl();
     public StartDate: any;
     public EndDate: any;
-    cols = [];
+    //cols = [];
     selectedToAirport: any;
     selectedFromAirport: any;
     selectedSupplier: any;
@@ -146,9 +148,50 @@ export class FlightComponent extends BaseListingComponent {
         };
         this.flightFilter.FromDate.setDate(1);
         this.flightFilter.FromDate.setMonth(this.flightFilter.FromDate.getMonth() - 3);
+
+
+        this.selectedColumns = [
+            { field: 'booking_ref_no', header: 'Reference No.', type: Types.text, isFrozen: true },
+            { field: 'status', header: 'Status', type: Types.text, isFrozen: true },
+            { field: 'bookingDate', header: 'Date', type: Types.text },
+            { field: 'pnr', header: 'PNR', type: Types.text, },
+            { field: 'gds_pnr', header: 'GDS PNR', type: Types.text, },
+            { field: 'supplier_name', header: 'Supplier', type: Types.text, },
+            { field: 'operating_carrier', header: 'Carrier', type: Types.text },
+            { field: 'purchase_price', header: 'Purchase Price', type: Types.text, },
+            { field: 'user_type', header: 'Type', type: Types.text, },
+            { field: 'mop', header: 'MOP', type: Types.text, },
+            { field: 'agent_name', header: 'Agent', type: Types.text, },
+            { field: 'from_airport_code', header: 'From', type: Types.text, },
+            { field: 'to_airport_code', header: 'To', type: Types.text, },
+            { field: 'travelDate', header: 'Travel Date', type: Types.text, },
+            { field: 'tripType', header: 'Trip Type', type: Types.text, },
+            { field: 'cabin', header: 'Cabin', type: Types.text, },
+            { field: 'device', header: 'Device', type: Types.text, },
+            { field: 'supplier_ref_no', header: 'Supplier Ref. No.', type: Types.text },
+            { field: 'payment_gateway_name', header: 'PG', type: Types.text },
+            { field: 'travelType', header: 'Travel Type', type: Types.text },
+            { field: '', header: ' Booking From', type: Types.text },
+            { field: 'ipAddress', header: ' IP Address', type: Types.text },
+
+
+        ];
+        this.cols.unshift(...this.selectedColumns);
     }
 
     ngOnInit() {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            // this.selectDateRanges(resp['table_config']);
+            this.primengTable['filters'] = resp['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+            this.primengTable._filter();
+        });
+
+
+
         this.agentList = this._filterService.agentListById;
         this.getAirportList("");
         this.getSupplierList();
@@ -190,7 +233,7 @@ export class FlightComponent extends BaseListingComponent {
                 this._filterService.selectionDateDropdown = 'custom_date_range';
                 this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
             }
-            
+
             if (resp['table_config']['travelDate']?.value != null) {
                 resp['table_config']['travelDate'].value = new Date(resp['table_config']['travelDate'].value);
             }
@@ -233,11 +276,33 @@ export class FlightComponent extends BaseListingComponent {
         }
     }
 
-    copy(link:any) {
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.module_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onFrozenColumn(field: any, event: MouseEvent) {
+    if (field == 'booking_ref_no' || field == 'status') {
+      this.isFrozenColumn(field);
+      event.stopPropagation();
+    }
+  }
+
+    copy(link: any) {
         this.clipboard.copy(link);
         this.toastr.showToast('success', 'Copied');
     }
-    
+
     getFilter(): any {
         const filterReq = {};
         filterReq['FromDate'] = '';
@@ -322,7 +387,7 @@ export class FlightComponent extends BaseListingComponent {
             }
         });
     }
-  
+
     // Api to get the Airportlist Data (from)
     getAirportFromList(value: any) {
         this.flighttabService.getAirportMstCombo(value).subscribe((data: any) => {
@@ -481,7 +546,7 @@ export class FlightComponent extends BaseListingComponent {
 
         // filterReq['FromDate'] = DateTime.fromJSDate(this.flightFilter.FromDate).toFormat('yyyy-MM-dd');
         // filterReq['ToDate'] = DateTime.fromJSDate(this.flightFilter.ToDate).toFormat('yyyy-MM-dd');
-        
+
         filterReq['FromDate'] = '';
         filterReq['ToDate'] = '';
         filterReq['agent_for'] = this.flightFilter?.agent_for;
@@ -541,5 +606,9 @@ export class FlightComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
     }
 }
