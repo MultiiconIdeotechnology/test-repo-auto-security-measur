@@ -249,6 +249,9 @@ export const Routes = {
         payment_link_path: 'account/payment_link',
         payment_link_route: 'account/payment_link',
 
+        proforma_invoice_path: 'account/proforma_invoice',
+        proforma_invoice_route: 'account/proforma_invoice',
+
         receipt_path: 'account/receipt',
         receipt_route: 'account/receipt',
 

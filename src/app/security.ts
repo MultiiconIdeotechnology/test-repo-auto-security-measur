@@ -248,6 +248,7 @@ export const module_name = {
     ledger: 'Agent Ledger',
     payment: 'Payments',
     paymentLink: 'Payment Link',
+    proformaInvoice: 'Proforma Invoice',
     receipt: 'Receipt',
     flight: 'Flight',
     bus: 'Bus',
@@ -372,6 +373,7 @@ export const filter_module_name = {
     account_payments: "account_payments",
     account_receipts: "account_receipts",
     payment_link: "payment_link",
+    proforma_invoice: "proforma_invoice",
     agent_wise_service_wise: "agent_wise_service_wise",
 
     //KYC

@@ -114,4 +114,8 @@ export class AccountService {
     return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterDMCCReport", model);
   }
 
+  GetProformaInvoiceList(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "ProformaInvoice/GetProformaInvoiceList", model);
+  }
+
 }
