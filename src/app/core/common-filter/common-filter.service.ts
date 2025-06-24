@@ -39,11 +39,11 @@ export class CommonFilterService {
         this.selectedOptionSubject.next(option);
     }
 
-    updatedSelectionOptionTwo(option:string):void {
+    updatedSelectionOptionTwo(option: string): void {
         this.selectedOptionTwoSubjectTwo.next(option);
     }
-    
-    updatedSelectedContracting(option:string):void {
+
+    updatedSelectedContracting(option: string): void {
         this.selectedOptionContracting.next(option);
     }
 
@@ -112,6 +112,11 @@ export class CommonFilterService {
         return JSON.parse(localStorage.getItem('filterData') || '[]');
     }
 
+    //getFilterData
+    getDefaultFilterByGridName(params: { gridName: string }) {
+        return JSON.parse(localStorage.getItem('filterData') || '[]').find(x => x.gridName == params.gridName)?.filters?.find(x => x.is_default);
+    }
+
     // Update LocalStorage Data setFilterData
     setLocalFilterData(data: any) {
         localStorage.setItem('filterData', JSON.stringify(data || []));
@@ -130,9 +135,20 @@ export class CommonFilterService {
         this.drawersUpdated.next(data);
     }
 
-    setActiveData(filerData: any) {
+    // setActiveData(filerData: any) {
+    //     if (filerData && filerData.filters) {
+    //         this.activeFiltData = filerData.filters.find((element: any) => element.is_default);
+    //     } else {
+    //         this.activeFiltData = {};
+    //     }
+    // }
+     setActiveData(filerData: any) {
         if (filerData && filerData.filters) {
             this.activeFiltData = filerData.filters.find((element: any) => element.is_default);
+            this.activeFiltData = {
+                ...this.activeFiltData,
+                gridName: filerData.gridName
+            }
         } else {
             this.activeFiltData = {};
         }
@@ -187,10 +203,10 @@ export class CommonFilterService {
     onOptionClick(option: any, primengTable: any, field: any, key?: any) {
         // this.selectionDateDropdown = option.id_by_value;
         this.selectedOptionSubject.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        }
     }
 
     // Date Range dropdown onselect Contracting
@@ -198,18 +214,18 @@ export class CommonFilterService {
         // this.selectionDateDropdownContracting = option.id_by_value;
         this.selectedOptionContracting.next(option.id_by_value);
 
-        if(option.id_by_value && option.id_by_value != 'custom_date_range'){
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        }
     }
 
     // date range option if more than one date range is required in same component
     onOptionClickTwo(option: any, primengTable: any, field: any, key?: any) {
         this.selectedOptionTwoSubjectTwo.next(option.id_by_value);
-        
-        if( option.id_by_value &&  option.id_by_value != 'custom_date_range'){
+
+        if (option.id_by_value && option.id_by_value != 'custom_date_range') {
             primengTable.filter(option, field, 'custom');
-        } 
+        }
     }
 
     // agent combo api call
@@ -249,7 +265,7 @@ export class CommonFilterService {
 
     //Dynamic column
 
-     private getAllSelectedColumns(): any[] {
+    private getAllSelectedColumns(): any[] {
         const data = localStorage.getItem(this.key);
         if (data && data?.trim() != '' && data != undefined) {
             return JSON.parse(data);
@@ -281,5 +297,11 @@ export class CommonFilterService {
     clearSelectedColumns(): void {
         localStorage.removeItem(this.key);
     }
+
+
+
+
+
+
 
 }

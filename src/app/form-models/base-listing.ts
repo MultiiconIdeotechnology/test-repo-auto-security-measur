@@ -378,15 +378,15 @@ export abstract class BaseListingComponent implements OnInit {
     }
 
     protected exportDataExcelInternal(model: ExportDataModel): void {
-        if (!model || !model.data) {
-            console.warn('Export Model or Export Model Data is undefined');
-            return;
-        }
+        // if (!model || !model.data) {
+        //     console.warn('Export Model or Export Model Data is undefined');
+        //     return;
+        // }
 
-        Excel.export(
-            this.reportTitle || this.module,
-            this.dataColumns.filter(c => c.isExportable !== false).map(c => ({ header: c.displayName || c.propertyName, property: c.propertyName })),
-            model.data);
+        // Excel.export(
+        //     this.reportTitle || this.module,
+        //     this.dataColumns.filter(c => c.isExportable !== false).map(c => ({ header: c.displayName || c.propertyName, property: c.propertyName })),
+        //     model.data);
     }
 
     //#endregion
