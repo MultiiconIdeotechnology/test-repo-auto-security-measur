@@ -22,6 +22,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
+import { AccountService } from 'app/services/account.service';
+import { DateTime } from 'luxon';
 
 @Component({
   selector: 'app-proforma-entry',
@@ -59,12 +61,18 @@ export class ProformaEntryComponent {
   buttonLabel: string = 'Create';
   referralData: any = {};
   disableBtn: boolean = false;
+  compnyAllList: any[] = [];
   compnyList: any[] = [];
+  particularAllList: any[] = [];
+  particularList: any[] = [];
+  fieldList: any[] = [];
+
 
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
     private builder: FormBuilder,
+    private accountService: AccountService,
     private _filterService: CommonFilterService,
     private dataManagerService: DataManagerService,
     private referralService: RefferralService,
@@ -78,6 +86,7 @@ export class ProformaEntryComponent {
       invoice_date: new Date(),
       customer_name: [''],
       particular: [''],
+      particularfilter: [''],
       currency: [''],
       total_amount: [''],
       tax: [''],
@@ -91,7 +100,6 @@ export class ProformaEntryComponent {
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res) {
         if (res['type'] == 'proforma-invoice-create') {
-          this.resetForm();
           this.settingsDrawer.open();
           this.title = 'Add New Proforman Invoice';
           this.buttonLabel = "Create";
@@ -99,9 +107,15 @@ export class ProformaEntryComponent {
           this.settingsDrawer.open();
           this.title = 'Proforman Invoice Info';
           this.referralData = res?.data;
-          this.buttonLabel = "Save";
-          this.formGroup.patchValue(res?.data);
-          this.formGroup.get('referral_link_url').patchValue(res?.data?.referral_link)
+          this.fieldList = [
+            { name: 'Customer Name', value: this.referralData.customer_name },
+            { name: 'Invoice No.', value: this.referralData.invoice_no },
+            { name: 'Invoice Date', value: this.referralData.invoice_date ? DateTime.fromISO(this.referralData.invoice_date).toFormat('dd-MM-yyyy').toString() : '' },
+            { name: 'Currency', value: this.referralData.currency },
+            { name: 'tax', value: this.referralData.tax },
+            { name: 'Taxable Amount', value: this.referralData.taxable_amount },
+            { name: 'Total Amount', value: this.referralData.total_amount },
+          ]
         }
       }
     });
@@ -120,26 +134,111 @@ export class ProformaEntryComponent {
       )
       .subscribe({
         next: data => {
+            if (!this.compnyAllList?.length) {
+            this.compnyAllList = data
+          }
           this.compnyList = data
-          this.formGroup.get('company_id').setValue(data[0]?.id);  
+          this.formGroup.get('company_id').setValue(this.compnyList[0]?.id);
         }
       });
+
+
+    /*************Particular combo**************/
+    this.formGroup
+      .get('particularfilter')
+      .valueChanges.pipe(
+        filter((search) => !!search),
+        startWith(''),
+        debounceTime(200),
+        distinctUntilChanged(),
+        switchMap((value: any) => {
+          return this.pspsettingService.TecProductMasterCombo(value);
+        })
+      )
+      .subscribe({
+        next: data => {
+          if (!this.particularAllList?.length) {
+            this.particularAllList = data
+          }
+          this.particularList = data
+          this.formGroup.get('particular').setValue(this.particularList[0]?.id);
+        }
+      });
+
+    /*************Currency Upparcase**************/
+    this.formGroup.get('currency')?.valueChanges.subscribe(value => {
+      if (value !== value?.toUpperCase()) {
+        this.formGroup.get('currency')?.setValue(value.toUpperCase(), { emitEvent: false });
+      }
+    });
   }
 
   // reseting form to default value
   resetForm() {
-    // this.formGroup?.reset({
-    //   referral_code: "",
-    //   campaign_category: "",
-    //   referral_link_for: "",
-    //   campaign_name: "",
-    //   relationship_manager_id: "",
-    //   referral_link_url: "",
-    //   remark: ""
-    // })
+    this.formGroup?.patchValue({
+      invoice_date: new Date(),
+      customer_name: '',
+      currency: '',
+      total_amount: '',
+      tax: '',
+      remark: '',
+    })
+
+    if (this.compnyAllList?.length) {
+      this.compnyList = [...this.compnyAllList]; // Use spread to avoid mutation
+      const defaultAgent = this.compnyList[0].id;
+      this.formGroup.get("company_id").patchValue(defaultAgent);
+    }
+    
+    if (this.particularAllList?.length) {
+      this.particularList = [...this.particularAllList]; // Use spread to avoid mutation
+      const defaultAgent = this.particularList[0].id;
+      this.formGroup.get("particular").patchValue(defaultAgent);
+    }
+
+
+    this.disableBtn = false;
+
   }
 
   submit(): void {
+    this.disableBtn = true
+    if (!this.formGroup.valid) {
+      this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
+      this.formGroup.markAllAsTouched();
+      return;
+    }
+
+    const json = this.formGroup.getRawValue();
+    json.invoice_date = DateTime.fromJSDate(json.invoice_date).toFormat('yyyy-MM-dd'),
+    // return
+    this.accountService.create(json).subscribe({
+      next: (data) => {
+        this.alertService.showToast('success', 'Proforma Invoice created successfully');
+        this.resetForm()
+        if (data.id) {
+          let resData = {
+            id: data.id,
+            invoice_no: data.invoice_no,
+            invoice_date: data.invoice_date,
+            customer_name: data.customer_name,
+            currency: data.currency,
+            taxable_amount: data.taxable_amount,
+            tax: data.tax,
+            total_amount: data.total_amount,
+            remark: data.remark,
+          }
+          this.sidebarDialogService.close({ data: resData, key: 'create-response' });
+          this.settingsDrawer.close();
+        }
+
+        this.disableBtn = false;
+      }, error: (err) => {
+        this.alertService.showToast('error', err)
+        this.disableBtn = false
+      }
+    });
+
     // const json = {
     //   id: this.ismodify ? this.formGroup.get('id').value : '',
     //   kyc_profile_id: this.routId,
@@ -182,7 +281,7 @@ export class ProformaEntryComponent {
     return v1 && v2 && v1.id === v2.id;
   }
 
-   numberOnly(event): boolean {
+  numberOnly(event): boolean {
     const charCode = (event.which) ? event.which : event.keyCode;
 
     // Allow numbers (48-57) and decimal point (46)

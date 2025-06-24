@@ -21,14 +21,17 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { filter_module_name, module_name } from 'app/security';
+import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { AgentService } from 'app/services/agent.service';
 import { EntityService } from 'app/services/entity.service';
 import { AppConfig } from 'app/config/app-config';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { ProformaEntryComponent } from './proforma-entry/proforma-entry.component';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
+import { CommonUtils } from 'app/utils/commonutils';
+import { DateTime } from 'luxon';
+import { Excel } from 'app/utils/export/excel';
 
 @Component({
   selector: 'app-proforma-invoice',
@@ -78,7 +81,7 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
   isFilterShow: boolean = false;
   selectedAgent: any;
   isLoading = false;
-
+  private destroy$: Subject<any> = new Subject<any>();
 
   constructor(
     private accountService: AccountService,
@@ -88,12 +91,14 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
     private entityService: EntityService,
     public _filterService: CommonFilterService
   ) {
-    super(module_name.payment)
+    super(module_name.proformaInvoice)
     this.key = 'invoice_date';
     this.sortColumn = 'invoice_date';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
+
+
 
     // this.entityService.onRefreshPaymentLinkEntityCall().pipe(takeUntil(this._unsubscribeAll)).subscribe({
     //   next: (item) => {
@@ -105,6 +110,18 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
   }
 
   ngOnInit() {
+
+    this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
+      if (res && res.key == 'create-response') {
+        let index = this.dataList.findIndex((item: any) => item.id == res.data.id);
+        if (index != -1) {
+          this.dataList[index] = res.data;
+        } else {
+          this.dataList.unshift(res.data);
+        }
+      }
+    })
+
     // this.getAgent("");
 
     this._filterService.updateSelectedOption('');
@@ -167,7 +184,7 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
     });
   }
 
-  create(): void {
+  createInternal(): void {
     // if (!Security.hasNewEntryPermission(module_name.whatsapp_config_template)) {
     //     return this.alertService.showToast('error', messages.permissionDenied);
     // }
@@ -179,6 +196,48 @@ export class ProformaInvoiceComponent extends BaseListingComponent implements On
     //     return this.alertService.showToast('error', messages.permissionDenied);
     // }
     this.sidebarDialogService.openModal('proforma-invoice-info', data)
+  }
+
+  invoice(record): void {
+    const recordData = record.id;
+    this.accountService.PrintProformaInvoice(recordData).subscribe({
+      next: (res) => {
+        CommonUtils.downloadPdf(res.data, record.id + '.pdf');
+      }, error: (err) => {
+        this.alertService.showToast('error', err)
+      }
+    })
+  }
+
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission(this.module_name)) {
+      return this.alertService.showToast('error',messages.permissionDenied);
+    }
+
+    const filterReq = this.getNewFilterReq({});
+    filterReq['Filter'] = this.searchInputControl.value;
+    filterReq['Take'] = this.totalRecords;
+
+    this.accountService.GetProformaInvoiceList(filterReq).subscribe((data) => {
+      for (var dt of data.data) {
+        dt.invoice_date = dt.invoice_date ? DateTime.fromISO(dt.invoice_date).toFormat('dd-MM-yyyy ') : '';
+      }
+      Excel.export(
+        'Proforma Invoice',
+        [
+          { header: 'Invoice Date.', property: 'invoice_date' },
+          { header: 'Invoice No', property: 'invoice_no' },
+          { header: 'Customer Name', property: 'customer_name' },
+          { header: 'Taxable Amount', property: 'taxable_amount' },
+          { header: 'Tax', property: 'tax' },
+          { header: 'Total Amount', property: 'total_amount' },
+          { header: 'Currency', property: 'currency' },
+        ],
+        data.data,
+        'Proforma Invoice',
+        [{ s: { r: 0, c: 0 }, e: { r: 0, c: 11 } }]
+      );
+    });
   }
 
   getNodataText(): string {

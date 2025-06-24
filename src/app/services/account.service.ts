@@ -118,4 +118,11 @@ export class AccountService {
     return this.http.post<any>(environment.apiUrl + "ProformaInvoice/GetProformaInvoiceList", model);
   }
 
+  create(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "ProformaInvoice/create", model);
+  }
+
+  PrintProformaInvoice(invoiceId: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'ProformaInvoice/PrintProformaInvoice', { invoiceId: invoiceId });
+  }
 }

@@ -56,7 +56,7 @@
             </button>
 
             <!------- Export Excel -->
-            <!-- <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
             </button>
             <mat-menu #menu>
@@ -64,7 +64,7 @@
                     <mat-icon>arrow_downward</mat-icon>
                     <span>Export Excel</span>
                 </button>
-            </mat-menu> -->
+            </mat-menu>
         </div>
     </div>
 
@@ -82,15 +82,16 @@
                 <tr>
                     <th class="text-center left-[-1px] w-10" pFrozenColumn>#</th>
 
-                    <th class="w-36 min-w-36 max-w-36 dark:bg-[#1e293b] text-center" pResizableColumn alignFrozen="left" pFrozenColumn
-                        [frozen]="frozenObj?.payment_link" [ngClass]="{'left-0': !frozenObj?.payment_link}"> Invoice
+                    <!-- <th class="w-36 min-w-36 max-w-36 dark:bg-[#1e293b] text-center" pResizableColumn alignFrozen="left"
+                        pFrozenColumn [frozen]="frozenObj?.payment_link"
+                        [ngClass]="{'left-0': !frozenObj?.payment_link}"> Invoice
                         <span class="float-right" (click)="isFrozenColumn('payment_link');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.payment_link" class="pi pi-lock-open icon-size-3"></i>
                             <i *ngIf="frozenObj?.payment_link" class="pi pi-lock icon-size-3"></i>
                         </span>
-                    </th>
+                    </th> -->
 
-                    <th pSortableColumn="invoice_date" pResizableColumn>
+                    <th pSortableColumn="invoice_date" pResizableColumn [ngClass]="{'min-w-[250px]': isFilterShow}">
                         Invoice Date <p-sortIcon field="agent" />
                     </th>
                     <th pSortableColumn="invoice_no" pResizableColumn>
@@ -111,13 +112,13 @@
                     <th class="w-full" pSortableColumn="currency" pResizableColumn>
                         Currency <p-sortIcon field="currency" />
                     </th>
-                 
+
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
 
-                    <th></th>
+                    <!-- <th></th> -->
 
                     <th>
                         <p-columnFilter field="invoice_date" type="date">
@@ -173,12 +174,17 @@
                                 <mat-icon class="mat-18">info</mat-icon>
                                 <span style="font-weight: 600">Info</span>
                             </button>
+                            <button mat-menu-item (click)="invoice(element)">
+                                <mat-icon svgIcon="heroicons_outline:arrow-down-tray"></mat-icon>
+                                <span style="font-weight: 600">Download Invoice</span>
+                            </button>
                         </mat-menu>
                     </td>
 
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link" class="text-center">
-                        <mat-icon svgIcon="heroicons_outline:arrow-down-tray"></mat-icon>
-                    </td>
+                    <!-- <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.payment_link" class="text-center">
+                        <mat-icon (click)="invoice(element)" class="cursor-pointer"
+                            svgIcon="heroicons_outline:arrow-down-tray"></mat-icon>
+                    </td> -->
 
                     <td>
                         {{(element.invoice_date | date: 'dd-MM-yyyy') || "-"}}
@@ -194,7 +200,9 @@
 
                     <td>{{element.tax || "-"}}</td>
 
-                    <td class="text-right">{{ element.total_amount || "-" }}</td>
+                    <td class="text-right">
+                        {{element.total_amount ? (element.total_amount.toFixed(2) | number: '1.2-2') : "-"}}
+                    </td>
 
                     <td>{{element.currency || "-"}}</td>
                 </tr>
