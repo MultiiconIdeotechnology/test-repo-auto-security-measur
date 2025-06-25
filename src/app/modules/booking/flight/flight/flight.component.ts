@@ -176,8 +176,6 @@ export class FlightComponent extends BaseListingComponent {
             { field: 'travelType', header: 'Travel Type', type: Types.text },
             { field: 'is_manual_entry', header: ' Booking From', type: Types.boolean },
             { field: 'ipAddress', header: ' IP Address', type: Types.text },
-
-
         ];
         this.cols.unshift(...this.selectedColumns);
         this.exportCol = cloneDeep(this.cols);

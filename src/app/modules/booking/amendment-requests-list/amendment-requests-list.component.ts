@@ -12,7 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, amendmentRequestsPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { AmendmentRequestsService } from 'app/services/amendment-requests.service';
 import { UpdateChargeComponent } from './update-charge/update-charge.component';
@@ -36,6 +36,7 @@ import { StatusInfoComponent } from './status-info/status-info.component';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-amendment-requests-list',
@@ -80,8 +81,8 @@ export class AmendmentRequestsListComponent
     total = 0;
 
     AmendmentFilter: any;
-    _selectedColumns: Column[];
-    cols = [];
+    // _selectedColumns: Column[];
+    //cols = [];
     selectedAgent: any
     selectedSupplier: any;
     selectedStatus: any;
@@ -89,6 +90,12 @@ export class AmendmentRequestsListComponent
     supplierList: any[] = [];
 
     isMenuOpen: boolean = false;
+
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    types = Types;
+
 
     typeList = ['Cancellation Quotation', 'Instant Cancellation', 'Full Refund', 'Reissue Quotation', 'No Show', 'Void', 'Correction Quotation', 'Wheel Chair', 'Meal Quotation(SSR)', 'Baggage Quotation(SSR)', 'Miscellaneous Quotation - SSR', 'Miscellaneous Quotation - Refund'];
     statusList = [
@@ -104,8 +111,8 @@ export class AmendmentRequestsListComponent
         { label: "Completed", value: 'Completed' },
         { label: "Rejected", value: 'Rejected' },
         { label: "Cancelled", value: 'Cancelled' },
-        { label:"Cancellation Pending", value:"Cancellation Pending"},
-        { label:"Partial Cancellation Pending", value:"Partial Cancellation Pending"},
+        { label: "Cancellation Pending", value: "Cancellation Pending" },
+        { label: "Partial Cancellation Pending", value: "Partial Cancellation Pending" },
         { label: "Partial Payment Completed", value: 'Partial Payment Completed' },
         { label: "Account Rejected", value: 'Account Rejected' },
         { label: "Account Audit", value: 'Account Audit' }
@@ -122,6 +129,15 @@ export class AmendmentRequestsListComponent
         "Completed",
         "Rejected",
         "Cancelled",
+    ];
+
+    cols: Column[] = [
+        // { field: 'travel_date', header: 'Travel Date',type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm'  },
+        // { field: 'status_for_agent', header: 'Agent Status' , type: Types.text},
+        // { field: 'reject_reason', header: 'Reject Reason',type: Types.text},
+        //  { field: 'amendment_confirmation_time', header: 'Confirmed' ,type: Types.text},
+        // { field: 'sup_refund_amount', header: 'Supplier Refund Amount' ,type: Types.text},
+        // { field: 'sup_refund_date', header: 'Supplier Refund Date',type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm'  },
     ];
     constructor(
         private amendmentrequestsService: AmendmentRequestsService,
@@ -158,19 +174,49 @@ export class AmendmentRequestsListComponent
                 }
             }
         });
+
+        this.selectedColumns = [
+            { field: 'reference_no', header: 'Ref. No', type: Types.link },
+            { field: 'amendment_type', header: 'Amendment Type', type: Types.select },
+            { field: 'amendment_status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'company_name', header: 'Supplier', type: Types.select, },
+            { field: 'agency_name', header: 'Agent', type: Types.select, },
+            { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal:0},
+            { field: 'booking_ref_no', header: ' Booking Ref. No.', type: Types.link, },
+            { field: 'pnr', header: 'PNR', type: Types.text, },
+            { field: 'gds_pnr', header: 'GDS PNR', type: Types.text, },
+            { field: 'refund_mode', header: 'Refund Mode', type: Types.text, },
+            { field: 'refund_amount', header: 'Refund Amount', type: Types.number, fixVal:2 , class:'text-right'},
+            { field: 'amendment_request_time', header: 'Requested Time ', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'updated_date_time', header: 'Updated Time ', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit() {
 
-        this.cols = [
-            { field: 'gds_pnr', header: 'GDS PNR' },
-            { field: 'travel_date', header: 'Travel Date' },
-            { field: 'status_for_agent', header: 'Agent Status' },
-            { field: 'reject_reason', header: 'Reject Reason' },
-            { field: 'amendment_confirmation_time', header: 'Confirmed' },
-            { field: 'sup_refund_amount', header: 'Supplier Refund Amount' },
-            { field: 'sup_refund_date', header: 'Supplier Refund Date' },
-        ];
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            //this.selectDateRanges(resp['table_config']);
+            this.primengTable['filters'] = resp['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+            this.primengTable._filter();
+        });
+
+
+        //old
+        // this.cols = [    
+        //     { field: 'travel_date', header: 'Travel Date' },
+        //     { field: 'status_for_agent', header: 'Agent Status' },
+        //     { field: 'reject_reason', header: 'Reject Reason' },
+        //     { field: 'amendment_confirmation_time', header: 'Confirmed' },
+        //     { field: 'sup_refund_amount', header: 'Supplier Refund Amount' },
+        //     { field: 'sup_refund_date', header: 'Supplier Refund Date' },
+        // ];
 
         this.getAgent("", true);
         this.getSupplier("");
@@ -209,9 +255,9 @@ export class AmendmentRequestsListComponent
 
     }
 
-    get selectedColumns(): Column[] {
-        return this._selectedColumns;
-    }
+    // get selectedColumns(): Column[] {
+    //     return this.selectedColumns;
+    // }
 
     ngAfterViewInit() {
         // Defult Active filter show
@@ -235,11 +281,56 @@ export class AmendmentRequestsListComponent
             }
             this.primengTable['filters'] = filterData['table_config'];
         }
+
+        const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+        if (filter && filter?.gridConfiguration) {
+            this.activeFiltData = filter;
+            this.isFilterShow = true;
+            let filterData = JSON.parse(filter.gridConfiguration);
+            this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
+        }
     }
 
-    set selectedColumns(val: Column[]) {
-        this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.module_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onFrozenColumn(field: any, event: MouseEvent) {
+        if (field == 'booking_ref_no' || field == 'status') {
+            this.isFrozenColumn(field);
+            event.stopPropagation();
+        }
+    }
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.module_name, columns: this.selectedColumns });
+    }
+
+
+    // set selectedColumns(val: Column[]) {
+    //     this._selectedColumns = this.cols.filter((col) => val.includes(col));
+    // }
 
     // Get Filter
     getFilter(): any {
@@ -514,5 +605,14 @@ export class AmendmentRequestsListComponent
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
     }
 }
