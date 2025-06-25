@@ -4,6 +4,23 @@ import { Routes } from 'app/common/const';
 
 export const defaultNavigation: FuseNavigationItem[] = [
     {
+        id: 'dashboard',
+        title: 'Dashboard',
+        type: 'group',
+        pid: 'MAINMENU_DASHBOARD_VIEW',
+        icon: 'heroicons_outline:cube',
+        children: [
+            {
+                id: 'dashboard.airline',
+                title: 'Airline',
+                type: 'basic',
+                pid: 'CRM_AIRLINE_VIEW',
+                icon: 'heroicons_outline:plus',
+                link: Routes.dashboard.airline_route
+            },
+        ]
+    },
+    {
         id: 'crm',
         title: 'CRM',
         type: 'group',
@@ -530,7 +547,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 ]
             },
 
-              {
+            {
                 id: 'reports.account2.0',
                 title: 'Accounts 2.0',
                 type: 'collapsable',
@@ -818,13 +835,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:campaign',
                 children: [
                     {
-                      id: 'reports.campaignregister',
-                      title: 'Campaign Register',
-                      type: 'basic',
-                      pid: 'CAMPAIGN-REPORTS_CAMPAIGNREGISTER_VIEW',
-                      icon: '',
-                      link: Routes.reports.campaign_register_path_route
-                  },
+                        id: 'reports.campaignregister',
+                        title: 'Campaign Register',
+                        type: 'basic',
+                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNREGISTER_VIEW',
+                        icon: '',
+                        link: Routes.reports.campaign_register_path_route
+                    },
                     {
                         id: 'reports.campaignsummary',
                         title: 'Campaign Summary',
@@ -833,7 +850,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.reports.campaign_summary_path_route
                     },
-                     {
+                    {
                         id: 'reports.campaignsummaryreport',
                         title: 'Campaign Summary Report',
                         type: 'basic',
@@ -1122,6 +1139,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
     }
 ];
 export const compactNavigation: FuseNavigationItem[] = [
+    {
+        id: 'dashboard',
+        title: 'Dashboard',
+        type: 'aside',
+        pid: 'MAINMENU_DASHBOARD_VIEW',
+        icon: 'heroicons_outline:cube',
+        children: []
+    },
     {
         id: 'crm',
         title: 'CRM',

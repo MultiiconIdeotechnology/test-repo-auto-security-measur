@@ -131,6 +131,10 @@ export const keys = {
 };
 
 export const Routes = {
+    dashboard:{
+        airline_path: 'dashboard/airline',
+        airline_route: '/dashboard/airline',
+    },
     crm: {
         lead_path: 'crm/lead',
         lead_route: '/crm/lead',

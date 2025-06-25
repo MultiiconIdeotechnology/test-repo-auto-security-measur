@@ -76,6 +76,9 @@ export const appRoutes: Route[] = [
             initialData: initialDataResolver
         },
         children: [
+            // Dashboard
+            { path: Routes.dashboard.airline_path, loadChildren: () => import('app/modules/dashboard/airline/airline.routes') },
+            
             // CRM
             { path: Routes.crm.lead_path, loadChildren: () => import('app/modules/crm/lead/lead-list/lead-list.routes') },
             { path: Routes.crm.agents_path, loadChildren: () => import('app/modules/crm/agent/agent-list/agent-list.routes') },
