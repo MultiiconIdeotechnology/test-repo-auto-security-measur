@@ -102,7 +102,7 @@ export class GroupInquiryListComponent
             { field: 'agent_name', header: 'Agent', type: Types.select, },
             { field: 'supplier_name', header: 'Supplier', type: Types.select, },
             { field: 'booking_status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
-            { field: 'pnr', header: 'PNR', type: Types.text, },
+            { field: 'pnr', header: 'PNR', type: Types.text },
             { field: 'departure_date', header: 'Departure Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'arrival_date', header: 'Arrival Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },

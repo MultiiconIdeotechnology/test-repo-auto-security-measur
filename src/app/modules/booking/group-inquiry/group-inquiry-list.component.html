@@ -71,16 +71,15 @@
     </div>
 
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList"  [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-             [columns]="selectedColumns"  columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['agent_name', 'supplier_name','booking_status', 'pnr','departure_date']"
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            [columns]="selectedColumns" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header"  let-columns>
                 <tr>
                     <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th>
@@ -134,11 +133,9 @@
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th pFrozenColumn class="left-[-1px] bg-gray-50 dark:bg-gray-800"></th>
-                    <th *ngFor="let col of columns" pFrozenColumn
-                        [frozen]="col?.isFrozen ? frozenObj?.[col?.field] : ''">
+                    <th  class="left-[-1px] bg-gray-50 dark:bg-gray-800"></th>
+                    <th *ngFor="let col of columns"  >
                         <ng-container *ngIf="!col?.isHideFilter">
-
                             <!-- Text -->
                             <p-columnFilter *ngIf="(col.type == types.text  || col.type == types.link)" [type]="'text'"
                                 [field]="col.field" [placeholder]="'Search by '+ col.header"
@@ -300,9 +297,10 @@
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-element let-i="rowIndex">
+            <ng-template pTemplate="body" let-element let-i="rowIndex" let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn  *ngIf="isDisplayHashCol()">
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" 
+                        *ngIf="isDisplayHashCol()" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -332,17 +330,16 @@
                             </button>
                         </mat-menu>
                     </td>
-                    <td *ngFor="let col of columns" [ngClass]="col.class" pFrozenColumn>
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
 
-                        <ng-container
-                            *ngIf="(col.type === types.text || col.type === types.select)">
+                        <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
                             <span [ngClass]="col.isCustomColor ? getStatusColor(element[col.field]) : ''">
                                 {{ element[col.field] || '-' }}
                             </span>
                         </ng-container>
 
                         <ng-container *ngIf="col.type == types.link">
-                            <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
+                            <span class="cursor-pointer border-b border-gray-500" (click)="view(element)">
                                 {{element[col.field] || "-"}}
                             </span>
                         </ng-container>
