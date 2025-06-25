@@ -57,6 +57,13 @@
                     (click)="blockedRefresh(blockedRef.value)"></mat-icon>
             </div>
 
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Domain'">
+                <input #domainRef matInput [formControl]="searchInputControlDomain" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="domainRefresh(domainRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="domainRefresh(domainRef.value)"></mat-icon>
+            </div>
+
             <!------global filter------>
             <button *ngIf="this.tabNameStr == 'Pending'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
                 matTooltip="Advanced Filter" [disabled]="pending?.isLoading"
@@ -91,6 +98,15 @@
                 <img *ngIf="!isFilterShowBlocked" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
                     alt="c">
                 <img *ngIf="isFilterShowBlocked " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <button *ngIf="this.tabNameStr == 'Domain'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="domain?.isLoading"
+                (click)="isFilterShowDomain  = !isFilterShowDomain ">
+                <img *ngIf="!isFilterShowDomain" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowDomain " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
                     alt="c">
             </button>
 
@@ -144,6 +160,7 @@
         </div>
     </div>
 
+    tabNameStr: {{tabNameStr}}
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
             <ng-container *ngIf="tabNameStr == 'Pending'">

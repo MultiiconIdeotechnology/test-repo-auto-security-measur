@@ -21,9 +21,7 @@ import { TechDashboardPendingComponent } from '../pending/pending.component';
 import { TechDashboardCompletedComponent } from '../completed/completed.component';
 import { TechDashboardExpiredComponent } from '../expired/expired.component';
 import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
-import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { ItemService } from 'app/services/item.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { TechDashboardDomainComponent } from './domain/domain.component';
 
@@ -53,7 +51,8 @@ import { TechDashboardDomainComponent } from './domain/domain.component';
         TechDashboardPendingComponent,
         TechDashboardCompletedComponent,
         TechDashboardExpiredComponent,
-        TechDashboardBlockedComponent
+        TechDashboardBlockedComponent,
+        TechDashboardDomainComponent
     ],
 })
 export class CRMTechDashboardListComponent implements OnDestroy {
@@ -62,7 +61,6 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     @ViewChild('expired') expired: TechDashboardExpiredComponent;
     @ViewChild('blocked') blocked: TechDashboardBlockedComponent;
     @ViewChild('domain') domain: TechDashboardDomainComponent;
-
 
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name;
@@ -80,6 +78,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     searchInputControlCompleted = new FormControl('');
     searchInputControlExpired = new FormControl('');
     searchInputControlBlocked = new FormControl('');
+    searchInputControlDomain = new FormControl('');
+
     itemList = [];
     dataListArchive = [];
     total = 0;
@@ -102,8 +102,8 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         if (tab == 'blocked') {
             return Security.hasPermission(techDashPermissions.blockedTabPermissions)
         }
-        if (tab == 'blocked') {
-            return Security.hasPermission(techDashPermissions.blockedTabPermissions)
+        if (tab == 'domain') {
+            return Security.hasPermission(techDashPermissions.domainTabPermissions)
         }
     }
 
@@ -117,36 +117,43 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         this.tabNameStr = tabName;
         this.tabName = tabName;
 
-        switch (this.tabNameStr) {
-            case 'Pending':
-                this.tab = 'pending';
-                this.pending?.refreshItems();
-                break;
+        // switch (this.tabNameStr) {
+        //     case 'Pending':
+        //         this.tab = 'pending';
+        //         this.pending?.refreshItems();
+        //         break;
 
-            case 'Completed':
-                this.tab = 'completed';
-                // if (this.isSecond) {
-                this.completed?.refreshItems();
-                this.isSecond = false;
-                // }
-                break;
+        //     case 'Completed':
+        //         this.tab = 'completed';
+        //         // if (this.isSecond) {
+        //         this.completed?.refreshItems();
+        //         this.isSecond = false;
+        //         // }
+        //         break;
 
-            case 'Blocked':
-                this.tab = 'blocked';
-                // if (this.isThird) {
-                this.blocked?.refreshItems();
-                this.isThird = false;
-                // }
-                break;
+        //     case 'Blocked':
+        //         this.tab = 'blocked';
+        //         // if (this.isThird) {
+        //         this.blocked?.refreshItems();
+        //         this.isThird = false;
+        //         // }
+        //         break;
 
-            case 'Expired':
-                this.tab = 'expired';
-                // if (this.isFourth) {
-                this.expired?.refreshItems();
-                this.isFourth = false;
-                // }
-                break;
-        }
+        //     case 'Expired':
+        //         this.tab = 'expired';
+        //         // if (this.isFourth) {
+        //         this.expired?.refreshItems();
+        //         this.isFourth = false;
+        //         // }
+        //         break;
+
+        //     case 'Domain':
+        //         this.tab = 'domain';
+        //         // if (this.isFourth) {
+        //         this.domain?.refreshItems();
+        //         // }
+        //         break;
+        // }
     }
 
     openTabFiterDrawer() {
@@ -178,9 +185,13 @@ export class CRMTechDashboardListComponent implements OnDestroy {
                 this.blocked?.refreshItems();
                 break;
             case 'Domain':
-                // this.domain?.refreshItems();
+                this.domain?.refreshItems();
                 break;
         }
+    }
+
+    ngAfterViewInit(){
+        console.log("domain>>", this.domain)
     }
 
     exportExcel(): void {
@@ -208,6 +219,11 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     blockedRefresh(event: any) {
         this.blocked.searchInputControlBlocked.patchValue(event);
         this.blocked?.refreshItems();
+    }
+
+    domainRefresh(event:any) {
+         this.domain.searchInputControlPending.patchValue(event);  // need to be changed, remaining ...................................................................
+        this.domain?.refreshItems();
     }
 
     ngOnDestroy(): void {
