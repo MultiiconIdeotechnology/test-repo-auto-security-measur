@@ -18,7 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { BusService } from 'app/services/bus.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -34,6 +34,7 @@ import { AgentService } from 'app/services/agent.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-bus',
@@ -83,7 +84,13 @@ export class BusComponent extends BaseListingComponent {
   tocityList: any[] = [];
   supplierListAll: any[] = [];
   isfirst: boolean = true;
-  cols = [];
+
+
+  types = Types;
+  cols: Column[] = [];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
 
   constructor(
     private conformationService: FuseConfirmationService,
@@ -118,9 +125,42 @@ export class BusComponent extends BaseListingComponent {
 
     this.busFilter.FromDate.setDate(1);
     this.busFilter.FromDate.setMonth(this.busFilter.FromDate.getMonth() - 3);
+
+    this.selectedColumns = [
+      { field: 'booking_ref_no', header: 'Reference No.', type: Types.link, isFrozen: false, },
+      { field: 'status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
+      { field: 'bookingDate', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'tin', header: 'TIN', type: Types.text, },
+      { field: 'ticket_no', header: 'Ticket No.', type: Types.text, },
+      { field: 'agent_name', header: 'Agent', type: Types.select },
+      { field: 'user_type', header: 'Type', type: Types.text },
+      { field: 'payment_gateway', header: 'PG', type: Types.text },
+      { field: 'mop', header: 'MOP', type: Types.text },
+      { field: 'supplier', header: 'Supplier', type: Types.text },
+      { field: 'purchase_price', header: 'Purchase Price', type: Types.number , fixVal:2 },
+      { field: 'sourceCity', header: 'From', type: Types.text },
+      { field: 'destination', header: ' To', type: Types.text },
+      { field: 'pax', header: 'Pax', type: Types.text },
+      { field: 'device', header: 'Device', type: Types.text },
+      { field: 'ip_address', header: 'IP Address', type: Types.text },
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      //this.selectDateRanges(resp['table_config']);
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
+
+
     this.agentList = this._filterService.agentListById;
     this.getSupplier();
     this.getFromCity('');
@@ -159,13 +199,28 @@ export class BusComponent extends BaseListingComponent {
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['bookingDate']?.value && Array.isArray(resp['table_config']['bookingDate']?.value)) {
-				this._filterService.selectionDateDropdown = 'custom_date_range';
-				this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
-			}
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(resp['table_config']['bookingDate']);
+      }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
       this.primengTable._filter();
     });
+
+    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+    if (filter && filter?.gridConfiguration) {
+      this.activeFiltData = filter;
+      this.isFilterShow = true;
+      let filterData = JSON.parse(filter.gridConfiguration);
+      this.primengTable['filters'] = filterData['table_config'];
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
+    }
   }
 
   ngAfterViewInit() {
@@ -185,16 +240,39 @@ export class BusComponent extends BaseListingComponent {
       }
 
       if (filterData['table_config']['bookingDate']?.value && Array.isArray(filterData['table_config']['bookingDate']?.value)) {
-				this._filterService.selectionDateDropdown = 'custom_date_range';
-				this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
-			}
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(filterData['table_config']['bookingDate']);
+      }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
   }
 
-  copy(link:any) {
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  copy(link: any) {
     this.clipboard.copy(link);
     this.toasterService.showToast('success', 'Copied');
   }
@@ -409,6 +487,16 @@ export class BusComponent extends BaseListingComponent {
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 
 }
