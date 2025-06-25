@@ -169,7 +169,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <!--date range picker-->
+                           
                             <ng-contaier *ngIf="col.field == 'agent_name'">
                                 <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
                                     [showMenu]="false">
@@ -255,6 +255,7 @@
                                 </p-columnFilter>
                             </ng-contaier>
 
+                            <!--date range picker-->
                             <ng-container *ngIf="col.type == types.dateTime">
                                 <p-columnFilter
                                     *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"

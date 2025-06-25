@@ -88,7 +88,7 @@ export class FlightComponent extends BaseListingComponent {
     public endDate = new FormControl();
     public StartDate: any;
     public EndDate: any;
-    //cols = [];
+
     selectedToAirport: any;
     selectedFromAirport: any;
     selectedSupplier: any;

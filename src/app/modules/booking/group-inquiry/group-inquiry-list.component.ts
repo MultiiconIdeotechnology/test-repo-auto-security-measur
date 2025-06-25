@@ -12,7 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, groupInquiryPermissions, messages, module_name } from 'app/security';
 import { MatDialog } from '@angular/material/dialog';
 import { GroupInquiryService } from 'app/services/group-inquiry.service';
@@ -28,6 +28,7 @@ import { KycDocumentService } from 'app/services/kyc-document.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { RejectResonComponent } from 'app/modules/account/withdraw/reject-reson/reject-reson.component';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-group-inquiry-list',
@@ -59,10 +60,10 @@ export class GroupInquiryListComponent
     private settingsUpdatedSubscription: Subscription;
     dataList = [];
     total = 0;
-    selectedAgent:any;
-    selectedSupplier:any;
-    agentList:any[] = [];
-    supplierList:any[]= [];
+    selectedAgent: any;
+    selectedSupplier: any;
+    agentList: any[] = [];
+    supplierList: any[] = [];
     statusList = [
         { label: 'Pending', value: 'Pending' },
         { label: 'Inprocess', value: 'Inprocess' },
@@ -74,8 +75,12 @@ export class GroupInquiryListComponent
         { label: 'Partial Cancellation Pending', value: 'Partial Cancellation Pending' },
         { label: 'Expired', value: 'Expired' }
     ];
-    
-    cols = [];
+
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
     constructor(
         private groupInquiryService: GroupInquiryService,
@@ -91,19 +96,45 @@ export class GroupInquiryListComponent
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'booking_ref_no', header: 'Ref No.', type: Types.link, isFrozen: false, },
+            { field: 'agent_name', header: 'Agent', type: Types.select, },
+            { field: 'supplier_name', header: 'Supplier', type: Types.select, },
+            { field: 'booking_status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
+            { field: 'pnr', header: 'PNR', type: Types.text, },
+            { field: 'departure_date', header: 'Departure Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'arrival_date', header: 'Arrival Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'trip_type', header: 'Trip Type', type: Types.text, },
+            { field: 'pax', header: 'Pax', type: Types.text, isHideFilter:true},
+            { field: 'reject_reason', header: 'Reject Reason', type: Types.text,isHideFilter:true },
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            //this.selectDateRanges(resp['table_config']);
+            this.primengTable['filters'] = resp['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+            this.primengTable._filter();
+        });
+
         this.getSupplier("");
         this.agentList = this._filterService.agentListById;
 
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
 
@@ -129,10 +160,10 @@ export class GroupInquiryListComponent
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
             this.selectedSupplier = filterData['table_config']['supplier_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
             if (filterData['table_config']['departure_date'].value) {
@@ -145,7 +176,46 @@ export class GroupInquiryListComponent
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
         }
+
+        const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+        if (filter && filter?.gridConfiguration) {
+            this.activeFiltData = filter;
+            this.isFilterShow = true;
+            let filterData = JSON.parse(filter.gridConfiguration);
+            this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
+        }
     }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.module_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.module_name, columns: this.selectedColumns });
+    }
+
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -171,7 +241,7 @@ export class GroupInquiryListComponent
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
             }
         });
@@ -181,9 +251,9 @@ export class GroupInquiryListComponent
         this.kycDocumentService.getSupplierCombo(value, 'Airline').subscribe((data) => {
             this.supplierList = data;
 
-            for(let i in this.supplierList){
+            for (let i in this.supplierList) {
                 this.supplierList[i].id_by_value = this.supplierList[i].company_name;
-             }
+            }
         });
     }
 
@@ -308,12 +378,12 @@ export class GroupInquiryListComponent
         }).afterClosed().subscribe({
             next: (res) => {
                 if (res && res.reject_reason) {
-                    let body = { 
-                        id: record.id, 
+                    let body = {
+                        id: record.id,
                         Status: 'Rejected',
                         reject_reason: res.reject_reason
                     }
-                    
+
                     this.groupInquiryService.setBookingStatus(body).subscribe({
                         next: () => {
                             this.alertService.showToast('success', "Group Inquiry Rejected", "top-right", true);
@@ -344,5 +414,16 @@ export class GroupInquiryListComponent
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
     }
 }

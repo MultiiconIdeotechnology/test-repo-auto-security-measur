@@ -196,7 +196,6 @@ export class AmendmentRequestsListComponent
     }
 
     ngOnInit() {
-
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             this.sortColumn = resp['sortColumn'];
             this.primengTable['_sortField'] = resp['sortColumn'];
@@ -283,6 +282,7 @@ export class AmendmentRequestsListComponent
         }
 
         const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+        console.log("filter??",filter)
         if (filter && filter?.gridConfiguration) {
             this.activeFiltData = filter;
             this.isFilterShow = true;
@@ -316,13 +316,7 @@ export class AmendmentRequestsListComponent
     isDisplayHashCol(): boolean {
         return this.selectedColumns.length > 0;
     }
-
-    onFrozenColumn(field: any, event: MouseEvent) {
-        if (field == 'booking_ref_no' || field == 'status') {
-            this.isFrozenColumn(field);
-            event.stopPropagation();
-        }
-    }
+    
     onSelectedColumnsChange(): void {
         this._filterService.setSelectedColumns({ name: this.module_name, columns: this.selectedColumns });
     }

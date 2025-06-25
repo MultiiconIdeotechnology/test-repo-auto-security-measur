@@ -114,7 +114,7 @@ export class CommonFilterService {
 
     //getFilterData
     getDefaultFilterByGridName(params: { gridName: string }) {
-        return JSON.parse(localStorage.getItem('filterData') || '[]').find(x => x.gridName == params.gridName)?.filters?.find(x => x.is_default);
+        return JSON.parse(localStorage.getItem('filterData') || '[]').find(x => x.grid_name == params.gridName)?.filters?.find(x => x.is_default);
     }
 
     // Update LocalStorage Data setFilterData
