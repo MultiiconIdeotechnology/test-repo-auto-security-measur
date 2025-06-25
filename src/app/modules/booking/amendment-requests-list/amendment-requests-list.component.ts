@@ -305,7 +305,7 @@ export class AmendmentRequestsListComponent
     checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
         if (col.length) return col;
         else {
-            var Col = this._filterService.getSelectedColumns({ name: this.module_name })?.columns || [];
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
             if (!Col.length)
                 return oldCol;
             else
@@ -318,7 +318,7 @@ export class AmendmentRequestsListComponent
     }
     
     onSelectedColumnsChange(): void {
-        this._filterService.setSelectedColumns({ name: this.module_name, columns: this.selectedColumns });
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
 
 
