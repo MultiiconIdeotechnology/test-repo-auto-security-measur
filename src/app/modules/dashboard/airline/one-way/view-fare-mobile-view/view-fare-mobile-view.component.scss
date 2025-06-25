@@ -1,0 +1,22 @@
+.header-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.fare-card {
+    flex-basis: 260px; /* This sets the base width of the card */
+    max-width: 100%;   /* But it can stretch to take the available space */
+    flex-grow: 1;      /* Allow the card to grow */
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.airline-remark {
+    display: flex;
+    padding: 4px 8px;
+    border-radius: 4px;
+    align-items: center;
+    background: linear-gradient(91.46deg, #FDF0DD -8.97%, #FFE6C1 105.88%);
+}

@@ -1,0 +1,200 @@
+<!-- Desktop Screen Section -->
+<div class="flex flex-col max-h-screen -m-6 p-6 space-y-4 mobile:hidden">
+
+    <div class="flex flex-col space-y-3">
+        <div class="flex flex-row items-center justify-between">
+            <span class="text-lg font-semibold">Travellers</span>
+        </div>
+
+        <div class="flex flex-col space-y-2 px-6">
+            <div class="flex flex-row items-center">
+                <div class="text-sm white-bg font-medium w-26">Adult (12+ yr)</div>
+                <div class="flex-grow flex flex-row space-x-2">
+                    <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
+                        (click)="toggleSelection(i,'adult')"
+                        [ngClass]="{'hidden': i === 0, 'secondary-bg primary-text': data.adult === i}"
+                        *ngFor="let i of 10 | enumerate">{{i}}</div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center">
+                <div class="text-sm white-bg font-medium w-26">Child (2-12 yr)</div>
+                <div class="flex-grow flex flex-row space-x-2">
+                    <div></div>
+                    <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
+                        (click)="toggleSelection(i,'child')" [ngClass]="{'secondary-bg primary-text': data.child === i}"
+                        *ngFor="let i of 9 | enumerate">{{i}}</div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center" *ngIf="data.service === 'flight'">
+                <div class="text-sm white-bg font-medium w-26">Infant (0-2 yr)</div>
+                <div class="flex-grow flex flex-row space-x-2">
+                    <div></div>
+                    <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
+                        (click)="toggleSelection(i,'infant')"
+                        [ngClass]="{'secondary-bg primary-text': data.infant === i}" *ngFor="let i of 9 | enumerate">
+                        {{i}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex" *ngIf="data.service === 'flight'">
+        <div>
+            <div class="flex flex-row items-center justify-between">
+                <span class="text-lg font-semibold pb-3">Class</span>
+            </div>
+
+            <div class="px-6">
+                <mat-radio-group [ngModelOptions]="{standalone: true}" [(ngModel)]="data.cabinClass">
+                    <div class="flex flex-col space-y-2">
+                        <mat-radio-button
+                            [value]="flightClass.economy"><span>{{flightClass.economy}}</span></mat-radio-button>
+                        <mat-radio-button
+                            [value]="flightClass.premium_economy"><span>{{flightClass.premium_economy}}</span>
+                        </mat-radio-button>
+                        <mat-radio-button
+                            [value]="flightClass.business"><span>{{flightClass.business}}</span></mat-radio-button>
+                        <mat-radio-button value="First"><span>{{flightClass.first_class}}</span></mat-radio-button>
+                    </div>
+                </mat-radio-group>
+                <!-- sub agent permistion wise class -->
+                <!-- <mat-radio-group [ngModelOptions]="{standalone: true}" [(ngModel)]="data.cabinClass">
+                    <div class="flex flex-col space-y-2">
+                        <ng-container *ngFor="let key of allowedClasses">
+                            <mat-radio-button [value]="flightClass[key]">
+                                <span>{{ flightClass[key] }}</span>
+                            </mat-radio-button>
+                        </ng-container>
+                    </div>
+                </mat-radio-group> -->
+
+            </div>
+        </div>
+
+        <div>
+            <div class="flex flex-row items-center justify-between">
+                <span class="text-lg font-semibold pb-3">Fare Type</span>
+            </div>
+
+            <div class="px-6">
+                <mat-radio-group [ngModelOptions]="{standalone: true}" [(ngModel)]="data.fareType">
+                    <div class="flex flex-col space-y-2">
+                        <mat-radio-button [value]="flightFareType.regular"><span>{{flightFareType.regular}}</span>
+                        </mat-radio-button>
+                        <mat-radio-button [value]="flightFareType.student"><span>{{flightFareType.student}}</span>
+                        </mat-radio-button>
+                        <mat-radio-button
+                            [value]="flightFareType.senior_citizen"><span>{{flightFareType.senior_citizen}}</span>
+                        </mat-radio-button>
+                        <mat-radio-button
+                            [value]="flightFareType.armed_forced"><span>{{flightFareType.armed_forced}}</span>
+                        </mat-radio-button>
+                    </div>
+                </mat-radio-group>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-row justify-end">
+        <button mat-button class="primary-text" (click)="matDialogRef.close(data)">DONE</button>
+    </div>
+
+</div>
+
+<!-- Mobile Screen Section -->
+<div class="mobile:flex flex-col hidden">
+    <div class="flex flex-row items-center gap-x-4 primary-bg p-4 sticky top-0 z-20">
+        <mat-icon class="text-white cursor-pointer" (click)="matDialogRef.close()"
+            [svgIcon]="'mat_outline:arrow_back'"></mat-icon>
+        <div class="text-lg font-medium text-white">
+            <span>Select Travellers & Class</span>
+        </div>
+    </div>
+
+    <div class="flex flex-col space-y-3 p-3">
+        <div class="flex flex-row items-center justify-between">
+            <span class="text-lg font-semibold">Travellers</span>
+        </div>
+
+        <div class="flex flex-col space-y-2">
+            <div class="flex flex-row items-center">
+                <div class="text-sm white-bg font-medium w-20">Adult (12+ yr)</div>
+
+                <div class="flex-grow flex flex-row space-x-2">
+                    <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
+                        (click)="toggleSelection(i,'adult')"
+                        [ngClass]="{'hidden': i === 0, 'secondary-bg primary-text': data.adult === i}"
+                        *ngFor="let i of 10 | enumerate">{{i}}</div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center">
+                <div class="text-sm white-bg font-medium w-20">Child (2-12 yr)</div>
+                <div class="flex-grow flex flex-row space-x-2">
+                    <div></div>
+                    <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
+                        (click)="toggleSelection(i,'child')" [ngClass]="{'secondary-bg primary-text': data.child === i}"
+                        *ngFor="let i of 9 | enumerate">{{i}}</div>
+                </div>
+            </div>
+            <div class="flex flex-row items-center" *ngIf="data.service === 'flight'">
+                <div class="text-sm white-bg font-medium w-20">Infant (0-2 yr)</div>
+                <div class="flex-grow flex flex-row space-x-2">
+                    <div></div>
+                    <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
+                        (click)="toggleSelection(i,'infant')"
+                        [ngClass]="{'secondary-bg primary-text': data.infant === i}" *ngFor="let i of 9 | enumerate">
+                        {{i}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col space-y-3 p-3" *ngIf="data.service === 'flight'">
+        <div class="flex flex-row items-center justify-between">
+            <span class="text-lg font-semibold">Class</span>
+        </div>
+
+        <div class="">
+            <mat-radio-group [ngModelOptions]="{standalone: true}" [(ngModel)]="data.cabinClass">
+                <div class="flex flex-col space-y-2">
+                    <mat-radio-button
+                        [value]="flightClass.economy"><span>{{flightClass.economy}}</span></mat-radio-button>
+                    <mat-radio-button [value]="flightClass.premium_economy"><span>{{flightClass.premium_economy}}</span>
+                    </mat-radio-button>
+                    <mat-radio-button
+                        [value]="flightClass.business"><span>{{flightClass.business}}</span></mat-radio-button>
+                    <mat-radio-button value="First"><span>{{flightClass.first_class}}</span></mat-radio-button>
+                </div>
+            </mat-radio-group>
+        </div>
+
+        <div>
+            <div class="flex flex-row items-center justify-between">
+                <span class="text-lg font-semibold py-3">Fare Type</span>
+            </div>
+
+            <div class="">
+                <mat-radio-group [ngModelOptions]="{standalone: true}" [(ngModel)]="data.fareType">
+                    <div class="flex flex-col space-y-2">
+                        <mat-radio-button [value]="flightFareType.regular"><span>{{flightFareType.regular}}</span>
+                        </mat-radio-button>
+                        <mat-radio-button [value]="flightFareType.student"><span>{{flightFareType.student}}</span>
+                        </mat-radio-button>
+                        <mat-radio-button
+                            [value]="flightFareType.senior_citizen"><span>{{flightFareType.senior_citizen}}</span>
+                        </mat-radio-button>
+                        <mat-radio-button
+                            [value]="flightFareType.armed_forced"><span>{{flightFareType.armed_forced}}</span>
+                        </mat-radio-button>
+                    </div>
+                </mat-radio-group>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-row justify-end">
+        <button mat-button class="primary-text" (click)="matDialogRef.close(data)">
+            DONE
+        </button>
+    </div>
+</div>

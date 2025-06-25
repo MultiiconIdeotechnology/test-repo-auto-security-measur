@@ -57,7 +57,7 @@ export const themes = {
     HoneymoonSpecial: 'Honeymoon Special',
 };
 
-export const imageRecSize ={
+export const imageRecSize = {
     holiday: '(225px &#10005; 225px)',
     destination: '(225px &#10005; 225px)',
 }
@@ -130,8 +130,22 @@ export const keys = {
     permissionHash: '6964D472E7741EC05A2DF8833E39DA88',
 };
 
+export const flightClass = {
+    economy: 'Economy',
+    business: 'Business',
+    premium_economy: 'Premium Economy',
+    first_class: 'First Class',
+}
+
+export const flightFareType = {
+    regular: 'Regular',
+    student: 'Student',
+    senior_citizen: 'Senior Citizen',
+    armed_forced: 'Armed Forced',
+}
+
 export const Routes = {
-    dashboard:{
+    dashboard: {
         airline_path: 'dashboard/airline',
         airline_route: '/dashboard/airline',
     },
@@ -188,7 +202,7 @@ export const Routes = {
         product_route: '/masters/products',
     },
 
-    hr:{
+    hr: {
         department_path: 'hr/department',
         department_route: '/hr/department',
 
@@ -205,7 +219,7 @@ export const Routes = {
         permissionProfile_path: 'hr/permission-profile',
         permissionProfile_route: '/hr/permission-profile',
     },
-    customers:{
+    customers: {
         lead_path: 'customers/lead',
         lead_route: '/customers/lead',
 
@@ -261,7 +275,7 @@ export const Routes = {
 
         agent_balance_path: 'account/agent-balance',
         agent_balance_path_route: 'account/agent-balance',
-        
+
         agent_wise_service_wise_path: 'account/agent-wise-service-wise',
         agent_wise_service_wise_path_route: 'account/agent-wise-service-wise',
 
@@ -291,12 +305,12 @@ export const Routes = {
 
         purchase_register_path: 'account/purchase_register',
         purchase_register_route: 'account/purchase_register',
-        
+
         purchase_register_path_2: 'account/purchase_register_2',
         purchase_register_route_2: 'account/purchase_register_2',
     },
 
-    leads:{
+    leads: {
         leads_register_path: 'account/leads-register',
         leads_register_route: 'account/leads-register',
     },
@@ -311,11 +325,11 @@ export const Routes = {
         bus_path: 'booking/bus',
         bus_route: '/booking/bus',
         bus_details_route: '/booking/bus/details',
-        
+
         holiday_lead_path: 'booking/holiday-lead',
         holiday_lead_route: '/booking/holiday-lead',
         holiday_lead_details_route: '/booking/holiday-lead/details',
-        
+
         insurance_path: 'booking/insurance',
         insurance_route: '/booking/insurance',
         insurance_details_route: '/booking/insurance/details',
@@ -323,11 +337,11 @@ export const Routes = {
         hotel_path: 'booking/hotel',
         hotel_route: '/booking/hotel',
         hotel_details_route: '/booking/hotel/details',
-        
+
         forex_path: 'booking/forex',
         forex_route: '/booking/forex',
         forex_details_route: '/booking/forex/details',
-        
+
         cab_path: 'booking/cab',
         cab_route: '/booking/cab',
         cab_details_route: '/booking/cab/details',
@@ -396,14 +410,14 @@ export const Routes = {
     reports: {
         // amendment_requests_path: 'reports/amendment-requests',
         // amendment_requests_route: 'reports/amendment-requests',
-        tech_summary_path:'reports/tech_summary',
-        tech_summary_route:'reports/tech_summary',
+        tech_summary_path: 'reports/tech_summary',
+        tech_summary_route: 'reports/tech_summary',
 
         tech_rm_monthly_path: 'reports/tech_rm_monthly_report',
         tech_rm_monthly_route: 'reports/tech_rm_monthly_report',
 
-        tech_product_monthly_path:'reports/tech_product_monthly',
-        tech_product_monthly_route:'reports/tech_product_monthly',
+        tech_product_monthly_path: 'reports/tech_product_monthly',
+        tech_product_monthly_route: 'reports/tech_product_monthly',
 
 
         ledger_path: 'reports/ledger',
@@ -411,16 +425,16 @@ export const Routes = {
 
         airline_path: 'reports/airline',
         airline_route: 'reports/airline',
-        
+
         airline_summary_path: 'reports/airline_summary',
         airline_summary_route: 'reports/airline_summary',
-        
+
         airline_career_path: 'reports/airline_career',
         airline_career_route: 'reports/airline_career',
-        
+
         airline_monthly_path: 'reports/airline_monthly',
         airline_monthly_route: 'reports/airline_monthly',
-        
+
         airline_offline_path: 'reports/airline_offline',
         airline_offline_route: 'reports/airline_offline',
 
@@ -444,7 +458,7 @@ export const Routes = {
 
         agents_rmwise_agents_path: 'reports/partner-summary',
         agents_rmwise_agents_route: 'reports/partner-summary',
-        
+
         sent_mail_path: 'reports/sent-mail',
         sent_mail_route: 'reports/sent-mail',
 
@@ -459,7 +473,7 @@ export const Routes = {
 
         report_potential_lead_path: 'reports/potential-lead',
         report_potential_lead_route: 'reports/potential-lead',
-    
+
         pg_refund_path: 'account/pg_refund',
         pg_refund_route: 'account/pg_refund',
 

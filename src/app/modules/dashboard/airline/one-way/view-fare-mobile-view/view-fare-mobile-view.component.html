@@ -1,0 +1,227 @@
+<div class="flex flex-col max-w-256 mobile:max-w-full mobile:min-w-full max-h-[90vh]">
+    <div
+        class="flex flex-0 items-center justify-between mobile:sticky mobile:top-0 pl-7 pr-4 h-15 bg-white shadow-lg z-10">
+        <div class="text-xl mobile:text-md font-bold py-1">
+            <span class="text-orange-600">{{data?.moreFlights?.data?.length || 0}} FARE OPTIONS</span> available for
+            your trip.
+        </div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="px-6 pb-4 overflow-auto relative">
+        <div class="flex justify-between items-center">
+            <p class="text-[14px] text-neutral-600 mobile:text-md font-semibold py-5 px-2">
+                {{data?.originCity}} 🡪 {{data?.destinationCity}} ·
+                {{data?.displaySegments[0]?.depTime | date: 'EEE, dd-MM-yyyy'}} · Departure at
+                {{data?.displaySegments[0]?.depTime | date: 'HH:mm'}} - Arrival at
+                {{data?.displaySegments[0].arrTime | date: 'HH:mm'}}
+
+                <span class="block mt-2" *ngIf="data?.displaySegments?.length > 1">
+                    {{data?.returnOriginCity}} 🡪 {{data?.returnDestinationCity}} ·
+                    {{data?.displaySegments[1]?.depTime | date: 'EEE, dd-MM-yyyy'}} · Departure at
+                    {{data?.displaySegments[1]?.depTime | date: 'HH:mm'}} - Arrival at
+                    {{data?.displaySegments[1]?.arrTime | date: 'HH:mm'}}
+                </span>
+            </p>
+
+            <div class="bg-[#ECF2F9] rounded p-[10px] cursor-pointer" (click)="onFilterIconClick($event)">
+                <img class="w-[18px]" src="assets/icons/filter_far.svg">
+            </div>
+        </div>
+
+        <!-- Fare Filter popup-->
+        <ng-container *ngIf="isFilterVisible">
+            <div #filterPopup class="p-3 rounded absolute top-[50px] right-[25px] z-10 bg-white"
+                style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                <div class="flex ">
+
+                    <!-- Fare Type Filter -->
+                    <div class="border-r-[1px] border-[#E8E5E5] pr-[10px]">
+                        <div class="font-semibold text-sm text-[#090808] pb-2">Fare Type</div>
+                        <div class="max-h-[200px] overflow-auto">
+                            <div class="flex" *ngFor="let type of uniqueFareTypes; let i = index">
+                                <mat-checkbox class="ckbox_far_or" [(ngModel)]="type.is_selected" (change)="onFareTypeChange(i)">{{ type.name }}</mat-checkbox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Refundable Filter -->
+                    <div class="border-r-[1px] border-[#E8E5E5] px-[10px]">
+                        <div class="font-semibold text-sm text-[#090808] pb-2">Refundable status</div>
+                        <mat-radio-group class="grid" [(ngModel)]="selectedRefundable">
+                            <mat-radio-button class="pb-2" value="all">All</mat-radio-button>
+                            <mat-radio-button class="pb-2" value="true">Refundable</mat-radio-button>
+                            <mat-radio-button class="pb-2" value="false">Non-Refundable</mat-radio-button>
+                          </mat-radio-group>
+                    </div>
+
+                    <!-- Hold Filter -->
+                    <div class="pl-[10px]" *ngIf="bontonPanel.isB2B()">
+                        <div class="font-semibold text-sm text-[#090808] pb-2">Hold status</div>
+                        <div>
+                            <mat-checkbox class="ckbox_far_or" type="checkbox" [(ngModel)]="holdOnly" >Is available</mat-checkbox> 
+                        </div>
+                    </div>
+                </div>
+                <!-- Action Buttons -->
+                <div class="text-end gap-3 pt-2 border-t-[1px] border-[#E8E5E5]">
+                    <button class="text-[#79828C] font-semibold text-base pr-3" (click)="clearAllFilters()">Clear all</button>
+                    <button class="primary-text font-semibold text-base" (click)="applyFilters()">Apply</button>
+                </div>
+            </div>
+        </ng-container>
+
+        <div class="dialog-body relative" *ngIf="moreFlightAll.length > 0 && slideConfig && showCarousel">
+            <ngx-slick-carousel class="carousel flex items-stretch" #slickModal="slick-carousel" [config]="slideConfig"
+                (afterChange)="onSlideChange($event)" [attr.data-carousel-key]="carouselKey">
+                <div ngxSlickItem *ngFor="let fare of moreFlightAll"
+                    class="fare-card border border-stone-300 rounded-[4px] bg-white min-w-[260px] mobile:min-w-min mb-4 mx-2">
+                    <div class="flex justify-between px-4 pb-2 pt-3 border-b border-stone-300 min-h-[86px]">
+                        <div [ngClass]="fare?.cashback_amount > 0 ? '' : 'pt-2'">
+                            <div class="text-orange-600 text-lg font-semibold">{{fare?.currency}} {{fare?.salePrice}}
+                            </div>
+
+                            <!----CaseBack---->
+                            <div class="flex gap-1"
+                                *ngIf="fare?.cashback_amount > 0 && fare?.currency == 'INR' && bontonPanel.isB2B()">
+                                <span class="text-gradient text-sm"> {{fare?.currency}} {{fare?.cashback_amount}}
+                                    Cashback</span>
+                                <!-- <img class="w-4" src="assets/icons/cashback.svg"> -->
+                            </div>
+
+                            <div class="text-md font-semibold mt-1">{{fare?.fareClassString || '-'}}</div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-sm py-1.5 px-3 rounded-full leading-3"
+                                [ngClass]="fare.is_refundable ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'">
+                                {{fare?.is_refundable ? 'Refundable' : 'Non Refundable'}}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="px-4 pb-4">
+                        <div class="fare-details pt-4 text-md relative">
+                            <div *ngIf="user.is_admin"
+                                class="absolute top-0 left-[-16px] triangle text-center opacity-50"
+                                [style]="'border-top: 20px solid '+ fare.provider_color +' ;'">
+                                <div class="mt-[-21px] ml-[3px] text-[10px] white-text">{{fare?.provider_id}}</div>
+                            </div>
+                            <div class="mb-2">
+                                <p class="font-semibold">Class</p>
+                                <p class="sub-text">{{fare.cabinClass}}</p>
+                            </div>
+                            <div class="mb-2">
+                                <p class="font-semibold">Baggage</p>
+                                <p class="sub-text">
+                                    {{fare?.cabinBaggageStr}} Cabin
+                                    <span class="text-blue-600 inline-flex items-center cursor-pointer"
+                                        [matMenuTriggerFor]="cabinBaggageMenu">
+                                        <span class="pl-1">View</span>
+                                        <img class="w-4 ml-1" src="assets/icons/arrow-up-right.svg"
+                                            alt="arrow-up-right">
+                                    </span>
+                                </p>
+                                <!-- Baggage Menu -->
+                                <mat-menu #cabinBaggageMenu="matMenu">
+                                    <div class="p-4 text-md">
+                                        <h3 class="font-bold">Cabin Baggage</h3>
+                                        <div [innerHTML]="fare?.cabinBaggage || '-'"></div>
+                                    </div>
+                                </mat-menu>
+
+                                <p class="sub-text">
+                                    {{fare?.checkinBaggageStr}} Check-in
+                                    <span class="text-blue-600 inline-flex items-center cursor-pointer"
+                                        [matMenuTriggerFor]="checkinBaggageMenu">
+                                        <span class="pl-1">View</span>
+                                        <img class="w-4 ml-1" src="assets/icons/arrow-up-right.svg"
+                                            alt="arrow-up-right">
+                                    </span>
+                                </p>
+                                <!-- Checkin Menu -->
+                                <mat-menu #checkinBaggageMenu="matMenu">
+                                    <div class="p-4 text-md">
+                                        <h3 class="font-bold">Check-In Baggage</h3>
+                                        <div [innerHTML]="fare?.checkinBaggage || '-'"></div>
+                                        <!-- <p>Hirasar → Mumbai</p>
+                                        <p>7 Kgs For Cabin</p>
+                                        <p>14 Kgs For Check-In</p>
+                                        <p class="mt-4">Mumbai → New Delhi</p>
+                                        <p>7 Kgs For Cabin</p>
+                                        <p>14 Kgs For Check-In</p> -->
+                                    </div>
+                                </mat-menu>
+                            </div>
+                            <div class="mb-2">
+                                <p class="font-semibold">Seats </p>
+                                <p class="sub-text">{{fare?.seats || 0}} Available</p>
+                            </div>
+                            <div class="mb-2">
+                                <p class="font-semibold">Cancellation</p>
+                                <div class="sub-text">{{fare?.cancellation}}
+                                    <div class="text-sm text-blue-600 items-center cursor-pointer"
+                                        (click)="fareRule(data.destination, data.origin, fare)">
+                                        Check fare rule
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <p class="font-semibold">Date Changes</p>
+                                <div class="sub-text">{{fare?.dateChange}}
+                                    <div class="text-sm text-blue-600 items-center cursor-pointer"
+                                        (click)="fareRule(data.destination, data.origin, fare)">
+                                        Check fare rule
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="font-Inter text-sm airline-remark" *ngIf="fare?.airlineRemark">
+                                ● <span class="pl-1 " [ngClass]="isMobileView ? '' : 'truncate'"
+                                    [innerHTML]="sanitizer.bypassSecurityTrustHtml(fare.airlineRemark)"></span>
+                                <mat-icon *ngIf="!isMobileView" svgIcon="heroicons_outline:exclamation-circle"
+                                    class="text-[#C97701] pl-1" [matTooltip]="fare.airlineRemark"
+                                    matTooltipPosition="above"></mat-icon>
+                            </div>
+                            <div *ngIf="!fare?.airlineRemark" class="h-10"></div>
+                        </div>
+
+                        <ng-container *ngIf="!authService.isAutoLogin">
+                            <div class="mt-5 flex justify-center" [ngClass]="{'justify-between': bontonPanel.isB2B()}">
+                                <ng-container *ngIf="bontonPanel.isB2B()">
+                                    <button [disabled]="!fare?.isHold" [ngClass]="{'primary-border': fare?.isHold}"
+                                        (click)="booking(fare)"
+                                        class="w-1/2 mr-4 border-[1px] rounded-md px-4 py-[7px] h-full justify-center items-center">
+                                        <span class="font-semibold text-sm uppercase tracking-wide"
+                                            [ngClass]="{'primary-text': fare?.isHold}">Hold</span>
+                                    </button>
+                                </ng-container>
+
+                                <button class="w-1/2 blue-button fuse-mat-button-large" mat-flat-button
+                                    (click)="booking(fare)">
+                                    <span class="white-text tracking-wide">Book</span>
+                                </button>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </ngx-slick-carousel>
+
+            <!-- Navigation arrows -->
+            <div mat-ripple
+                class="flex flex-row justify-center items-center absolute h-10 w-10 white-bg rounded-full top-[190px] -ml-[16px] shadow-xl gray-border border cursor-pointer"
+                (click)="slickModal.slickPrev()" *ngIf="showLeftArrow">
+                <mat-icon class="relative left-1 primary-text">arrow_back_ios</mat-icon>
+            </div>
+
+            <div mat-ripple
+                class="flex flex-row justify-center items-center absolute h-10 w-10 white-bg rounded-full right-0 top-[190px] -mr-[16px] shadow-xl gray-border border cursor-pointer"
+                (click)="slickModal.slickNext()" *ngIf="showRightArrow">
+                <mat-icon class="primary-text">arrow_forward_ios</mat-icon>
+            </div>
+        </div>
+
+        <div *ngIf="moreFlightAll.length == 0" class="h-72 w-[680px] mobile:w-auto flex justify-center items-center font-semibold text-lg">No Data.</div>
+    </div>
+</div>

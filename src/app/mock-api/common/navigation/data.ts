@@ -14,8 +14,8 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 id: 'dashboard.airline',
                 title: 'Airline',
                 type: 'basic',
-                pid: 'CRM_AIRLINE_VIEW',
-                icon: 'heroicons_outline:plus',
+                pid: 'DASHBOARD_AIRLINE_VIEW',
+                icon: 'flight_takeoff',
                 link: Routes.dashboard.airline_route
             },
         ]
