@@ -168,5 +168,11 @@
                 <app-crm-tech-dashboard-expired #expired [(isFilterShowExpired)]="isFilterShowExpired"></app-crm-tech-dashboard-expired>
             </ng-container>
         </mat-tab>
+
+        <mat-tab label="Domain" [aria-label]="'Domain'" *ngIf="getTabsPermission('domain')">
+            <ng-container *ngIf="tabNameStr == 'Domain'">
+                <app-crm-tech-dashboard-domain #domain [(isFilterShowDomain)]="isFilterShowDomain"></app-crm-tech-dashboard-domain>
+            </ng-container>
+        </mat-tab>
     </mat-tab-group>
 </div>
