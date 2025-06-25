@@ -134,7 +134,7 @@ export class ProformaEntryComponent {
       )
       .subscribe({
         next: data => {
-            if (!this.compnyAllList?.length) {
+          if (!this.compnyAllList?.length) {
             this.compnyAllList = data
           }
           this.compnyList = data
@@ -189,7 +189,7 @@ export class ProformaEntryComponent {
       const defaultAgent = this.compnyList[0].id;
       this.formGroup.get("company_id").patchValue(defaultAgent);
     }
-    
+
     if (this.particularAllList?.length) {
       this.particularList = [...this.particularAllList]; // Use spread to avoid mutation
       const defaultAgent = this.particularList[0].id;
@@ -202,42 +202,47 @@ export class ProformaEntryComponent {
   }
 
   submit(): void {
-    this.disableBtn = true
     if (!this.formGroup.valid) {
       this.alertService.showToast('error', 'Please fill all required fields.', 'top-right', true);
       this.formGroup.markAllAsTouched();
       return;
     }
-
+    
+    if (this.formGroup.get('total_amount').value <= 0) {
+      this.alertService.showToast('error', 'Total amount must be greater than 0.', 'top-right', true);
+      return;
+    }
+    
     const json = this.formGroup.getRawValue();
     json.invoice_date = DateTime.fromJSDate(json.invoice_date).toFormat('yyyy-MM-dd'),
     // return
-    this.accountService.create(json).subscribe({
-      next: (data) => {
-        this.alertService.showToast('success', 'Proforma Invoice created successfully');
-        this.resetForm()
-        if (data.id) {
-          let resData = {
-            id: data.id,
-            invoice_no: data.invoice_no,
-            invoice_date: data.invoice_date,
-            customer_name: data.customer_name,
-            currency: data.currency,
-            taxable_amount: data.taxable_amount,
-            tax: data.tax,
-            total_amount: data.total_amount,
-            remark: data.remark,
+    this.disableBtn = true
+      this.accountService.create(json).subscribe({
+        next: (data) => {
+          this.alertService.showToast('success', 'Proforma Invoice created successfully');
+          this.resetForm()
+          if (data.id) {
+            let resData = {
+              id: data.id,
+              invoice_no: data.invoice_no,
+              invoice_date: data.invoice_date,
+              customer_name: data.customer_name,
+              currency: data.currency,
+              taxable_amount: data.taxable_amount,
+              tax: data.tax,
+              total_amount: data.total_amount,
+              remark: data.remark,
+            }
+            this.sidebarDialogService.close({ data: resData, key: 'create-response' });
+            this.settingsDrawer.close();
           }
-          this.sidebarDialogService.close({ data: resData, key: 'create-response' });
-          this.settingsDrawer.close();
-        }
 
-        this.disableBtn = false;
-      }, error: (err) => {
-        this.alertService.showToast('error', err)
-        this.disableBtn = false
-      }
-    });
+          this.disableBtn = false;
+        }, error: (err) => {
+          this.alertService.showToast('error', err)
+          this.disableBtn = false
+        }
+      });
 
     // const json = {
     //   id: this.ismodify ? this.formGroup.get('id').value : '',
