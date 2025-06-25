@@ -175,7 +175,7 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
           const filterReq = this.getNewFilterReq(event);
           filterReq['Filter'] = this.searchInputControlPending.value;
   
-          this.crmService.getTechProductList(filterReq).subscribe({
+          this.crmService.getTechDomainProductList(filterReq).subscribe({
               next: (data) => {
                   this.isLoading = false;
                   this.dataList = data.data;

@@ -153,6 +153,10 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardBlockedList', model);
     }
 
+     getTechDomainProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/domainList', model);
+    }
+
     startIntegration(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/startIntegration', model);
     }

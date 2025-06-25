@@ -10,36 +10,28 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                <th pSortableColumn="item_code" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-                    class="dark:bg-[#1e293b]" [frozen]="frozenObj?.item_code"
-                    [ngClass]="{'left-0': !frozenObj?.item_code}">
-                    Item Code <p-sortIcon field="item_code" />
-                    <span class="float-right" (click)="isFrozenColumn('item_code');$event.stopPropagation()">
-                        <i *ngIf="!frozenObj?.item_code" class="pi pi-lock-open icon-size-3"></i>
-                        <i *ngIf="frozenObj?.item_code" class="pi pi-lock icon-size-3"></i>
+                <th pSortableColumn="agent_id" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+                    class="dark:bg-[#1e293b]" [frozen]="frozenObj?.agent_id"
+                    [ngClass]="{'left-0': !frozenObj?.agent_id}">
+                    Item Code <p-sortIcon field="agent_id" />
+                    <span class="float-right" (click)="isFrozenColumn('agent_id');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.agent_id" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.agent_id" class="pi pi-lock icon-size-3"></i>
                     </span>
                 </th>
-                <th pSortableColumn="item_name" pResizableColumn>
-                    Item <p-sortIcon field="item_name" />
+                <th pSortableColumn="domain_name" pResizableColumn>
+                    Domain Name <p-sortIcon field="domain_name" />
                 </th>
-                <th pSortableColumn="product_name" pResizableColumn>
-                    Product <p-sortIcon field="product_name" />
+                <th pSortableColumn="ip_address" pResizableColumn>
+                    IP Address <p-sortIcon field="ip_address" />
                 </th>
-                <th pSortableColumn="product_status" pResizableColumn>
-                    Status <p-sortIcon field="product_status" />
+                <th pSortableColumn="ssl_expire_date_time" pResizableColumn>
+                    SSL Expiry Date <p-sortIcon field="ssl_expire_date_time" />
                 </th>
-                <th pSortableColumn="agentCode" pResizableColumn>
-                    Agent Code <p-sortIcon field="agentCode" />
+                <th class="w-full" pSortableColumn="is_domain_pointed" pResizableColumn>
+                    Is Pointing <p-sortIcon field="is_domain_pointed" />
                 </th>
-                <th pSortableColumn="agency_name" pResizableColumn>
-                    Agency Name <p-sortIcon field="agency_name" />
-                </th>
-                <th pSortableColumn="integration_start_date_time" pResizableColumn>
-                    Start Int. Date <p-sortIcon field="integration_start_date_time" />
-                </th>
-                <th pSortableColumn="entry_date_time" pResizableColumn>
-                    Entry Date <p-sortIcon field="entry_date_time" />
-                </th>
+
             </tr>
 
             <tr *ngIf="isFilterShowPending">
@@ -158,74 +150,13 @@
                             <mat-icon class="mat-18">info</mat-icon>
                             <span style="font-weight: 600">Info</span>
                         </button>
-                        <button mat-menu-item (click)="startIntegration(element)"
-                            *ngIf="element.is_integration_started == false">
-                            <mat-icon class="mat-18">how_to_reg</mat-icon>
-                            <span style="font-weight: 600">Start Integration</span>
-                        </button>
-                        <button mat-menu-item (click)="updateStatus(element)"
-                            *ngIf="element.is_integration_started == true">
-                            <mat-icon class="mat-18">edit</mat-icon>
-                            <span style="font-weight: 600">Update Status</span>
-                        </button>
-                        <ng-container *ngIf="!element?.product_name?.toLowerCase().includes('rise')">
-                            <button mat-menu-item (click)="wlSetting(element)"
-                                *ngIf="element.is_integration_started == true">
-                                <mat-icon class="mat-18">schedule</mat-icon>
-                                <span style="font-weight: 600">WL Settings</span>
-                            </button>
-                        </ng-container>
-                        <button mat-menu-item (click)="activate(element, i)" *ngIf="(
-                                (element.is_integration_started == true &&
-                                !['003', '004', '006', '007'].includes(element.item_code)) ||
-                                element.product_status.toLowerCase() === 'google closed testing') 
-                                &&
-                                (
-                                element?.item_name?.toLowerCase()?.includes('android') ||
-                                element?.item_name?.toLowerCase()?.includes('ios')
-                                )">
-                            <mat-icon class="mat-18">history</mat-icon>
-                            <span style="font-weight: 600">Activate</span>
-                        </button>
-                        <button mat-menu-item (click)="googleClosedTesting(element)" *ngIf="element.product_status.toLowerCase() == 'inprocess' && (element.item_code == '003' ||
-                             element.item_code == '004' || element.item_code == '006' || element.item_code == '007')">
-                            <mat-icon svgIcon="heroicons_outline:clipboard-document-check"></mat-icon>
-                            <span style="font-weight: 600">Google Closed Testing</span>
-                        </button>
-                        <!-- <button mat-menu-item (click)="link(ListItem)">
-                            <mat-icon class="mat-18">how_to_reg</mat-icon>
-                            <span style="font-weight: 600">Link</span>
-                        </button>
-                        <button mat-menu-item (click)="statusChangedLog(ListItem)">
-                            <mat-icon class="mat-18">history</mat-icon>
-                            <span style="font-weight: 600">Status Change Logs</span>
-                        </button> -->
                     </mat-menu>
                 </td>
-                <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.item_code">
-                    {{element.item_code || '-'}}
-                </td>
-                <td>
-                    {{element.item_name || '-'}}
-                </td>
-                <td>
-                    {{element.product_name || '-'}}
-                </td>
-                <td>
-                    <span [ngClass]="getStatusColor(element.product_status)">{{(element.product_status) || '-'}}</span>
-                </td>
-                <td>
-                    {{element.agentCode || '0'}}
-                </td>
-                <td>
-                    {{element.agency_name || '-'}}
-                </td>
-                <td>
-                    {{(element.integration_start_date_time | date: 'dd-MM-yyyy') || "-"}}
-                </td>
-                <td class="w-full">
-                    {{(element.entry_date_time | date: 'dd-MM-yyyy') || "-"}}
-                </td>
+                <td>{{ element.agent_id || '-' }}</td>
+                <td>{{ element.domain_name || '-' }}</td>
+                <td>{{ element.ip_address || '-' }}</td>
+                <td>{{element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'yyyy-MM-dd HH:mm:ss'):'-' }}</td>
+                <td>{{ element.is_domain_pointed ? 'Yes' : 'No' }}</td>
             </tr>
         </ng-template>
 

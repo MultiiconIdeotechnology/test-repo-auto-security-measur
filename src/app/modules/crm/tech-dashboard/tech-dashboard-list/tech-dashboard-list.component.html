@@ -160,7 +160,6 @@
         </div>
     </div>
 
-    tabNameStr: {{tabNameStr}}
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
             <ng-container *ngIf="tabNameStr == 'Pending'">
