@@ -88,48 +88,7 @@
                         [ngClass]="{ 'w-full': isLast}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
-                    </th>
-                    <!-- <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="dark:bg-[#1e293b]" pSortableColumn="booking_ref_no" pResizableColumn pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no"
-                        [ngClass]="{'left-0': !frozenObj?.booking_ref_no}">
-                        Ref No. <p-sortIcon field="booking_ref_no" />
-                        <span class="float-right" (click)="isFrozenColumn('booking_ref_no');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.booking_ref_no" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.booking_ref_no" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                    <th pSortableColumn="agent_name" pResizableColumn>
-                        Agent <p-sortIcon field="agent_name" />
-                    </th>
-                    <th pSortableColumn="supplier_name" pResizableColumn>
-                        Supplier <p-sortIcon field="supplier_name" />
-                    </th>
-                    <th pSortableColumn="booking_status" pResizableColumn>
-                        Status <p-sortIcon field="booking_status" />
-                    </th>
-                    <th pSortableColumn="pnr" pResizableColumn>
-                        PNR <p-sortIcon field="pnr" />
-                    </th>
-                    <th class="min-w-[200px]" pSortableColumn="departure_date" pResizableColumn>
-                        Departure Date <p-sortIcon field="departure_date" />
-                    </th>
-                    <th class="min-w-[200px]" pSortableColumn="arrival_date" pResizableColumn>
-                        Arrival Date <p-sortIcon field="arrival_date" />
-                    </th>
-                    <th class="min-w-[200px]" pSortableColumn="entry_date_time" pResizableColumn>
-                        Entry Date <p-sortIcon field="entry_date_time" />
-                    </th>
-                    <th pSortableColumn="trip_type" pResizableColumn>
-                        Trip Type <p-sortIcon field="trip_type" />
-                    </th>
-                    <th pResizableColumn>
-                        Pax
-                         <p-sortIcon field="pax" /> -
-                    </th>
-                    <th pResizableColumn>
-                        Reject Reason
-                    </th> -->
+                    </th>              
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -203,97 +162,7 @@
 
 
                         </ng-container>
-                    </th>
-                    <!-- <th class=" left-[-1px]" pFrozenColumn></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no" class="min-w-[150px]">
-                        <p-columnFilter field="booking_ref_no" type="text" placeholder="Search by Ref No."
-                            ariaLabel="Filter Ref No."></p-columnFilter>
-                    </th>
-                    <th>                   
-                        <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [(ngModel)]="selectedAgent" [options]="agentList"
-                                    optionLabel="agent_info" [filter]="true" filterBy="agent_info"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>                      
-                        <p-columnFilter field="supplier_name" matchMode="in" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
-                                    placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
-                                    <ng-template let-supplier pTemplate="item">
-                                        <div>
-                                            {{supplier.company_name}}
-                                        </div>
-                                    </ng-template>
-                                </p-multiSelect>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-
-                    <th>                  
-                        <p-columnFilter field="booking_status" matchMode="in" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="statusList" optionLabel="label"
-                                    placeholder="Select Status" (onChange)="filter($event.value)" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option.label}}</p>
-                                    </ng-template>
-                                </p-multiSelect>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pnr" placeholder="Search by PNR"
-                            ariaLabel="Filter PNR" />
-                    </th>
-                    <th>
-                        <p-columnFilter field="departure_date" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Last Departure Date">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter field="arrival_date" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Last Arrival Date">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter field="entry_date_time" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Last Entry Date">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="trip_type"
-                            placeholder="Search by Trip Type" ariaLabel="Filter Trip Type" />
-                    </th>                        
-                    </th> -->
+                    </th>              
                 </tr>
             </ng-template>
 
@@ -347,52 +216,7 @@
                         <ng-container *ngIf="col.type == types.date">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
-
-                    </td>
-                    <!-- <td class="min-w-[110px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no">
-                        <span class="cursor-pointer border-b border-gray-500" (click)="view(element)">
-                            {{element.booking_ref_no || "-"}}
-                        </span>
-                    </td>
-
-                    <td>
-                        {{element.agent_name || '-'}}
-                    </td>
-
-                    <td>
-                        {{element.supplier_name || '-'}}
-                    </td>
-
-                    <td>
-                        <span [ngClass]="getStatusColor(element.booking_status)">{{(element.booking_status) ||
-                            '-'}}</span>
-                    </td>
-
-                    <td>
-                        {{element.pnr || '-'}}
-                    </td>
-
-                    <td>
-                        {{(element.departure_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-
-                    <td>
-                        {{(element.arrival_date | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td>
-                        {{(element.entry_date_time | date: 'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td>
-                        {{element.trip_type || '-'}}
-                    </td>
-
-                    <td>
-                        {{element.pax || '-'}}
-                    </td>
-                    <td class="w-full">
-                        {{(element.reject_reason && element.reject_reason?.length > 30) ? (element.reject_reason |
-                        slice:0:30) + '...' : (element?.reject_reason || '-')}}
-                    </td> -->
+                    </td>                  
                 </tr>
             </ng-template>
 
