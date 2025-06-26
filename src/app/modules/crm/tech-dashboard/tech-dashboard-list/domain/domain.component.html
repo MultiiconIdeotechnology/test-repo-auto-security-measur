@@ -10,6 +10,7 @@
         <ng-template pTemplate="header">
             <tr>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+                <th class="w-5 text-center left-[-1px]" pFrozenColumn>Select Domain</th>
                 <th pSortableColumn="agent_id" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
                     class="dark:bg-[#1e293b]" [frozen]="frozenObj?.agent_id"
                     [ngClass]="{'left-0': !frozenObj?.agent_id}">
@@ -22,10 +23,10 @@
                 <th pSortableColumn="domain_name" pResizableColumn>
                     Domain Name <p-sortIcon field="domain_name" />
                 </th>
-                <th pSortableColumn="ip_address" pResizableColumn>
+                <th pSortableColumn="ip_address" pResizableColumn [ngClass]="{'min-w-[180px]': isFilterShowDomain}">
                     IP Address <p-sortIcon field="ip_address" />
                 </th>
-                <th pSortableColumn="ssl_expire_date_time" pResizableColumn>
+                <th pSortableColumn="ssl_expire_date_time" pResizableColumn [ngClass]="{'min-w-[250px]': isFilterShowDomain}">
                     SSL Expiry Date <p-sortIcon field="ssl_expire_date_time" />
                 </th>
                 <th class="w-full" pSortableColumn="is_domain_pointed" pResizableColumn>
@@ -34,104 +35,66 @@
 
             </tr>
 
-            <tr *ngIf="isFilterShowPending">
+            <tr *ngIf="isFilterShowDomain">
                 <th class=" left-[-1px]" pFrozenColumn></th>
-                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.item_code" class="min-w-[110px]">
-                    <p-columnFilter field="item_code" type="text" placeholder="Search by Item code"
-                        ariaLabel="Filter Item code"></p-columnFilter>
+                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_id" class="min-w-[110px]">
+                    <p-columnFilter field="agent_id" type="numeric" placeholder="Search by Agent Id"
+                        ariaLabel="Filter Agent Id"></p-columnFilter>
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="item_name" placeholder="Search by Name"
-                        ariaLabel="Filter Item" /> -->
-                    <p-columnFilter field="item_name" matchMode="in" [showMenu]="false">
-                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-multiSelect [ngModel]="value" [options]="globalSearchService.itemList"
-                                optionLabel="itemInfo" placeholder="Search by Name" (onChange)="filter($event.value)"
-                                appendTo="body">
-                                <ng-template let-item pTemplate="item">
-                                    <div>
-                                        {{item.itemInfo}}
-                                    </div>
-                                </ng-template>
-                            </p-multiSelect>
-                        </ng-template>
-                    </p-columnFilter>
+                    <p-columnFilter field="domain_name" type="text" placeholder="Search by Domain Name"
+                        ariaLabel="Filter Domain Name"></p-columnFilter>
                 </th>
                 <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="product_name"
-                        placeholder="Search by Product" ariaLabel="Filter Product" /> -->
-                    <p-columnFilter field="product_name" matchMode="in" [showMenu]="false">
-                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-multiSelect [ngModel]="value" [options]="globalSearchService.productList"
-                                optionLabel="productInfo" placeholder="Search by Name" (onChange)="filter($event.value)"
-                                appendTo="body">
-                                <ng-template let-product pTemplate="item">
-                                    <div>
-                                        {{product.productInfo}}
-                                    </div>
-                                </ng-template>
-                            </p-multiSelect>
-                        </ng-template>
-                    </p-columnFilter>
+                    <p-columnFilter field="ip_address" type="text" placeholder="Search by IP address"
+                        ariaLabel="Filter IP address"></p-columnFilter>
                 </th>
-                <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="product_status" placeholder="Search by Status"
-                        ariaLabel="Filter Status" /> -->
-                    <p-columnFilter field="product_status" matchMode="equals" [showMenu]="false">
+
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ssl_expire_date_time">
+                    <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                        field="ssl_expire_date_time" matchMode="custom" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                            <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                [options]="_filterService.dateRangeList" optionLabel="label" placeholder="Select Option"
                                 appendTo="body">
                                 <ng-template let-option pTemplate="item">
-                                    <p>{{option}}</p>
-                                </ng-template>
-                            </p-dropdown>
-                        </ng-template>
-                    </p-columnFilter>
-                </th>
-                <th>
-                    <p-columnFilter type="numeric" field="agentCode" placeholder="Search by Agent Code"
-                        ariaLabel="Filter Agent Code" />
-                </th>
-                <th>
-                    <!-- <p-columnFilter type="text" matchMode="contains" field="agency_name" placeholder="Search by Agency Name"
-                        ariaLabel="Filter Agency Name" /> -->
-                    <p-columnFilter class="searchableDropdown" field="agency_name" matchMode="equals"
-                        [showMenu]="false">
-                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
-                                [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                <ng-template let-agent pTemplate="item">
-                                    <div class="flex align-items-center gap-1">
-                                        <div [value]="agent.id">
-                                            <div class="m-0">
-                                                {{agent.code}} - {{agent.agency_name}}
-                                                <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                            </div>
-                                        </div>
+                                    <div
+                                        (click)="_filterService.onOptionClick(option, primengTable, 'ssl_expire_date_time')">
+                                        <div>{{option.label}}</div>
                                     </div>
                                 </ng-template>
                             </p-dropdown>
                         </ng-template>
                     </p-columnFilter>
+
+                    <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                        <div class="relative inline-block">
+                            <p-columnFilter field="ssl_expire_date_time" matchMode="custom" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar selectionMode="range" [ngModel]="value"
+                                        (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                        dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                            <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                style="top:50%; transform: translatey(-50%); right: 25px;"
+                                (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                        </div>
+                    </ng-container>
                 </th>
+
                 <th>
-                    <p-columnFilter field="integration_start_date_time" type="date">
+                    <p-columnFilter field="is_domain_pointed" matchMode="equals" [showMenu]="false">
                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                [ngModel]="value" placeholder="Search by Start Int. Date">
-                            </p-calendar>
-                        </ng-template>
-                    </p-columnFilter>
-                </th>
-                <th>
-                    <p-columnFilter field="entry_date_time" type="date">
-                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                [ngModel]="value" placeholder="Search by Entry Date">
-                            </p-calendar>
+                            <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="isPointingList"
+                                (onChange)="filter($event.value)" placeholder="Select Option" [showClear]="true"
+                                appendTo="body">
+                                <ng-template let-option pTemplate="item">
+                                    <p>{{option.label}}</p>
+                                </ng-template>
+                            </p-dropdown>
                         </ng-template>
                     </p-columnFilter>
                 </th>
@@ -146,16 +109,21 @@
                     </span>
 
                     <mat-menu #optionMenu>
-                        <button mat-menu-item (click)="viewDetail(element)">
+                        <button mat-menu-item (click)="info(element)">
                             <mat-icon class="mat-18">info</mat-icon>
                             <span style="font-weight: 600">Info</span>
                         </button>
                     </mat-menu>
                 </td>
+                <td alignFrozen="left" pFrozenColumn class="text-center">
+                    <mat-checkbox (change)="toggleSelection(element)" [checked]="selection.includes(element)">
+                    </mat-checkbox>
+                </td>
                 <td>{{ element.agent_id || '-' }}</td>
                 <td>{{ element.domain_name || '-' }}</td>
                 <td>{{ element.ip_address || '-' }}</td>
-                <td>{{element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'yyyy-MM-dd HH:mm:ss'):'-' }}</td>
+                <td>{{element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'dd-MM-yyyy HH:mm:ss'):'-' }}
+                </td>
                 <td>{{ element.is_domain_pointed ? 'Yes' : 'No' }}</td>
             </tr>
         </ng-template>

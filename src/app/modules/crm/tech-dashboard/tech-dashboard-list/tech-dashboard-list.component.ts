@@ -24,6 +24,8 @@ import { TechDashboardBlockedComponent } from '../blocked/blocked.component';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { TechDashboardDomainComponent } from './domain/domain.component';
+import { DomainInfoComponent } from './domain/domain-info/domain-info.component';
+import { SelectedSslInfoComponent } from './domain/selected-ssl-info/selected-ssl-info.component';
 
 @Component({
     selector: 'app-crm-tech-dashboard-list',
@@ -52,7 +54,9 @@ import { TechDashboardDomainComponent } from './domain/domain.component';
         TechDashboardCompletedComponent,
         TechDashboardExpiredComponent,
         TechDashboardBlockedComponent,
-        TechDashboardDomainComponent
+        TechDashboardDomainComponent,
+        DomainInfoComponent,
+        SelectedSslInfoComponent
     ],
 })
 export class CRMTechDashboardListComponent implements OnDestroy {
@@ -224,6 +228,10 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     domainRefresh(event:any) {
          this.domain.searchInputControlPending.patchValue(event);  // need to be changed, remaining ...................................................................
         this.domain?.refreshItems();
+    }
+
+    generateSSL(){
+        this.domain?.openSelectedDomain();
     }
 
     ngOnDestroy(): void {
