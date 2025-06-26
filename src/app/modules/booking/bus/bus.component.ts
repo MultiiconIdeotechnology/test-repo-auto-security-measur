@@ -85,7 +85,6 @@ export class BusComponent extends BaseListingComponent {
   supplierListAll: any[] = [];
   isfirst: boolean = true;
 
-
   types = Types;
   cols: Column[] = [];
   selectedColumns: Column[] = [];
