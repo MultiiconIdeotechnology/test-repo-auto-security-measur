@@ -85,82 +85,16 @@
                 <tr>
                     <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th>
+
                     <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
                         [ngClass]="{ 'w-full': isLast}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
                     </th>
-
-
-                    <!-- <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[175px] max-w-[175px] dark:bg-[#1e293b]" pSortableColumn="booking_ref_no"
-                        pResizableColumn alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no"
-                        [ngClass]="{'left-0': !frozenObj?.booking_ref_no}">
-                        Reference No. <p-sortIcon field="booking_ref_no" />
-                        <span class="float-right" (click)="isFrozenColumn('booking_ref_no');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.booking_ref_no" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.booking_ref_no" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="status" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status"
-                        [ngClass]="{'left-0': !frozenObj?.status}">
-                        Status <p-sortIcon field="status" />
-                        <span class="float-right" (click)="isFrozenColumn('status');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.status" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.status" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'"
-                        pSortableColumn="bookingDate" pResizableColumn>
-                        Date <p-sortIcon field="bookingDate" />
-                    </th>
-                    <th pSortableColumn="tin" pResizableColumn>
-                        TIN <p-sortIcon field="tin" />
-                    </th>
-                    <th pSortableColumn="ticket_no" pResizableColumn>
-                        Ticket No. <p-sortIcon field="ticket_no" />
-                    </th>
-                    <th class="" pSortableColumn="agent_name" pResizableColumn>
-                        Agent <p-sortIcon field="agent_name" />
-                    </th>
-                    <th pSortableColumn="user_type" pResizableColumn>
-                        Type <p-sortIcon field="user_type" />
-                    </th>
-                    <th pSortableColumn="payment_gateway" pResizableColumn>
-                        PG <p-sortIcon field="payment_gateway" />
-                    </th>
-                    <th pSortableColumn="mop" pResizableColumn>
-                        MOP <p-sortIcon field="mop" />
-                    </th>
-                    <th pSortableColumn="supplier" pResizableColumn>
-                        Supplier <p-sortIcon field="supplier" />
-                    </th>
-                    <th class="text-right" pSortableColumn="purchase_price" pResizableColumn>
-                        Purchase Price <p-sortIcon field="purchase_price" />
-                    </th>
-                    <th pSortableColumn="sourceCity" pResizableColumn>
-                        From <p-sortIcon field="sourceCity" />
-                    </th>
-                    <th pSortableColumn="destination" pResizableColumn>
-                        To <p-sortIcon field="destination" />
-                    </th>
-                    <th pSortableColumn="pax" pResizableColumn>
-                        Pax <p-sortIcon field="pax" />
-                    </th>
-                    <th pSortableColumn="device" pResizableColumn>
-                        Device <p-sortIcon field="device" />
-                    </th>
-                    <th class="w-full min-w-[200px]" pSortableColumn="ip_address" pResizableColumn>
-                        IP Address <p-sortIcon field="ip_address" />
-                    </th>
-                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
-                        {{col.header}} <p-sortIcon [field]="col.field" />
-                    </th> -->
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class="left-[-1px] bg-gray-50 dark:bg-gray-800"></th>
+                    <th  class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th>
                     <th *ngFor="let col of columns">
                         <ng-container *ngIf="!col?.isHideFilter">
                             <!-- Text -->
@@ -168,7 +102,7 @@
                                 [field]="col.field" [placeholder]="'Search by '+ col.header"
                                 [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
-                            <p-columnFilter &ngIf="col.type == types.select && col.field == 'status' "
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'status'"
                                 [field]="col.field" matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
@@ -179,6 +113,13 @@
                                         </ng-template>
                                     </p-dropdown>
                                 </ng-template>
+                            </p-columnFilter>
+
+                            <!--2 digit point number-->
+                            <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
+                                [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
+                                maxFractionDigits="2">
                             </p-columnFilter>
 
                             <!--date range picker-->
@@ -304,181 +245,14 @@
                             </ngContainer>
 
                         </ng-container>
-                    </th>
-                    <!-- <th class="left-[-1px]" pFrozenColumn></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no">
-                        <p-columnFilter type="text" matchMode="contains" field="booking_ref_no"
-                            placeholder="Search by Reference No." ariaLabel="Filter Reference No." />
-                    </th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status">
-                        <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select status" [showClear]="true"
-                                    appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option}}</p>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
-                            field="bookingDate" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                    [options]="_filterService.dateRangeList" optionLabel="label"
-                                    placeholder="Select Option" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <div
-                                            (click)="_filterService.onOptionClick(option, primengTable, 'bookingDate')">
-                                            <div>{{option.label}}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-
-                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
-                            <div class="relative inline-block">
-                                <p-columnFilter field="bookingDate" matchMode="custom" [showMenu]="false">
-                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                        <p-calendar selectionMode="range" [ngModel]="value"
-                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
-                                        </p-calendar>
-                                    </ng-template>
-                                </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute"
-                                    style="top:50%; transform: translatey(-50%); right: 25px;"
-                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
-                            </div>
-                        </ng-container>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="tin" placeholder="Search by TIN"
-                            ariaLabel="Filter TIN" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="ticket_no"
-                            placeholder="Search by Ticket No" ariaLabel="Filter Ticket No" />
-                    </th>
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="agent_name" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="agentList" optionLabel="agent_info"
-                                    [filter]="true" filterBy="agent_info" [(ngModel)]="selectedAgent"
-                                    (onFilter)="getAgent($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select Agent">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.code}} - {{agent.agency_name}}
-                                                    <div class="text-sm text-slate-500">{{agent.email_address}}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="user_type" placeholder="Search by Type"
-                            ariaLabel="Filter Type" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="payment_gateway"
-                            placeholder="Search by PG" ariaLabel="Filter  PG" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="mop" placeholder="Search by MOP"
-                            ariaLabel="Filter MOP" />
-                    </th>
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="supplier" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="supplierListAll"
-                                    optionLabel="company_name" [(ngModel)]="selectedSupplier" [filter]="true"
-                                    filterBy="company_name" (onChange)="filter($event.value)" [showClear]="true"
-                                    appendTo="body" placeholder="Select Supplier">
-                                    <ng-template let-currency pTemplate="item">
-                                        <div class="flex align-items-center gap-2">
-                                            <div>{{ currency.company_name }}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="purchase_price" placeholder="Search by Purchase Price"
-                            ariaLabel="Filter Purchase Price" />
-                    </th>
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="from_id_filters" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="fromcityList" optionLabel="display_name"
-                                    [filter]="true" filterBy="display_name" (onFilter)="getFromCity($event?.filter)"
-                                    (onChange)="filter($event.value)" [(ngModel)]="selectedFromCity" [showClear]="true"
-                                    appendTo="body" placeholder="Select From">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div class="m-0">
-                                                {{agent.display_name}}
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter class="searchableDropdown" field="to_id_filters" matchMode="equals"
-                            [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [options]="tocityList" optionLabel="display_name"
-                                    [filter]="true" filterBy="display_name" [(ngModel)]="selectedToCity"
-                                    (onFilter)="getToCity($event?.filter)" (onChange)="filter($event.value)"
-                                    [showClear]="true" appendTo="body" placeholder="Select To">
-                                    <ng-template let-agent pTemplate="item">
-                                        <div class="flex align-items-center gap-1">
-                                            <div [value]="agent.id">
-                                                <div class="m-0">
-                                                    {{agent.display_name}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="pax" placeholder="Search by Pax" ariaLabel="Filter Pax" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="device" placeholder="Search by Device"
-                            ariaLabel="Filter Device" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="ip_address"
-                            placeholder="Search by IP Address" ariaLabel="Filter IP Address" />
-                    </th> -->
-
-
+                    </th>                
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn
-                        *ngIf="isDisplayHashCol()">
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" *ngIf="isDisplayHashCol()"
+                        pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -495,61 +269,24 @@
                                 {{ element[col.field] || '-' }}
                             </span>
                         </ng-container>
-                    </td>
-                    <!-- <td class="min-w-[175px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.booking_ref_no">
-                        <span class="cursor-pointer border-b border-gray-500" (click)="view(element)">
-                            {{element.booking_ref_no || "-"}}
-                        </span>
-                    </td>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.status">
-                        <span [ngClass]="getStatusColor(element.status)">
-                            {{element.status || "-"}}
-                        </span>
-                    </td>
-                    <td>
-                        {{(element.bookingDate | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
-                    <td>
-                        {{element.tin || "-"}}
-                    </td>
-                    <td>
-                        {{element.ticket_no || "-"}}
-                    </td>
-                    <td>
-                        {{element.agent_name || "-"}}
-                    </td>
-                    <td>
-                        {{element.user_type || "-"}}
-                    </td>
-                    <td>
-                        {{element.payment_gateway || "-"}}
-                    </td>
-                    <td>
-                        {{element.mop || "-"}}
-                    </td>
-                    <td>
-                        {{element.supplier || "-"}}
-                    </td>
-                    <td class="text-right">
-                        {{element.purchase_price.toFixed(2) || "0"}}
-                    </td>
-                    <td>
-                        {{element.sourceCity || "-"}}
-                    </td>
-                    <td>
-                        {{element.destination || "-"}}
-                    </td>
-                    <td>
-                        {{element.pax || "-"}}
-                    </td>
-                    <td>
-                        {{element.device || "-"}}
-                    </td>
-                    <td>
-                        {{element.ip_address || "-"}}
-                    </td> -->
 
+                        <ng-container *ngIf="col.type == types.link">
+                            <span class="cursor-pointer border-b border-gray-500" (click)="view(element)">
+                                {{element[col.field] || "-"}}
+                            </span>
+                        </ng-container>
 
+                        <ng-container *ngIf="col.type == types.number">
+                            <span>
+                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
+                                (0).toFixed(col?.fixVal || 0)}}
+                            </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.dateTime">
+                            {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
+                        </ng-container>
+                    </td>               
                 </tr>
             </ng-template>
 
