@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { UserService } from 'app/core/user/user.service';
 import { bookingsInsurancePermissions, filter_module_name, messages, module_name, Security } from 'app/security';
@@ -29,6 +29,7 @@ import { InsuranceService } from 'app/services/insurance.service';
 import { Linq } from 'app/utils/linq';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-insurance',
@@ -71,17 +72,23 @@ export class InsuranceComponent extends BaseListingComponent {
   dataList = [];
   total = 0;
   isFilterShow: boolean = false;
-  _selectedColumns: Column[];
   statusList = ['Pending', 'Confirmed', 'Payment Failed', 'Inprocess', 'Failed', 'Applied', 'Success', 'Rejected', 'Partial Cancelled'];
 
-  cols: any = [
-    { field: 'pax', header: 'No of Pax', isDate: false, type: 'numeric', matchMode: 'equals' },
-    { field: 'planName', header: 'Policy Name', isDate: false, type: 'text', matchMode: 'contains' },
-    { field: 'psp_ref_number', header: 'PSP Reference No.', isDate: false, type: 'text', matchMode: 'contains' },
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [
+    { field: 'pax', header: 'No of Pax', type: Types.number, fixVal: 0 },
+    { field: 'planName', header: 'Policy Name', type: 'text', },
+    { field: 'psp_ref_number', header: 'PSP Reference No.', type: 'text' },
   ];
   agentList: any[] = [];
   selectedAgent: any;
   insuranceFilter: any;
+
+
+
 
 
   constructor(
@@ -117,9 +124,45 @@ export class InsuranceComponent extends BaseListingComponent {
         this.user = user;
       });
 
+
+    this.selectedColumns = [
+      { field: 'booking_ref_no', header: 'Reference No.', type: Types.link, isFrozen: false, },
+      { field: 'status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
+      { field: 'bookingDate', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'supplier', header: 'Supplier', type: Types.text },
+      { field: 'policyNumber', header: 'Policy No', type: Types.text },
+      { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2 },
+      { field: 'user_type', header: 'Type', type: Types.text },
+      { field: 'device', header: 'Device', type: Types.text },
+      { field: 'mop', header: 'MOP', type: Types.text },
+      { field: 'agent_name', header: 'Agent', type: Types.select, },
+      { field: 'startDate', header: 'Travel From Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'endDate', header: 'Travel To Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+      { field: 'duration', header: 'Duration', type: Types.number, fixVal: 0 },
+      { field: 'payment_gateway', header: 'PG', type: Types.text },
+      { field: 'travelType', header: 'Travel Type', type: Types.text },
+      { field: 'device', header: 'Device', type: Types.text },
+      { field: 'ip_address', header: 'IP Address', type: Types.text }
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
+
+
   }
 
   ngOnInit() {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      //this.selectDateRanges(resp['table_config']);
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
+
+
     this.agentList = this._filterService.agentListByValue;
 
     // common filter
@@ -146,10 +189,12 @@ export class InsuranceComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = resp['table_config'];
-      this._selectedColumns = resp['selectedColumns'] || [];
+      this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
       this.primengTable._filter();
     });
+
+
   }
 
   ngAfterViewInit() {
@@ -177,9 +222,47 @@ export class InsuranceComponent extends BaseListingComponent {
       this.primengTable['filters'] = filterData['table_config'];
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
-      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.selectedColumns = filterData['selectedColumns'] || [];
       this.isFilterShow = true;
     }
+
+    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+    if (filter && filter?.gridConfiguration) {
+      this.activeFiltData = filter;
+      this.isFilterShow = true;
+      let filterData = JSON.parse(filter.gridConfiguration);
+      this.primengTable['filters'] = filterData['table_config'];
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
+    }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   getStatusColor(status: string): string {
@@ -198,19 +281,19 @@ export class InsuranceComponent extends BaseListingComponent {
     }
   }
 
-  get selectedColumns(): Column[] {
-    return this._selectedColumns;
-  }
+  // get selectedColumns(): Column[] {
+  //   return this._selectedColumns;
+  // }
 
-  set selectedColumns(val: Column[]) {
-    if (Array.isArray(val)) {
-      this._selectedColumns = this.cols.filter(col =>
-        val.some(selectedCol => selectedCol.field === col.field)
-      );
-    } else {
-      this._selectedColumns = [];
-    }
-  }
+  // set selectedColumns(val: Column[]) {
+  //   if (Array.isArray(val)) {
+  //     this._selectedColumns = this.cols.filter(col =>
+  //       val.some(selectedCol => selectedCol.field === col.field)
+  //     );
+  //   } else {
+  //     this._selectedColumns = [];
+  //   }
+  // }
 
   bookingRef(record): void {
     if (!Security.hasPermission(bookingsInsurancePermissions.modifyPermissions)) {
@@ -225,6 +308,10 @@ export class InsuranceComponent extends BaseListingComponent {
       next: (data) => {
         this.isLoading = false;
         this.dataList = data.data;
+        this.dataList.forEach(x =>{
+          x.duration = Number(x.duration || "0");
+          x.duration = Number(x.duration);
+        })
         this.totalRecords = data.total;
         if (this.dataList && this.dataList.length) {
           setTimeout(() => {
@@ -315,5 +402,16 @@ export class InsuranceComponent extends BaseListingComponent {
       this._filterService.activeFiltData = {};
     }
   }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+  }
+
 
 }

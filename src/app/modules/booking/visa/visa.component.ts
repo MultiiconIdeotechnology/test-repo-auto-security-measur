@@ -93,6 +93,9 @@ export class VisaComponent extends BaseListingComponent {
     statusList = ['Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
 
     types = Types;
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
     cols: Column[] = [
         { field: 'visa_type', header: 'Visa Type', type: 'text' },
         { field: 'length_of_stay', header: 'Length of Stay', type: 'number', fixVal: 0 },
@@ -102,9 +105,7 @@ export class VisaComponent extends BaseListingComponent {
         { field: 'psp_ref_number', header: 'PSP Refrence No.', type: 'text' },
         { field: 'payment_fail_reason', header: 'Payment Fail Reason', type: 'text' },
     ];
-    selectedColumns: Column[] = [];
-    exportCol: Column[] = [];
-    activeFiltData: any = {};
+
 
     constructor(
         private matDialog: MatDialog,
@@ -147,13 +148,13 @@ export class VisaComponent extends BaseListingComponent {
             { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'operation_person', header: 'Operation Person', type: Types.text },
             { field: 'agent', header: 'Agent', type: Types.select, },
-            { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2 , class:'text-right' },
+            { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'user_type', header: 'Type', type: Types.text },
             { field: 'device', header: 'Device', type: Types.text },
             { field: 'payment_mode', header: 'MOP', type: Types.text },
             { field: 'destination_caption', header: 'Destination', type: Types.text },
             { field: 'travel_date', header: 'Travel Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
-            { field: 'pax', header: 'Pax', type: Types.number, fixVal:0 },
+            { field: 'pax', header: 'Pax', type: Types.number, fixVal: 0 },
             { field: 'payment_gateway', header: 'PG', type: Types.text },
             { field: 'ip_address', header: 'IP Address', type: Types.text }
         ];

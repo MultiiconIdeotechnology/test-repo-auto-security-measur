@@ -89,7 +89,7 @@
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
                     </th>
-                </tr>           
+                </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th>
@@ -100,7 +100,8 @@
                                 [field]="col.field" [placeholder]="'Search by '+ col.header"
                                 [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
-                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'visa_status'" [field]="col.field" matchMode="equals" [showMenu]="false">
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'visa_status'"
+                                [field]="col.field" matchMode="equals" [showMenu]="false">
                                 <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                     <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
                                         (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
@@ -190,7 +191,7 @@
                             </ngContainer>
 
                         </ng-container>
-                    </th>                   
+                    </th>
                 </tr>
             </ng-template>
 
@@ -230,15 +231,14 @@
 
                         <ng-container *ngIf="col.type == types.number">
                             <span>
-                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
-                                (0).toFixed(col?.fixVal || 0)}}
+                                {{(element[col?.field] || 0).toFixed(col?.fixVal || 0)}}
                             </span>
                         </ng-container>
 
                         <ng-container *ngIf="col.type == types.dateTime || col.type == types.date">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
-                    </td>                  
+                    </td>
                 </tr>
             </ng-template>
 

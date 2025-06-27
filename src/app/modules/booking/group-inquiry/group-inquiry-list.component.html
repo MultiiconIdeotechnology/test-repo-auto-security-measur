@@ -79,7 +79,7 @@
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
-            <ng-template pTemplate="header"  let-columns>
+            <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th>
@@ -88,12 +88,12 @@
                         [ngClass]="{ 'w-full': isLast}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
-                    </th>              
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th  class="left-[-1px] bg-gray-50 dark:bg-gray-800"></th>
-                    <th *ngFor="let col of columns"  >
+                    <th class="left-[-1px] bg-gray-50 dark:bg-gray-800"></th>
+                    <th *ngFor="let col of columns">
                         <ng-container *ngIf="!col?.isHideFilter">
                             <!-- Text -->
                             <p-columnFilter *ngIf="(col.type == types.text  || col.type == types.link)" [type]="'text'"
@@ -162,14 +162,13 @@
 
 
                         </ng-container>
-                    </th>              
+                    </th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-i="rowIndex" let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" 
-                        *ngIf="isDisplayHashCol()" pFrozenColumn>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" *ngIf="isDisplayHashCol()" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -216,7 +215,7 @@
                         <ng-container *ngIf="col.type == types.date">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
-                    </td>                  
+                    </td>
                 </tr>
             </ng-template>
 

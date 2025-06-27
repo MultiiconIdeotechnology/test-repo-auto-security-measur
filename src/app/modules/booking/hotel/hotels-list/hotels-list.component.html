@@ -243,8 +243,7 @@
 
                         <ng-container *ngIf="col.type == types.number">
                             <span>
-                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
-                                (0).toFixed(col?.fixVal || 0)}}
+                               {{(element[col?.field] || 0).toFixed(col?.fixVal || 0)}}
                             </span>
                         </ng-container>
 
