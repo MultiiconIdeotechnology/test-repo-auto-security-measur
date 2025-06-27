@@ -318,12 +318,10 @@
                     </td> -->
                     <td *ngFor="let col of columns" [ngClass]="col.class">
                         <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
-                            <span
-                                [ngClass]="col.isCustomColor && visaStatusColors[element[col.field]] ? visaStatusColors[element[col.field]] : ''">
+                            <span [ngClass]="col.isCustomColor ? getStatusColor(element[col.field]) : ''">
                                 {{ element[col.field] || '-' }}
                             </span>
                         </ng-container>
-
                         <ng-container *ngIf="col.type == types.boolean">
                             <div class="flex justify-center items-center h-full">
                                 <span [matTooltip]="element[col?.field] ? 'Read' : 'Unread'"
@@ -361,7 +359,7 @@
             </ng-template>
         </p-table>
     </div>
-     <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
         Select a column
     </div>
 </div>

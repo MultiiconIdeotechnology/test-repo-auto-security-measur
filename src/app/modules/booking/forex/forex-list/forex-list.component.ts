@@ -146,7 +146,7 @@ export class ForexListComponent extends BaseListingComponent {
     this.selectedColumns = [
       { field: 'is_read_by_supplier', header: 'Read', type: Types.boolean },
       { field: 'reference_no', header: 'Ref. No.', type: Types.link },
-      { field: 'lead_status', header: 'Status', type: Types.select },
+      { field: 'lead_status', header: 'Status', type: Types.select , isCustomColor:true },
       { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'supplier_name', header: 'Supplier', type: Types.select },
       { field: 'agent', header: 'Agent', type: Types.select },

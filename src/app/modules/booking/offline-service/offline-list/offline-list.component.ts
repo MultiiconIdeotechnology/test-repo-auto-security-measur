@@ -18,7 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, module_name, offlineServicePermissions } from 'app/security';
 import { OfflineserviceService } from 'app/services/offlineservice.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -37,6 +37,7 @@ import { EmployeeService } from 'app/services/employee.service';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-offline-list',
@@ -82,11 +83,16 @@ export class OfflineListComponent extends BaseListingComponent {
   user: any = {};
   selectedEmployee: any;
   selectedAgent: any;
-  cols = [];
   statusList = ['New', 'Completed', 'Pending'];
   isFilterShow: boolean = false;
   employeeList: any[] = [];
   agentList: any[] = [];
+
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
 
   constructor(
     private matDialog: MatDialog,
@@ -111,9 +117,35 @@ export class OfflineListComponent extends BaseListingComponent {
       .subscribe((user: any) => {
         this.user = user;
       });
+
+    this.selectedColumns = [
+      { field: 'booking_ref_number', header: 'Booking Ref', type: Types.text },
+      { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
+      { field: 'dec_agent_id', header: 'Agent Code', type: Types.number, fixVal: 0 },
+      { field: 'agent_name', header: 'Agency Name', type: Types.select },
+      { field: 'operation_person', header: 'Operation Person', type: Types.text },
+      { field: 'sales_person', header: 'RM', type: Types.select },
+      { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      //this.selectDateRanges(resp['table_config']);
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
+
+
+
     this.getRelationManagerList("");
     this.agentList = this._filterService.agentListById;
 
@@ -160,6 +192,44 @@ export class OfflineListComponent extends BaseListingComponent {
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
     }
+
+    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+    if (filter && filter?.gridConfiguration) {
+      this.activeFiltData = filter;
+      this.isFilterShow = true;
+      let filterData = JSON.parse(filter.gridConfiguration);
+      this.primengTable['filters'] = filterData['table_config'];
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
+    }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   getFilter(): any {
@@ -316,6 +386,16 @@ export class OfflineListComponent extends BaseListingComponent {
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 
 }
