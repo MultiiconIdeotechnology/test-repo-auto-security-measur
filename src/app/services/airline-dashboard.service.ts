@@ -85,4 +85,8 @@ export class AirlineDashboardService {
     getActualMarkupROE(model: any): Observable<any> {
         return this.http.post<any>(environment.apiUrl + 'currency/getActualMarkupROE', model);
     }
+
+    getConvertCurrencyCombo(): Observable<any[]> {
+        return this.http.post<any[]>(environment.apiUrl + 'currency/getConvertCurrencyCombo', {});
+    }
 }

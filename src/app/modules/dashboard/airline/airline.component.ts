@@ -1,5 +1,5 @@
-import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe } from '@angular/common';
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { NgIf, NgFor, NgClass, DatePipe, AsyncPipe, CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, HostListener, NgModule, OnInit, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { flightClass, flightFareType } from 'app/common/const';
 import { AirlineDashboardService } from 'app/services/airline-dashboard.service';
@@ -19,20 +19,27 @@ import { ToasterService } from 'app/services/toaster.service';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
-import { debounceTime, distinctUntilChanged, filter, Observable, ReplaySubject, startWith, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, Observable, ReplaySubject, startWith, switchMap, takeUntil } from 'rxjs';
 import { TravellersClassComponent } from './travellers-class/travellers-class.component';
 import { OneWayComponent } from './one-way/one-way.component';
-import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Linq } from 'app/utils/linq';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { AppConfig } from 'app/config/app-config';
 import { cloneDeep } from 'lodash';
+import { CommanLoaderService } from 'app/services/comman-loader.service';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSliderModule } from '@angular/material/slider';
+import { EnumeratePipe } from 'app/enurable.pipe';
 
 @Component({
   selector: 'app-airline',
   standalone: true,
   imports: [
+    CommonModule,
     NgIf,
     NgFor,
     NgClass,
@@ -53,6 +60,16 @@ import { cloneDeep } from 'lodash';
     MatRippleModule,
     PrimeNgImportsModule,
     OneWayComponent,
+    MatCheckboxModule,
+
+    EnumeratePipe,
+    MatFormFieldModule,
+    MatTableModule,
+    MatSliderModule,
+    MatSlideToggleModule,
+    MatPaginatorModule,
+    RouterLink,
+    MatMenuModule,
   ],
   templateUrl: './airline.component.html',
   styleUrls: ['./airline.component.css']
@@ -113,7 +130,7 @@ export class AirlineComponent implements OnInit {
   maxSlider = 1000;
   AirLines: any[] = [];
   selectedDate: any;
-   isRefundable: boolean = false;
+  isRefundable: boolean = false;
   isNonRefundable: boolean = false;
   isHoldAvailable: boolean = false;
 
@@ -138,6 +155,8 @@ export class AirlineComponent implements OnInit {
   tempFromCityList: any = [];
   tempToCityList: any = [];
   currentURL: string = '';
+  isShowItinerary: boolean = false;
+
 
   @ViewChild(MatPaginator) public _paginator: MatPaginator;
   @ViewChild('currencyField') currencySelect: MatSelect;
@@ -158,6 +177,7 @@ export class AirlineComponent implements OnInit {
     arrivalAirport: [],
     retarrivalAirport: [],
   };
+
 
   sortBy: any[] = [
     { title: '', name: 'Cheapest', is_selected: false },
@@ -194,8 +214,8 @@ export class AirlineComponent implements OnInit {
   flightType = [
     { id: 'ow', name: 'One Way' },
     { id: 'rt', name: 'Round Trip' },
-    { id: 'mc', name: 'Multi City' },
-    { id: 'gi', name: 'Group Inquiry' },
+    // { id: 'mc', name: 'Multi City' },
+    // { id: 'gi', name: 'Group Inquiry' },
   ];
 
   layoverDurations: any[] = [
@@ -215,9 +235,18 @@ export class AirlineComponent implements OnInit {
     private matDialog: MatDialog,
     private alertService: ToasterService,
     private airlineDashboardService: AirlineDashboardService,
-    private commanService: CommanService
-  ) {
+    private cdr: ChangeDetectorRef,
+    private commanService: CommanLoaderService,
 
+  ) {
+    this.sortBy = Linq.groupBy(this.sortBy, (x: any) => x.title);
+    this.filterList = Linq.groupBy(this.filterList, (x: any) => x.maintitle);
+
+    this.commanService.onLoader().pipe(takeUntil(this.unSubscribeAll)).subscribe(res => {
+      this.isLoading = res.loading;
+    })
+    this.getConvertCurrencyCombo();
+    
   }
 
   ngOnInit() {
@@ -422,7 +451,12 @@ export class AirlineComponent implements OnInit {
 
   // Function to fetch fares when "From" and "To" cities are selected
   fetchDateWiseFares() {
+    this.nextYear = new Date(this.today);
+    this.nextYear.setFullYear(this.today.getFullYear() + 1);
+    this.currentDate = new Date(this.today);
+
     if (this.selectedFromCity && this.selectedToCity) {
+
       this.airlineDashboardService.getDateWiseFares(this.selectedFromCity, this.selectedToCity, 'ow').subscribe({
         next: (res) => {
           if (res) {
@@ -430,14 +464,43 @@ export class AirlineComponent implements OnInit {
               acc[item.date] = item.price;
               return acc;
             }, {});
+
+            if (this.isFirst) {
+              this.FareDateList = this.generateDateList();
+              this.cdr.detectChanges();
+            }
+
+
           } else {
             this.fareMap = {}
+            this.FareDateList = this.generateDateList();
           }
         }, error: (err) => {
           this.fareMap = {}
+          this.FareDateList = this.generateDateList();
         }
       });
     }
+  }
+
+  generateDateList(): any[] {
+    const startDate = new Date(this.today); // April 1, 2025
+    const endDate = new Date(this.nextYear); // April 1, 2026
+
+    const dateList = [];
+    let currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      const dateString = currentDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      const price = this.fareMap[dateString] || "View Details"; // Price or "View Details"
+      dateList.push({
+        date: dateString,
+        price: price
+      });
+      currentDate.setDate(currentDate.getDate() + 1); // Move to next day
+    }
+
+    return dateList;
   }
 
   // Fetch fares for return (e.g., DEL to BOM)
@@ -633,22 +696,28 @@ export class AirlineComponent implements OnInit {
         destinationCity = val.destination;
       }
       // this.cacheService.MainFilterChanged(json, 'flight-filters');
+      // debugger
       console.log('json', json);
-      this.searchFlights(json)
-      let navigationURL = '/dashboard/airline/flights/detail/' + sourceCity + '/' + destinationCity + '/' + json.departureDate
-      if (json.type == 'rt') {
-        navigationURL = navigationURL + '/' + json.returnDate;
-      }
-      this.router.navigate([navigationURL]);
+      // this.searchFlights(json) 
+      // let navigationURL = '/dashboard/airline/flights/detail/' + sourceCity + '/' + destinationCity + '/' + json.departureDate
+      // if (json.type == 'rt') {
+      //   navigationURL = navigationURL + '/' + json.returnDate;
+      // }
+      // this.router.navigate([navigationURL]);
     }
   }
 
-  searchFlights(reData: any): void {
+  searchFlights(): void {
     if (this.isFirst) {
       this.loading = true;
     }
     this.contents = true;
     const json = this.formGroup.getRawValue();
+    json.systemTraceId = this.systemTraceId || '';
+    json.priority = this.priority || 1;
+    json.version = 2;
+
+
     // if (this.formGroup.get('type').value === 'mc') {
     //   const hasError = json.multiCityObjects.length < 1
     //   const hasEmptyFields = json.multiCityObjects.some(
@@ -675,7 +744,7 @@ export class AirlineComponent implements OnInit {
     // debugger
     json.fromCity = json.fromCity.id;
     json.toCity = json.toCity.id;
-    json.departureDate = reData && reData?.trim() != '' ? DateTime.fromJSDate(new Date(reData.split('T')[0])).toFormat('yyyy-MM-dd') : DateTime.fromJSDate(new Date(json.departureDate)).toFormat('yyyy-MM-dd');
+    json.departureDate = DateTime.fromJSDate(new Date(json.departureDate)).toFormat('yyyy-MM-dd');
     json.returnDate = json.returnDate ? DateTime.fromJSDate(new Date(json.returnDate)).toFormat('yyyy-MM-dd') : '';
     if (json.multiCityObjects) {
       json.multiCityObjects.forEach(x => {
@@ -697,6 +766,7 @@ export class AirlineComponent implements OnInit {
     // }
 
 
+    console.log("search 707", json);
 
     this.airlineDashboardService.flightSearch(json).subscribe({
       next: (res) => {
@@ -721,7 +791,7 @@ export class AirlineComponent implements OnInit {
         // this.groupInquiry = json.type == "gi";
         this.priority = res.priority;
         this.systemTraceId = res.systemTraceId;
-        // this.search_date_time = res.search_date_time;
+        this.search_date_time = res.search_date_time;
         res.flights.forEach(x => {
           x.tab = 0;
           var DataSource: MatTableDataSource<any[]> = new MatTableDataSource<any[]>();
@@ -848,7 +918,7 @@ export class AirlineComponent implements OnInit {
         this.is_search_complete = res.is_search_complete;
 
         if (!res.is_search_complete) {
-          this.searchFlights(reData);
+          this.searchFlights();
           this.priority = 1;
           this.systemTraceId = '';
 
@@ -888,6 +958,34 @@ export class AirlineComponent implements OnInit {
   // botom
   toggleby(event: MatSlideToggleChange) {
     this.offervalue = event.checked;
+  }
+
+  scrollTotTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  sortByChange(sorter): void {
+    this.sortBy.forEach(x => {
+      x.value.map(y => y.is_selected = false);
+    });
+    sorter.is_selected = true;
+    this.activeSort = sorter;
+
+    this.DataFilter();
+  }
+
+  Points(v?): void {
+    // this.matDialog.open(PointListComponent, {
+    //   data: { layoverPoints: this.layoverPoints, name: v },
+    //   panelClass: [CommonUtils.isMobileView() ? 'full-screen-model' : ''],
+    //   disableClose: true
+    // }).afterClosed().subscribe(res => {
+    //   if (v === 'layover') {
+    //     this.selectedLPoints = res;
+    //     this.lPoint = this.selectedLPoints;
+    //   }
+    //   this.DataFilter(false, null, 'priceRange');
+    // })
   }
 
   DataFilter(isPaginatorEvent?: boolean, event?: any, key?: string): void {
@@ -1407,7 +1505,7 @@ export class AirlineComponent implements OnInit {
     return allFlights;
   }
 
-    RefundableChange(from: string) {
+  RefundableChange(from: string) {
     if (from == 'isRefundable') {
       if (this.isRefundable) {
         this.isNonRefundable = false
@@ -1511,23 +1609,23 @@ export class AirlineComponent implements OnInit {
       isDomestic: this.is_domestic,
     }
 
-    this.matDialog.open(FlightsSerachFilterComponent, {
-      data: JSON.stringify(dataObj),
-      panelClass: ['full-screen-model']
-      // disableClose: true
-    }).afterClosed().subscribe(res => {
-      if (res && res.data) {
-        var isCallGetCurrencyData = false;
-        if (this.currency.value != res.data.currencyc)
-          isCallGetCurrencyData = true;
-        Object.assign(this, res.data)
-        this.DataFilter();
-        if (isCallGetCurrencyData) {
-          this.currency.patchValue(res.data.currencyc);
-          this.getCurrencyData();
-        }
-      }
-    });
+    // this.matDialog.open(FlightsSerachFilterComponent, {
+    //   data: JSON.stringify(dataObj),
+    //   panelClass: ['full-screen-model']
+    //   // disableClose: true
+    // }).afterClosed().subscribe(res => {
+    //   if (res && res.data) {
+    //     var isCallGetCurrencyData = false;
+    //     if (this.currency.value != res.data.currencyc)
+    //       isCallGetCurrencyData = true;
+    //     Object.assign(this, res.data)
+    //     this.DataFilter();
+    //     if (isCallGetCurrencyData) {
+    //       this.currency.patchValue(res.data.currencyc);
+    //       this.getCurrencyData();
+    //     }
+    //   }
+    // });
   }
 
   addArrivalAirpor() {
@@ -1560,9 +1658,9 @@ export class AirlineComponent implements OnInit {
     }
   }
 
-  
+
   getConvertCurrencyCombo() {
-    this.agentSettingService.getConvertCurrencyCombo().subscribe((res: any) => {
+    this.airlineDashboardService.getConvertCurrencyCombo().subscribe((res: any) => {
       this.convertCurrencyList = res;
 
       this.currShortCode = this.convertCurrencyList.find(x => x.id == this.currency.value)?.currency_short_code
@@ -1574,7 +1672,7 @@ export class AirlineComponent implements OnInit {
     this.currShortCode = this.convertCurrencyList.find(x => x.id == this.currency.value)?.currency_short_code
     this.currencySymbol = this.convertCurrencyList.find(x => x.id == this.currency.value);
 
-    this.airlineDashboardService.getActualMarkupROE({ from_currency_id: this.user.currencyId, to_currency_id: this.currency.value }).subscribe({
+    this.airlineDashboardService.getActualMarkupROE({ from_currency_id: this.user.currencyId || 'Tir0JeaB0$DpcSqJjaA0$2Yc5u7waC0$aC0$', to_currency_id: this.currency.value }).subscribe({
       next: (res: any) => {
         this.actual_markup_roe = res.actual_markup_roe;
 
@@ -1594,6 +1692,49 @@ export class AirlineComponent implements OnInit {
         this.alertService.showToast('error', err);
       },
     });
+  }
+
+  @HostListener('window:scroll', [])
+  onScroll() {
+    if (!this.isSticky) {
+      this.updateStickyTop();
+    }
+  }
+
+  updateStickyTop() {
+    const scrollTop = window.scrollY;
+    const offset = -(scrollTop - 500);
+    this.stickyTopSignal.set(`${offset}px`);
+  }
+
+  resetPriceRange() {
+    this.startThumbValue = this.minSlider;
+    this.endThumbValue = this.maxSlider;
+    this.DataFilter(false, "", 'priceRange');
+  }
+
+  cancelReturnDate() {
+    this.formGroup.get('returnDate').setValue(null);
+    if (this.formGroup.get('type').value == "rt")
+      this.formGroup.get('type').setValue('ow');
+  }
+
+
+  // Called when "From" city is selected
+  onFromCitySelectionChange(selectedCity: any) {
+    this.selectedFromCity = selectedCity.airport_code; // Use city ID or code
+    this.fetchDateWiseFares();
+  }
+
+  // Called when "To" city is selected
+  onToCitySelectionChange(selectedCity: any) {
+    this.selectedToCity = selectedCity.airport_code; // Use city ID or code
+    this.fetchDateWiseFares();
+  }
+
+  // Function to format date for binding prices
+  getFormattedDateNew(date: any): string {
+    return `${date.year}-${String(date.month + 1).padStart(2, '0')}-${String(date.day).padStart(2, '0')}`;
   }
 
 }

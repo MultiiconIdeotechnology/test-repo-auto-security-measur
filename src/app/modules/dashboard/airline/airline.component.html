@@ -1,6 +1,6 @@
 <div class="mx-auto pt-10 max-w-[1200px]">
 
-  <form [formGroup]="formGroup" class="flex flex-col px-4 pt-5  shadow pb-5 border rounded-2xl">
+  <form [formGroup]="formGroup" class="flex flex-col px-4 pt-5  shadow pb-5 border rounded-2xl bg-card">
     <div class="flex flex-row">
       <mat-radio-group formControlName="type" (change)="optionChange($event.value)">
         <div class="flex flex-row space-x-8">
@@ -15,9 +15,10 @@
 
     <div class="flex flex-row space-x-3 mt-3 mb-5">
       <div class="flex flex-row items-center w-1/2" *ngIf="formGroup.get('type').value != 'mc'">
-        <div class="flex flex-col min-w-[49%] max-w-[49%] p-3 bg-card rounded-lg -mr-3 cursor-pointer"
+        <div
+          class="flex flex-col min-w-[49%] max-w-[49%] p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg -mr-3 cursor-pointer"
           (click)="openFromCityDropdown()">
-          <span class="text-gray text-md">From</span>
+          <span class="text-gray text-md text-secondary">From</span>
           <mat-select #fromCitySelect class="font-semibold" (selectionChange)="onFromCitySelectionChange($event.value)"
             [matTooltip]="
                             formGroup.get('fromCity').value.display_name +
@@ -44,14 +45,15 @@
         </div>
 
         <div (click)="switch()"
-          class="flex flex-row justify-center items-center w-9 h-9 white-bg rounded-full z-20 cursor-pointer"
+          class="flex flex-row justify-center items-center w-9 h-9 bg-card rounded-full z-20 cursor-pointer"
           [matTooltip]="'Switch'">
           <mat-icon svgIcon="heroicons_outline:arrows-right-left" class="primary-text icon-size-4"></mat-icon>
         </div>
 
-        <div class="flex flex-col min-w-[49%] max-w-[49%] p-3 pl-4 items-start bg-card rounded-lg -ml-3 cursor-pointer"
+        <div
+          class="flex flex-col min-w-[49%] max-w-[49%] p-3 pl-4 items-start dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer"
           (click)="openToCityDropdown()">
-          <span class="text-gray text-md">To</span>
+          <span class="text-gray text-md text-secondary">To</span>
           <mat-select #toCitySelect class="font-semibold right-mat-select"
             (selectionChange)="onToCitySelectionChange($event.value)" [matTooltip]="
                             formGroup.get('toCity').value.display_name +
@@ -83,9 +85,10 @@
 
       <div class="flex flex-row items-center w-90 space-x-3"
         [ngClass]="formGroup.get('type').value == 'gi' ? 'w-full' : ''" *ngIf="formGroup.get('type').value != 'mc'">
-        <div class="flex flex-col w-[48%] bg-card rounded-lg p-3"
+
+        <div class="flex flex-col w-[48%] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3"
           *ngIf="formGroup.get('type').value != 'ow' && formGroup.get('type').value != 'rt'">
-          <span class="text-gray text-md">Departure</span>
+          <span class="text-gray text-md text-secondary">Departure</span>
           <div class="flex flex-row">
             <input class="font-semibold" [min]="minDate" (click)="picker.open()" [readonly]="true"
               [matDatepicker]="picker" formControlName="departureDate" />
@@ -93,26 +96,27 @@
           <mat-datepicker #picker></mat-datepicker>
         </div>
 
-        <div class="w-[48%] bg-card rounded-lg p-[10px]"
+        <div class="w-[48%] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-[10px]"
           *ngIf="formGroup.get('type').value === 'ow' || formGroup.get('type').value === 'rt'">
-          <span class="text-gray text-md">Departure</span>
-          <p-calendar class="fare_cal" [readonlyInput]="true" formControlName="departureDate" [showOtherMonths]="false"
-            [selectOtherMonths]="false" [minDate]="minDate" [dateFormat]="'dd M yy'">
+          <span class="text-gray text-md text-secondary">Departure</span>
+          <p-calendar  class="fare_cal" [readonlyInput]="true" formControlName="departureDate"
+            [showOtherMonths]="false" [selectOtherMonths]="false" [minDate]="minDate" [dateFormat]="'dd M yy'">
             <ng-template pTemplate="date" let-date>
               <span>
-                {{ date.day }}
+                {{ date.day }} 
               </span>
               <span *ngIf="fareMap[getFormattedDateNew(date)]">{{ fareMap[getFormattedDateNew(date)]
                 }}</span>
             </ng-template>
           </p-calendar>
+          
         </div>
 
 
-        <div class="flex flex-col w-[48%] bg-card rounded-lg p-3">
+        <div class="flex flex-col w-[48%] dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3">
 
           <div class="flex flex-row justify-between">
-            <span class="text-gray text-md">Return</span>
+            <span class="text-gray text-md text-secondary">Return</span>
             <mat-icon class="icon-size-4"
               *ngIf="formGroup.get('type').value === 'rt' || formGroup.get('type').value === 'gi'"
               (click)="cancelReturnDate()">cancel</mat-icon>
@@ -138,9 +142,8 @@
               (click)="formGroup.get('type').value == 'ow' ? formGroup.get('type').patchValue('rt') : null; fetchReturnDateFares()">
               <ng-template pTemplate="date" let-date>
                 <span>
-                  {{ date.day }}
+                  {{ date.day }} 
                 </span>
-                <!-- <span *ngIf="fareMap[getFormattedDateNew(date)]">{{ fareMap[getFormattedDateNew(date)]}}</span> -->
                 <span *ngIf="returnFareMap[getFormattedDateNew(date)]">{{ returnFareMap[getFormattedDateNew(date)]
                   }}</span>
               </ng-template>
@@ -149,13 +152,13 @@
         </div>
       </div>
 
-      <div class="w-full space-y-3 flex flex-col" *ngIf="formGroup.get('type').value === 'mc' && formDataList">
+      <!-- <div class="w-full space-y-3 flex flex-col" *ngIf="formGroup.get('type').value === 'mc' && formDataList">
         <div class="w-full flex" *ngFor="let formData of formDataList; let i = index">
           <div class="flex w-[calc(100%-260px)] pr-3">
             <div class="flex flex-row items-center w-[60%] pr-3">
-              <div class="flex flex-col min-w-[49%] max-w-[49%] w-full p-3 bg-card rounded-lg -mr-3 cursor-pointer"
+              <div class="flex flex-col min-w-[49%] max-w-[49%] w-full p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg -mr-3 cursor-pointer"
                 (click)="openFromMultiCityDropdown(i)">
-                <span class="text-gray text-md">From</span>
+                <span class="text-gray text-md text-secondary">From</span>
                 <mat-select #fromMultiCitySelect class="font-semibold" [ngModelOptions]="{ standalone: true }"
                   [(ngModel)]="formData.fromCity" [compareWith]="compareWith" required>
                   <mat-option>
@@ -182,15 +185,15 @@
               </div>
 
               <div (click)="switch(i)"
-                class="flex flex-row justify-center items-center w-9 h-9 white-bg rounded-full z-20 cursor-pointer"
+                class="flex flex-row justify-center items-center w-9 h-9 bg-card rounded-full z-20 cursor-pointer"
                 [matTooltip]="'Switch'">
                 <mat-icon svgIcon="heroicons_outline:arrows-right-left" class="primary-text icon-size-4"></mat-icon>
               </div>
 
               <div
-                class="flex flex-col min-w-[49%] max-w-[49%] p-3 pl-4 items-start bg-card rounded-lg -ml-3 cursor-pointer"
+                class="flex flex-col min-w-[49%] max-w-[49%] p-3 pl-4 items-start dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer"
                 (click)="openToMultiCityDropdown(i)">
-                <span class="text-gray text-md">To</span>
+                <span class="text-gray text-md text-secondary">To</span>
                 <mat-select #toMultiCitySelect class="font-semibold" [ngModelOptions]="{ standalone: true }"
                   [(ngModel)]="formData.toCity" [compareWith]="compareWith" required
                   (ngModelChange)="changeValue($event, i, 'to')">
@@ -219,8 +222,8 @@
             </div>
 
             <div class="flex flex-row items-center space-x-3 w-[40%]">
-              <div class="flex flex-col w-full bg-card rounded-lg p-3">
-                <span class="text-gray text-md">Departure</span>
+              <div class="flex flex-col w-full dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3">
+                <span class="text-gray text-md text-secondary">Departure</span>
                 <div class="flex flex-row" (click)="picker.open()">
                   <input class="font-semibold" [ngModelOptions]="{ standalone: true }" [min]="
                                             i == 0
@@ -235,8 +238,8 @@
             </div>
           </div>
 
-          <div *ngIf="i === 0" class="flex flex-col flex-grow p-3 bg-card rounded-lg w-[240px]">
-            <span class="text-gray text-md">Travellers | Class | Fare</span>
+          <div *ngIf="i === 0" class="flex flex-col flex-grow p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg w-[240px]">
+            <span class="text-gray text-md text-secondary">Travellers | Class | Fare</span>
             <span
               [matTooltip]="formGroup.get('adult').value + formGroup.get('child').value + formGroup.get('infant').value + 'Pax, ' +  formGroup.get('cabinClass').value + ', '+ formGroup.get('fareType').value "
               class="font-semibold cursor-pointer" (click)="travellersClass()">{{
@@ -250,7 +253,6 @@
           <div *ngIf="i != 0 && i === formDataList.length - 1" class="flex items-center space-x-1">
             <button *ngIf="i > 1" mat-flat-button class="min-h-8 min-w-12 px-1 rounded-md bg-transparent"
               (click)="removeCity(i)">
-              <!-- <span class="white-text font-medium">Remove City</span> -->
               <mat-icon class="material-symbols-outlined primary-text"><span
                   class="primary-text text-3xl">close</span></mat-icon>
             </button>
@@ -260,11 +262,11 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <div class="flex flex-col flex-grow p-3 bg-card rounded-lg"
+      <div class="flex flex-col flex-grow p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg"
         *ngIf="formGroup.get('type').value != 'mc' && formGroup.get('type').value != 'gi'">
-        <span class="text-gray text-md">Travellers | Class | Fare</span>
+        <span class="text-gray text-md text-secondary">Travellers | Class | Fare</span>
         <span
           [matTooltip]="formGroup.get('adult').value + formGroup.get('child').value + formGroup.get('infant').value + 'Pax, ' +  formGroup.get('cabinClass').value + ', '+ formGroup.get('fareType').value "
           class="font-semibold cursor-pointer" (click)="travellersClass()">{{
@@ -277,7 +279,7 @@
     </div>
 
     <div class="flex flex-row justify-center items-center -mb-11 space-x-4">
-      <button mat-flat-button class="dark:bg-primary bg-gray-200 w-50 min-h-13 rounded-lg" (click)="detail()">
+      <button mat-flat-button class="dark:bg-primary bg-gray-200 w-50 min-h-13 rounded-lg" (click)="searchFlights()">
         <span class="white-text font-semibold text-lg">Search</span>
       </button>
 
@@ -285,9 +287,10 @@
   </form>
 
   <!-- bottom -->
-  <div class="w-full flex ">
-    <div class="left mobile:hidden w-[280px] mr-5">
-      <div class="flex flex-row rounded-lg border-gray-border border white-bg items-center px-4 py-2"
+  <div class="w-full flex pt-13" >
+
+    <div class="left mobile:hidden w-[280px] min-w-[280px] mr-5">
+      <div class="flex flex-row rounded-lg border-gray-border border bg-card items-center px-4 py-2"
         [ngClass]="{'justify-center':groupInquiry, 'justify-between':!groupInquiry,'field-blue-bg':!is_search_complete}">
         <span *ngIf="is_search_complete">Total <span class="font-semibold text-lg"> {{loading?
             '0':totalflights()}} </span> flights found</span>
@@ -295,13 +298,13 @@
           <mat-icon [svgIcon]="'heroicons_outline:arrow-path'" class="rotate theme-black-text icon-size-5"></mat-icon>
           <span class="py-1 pl-4">Fetching best price</span>
         </span>
-        <div *ngIf="is_search_complete && bontonPanel.isB2B()" class="green-toggle" [matTooltip]="'Show Offer Price'"
+        <div *ngIf="is_search_complete" class="green-toggle" [matTooltip]="'Show Offer Price'"
           [ngClass]="{hidden: groupInquiry}">
           <mat-slide-toggle (change)="toggleby($event)"></mat-slide-toggle>
         </div>
       </div>
 
-      <div class="first rounded-lg border-gray-border border mt-5 white-bg" *ngIf="!groupInquiry">
+      <div class="first rounded-lg border-gray-border border mt-5 bg-card" *ngIf="!groupInquiry">
         <div class="title flex justify-between px-4 py-2" [matMenuTriggerFor]="currMenu">
           <div>
             <span class="text-lg font-bold">Currency :</span> <span class="pl-2">
@@ -313,34 +316,15 @@
 
         <mat-menu class="fuse-horizontal-navigation-menu-panel" [overlapTrigger]="false" #currMenu>
           <div class="min-w-[250px] h-[48px] flex items-center hover:bg-[#0000000a] cursor-pointer px-3"
-            [ngClass]="currency.value == tp.id ? 'bg-[#0000000a]' : 'bg-white'" *ngFor="let tp of convertCurrencyList"
-            (click)="currency.patchValue(tp.id);getCurrencyData()">
+            *ngFor="let tp of convertCurrencyList" (click)="currency.patchValue(tp.id);getCurrencyData()">
             {{tp.currency_symbol }}
             {{tp.currency_short_code }}
           </div>
         </mat-menu>
       </div>
 
-      <!-- <div class="first rounded-lg border-gray-border border mt-5 white-bg"
-                *ngIf="(oneWay || roundTrip || multiCity) && bontonPanel.isB2B()">
-                <div class="title flex justify-between px-4 py-2">
-                    <span class="text-xl font-bold">Share Itinerary</span>
-                    <span class="pl-2 text-lg font-medium cursor-pointer primary-text" *ngIf="sendBtnShow()"
-                        (click)="sendDetail()">Send</span>
-                </div>
-                <div class="border-b border-dashed border-gray-border w-full"></div>
-                <div *ngIf="shareItinerary.length > 0" class="px-4 pb-2">
-                    <ng-container *ngFor="let itenary of shareItinerary">
-                        <div class="flex">
-                            <mat-checkbox class="share-iter-checkbox" [(ngModel)]="itenary.isSelected"
-                                (change)="ChangeshareItinerary(itenary)"> <img loading="lazy" [src]="itenary.img"
-                                    class="w-[18px] h-[18px] mr-2"> {{itenary.name}}</mat-checkbox>
-                        </div>
-                    </ng-container>
-                </div>
-            </div> -->
 
-      <div class="first rounded-lg border-gray-border border mt-5 white-bg">
+      <div class="first rounded-lg border-gray-border border mt-5 bg-card">
         <div class="title flex justify-between px-4 py-2">
           <span class="text-xl font-bold">Sort By</span>
         </div>
@@ -365,7 +349,7 @@
       </div>
 
       <div [ngClass]="isSticky ? 'sticky' : 'static'" [ngStyle]="isSticky ? { 'top': stickyTopSignal() } : {}">
-        <div class="sec rounded-lg border-gray-border border mt-5 white-bg" #scrollableContainer>
+        <div class="sec rounded-lg border-gray-border border mt-5 bg-card" #scrollableContainer>
           <div class="title flex justify-between px-4 py-2">
             <span class="text-xl font-semibold">Filters</span>
             <button class="text-lg font-medium primary-text cursor-pointer" (click)="ClearFilter()">
@@ -384,8 +368,7 @@
               <span>Non Refundable</span>
             </mat-checkbox>
 
-            <!-- This code is When Hold Flight live that time enable Please do not remove this code -->
-            <ng-container *ngIf="bontonPanel.isB2B() && oneWay || (roundTrip && !is_domestic)">
+            <ng-container *ngIf="oneWay || (roundTrip && !is_domestic)">
               <mat-checkbox class="mt-[-5px]" [(ngModel)]="isHoldAvailable" (change)="DataFilter()">
                 <span>Hold Available</span>
               </mat-checkbox>
@@ -402,32 +385,10 @@
                   Return Journey
                 </span>
               </div>
-              <div class="sub-title">
-                <span class="font-semibold pb-2 flex">
-                  <span class="text-lg" *ngIf="trip_type !== 'RETURN'">{{
-                    filter.value[0].title}}</span>
-                  <span class="text-lg" *ngIf="trip_type === 'RETURN'">
-                    <span *ngIf="(i === 0)||(i === 3)">{{ filter.value[0].title}}</span>
-                    <span *ngIf="i === 1">{{ filter.value[0].title}} from
-                      {{this.formDataList[0].fromCity?.city}}</span>
-                    <span *ngIf="i === 2">{{ filter.value[0].title}} at
-                      {{this.formDataList[0].toCity?.city}}</span>
-                    <span *ngIf="i === 4">{{ filter.value[0].title}} from
-                      {{this.formDataList[0].toCity?.city}}</span>
-                    <span *ngIf="i === 5">{{ filter.value[0].title}} at
-                      {{this.formDataList[0].fromCity?.city}}</span>
-                  </span>
-                </span>
-                <div class="flex justify-between items-center" *ngFor="let f of filter.value">
-                  <mat-checkbox [(ngModel)]="f.is_selected" (change)="DataFilter()">
-                    <span> {{ f.name }}</span>
-                  </mat-checkbox>
-                </div>
-              </div>
+
               <div class="sub"></div>
             </div>
 
-            <!-- Arrival Airports -->
             <ng-container
               *ngIf="(i == 2 && arrivalAirportObj?.arrivalAirport?.length > 1) || (i == 5 && arrivalAirportObj?.retarrivalAirport?.length > 1)">
               <div class="border-t border-dashed border-gray-border w-full pt-3 px-4">
@@ -449,7 +410,6 @@
             </div>
           </ng-container>
 
-          <!-- Departure Airport | Arrival Airport -->
           <ng-container *ngIf="formGroup.get('type')?.value == 'ow' && !is_domestic">
             <div class="sub-title px-4 pb-2" *ngIf="displayAirportCodeFilters?.oneway?.origin?.length > 1">
               <span class="font-semibold text-lg pb-4">Departure Airport</span>
@@ -586,13 +546,7 @@
                 </span>
                 <span class="text-lg font-medium primary-text cursor-pointer" (click)="resetPriceRange()">Reset</span>
               </div>
-              <!-- <mat-slider [min]="minSlider" [max]="maxSlider" (change)="DataFilter(false, $event, 'priceRange')" showTickMarks discrete
-                        <mat-slider [min]="minSlider" [max]="maxSlider"
-                            (change)="DataFilter(false, $event, 'priceRange')" showTickMarks discrete
-                            [step]="sliderStep" [displayWith]="formatLabel">
-                            <input matInput matSliderStartThumb [(ngModel)]="startThumbValue" />
-                            <input matInput [(ngModel)]="endThumbValue" matSliderEndThumb />
-                        </mat-slider> -->
+
 
               <mat-slider class="w-11/12" [min]="minSlider" [max]="maxSlider"
                 (change)="DataFilter(false, $event, 'priceRange')">
@@ -621,58 +575,10 @@
                   </span>
                 </mat-checkbox>
               </div>
-              <!-- <div *ngIf="AirLines.length > 5" class="text-md bonton-orange-text font-bold cursor-pointer"
-                                (click)="onAirlineShowToggle()">
-                                {{airlineSliceNum !== this.AirLines?.length ? 'Show More...': 'Show Less...'}}
-                            </div> -->
+
             </div>
           </div>
-          <!-- <div [ngClass]="scrollPageSize >= 25  &&  isFixed ? 'fixed top-[9rem] w-[280px] ' : 'hidden' ">
-                    <div class="sec rounded-lg border-gray-border border mt-2 bg-white">
-                        <div class="flex flex-col price-range px-4 py-2" *ngIf="!groupInquiry">
-                          <mat-slider class="w-11/12" [min]="minSlider" [max]="maxSlider"
-                                (change)="DataFilter(false, $event, 'priceRange')">
-                                <input matInput matSliderStartThumb [(ngModel)]="startThumbValue" />
-                                <input matInput [(ngModel)]="endThumbValue" matSliderEndThumb />
-                            </mat-slider>
 
-                            <div class="flex justify-between items-center">
-                                <span>{{currShortCode}} {{(startThumbValue * actual_markup_roe) |
-                                    number:'1.0-0'}}</span>
-                                <span>{{currShortCode}} {{(endThumbValue * actual_markup_roe) | number:'1.0-0'}}</span>
-                            </div>
-                        </div>
-
-
-                        <div class="border-b border-dashed border-gray-border w-full my-3" *ngIf="AirLines.length > 0">
-                        </div>
-                        <div *ngIf="AirLines.length > 0" class="sub-title mt-2 px-4 py-2"
-                            [ngClass]="scrollPageSize >= 25  ? 'max-h-[260px] overflow-auto' : '' ">
-                            <span class="text-lg font-semibold pb-2">Airline</span>
-                            <div class="flex justify-between items-center"
-                                *ngFor="let al of AirLines.slice(0,airlineSliceNum)">
-                                <mat-checkbox [(ngModel)]="al.checked" (change)="DataFilter()">
-                                    <span class="flex items-center">
-                                        <img loading="lazy" class="w-5 h-5 object-contain"
-                                            [src]="al.value[0].airline_logo" alt="airline_logo" />
-                                        <span class="pl-2">{{al.value[0].airlineName}}</span>
-                                    </span>
-                                </mat-checkbox>
-                            </div>
-                            <div *ngIf="AirLines.length > 5" class="text-md bonton-orange-text font-bold cursor-pointer"
-                                (click)="onAirlineShowToggle()">
-                                {{airlineSliceNum !== this.AirLines?.length ? 'Show More...': 'Show Less...'}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pt-3">
-                        <button
-                            class=" flex items-center gap-2 px-6 py-1 w-full border border-primaryColor text-primaryColor rounded-full text-sm font-semibold transition-all justify-center"
-                            (click)="scrollTotTop()">
-                            SCROLL TO TOP <i class="material-icons text-md">arrow_upward</i>
-                        </button>
-                    </div>
-                </div> -->
         </div>
         <div class="pt-3" #targetDiv>
           <button
@@ -684,16 +590,32 @@
       </div>
     </div>
 
-    <div class="flex flex-col space-y-6">
+    <div class="flex flex-col space-y-6 w-full">
       <!-- *ngIf="flights.length > 0" -->
-      <!-- <app-one-way  [isShowItinerary]="isShowItinerary" [flights]="flights"
-        [searchdateTime]="search_date_time" [filename]="filename" [trip_type]="trip_type"
-        [cabinClassSearch]="cabinClassSearch" [offervalue]="offervalue"></app-one-way>
-    </div> -->
-      <!-- <div *ngIf="roundTrip">
+      <app-one-way [isShowItinerary]="isShowItinerary" [flights]="flights" [searchdateTime]="search_date_time"
+        [filename]="filename" [trip_type]="trip_type" [cabinClassSearch]="cabinClassSearch"
+        [offervalue]="offervalue"></app-one-way>
+
+      <div class="w-full h-128 flex flex-row justify-center items-center" *ngIf="flights.length < 1 && !isLoading">
+        <div class="w-50 text-center">
+          <img loading="lazy" src="assets/images/logo/Flight_Found.svg" />
+          <!-- <div class="font-bold text-xl uppercase pt-3">No Flights Found</div> -->
+          <div class="font-bold text-xl uppercase pt-3">{{!is_search_complete ? 'Loading...' : 'No Flights
+            Found'}}</div>
+        </div>
+      </div>
+
+      <div class="z-10 flex justify-end bg-card border border-gray-border rounded-lg w-full">
+        <mat-paginator [ngClass]="{'pointer-events-none': isLoading}" [pageSizeOptions]="appConfig.pageSizeOptions"
+          [pageSize]="appConfig.pageSize" (page)="DataFilter(true,$event)"
+          [showFirstLastButtons]="appConfig.showFirstLastButtons">
+        </mat-paginator>
+      </div>
+    </div>
+    <!-- <div *ngIf="roundTrip">
       <app-round-trip #rt [flights]="flights" [allflights]="Allflights" [isShowItinerary]="isShowItinerary"
         [searchdateTime]="search_date_time" [returnDate]="returnDate" [is_domestic]="is_domestic" [filename]="filename"
         [trip_type]="trip_type" [cabinClassSearch]="cabinClassSearch" [offervalue]="offervalue"></app-round-trip>
     </div> -->
-    </div>
   </div>
+</div>

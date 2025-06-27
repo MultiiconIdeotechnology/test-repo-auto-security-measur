@@ -1,6 +1,6 @@
 <!-- Right Side -->
 <div *ngFor="let flight of flights; let index = index" class="mb-4">
-    <div class="relative rounded-lg border-gray-border border overflow-hidden white-bg">
+    <div class="relative rounded-lg border-gray-border border-2 overflow-hidden white-bg">
         <div *ngIf="user.is_admin" class="triangle text-center opacity-50"
             [style]="'border-top: 20px solid '+ flight.provider_color +' ;'">
             <div class="mt-[-21px] ml-[3px] text-[10px] white-text">{{flight.provider_id}}</div>
@@ -35,7 +35,7 @@
                         <!-- Auto Login User Button Hide -->
                         <ng-container *ngIf="!authService.isAutoLogin">
                             <button *ngIf="!flight.moreFlights.data.length > 0"
-                                class="small-blue fuse-mat-button-large px-[10px]" mat-flat-button
+                                class="dark:bg-primary bg-gray-200  px-[10px] rounded-lg" mat-flat-button
                                 (click)="booking(flight)">
                                 <span class="white-text text-md tracking-wide">Book Now</span>
                             </button>
@@ -54,7 +54,7 @@
                 <div class="flex justify-around mobile:w-full w-[50%]">
                     <div class="flex flex-col">
                         <span
-                            class="text-gray text-lg mobile:text-base font-medium leading-none">{{flight.displaySegments[0].originCityCode}}</span>
+                            class="text-gray-400 text-lg mobile:text-base font-medium leading-none">{{flight.displaySegments[0].originCityCode}}</span>
                         <span
                             class="font-semibold text-xl mobile:text-base mobile:leading-5">{{flight.displaySegments[0].depTime
                             | date: 'HH:mm'}}</span>
@@ -65,8 +65,8 @@
                         <span class="text-gray mobile:text-sm text-md">{{flight.displaySegments[0].duration}}</span>
                         <span class="font-semibold my-1">
                             <div class="w-36 mobile:w-22 h-[2px] rounded-md relative flex justify-evenly items-center"
-                                [ngClass]="flight.displaySegments[0].layoverAt ? 'bonton-red-bg' : 'primary-bg'">
-                                <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-border"
+                                [ngClass]="flight.displaySegments[0].layoverAt ? ' bg-red-500' : 'bg-primary'">
+                                <span class="w-2 h-2 text-gray-400 rounded-full border border-gray-400"
                                     *ngFor="let i of flight.stops | enumerate"></span>
                             </div>
                         </span>
@@ -89,8 +89,9 @@
                     </div>
                     <div class="flex flex-col">
                         <span
-                            class="text-gray text-lg font-medium leading-none mobile:text-base">{{flight.displaySegments[0].destinationCityCode}}</span>
-                        <span class="font-semibold text-xl mobile:text-base">{{flight.displaySegments[0].arrTime | date:
+                            class="text-gray-400 text-lg font-medium leading-none mobile:text-base">{{flight.displaySegments[0].destinationCityCode}}</span>
+                        <span class="font-semibold text-xl mobile:text-base ">{{flight.displaySegments[0].arrTime |
+                            date:
                             'HH:mm'}}</span>
                         <span class="text-gray text-md mobile:text-xs">
                             {{flight.displaySegments[0].arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
@@ -102,16 +103,16 @@
                     <span class="text-2xl font-semibold">{{flight.currency || 'INR'}} {{flight.salePrice}}</span>
 
                     <!----CaseBack---->
-                    <div class="flex gap-1 mb-2"
-                        *ngIf="flight?.cashback_amount > 0 && flight?.currency == 'INR' && bontonPanel.isB2B()">
+                    <div class="flex gap-1 mb-2" *ngIf="flight?.cashback_amount > 0 && flight?.currency == 'INR'">
                         <span class="text-gradient">{{flight?.currency}} {{flight?.cashback_amount}} Cashback</span>
                         <!-- <img class="w-5" src="assets/icons/cashback.svg"> -->
                     </div>
 
                     <!-- Auto Login User Button Hide -->
                     <ng-container *ngIf="!authService.isAutoLogin">
-                        <button *ngIf="!flight.moreFlights.data.length > 0" class="blue fuse-mat-button-large"
-                            mat-flat-button (click)="booking(flight)">
+                        <button *ngIf="!flight.moreFlights.data.length > 0"
+                            class="dark:bg-primary bg-gray-200  px-[10px] rounded-lg" mat-flat-button
+                            (click)="booking(flight)">
                             <span class="white-text tracking-wide">Book Now</span>
                         </button>
                     </ng-container>
@@ -126,7 +127,8 @@
                 </div>
             </div>
 
-            <div class="mobile:px-2 px-4 flex justify-between field-blue-bg mobile:w-full">
+            <div
+                class="mobile:px-2 px-4 flex justify-between field-blue-bg mobile:w-full dark:bg-[#364459] bg-gray-200">
                 <div class="flex items-center py-2 mobile:w-[72%]">
                     <!-- <div class="min-w-[6px] h-[6px] rounded-full primary-bg mr-2" *ngIf="flight.airlineRemark"></div>
                     <div [ngClass]="flight.airlineRemark? 'mr-4 mobile:mr-1':''"
@@ -141,23 +143,23 @@
                     </div> -->
 
                     <!-- Share Itinerary -->
-                    <div *ngIf="bontonPanel.isB2B()"
-                        class="border border-[#1877F2] rounded px-1 gap-1 h-6 items-center flex text-[#0E458C] cursor-pointer"
+                    <!-- <div class="border border-[#1877F2] rounded px-1 gap-1 h-6 items-center flex text-[#0E458C] cursor-pointer"
                         (click)="sendDetail(flight)">
                         <img src="assets/icons/share.svg" class="w-auto">
                         <div class="text-sm">Share</div>
-                    </div>
+                    </div> -->
 
-                     <!-- Refundable and Non Refundable -->
-                     <div class="flex items-center" *ngIf="!flight.moreFlights.data.length > 0">
-                        <div class="h-4 border-r-2 pl-3 border-gray-border" *ngIf="bontonPanel.isB2B()"></div>
-                        <div class="text-sm mobile:text-xs ml-3 text-gray leading-none" [ngClass]="flight.isRefundable ? 'text-green-500' : 'text-red-500'"> 
+                    <!-- Refundable and Non Refundable -->
+                    <div class="flex items-center" *ngIf="!flight.moreFlights.data.length > 0">
+                        <!-- <div class="h-4 border-r-2 pl-3 border-gray-border" ></div> -->
+                        <div class="text-sm mobile:text-xs ml-3 text-gray leading-none"
+                            [ngClass]="flight.isRefundable ? 'text-green-500' : 'text-red-500'">
                             {{flight.isRefundable ? 'Refundable' : 'Non Refundable'}}
                         </div>
                     </div>
 
                     <!-- This code is When Hold Flight live that time enable Please do not remove this code -->
-                    <div class="flex items-center" *ngIf="flight.isHold && bontonPanel.isB2B()" >
+                    <div class="flex items-center" *ngIf="flight.isHold">
                         <div class="h-4 border-r-2 pl-3 border-gray-border"></div>
                         <div class="text-sm mobile:text-xs ml-3 text-gray leading-none">
                             Hold Available
@@ -231,9 +233,10 @@
                             </div>
                             <div class="flex justify-between items-center w-[70%] mobile:w-full mobile:pr-0 pr-20">
                                 <div class="flex flex-col w-[150px] mobile:w-full">
-                                    <span class="font-semibold text-xl mobile:text-base">{{segment.originCityCode}}<span
-                                            class="text-gray text-lg mobile:text-base"> {{segment.depTime | date:
-                                            'HH:mm'}}</span></span>
+                                    <div class="flex gap-2 items-center">
+                                        <div class="font-semibold text-xl mobile:text-base text-gray-400">{{segment.originCityCode}}</div>
+                                        <div class="text-gray text-lg mobile:text-base"> {{segment.depTime | date:'HH:mm'}}</div>
+                                    </div>
                                     <span class="text-sm font-medium mobile:text-sm">
                                         {{segment.depTime | date: 'EEE, dd-MM-yyyy'}}</span>
                                     <span class="text-gray text-sm mobile:text-xs">{{segment.originTerminal}}
@@ -249,10 +252,12 @@
                                     <span class="border border-dashed w-16 gray-border mobile:hidden"></span>
                                 </div>
                                 <div class="flex flex-col w-[150px] mobile:w-full">
-                                    <span
-                                        class="font-semibold text-xl mobile:text-base">{{segment.destinationCityCode}}<span
+                                    <div class="flex gap-2 items-center">
+                                    <div
+                                        class="font-semibold text-xl mobile:text-base text-gray-400">{{segment.destinationCityCode}}<div
                                             class="text-gray text-lg mobile:text-base"> {{segment.arrTime | date:
-                                            'HH:mm'}}</span></span>
+                                            'HH:mm'}}</div></div>
+                                    </div>            
                                     <span class="text-sm font-medium mobile:text-sm">
                                         {{segment.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
                                     <span class="text-gray text-sm mobile:text-xs">{{segment.destinationTerminal}}
