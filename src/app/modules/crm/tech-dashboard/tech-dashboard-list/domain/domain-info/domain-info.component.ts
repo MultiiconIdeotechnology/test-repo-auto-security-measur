@@ -27,6 +27,7 @@ export class DomainInfoComponent implements OnInit {
   infoDisplayData: any;
 
   fieldMap = [
+  { key: 'Agent Code', field: 'agentCode', type: 'number' },
   { key: 'Agent ID', field: 'agent_id', type: 'text' },
   { key: 'Domain Name', field: 'domain_name', type: 'text' },
   { key: 'IP Address', field: 'ip_address', type: 'text' },

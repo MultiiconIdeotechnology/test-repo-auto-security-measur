@@ -24,7 +24,7 @@ import { AppConfig } from 'app/config/app-config';
 import { Security, filter_module_name, messages, module_name, techDashPermissions } from 'app/security';
 import { CrmService } from 'app/services/crm.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { Subject } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
@@ -111,6 +111,12 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
     }
 
     ngOnInit(): void {
+        this.sidebarDialogService.onModalChange().pipe(takeUntil(this._unsubscribeAll)).subscribe((res:any) => {
+            if(res && res.key == 'crm-domain-generate-success') {
+                this.refreshItems();
+            }
+        })
+
         this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             if (resp['table_config']['ssl_expire_date_time']?.value != null && resp['table_config']['ssl_expire_date_time'].value.length) {
@@ -207,7 +213,7 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
                 'Domain',
                 [
                     // { header: 'Code', property: 'agent_code' },
-                    { header: 'Item Code', property: 'agent_id' },
+                    { header: 'Agent Code', property: 'Agent Code' },
                     { header: 'Domain Name', property: 'domain_name' },
                     { header: 'IP Address', property: 'ip_address' },
                     { header: 'SSL Expiry Date', property: 'ssl_expire_date_time' },

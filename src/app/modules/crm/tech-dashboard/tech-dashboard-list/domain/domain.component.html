@@ -11,13 +11,13 @@
             <tr>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>Select Domain</th>
-                <th pSortableColumn="agent_id" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-                    class="dark:bg-[#1e293b] min-w-[180px]" [frozen]="frozenObj?.agent_id"
-                    [ngClass]="{'left-0': !frozenObj?.agent_id}">
-                    Item Code <p-sortIcon field="agent_id" />
-                    <span class="float-right" (click)="isFrozenColumn('agent_id');$event.stopPropagation()">
-                        <i *ngIf="!frozenObj?.agent_id" class="pi pi-lock-open icon-size-3"></i>
-                        <i *ngIf="frozenObj?.agent_id" class="pi pi-lock icon-size-3"></i>
+                <th pSortableColumn="agentCode" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+                    class="dark:bg-[#1e293b] min-w-[160px]" [frozen]="frozenObj?.agentCode"
+                    [ngClass]="{'left-0': !frozenObj?.agentCode}">
+                    Agent Code <p-sortIcon field="agentCode" />
+                    <span class="float-right" (click)="isFrozenColumn('agentCode');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.agentCode" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.agentCode" class="pi pi-lock icon-size-3"></i>
                     </span>
                 </th>
                 <th pSortableColumn="domain_name" pResizableColumn>
@@ -38,8 +38,8 @@
             <tr *ngIf="isFilterShowDomain">
                 <th class=" left-[-1px]" pFrozenColumn></th>
                 <th class=" left-[-1px]" pFrozenColumn></th>
-                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent_id" class="min-w-[110px]">
-                    <p-columnFilter field="agent_id" type="numeric" placeholder="Search by Agent Id"
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agentCode" class="min-w-[110px]">
+                    <p-columnFilter field="agentCode" type="numeric" placeholder="Search by Agent Id"
                         ariaLabel="Filter Agent Id"></p-columnFilter>
                 </th>
                 <th>
@@ -119,7 +119,7 @@
                     <mat-checkbox (change)="toggleSelection(element)" [checked]="selection.includes(element)">
                     </mat-checkbox>
                 </td>
-                <td>{{ element.agent_code || '-' }}</td>  
+                <td>{{ element.agentCode || '-' }}</td>  
                 <td>{{ element.domain_name || '-' }}</td>
                 <td>{{ element.ip_address || '-' }}</td>
                 <td>{{ element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'dd-MM-yyyy'):'-' }}

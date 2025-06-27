@@ -78,11 +78,10 @@ export class SelectedSslInfoComponent implements OnInit {
     console.log("this.selection>>>", selection);
     this.crmService.generateSsl(selection).subscribe({
       next: (resp: any) => {
-        this.isLoading = false;
-        console.log("resp>>", resp);
         this.alertService.showToast('success', 'SSL generated successfully');
         this.sidebarDialogService.close({ key: 'crm-domain-generate-success' })
         this.settingsDrawer.close();
+        this.isLoading = false;
       },
       error: (err) => {
         this.alertService.showToast('error', err, 'top-right', true);
