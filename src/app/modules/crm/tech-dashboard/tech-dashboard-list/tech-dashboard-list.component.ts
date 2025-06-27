@@ -170,7 +170,7 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         } else if (this.tabNameStr == 'expired') {
             this._filterService.openDrawer(this.filter_table_name.tech_dashboard_expired, this.expired.primengTable);
         } else if (this.tabNameStr == 'Domain') {
-            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_domain, this.expired.primengTable);
+            this._filterService.openDrawer(this.filter_table_name.tech_dashboard_domain, this.domain.primengTable);
         }
     }
 
@@ -194,15 +194,15 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
     }
 
-    ngAfterViewInit(){
-        console.log("domain>>", this.domain)
-    }
-
     exportExcel(): void {
         if (this.tab == 'blocked')
-            this.blocked.exportExcel()
-        else
-            this.expired.exportExcel()
+            this.blocked.exportExcel();
+        else if(this.tab == 'expired')
+            this.expired.exportExcel();
+        else if(this.tab == 'domain')
+            console.log("domain", this.tab);
+            
+            this.domain.exportExcel();
     }
 
     pendingRefresh(event: any) {
@@ -226,7 +226,7 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     }
 
     domainRefresh(event:any) {
-         this.domain.searchInputControlPending.patchValue(event);  // need to be changed, remaining ...................................................................
+        this.domain.searchInputControlDomain.patchValue(event); 
         this.domain?.refreshItems();
     }
 

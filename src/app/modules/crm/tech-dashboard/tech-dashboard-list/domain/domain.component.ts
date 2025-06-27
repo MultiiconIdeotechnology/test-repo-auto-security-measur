@@ -37,6 +37,8 @@ import { PendingLinkComponent } from '../../pending-link/pending-link.component'
 import { MobileProductActivateDialogComponent } from '../../domain-ssl-verification/mobile-product-activate-dialog/mobile-product-activate-dialog.component';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
 
 @Component({
     selector: 'app-crm-tech-dashboard-domain',
@@ -74,7 +76,7 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
     cols = [];
     dataList = [];
     getWLSettingList: any = [];
-    searchInputControlPending = new FormControl('');
+    searchInputControlDomain = new FormControl('');
     deadLeadId: any;
     statusList = ['Pending', 'Inprocess', 'Delivered', 'Google Closed Testing', 'Waiting for Customer Update', 'Waiting for Account Activation', 'Rejected from Store',];
     isLoading = false;
@@ -125,7 +127,7 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
 
     ngAfterViewInit() {
         // Defult Active filter show
-         this._filterService.updateSelectedOption('');
+        this._filterService.updateSelectedOption('');
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShowDomain = true;
             this.isFilterShowDomainChange.emit(this.isFilterShowDomain);
@@ -136,15 +138,15 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
             }
 
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
         }
     }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
         const filterReq = this.getNewFilterReq(event);
-        filterReq['Filter'] = this.searchInputControlPending.value;
+        filterReq['Filter'] = this.searchInputControlDomain.value;
 
         this.crmService.getTechDomainProductList(filterReq).subscribe({
             next: (data) => {
@@ -176,27 +178,43 @@ export class TechDashboardDomainComponent extends BaseListingComponent {
         this.sidebarDialogService.openModal('crm-selected-domain', this.selection);
     }
 
-    generateSsl() {
-        console.log("this.selection>>>", this.selection);
-        return;
-        this.crmService.generateSsl(this.selection).subscribe({
-            next: (resp: any) => {
-                this.isLoading = false;
-                console.log("resp>>", resp);
-            },
-            error: (err) => {
-                this.alertService.showToast('error', err, 'top-right', true);
-                this.isLoading = false;
-            },
-        });
-    }
-
     getNodataText(): string {
         if (this.isLoading)
             return 'Loading...';
-        else if (this.searchInputControlPending.value)
-            return `no search results found for \'${this.searchInputControlPending.value}\'.`;
+        else if (this.searchInputControlDomain.value)
+            return `no search results found for \'${this.searchInputControlDomain.value}\'.`;
         else return 'No data to display';
+    }
+
+    exportExcel(): void {
+        // if (!Security.hasExportDataPermission(this.module_name)) {
+        //     return this.alertService.showToast('error', messages.permissionDenied);
+        // }
+
+        let filterReq = this.getNewFilterReq({});
+        filterReq["Filter"] = this.searchInputControlDomain.value;
+        filterReq['Skip'] = 0;
+        filterReq['Take'] = this.totalRecords;
+
+        this.crmService.getTechDomainProductList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                // dt.amendment_request_time = DateTime.fromISO(dt.amendment_request_time).toFormat('dd-MM-yyyy HH:mm:ss')
+                dt.ssl_expire_date_time = dt.ssl_expire_date_time ? DateTime.fromISO(dt.ssl_expire_date_time).toFormat('dd-MM-yyyy') : '';
+                dt.is_domain_pointed = dt.is_domain_pointed ? 'Yes' : 'No';
+            }
+
+            Excel.export(
+                'Domain',
+                [
+                    // { header: 'Code', property: 'agent_code' },
+                    { header: 'Item Code', property: 'agent_id' },
+                    { header: 'Domain Name', property: 'domain_name' },
+                    { header: 'IP Address', property: 'ip_address' },
+                    { header: 'SSL Expiry Date', property: 'ssl_expire_date_time' },
+                    { header: 'Is Pointing', property: 'is_domain_pointed' },
+                ],
+                data.data, "Domain", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 17 } }]);
+        });
     }
 
 

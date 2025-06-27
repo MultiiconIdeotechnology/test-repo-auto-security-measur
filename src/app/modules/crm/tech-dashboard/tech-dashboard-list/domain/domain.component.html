@@ -12,7 +12,7 @@
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
                 <th class="w-5 text-center left-[-1px]" pFrozenColumn>Select Domain</th>
                 <th pSortableColumn="agent_id" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-                    class="dark:bg-[#1e293b]" [frozen]="frozenObj?.agent_id"
+                    class="dark:bg-[#1e293b] min-w-[180px]" [frozen]="frozenObj?.agent_id"
                     [ngClass]="{'left-0': !frozenObj?.agent_id}">
                     Item Code <p-sortIcon field="agent_id" />
                     <span class="float-right" (click)="isFrozenColumn('agent_id');$event.stopPropagation()">
@@ -119,10 +119,10 @@
                     <mat-checkbox (change)="toggleSelection(element)" [checked]="selection.includes(element)">
                     </mat-checkbox>
                 </td>
-                <td>{{ element.agent_id || '-' }}</td>
+                <td>{{ element.agent_code || '-' }}</td>  
                 <td>{{ element.domain_name || '-' }}</td>
                 <td>{{ element.ip_address || '-' }}</td>
-                <td>{{element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'dd-MM-yyyy HH:mm:ss'):'-' }}
+                <td>{{ element.ssl_expire_date_time ? (element.ssl_expire_date_time | date: 'dd-MM-yyyy'):'-' }}
                 </td>
                 <td>{{ element.is_domain_pointed ? 'Yes' : 'No' }}</td>
             </tr>

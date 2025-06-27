@@ -57,7 +57,7 @@ export class DomainInfoComponent implements OnInit {
 
         if(type == 'date'){
           if(value){
-            value = formatDate(value, 'dd-MM-yyyy HH:mm:ss', 'en-US');
+            value = formatDate(value, 'dd-MM-yyyy', 'en-US');
           } else {
             value = "-"
           }
