@@ -151,6 +151,16 @@ export class HotelsListComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      //this.selectDateRanges(resp['table_config']);
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
     this.agentList = this._filterService.agentListById;
     this.getSupplier();
     // this.getFromCity('');

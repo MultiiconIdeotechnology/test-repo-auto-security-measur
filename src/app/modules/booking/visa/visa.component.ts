@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, bookingsVisaPermissions, filter_module_name, messages, module_name } from 'app/security';
 import { ToasterService } from 'app/services/toaster.service';
 import { Excel } from 'app/utils/export/excel';
@@ -35,6 +35,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { cloneDeep } from 'lodash';
 
 
 @Component({
@@ -77,20 +78,33 @@ export class VisaComponent extends BaseListingComponent {
     total = 0;
     visaFilter: any;
     user: any = {};
-    cols: any = [
-        { field: 'visa_type', header: 'Visa Type', isDate: false, type: 'text' },
-        { field: 'length_of_stay', header: 'Length of Stay', isDate: false, type: 'numeric' },
-        { field: 'customer_name', header: 'Customer Name', isDate: false, type: 'text' },
-        { field: 'payment_request_time', header: 'Payment Request Time', isDate: true, type: 'date' },
-        { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true, type: 'date' },
-        { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false, type: 'text' },
-        { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false, type: 'text' },
-    ];
+    // cols: any = [
+    //     { field: 'visa_type', header: 'Visa Type', isDate: false, type: 'text' },
+    //     { field: 'length_of_stay', header: 'Length of Stay', isDate: false, type: 'numeric' },
+    //     { field: 'customer_name', header: 'Customer Name', isDate: false, type: 'text' },
+    //     { field: 'payment_request_time', header: 'Payment Request Time', isDate: true, type: 'date' },
+    //     { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', isDate: true, type: 'date' },
+    //     { field: 'psp_ref_number', header: 'PSP Refrence No.', isDate: false, type: 'text' },
+    //     { field: 'payment_fail_reason', header: 'Payment Fail Reason', isDate: false, type: 'text' },
+    // ];
     agentList: any[] = [];
     isFilterShow: boolean = false;
-    _selectedColumns: Column[];
-    selectedAgent:any;
-    statusList = [ 'Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
+    selectedAgent: any;
+    statusList = ['Pending', 'Payment Confirmed', 'Payment Failed', 'Inprocess', 'Documents Rejected', 'Documents Revised', 'Applied', 'Success', 'Rejected'];
+
+    types = Types;
+    cols: Column[] = [
+        { field: 'visa_type', header: 'Visa Type', type: 'text' },
+        { field: 'length_of_stay', header: 'Length of Stay', type: 'number', fixVal: 0 },
+        { field: 'customer_name', header: 'Customer Name', type: 'text' },
+        { field: 'payment_request_time', header: 'Payment Request Time', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+        { field: 'payment_confirmation_time', header: 'Payment Confirmation Time', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+        { field: 'psp_ref_number', header: 'PSP Refrence No.', type: 'text' },
+        { field: 'payment_fail_reason', header: 'Payment Fail Reason', type: 'text' },
+    ];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
     constructor(
         private matDialog: MatDialog,
@@ -126,20 +140,61 @@ export class VisaComponent extends BaseListingComponent {
             .subscribe((user: any) => {
                 this.user = user;
             });
+
+        this.selectedColumns = [
+            { field: 'booking_ref_no', header: 'Reference No.', type: Types.link, isFrozen: false, },
+            { field: 'visa_status', header: 'Status', type: Types.select, isFrozen: false, isCustomColor: true },
+            { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'operation_person', header: 'Operation Person', type: Types.text },
+            { field: 'agent', header: 'Agent', type: Types.select, },
+            { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2 , class:'text-right' },
+            { field: 'user_type', header: 'Type', type: Types.text },
+            { field: 'device', header: 'Device', type: Types.text },
+            { field: 'payment_mode', header: 'MOP', type: Types.text },
+            { field: 'destination_caption', header: 'Destination', type: Types.text },
+            { field: 'travel_date', header: 'Travel Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'pax', header: 'Pax', type: Types.number, fixVal:0 },
+            { field: 'payment_gateway', header: 'PG', type: Types.text },
+            { field: 'ip_address', header: 'IP Address', type: Types.text }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
+    visaStatusColors: { [key: string]: string } = {
+        'Payment Confirmed': 'text-green-600',
+        'Success': 'text-green-600',
+        'Pending': 'text-yellow-600',
+        'Payment Failed': 'text-red-600',
+        'Rejected': 'text-red-600',
+        'Documents Rejected': 'text-red-600',
+        'Inprocess': 'text-blue-600',
+        'Applied': 'text-blue-600',
+        'Documents Revised': 'text-blue-600'
+    };
+
     ngOnInit() {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            this.sortColumn = resp['sortColumn'];
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            //this.selectDateRanges(resp['table_config']);
+            this.primengTable['filters'] = resp['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+            this.primengTable._filter();
+        });
+
         this.agentList = this._filterService.agentListById;
 
         // common filter
         this._filterService.updateSelectedOption('');
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp:any) => {
-           this._filterService.updateSelectedOption('');
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
+            this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent_id_filters']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
 
@@ -159,7 +214,7 @@ export class VisaComponent extends BaseListingComponent {
                 resp['table_config']['payment_confirmation_time'].value = new Date(resp['table_config']['payment_confirmation_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
-            this._selectedColumns = resp['selectedColumns'] || [];
+            this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -170,10 +225,10 @@ export class VisaComponent extends BaseListingComponent {
         if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agent_id_filters']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
 
@@ -193,14 +248,53 @@ export class VisaComponent extends BaseListingComponent {
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
-            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
+        }
+        const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+        if (filter && filter?.gridConfiguration) {
+            this.activeFiltData = filter;
+            this.isFilterShow = true;
+            let filterData = JSON.parse(filter.gridConfiguration);
+            this.primengTable['filters'] = filterData['table_config'];
+            this.primengTable['_sortField'] = filterData['sortColumn'];
+            this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
+        }
+
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
         }
     }
 
-    get selectedColumns(): Column[] {
-        return this._selectedColumns;
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
     }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+
+    // get selectedColumns(): Column[] {
+    //     return this.selectedColumns;
+    // }
 
     // set selectedColumns(val: Column[]) {
     //     if (Array.isArray(val)) {
@@ -412,4 +506,15 @@ export class VisaComponent extends BaseListingComponent {
             this._filterService.activeFiltData = {};
         }
     }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+    }
+
 }
