@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { ForexService } from 'app/services/forex.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -33,6 +33,7 @@ import { EntityService } from 'app/services/entity.service';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-forex-list',
@@ -77,9 +78,8 @@ export class ForexListComponent extends BaseListingComponent {
   hotelFilter: any;
   agentList: any[];
   selectedAgent: any;
-  _selectedColumns: any;
   isFilterShow: boolean;
-  cols: any;
+
   statusList = [
     { label: 'New', value: 'New' },
     { label: 'Completed', value: 'Completed' },
@@ -103,6 +103,13 @@ export class ForexListComponent extends BaseListingComponent {
   supplierList: any[] = [];
   fromcurrencyListAll: any[] = [];
   tocurrencyListAll: any[] = [];
+  
+  
+  cols: Column[] = [];
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
 
   constructor(
     private agentService: AgentService,
@@ -118,6 +125,7 @@ export class ForexListComponent extends BaseListingComponent {
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
+   
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.hotelFilter = {
@@ -135,10 +143,39 @@ export class ForexListComponent extends BaseListingComponent {
     this.hotelFilter.FromDate.setDate(1);
     this.hotelFilter.FromDate.setMonth(this.hotelFilter.FromDate.getMonth() - 3);
 
-
+    this.selectedColumns = [
+      { field: 'is_read_by_supplier', header: 'Read', type: Types.boolean },
+      { field: 'reference_no', header: 'Ref. No.', type: Types.link },
+      { field: 'lead_status', header: 'Status', type: Types.select },
+      { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'supplier_name', header: 'Supplier', type: Types.select },
+      { field: 'agent', header: 'Agent', type: Types.select },
+      { field: 'rate_for', header: 'Rate For', type: Types.select },
+      { field: 'city_name', header: 'City', type: Types.select },
+      { field: 'from_currency', header: 'From Currency', type: Types.select },
+      { field: 'to_currency', header: 'To Currency', type: Types.select },
+      { field: 'transaction_type', header: 'Transaction Type', type: Types.select },
+      { field: 'customer_name', header: 'B2C Customer', type: Types.text },
+      { field: 'lead_name', header: 'Lead Name', type: Types.text },
+      { field: 'lead_email', header: 'Lead Email', type: Types.text },
+      { field: 'lead_mobile', header: 'Lead Number', type: Types.text }
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit() {
+
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      this.sortColumn = resp['sortColumn'];
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      //this.selectDateRanges(resp['table_config']);
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
+
     this.getCitytList('');
     this.getSupplierList('');
     this.getCurrencyList();
@@ -162,7 +199,7 @@ export class ForexListComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = resp['table_config'];
-      this._selectedColumns = resp['selectedColumns'] || [];
+      this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
       this.primengTable._filter();
     });
@@ -191,9 +228,47 @@ export class ForexListComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = filterData['table_config'];
-      this._selectedColumns = filterData['selectedColumns'] || [];
+      this.selectedColumns = filterData['selectedColumns'] || [];
       this.isFilterShow = true;
     }
+
+    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
+    if (filter && filter?.gridConfiguration) {
+      this.activeFiltData = filter;
+      this.isFilterShow = true;
+      let filterData = JSON.parse(filter.gridConfiguration);
+      this.primengTable['filters'] = filterData['table_config'];
+      this.primengTable['_sortField'] = filterData['sortColumn'];
+      this.sortColumn = filterData['sortColumn'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
+    }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   getAgent(value: string) {
@@ -363,19 +438,19 @@ export class ForexListComponent extends BaseListingComponent {
     else return 'No data to display';
   }
 
-  get selectedColumns(): Column[] {
-    return this._selectedColumns;
-  }
+  // get selectedColumns(): Column[] {
+  //   return this._selectedColumns;
+  // }
 
-  set selectedColumns(val: Column[]) {
-    if (Array.isArray(val)) {
-      this._selectedColumns = this.cols.filter(col =>
-        val.some(selectedCol => selectedCol.field === col.field)
-      );
-    } else {
-      this._selectedColumns = [];
-    }
-  }
+  // set selectedColumns(val: Column[]) {
+  //   if (Array.isArray(val)) {
+  //     this._selectedColumns = this.cols.filter(col =>
+  //       val.some(selectedCol => selectedCol.field === col.field)
+  //     );
+  //   } else {
+  //     this._selectedColumns = [];
+  //   }
+  // }
 
   exportExcel(): void {
     if (!Security.hasExportDataPermission(module_name.bookingsHotel)) {
@@ -412,5 +487,16 @@ export class ForexListComponent extends BaseListingComponent {
         data.data, "Forex", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
     });
   }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+  }
+
 
 }
