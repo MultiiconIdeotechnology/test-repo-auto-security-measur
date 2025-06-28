@@ -181,12 +181,12 @@ export class AmendmentRequestsListComponent
             { field: 'amendment_status', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'company_name', header: 'Supplier', type: Types.select, },
             { field: 'agency_name', header: 'Agent', type: Types.select, },
-            { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal:0},
+            { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
             { field: 'booking_ref_no', header: ' Booking Ref. No.', type: Types.link, },
             { field: 'pnr', header: 'PNR', type: Types.text, },
             { field: 'gds_pnr', header: 'GDS PNR', type: Types.text, },
             { field: 'refund_mode', header: 'Refund Mode', type: Types.text, },
-            { field: 'refund_amount', header: 'Refund Amount', type: Types.number, fixVal:2 , class:'text-right'},
+            { field: 'refund_amount', header: 'Refund Amount', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'amendment_request_time', header: 'Requested Time ', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'updated_date_time', header: 'Updated Time ', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
         ];
@@ -196,17 +196,6 @@ export class AmendmentRequestsListComponent
     }
 
     ngOnInit() {
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
-            this.isFilterShow = true;
-            //this.selectDateRanges(resp['table_config']);
-            this.primengTable['filters'] = resp['table_config'];
-            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
-            this.primengTable._filter();
-        });
-
-
         //old
         // this.cols = [    
         //     { field: 'travel_date', header: 'Travel Date' },
@@ -249,6 +238,7 @@ export class AmendmentRequestsListComponent
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
 
@@ -279,17 +269,6 @@ export class AmendmentRequestsListComponent
                 filterData['table_config']['travel_date'].value = new Date(filterData['table_config']['travel_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-        }
-
-        const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
-        console.log("filter??",filter)
-        if (filter && filter?.gridConfiguration) {
-            this.activeFiltData = filter;
-            this.isFilterShow = true;
-            let filterData = JSON.parse(filter.gridConfiguration);
-            this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
             this.onColumnsChange();
         } else {
@@ -316,7 +295,7 @@ export class AmendmentRequestsListComponent
     isDisplayHashCol(): boolean {
         return this.selectedColumns.length > 0;
     }
-    
+
     onSelectedColumnsChange(): void {
         this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }

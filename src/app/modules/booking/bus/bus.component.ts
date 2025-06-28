@@ -136,10 +136,10 @@ export class BusComponent extends BaseListingComponent {
       { field: 'payment_gateway', header: 'PG', type: Types.text },
       { field: 'mop', header: 'MOP', type: Types.text },
       { field: 'supplier', header: 'Supplier', type: Types.text },
-      { field: 'purchase_price', header: 'Purchase Price', type: Types.number , fixVal:2 , class:'text-right' },
+      { field: 'purchase_price', header: 'Purchase Price', type: Types.number, fixVal: 2, class: 'text-right' },
       { field: 'sourceCity', header: 'From', type: Types.select },
       { field: 'destination', header: ' To', type: Types.select },
-      { field: 'pax', header: 'Pax', type: Types.number , fixVal:0 },
+      { field: 'pax', header: 'Pax', type: Types.number, fixVal: 0 },
       { field: 'device', header: 'Device', type: Types.text },
       { field: 'ip_address', header: 'IP Address', type: Types.text },
     ];
@@ -148,17 +148,6 @@ export class BusComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
-      this.isFilterShow = true;
-      //this.selectDateRanges(resp['table_config']);
-      this.primengTable['filters'] = resp['table_config'];
-      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
-      this.primengTable._filter();
-    });
-
 
     this.agentList = this._filterService.agentListById;
     this.getSupplier();
@@ -203,6 +192,7 @@ export class BusComponent extends BaseListingComponent {
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
 
@@ -245,6 +235,11 @@ export class BusComponent extends BaseListingComponent {
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
   }
 

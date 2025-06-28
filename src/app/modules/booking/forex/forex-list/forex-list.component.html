@@ -86,9 +86,12 @@
                     </th> -->
 
                     <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
-                        [ngClass]="{ 'w-full': isLast}" [class]="col.class">
+                        [ngClass]="{ 'w-full': isLast  && (selectedColumns[selectedColumns?.length-1]?.field !='is_read_by_supplier')}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
+                    </th>
+                     <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='is_read_by_supplier')">
                     </th>
                 </tr>
 
@@ -288,6 +291,9 @@
 
                         </ng-container>
                     </th>
+                     <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='is_read_by_supplier')">
+                    </th>
                 </tr>
             </ng-template>
 
@@ -347,6 +353,9 @@
                         <ng-container *ngIf="col.type == types.dateTime || col.type == types.date">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
+                    </td>
+                     <td
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='is_read_by_supplier')">
                     </td>
                 </tr>
             </ng-template>

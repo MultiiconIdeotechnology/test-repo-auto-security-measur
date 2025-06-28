@@ -104,7 +104,7 @@ export class HolidayLeadComponent extends BaseListingComponent {
 
     this.selectedColumns = [
       { field: 'reference_no', header: 'Ref. No.', type: Types.link },
-      { field: 'lead_status', header: 'Status', type: Types.select , isCustomColor:true },
+      { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
       { field: 'product_name', header: 'Product Name', type: Types.text },
       { field: 'supplier_name', header: 'Supplier', type: Types.select },
       { field: 'agent_name', header: 'Agent', type: Types.select },
@@ -121,16 +121,6 @@ export class HolidayLeadComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
-      this.isFilterShow = true;
-      //this.selectDateRanges(resp['table_config']);
-      this.primengTable['filters'] = resp['table_config'];
-      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
-      this.primengTable._filter();
-    });
 
     this.getSupplierList('');
 
@@ -156,6 +146,7 @@ export class HolidayLeadComponent extends BaseListingComponent {
       this.primengTable['filters'] = resp['table_config'];
       this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
 
@@ -179,24 +170,15 @@ export class HolidayLeadComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = filterData['table_config'];
-      this.selectedColumns = filterData['selectedColumns'] || [];
-      this.isFilterShow = true;
-    }
-
-    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
-    if (filter && filter?.gridConfiguration) {
-      this.activeFiltData = filter;
-      this.isFilterShow = true;
-      let filterData = JSON.parse(filter.gridConfiguration);
-      this.primengTable['filters'] = filterData['table_config'];
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
       this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
       this.onColumnsChange();
+      //this.selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
     } else {
       this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
       this.onColumnsChange();
     }
+
   }
 
   onColumnsChange(): void {

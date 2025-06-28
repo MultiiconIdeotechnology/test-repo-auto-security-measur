@@ -182,15 +182,6 @@ export class FlightComponent extends BaseListingComponent {
     }
 
     ngOnInit() {
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
-            this.isFilterShow = true;
-            //this.selectDateRanges(resp['table_config']);
-            this.primengTable['filters'] = resp['table_config'];
-            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
-            this.primengTable._filter();
-        });
 
         this.agentList = this._filterService.agentListById;
         this.getAirportList("");
@@ -240,6 +231,7 @@ export class FlightComponent extends BaseListingComponent {
 
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
 
@@ -273,27 +265,18 @@ export class FlightComponent extends BaseListingComponent {
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
-        }
-
-        const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
-        if (filter && filter?.gridConfiguration) {
-            this.activeFiltData = filter;
-            this.isFilterShow = true;
-            let filterData = JSON.parse(filter.gridConfiguration);
-            this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
             this.onColumnsChange();
         } else {
             this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
             this.onColumnsChange();
         }
+
     }
 
-     onColumnsChange(): void {
-    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
-  }
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
 
     checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
         if (col.length) return col;

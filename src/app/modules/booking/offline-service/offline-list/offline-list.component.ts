@@ -133,19 +133,6 @@ export class OfflineListComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-      this.sortColumn = resp['sortColumn'];
-      this.primengTable['_sortField'] = resp['sortColumn'];
-      this.isFilterShow = true;
-      //this.selectDateRanges(resp['table_config']);
-      this.primengTable['filters'] = resp['table_config'];
-      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
-      this.primengTable._filter();
-    });
-
-
-
     this.getRelationManagerList("");
     this.agentList = this._filterService.agentListById;
 
@@ -167,6 +154,7 @@ export class OfflineListComponent extends BaseListingComponent {
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
   }
@@ -190,17 +178,6 @@ export class OfflineListComponent extends BaseListingComponent {
       }
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
-      this.primengTable['filters'] = filterData['table_config'];
-    }
-
-    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
-    if (filter && filter?.gridConfiguration) {
-      this.activeFiltData = filter;
-      this.isFilterShow = true;
-      let filterData = JSON.parse(filter.gridConfiguration);
-      this.primengTable['filters'] = filterData['table_config'];
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
       this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
       this.onColumnsChange();
     } else {

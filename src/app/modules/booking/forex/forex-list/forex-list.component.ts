@@ -103,8 +103,8 @@ export class ForexListComponent extends BaseListingComponent {
   supplierList: any[] = [];
   fromcurrencyListAll: any[] = [];
   tocurrencyListAll: any[] = [];
-  
-  
+
+
   cols: Column[] = [];
   types = Types;
   selectedColumns: Column[] = [];
@@ -125,7 +125,7 @@ export class ForexListComponent extends BaseListingComponent {
     this.sortColumn = 'entry_date_time';
     this.sortDirection = 'desc';
     this.Mainmodule = this;
-   
+
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.hotelFilter = {
@@ -146,7 +146,7 @@ export class ForexListComponent extends BaseListingComponent {
     this.selectedColumns = [
       { field: 'is_read_by_supplier', header: 'Read', type: Types.boolean },
       { field: 'reference_no', header: 'Ref. No.', type: Types.link },
-      { field: 'lead_status', header: 'Status', type: Types.select , isCustomColor:true },
+      { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
       { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'supplier_name', header: 'Supplier', type: Types.select },
       { field: 'agent', header: 'Agent', type: Types.select },
@@ -201,6 +201,7 @@ export class ForexListComponent extends BaseListingComponent {
       this.primengTable['filters'] = resp['table_config'];
       this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
   }
@@ -228,20 +229,10 @@ export class ForexListComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = filterData['table_config'];
-      this.selectedColumns = filterData['selectedColumns'] || [];
-      this.isFilterShow = true;
-    }
-
-    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
-    if (filter && filter?.gridConfiguration) {
-      this.activeFiltData = filter;
-      this.isFilterShow = true;
-      let filterData = JSON.parse(filter.gridConfiguration);
-      this.primengTable['filters'] = filterData['table_config'];
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
       this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
       this.onColumnsChange();
+      //this.selectedColumns = filterData['selectedColumns'] || [];
+      this.isFilterShow = true;
     } else {
       this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
       this.onColumnsChange();

@@ -107,23 +107,14 @@ export class GroupInquiryListComponent
             { field: 'arrival_date', header: 'Arrival Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'trip_type', header: 'Trip Type', type: Types.text, },
-            { field: 'pax', header: 'Pax', type: Types.text, isHideFilter:true},
-            { field: 'reject_reason', header: 'Reject Reason', type: Types.text,isHideFilter:true },
+            { field: 'pax', header: 'Pax', type: Types.text, isHideFilter: true },
+            { field: 'reject_reason', header: 'Reject Reason', type: Types.text, isHideFilter: true },
         ];
         this.cols.unshift(...this.selectedColumns);
         this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
-        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-            this.sortColumn = resp['sortColumn'];
-            this.primengTable['_sortField'] = resp['sortColumn'];
-            this.isFilterShow = true;
-            //this.selectDateRanges(resp['table_config']);
-            this.primengTable['filters'] = resp['table_config'];
-            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
-            this.primengTable._filter();
-        });
 
         this.getSupplier("");
         this.agentList = this._filterService.agentListById;
@@ -149,6 +140,7 @@ export class GroupInquiryListComponent
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
@@ -173,18 +165,6 @@ export class GroupInquiryListComponent
                 filterData['table_config']['arrival_date'].value = new Date(filterData['table_config']['arrival_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
-        }
-
-        const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
-        if (filter && filter?.gridConfiguration) {
-            this.activeFiltData = filter;
-            this.isFilterShow = true;
-            let filterData = JSON.parse(filter.gridConfiguration);
-            this.primengTable['filters'] = filterData['table_config'];
-            this.primengTable['_sortField'] = filterData['sortColumn'];
-            this.sortColumn = filterData['sortColumn'];
             this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
             this.onColumnsChange();
         } else {
