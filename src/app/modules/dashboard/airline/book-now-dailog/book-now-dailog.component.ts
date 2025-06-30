@@ -49,6 +49,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 export class BookNowDailogComponent implements OnInit {
 
   record: any;
+  flightData: any;
 
   constructor(
     public matDialogRef: MatDialogRef<BookNowDailogComponent>,
@@ -87,6 +88,7 @@ export class BookNowDailogComponent implements OnInit {
     // return;
     this.airlineDashboardService.fareQuote(model).subscribe({
       next: res => {
+        this.flightData = res.data
         console.log("fare qouts responce res", res);
 
         // this.commanService.raiseLoader(false);

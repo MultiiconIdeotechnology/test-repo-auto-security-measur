@@ -163,6 +163,8 @@ export class OneWayComponent {
   }
 
   loadFareRules(flight, isMiniFareRule: boolean = true, scrollToID?: any): void {
+    console.log("loadfare flight", flight);
+    
     const model = {
       traceId: flight.traceId,
       providerId: flight.provider_id_enc,
