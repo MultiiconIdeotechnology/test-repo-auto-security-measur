@@ -67,8 +67,6 @@ import { cloneDeep } from 'lodash';
     ],
 })
 export class FlightComponent extends BaseListingComponent {
-    types = Types;
-    cols: Column[] = [];
     flightFilter: any;
     module_name = module_name.flight;
     filter_table_name = filter_module_name.flight_booking;
@@ -80,6 +78,9 @@ export class FlightComponent extends BaseListingComponent {
     supplierList: any[] = [];
     total = 0;
     isFilterShow: boolean = false;
+
+    types = Types;
+    cols: Column[] = [];
     selectedColumns: Column[] = [];
     exportCol: Column[] = [];
     activeFiltData: any = {};
@@ -289,6 +290,10 @@ export class FlightComponent extends BaseListingComponent {
         }
     }
 
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
     isDisplayHashCol(): boolean {
         return this.selectedColumns.length > 0;
     }
@@ -299,9 +304,7 @@ export class FlightComponent extends BaseListingComponent {
             event.stopPropagation();
         }
     }
-    onSelectedColumnsChange(): void {
-        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
-    }
+
 
     copy(link: any) {
         this.clipboard.copy(link);

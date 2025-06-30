@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { KycInfoComponent } from '../kyc-info/kyc-info.component';
 import { BlockReasonComponent } from '../../supplier/block-reason/block-reason.component';
 import { MarkupProfileDialogeComponent } from '../markup-profile-dialoge/markup-profile-dialoge.component';
@@ -44,6 +44,7 @@ import { ChangeEmailNumberComponent } from '../sub-agent/change-email-number/cha
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SetDisplayCurrencyComponent } from '../set-display-currency/set-display-currency.component';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-agent-list',
@@ -77,7 +78,6 @@ export class AgentListComponent extends BaseListingComponent {
     agentFilter: any;
     user: any = {};
     dataList = [];
-    _selectedColumns: Column[];
     isFilterShow: boolean = false;
 
     active_agent_count: any
@@ -95,23 +95,45 @@ export class AgentListComponent extends BaseListingComponent {
         { label: 'No', value: false }
     ];
 
+    // cols: Column[] = [
+    //     { field: 'is_blocked', header: 'Blocked' },
+    //     { field: 'pan_number', header: 'PAN Number' },
+    //     { field: 'gst_number', header: 'GST Number' },
+    //     { field: 'markup_profile_name', header: 'Markup Profile' },
+    //     { field: 'kyc_profile_name', header: 'KYC Profile' },
+    //     { field: 'balance', header: 'Balance' },
+    //     { field: 'web_last_login_time', header: 'Last Login' },
+    //     { field: 'is_wl', header: 'WL' },
+    //     { field: 'is_test', header: 'Read Only' },
+    //     { field: 'subagent_count', header: 'Sub Agent Count' },
+    //     { field: 'city_name', header: 'City Name' },
+    //     { field: 'first_login_date_time', header: 'First Time Login' },
+    //     { field: 'first_transaction_date_time', header: 'First Time Transaction' },
+    //     { field: 'agent_assign_by', header: 'Assign By' },
+    //     { field: 'agent_assign_by_date', header: 'Assign By Date' },
+    // ];
+
+    types = Types;
     cols: Column[] = [
-        { field: 'is_blocked', header: 'Blocked' },
-        { field: 'pan_number', header: 'PAN Number' },
-        { field: 'gst_number', header: 'GST Number' },
-        { field: 'markup_profile_name', header: 'Markup Profile' },
-        { field: 'kyc_profile_name', header: 'KYC Profile' },
-        { field: 'balance', header: 'Balance' },
-        { field: 'web_last_login_time', header: 'Last Login' },
-        { field: 'is_wl', header: 'WL' },
-        { field: 'is_test', header: 'Read Only' },
-        { field: 'subagent_count', header: 'Sub Agent Count' },
-        { field: 'city_name', header: 'City Name' },
-        { field: 'first_login_date_time', header: 'First Time Login' },
-        { field: 'first_transaction_date_time', header: 'First Time Transaction' },
-        { field: 'agent_assign_by', header: 'Assign By' },
-        { field: 'agent_assign_by_date', header: 'Assign By Date' },
+        { field: 'is_blocked', header: 'Blocked', type: Types.boolean },
+        { field: 'pan_number', header: 'PAN Number', type: Types.text },
+        { field: 'gst_number', header: 'GST Number', type: Types.text },
+        { field: 'markup_profile_name', header: 'Markup Profile', type: Types.select },
+        { field: 'kyc_profile_name', header: 'KYC Profile', type: Types.select },
+        { field: 'balance', header: 'Balance', type: Types.number, fixVal: 2, class: 'text-right' },
+        { field: 'web_last_login_time', header: 'Last Login', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+        { field: 'is_wl', header: 'WL', type: Types.boolean },
+        { field: 'is_test', header: 'Read Only', type: Types.boolean },
+        { field: 'subagent_count', header: 'Sub Agent Count', type: Types.number, fixVal: 0, class: 'text-center' },
+        { field: 'city_name', header: 'City Name', type: Types.text },
+        { field: 'first_login_date_time', header: 'First Time Login', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+        { field: 'first_transaction_date_time', header: 'First Time Transaction', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+        { field: 'agent_assign_by', header: 'Assign By', type: Types.text },
+        { field: 'agent_assign_by_date', header: 'Assign By Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
     ];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
     // statusList = ['All', 'New', 'Active','Inactive','Dormant',];
 
@@ -124,7 +146,7 @@ export class AgentListComponent extends BaseListingComponent {
 
     cashbackList = [
         { label: 'Yes', value: true },
-        { label: 'No', value: false}
+        { label: 'No', value: false }
     ]
 
     // blockList = [
@@ -188,6 +210,21 @@ export class AgentListComponent extends BaseListingComponent {
             }
         })
 
+        this.selectedColumns = [
+            { field: 'agent_code', header: 'Code', type: Types.number, fixVal: 0 },
+            { field: 'agency_name', header: 'Agency', type: Types.text },
+            { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'relation_manager_name', header: 'RM', type: Types.select },
+            { field: 'email_address', header: 'Email', type: Types.text },
+            { field: 'mobile_no', header: 'Mobile', type: Types.text,},
+            { field: 'currency', header: 'Currency', type: Types.select },
+            { field: 'is_cashback_enable', header: 'Cashback', type: Types.boolean },
+            { field: 'entry_date_time', header: 'Signup', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
+
     }
 
     ngOnInit() {
@@ -206,19 +243,20 @@ export class AgentListComponent extends BaseListingComponent {
                 this._filterService.updateSelectedOption('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
             }
-            
+
             if (resp['table_config']['first_transaction_date_time']?.value != null && resp['table_config']['first_transaction_date_time'].value.length) {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['first_transaction_date_time']);
             }
-            
+
             if (resp['table_config']['first_login_date_time']?.value != null && resp['table_config']['first_login_date_time'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(resp['table_config']['first_login_date_time']);
             }
             this.primengTable['filters'] = resp['table_config'];
-            this._selectedColumns = resp['selectedColumns'] || [];
+            this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
 
@@ -254,15 +292,43 @@ export class AgentListComponent extends BaseListingComponent {
                 this._filterService.updatedSelectedContracting('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['first_transaction_date_time']);
             }
-            
+
             if (filterData['table_config']['first_login_date_time']?.value != null && filterData['table_config']['first_login_date_time'].value.length) {
                 this._filterService.updatedSelectionOptionTwo('custom_date_range');
                 this._filterService.rangeDateConvert(filterData['table_config']['first_login_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this._selectedColumns = filterData['selectedColumns'] || [];
+            //this.selectedColumns = filterData['selectedColumns'] || [];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
             this.isFilterShow = true;
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
     }
 
     //  cityList Api
@@ -333,19 +399,19 @@ export class AgentListComponent extends BaseListingComponent {
         this.entityService.raiseChangeEmailNumberCall({ data: data, flag: 'mobile' })
     }
 
-    get selectedColumns(): Column[] {
-        return this._selectedColumns;
-    }
+    // get selectedColumns(): Column[] {
+    //     return this._selectedColumns;
+    // }
 
-    set selectedColumns(val: Column[]) {
-        if (Array.isArray(val)) {
-            this._selectedColumns = this.cols.filter(col =>
-                val.some(selectedCol => selectedCol.field === col.field)
-            );
-        } else {
-            this._selectedColumns = [];
-        }
-    }
+    // set selectedColumns(val: Column[]) {
+    //     if (Array.isArray(val)) {
+    //         this._selectedColumns = this.cols.filter(col =>
+    //             val.some(selectedCol => selectedCol.field === col.field)
+    //         );
+    //     } else {
+    //         this._selectedColumns = [];
+    //     }
+    // }
 
     getFilter(): any {
         let filterReq = {};
@@ -593,57 +659,57 @@ export class AgentListComponent extends BaseListingComponent {
         }
     }
 
-     EnableDisable(record): void {
+    EnableDisable(record): void {
         if (!Security.hasPermission(agentsPermissions.enableDisablePermissions)) {
-          return this.alertService.showToast('error', messages.permissionDenied);
+            return this.alertService.showToast('error', messages.permissionDenied);
         }
-    
+
         const label: string = record.is_cashback_enable ? 'Disable' : 'Enable';
         let title = label == 'Disable' ? 'Cashback Disable' : 'Cashback Enable';
         this.conformationService
-          .open({
-            title: label,
-            message:
-              'Are you sure to ' +
-              label.toLowerCase() +
-              ' ' +
-              record.agency_name +
-              ' ?',
-          })
-          .afterClosed()
-          .subscribe((res) => {
-            if (res === 'confirmed') {
-    
-                this.agentService
-                  .setCashbackEnable(record.id)
-                  .subscribe({
-                    next: () => {
-                      record.is_cashback_enable = !record.is_cashback_enable;
-                      if (record.is_cashback_enable) {
-                        this.alertService.showToast(
-                          'success',
-                          'Cashback Enabled!',
-                          'top-right',
-                          true
-                        );
-                      } else {
-                        this.alertService.showToast(
-                          'success',
-                          'Cashback Disabled!',
-                          'top-right',
-                          true
-                        );
-                      }
-                      this.refreshItems();
+            .open({
+                title: label,
+                message:
+                    'Are you sure to ' +
+                    label.toLowerCase() +
+                    ' ' +
+                    record.agency_name +
+                    ' ?',
+            })
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === 'confirmed') {
 
-                    }, error: (err) => {
-                      this.alertService.showToast('error', err);
-                    }
-                  });
-                  
-            }
-          });
-      }
+                    this.agentService
+                        .setCashbackEnable(record.id)
+                        .subscribe({
+                            next: () => {
+                                record.is_cashback_enable = !record.is_cashback_enable;
+                                if (record.is_cashback_enable) {
+                                    this.alertService.showToast(
+                                        'success',
+                                        'Cashback Enabled!',
+                                        'top-right',
+                                        true
+                                    );
+                                } else {
+                                    this.alertService.showToast(
+                                        'success',
+                                        'Cashback Disabled!',
+                                        'top-right',
+                                        true
+                                    );
+                                }
+                                this.refreshItems();
+
+                            }, error: (err) => {
+                                this.alertService.showToast('error', err);
+                            }
+                        });
+
+                }
+            });
+    }
 
     relationahipManager(record): void {
         if (!Security.hasPermission(agentsPermissions.relationshipManagerPermissions)) {
@@ -826,7 +892,7 @@ export class AgentListComponent extends BaseListingComponent {
         if (!Security.hasPermission(agentsPermissions.setDisplayCurrencyPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        
+
         this.matDialog.open(SetDisplayCurrencyComponent, {
             data: record,
             disableClose: true
@@ -1018,5 +1084,15 @@ export class AgentListComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
     }
 }
