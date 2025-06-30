@@ -42,6 +42,17 @@
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onChange)="onSelectedColumnsChange()" />
+            </p-overlayPanel>
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -63,96 +74,83 @@
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+        <p-table #datatable [value]="dataList" [columns]="selectedColumns" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['code', 'type', 'name', 'ledgerBalance', 'walletBalance', 'mismatchAmount']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="code" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code"
-                        [ngClass]="{'left-0': !frozenObj?.code}">
-                        Agent Code<p-sortIcon field="code" />
-                        <span class="float-right" (click)="isFrozenColumn('code');$event.stopPropagation()">
-                            <i *ngIf="frozenObj?.code" class="pi pi-lock icon-size-3"></i>
-                            <i *ngIf="!frozenObj?.code" class="pi pi-lock-open icon-size-3"></i>
-                        </span>
-                    </th>
-                    <th class="" pSortableColumn="type" pResizableColumn>
-                        Type <p-sortIcon field="type" />
-                    </th>
-                    <th class="" pSortableColumn="name" pResizableColumn>
-                        Name <p-sortIcon field="name" />
-                    </th>
-                    <th class="text-right" pSortableColumn="ledgerBalance" pResizableColumn>
-                        Ledger Balance <p-sortIcon field="ledgerBalance" />
-                    </th>
-                    <th class="text-right" pSortableColumn="walletBalance" pResizableColumn>
-                        Wallet Balance <p-sortIcon field="walletBalance" />
-                    </th>
-                    <th class="text-right" pSortableColumn="mismatchAmount" pResizableColumn>
-                        Missmatch Amount <p-sortIcon field="mismatchAmount" />
-                    </th>
+                    <!-- <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
+                    </th> -->
 
+                    <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
+                        [ngClass]="{ 'w-full': isLast && (selectedColumns[selectedColumns?.length-1]?.field !='ledgerBalance') && (selectedColumns[selectedColumns?.length-1]?.field !='walletBalance' )
+                            && (selectedColumns[selectedColumns?.length-1]?.field !='mismatchAmount' )}"
+                        [class]="col.class">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col?.field" />
+                    </th>
+                    <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='ledgerBalance') || (selectedColumns[selectedColumns?.length-1]?.field =='walletBalance') || (selectedColumns[selectedColumns?.length-1]?.field =='mismatchAmount')">
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">
-                        <p-columnFilter type="numeric" field="code" placeholder="Search by code"
-                            ariaLabel="Filter code" />
+                    <!-- <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th> -->
+                    <th *ngFor="let col of columns">
+                        <ng-container *ngIf="!col?.isHideFilter">
+                            <!-- Text -->
+                            <p-columnFilter *ngIf="(col.type == types.text)" [type]="'text'" [field]="col.field"
+                                [placeholder]="'Search by '+ col.header" [ariaLabel]="'Filter '+ col.header"
+                                matchMode="contains" />
+
+                            <!--2 digit point number-->
+                            <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
+                                [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
+                                maxFractionDigits="2">
+                            </p-columnFilter>
+                        </ng-container>
                     </th>
-                    <th>
-                        <p-columnFilter type="text" field="type" placeholder="Search by type" ariaLabel="Filter type" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" field="name" placeholder="Search by name" ariaLabel="Filter name" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="ledgerBalance" placeholder="Search by ledgerBalance"
-                            ariaLabel="Filter ledgerBalance" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="walletBalance" placeholder="Search by walletBalance"
-                            ariaLabel="Filter walletBalance" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="mismatchAmount" placeholder="Search by mismatchAmount"
-                            ariaLabel="Filter mismatchAmount" />
+                    <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='ledgerBalance') || (selectedColumns[selectedColumns?.length-1]?.field =='walletBalance') || (selectedColumns[selectedColumns?.length-1]?.field =='mismatchAmount')">
                     </th>
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-element>
+            <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.code">
-                        {{element.code || "-"}}
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
+                        <ng-container *ngIf="(col.type === types.text)">
+                            {{ element[col.field] || '-' }}
+                        </ng-container>
+                        <ng-container *ngIf="col.type == types.number">
+                            <span>
+                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
+                                (0).toFixed(col?.fixVal || 0)}}
+                            </span>
+                        </ng-container>
                     </td>
-                    <td>{{element.type || "-"}}</td>
-                    <td>{{element.name || "-"}}</td>
-                    <td class="text-right">{{element.ledgerBalance ? (element.ledgerBalance | number:'1.2-2':'en-IN') :
-                        "0"}}</td>
-                    <td class="text-right">
-                        {{ element.walletBalance ? (element.walletBalance | number:'1.2-2':'en-IN') : "0" }}
-                    </td>
-
-                    <td class="text-right">
-                        {{ element.mismatchAmount ? (element.mismatchAmount | number:'1.2-2':'en-IN') : "0" }}
+                    <td class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='ledgerBalance') || (selectedColumns[selectedColumns?.length-1]?.field =='walletBalance') || (selectedColumns[selectedColumns?.length-1]?.field =='mismatchAmount')">
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="9" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
+    </div>
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
     </div>
 </div>
