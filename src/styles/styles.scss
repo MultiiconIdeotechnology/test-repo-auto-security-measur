@@ -1294,3 +1294,70 @@ div:where(.swal2-container) button:where(.swal2-close) {
     background: transparent;
   }
   
+   .fixedDepartCarousel {
+    .fixed-depart-left-arrow {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      font-size: 22px;
+      cursor: pointer;
+      opacity: 1;
+      height: 55px;
+      width: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
+
+    .fixed-depart-left-arrow.slick-disabled,
+    .fixed-depart-right-arrow.slick-disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .fixed-depart-right-arrow {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      font-size: 22px;
+      cursor: pointer;
+      opacity: 1;
+      height: 55px;
+      width: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
+  }
+
+  .fixedDepartCarousel .slick-slide {
+    margin-right: 10px;
+}
+
+.fixedDepartCarousel {
+    .fixed-depart-left-arrow {
+        position: absolute;
+        left: -35px;
+        top: -9px;
+        font-size: 26px;
+        cursor:pointer;
+        opacity: 1;
+    }
+
+    .fixed-depart-left-arrow.slick-disabled,
+    .fixed-depart-right-arrow.slick-disabled {
+        opacity: 0.5;
+        pointer-events: none; 
+    }
+
+    .fixed-depart-right-arrow {
+        position: absolute;
+        right: -35px;
+        top: -9px;
+        font-size: 26px;
+        cursor: pointer;
+        opacity:1;
+    }
+}

@@ -47,6 +47,10 @@ export class AirlineDashboardService {
         return this.http.post<any>(environment.apiUrl + "Flight/fareRules", model);
     }
 
+    fareQuote(model: any): Observable<any> {
+        return this.http.post<any>(environment.apiUrl + "Flight/fareQuote", model);
+    }
+
     generateUniqueKey(): string {
         let random = Math.floor(Math.random() * 900) + 100;
         return random + '-' + Date.now();

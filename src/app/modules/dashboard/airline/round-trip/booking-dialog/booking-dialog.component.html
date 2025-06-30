@@ -1,0 +1,433 @@
+<div
+    class="flex flex-col max-w-256 md:min-w-256 max-h-screen -m-6 mobile:min-w-full mobile:w-full mobile:max-w-full mobile:m-0">
+    <!-- Header -->
+    <div class="flex flex-0 items-center justify-between mobile:sticky mobile:top-0 px-4 h-15 bg-white shadow-lg z-10">
+        <div class="text-xl mobile:text-lg font-medium">
+            You have more fares to select from
+        </div>
+        <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
+            <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="flex mt-3 mobile:mt-2 mobile:w-full">
+        <!-- Left half -->
+        <div class="w-1/2">
+            <div class="px-7 mobile:px-1.5 py-1">
+                <div class="flex justify-between mobile:items-center flex-wrap">
+                    <div class="flex items-center box-border">
+                        <img loading="lazy" class="w-9 h-9 mobile:h-6 mobile:w-6 object-contain mobile:mr-1.5 mr-3"
+                            [src]="depflight.flightStopSegments[0].airline_logo" alt="airline_logo">
+                        <div>
+                            <div class="text-md mobile:text-sm font-semibold">
+                                {{depflight.flightStopSegments[0].airlineName}}</div>
+                            <div class="text-md mobile:text-sm">{{depflight.flightStopSegments[0].airlineCode}} -
+                                {{depflight.flightStopSegments[0].flightNumber}}</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 relative">
+                        <div class="bg-lightgray mobile:h-fit rounded-md mobile:px-1.5 px-4 py-2 flex justify-between">
+                            <div class="flex justify-center">
+                                <span class="text-base font-semibold mobile:text-md">DEPARTURE</span>
+                            </div>
+                        </div>
+                        <!-- Fare Filter -->
+                        <div class="bg-lightgray rounded p-[10px] cursor-pointer" (click)="onFilterIconClickDep($event)">
+                            <img class="w-[18px]" src="assets/icons/filter_far.svg">
+                        </div>
+
+                        <!-- Fare Filter popup-->
+                        <ng-container *ngIf="isFilterVisibleDep">
+                            <div #filterPopupDep class="p-3 'w-[470px] rounded absolute top-[50px] mobile:w-[310px] mobile:left-[-4px] right-0 z-10 bg-white" 
+                                style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                                <div class="flex ">
+
+                                    <!-- Fare Type Filter -->
+                                    <div class="border-r-[1px] border-[#E8E5E5] pr-[10px]">
+                                        <div class="font-semibold text-sm text-[#090808] pb-2">Fare Type</div>
+                                        <div class="max-h-[200px] overflow-auto">
+                                            <div class="flex" *ngFor="let type of uniqueFareTypesDep; let i = index">
+                                                <mat-checkbox class="ckbox_far" [(ngModel)]="type.is_selected"
+                                                    (change)="onFareTypeChangeDep(i)">{{
+                                                    type.name }}</mat-checkbox>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Refundable Filter -->
+                                    <div class=" px-[10px] border-r-[1px] border-[#E8E5E5]" >
+                                        <div class="font-semibold text-sm text-[#090808] pb-2">Refundable status</div>
+                                        <mat-radio-group class="grid" [(ngModel)]="selectedRefundableDep">
+                                            <mat-radio-button class="pb-2 rdio_fair" value="all">All</mat-radio-button>
+                                            <mat-radio-button class="pb-2 rdio_fair"
+                                                value="true">Refundable</mat-radio-button>
+                                            <mat-radio-button class="pb-2 rdio_fair"
+                                                value="false">Non-Refundable</mat-radio-button>
+                                        </mat-radio-group>
+                                    </div>
+
+                                    <!-- Hold Filter -->
+                                    <div class="pl-[10px]" >
+                                        <div class="font-semibold text-sm text-[#090808] pb-2">Hold status</div>
+                                        <div>
+                                            <mat-checkbox class="ckbox_far" [(ngModel)]="holdOnlyDep">Is
+                                                available</mat-checkbox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Action Buttons -->
+                                <div class="text-end gap-3 pt-2 border-t-[1px] border-[#E8E5E5]">
+                                    <button class="text-[#79828C] font-semibold text-base pr-3"
+                                        (click)="clearAllFiltersDep()">Clear
+                                        all</button>
+                                    <button class="primary-text font-semibold text-base"
+                                        (click)="applyFiltersDep()">Apply</button>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-7 py-2 mt-2 mobile:px-1.5 relative">
+                <div
+                    class="sky-blue-bg rounded-md px-4 mobile:pr-2 mobile:pl-2 py-2 flex items-center justify-between mobile:justify-start mobile:flex-col flex-wrap">
+                    <div class="flex items-center">
+                        <span
+                            class="text-base font-semibold mobile:text-md">{{depflight.flightStopSegments[0].originCityName
+                            | titlecase}}</span>
+                        <mat-icon
+                            class="mx-4 mobile:mx-1.5 mobile:icon-size-4 material-symbols-outlined rotate-90 primary-text">flight</mat-icon>
+                        <span
+                            class="text-base mobile:text-md font-semibold">{{depflight.flightStopSegments[0].destinationCityName
+                            | titlecase}}</span>
+                    </div>
+                    <div class="flex justify-center">
+                        <span class="text-sm font-semibold">
+                            {{depflight.flightStopSegments[0].depTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="max-h-120 overflow-y-auto" *ngIf="depFlightAll.length > 0">
+                <div class="px-7 mobile:px-1.5 py-2">
+                    <mat-radio-group [ngModel]="selectedDFlight" (change)="changePoint($event.value,'departure')"
+                        class="w-full space-y-3">
+                        <mat-radio-button value="{{mf.id}}" class="flex rounded-xl p-3 mobile:py-2 mobile:px-1.5 w-full"
+                            *ngFor="let mf of depFlightAll">
+
+                            <div class="flex justify-between mobile:flex-col px-1 box-border">
+                                <div class="mobile:flex-col">
+                                    <div class="text-orange-600 text-lg font-semibold">{{mf?.currency}}
+                                        {{mf?.salePrice}}</div>
+
+                                    <div class="flex gap-1"
+                                        *ngIf="mf?.cashback_amount > 0 && mf?.currency == 'INR' ">
+                                        <span class="text-gradient text-sm"> {{mf?.currency}} {{mf?.cashback_amount}}
+                                            Cashback</span>
+                                    </div>
+
+                                    <div class="text-md font-semibold">{{mf?.fareClassString || '-'}}</div>
+                                </div>
+                                <div class="flex items-center mobile:flex-col">
+                                    <span class="text-sm py-1.5 px-3 rounded-full leading-3"
+                                        [ngClass]="mf.is_refundable ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'">
+                                        {{mf?.is_refundable ? 'Refundable' : 'Non Refundable'}}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="ml-[-25px] pt-3 space-y-2 leading-snug">
+                                <div
+                                    class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                    <div class="flex items-center">
+                                        <mat-icon
+                                            class="material-symbols-outlined icon-size-5 text-gray">luggage</mat-icon>
+                                        <div class="ml-3 mobile:ml-1 text-gray mobile:text-base">Check-In-Baggage</div>
+                                    </div>
+                                    <div class="theme-black-text max-w-44 text-right mobile:text-left mobile:pl-1 mobile:text-base"
+                                        [innerHTML]="mf.checkinBaggage">
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                    <div class="flex items-center"><mat-icon
+                                            class="mt-4 mb-5 text-gray material-symbols-outlined rotate-90 icon-size-5 h-7">flight</mat-icon>
+                                        <div class="ml-3 mobile:ml-1 mobile:text-base flex flex-col text-gray">
+                                            <span>Cancellation Fee,</span>
+                                            <span>Per Passenger</span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="theme-black-text max-w-44 text-right mobile:pl-1 mobile:text-left mobile:text-base">
+                                        {{mf.cancellation}}</div>
+                                </div>
+                                <div
+                                    class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                    <div class="flex items-center"><mat-icon
+                                            class="material-symbols-outlined icon-size-5 text-gray">business_center</mat-icon>
+                                        <div class="ml-3 text-gray mobile:ml-1 mobile:text-base">Cabin Baggage</div>
+                                    </div>
+                                    <div class="theme-black-text max-w-44 text-right mobile:pl-1 mobile:text-left mobile:text-base"
+                                        [innerHTML]="mf.cabinBaggage">
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                    <div class="flex items-center"><mat-icon
+                                            class="text-gray material-symbols-outlined icon-size-5">corporate_fare</mat-icon>
+                                        <div class="ml-3 text-gray mobile:ml-1 mobile:text-base">Fare Rule</div>
+                                    </div>
+                                    <div class="min-w-20 max-w-20 text-md primary-text cursor-pointer leading-normal text-right mobile:pl-1 mobile:text-left mobile:text-base"
+                                        (click)="fareRule(depflight.flightStopSegments[0].destinationCityName,depflight.flightStopSegments[0].originCityName,mf)">
+                                        <span class="underline font-semibold">view</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            </div>
+
+            <div *ngIf="depFlightAll.length == 0" class="h-72 flex justify-center items-center font-semibold text-lg">No
+                Data.</div>
+
+        </div>
+
+        <!-- Right half -->
+        <div class="w-1/2">
+            <div class="px-7 py-2 mobile:px-1.5">
+                <div class="flex justify-between mobile:items-center">
+                    <div class="flex items-center">
+                        <img loading="lazy" class="w-9 h-9 object-contain mobile:h-6 mobile:w-6 mobile:mr-1.5 mr-3"
+                            [src]="retflight.flightStopSegments[0].airline_logo" alt="airline_logo">
+                        <div>
+                            <div class="text-md font-semibold mobile:text-sm">
+                                {{retflight.flightStopSegments[0].airlineName}}</div>
+                            <div class="text-md mobile:text-sm">{{retflight.flightStopSegments[0].airlineCode}} -
+                                {{retflight.flightStopSegments[0].flightNumber}}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 relative">
+                        <div class="bg-lightgray rounded-md px-4 py-2 flex justify-between mobile:px-1.5 mobile:h-fit">
+                            <div class="flex justify-center">
+                                <span class="text-base font-semibold mobile:text-md">RETURN</span>
+                            </div>
+                        </div>
+
+                        <!-- Fare Filter -->
+                        <div class="bg-lightgray rounded p-[10px] cursor-pointer" (click)="onFilterIconClickRet($event)">
+                            <img class="w-[18px] max-w-[18px]" src="assets/icons/filter_far.svg">
+                        </div>
+
+                        <!-- Fare Filter popup-->
+                        <ng-container *ngIf="isFilterVisibleRet">
+                            <div #filterPopupRet class="p-3 rounded absolute top-[50px] right-0 z-10 bg-white w-[470px]"  
+                                style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                                <div class="flex ">
+
+                                    <!-- Fare Type Filter -->
+                                    <div class="border-r-[1px] border-[#E8E5E5] pr-[10px]">
+                                        <div class="font-semibold text-sm text-[#090808] pb-2">Fare Type</div>
+                                        <div class="max-h-[200px] overflow-auto">
+                                            <div class="flex" *ngFor="let type of uniqueFareTypesRet; let i = index">
+                                                <mat-checkbox class="ckbox_far" [(ngModel)]="type.is_selected"
+                                                    (change)="onFareTypeChangeRet(i)">{{
+                                                    type.name }}</mat-checkbox>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Refundable Filter -->
+                                    <div class=" px-[10px] border-r-[1px] border-[#E8E5E5]" >
+                                        <div class="font-semibold text-sm text-[#090808] pb-2">Refundable status
+                                        </div>
+                                        <mat-radio-group class="grid" [(ngModel)]="selectedRefundableRet">
+                                            <mat-radio-button class="pb-2 rdio_fair" value="all">All</mat-radio-button>
+                                            <mat-radio-button class="pb-2 rdio_fair"
+                                                value="true">Refundable</mat-radio-button>
+                                            <mat-radio-button class="pb-2 rdio_fair"
+                                                value="false">Non-Refundable</mat-radio-button>
+                                        </mat-radio-group>
+                                    </div>
+
+                                    <!-- Hold Filter -->
+                                    <div class="pl-[10px]" >
+                                        <div class="font-semibold text-sm text-[#090808] pb-2">Hold status</div>
+                                        <div>
+                                            <mat-checkbox class="ckbox_far" [(ngModel)]="holdOnlyRet">Is
+                                                available</mat-checkbox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Action Buttons -->
+                                <div class="text-end gap-3 pt-2 border-t-[1px] border-[#E8E5E5]">
+                                    <button class="text-[#79828C] font-semibold text-base pr-3"
+                                        (click)="clearAllFiltersRet()">Clear
+                                        all</button>
+                                    <button class="primary-text font-semibold text-base"
+                                        (click)="applyFiltersRet()">Apply</button>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            <!-- </div> -->
+        </div>
+
+        <div class="px-7 py-2 mobile:px-1.5">
+            <div
+                class="sky-blue-bg rounded-md px-4 py-2 flex items-center justify-between mobile:pr-2 mobile:pl-2 mobile:justify-start mobile:flex-col">
+                <div class="flex items-center">
+                    <span
+                        class="text-base font-semibold mobile:text-md">{{retflight.flightStopSegments[0].originCityName
+                        | titlecase}}</span>
+                    <mat-icon
+                        class="mx-4 material-symbols-outlined mobile:mx-1.5 mobile:icon-size-4 rotate-90 primary-text">flight</mat-icon>
+                    <span
+                        class="text-base font-semibold mobile:text-md">{{retflight.flightStopSegments[0].destinationCityName
+                        | titlecase}}</span>
+                </div>
+                <div class="flex justify-center">
+                    <span class="text-sm font-semibold">
+                        {{retflight.flightStopSegments[0].depTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-h-120 overflow-y-auto" *ngIf="retFlightAll.length > 0">
+            <div class="px-7 mobile:px-1.5 py-2">
+                <mat-radio-group [ngModel]="selectedRFlight" (change)="changePoint($event.value,'return')"
+                    class="w-full space-y-3">
+                    <mat-radio-button value="{{rf.id}}"
+                        class="flex rounded-xl px-3 py-4 w-full mobile:py-2 mobile:px-1.5"
+                        *ngFor="let rf of retFlightAll">
+                        <!-- <div class="flex justify-between mobile:flex-col">
+                                <div>
+                                    <div class="text-lg font-semibold mx-2 mobile:mx-0 mobile:text-base">
+                                        {{rf.fareClassString}}
+                                    </div>
+                                    <div class="text-sm font-semibold mx-2 mobile:mx-0 leading-snug">Fare Offered by
+                                        Airline.</div>
+                                </div>
+                                <div>
+                                    <div class="primary-text text-lg font-semibold text-end mobile:text-base mobile:pl-2">
+                                        {{rf.currency || 'INR'}}
+                                        {{rf.salePrice}}</div>
+                                    <div class="flex gap-1 mb-2 text-end" *ngIf="rf?.cashback_amount > 0 && bontonPanel.isB2B()">
+                                        <span class="text-gradient text-end">{{rf?.currency}} {{rf?.cashback_amount}}
+                                            Cashback</span>
+                                    </div>
+                                </div>
+                            </div> -->
+
+                        <div class="flex justify-between mobile:flex-col px-1 box-border">
+                            <div class="mobile:flex-col">
+                                <div class="text-orange-600 text-lg font-semibold">{{rf?.currency}}
+                                    {{rf?.salePrice}}</div>
+
+                                <div class="flex gap-1"
+                                    *ngIf="rf?.cashback_amount > 0 && rf?.currency == 'INR' ">
+                                    <span class="text-gradient text-sm"> {{rf?.currency}} {{rf?.cashback_amount}}
+                                        Cashback</span>
+                                </div>
+
+                                <div class="text-md font-semibold">{{rf?.fareClassString || '-'}}</div>
+                            </div>
+                            <div class="flex items-center mobile:flex-col">
+                                <span class="text-sm py-1.5 px-3 rounded-full leading-3"
+                                    [ngClass]="rf.is_refundable ? 'text-green-600 bg-green-100' : 'text-red-600 bg-red-100'">
+                                    {{rf?.is_refundable ? 'Refundable' : 'Non Refundable'}}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="ml-[-25px] pt-3 space-y-2 leading-snug">
+                            <div
+                                class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                <div class="flex items-center"><mat-icon
+                                        class="material-symbols-outlined icon-size-5 text-gray">luggage</mat-icon>
+                                    <div class="ml-3 text-gray mobile:text-base mobile:ml-1">Check-In-Baggage</div>
+                                </div>
+                                <div class="theme-black-text max-w-44 text-right mobile:pl-1 mobile:text-left mobile:text-base"
+                                    [innerHTML]="rf.checkinBaggage">
+                                </div>
+                            </div>
+                            <div
+                                class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                <div class="flex items-center"><mat-icon
+                                        class="mt-4 mb-5 text-gray material-symbols-outlined rotate-90 icon-size-5 h-7">flight</mat-icon>
+                                    <div class="ml-3 flex flex-col text-gray mobile:text-base mobile:ml-1">
+                                        <span>Cancellation Fee,</span>
+                                        <span>Per Passenger</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="theme-black-text max-w-44 text-right mobile:pl-1 mobile:text-left mobile:text-base">
+                                    {{rf.cancellation}}</div>
+                            </div>
+                            <!-- <div class="flex justify-between items-center">
+                                    <div class="flex items-center"><mat-icon class="material-symbols-outlined icon-size-5 text-gray">restaurant</mat-icon> <div class="ml-3 text-gray">Meal</div></div>
+                                    <div class="theme-black-text max-w-44 text-right">{{rf.meal}}</div>
+                                </div> -->
+                            <div
+                                class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                <div class="flex items-center"><mat-icon
+                                        class="material-symbols-outlined icon-size-5 text-gray">business_center</mat-icon>
+                                    <div class="ml-3 text-gray mobile:text-base mobile:ml-1">Cabin Baggage</div>
+                                </div>
+                                <div class="theme-black-text max-w-44 text-right mobile:pl-1 mobile:text-left mobile:text-base"
+                                    [innerHTML]="rf.checkinBaggage">
+                                </div>
+                            </div>
+                            <div
+                                class="flex justify-between items-center mobile:items-start mobile:flex-col mobile:justify-start">
+                                <div class="flex items-center"><mat-icon
+                                        class="text-gray material-symbols-outlined icon-size-5">corporate_fare</mat-icon>
+                                    <div class="ml-3 text-gray mobile:text-base mobile:ml-1">Fare Rule</div>
+                                </div>
+                                <div class="min-w-20 max-w-20 text-md primary-text cursor-pointer leading-normal text-right mobile:pl-1 mobile:text-left mobile:text-base"
+                                    (click)="fareRule(retflight.flightStopSegments[0].destinationCityName,retflight.flightStopSegments[0].originCityName,rf)">
+                                    <span class="underline font-semibold">view</span>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </div>
+
+        <div *ngIf="retFlightAll.length == 0" class="h-72 flex justify-center items-center font-semibold text-lg">No
+            Data.</div>
+    </div>
+</div>
+
+<div class="flex items-center justify-between px-6 mobile:px-3 py-3 mt-4 shadow-[0_0_15px_0_rgba(0,0,0,0.1)]">
+    <div class="flex flex-row items-center w-full mobile:justify-between mobile:gap-4">
+        <div class="flex-grow text-right mx-6 mobile:mx-0 mobile:text-left">
+            <!-- <div class="text-sm font-semibold primary-text">Off {{depflight.currency || 'INR'}}
+                    {{(retflight.purchasePrice +
+                        depflight.purchasePrice).toFixed(2)}}</div>
+                <div class="text-2xl font-semibold primary-text">{{depflight.currency || 'INR'}}
+                    {{(retflight.salePrice +
+                    depflight.salePrice).toFixed(2)}}</div> -->
+            <div *ngIf="data.offervalue" class="text-sm font-semibold primary-text">Offer {{depflight.currency ||
+                'INR'}}
+                <!-- {{(selectedRetFlight[0].purchasePrice + selectedDepFlight[0].purchasePrice).toFixed(2)}} -->
+                {{purchaseData(selectedRetFlight[0]?.purchasePrice, selectedDepFlight[0]?.purchasePrice)}}
+            </div>
+            <div class="text-2xl mobile:text-lg font-semibold primary-text">{{depflight.currency || 'INR'}}
+                <!-- {{(selectedRetFlight[0].salePrice + selectedDepFlight[0].salePrice).toFixed(2)}} -->
+                {{addData(selectedRetFlight[0]?.salePrice, selectedDepFlight[0]?.salePrice)}}
+            </div>
+        </div>
+        <button mat-raised-button [disabled]="!selectedDepFlight[0]?.salePrice || !selectedRetFlight[0]?.salePrice" class=" mobile:w-30 w-40 min-h-11 rounded-lg" (click)="booking()" [ngClass]="!selectedDepFlight[0]?.salePrice || !selectedRetFlight[0]?.salePrice ? 'text-gray' : 'primary-bg'">
+            <span class="white-text font-semibold text-xl mobile:text-lg">CONTINUE</span>
+        </button>
+    </div>
+</div>
+</div>

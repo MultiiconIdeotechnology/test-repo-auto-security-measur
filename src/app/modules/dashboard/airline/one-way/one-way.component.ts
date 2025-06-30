@@ -25,6 +25,7 @@ import { ViewFareMobileViewComponent } from './view-fare-mobile-view/view-fare-m
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from 'app/core/auth/auth.service';
 import { AirlineDashboardService } from 'app/services/airline-dashboard.service';
+import { BookNowDailogComponent } from '../book-now-dailog/book-now-dailog.component';
 // import { ShareItineraryComponent } from '../../dialogs/share-itinerary/share-itinerary.component';
 
 @Component({
@@ -256,8 +257,8 @@ export class OneWayComponent {
       adultCount: flight.adultCount,
       childCount: flight.childCount,
       traceId: flight.traceId,
-      resultIndex: this.airlineDashboardService.generateUniqueKey(), // This key to get resultIndex in detail page
       infantCount: flight.infantCount,
+      resultIndex: this.airlineDashboardService.generateUniqueKey(), // This key to get resultIndex in detail page
       is_domestic: flight.is_domestic,
       provider_id_enc: flight.provider_id_enc,
       cabin_class: flight.cabinClass,
@@ -265,43 +266,61 @@ export class OneWayComponent {
       origin: flight.origin,
       destination: flight.destination,
       purchasePrice: flight.tempSalePrice,
-      caching_file_name: flight.caching_file_name
-    };
+      caching_file_name: flight.caching_file_name,
 
-    let queryParams: any = {
-      flight: JSON.stringify(json),
       searchdateTime: DateTime.fromISO(this.searchdateTime.toString()).toFormat('yyyy-MM-dd'),
       filename: this.filename,
       travellClass: this.cabinClassSearch,
-      caching_file_name: flight.caching_file_name || '',
     };
+    console.log("json", json);
 
-    let baggageDetail = [];
-    if(flight.flightStopSegments !== undefined) {
-      baggageDetail.push({
-        adultBaggage: flight.flightStopSegments[0]?.adultBaggage || "0",
-        adultCabinBaggage: flight.flightStopSegments[0]?.adultCabinBaggage || "0",
-        childBaggage: flight.flightStopSegments[0]?.childBaggage || "0",
-        childCabinBaggage: flight.flightStopSegments[0]?.childCabinBaggage || "0",
-        isRefundable: flight.flightStopSegments[0].isRefundable,
+    this.matDialog
+      .open(BookNowDailogComponent, {
+        data: json,
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          // this.refreshItems();
+        }
       });
-    }
-    else {
-      baggageDetail.push({
-        adultBaggage: flight?.checkinBaggageStr || "0",
-        adultCabinBaggage: flight?.cabinBaggageStr || "0",
-        childBaggage: "0",
-        childCabinBaggage: "0",
-        isRefundable: flight.is_refundable,
-      });
-    }
-    const selectedflightData = {
-      baggageDetail:baggageDetail,
-      flightType: 'ow'
-    };
-    // this.cacheService.MainFilterChanged(selectedflightData, 'selected-flight');
-    this.airlineDashboardService.addFlightRecord(json.resultIndex, flight.resultIndex);
-    Linq.recirect('/flights/detail/booking', queryParams)
+
+    // let queryParams: any = {
+    //   flight: JSON.stringify(json),
+    //   searchdateTime: DateTime.fromISO(this.searchdateTime.toString()).toFormat('yyyy-MM-dd'),
+    //   filename: this.filename,
+    //   travellClass: this.cabinClassSearch,
+    //   caching_file_name: flight.caching_file_name || '',
+    // };
+
+
+    // let baggageDetail = [];
+    // if(flight.flightStopSegments !== undefined) {
+    //   baggageDetail.push({
+    //     adultBaggage: flight.flightStopSegments[0]?.adultBaggage || "0",
+    //     adultCabinBaggage: flight.flightStopSegments[0]?.adultCabinBaggage || "0",
+    //     childBaggage: flight.flightStopSegments[0]?.childBaggage || "0",
+    //     childCabinBaggage: flight.flightStopSegments[0]?.childCabinBaggage || "0",
+    //     isRefundable: flight.flightStopSegments[0].isRefundable,
+    //   });
+    // }
+    // else {
+    //   baggageDetail.push({
+    //     adultBaggage: flight?.checkinBaggageStr || "0",
+    //     adultCabinBaggage: flight?.cabinBaggageStr || "0",
+    //     childBaggage: "0",
+    //     childCabinBaggage: "0",
+    //     isRefundable: flight.is_refundable,
+    //   });
+    // }
+    // const selectedflightData = {
+    //   baggageDetail:baggageDetail,
+    //   flightType: 'ow'
+    // };
+    // // this.cacheService.MainFilterChanged(selectedflightData, 'selected-flight');
+    // this.airlineDashboardService.addFlightRecord(json.resultIndex, flight.resultIndex);
+    // Linq.recirect('/flights/detail/booking', queryParams)
   }
 
   fareRule(dest: any, origin: any, val: any): void {

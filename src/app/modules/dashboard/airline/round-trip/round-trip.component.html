@@ -1,0 +1,1043 @@
+<div class="relative w-full" *ngIf="is_domestic else international">
+    <div class="flex space-x-4 mobile:space-x-2">
+        <div class="w-1/2" *ngIf="depFlightsObj && depFlightsObj.originCity">
+            <div
+                class="sky-blue-bg border border-gray-border rounded-lg mobile:px-2 px-4 py-2 flex justify-between flex-wrap">
+                <div class="flex justify-center mobile:items-center">
+                    <span class="text-lg font-semibold mobile:font-medium mobile:text-md">{{depFlightsObj?.originCity |
+                        titlecase}}</span>
+                    <mat-icon
+                        class="mx-4 mobile:mx-1 mobile:icon-size-5 material-symbols-outlined rotate-90 primary-text">flight</mat-icon>
+                    <span
+                        class="text-lg mobile:text-md mobile:font-medium font-semibold">{{depFlightsObj?.destinationCity
+                        | titlecase}}</span>
+                </div>
+                <div class="text-gray mobile:text-sm">{{depFlightsObj?.startTime ? (depFlightsObj?.startTime | date:
+                    'dd, MMM') :
+                    ''}}</div>
+            </div>
+            <div *ngFor="let flight of depFlights">
+                <div class="relative border overflow-hidden rounded-lg my-4 mobile:my-2  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer white-bg"
+                    [ngClass]="{'shadow-xl primary-border' : SelectedDepartureFlight?.id === flight.id, 'border-gray-border' : SelectedDepartureFlight?.id !== flight.id}"
+                    (click)="SelectedDepartureFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedDepartureFlight = flight">
+                    <div class="px-5">
+                        <div *ngIf="user.is_admin" class="triangle text-center opacity-50"
+                            [style]="'border-top: 20px solid '+ flight.provider_color +' ;'">
+                            <div class="mt-[-21px] ml-[3px] text-[10px] white-text">{{flight.provider_id}}</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="flex" *ngIf="isShowItinerary">
+                                    <mat-checkbox [(ngModel)]="flight.shareItinerary"
+                                        (click)="$event.stopPropagation()"></mat-checkbox>
+                                </div>
+                                <img loading="lazy"
+                                    class="w-9 h-9 mobile:h-5 mobile:w-5 object-contain mr-3 mobile:mr-1"
+                                    [src]="flight?.displaySegments[0].airline_logo" alt="airline_logo">
+                                <div>
+                                    <div class="font-semibold mobile:text-sm">{{flight?.displaySegments[0].airlineName}}
+                                    </div>
+                                    <div class="text-gray text-sm mobile:text-xs">
+                                        {{flight?.displaySegments[0].airlineCode}}
+                                        -
+                                        {{flight?.displaySegments[0].flightNumber}}
+                                        <p
+                                            [ngClass]="cabinClassSearch == flight?.displaySegments[0].cabinClass ? '' : 'bonton-red-text'">
+                                            {{flight?.displaySegments[0].cabinClass}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span *ngIf="offervalue" class="text-gray text-sm leading-none mb-1 text-end">Offer
+                                    {{flight?.currency || 'INR'}}
+                                    {{flight?.purchasePrice}}</span>
+                                <div class="text-lg mobile:text-md text-end font-semibold mobile:leading-[19px]">
+                                    {{flight?.currency
+                                    || 'INR'}}
+                                    {{flight.salePrice}}</div>
+
+
+                                <!----CaseBack---->
+                                <div class="flex gap-1 mb-2"
+                                    *ngIf="flight?.cashback_amount > 0 && flight?.currency == 'INR'">
+                                    <span class="text-gradient">{{flight?.currency}} {{flight?.cashback_amount}}
+                                        Cashback</span>
+                                    <!-- <img class="w-5" src="assets/icons/cashback.svg"> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-2 mb-2">
+                            <div class="flex flex-col">
+                                <span class="font-semibold text-xl mobile:text-md">{{flight?.displaySegments[0].depTime
+                                    |
+                                    date:
+                                    'HH:mm'}}</span>
+                                <span class="text-gray text-md mobile:hidden">
+                                    {{flight?.displaySegments[0].depTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                <span
+                                    class="text-gray text-xs mobile:flex hidden">{{flight.displaySegments[0].duration}}</span>
+
+                            </div>
+                            <div class="flex flex-col items-center justify-center">
+                                <span
+                                    class="text-gray text-md mobile:hidden">{{flight.displaySegments[0].duration}}</span>
+                                <span class="font-semibold my-1">
+                                    <div class="w-36 mobile:w-8 h-[2px] rounded-md relative flex justify-evenly items-center"
+                                        [ngClass]="flight.displaySegments[0].layoverAt ? 'bonton-red-bg' : 'primary-bg'">
+                                        <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-border"
+                                            *ngFor="let i of flight.stops | enumerate"></span>
+                                    </div>
+                                </span>
+                                <ng-container>
+                                    <span *ngIf="flight.displaySegments[0].layoverAt"
+                                        class="bonton-red-text text-sm w-48 mobile:w-[70px] truncate text-center mobile:hidden"
+                                        [matTooltip]="getTooltip(flight.displaySegments[0].layoverData)"
+                                        [matTooltipClass]="'custom-tooltip'">
+                                        {{flight.displaySegments[0].layoverAt | lowercase}}
+                                    </span>
+                                    <span *ngIf="!flight.displaySegments[0].layoverAt"
+                                        class="green-text text-sm mobile:text-xs mobile:hidden">Non
+                                        Stop</span>
+                                    <span
+                                        class="text-gray text-sm mobile:text-xs">{{flight.displaySegments[0].noOfSeatAvailable}}
+                                        Seat(s)
+                                        left</span>
+                                </ng-container>
+                                <!-- <ng-container>
+                                <span *ngIf="flight.stops > 0" class="text-gray text-sm w-48 truncate text-center" [matTooltip]="getTooltip(flight.flightStopSegments,'depflight')" [matTooltipClass]="'custom-tooltip'">
+                                  {{flight.stops + ' Stops via ' }}
+                                  <ng-container *ngFor="let fs of flight.flightStopSegments; let i = index">
+                                    <span *ngIf="!fs.isreturn">
+                                        {{fs.layoverAt | lowercase}}{{((flight.flightStopSegments.length - 1) === i) || (fs.layoverAt === '') ? '' : ','}}
+                                    </span>
+                                  </ng-container>
+                                </span>
+                                <span *ngIf="flight.stops < 1" class="text-gray text-sm">Non Stop</span>
+                              </ng-container> -->
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-semibold text-xl mobile:text-md">{{flight.displaySegments[0].arrTime |
+                                    date:
+                                    'HH:mm'}}</span>
+                                <span class="text-gray text-md mobile:hidden">
+                                    {{flight.displaySegments[0].arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                <span *ngIf="flight.displaySegments[0].layoverAt"
+                                    class="text-gray text-xs mobile:flex hidden">{{flight.stops}} Stop</span>
+                                <span *ngIf="!flight.displaySegments[0].layoverAt"
+                                    class="green-text text-xs mobile:flex hidden">Non Stop</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="mobile:px-2 px-5 py-[6px] flex justify-between field-blue-bg mobile:w-full">
+                        <div class="text-sm mobile:text-xs font-semibold bonton-red-text leading-none"
+                            [ngClass]="{'green-text' : flight.isRefundable,'mobile:ml-1' : flight.airlineRemark}">
+                            {{flight.isRefundable ? 'REFUNDABLE' : 'NON-REFUNDABLE'}}</div>
+                    </div> -->
+                    <!-- <div
+                        class="primary-text text-md font-semibold cursor-pointer leading-none flex items-center justify-end">
+                        <span (click)="toggleFlightDetails(flight); $event.stopPropagation()">Flight detail</span>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <div class="w-1/2" *ngIf="retFlightsObj && retFlightsObj.originCity">
+            <div
+                class="sky-blue-bg border border-gray-border mobile:px-2 rounded-lg px-4 py-2 flex justify-between flex-wrap">
+                <div class="flex justify-center mobile:items-center">
+                    <span class="text-lg font-semibold mobile:font-medium mobile:text-md">{{retFlightsObj?.originCity |
+                        titlecase}}</span>
+                    <mat-icon
+                        class="mx-4 mobile:mx-1 mobile:icon-size-5 material-symbols-outlined rotate-90 primary-text">flight</mat-icon>
+                    <span
+                        class="text-lg font-semibold mobile:text-md mobile:font-medium">{{retFlightsObj?.destinationCity
+                        | titlecase}}</span>
+                </div>
+                <div class="text-gray mobile:text-sm">{{retFlightsObj?.startTime ? (retFlightsObj?.startTime | date:
+                    'dd, MMM') :
+                    ''}}</div>
+            </div>
+            <div *ngFor="let flight of retFlights">
+                <div class="relative border overflow-hidden rounded-lg mobile:my-2 my-4  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer white-bg"
+                    [ngClass]="{'shadow-xl primary-border' : SelectedReturnFlight?.id === flight.id, 'border-gray-border' : SelectedReturnFlight?.id !== flight.id}"
+                    (click)="SelectedReturnFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedReturnFlight = flight">
+                    <div class="px-5">
+                        <div *ngIf="user.is_admin" class="triangle text-center opacity-50"
+                            [style]="'border-top: 20px solid '+ flight.provider_color +' ;'">
+                            <div class="mt-[-21px] ml-[3px] text-[10px] white-text">{{flight.provider_id}}</div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <div class="flex" *ngIf="isShowItinerary">
+                                    <mat-checkbox [(ngModel)]="flight.shareItinerary"
+                                        (click)="$event.stopPropagation()"></mat-checkbox>
+                                </div>
+                                <img loading="lazy"
+                                    class="w-9 h-9 object-contain mobile:h-5 mobile:w-5 mobile:mr-1 mr-3"
+                                    [src]="flight.displaySegments[0].airline_logo" alt="airline_logo">
+                                <div>
+                                    <div class="font-semibold mobile:text-sm">{{flight.displaySegments[0].airlineName}}
+                                    </div>
+                                    <div class="text-gray text-sm mobile:text-xs">
+                                        {{flight.displaySegments[0].airlineCode}}
+                                        -
+                                        {{flight.displaySegments[0].flightNumber}}
+                                        <p
+                                            [ngClass]="cabinClassSearch == flight?.displaySegments[0].cabinClass ? '' : 'bonton-red-text'">
+                                            {{flight?.displaySegments[0].cabinClass}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col">
+                                <span *ngIf="offervalue" class="text-gray text-sm leading-none mb-1 text-end">Offer
+                                    {{flight.currency || 'INR'}}
+                                    {{flight.purchasePrice}}</span>
+                                <div class="text-lg font-semibold text-end mobile:text-md mobile:leading-[19px]">
+                                    {{flight.currency
+                                    || 'INR'}} {{flight.salePrice}}</div>
+
+                                <!----CaseBack---->
+                                <div class="flex gap-1 mb-2"
+                                    *ngIf="flight?.cashback_amount > 0 && flight?.currency == 'INR' ">
+                                    <span class="text-gradient">{{flight?.currency}} {{flight?.cashback_amount}}
+                                        Cashback</span>
+                                    <!-- <img class="w-5" src="assets/icons/cashback.svg"> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between mt-2 mb-2">
+                            <div class="flex flex-col">
+                                <span class="font-semibold text-xl mobile:text-md">{{flight.displaySegments[0].depTime |
+                                    date:
+                                    'HH:mm'}}</span>
+                                <span class="text-gray text-md mobile:hidden">
+                                    {{flight.displaySegments[0].depTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                <span
+                                    class="text-gray text-xs mobile:flex hidden">{{flight.displaySegments[0].duration}}</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center">
+                                <span
+                                    class="text-gray text-md mobile:hidden">{{flight.displaySegments[0].duration}}</span>
+                                <span class="font-semibold my-1">
+                                    <div class="w-36 mobile:w-8 h-[2px] rounded-md relative flex justify-evenly items-center"
+                                        [ngClass]="flight.displaySegments[0].layoverAt ? 'bonton-red-bg' : 'primary-bg'">
+                                        <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-border"
+                                            *ngFor="let i of flight.stops | enumerate"></span>
+                                    </div>
+                                </span>
+                                <ng-container>
+                                    <span *ngIf="flight.displaySegments[0].layoverAt"
+                                        class="bonton-red-text text-sm w-48 truncate text-center mobile:hidden"
+                                        [matTooltip]="getTooltip(flight.displaySegments[0].layoverData)"
+                                        [matTooltipClass]="'custom-tooltip'">
+                                        {{flight.displaySegments[0].layoverAt | lowercase}}
+                                    </span>
+                                    <span *ngIf="!flight.displaySegments[0].layoverAt"
+                                        class="text-sm green-text mobile:hidden">Non
+                                        Stop</span>
+                                    <span
+                                        class="text-gray text-sm mobile:text-xs">{{flight.displaySegments[0].noOfSeatAvailable}}
+                                        Seat(s)
+                                        left</span>
+                                </ng-container>
+                                <!-- <ng-container>
+                                <span *ngIf="flight.stops > 0" class="text-gray text-sm w-48 truncate text-center" [matTooltip]="getTooltip(flight.flightStopSegments,'retflight')" [matTooltipClass]="'custom-tooltip'">
+                                  {{flight.stops + ' Stops via ' }}
+                                  <ng-container *ngFor="let fs of flight.flightStopSegments; let i = index">
+                                        <span *ngIf="fs.isreturn">
+                                            {{fs.layoverAt | lowercase}}{{((flight.flightStopSegments.length - 1) === i) || (fs.layoverAt === '') ? '' : ','}}
+                                        </span>
+                                  </ng-container>
+                                </span>
+                                <span *ngIf="flight.stops < 1" class="text-gray text-sm">Non Stop</span>
+                            </ng-container> -->
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="font-semibold text-xl mobile:text-md">{{flight.displaySegments[0].arrTime |
+                                    date:
+                                    'HH:mm'}}</span>
+                                <span class="text-gray text-md mobile:hidden">
+                                    {{flight.displaySegments[0].arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                <span *ngIf="flight.displaySegments[0].layoverAt"
+                                    class="text-gray text-xs mobile:flex hidden">{{flight.stops}} Stop</span>
+                                <span *ngIf="!flight.displaySegments[0].layoverAt"
+                                    class="green-text text-xs mobile:flex hidden">Non Stop</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="mobile:px-2 px-5 py-[6px] flex justify-between field-blue-bg mobile:w-full">
+                        <div class="text-sm mobile:text-xs font-semibold bonton-red-text leading-none"
+                            [ngClass]="{'green-text' : flight.isRefundable,'mobile:ml-1' : flight.airlineRemark}">
+                            {{flight.isRefundable ? 'REFUNDABLE' : 'NON-REFUNDABLE'}}</div>
+                    </div> -->
+                    <!-- <div
+                        class="primary-text text-md font-semibold cursor-pointer leading-none flex items-center justify-end">
+                        <span (click)="toggleFlightDetails(flight); $event.stopPropagation()">Flight detail</span>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="SelectedDepartureFlight && SelectedReturnFlight"
+        class="fixed bottom-4 w-full max-w-[960px] mobile:right-0 mobile:flex mobile:items-center mobile:justify-center mobile:w-full mobile:left-0 mobile:max-w-full rounded-lg overflow-hidden ml-0 white-text z-99 shadow-[0_0_15px_0_rgba(73,108,150,0.7)]">
+        <mat-icon
+            class="light-gray-text absolute right-1 mobile:right-4 mobile:top-1.5 top-1 icon-size-4 cursor-pointer"
+            (click)="SelectedReturnFlight = null; SelectedDepartureFlight = null;">cancel</mat-icon>
+        <div class="flex items-center primary-bg py-4 w-full mobile:w-[96%] mobile:rounded-lg">
+            <div class="flex w-[calc(100%-200px)] mobile:w-full mobile:flex-col">
+                <div class="border-sky border-r mobile:border-dotted px-8 w-[50%] mobile:w-full mobile:px-3">
+                    <div class="pb-3">Departure <span
+                            class="text-sm font-light pl-2">{{SelectedDepartureFlight.flightStopSegments[0].airlineName}}</span>
+                    </div>
+                    <div class="flex">
+                        <img loading="lazy" class="w-12 h-12 mobile:h-8 mobile:w-8 object-contain mr-3"
+                            [src]="SelectedDepartureFlight.flightStopSegments[0].airline_logo" alt="airline_logo">
+                        <div>
+                            <span class="text-lg flex mobile:text-base mobile:flex mobile:items-center">
+                                <span>{{SelectedDepartureFlight.origin}}
+                                    {{SelectedDepartureFlight.startTime | date: 'HH:mm'}}</span>
+                                <mat-icon
+                                    class="mx-2 material-symbols-outlined mobile:icon-size-4 mobile:mx-1 white-text">east</mat-icon>
+                                <span class="text-lg mobile:text-base">{{SelectedDepartureFlight.destination}}
+                                    {{SelectedDepartureFlight.endTime | date: 'HH:mm'}}</span>
+                            </span>
+                            <span
+                                class="text-md mobile:text-sm opacity-70 py-1">{{SelectedDepartureFlight.totalTravelTime}}</span>
+                            <span class="text-md pl-4 mobile:text-sm py-1">{{SelectedDepartureFlight.currency || 'INR'}}
+                                {{SelectedDepartureFlight.salePrice}}</span>
+                            <span class="orange-text block cursor-pointer"
+                                (click)="toggleFlightDetails(SelectedDepartureFlight)">Flight Details</span>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="border-sky border-r px-8 w-[50%] mobile:border-dotted mobile:w-full mobile:px-3 mobile:pt-1">
+                    <div class="pb-3 mobile:pb-2 mobile:pt-1 mobile:border-t mobile:border-sky mobile:border-dotted">
+                        Return <span
+                            class="text-sm font-light pl-2">{{SelectedReturnFlight.flightStopSegments[0].airlineName}}</span>
+                    </div>
+                    <div class="flex">
+                        <img loading="lazy" class="w-12 h-12 mobile:h-8 mobile:w-8 object-contain mr-3"
+                            [src]="SelectedReturnFlight.flightStopSegments[0].airline_logo" alt="airline_logo">
+                        <div>
+                            <span class="text-lg flex mobile:text-base mobile:flex mobile:items-center"><span>{{SelectedReturnFlight.origin}}
+                                    {{SelectedReturnFlight.startTime | date: 'HH:mm'}}</span>
+                                <mat-icon
+                                    class="mx-2 material-symbols-outlined white-text mobile:icon-size-4 mobile:mx-1">east</mat-icon>
+                                <span class="text-lg mobile:text-base">{{SelectedReturnFlight.destination}}
+                                    {{SelectedReturnFlight.endTime | date: 'HH:mm'}}</span> </span>
+                            <span
+                                class="text-md opacity-70 mobile:text-sm py-1">{{SelectedReturnFlight.totalTravelTime}}</span>
+                            <span class="text-md pl-4 py-1 mobile:text-sm">{{SelectedReturnFlight.currency || 'INR'}}
+                                {{SelectedReturnFlight.salePrice}}</span>
+                            <span class="orange-text block cursor-pointer"
+                                (click)="toggleFlightDetails(SelectedReturnFlight)">Flight Details</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col items-center px-3 w-[200px] mobile:px-2 mobile:w-fit">
+                <span class="text-lg  mobile:text-base font-semibold">{{SelectedDepartureFlight?.currency || 'INR'}}
+                    {{addData(SelectedReturnFlight?.salePrice, SelectedDepartureFlight?.salePrice)}}
+                </span>
+
+                <!----CaseBack---->
+                <div class="flex gap-1 "
+                    *ngIf="SelectedDepartureFlight?.cashback_amount > 0 && SelectedDepartureFlight?.currency == 'INR' ">
+                    <span class="text-gradient">{{SelectedDepartureFlight?.currency || 'INR'}}
+                        {{addData(SelectedReturnFlight?.cashback_amount, SelectedDepartureFlight?.cashback_amount)}}
+                        Cashback</span>
+                    <!-- <img class="w-5" src="assets/icons/cashback.svg"> -->
+                </div>
+
+                <!-- <button class="white fuse-mat-button" mat-flat-button><span class="primary-text font-bold px-4"
+                        (click)="booking(SelectedDepartureFlight,SelectedReturnFlight)">BOOK</span></button> -->
+
+                <div class="flex gap-3">
+                    <!-- Share Itinerary -->
+                    <!-- <div *ngIf="bontonPanel.isB2B()"
+                        class="border border-[#ffffff] rounded-[10px] px-2 gap-1 flex h-10 mt-2 items-center text-[#ffffff] cursor-pointer"
+                        (click)="sendDetail(SelectedDepartureFlight,SelectedReturnFlight)">
+                        <img src="assets/icons/white-share.svg" class="w-[14px]">
+                        <div class="text-base">Share</div>
+                    </div> -->
+
+                    <button class="white mt-2 fuse-mat-button w-[85px]"
+                        (click)="bookingDetails(SelectedDepartureFlight,SelectedReturnFlight)" mat-flat-button>
+                        <span class="primary-text font-bold px-4">BOOK</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #international>
+    <div *ngFor="let flight of flights; let index = index" class="mb-4">
+        <div class="relative rounded-lg border-gray-border border-2  overflow-hidden white-bg">
+            <div *ngIf="user.is_admin" class="triangle text-center opacity-50"
+                [style]="'border-top: 20px solid '+ flight.provider_color +' ;'">
+                <div class="mt-[-21px] ml-[3px] text-[10px] white-text">{{flight.provider_id}}</div>
+            </div>
+            <div>
+                <div class="flex justify-between py-1 pl-2 mobile:pr-2 pr-4 items-center w-full">
+                    <div class="flex" *ngIf="isShowItinerary">
+                        <mat-checkbox [(ngModel)]="flight.shareItinerary"></mat-checkbox>
+                    </div>
+                    <div class="w-[calc(100%-160px)] mobile:w-full flex flex-col">
+                        <div class="relative w-full mobile:flex-col border-gray-border border-dashed border-r flex mobile:px-0 py-2"
+                            [ngClass]="isShowItinerary ? 'pr-4' : 'px-4'"
+                            *ngFor="let fl of flight.displaySegments;let i = index">
+                            <div class="flex items-center w-[25%] mobile:w-full">
+                                <img loading="lazy" class="w-12 h-12 object-contain mr-3 mobile:h-6 mobile:w-6"
+                                    [src]="fl.airline_logo" alt="airline_logo">
+                                <div>
+                                    <div class="font-semibold text-lg mobile:text-base">{{fl.airlineName}}</div>
+                                    <div class="text-gray mobile:text-md">{{fl.airlineCode}} - {{fl.flightNumber}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-around w-[75%] mobile:w-full">
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-gray-400 text-lg font-medium leading-none mobile:text-base">{{fl.originCityCode}}</span>
+                                    <span class="font-semibold text-xl mobile:text-base mobile:leading-5">{{fl.depTime |
+                                        date: 'HH:mm'}}</span>
+                                    <span class="text-gray text-md mobile:text-xs">
+                                        {{fl.depTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                </div>
+                                <div class="flex flex-col items-center justify-center">
+                                    <span class="text-gray text-md mobile:text-xs">{{fl.duration}}</span>
+                                    <span class="font-semibold my-1">
+                                        <div class="w-36 mobile:w-18 h-[2px] rounded-md relative flex justify-center items-center"
+                                            [ngClass]="fl.layoverAt ? 'bonton-red-bg' : 'primary-bg'">
+                                            <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-border"
+                                                *ngFor="let i of fl.multicityStop | enumerate"></span>
+                                        </div>
+                                    </span>
+                                    <ng-container>
+                                        <span *ngIf="fl.layoverAt"
+                                            class="text-gray mobile:leading-3 text-sm w-48 mobile:w-fit truncate text-center mobile:text-xs"
+                                            [matTooltip]="getTooltip(fl.layoverData)"
+                                            [matTooltipClass]="'custom-tooltip'">
+                                            {{fl.layoverAt | lowercase}}
+                                        </span>
+                                        <span *ngIf="!fl.layoverAt"
+                                            class="text-sm mobile:text-xs green-text mobile:leading-3">Non Stop</span>
+                                        <span class="text-gray text-sm mobile:text-xs">{{fl.noOfSeatAvailable}} Seat(s)
+                                            left</span>
+                                    </ng-container>
+                                    <!-- <span class="text-gray text-md">{{fl.multicityStop > 0 ? (fl.multicityStop + ' Stops') : 'Non Stop'}}</span> -->
+                                    <!-- <ng-container>
+                                        <span *ngIf="fl.multicityStop > 0" class="text-gray text-sm w-48 truncate text-center" [matTooltip]="getTooltip(flight.flightStopSegments)" [matTooltipClass]="'custom-tooltip'">
+                                          {{fl.multicityStop + ' Stops via ' }}
+                                            <span *ngFor="let fs of flight.flightStopSegments; let i = index">
+                                                {{fs.layoverAt }}
+                                                <ng-container *ngIf="i != 0">
+                                                    {{((flight.flightStopSegments.length - 1) === i) || (fs.layoverAt === '') ? '' : ','}}
+                                                </ng-container>
+                                            </span>
+                                        </span>
+                                        <span *ngIf="fl.multicityStop < 1" class="text-gray text-sm">Non Stop</span>
+                                      </ng-container> -->
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-gray-400 text-lg font-medium leading-none mobile:text-base">{{fl.destinationCityCode}}</span>
+                                    <span class="font-semibold text-xl mobile:text-base">{{fl.arrTime | date:
+                                        'HH:mm'}}</span>
+                                    <span class="text-gray text-md mobile:text-xs">
+                                        {{fl.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                </div>
+                            </div>
+                            <span *ngIf="i != (flight.displaySegments.length - 1)"
+                                class="absolute bottom-[-12px] w-[95%] border-b border-gray-border my-3"></span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end text-right w-[160px] mobile:w-fit mobile:pl-2">
+                        <span *ngIf="offervalue" class="text-gray mobile:text-sm text-md leading-none">Off
+                            {{flight.currency || 'INR'}}
+                            {{flight.purchasePrice}}</span>
+                        <span class="text-2xl  mobile:text-base font-semibold">{{flight.currency || 'INR'}}
+                            {{flight.salePrice}}
+                        </span>
+
+                        <!----CaseBack---->
+                        <div class="flex gap-1 mb-2" *ngIf="flight?.cashback_amount > 0 && flight?.currency == 'INR' ">
+                            <span class="text-gradient">{{flight?.currency}} {{flight?.cashback_amount}} Cashback</span>
+                            <!-- <img class="w-5" src="assets/icons/cashback.svg"> -->
+                        </div>
+
+                        <!-- Auto Login User Button Hide -->
+                        <ng-container *ngIf="!authService.isAutoLogin">
+                            <button *ngIf="!flight.moreFlights.data.length > 0"
+                                class="dark:bg-primary bg-gray-200  px-[10px] rounded-lg mobile:hidden" mat-flat-button
+                                (click)="booking(flight)">
+                                <span class="white-text tracking-wide mobile:text-md">Book Now</span>
+                            </button>
+
+                            <button *ngIf="!flight.moreFlights.data.length > 0"
+                                class="dark:bg-primary bg-gray-200  px-[10px] rounded-lg mobile:px-[10px] mobile:flex hidden"
+                                mat-flat-button (click)="booking(flight)">
+                                <span class="white-text tracking-wide mobile:text-md">Book Now</span>
+                            </button>
+                        </ng-container>
+
+                        <!-- <button *ngIf="flight.moreFlights.data.length > 0" class="blue fuse-mat-button-large"
+                                mat-flat-button (click)="toggleViewFare(flight)">
+                                <span *ngIf="!flight.showFare" class="white-text tracking-wide">View Fare</span>
+                                <span *ngIf="flight.showFare" class="white-text tracking-wide">Hide Fare</span>
+                            </button> -->
+                        <button *ngIf="flight.moreFlights.data.length > 0"
+                            class="secondary-bg mobile:min-w-[82px] primary-border border-[1px] mobile:h-[28px] rounded-md px-4 py-[7px] mobile:px-[8px] mobile:py-0 h-full justify-center items-center"
+                            (click)="toggleViewFare(flight)">
+                            <span *ngIf="!flight.showFare"
+                                class="primary-text font-semibold text-sm uppercase tracking-wide">View Fare</span>
+                            <span *ngIf="flight.showFare"
+                                class="primary-text font-semibold text-sm uppercase tracking-wide">Hide Fare</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    class="px-4 flex justify-between field-blue-bg mobile:w-full mobile:px-2 dark:bg-[#364459] bg-gray-200">
+                    <div class="flex items-center py-2 mobile:w-[72%]">
+                        <!-- <span class="w-2 h-2 rounded-full primary-bg mr-2" *ngIf="flight.airlineRemark"></span>
+                        <span
+                            class="mr-4 text-gray text-sm leading-none max-w-[500px] truncate mobile:mr-1 mobile:max-w-full mobile:text-xs"
+                            [matTooltip]="flight.airlineRemark">{{flight.airlineRemark}}</span>
+                        <span class="flex items-center">
+                            <div *ngIf="flight.airlineRemark" class="h-4 border-r-2 border-gray-border"></div>
+                            <span class="text-md mobile:text-xs font-semibold bonton-red-text leading-none"
+                                [ngClass]="{'green-text' : flight.isRefundable,'ml-4 mobile:ml-1' : flight.airlineRemark}">
+                                {{flight.isRefundable ? 'REFUNDABLE' : 'NON-REFUNDABLE'}}</span>
+                        </span> -->
+
+                        <!-- Share Itinerary -->
+                        <!-- <div 
+                            class="border border-[#1877F2] rounded px-1 gap-1 flex items-center h-6 text-[#0E458C] cursor-pointer"
+                            (click)="sendDetailInternation(flight)">
+                            <img src="assets/icons/share.svg" class="w-[14px]">
+                            <div class="text-sm">Share</div>
+                        </div> -->
+
+                        <!-- Refundable and Non Refundable -->
+                        <div class="flex items-center" *ngIf="!flight.moreFlights.data.length > 0">
+                            <div class="h-4 border-r-2 pl-3 border-gray-border"></div>
+                            <div class="text-sm mobile:text-xs ml-3 text-gray leading-none"
+                                [ngClass]="flight.isRefundable ? 'text-green-500' : 'text-red-500'">
+                                {{flight.isRefundable ? 'Refundable' : 'Non Refundable'}}
+                            </div>
+                        </div>
+
+                        <!-- Hold Available -->
+                        <div class="flex items-center" *ngIf="flight.isHold">
+                            <div class="h-4 border-r-2 pl-3 border-gray-border"></div>
+                            <div class="text-sm mobile:text-xs ml-3 text-gray leading-none">
+                                Hold Available
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex">
+                        <!-- <div class="flex items-center">
+                                <mat-icon class="material-symbols-outlined text-black">luggage</mat-icon>
+                                <span class="text-gray text-md font-medium leading-none">30 kgs</span>
+                            </div>
+                            <div class="flex items-center ml-2 mr-4">
+                                <mat-icon class="material-symbols-outlined text-black">local_mall</mat-icon>
+                                <span class="text-gray text-md pl-1 font-medium leading-none">7 kgs</span>
+                            </div> -->
+                        <div (click)="flight.showDetails = !flight.showDetails"
+                            class="primary-text text-md font-semibold cursor-pointer leading-none flex items-center mobile:text-sm mobile:min-w-[90px]">
+                            <span>Flight detail</span> <mat-icon *ngIf="!flight.showDetails"
+                                class="primary-text">expand_more</mat-icon>
+                            <mat-icon *ngIf="flight.showDetails" class="primary-text">expand_less</mat-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-2" *ngIf="flight.showDetails">
+                <div class="flex justify-between border-b border-gray-border  px-4">
+                    <div class="flex flex-row items-center h-11 select-none W-full mobile:h-8">
+                        <div class="flex justify-center items-center mr-6 cursor-pointer h-11 mobile:h-8 mobile:mr-2"
+                            [ngClass]="flight.tab === 0? 'border-b-4 bonton-orange-border mobile:border-b-2':''"
+                            (click)="tabChanged(0, flight)">
+                            <span class="uppercase font-semibold mobile:text-sm"
+                                [ngClass]="flight.tab === 0? 'bonton-orange-text':'gray-text'">FLIGHT DETAILS</span>
+                        </div>
+                        <!-- <div class="flex justify-center items-center mx-6 cursor-pointer h-11"
+                            [ngClass]="flight.tab === 1? 'border-b-4 bonton-orange-border':''" (click)="tabChanged(1, flight)">
+                            <span class="uppercase font-semibold"
+                                [ngClass]="flight.tab === 1? 'bonton-orange-text':'gray-text'">FARE SUMMARY</span>
+                        </div> -->
+                        <div class="flex justify-center items-center mx-6 cursor-pointer h-11 mobile:h-8 mobile:mr-2"
+                            [ngClass]="flight.tab === 2? 'border-b-4 bonton-orange-border mobile:border-b-2':''"
+                            (click)="tabChanged(2, flight)" *ngIf="!flight.moreFlights.data.length > 0">
+                            <span class="uppercase font-semibold mobile:text-sm"
+                                [ngClass]="flight.tab === 2? 'bonton-orange-text':'gray-text'">BAGGAGE</span>
+                        </div>
+                        <div class="flex justify-center items-center mx-6 cursor-pointer h-11 mobile:h-8 mobile:mr-2"
+                            [ngClass]="flight.tab === 3? 'border-b-4 bonton-orange-border mobile:border-b-2':''"
+                            (click)="tabChanged(3, flight)" *ngIf="!flight.moreFlights.data.length > 0">
+                            <span class="uppercase font-semibold mobile:text-sm"
+                                [ngClass]="flight.tab === 3? 'bonton-orange-text':'gray-text'">FARE RULE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full relative p-4 mobile:p-2.5">
+
+                    <div [class.hidden]="flight.tab !== 0">
+                        <div *ngFor="let segment of flight.flightStopSegments; let i = index">
+                            <div class="rounded-xl border border-dashed border-gray-border relative mt-[-1px]"
+                                *ngIf="!segment.isreturn">
+                                <div class="flex justify-between px-3 pt-3 pb-4 items-center w-full mobile:flex-col">
+                                    <div class="flex items-center w-[30%] mobile:w-full">
+                                        <img loading="lazy" class="w-8 h-8 object-contain mr-3 mobile:h-6 mobile:w-6"
+                                            [src]="segment.airline_logo" alt="airline_logo">
+                                        <div>
+                                            <div class="font-semibold text-lg mobile:text-base">{{segment.airlineName}}
+                                            </div>
+                                            <div class="text-gray mobile:text-sm flex gap-1">
+                                                <span>{{segment.airlineCode}} -
+                                                    {{segment.flightNumber}} </span> - <p
+                                                    [ngClass]="cabinClassSearch == segment.cabinClass ? '' : 'bonton-red-text'">
+                                                    {{segment.cabinClass}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex justify-between items-center w-[70%] pr-20 mobile:w-full mobile:pr-0">
+                                        <div class="flex flex-col w-[150px] mobile:w-full">
+                                            <div class="flex gap-2 items-center">
+                                                <div class="font-semibold text-xl mobile:text-base text-gray-400">
+                                                    {{segment.originCityCode}}</div>
+                                                <div class="text-gray text-lg mobile:text-base"> {{segment.depTime |
+                                                    date:'HH:mm'}}</div>
+                                            </div>
+                                            <!-- <span
+                                                class="font-semibold text-xl mobile:text-base">{{segment.originCityCode}}<span
+                                                    class="text-gray text-lg mobile:text-base"> {{segment.depTime |
+                                                    date: 'HH:mm'}}</span></span> -->
+                                            <span class="text-sm font-medium ile:text-sm">
+                                                {{segment.depTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                            <!-- <span class="text-gray text-sm">{{segment.originTerminal}} -
+                                                {{segment.originAirportName}}, {{segment.originCountryName}}</span> -->
+                                            <span class="text-gray text-sm ile:text-xs">{{segment.originTerminal}}
+                                                {{segment.originTerminal? '-':''}} {{segment.originAirportName}}
+                                                {{segment.originCityName}}{{segment.originCountryName? ',':''}}
+                                                {{segment.originCountryName}}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center justify-center">
+                                            <span class="border border-dashed w-16 gray-border mobile:hidden"></span>
+                                            <span
+                                                class="text-md mx-2 mobile:mx-0 mobile:text-xs mobile:w-[50px] mobile:text-center">{{segment.duration}}</span>
+                                            <span class="border border-dashed w-16 gray-border mobile:hidden"></span>
+                                        </div>
+                                        <div class="flex flex-col w-[150px] mobile:w-full">
+                                            <div class="flex gap-2 items-center">
+                                                <div class="font-semibold text-xl mobile:text-base text-gray-400">
+                                                    {{segment.destinationCityCode}}</div>
+                                                <div class="text-gray text-lg mobile:text-base"> {{segment.arrTime |
+                                                    date:'HH:mm'}}</div>
+                                            </div>
+                                            <!-- <span
+                                                class="font-semibold text-xl mobile:text-base">{{segment.destinationCityCode}}<span
+                                                    class="text-gray mobile:text-base text-lg"> {{segment.arrTime |
+                                                    date: 'HH:mm'}}</span></span> -->
+                                            <span class="text-sm font-medium mobile:text-sm">
+                                                {{segment.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                            <!-- <span class="text-gray text-sm">{{segment.destinationTerminal}} -
+                                                {{segment.destinationAirportName}},
+                                                {{segment.destinationCountryName}}</span> -->
+                                            <span
+                                                class="text-gray text-sm mobile:text-xs">{{segment.destinationTerminal}}
+                                                {{segment.destinationTerminal? '-':''}}
+                                                {{segment.destinationAirportName}}
+                                                {{segment.destinationCityName}}{{segment.destinationCountryName?
+                                                ',':''}}
+                                                {{segment.destinationCountryName}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-[-10px] left-0 w-full text-center z-10 mobile:truncate"
+                                    *ngIf="i !== (flight.flightStopSegments.length - 1) && flight.flightStopSegments[i+1].layover">
+                                    <span class="light-blue-bg rounded-3xl px-10 text-gray text-sm mobile:px-2">
+                                        {{isSamePlanes(segment, flight.flightStopSegments[i+1])
+                                        ? 'No plane change require'
+                                        : 'Change of planes'}}・{{flight.flightStopSegments[i+1].layover}} Layover in
+                                        {{segment.destinationCityName}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div *ngFor="let segment of flight.flightStopSegments; let i = index">
+                                <div class="rounded-xl border border-dashed border-gray-border relative mt-[-1px]"
+                                    *ngIf="segment.isreturn">
+                                    <div
+                                        class="flex justify-between px-3 pt-3 pb-4 items-center w-full mobile:flex-col">
+                                        <div class="flex items-center w-[30%] mobile:w-full">
+                                            <img loading="lazy"
+                                                class="w-8 h-8 object-contain mr-3 mobile:h-6 mobile:w-6"
+                                                [src]="segment.airline_logo" alt="airline_logo">
+                                            <div>
+                                                <div class="font-semibold text-lg mobile:text-base">
+                                                    {{segment.airlineName}}</div>
+                                                <div class="text-gray mobile:text-sm flex gap-1">
+                                                    <span>{{segment.airlineCode}}
+                                                        -
+                                                        {{segment.flightNumber}} </span> - <p
+                                                        [ngClass]="cabinClassSearch == segment.cabinClass ? '' : 'bonton-red-text'">
+                                                        {{segment.cabinClass}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex justify-between items-center w-[70%] pr-20 mobile:w-full mobile:pr-0">
+                                            <div class="flex flex-col w-[150px] mobile:w-full">
+                                                <span
+                                                    class="font-semibold text-xl mobile:text-base">{{segment.originCityCode}}<span
+                                                        class="text-gray mobile:text-base text-lg"> {{segment.depTime |
+                                                        date: 'HH:mm'}}</span></span>
+                                                <span class="text-sm font-medium mobile:text-sm">
+                                                    {{segment.depTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                                <!-- <span class="text-gray text-sm">{{segment.originTerminal}} -
+                                                    {{segment.originAirportName}}, {{segment.originCountryName}}</span> -->
+                                                <span
+                                                    class="text-gray text-sm mobile:text-xs">{{segment.originTerminal}}
+                                                    {{segment.originTerminal? '-':''}} {{segment.originAirportName}}
+                                                    {{segment.originCityName}}{{segment.originCountryName? ',':''}}
+                                                    {{segment.originCountryName}}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center justify-center">
+                                                <span
+                                                    class="border border-dashed w-16 gray-border mobile:hidden"></span>
+                                                <span
+                                                    class="text-md mx-2 mobile:mx-0 mobile:text-xs mobile:w-[50px] mobile:text-center">{{segment.duration}}</span>
+                                                <span
+                                                    class="border border-dashed w-16 gray-border mobile:hidden"></span>
+                                            </div>
+                                            <div class="flex flex-col w-[150px] mobile:w-full">
+                                                <span
+                                                    class="font-semibold text-xl mobile:text-base">{{segment.destinationCityCode}}<span
+                                                        class="text-gray mobile:text-base text-lg"> {{segment.arrTime |
+                                                        date: 'HH:mm'}}</span></span>
+                                                <span class="text-sm font-medium mobile:text-sm">
+                                                    {{segment.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                                                <!-- <span class="text-gray text-sm">{{segment.destinationTerminal}} -
+                                                    {{segment.destinationAirportName}},
+                                                    {{segment.destinationCountryName}}</span> -->
+                                                <span
+                                                    class="text-gray text-sm mobile:text-xs">{{segment.destinationTerminal}}
+                                                    {{segment.destinationTerminal? '-':''}}
+                                                    {{segment.destinationAirportName}}
+                                                    {{segment.destinationCityName}}{{segment.destinationCountryName?
+                                                    ',':''}}
+                                                    {{segment.destinationCountryName}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="absolute bottom-[-10px] left-0 w-full text-center z-10 mobile:truncate"
+                                        *ngIf="i !== (flight.flightStopSegments.length - 1)">
+                                        <span class="light-blue-bg rounded-3xl px-10 text-gray text-sm mobile:px-2">
+                                            {{isSamePlanes(segment, flight.flightStopSegments[i+1])
+                                            ? 'No plane change require'
+                                            : 'Change of planes'}}・{{flight.flightStopSegments[i+1].layover}} Layover in
+                                            {{segment.destinationCityName}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div [class.hidden]="flight.tab !== 1">
+                        <table mat-table [dataSource]="dataSource"
+                            class="light-black border-collapse border border-gray-border">
+
+                            <ng-container matColumnDef="name">
+                                <th mat-header-cell *matHeaderCellDef> </th>
+                                <td mat-cell *matCellDef="let element"
+                                    class="border border-gray-border min-w-50 max-w-50">
+                                    {{element.name|| ''}}
+                                </td>
+                                <td mat-footer-cell *matFooterCellDef
+                                    class="border border-gray-border font-semibold min-w-50 max-w-50">
+                                    <div>Total Fare</div>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="number">
+                                <th mat-header-cell *matHeaderCellDef> </th>
+                                <td mat-cell *matCellDef="let element"
+                                    class="border border-gray-border min-w-50 max-w-50 text-right">
+                                    <span>₹ {{element.number|| ''}}</span>
+                                </td>
+                                <td mat-footer-cell *matFooterCellDef
+                                    class="border border-gray-border font-semibold min-w-50 max-w-50 text-right">
+                                    <div>₹ {{Sum('number')|| '0' }}</div>
+                                </td>
+                            </ng-container>
+
+                            <tr class="h-10 border border-gray-border" mat-row *matRowDef="let row; columns: columns;">
+                            </tr>
+                            <tr class="h-10 border border-gray-border" mat-footer-row *matFooterRowDef="columns"></tr>
+                        </table>
+                    </div> -->
+
+                    <div [class.hidden]="flight.tab !== 2" class="flex flex-col">
+                        <div *ngFor="let segment of flight.flightStopSegments; let i = index">
+                            <div *ngIf="segment.isreturn">
+                                <div class="flex items-center">
+                                    <img loading="lazy" class="w-7 h-7 mobile:h-6 mobile:w-6 object-contain"
+                                        [src]="segment.airline_logo" alt="airline_logo"><span
+                                        class="ml-3 mobile:text-base font-semibold">{{segment.originCityName |
+                                        uppercase}} -
+                                        {{segment.destinationCityName | uppercase}}</span>
+                                </div>
+                                <table cellPadding="7px" class="w-full mt-1">
+                                    <tr class="font-semibold mobile:text-md">
+                                        <td>
+                                            Baggage Type
+                                        </td>
+                                        <td>
+                                            Check-In
+                                        </td>
+                                        <td>
+                                            Cabin
+                                        </td>
+                                    </tr>
+                                    <tr class="mobile:text-sm">
+                                        <td>
+                                            Adult
+                                        </td>
+                                        <td>
+                                            {{segment.adultBaggage || '-'}}
+                                        </td>
+                                        <td>
+                                            {{segment.adultCabinBaggage || '-'}}
+                                        </td>
+                                    </tr>
+                                    <tr class="mobile:text-sm" *ngIf="flight && flight.childCount > 0">
+                                        <td>
+                                            Child
+                                        </td>
+                                        <td>
+                                            {{segment.childBaggage || '-'}}
+                                        </td>
+                                        <td>
+                                            {{segment.childCabinBaggage || '-'}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="w-full mobile:my-3 my-6 border-b border-solid shadow-lg border-gray-border"></div>
+
+                        <div *ngFor="let segment of flight.flightStopSegments; let i = index">
+                            <div *ngIf="!segment.isreturn">
+                                <div class="flex items-center">
+                                    <img loading="lazy" class="w-7 h-7 mobile:h-6 mobile:w-6 object-contain"
+                                        [src]="segment.airline_logo" alt="airline_logo"><span
+                                        class="ml-3 font-semibold mobile:text-base">{{segment.originCityName |
+                                        uppercase}} -
+                                        {{segment.destinationCityName | uppercase}}</span>
+                                </div>
+                                <table cellPadding="7px" class="w-full mt-1">
+                                    <tr class="font-semibold mobile:text-md">
+                                        <td>
+                                            Baggage Type
+                                        </td>
+                                        <td>
+                                            Check-In
+                                        </td>
+                                        <td>
+                                            Cabin
+                                        </td>
+                                    </tr>
+                                    <tr class="mobile:text-sm">
+                                        <td>
+                                            Adult
+                                        </td>
+                                        <td>
+                                            {{segment.adultBaggage || '-'}}
+                                        </td>
+                                        <td>
+                                            {{segment.adultCabinBaggage || '-'}}
+                                        </td>
+                                    </tr>
+                                    <tr class="mobile:text-sm" *ngIf="flight && flight.childCount > 0">
+                                        <td>
+                                            Child
+                                        </td>
+                                        <td>
+                                            {{segment.childBaggage || '-'}}
+                                        </td>
+                                        <td>
+                                            {{segment.childCabinBaggage || '-'}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="text-[11px] text-[#808080] mt-[10px]">The baggage information is just for reference.
+                            Please Check with airline before check-in.</div>
+                    </div>
+
+                    <div [class.hidden]="flight.tab !== 3" class="max-h-80 overflow-y-auto">
+                        <!-- <div [innerHTML]="flight.fareRules" *ngIf="!isFareRuleLoading" class="mobile:text-base">
+                        </div> -->
+
+                        <div [innerHTML]="flight.fareRuleData" *ngIf="flight.fareRuleData" class="mobile:text-base">
+                        </div>
+
+                        <span class="text-blue text-lg  underline cursor-pointer"
+                            (click)="loadFareRules(flight, false, 'section1'+index);" *ngIf="flight.isMoreShowFare">more
+                            details</span>
+
+                        <div class="p-4 border rounded-lg mt-4" *ngIf="flight.fareRuleData">
+                            <div class="flex items-center mb-[10px]">
+                                <mat-icon class="text-2xl mr-1 icon-size-4 bonton-red-text"
+                                    svgIcon="mat_outline:report_problem"></mat-icon>
+                                <span class="bonton-red-text text-[17px] font-semibold">Important :</span>
+                            </div>
+                            <div>
+                                <ul class="list-[circle] mx-4">
+                                    <li class="mb-[5px] text-gray font-semibold">*MENTIONED FEE ARE INDICATIVE PER PAX
+                                        AND PER SECTOR.</li>
+                                    <li class="mb-[5px]">APART FROM AIRLINE CHARGES,GST+RAF+ APPLICABLE CHARGES IF ANY,
+                                        WILL BE CHARGED.</li>
+                                    <li class="mb-[5px]">FOR DOMESTIC BOOKINGS, PASSENGERS ARE REQUIRED TO SUBMIT
+                                        REISSUE REQUEST AT LEAST 4 HOURS BEFORE THE AIRLINES REISSUE POLICY.</li>
+                                    <li>FOR INTERNATIONAL BOOKINGS, PASSENGERS ARE REQUIRED TO SUBMIT THE REISSUE
+                                        REQUEST AT LEAST 6 HOURS BEFORE THE REISSUE POLICY.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div [innerHTML]="flight.newFare" *ngIf="flight.newFare" class="mobile:text-base mt-3"
+                            [id]="'section1'+ index"></div>
+
+
+                        <div *ngIf="isFareRuleLoading" class="py-7 font-semibold text-center text-lg mobile:text-base">
+                            Loading...</div>
+                        <div *ngIf="!flight.fareRules && !isFareRuleLoading"
+                            class="flex flex-row h-full w-full justify-center items-center">
+                            <div class="flex flex-col items-center">
+                                <span class="font-medium mobile:text-base">Fare Rules not available</span>
+                                <div class="flex flex-row space-x-1 items-center primary-text text-sm">
+                                    <span>Try Again</span>
+                                    <mat-icon class="cursor-pointer icon-size-4"
+                                        (click)="loadFareRules(flight)">refresh</mat-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- <div class="flex flex-col mt-4 overflow-x-auto max-w-full" *ngIf="flight.showFare">
+                <table mat-table [dataSource]="flight.moreFlights.data" class="light-black !border-0">
+
+                    <ng-container matColumnDef="fareClassString">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="font-semibold min-w-30 max-w-30 text-sm leading-normal hover-bg h-9">Fare Type</th>
+                        <td mat-cell *matCellDef="let element" class="min-w-30 max-w-30 leading-normal relative">
+                            <span class="font-bold text-md">{{element.fareClassString || '-'}}</span>
+                            <div *ngIf="user.is_admin" class="absolute top-0 left-0 triangle text-center opacity-50"
+                                [style]="'border-top: 20px solid '+ element.provider_color +' ;'">
+                                <div class="mt-[-21px] ml-[3px] text-[10px] white-text">{{element.provider_id}}</div>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="cabinBaggage">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="font-semibold min-w-24 max-w-24 text-sm leading-normal hover-bg h-9">Cabin</th>
+                        <td mat-cell *matCellDef="let element"
+                            class="min-w-24 max-w-24 text-md font-medium leading-normal">
+                            <span [innerHTML]="element.cabinBaggage || '-'"></span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="checkinBaggage">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="font-semibold min-w-24 max-w-24 text-sm leading-normal hover-bg h-9">Check In</th>
+                        <td mat-cell *matCellDef="let element"
+                            class="min-w-24 max-w-24 text-md font-medium leading-normal">
+                            <span [innerHTML]="element.checkinBaggage || '-'"></span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="cancellation">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="font-semibold min-w-40 max-w-40 text-sm leading-normal hover-bg h-9">Cancellation
+                        </th>
+                        <td mat-cell *matCellDef="let element"
+                            class="min-w-40 max-w-40 text-md font-medium leading-normal">
+                            <span>{{element.cancellation|| '-'}}</span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dateChange">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="font-semibold min-w-40 max-w-40 text-sm leading-normal hover-bg h-9">Date Change</th>
+                        <td mat-cell *matCellDef="let element"
+                            class="min-w-40 max-w-40 text-md font-medium leading-normal">
+                            <span>{{element.dateChange|| '-'}}</span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="fareRule">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="font-semibold min-w-18 max-w-18 text-md leading-normal hover-bg h-9">Fare Rule</th>
+                        <td mat-cell *matCellDef="let element"
+                            class="min-w-20 max-w-20 text-md primary-text cursor-pointer leading-normal text-center"
+                            (click)="fareRule(flight.destination,flight.origin,element)">
+                            <span class="underline font-semibold">view</span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="bookNow">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="font-semibold min-w-40 max-w-40 text-sm leading-normal hover-bg text-right h-9">
+                        </th>
+                        <td mat-cell *matCellDef="let element"
+                            class="min-w-40 max-w-40 text-md font-medium leading-normal text-right">
+                            <div class="flex flex-col items-end py-4">
+                                <span *ngIf="offervalue" class="text-gray text-md leading-none pb-1">Offer
+                                    {{element.currency || 'INR'}}
+                                    {{element.purchasePrice}}</span>
+                                <span class="text-lg font-semibold mb-1">{{element.currency || 'INR'}}
+                                    {{element.salePrice}}
+                                </span>
+                                <ng-container *ngIf="!authService.isAutoLogin">
+                                    <button class="primary-bg px-4 rounded-lg max-w-[125px] mobile:hidden"
+                                        mat-flat-button (click)="booking(element)">
+                                        <span class="white-text tracking-wide">Book Now</span>
+                                    </button>
+
+                                    <button class="fuse-mat-button-large small-blue mobile:flex hidden px-[10px]"
+                                        mat-flat-button (click)="booking(element)">
+                                        <span class="white-text tracking-wide">Book Now</span>
+                                    </button>
+                                </ng-container>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <tr class="bg-[#EDEDED] h-9" mat-header-row *matHeaderRowDef="columns"></tr>
+                    <tr class="rounded-md" mat-row *matRowDef="let row; columns: columns;"></tr>
+                </table>
+            </div> -->
+
+        </div>
+    </div>
+</ng-template>

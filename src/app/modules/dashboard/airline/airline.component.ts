@@ -18,7 +18,7 @@ import { CommanService } from 'app/services/comman.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { DateTime } from 'luxon';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { SlickCarouselModule } from 'ngx-slick-carousel';
+import { SlickCarouselComponent, SlickCarouselModule } from 'ngx-slick-carousel';
 import { debounceTime, distinctUntilChanged, filter, Observable, ReplaySubject, startWith, switchMap, takeUntil } from 'rxjs';
 import { TravellersClassComponent } from './travellers-class/travellers-class.component';
 import { OneWayComponent } from './one-way/one-way.component';
@@ -34,6 +34,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSliderModule } from '@angular/material/slider';
 import { EnumeratePipe } from 'app/enurable.pipe';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RoundTripComponent } from './round-trip/round-trip.component';
 
 @Component({
   selector: 'app-airline',
@@ -70,12 +72,15 @@ import { EnumeratePipe } from 'app/enurable.pipe';
     MatPaginatorModule,
     RouterLink,
     MatMenuModule,
+    MatProgressBarModule,
+    RoundTripComponent
   ],
   templateUrl: './airline.component.html',
   styleUrls: ['./airline.component.css']
 })
 export class AirlineComponent implements OnInit {
-
+  @ViewChild('slickModal4') slickModal4: SlickCarouselComponent;
+  isLoadingProcessing: boolean = false;
   formGroup: FormGroup;
   fareMap: { [key: string]: number } = {}; // Store date-wise fares
   allCity: any[];
@@ -167,7 +172,7 @@ export class AirlineComponent implements OnInit {
   public appConfig = AppConfig;
   isReDataFirst: boolean = true;
   FareDateList: any[] = []
-  // @ViewChild('rt') rt: RoundTripComponent;
+  @ViewChild('rt') rt: RoundTripComponent;
   // @ViewChild('md') md: MulticityDetailComponent;
   airlineSliceNum: number = 5;
 
@@ -176,6 +181,27 @@ export class AirlineComponent implements OnInit {
   arrivalAirportObj: any = {
     arrivalAirport: [],
     retarrivalAirport: [],
+  };
+
+  fixedFareDateSlideConfig = {
+    slidesToShow: 7, slidesToScroll: 1, dots: false, infinite: false, autoplay: false, draggable: false,
+    autoplaySpeed: 3000,
+    variableWidth: true,
+    initialSlide: 0,
+    centerMode: false, // Enable center mode
+    prevArrow: '<i class="material-icons fixed-depart-left-arrow" style="box-shadow: 7px 0px 24px 0px rgba(0, 0, 0, 0.14);">arrow_back_ios_new</i>',
+    nextArrow: '<i class="material-icons fixed-depart-right-arrow" style="box-shadow: -6px 0px 24px 0px rgba(0, 0, 0, 0.14);">arrow_forward_ios</i>',
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 1,
+          draggable: true,
+          slidesToScroll: 1,
+          centerMode: false // Ensure centering on mobile too
+        }
+      }
+    ]
   };
 
 
@@ -227,6 +253,9 @@ export class AirlineComponent implements OnInit {
   ];
 
   returnFareMap: any = {}
+  supplierList: {
+    supplier_name: any; isSelected: boolean; // add a checkbox state for UI
+  }[];
 
   constructor(
     private router: Router,
@@ -246,7 +275,7 @@ export class AirlineComponent implements OnInit {
       this.isLoading = res.loading;
     })
     this.getConvertCurrencyCombo();
-    
+
   }
 
   ngOnInit() {
@@ -697,7 +726,6 @@ export class AirlineComponent implements OnInit {
       }
       // this.cacheService.MainFilterChanged(json, 'flight-filters');
       // debugger
-      console.log('json', json);
       // this.searchFlights(json) 
       // let navigationURL = '/dashboard/airline/flights/detail/' + sourceCity + '/' + destinationCity + '/' + json.departureDate
       // if (json.type == 'rt') {
@@ -717,31 +745,11 @@ export class AirlineComponent implements OnInit {
     json.priority = this.priority || 1;
     json.version = 2;
 
-
-    // if (this.formGroup.get('type').value === 'mc') {
-    //   const hasError = json.multiCityObjects.length < 1
-    //   const hasEmptyFields = json.multiCityObjects.some(
-    //     (x) =>
-    //       !x.fromCity ||
-    //       !x.toCity ||
-    //       x.departureDate === 'Invalid DateTime'
-    //   );
-
-
-    //   if (hasEmptyFields || hasError) {
-    //     this.alertService.showToast(
-    //       'error',
-    //       'Please fill all the fields.'
-    //     );
-    //     return;
-    //   }
-    // }
     if (this.formGroup.get('type').value === 'rt' && this.isFirst) {
       this.formDataList[0].fromCity = json.fromCity;
       this.formDataList[0].toCity = json.toCity;
     }
 
-    // debugger
     json.fromCity = json.fromCity.id;
     json.toCity = json.toCity.id;
     json.departureDate = DateTime.fromJSDate(new Date(json.departureDate)).toFormat('yyyy-MM-dd');
@@ -755,26 +763,15 @@ export class AirlineComponent implements OnInit {
       )
     }
 
-    // this.cacheService.MainFilterChanged(json, 'flight-filters');
-
     if (this.isFirst) {
       this.commanService.raiseLoader(true, 'Fetching Flights...');
     }
-    // bealt mathi dete change kare tyare first time call ma loader active thase
-    // if (reData && this.isReDataFirst) {
-    //   this.commanService.raiseLoader(true, 'Fetching Flights...');
-    // }
-
-
-    console.log("search 707", json);
+    this.isLoadingProcessing = true
 
     this.airlineDashboardService.flightSearch(json).subscribe({
       next: (res) => {
 
-        // if (reData && this.isReDataFirst) {
-        //   this.commanService.raiseLoader(false);
-        //   this.isReDataFirst = false
-        // }
+
         if (this.isFirst) {
           this.loading = false;
         }
@@ -783,12 +780,8 @@ export class AirlineComponent implements OnInit {
           this.isFirst = false;
         }
         this.contents = false;
-        // this.multicityShow = false;
-        // this.multiCity = json.type === 'mc';
         this.oneWay = json.type === 'ow';
         this.roundTrip = json.type === 'rt';
-        // this.privateCharter = json.type === 'pc';
-        // this.groupInquiry = json.type == "gi";
         this.priority = res.priority;
         this.systemTraceId = res.systemTraceId;
         this.search_date_time = res.search_date_time;
@@ -814,6 +807,7 @@ export class AirlineComponent implements OnInit {
 
         this.Allflights = flightData;
         this.flights = flightData;
+
         this.returnDate = res.return_date_time;
         this.totalflights.set(res.count);
         this.is_domestic = res.is_domestic;
@@ -840,6 +834,17 @@ export class AirlineComponent implements OnInit {
         });
         this.layoverPoints = Linq.groupBy(lypoints, x => x.layoverAt).filter(item => item.key !== '');
         this.layoverPoints.sort((a, b) => a.key?.localeCompare(b.key));
+
+     
+
+        this.supplierList = Array.from(
+          new Set(this.flights.map(flight => flight.supplier_name).filter(Boolean))
+        ).map(name => ({
+          supplier_name: name,
+          isSelected: false
+        }));
+        console.log("this.supplierList", this.supplierList);
+        
 
         // to get the list for airport code to filter (departure and arrival)
         this.Allflights.forEach(flight => {
@@ -895,15 +900,10 @@ export class AirlineComponent implements OnInit {
             checked: false, // add a checkbox state for UI
           }));
 
-
-        // this.AirLines = Linq.groupBy(this.Allflights.map(x => x.flightStopSegments[0]), (x: any) => x.airlineCode);
-
         this.minSlider = Math.min(...this.Allflights.map(x => x.tempSalePrice));
         this.maxSlider = Math.max(...this.Allflights.map(x => x.tempSalePrice));
         this.startThumbValue = this.minSlider;
         this.endThumbValue = this.maxSlider;
-        // const tickMarksCount = 10;
-        // this.sliderStep = (this.maxSlider - this.minSlider) / tickMarksCount;
 
         this.DataFilter(false, null, 'priceRange');
 
@@ -921,26 +921,21 @@ export class AirlineComponent implements OnInit {
           this.searchFlights();
           this.priority = 1;
           this.systemTraceId = '';
-
+          
+          this.isLoadingProcessing = true;
         }
         else {
           this.priority = 1;
+          this.isLoadingProcessing = false;
           // this.isReDataFirst = true;
         }
-
-        // setTimeout(() => {
-        //   if (this.slickModal4) {
-        //     this.goToSlideById(this.selectedDate);
-        //   }
-        //   this.initObserver();
-
-        // }, 1000);
-
         this._paginator.length = this.totalflights();
+
       }, error: (err) => {
         this.loading = false;
         this.commanService.raiseLoader(false);
         this.contents = false;
+        this.isLoadingProcessing = false
       }
     })
 
@@ -954,6 +949,24 @@ export class AirlineComponent implements OnInit {
     }
 
   }
+
+  supplierFilter(selected: any): void {
+    // debugger
+    // Deselect all first
+    this.supplierList.forEach(supplier => supplier.isSelected = false);
+
+    // Select only the clicked one
+    selected.isSelected = true;
+
+    this.DataFilter(false, null, 'priceRange');
+
+    // Update flight count, paginator, and filters
+    //this.totalflights.set(this.flights.length);
+    // this._paginator.length = this.flights.length;
+  }
+
+
+
 
   // botom
   toggleby(event: MatSlideToggleChange) {
@@ -1419,6 +1432,13 @@ export class AirlineComponent implements OnInit {
       });
     });
 
+    var supplier = this.supplierList.find(supplier => supplier.isSelected);
+
+    if (supplier && supplier?.supplier_name) {
+      AllFlights = AllFlights.filter(flight =>
+        flight.supplier_name === supplier.supplier_name
+      );
+    }
 
     if ((this.formGroup.get('type').value === 'rt' && this.is_domestic) || (this.formGroup.get('type').value === 'gi' && this.is_domestic && this.trip_type === 'RETURN')) {
 

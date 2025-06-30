@@ -234,8 +234,10 @@
                             <div class="flex justify-between items-center w-[70%] mobile:w-full mobile:pr-0 pr-20">
                                 <div class="flex flex-col w-[150px] mobile:w-full">
                                     <div class="flex gap-2 items-center">
-                                        <div class="font-semibold text-xl mobile:text-base text-gray-400">{{segment.originCityCode}}</div>
-                                        <div class="text-gray text-lg mobile:text-base"> {{segment.depTime | date:'HH:mm'}}</div>
+                                        <div class="font-semibold text-xl mobile:text-base text-gray-400">
+                                            {{segment.originCityCode}}</div>
+                                        <div class="text-gray text-lg mobile:text-base"> {{segment.depTime |
+                                            date:'HH:mm'}}</div>
                                     </div>
                                     <span class="text-sm font-medium mobile:text-sm">
                                         {{segment.depTime | date: 'EEE, dd-MM-yyyy'}}</span>
@@ -253,11 +255,11 @@
                                 </div>
                                 <div class="flex flex-col w-[150px] mobile:w-full">
                                     <div class="flex gap-2 items-center">
-                                    <div
-                                        class="font-semibold text-xl mobile:text-base text-gray-400">{{segment.destinationCityCode}}<div
-                                            class="text-gray text-lg mobile:text-base"> {{segment.arrTime | date:
-                                            'HH:mm'}}</div></div>
-                                    </div>            
+                                        <div class="font-semibold text-xl mobile:text-base text-gray-400">
+                                            {{segment.destinationCityCode}}</div>
+                                        <div class="text-gray text-lg mobile:text-base"> {{segment.arrTime | date:
+                                            'HH:mm'}}</div>
+                                    </div>
                                     <span class="text-sm font-medium mobile:text-sm">
                                         {{segment.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
                                     <span class="text-gray text-sm mobile:text-xs">{{segment.destinationTerminal}}
