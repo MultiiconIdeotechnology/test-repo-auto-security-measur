@@ -120,6 +120,8 @@ export class OneWayComponent {
   }
 
   ngOnInit(): void {
+    console.log("flightsssssss", this.flights);
+    
   }
 
   sendDetail(record: any): void {
@@ -253,12 +255,16 @@ export class OneWayComponent {
   }
 
   booking(flight: any): void {
+    console.log("flight", flight);
+    
     const json = {
       adultCount: flight.adultCount,
       childCount: flight.childCount,
       traceId: flight.traceId,
       infantCount: flight.infantCount,
-      resultIndex: this.airlineDashboardService.generateUniqueKey(), // This key to get resultIndex in detail page
+      resultIndex: flight.resultIndex, // This key to get resultIndex in detail page
+      // resultIndex: this.airlineDashboardService.generateUniqueKey(), // This key to get resultIndex in detail page
+      ret_searchCachingFileName: flight.return_caching_file_name,
       is_domestic: flight.is_domestic,
       provider_id_enc: flight.provider_id_enc,
       cabin_class: flight.cabinClass,
@@ -267,7 +273,6 @@ export class OneWayComponent {
       destination: flight.destination,
       purchasePrice: flight.tempSalePrice,
       caching_file_name: flight.caching_file_name,
-
       searchdateTime: DateTime.fromISO(this.searchdateTime.toString()).toFormat('yyyy-MM-dd'),
       filename: this.filename,
       travellClass: this.cabinClassSearch,

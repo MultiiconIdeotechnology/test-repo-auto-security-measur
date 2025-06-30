@@ -42,7 +42,7 @@
                                         -
                                         {{flight?.displaySegments[0].flightNumber}}
                                         <p
-                                            [ngClass]="cabinClassSearch == flight?.displaySegments[0].cabinClass ? '' : 'bonton-red-text'">
+                                            [ngClass]="cabinClassSearch == flight?.displaySegments[0].cabinClass ? '' : 'text-red-500'">
                                             {{flight?.displaySegments[0].cabinClass}}</p>
                                     </div>
                                 </div>
@@ -83,14 +83,14 @@
                                     class="text-gray text-md mobile:hidden">{{flight.displaySegments[0].duration}}</span>
                                 <span class="font-semibold my-1">
                                     <div class="w-36 mobile:w-8 h-[2px] rounded-md relative flex justify-evenly items-center"
-                                        [ngClass]="flight.displaySegments[0].layoverAt ? 'bonton-red-bg' : 'primary-bg'">
-                                        <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-border"
+                                        [ngClass]="flight.displaySegments[0].layoverAt ? 'bg-red-500' : 'bg-primary'">
+                                        <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-400"
                                             *ngFor="let i of flight.stops | enumerate"></span>
                                     </div>
                                 </span>
                                 <ng-container>
                                     <span *ngIf="flight.displaySegments[0].layoverAt"
-                                        class="bonton-red-text text-sm w-48 mobile:w-[70px] truncate text-center mobile:hidden"
+                                        class=" text-red-500 text-sm w-48 mobile:w-[70px] truncate text-center mobile:hidden"
                                         [matTooltip]="getTooltip(flight.displaySegments[0].layoverData)"
                                         [matTooltipClass]="'custom-tooltip'">
                                         {{flight.displaySegments[0].layoverAt | lowercase}}
@@ -129,7 +129,7 @@
                         </div>
                     </div>
                     <!-- <div class="mobile:px-2 px-5 py-[6px] flex justify-between field-blue-bg mobile:w-full">
-                        <div class="text-sm mobile:text-xs font-semibold bonton-red-text leading-none"
+                        <div class="text-sm mobile:text-xs font-semibold text-red-500 leading-none"
                             [ngClass]="{'green-text' : flight.isRefundable,'mobile:ml-1' : flight.airlineRemark}">
                             {{flight.isRefundable ? 'REFUNDABLE' : 'NON-REFUNDABLE'}}</div>
                     </div> -->
@@ -182,7 +182,7 @@
                                         -
                                         {{flight.displaySegments[0].flightNumber}}
                                         <p
-                                            [ngClass]="cabinClassSearch == flight?.displaySegments[0].cabinClass ? '' : 'bonton-red-text'">
+                                            [ngClass]="cabinClassSearch == flight?.displaySegments[0].cabinClass ? '' : 'text-red-500'">
                                             {{flight?.displaySegments[0].cabinClass}}</p>
                                     </div>
                                 </div>
@@ -219,14 +219,14 @@
                                     class="text-gray text-md mobile:hidden">{{flight.displaySegments[0].duration}}</span>
                                 <span class="font-semibold my-1">
                                     <div class="w-36 mobile:w-8 h-[2px] rounded-md relative flex justify-evenly items-center"
-                                        [ngClass]="flight.displaySegments[0].layoverAt ? 'bonton-red-bg' : 'primary-bg'">
-                                        <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-border"
+                                        [ngClass]="flight.displaySegments[0].layoverAt ? ' bg-red-500' : 'bg-primary'">
+                                        <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-400"
                                             *ngFor="let i of flight.stops | enumerate"></span>
                                     </div>
                                 </span>
                                 <ng-container>
                                     <span *ngIf="flight.displaySegments[0].layoverAt"
-                                        class="bonton-red-text text-sm w-48 truncate text-center mobile:hidden"
+                                        class="text-red-500 text-sm w-48 truncate text-center mobile:hidden"
                                         [matTooltip]="getTooltip(flight.displaySegments[0].layoverData)"
                                         [matTooltipClass]="'custom-tooltip'">
                                         {{flight.displaySegments[0].layoverAt | lowercase}}
@@ -265,7 +265,7 @@
                         </div>
                     </div>
                     <!-- <div class="mobile:px-2 px-5 py-[6px] flex justify-between field-blue-bg mobile:w-full">
-                        <div class="text-sm mobile:text-xs font-semibold bonton-red-text leading-none"
+                        <div class="text-sm mobile:text-xs font-semibold text-red-500 leading-none"
                             [ngClass]="{'green-text' : flight.isRefundable,'mobile:ml-1' : flight.airlineRemark}">
                             {{flight.isRefundable ? 'REFUNDABLE' : 'NON-REFUNDABLE'}}</div>
                     </div> -->
@@ -410,8 +410,8 @@
                                     <span class="text-gray text-md mobile:text-xs">{{fl.duration}}</span>
                                     <span class="font-semibold my-1">
                                         <div class="w-36 mobile:w-18 h-[2px] rounded-md relative flex justify-center items-center"
-                                            [ngClass]="fl.layoverAt ? 'bonton-red-bg' : 'primary-bg'">
-                                            <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-border"
+                                            [ngClass]="fl.layoverAt ? 'bg-red-500' : 'bg-primary'">
+                                            <span class="w-2 h-2 text-gray-bg rounded-full border border-gray-400"
                                                 *ngFor="let i of fl.multicityStop | enumerate"></span>
                                         </div>
                                     </span>
@@ -508,7 +508,7 @@
                             [matTooltip]="flight.airlineRemark">{{flight.airlineRemark}}</span>
                         <span class="flex items-center">
                             <div *ngIf="flight.airlineRemark" class="h-4 border-r-2 border-gray-border"></div>
-                            <span class="text-md mobile:text-xs font-semibold bonton-red-text leading-none"
+                            <span class="text-md mobile:text-xs font-semibold text-red-500 leading-none"
                                 [ngClass]="{'green-text' : flight.isRefundable,'ml-4 mobile:ml-1' : flight.airlineRemark}">
                                 {{flight.isRefundable ? 'REFUNDABLE' : 'NON-REFUNDABLE'}}</span>
                         </span> -->
@@ -523,7 +523,7 @@
 
                         <!-- Refundable and Non Refundable -->
                         <div class="flex items-center" *ngIf="!flight.moreFlights.data.length > 0">
-                            <div class="h-4 border-r-2 pl-3 border-gray-border"></div>
+                            <div class="h-4  pl-3 border-gray-border"></div>
                             <div class="text-sm mobile:text-xs ml-3 text-gray leading-none"
                                 [ngClass]="flight.isRefundable ? 'text-green-500' : 'text-red-500'">
                                 {{flight.isRefundable ? 'Refundable' : 'Non Refundable'}}
@@ -532,7 +532,7 @@
 
                         <!-- Hold Available -->
                         <div class="flex items-center" *ngIf="flight.isHold">
-                            <div class="h-4 border-r-2 pl-3 border-gray-border"></div>
+                            <div class="h-4  pl-3 border-gray-border"></div>
                             <div class="text-sm mobile:text-xs ml-3 text-gray leading-none">
                                 Hold Available
                             </div>
@@ -602,7 +602,7 @@
                                             <div class="text-gray mobile:text-sm flex gap-1">
                                                 <span>{{segment.airlineCode}} -
                                                     {{segment.flightNumber}} </span> - <p
-                                                    [ngClass]="cabinClassSearch == segment.cabinClass ? '' : 'bonton-red-text'">
+                                                    [ngClass]="cabinClassSearch == segment.cabinClass ? '' : 'text-red-500'">
                                                     {{segment.cabinClass}}</p>
                                             </div>
                                         </div>
@@ -665,7 +665,7 @@
                                 </div>
                                 <div class="absolute bottom-[-10px] left-0 w-full text-center z-10 mobile:truncate"
                                     *ngIf="i !== (flight.flightStopSegments.length - 1) && flight.flightStopSegments[i+1].layover">
-                                    <span class="light-blue-bg rounded-3xl px-10 text-gray text-sm mobile:px-2">
+                                    <span class="bg-card rounded-3xl px-10 text-gray text-sm mobile:px-2">
                                         {{isSamePlanes(segment, flight.flightStopSegments[i+1])
                                         ? 'No plane change require'
                                         : 'Change of planes'}}・{{flight.flightStopSegments[i+1].layover}} Layover in
@@ -690,7 +690,7 @@
                                                     <span>{{segment.airlineCode}}
                                                         -
                                                         {{segment.flightNumber}} </span> - <p
-                                                        [ngClass]="cabinClassSearch == segment.cabinClass ? '' : 'bonton-red-text'">
+                                                        [ngClass]="cabinClassSearch == segment.cabinClass ? '' : 'text-red-500'">
                                                         {{segment.cabinClass}}</p>
                                                 </div>
                                             </div>
@@ -698,10 +698,13 @@
                                         <div
                                             class="flex justify-between items-center w-[70%] pr-20 mobile:w-full mobile:pr-0">
                                             <div class="flex flex-col w-[150px] mobile:w-full">
-                                                <span
-                                                    class="font-semibold text-xl mobile:text-base">{{segment.originCityCode}}<span
-                                                        class="text-gray mobile:text-base text-lg"> {{segment.depTime |
-                                                        date: 'HH:mm'}}</span></span>
+                                                <div class="flex gap-2 items-center">
+                                                    <span
+                                                        class="font-semibold text-xl mobile:text-base text-gray-400">{{segment.originCityCode}}
+                                                    </span>
+                                                    <span class="text-gray mobile:text-base text-lg"> {{segment.depTime
+                                                        | date: 'HH:mm'}}</span>
+                                                </div>
                                                 <span class="text-sm font-medium mobile:text-sm">
                                                     {{segment.depTime | date: 'EEE, dd-MM-yyyy'}}</span>
                                                 <!-- <span class="text-gray text-sm">{{segment.originTerminal}} -
@@ -722,10 +725,19 @@
                                                     class="border border-dashed w-16 gray-border mobile:hidden"></span>
                                             </div>
                                             <div class="flex flex-col w-[150px] mobile:w-full">
-                                                <span
-                                                    class="font-semibold text-xl mobile:text-base">{{segment.destinationCityCode}}<span
-                                                        class="text-gray mobile:text-base text-lg"> {{segment.arrTime |
-                                                        date: 'HH:mm'}}</span></span>
+                                                <!-- <div class="flex gap-2 items-center">
+                                                <div class="font-semibold text-xl mobile:text-base text-gray-400">
+                                                    {{segment.destinationCityCode}}</div>
+                                                <div class="text-gray text-lg mobile:text-base"> {{segment.arrTime |
+                                                    date:'HH:mm'}}</div>
+                                            </div> -->
+                                                <div class="flex gap-2 items-center">
+                                                    <div class="font-semibold text-xl mobile:text-base text-gray-400">
+                                                        {{segment.destinationCityCode}}</div>
+                                                    <div class=" mobile:text-base text-lg"> {{segment.arrTime |
+                                                        date: 'HH:mm'}}</div>
+                                                </div>
+
                                                 <span class="text-sm font-medium mobile:text-sm">
                                                     {{segment.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
                                                 <!-- <span class="text-gray text-sm">{{segment.destinationTerminal}} -
@@ -744,7 +756,7 @@
                                     </div>
                                     <div class="absolute bottom-[-10px] left-0 w-full text-center z-10 mobile:truncate"
                                         *ngIf="i !== (flight.flightStopSegments.length - 1)">
-                                        <span class="light-blue-bg rounded-3xl px-10 text-gray text-sm mobile:px-2">
+                                        <span class="bg-card rounded-3xl px-10 text-gray text-sm mobile:px-2">
                                             {{isSamePlanes(segment, flight.flightStopSegments[i+1])
                                             ? 'No plane change require'
                                             : 'Change of planes'}}・{{flight.flightStopSegments[i+1].layover}} Layover in
@@ -903,9 +915,9 @@
 
                         <div class="p-4 border rounded-lg mt-4" *ngIf="flight.fareRuleData">
                             <div class="flex items-center mb-[10px]">
-                                <mat-icon class="text-2xl mr-1 icon-size-4 bonton-red-text"
+                                <mat-icon class="text-2xl mr-1 icon-size-4 text-red-500"
                                     svgIcon="mat_outline:report_problem"></mat-icon>
-                                <span class="bonton-red-text text-[17px] font-semibold">Important :</span>
+                                <span class="text-red-500 text-[17px] font-semibold">Important :</span>
                             </div>
                             <div>
                                 <ul class="list-[circle] mx-4">
