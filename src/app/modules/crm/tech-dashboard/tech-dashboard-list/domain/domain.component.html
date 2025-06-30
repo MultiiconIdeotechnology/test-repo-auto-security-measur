@@ -9,8 +9,8 @@
 
         <ng-template pTemplate="header">
             <tr>
-                <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-                <th class="w-5 text-center left-[-1px]" pFrozenColumn>Select Domain</th>
+                <th class="w-5 text-center left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn>#</th>
+                <th class="text-center dark:bg-gray-800 bg-gray-50" pFrozenColumn>Select Domain</th>
                 <th pSortableColumn="agentCode" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
                     class="dark:bg-[#1e293b] min-w-[160px]" [frozen]="frozenObj?.agentCode"
                     [ngClass]="{'left-0': !frozenObj?.agentCode}">
@@ -36,8 +36,8 @@
             </tr>
 
             <tr *ngIf="isFilterShowDomain">
-                <th class=" left-[-1px]" pFrozenColumn></th>
-                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th class="left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn></th>
+                <th class="left-[-1px] dark:bg-gray-800 bg-gray-50" pFrozenColumn></th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agentCode" class="min-w-[110px]">
                     <p-columnFilter field="agentCode" type="numeric" placeholder="Search by Agent Id"
                         ariaLabel="Filter Agent Id"></p-columnFilter>
@@ -115,7 +115,7 @@
                         </button>
                     </mat-menu>
                 </td>
-                <td alignFrozen="left" pFrozenColumn class="text-center">
+                <td alignFrozen="left" pFrozenColumn class="text-center dark:bg-gray-900 bg-gray-50">
                     <mat-checkbox (change)="toggleSelection(element)" [checked]="selection.includes(element)">
                     </mat-checkbox>
                 </td>

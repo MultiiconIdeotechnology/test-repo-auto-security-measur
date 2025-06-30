@@ -3,7 +3,11 @@
 	<div class="w-full">
 		<div class="flex justify-between border-b-2 border-gray-border px-5 py-4 h-15">
 			<span class="text-lg font-semibold">Selected Domains</span>
-			<mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer " (click)="settingsDrawer.close()"></mat-icon>
+
+			<!-- close modal -->
+			<button mat-icon-button (click)="settingsDrawer.close()" [tabIndex]="-1">
+				<mat-icon class="text-current dark:text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+			</button>
 		</div>
 
 		<div class="px-5 py-2 h-[calc(100vh-120px)] overflow-auto">
