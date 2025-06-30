@@ -196,20 +196,6 @@ export class BusComponent extends BaseListingComponent {
       this.primengTable._filter();
     });
 
-    const filter = this._filterService.getDefaultFilterByGridName({ gridName: this.filter_table_name });
-    if (filter && filter?.gridConfiguration) {
-      this.activeFiltData = filter;
-      this.isFilterShow = true;
-      let filterData = JSON.parse(filter.gridConfiguration);
-      this.primengTable['filters'] = filterData['table_config'];
-      this.primengTable['_sortField'] = filterData['sortColumn'];
-      this.sortColumn = filterData['sortColumn'];
-      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
-      this.onColumnsChange();
-    } else {
-      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
-      this.onColumnsChange();
-    }
   }
 
   ngAfterViewInit() {

@@ -29,9 +29,22 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onChange)="onSelectedColumnsChange()" />
+            </p-overlayPanel>
+
 
             <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()"
                 matTooltip="Refresh">
@@ -48,84 +61,50 @@
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [columns]="selectedColumns" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['destination_caption', 'country', 'visa_type', 'validity_period','length_of_stay','processing_time','no_of_entry']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[145px] dark:bg-[#1e293b]" pSortableColumn="destination_caption" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.destination_caption"
-                        [ngClass]="{'left-0': !frozenObj?.destination_caption}">
-                        Destination <p-sortIcon field="destination_caption" />
-                        <span class="float-right"
-                            (click)="isFrozenColumn('destination_caption');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.destination_caption" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.destination_caption" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                    <th pSortableColumn="country" pResizableColumn>
-                        Country <p-sortIcon field="country" />
-                    </th>
-                    <th pSortableColumn="visa_type" pResizableColumn>
-                        Visa Type <p-sortIcon field="visa_type" />
-                    </th>
-                    <th pSortableColumn="validity_period" pResizableColumn class="text-center">
-                        Validity <p-sortIcon field="validity_period" />
-                    </th>
-                    <th pSortableColumn="length_of_stay" pResizableColumn class="text-center">
-                        Length of Stay <p-sortIcon field="length_of_stay" />
-                    </th>
-                    <th pSortableColumn="processing_time" pResizableColumn>
-                        Processing Time <p-sortIcon field="processing_time" />
-                    </th>
-                    <th class="w-full min-w-[200px]" pSortableColumn="no_of_entry" pResizableColumn>
-                        No of Entry <p-sortIcon field="no_of_entry" />
+                    <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th>
 
+                    <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
+                        [ngClass]="{ 'w-full': isLast}" [class]="col.class">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col?.field" />
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th class=" left-[-1px]" pFrozenColumn></th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.destination_caption">
-                        <p-columnFilter type="text" matchMode="contains" field="destination_caption"
-                            placeholder="Search by Destination Caption" ariaLabel="Filter Destination Caption" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="country" placeholder="Search by Country"
-                            ariaLabel="Filter Country" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="visa_type"
-                            placeholder="Search by Visa Type" ariaLabel="Filter Visa Type" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="validity_period" placeholder="Search by Validity Period"
-                            ariaLabel="Filter Validity Period" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="length_of_stay" placeholder="Search by Length of stay"
-                            ariaLabel="Filter Length of stay" />
-                    </th>
-                    <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="processing_time" placeholder="Search by Processing time"
-                            ariaLabel="Filter Processing time" /> -->
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" field="no_of_entry" placeholder="Search by No of entry"
-                            ariaLabel="Filter No of entry" />
+                    <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th>
+                    <th *ngFor="let col of columns">
+                        <ng-container *ngIf="!col?.isHideFilter">
+                            <!-- Text -->
+                            <p-columnFilter *ngIf="(col.type == types.text)" [type]="'text'" [field]="col.field"
+                                [placeholder]="'Search by '+ col.header" [ariaLabel]="'Filter '+ col.header"
+                                matchMode="contains" />
+
+                            <!--2 digit point number-->
+                            <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
+                                [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
+                                [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
+                                maxFractionDigits="2">
+                            </p-columnFilter>
+                        </ng-container>
                     </th>
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-element>
+            <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr [ngClass]="!element.is_enable ? 'opacity-38' : ''">
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn
+                        *ngIf="isDisplayHashCol()">
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -173,41 +152,32 @@
                         </mat-menu>
                     </td>
 
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.destination_caption">
-                        {{element.destination_caption}}
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
+
+                        <ng-container *ngIf="(col.type === types.text)">
+                            {{ element[col.field] || '-' }}
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.number">
+                            <span>
+                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
+                                (0).toFixed(col?.fixVal || 0)}}
+                            </span>
+                        </ng-container>
+
                     </td>
-
-                    <td>{{element.country}}</td>
-
-                    <td>{{element.visa_type}}</td>
-
-                    <td class="text-center">{{element.validity_period}}</td>
-
-                    <td class="text-center">
-                        {{element.length_of_stay}}
-                    </td>
-
-                    <td>
-                        {{element.processing_time}} Days
-                    </td>
-
-                    <td>
-                        <div class="pl-[40px]">
-                            {{element.no_of_entry}}
-                        </div>
-                    </td>
-
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="8" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
-
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
+    </div>
 </div>

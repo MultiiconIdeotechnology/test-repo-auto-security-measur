@@ -96,7 +96,7 @@
                         [ngClass]="{ 'w-full': isLast}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
-                    </th>                  
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -376,7 +376,7 @@
                             </ng-container>
 
                         </ng-container>
-                    </th>              
+                    </th>
                 </tr>
             </ng-template>
 
@@ -579,7 +579,7 @@
                         <ng-container *ngIf="col.type == types.dateTime || col.type == types.date">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
-                    </td>                   
+                    </td>
                 </tr>
             </ng-template>
 

@@ -14,7 +14,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, inventoryVisaPermissions, messages, module_name } from 'app/security';
 import { VisaService } from 'app/services/visa.service';
 import { VisaEntryComponent } from '../visa-entry/visa-entry.component';
@@ -25,6 +25,7 @@ import { VisaSpecialNotesComponent } from '../visa-special-notes/visa-special-no
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Subscription } from 'rxjs';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-visa-list',
@@ -170,8 +171,14 @@ export class VisaListComponent extends BaseListingComponent {
             tooltip: true,
         },
     ];
-    cols = [];
+
     isFilterShow: boolean = false;
+
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
 
     constructor(
@@ -188,6 +195,19 @@ export class VisaListComponent extends BaseListingComponent {
         this.sortDirection = 'asc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'destination_caption', header: 'Destination', type: Types.text, isFrozen: false },
+            { field: 'country', header: 'Country', type: Types.text },
+            { field: 'visa_type', header: 'Visa Type', type: Types.text },
+            { field: 'validity_period', header: 'Validity', type: Types.number, fixVal: 0, class: 'text-center' },
+            { field: 'length_of_stay', header: 'Length of Stay', type: Types.number, fixVal: 0, class: 'text-center' },
+            { field: 'processing_time', header: 'Processing Time', type: Types.number, isHideFilter: true },
+            { field: 'no_of_entry', header: 'No of Entry', type: Types.number, fixVal: 0 }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -196,17 +216,46 @@ export class VisaListComponent extends BaseListingComponent {
             // this.primengTable['_sortField'] = resp['sortColumn'];
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
 
-    ngAfterViewInit(){
-        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+    ngAfterViewInit() {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
-      }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -399,11 +448,11 @@ export class VisaListComponent extends BaseListingComponent {
             data: data,
             disableClose: true,
         })
-        .afterClosed().subscribe((res) => {
-            if (res) {
-                this.refreshItems();
-            }
-        });
+            .afterClosed().subscribe((res) => {
+                if (res) {
+                    this.refreshItems();
+                }
+            });
     }
 
     getNodataText(): string {
@@ -419,5 +468,15 @@ export class VisaListComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
     }
 }
