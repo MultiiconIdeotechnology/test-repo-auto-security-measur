@@ -283,7 +283,7 @@ export class OneWayComponent {
 
     this.matDialog
       .open(BookNowDailogComponent, {
-        data: json,
+        data: {data: json, supplier: flight.supplier_name},
         disableClose: true,
       })
       .afterClosed()

@@ -595,7 +595,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col space-y-6  min-w-[920px]">
+    <div class="flex flex-col space-y-6  min-w-[900px]">
 
       <!------One Way Fare Date Calendar-------->
       <div *ngIf="oneWay && flights.length > 0">
@@ -605,9 +605,9 @@
             [config]="fixedFareDateSlideConfig">
             <div ngxSlickItem *ngFor="let data of supplierList; let i = index; let last = last;"
               class="theme-black-text mr-0 font-medium text-base   text-center cursor-pointer"
-              [ngClass]="[contents ? 'pointer-events-none opacity-90' : '', !last ? 'border-r border-r-gray-600' : '']">
-              <div class="grid p-2 px-5" (click)="supplierFilter(data)" [ngClass]="{'bg-green-500': data.isSelected }">
-                <span class="text-white text-sm font-semibold">{{data.supplier_name}} </span>
+              [ngClass]="[contents ? 'pointer-events-none opacity-90' : '', !last ? 'border-r dark:border-r-gray-600' : '']">
+              <div class="grid p-2 px-5" (click)="supplierFilter(data)" [ngClass]="{'dark:bg-primary bg-gray-200 rounded-lg mx-2': data.isSelected }">
+                <span class="dark:text-white text-sm font-semibold">{{data.supplier_name}} </span>
               </div>
             </div>
           </ngx-slick-carousel>

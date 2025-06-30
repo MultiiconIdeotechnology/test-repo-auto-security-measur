@@ -1,16 +1,17 @@
 <div class="flex flex-col max-w-240 md:min-w-192 max-h-screen -m-6">
 
   <!-- Header -->
-  <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
-    <div class="text-lg font-medium text-white">Info</div>
+  <div class="flex flex-0 items-center justify-between h-12 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary">
+    <div class="text-lg font-medium text-white">{{supplier}}</div>
     <button mat-icon-button (click)="matDialogRef.close()" [tabIndex]="-1">
       <mat-icon class="text-current text-white" [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
     </button>
   </div>
 
-  <div *ngIf="flightData.displaySegments.length > 0">
+  <div class="flex gap-3 p-5" *ngIf="flightData?.displaySegments.length > 0 && !isLoading">
     <ng-container *ngFor="let ds of flightData.displaySegments;let i=index;">
-      <div class="first relative flex flex-col mb-4 white-bg rounded-md round-shadow overflow-x-hidden border border-gray-200">
+      <div
+        class="first relative flex flex-col white-bg rounded-md  overflow-x-hidden border ">
         <div
           class="upSide relative flex mobile:justify-between pt-5 px-5 pb-7 border-b border-dashed border-gray-border">
           <div class="flex items-center">
@@ -33,7 +34,7 @@
             <div class="flex items-center">
               <span class="font-semibold text-lg mobile:text-base flex items-end relative mobile:items-center">
                 <span>{{ds.originCityCode}}</span>
-                <mat-icon class="text-black mobile:icon-size-4 mobile:mx-0.5 mx-3 text-2xl">arrow_forward</mat-icon>
+                <mat-icon class="text-gray-500 mobile:icon-size-4 mobile:mx-0.5 mx-3 text-2xl">arrow_forward</mat-icon>
                 <span>{{ds.destinationCityCode}}</span>
               </span>
               <span class="text-gray pl-5 mobile:text-md mobile:pl-1 mobile:text-center">
@@ -107,11 +108,26 @@
       </div>
     </ng-container>
 
-    <div>
-      <div>Price Information</div>
-      <div><span>Base Fare</span></div>
+    <div class="overflow-hidden rounded-2xl bg-card border w-72 h-fit">
+      <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Price Information</div>
+      <div class="px-5 py-[8px] justify-between flex">
+        <span>Base Fare</span>
+        <span>{{flightData.purchasePrice}}</span>
+      </div>
+      <div class="px-5 py-[8px] justify-between flex">
+        <span>Taxes & Fees</span>
+        <span>{{flightData.tax}}</span>
+      </div>
+      <div class="px-5 py-[8px] justify-between border-dashed border-t flex">
+        <span class="font-medium">Grand Total</span>
+        <span class="font-medium">{{(flightData.purchasePrice + flightData.tax).toFixed(2)}}</span>
+      </div>
     </div>
 
+  </div>
+
+  <div class="px-10 py-15 text-center text-primary text-xl font-medium" *ngIf="isLoading">
+    Loading...
   </div>
 
 </div>

@@ -50,6 +50,8 @@ export class BookNowDailogComponent implements OnInit {
 
   record: any;
   flightData: any;
+  supplier: any;
+  isLoading:boolean = true;
 
   constructor(
     public matDialogRef: MatDialogRef<BookNowDailogComponent>,
@@ -58,7 +60,8 @@ export class BookNowDailogComponent implements OnInit {
     public alertService: ToasterService,
     @Inject(MAT_DIALOG_DATA) public data: any = {}
   ) {
-    this.record = data
+    this.record = data?.data
+    this.supplier = data?.supplier
     console.log("this.record", this.record);
 
   }
@@ -82,21 +85,23 @@ export class BookNowDailogComponent implements OnInit {
       ret_searchCachingFileName: this.record.return_caching_file_name,
       searchCachingFileName: this.record.caching_file_name,
       search_date_time: this.record.searchdateTime,
-      response_date_time:  null
+      response_date_time: null
     }
-    // this.commanService.raiseLoader(false);
-    // return;
     this.airlineDashboardService.fareQuote(model).subscribe({
       next: res => {
-        this.flightData = res.data
-        console.log("fare qouts responce res", res);
-
-        // this.commanService.raiseLoader(false);
+        this.isLoading = false 
+        if (res.data) {
+          this.flightData = res.data
+        } else {
+          this.matDialogRef.close()
+        }
 
       }, error: (err) => {
+        this.isLoading = false 
+
         // this.nobookingData = true;
         this.alertService.showToast('error', err);
-        // this.commanService.raiseLoader(false);
+        this.matDialogRef.close()
       }
     });
   }
