@@ -97,7 +97,7 @@ export class CommissionExpenseComponent
             { field: 'booking_date', header: 'Booking Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
             { field: 'booking_ref_no', header: 'Booking Ref. No.', type: Types.link },
             { field: 'agent_code', header: 'Agent Code', type: Types.number , fixVal:0 },
-            { field: 'agency_name', header: 'Agency Name', type: Types.text },
+            { field: 'agency_name', header: 'Agency Name', type: Types.select },
             { field: 'pnr', header: 'PNR', type: Types.text },
             { field: 'gds_pnr', header: 'GSD PNR', type: Types.text },
             { field: 'particular', header: 'Particular', type: Types.text },
