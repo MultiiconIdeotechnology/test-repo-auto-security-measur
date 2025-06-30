@@ -2,7 +2,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { Routes } from 'app/common/const';
 import { Security, filter_module_name, inventoryHolidayPermissions, messages, module_name } from 'app/security';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
@@ -23,6 +23,7 @@ import { FlightTabService } from 'app/services/flight-tab.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Subscription } from 'rxjs';
 import { HolidayVersionTwoService } from 'app/services/holidayversion2.service ';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-holiday-list',
@@ -59,6 +60,12 @@ export class HolidayListComponent extends BaseListingComponent {
     supplierListAll: any[] = [];
     selectedSupplier: any;
 
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+
     constructor(
         private holidayService: HolidayVersionTwoService,
         private toasterService: ToasterService,
@@ -75,13 +82,28 @@ export class HolidayListComponent extends BaseListingComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'product_name', header: 'Product', type: Types.text, isFrozen: false },
+            { field: 'destination', header: 'Destination', type: Types.text },
+            { field: 'supplier_name', header: 'Supplier', type: Types.select },
+            { field: 'no_of_nights', header: 'Nights', type: Types.number, fixVal: 0 },
+            { field: 'no_of_days', header: 'Days', type: Types.number, fixVal: 0 },
+            { field: 'is_popular', header: 'Is Popular', type: Types.boolean , class:'text-center' },
+            { field: 'is_audited', header: 'Is Audited', type: Types.boolean , class:'text-center' },
+            { field: 'publish_date_time', header: 'Published', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'entry_date_time', header: 'Entry', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'last_price_date', header: 'Last Price Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit() {
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if(resp['table_config']['supplier_name']){
+            if (resp['table_config']['supplier_name']) {
                 this.selectedSupplier = resp['table_config'].supplier_name?.value;
             }
             if (resp['table_config']['publish_date_time'].value) {
@@ -95,6 +117,7 @@ export class HolidayListComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
         this.getSupplier("")
@@ -134,12 +157,12 @@ export class HolidayListComponent extends BaseListingComponent {
             });
     }
 
-    ngAfterViewInit(){
+    ngAfterViewInit() {
         // Defult Active filter show
-        if(this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+        if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
             this.isFilterShow = true;
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-            if(filterData['table_config']['supplier_name']){
+            if (filterData['table_config']['supplier_name']) {
                 this.selectedSupplier = filterData['table_config'].supplier_name?.value;
             }
             if (filterData['table_config']['publish_date_time'].value) {
@@ -152,8 +175,37 @@ export class HolidayListComponent extends BaseListingComponent {
                 filterData['table_config']['last_price_date'].value = new Date(filterData['table_config']['last_price_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
-      }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
 
     createData(): void {
         if (!Security.hasNewEntryPermission(module_name.inventoryHoliday)) {
@@ -191,7 +243,7 @@ export class HolidayListComponent extends BaseListingComponent {
         this.router.navigate([Routes.inventory.holiday_entry_route + '/' + record.id + '/readonly']);
     }
 
-    deleteData(record:any, index:any): void {
+    deleteData(record: any, index: any): void {
         if (!Security.hasDeleteEntryPermission(module_name.inventoryHoliday)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -212,7 +264,7 @@ export class HolidayListComponent extends BaseListingComponent {
                 if (res === 'confirmed') {
                     this.holidayService.delete(record.id).subscribe({
                         next: () => {
-                            this.dataList.splice(index, 1);  
+                            this.dataList.splice(index, 1);
                             this.alertService.showToast(
                                 'success',
                                 'Holiday has been deleted!',
@@ -239,13 +291,13 @@ export class HolidayListComponent extends BaseListingComponent {
             : 'Publish';
         this.conformationService
             .open({
-                title: label+ " Holiday",
+                title: label + " Holiday",
                 message:
                     'Are you sure to ' +
-                    
+
                     label.toLowerCase() +
                     ' ' +
-                    
+
                     record.product_name +
                     ' ?',
             })
@@ -253,9 +305,9 @@ export class HolidayListComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     this.holidayService.setHolidayPublish(record.id).subscribe({
-                        next: (res:any) => {
-                            record.is_publish_for_bonton  = !record.is_publish_for_bonton ;
-                            if (record.is_publish_for_bonton ) {
+                        next: (res: any) => {
+                            record.is_publish_for_bonton = !record.is_publish_for_bonton;
+                            if (record.is_publish_for_bonton) {
                                 this.alertService.showToast('success', "Holiday Product has been Publish!", "top-right", true);
                             } else {
                                 this.alertService.showToast('success', "Holiday Product has been UnPublish!", "top-right", true);
@@ -274,12 +326,12 @@ export class HolidayListComponent extends BaseListingComponent {
         }
 
         const label: string = record.is_popular
-        ? 'Make as Unpopular Holiday Product'
-        : 'Set as Popular Holiday Product';
+            ? 'Make as Unpopular Holiday Product'
+            : 'Set as Popular Holiday Product';
         this.conformationService
             .open({
                 title: label,
-                message: `Are you sure you want to set ${record.product_name} as ${record.is_popular ? 'Unpopular':'Popular'}?`
+                message: `Are you sure you want to set ${record.product_name} as ${record.is_popular ? 'Unpopular' : 'Popular'}?`
             })
             .afterClosed()
             .subscribe((res) => {
@@ -325,61 +377,61 @@ export class HolidayListComponent extends BaseListingComponent {
     // }
 
     Audit(data: any): void {
-		if (!Security.hasPermission(inventoryHolidayPermissions.auditUnauditPermissions)) {
-			return this.alertService.showToast('error', messages.permissionDenied);
-		}
+        if (!Security.hasPermission(inventoryHolidayPermissions.auditUnauditPermissions)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
 
-		const label: string = data.is_audited ? 'UnAudit Holiday Product' : 'Audit Holiday Product';
-		this.conformationService.open({
-			title: label,
-			message: 'Are you sure to ' + label.toLowerCase() + ' ?'
-		}).afterClosed().subscribe({
-			next: (res) => {
-				if (res === 'confirmed') {
-						this.holidayService.setAuditUnaudit(data.id).subscribe({
-							next: (res) => {
-                                if(res && res['status']){
-                                    if(!data.is_audited){
-                                        this.alertService.showToast('success', "Holiday Product Audited", "top-right", true);
-                                    } else {
-                                        this.alertService.showToast('success', "Holiday Product UnAudited", "top-right", true);
-                                    }
-    
-                                    data.is_audited = !data.is_audited;
+        const label: string = data.is_audited ? 'UnAudit Holiday Product' : 'Audit Holiday Product';
+        this.conformationService.open({
+            title: label,
+            message: 'Are you sure to ' + label.toLowerCase() + ' ?'
+        }).afterClosed().subscribe({
+            next: (res) => {
+                if (res === 'confirmed') {
+                    this.holidayService.setAuditUnaudit(data.id).subscribe({
+                        next: (res) => {
+                            if (res && res['status']) {
+                                if (!data.is_audited) {
+                                    this.alertService.showToast('success', "Holiday Product Audited", "top-right", true);
+                                } else {
+                                    this.alertService.showToast('success', "Holiday Product UnAudited", "top-right", true);
                                 }
-                              
-							}, error: (err) => this.alertService.showToast('error', err, "top-right", true)
-						});
-				}
-			}
-		})
 
-	}
+                                data.is_audited = !data.is_audited;
+                            }
+
+                        }, error: (err) => this.alertService.showToast('error', err, "top-right", true)
+                    });
+                }
+            }
+        })
+
+    }
 
     viewDetails(record: any): void {
         if (!Security.hasPermission(inventoryHolidayPermissions.viewHolidayPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-        
+
         const queryParams = {
             id: record.id,
             // date: DateTime.fromISO(record.departure_date).toFormat('yyyy-MM-dd'),
-            date:DateTime.now().toFormat('yyyy-MM-dd'),
+            date: DateTime.now().toFormat('yyyy-MM-dd'),
             adult: 2,
             child: 0,
         };
-        
+
         const navigationExtras: NavigationExtras = {
             queryParams: {
                 "user": JSON.stringify(queryParams)
             }
         };
-        
+
         // Construct the URL using the Router
         const url = this.router.serializeUrl(
             this.router.createUrlTree(['/inventory/holidayv2-products/view-details'], navigationExtras)
         );
-        
+
         // Open the URL in a new tab/window
         window.open(url, '_blank');
 
@@ -397,6 +449,17 @@ export class HolidayListComponent extends BaseListingComponent {
         if (this.settingsUpdatedSubscription) {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
-          }
+        }
     }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+    }
+
 }
