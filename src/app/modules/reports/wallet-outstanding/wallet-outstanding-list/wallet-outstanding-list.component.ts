@@ -18,7 +18,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet, Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { filter_module_name, messages, module_name, Security } from 'app/security';
 import { WalletOutstandingService } from 'app/services/wallet-outstanding.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -29,6 +29,7 @@ import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-wallet-outstanding-list',
@@ -75,6 +76,12 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
     selectedAgent: any;
     selectedRM: any;
 
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+
     constructor(
         private agentService: AgentService,
         private refferralService: RefferralService,
@@ -87,6 +94,22 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
         this.sortDirection = 'asc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'agentid', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agency_name', header: 'Agent', type: Types.select },
+            { field: 'outstanding_on_due_date', header: 'Outstanding', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'employee_name', header: 'RM', type: Types.select },
+            { field: 'mobile_number', header: 'Mobile', type: Types.text },
+            { field: 'email_address', header: 'Email', type: Types.text },
+            { field: 'credit_balance', header: 'Credit', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'payment_cycle_policy', header: 'Payment Cycle', type: Types.text },
+            { field: 'payment_cycle_policy_type', header: 'Payment Policy', type: Types.text },
+            { field: 'due_date', header: 'Due Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'over_due_count', header: 'Over Due Count', type: Types.number, fixVal: 0, class: 'text-center' }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -98,10 +121,10 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
             this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agency_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
 
@@ -115,6 +138,7 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
@@ -126,10 +150,10 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedRM = filterData['table_config']['employee_name']?.value;
-            if(this.selectedAgent && this.selectedAgent.id) {
+            if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
-                  this.agentList.push(this.selectedAgent);
+                    this.agentList.push(this.selectedAgent);
                 }
             }
             if (filterData['table_config']['due_date']?.value && Array.isArray(filterData['table_config']['due_date']?.value)) {
@@ -139,14 +163,42 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
 
     getAgent(value: string) {
         this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
-            for(let i in this.agentList){
+            for (let i in this.agentList) {
                 this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`;
                 this.agentList[i].id_by_value = this.agentList[i].agency_name;
             }
@@ -223,5 +275,16 @@ export class WalletOutstandingListComponent extends BaseListingComponent impleme
             this._filterService.activeFiltData = {};
         }
     }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+    }
+
 
 }
