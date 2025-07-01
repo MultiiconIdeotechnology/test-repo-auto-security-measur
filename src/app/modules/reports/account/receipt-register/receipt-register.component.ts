@@ -2,7 +2,7 @@ import { Security, filter_module_name, messages, module_name } from 'app/securit
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
@@ -24,6 +24,7 @@ import { PspSettingService } from 'app/services/psp-setting.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-receipt-register',
@@ -70,24 +71,30 @@ export class ReceiptRegisterComponent
     selectedCompany: any;
     dateRangeValue: any = [];
 
-    cols: Column[] = [
-        { field: 'receipt_ref_no', header: 'Receipt No.' },
-        { field: 'receipt_request_date', header: 'Date' },
-        { field: 'agent_Code', header: 'Agent Code' },
-        { field: 'agent_name', header: 'Agency Name' },
-        { field: 'service', header: 'Service' },
-        { field: 'booking_ref_no', header: 'Booking Ref. No.' },
-        { field: 'pnr', header: 'PNR' },
-        { field: 'mode_of_payment', header: 'MOP' },
-        { field: 'currency', header: 'Currency' },
-        { field: 'wallet_amount', header: 'Wallet Amount' },
-        { field: 'pg_amount', header: 'PG Amount' },
-        { field: 'pg_name', header: 'PSP' },
-        { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
-        { field: 'company', header: 'Company' }
-    ];
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
-    _selectedColumns: Column[];
+    // cols: Column[] = [
+    //     { field: 'receipt_ref_no', header: 'Receipt No.' },
+    //     { field: 'receipt_request_date', header: 'Date' },
+    //     { field: 'agent_Code', header: 'Agent Code' },
+    //     { field: 'agent_name', header: 'Agency Name' },
+    //     { field: 'service', header: 'Service' },
+    //     { field: 'booking_ref_no', header: 'Booking Ref. No.' },
+    //     { field: 'pnr', header: 'PNR' },
+    //     { field: 'mode_of_payment', header: 'MOP' },
+    //     { field: 'currency', header: 'Currency' },
+    //     { field: 'wallet_amount', header: 'Wallet Amount' },
+    //     { field: 'pg_amount', header: 'PG Amount' },
+    //     { field: 'pg_name', header: 'PSP' },
+    //     { field: 'pg_payment_ref_no', header: 'PSP Ref. No.' },
+    //     { field: 'company', header: 'Company' }
+    // ];
+
+
     isFilterShow: boolean = false;
     companyList: any[] = [];
 
@@ -115,6 +122,25 @@ export class ReceiptRegisterComponent
         this.currentFilter.fromDate.setMonth(
             this.currentFilter.fromDate.getMonth()
         );
+
+        this.selectedColumns = [
+            { field: 'receipt_ref_no', header: 'Receipt No.', type: Types.text },
+            { field: 'receipt_request_date', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'agent_Code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agent_name', header: 'Agency Name', type: Types.select },
+            { field: 'service', header: 'Service', type: Types.text },
+            { field: 'booking_ref_no', header: 'Booking Ref. No.', type: Types.link },
+            { field: 'pnr', header: 'PNR', type: Types.text },
+            { field: 'mode_of_payment', header: 'MOP', type: Types.text },
+            { field: 'currency', header: 'Currency', type: Types.text },
+            { field: 'wallet_amount', header: 'Wallet Amount', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'pg_amount', header: 'PG Amount', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'pg_name', header: 'PSP', type: Types.text },
+            { field: 'pg_payment_ref_no', header: 'PSP Ref. No.', type: Types.text },
+            { field: 'company', header: 'Company', type: Types.select }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit() {
@@ -135,7 +161,7 @@ export class ReceiptRegisterComponent
         // common filter
         this._filterService.updateSelectedOption('');
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
-           this._filterService.updateSelectedOption('');
+            this._filterService.updateSelectedOption('');
             this.selectedAgent = resp['table_config']['agent_name']?.value;
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
@@ -152,8 +178,9 @@ export class ReceiptRegisterComponent
                 this._filterService.rangeDateConvert(resp['table_config']['receipt_request_date']);
             }
             this.primengTable['filters'] = resp['table_config'];
-            this._selectedColumns = resp['selectedColumns'] || [];
+            this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
@@ -177,11 +204,39 @@ export class ReceiptRegisterComponent
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
-            this._selectedColumns = filterData['selectedColumns'] || [];
+            // this.selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
-            // this.primengTable._filter();
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
     }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
 
     getCompanyList(value) {
         this.pspsettingService.getCompanyCombo(value).subscribe((data) => {
@@ -327,19 +382,19 @@ export class ReceiptRegisterComponent
             });
     }
 
-    get selectedColumns(): Column[] {
-        return this._selectedColumns;
-    }
+    // get selectedColumns(): Column[] {
+    //     return this._selectedColumns;
+    // }
 
-    set selectedColumns(val: Column[]) {
-        if (Array.isArray(val)) {
-            this._selectedColumns = this.cols.filter(col =>
-                val.some(selectedCol => selectedCol.field === col.field)
-            );
-        } else {
-            this._selectedColumns = [];
-        }
-    }
+    // set selectedColumns(val: Column[]) {
+    //     if (Array.isArray(val)) {
+    //         this._selectedColumns = this.cols.filter(col =>
+    //             val.some(selectedCol => selectedCol.field === col.field)
+    //         );
+    //     } else {
+    //         this._selectedColumns = [];
+    //     }
+    // }
 
     refreshItems(event?: any): void {
         this.isLoading = true;
@@ -374,4 +429,15 @@ export class ReceiptRegisterComponent
         }
         // this.masterService.setData(this.key, this);
     }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+    }
+
 }
