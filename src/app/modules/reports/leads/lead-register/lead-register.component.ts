@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, leadRegisterPermissions, messages, module_name } from 'app/security';
 import { LeadsRegisterService } from 'app/services/leads-register.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -38,6 +38,7 @@ import { EmployeeService } from 'app/services/employee.service';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Subscription } from 'rxjs';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-lead-register',
@@ -90,8 +91,18 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
     leadList: any[] = [];
     employeeList: any[] = [];
     agentList: any[] = [];
-    selectedRm:any;
-    selectedLeadStatus:any;
+    selectedRm: any;
+    selectedLeadStatus: any;
+
+    types = Types;
+    cols: Column[] = [
+        { field: 'lead_assign_by', header: 'Assign By' },
+        { field: 'lead_assign_by_date', header: 'Assign By Date' },
+    ];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+
 
     statusList: any[] = [
         { label: 'New', value: 'New', },
@@ -121,11 +132,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         { label: 'No', value: 'No' },
     ]
 
-    cols: Column[] = [
-        { field: 'lead_assign_by', header: 'Assign By'},
-        { field: 'lead_assign_by_date', header: 'Assign By Date'},
-    ];
-    _selectedColumns: Column[];
+
     leadStatus: any;
 
     constructor(
@@ -155,6 +162,26 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             ToDate: null
         };
         this._filterService.applyDefaultFilter(this.filter_table_name);
+        this.selectedColumns = [
+            { field: 'calls', header: 'Calls', isHideFilter: true, type: Types.number, class: 'text-center' },
+            { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'priority_text', header: 'Priority', type: Types.select, isCustomColor: true },
+            { field: 'agency_name', header: 'Agency', type: Types.text },
+            { field: 'rmName', header: 'RM', type: Types.select },
+            { field: 'lead_type', header: 'Type', type: Types.select },
+            { field: 'lead_source', header: 'Source', type: Types.select },
+            { field: 'contact_person_name', header: 'Contact Person', type: Types.text },
+            { field: 'contact_person_email', header: 'Email', type: Types.text },
+            { field: 'contact_person_mobile', header: 'Mobile', type: Types.text },
+            { field: 'cityName', header: 'City', type: Types.text },
+            { field: 'country_name', header: 'Country', type: Types.text },
+            { field: 'kycStarted', header: 'KYC Started', type: Types.boolean },
+            { field: 'lastCallFeedback', header: 'Last Feedback', type: Types.text },
+            { field: 'lastCall', header: 'Last Call', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'leadDate', header: 'Lead Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit() {
@@ -170,7 +197,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
 
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if(resp['table_config']['supplier_name']){
+            if (resp['table_config']['supplier_name']) {
                 this.leadStatus = resp['table_config'].supplier_name?.value;
             }
             if (resp['table_config']['lastCall'].value) {
@@ -181,25 +208,26 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
                 this._filterService.rangeDateConvert(resp['table_config']['leadDate']);
             }
             this.primengTable['filters'] = resp['table_config'];
-            this._selectedColumns = resp['selectedColumns'] || [];
+            this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
 
-    get selectedColumns(): Column[] {
-        return this._selectedColumns;
-    }
+    // get selectedColumns(): Column[] {
+    //     return this._selectedColumns;
+    // }
 
-    set selectedColumns(val: Column[]) {
-        if (Array.isArray(val)) {
-            this._selectedColumns = this.cols.filter(col =>
-                val.some(selectedCol => selectedCol.field === col.field)
-            );
-        } else {
-            this._selectedColumns = [];
-        }
-    }
+    // set selectedColumns(val: Column[]) {
+    //     if (Array.isArray(val)) {
+    //         this._selectedColumns = this.cols.filter(col =>
+    //             val.some(selectedCol => selectedCol.field === col.field)
+    //         );
+    //     } else {
+    //         this._selectedColumns = [];
+    //     }
+    // }
 
     ngAfterViewInit() {
         // Defult Active filter show
@@ -209,7 +237,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             this.selectedRm = filterData['table_config']['rm_Id']?.value;
             this.selectedLeadStatus = filterData['table_config']['lead_source']?.value;
 
-            if(filterData['table_config']['supplier_name']){
+            if (filterData['table_config']['supplier_name']) {
                 this.leadStatus = filterData['table_config'].supplier_name?.value;
             }
             if (filterData['table_config']['lastCall'].value) {
@@ -222,10 +250,39 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
-            this._selectedColumns = filterData['selectedColumns'] || [];
+            // this.selectedColumns = filterData['selectedColumns'] || [];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
     }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
 
     getFilter(): any {
         const filterReq = {};
@@ -342,7 +399,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         })
     }
 
-    syncLeads(){
+    syncLeads() {
         if (!Security.hasPermission(leadRegisterPermissions.leadsSyncPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -547,6 +604,16 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
     }
 }
 
