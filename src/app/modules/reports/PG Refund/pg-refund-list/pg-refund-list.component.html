@@ -117,58 +117,20 @@
             [globalFilterFields]="['refNo','agentCode','agentName', 'service', 'pspName', 'pspRefNo', 'type', 'amount', 'requestDate', 'refundedAmount', 'refundDate', 'outstanding_on_refundDate', 'over_due_count']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header" let-columns>
                 <tr>
                     <!-- <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>#
                     </th> -->
 
                     <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
-                        [ngClass]="{ 'w-full': isLast}" [class]="col.class">
+                        [ngClass]="{ 'w-full': isLast && (selectedColumns[selectedColumns?.length-1]?.field !='amount') && (selectedColumns[selectedColumns?.length-1]?.field !='refundedAmount' )}"
+                        [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
                     </th>
-                    <!-- <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="refNo" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.refNo"
-                        [ngClass]="{'left-0': !frozenObj?.service}">
-                        Ref. No. <p-sortIcon field="refNo" />
-                        <span class="float-right" (click)="isFrozenColumn('refNo');$event.stopPropagation()">
-                            <i *ngIf="frozenObj?.refNo" class="pi pi-lock icon-size-3"></i>
-                            <i *ngIf="!frozenObj?.refNo" class="pi pi-lock-open icon-size-3"></i>
-                        </span>
+                    <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='amount') || (selectedColumns[selectedColumns?.length-1]?.field =='refundedAmount')">
                     </th>
-                    <th class="w-auto" pSortableColumn="service">
-                        Service <p-sortIcon field="service" />
-                    </th>
-                    <th pSortableColumn="agentCode" pResizableColumn>
-                        Agent Code <p-sortIcon field="agentCode" />
-                    </th>
-                    <th pSortableColumn="agentName" pResizableColumn>
-                        Agent Name <p-sortIcon field="agentName" />
-                    </th>
-                    <th pSortableColumn="pspName" pResizableColumn>
-                        PSP Name <p-sortIcon field="pspName" />
-                    </th>
-                    <th pSortableColumn="pspRefNo" pResizableColumn>
-                        PSP Ref. No. <p-sortIcon field="pspRefNo" />
-                    </th>
-                    <th pSortableColumn="type" pResizableColumn>
-                        Type <p-sortIcon field="type" />
-                    </th>
-                    <th class="text-right" pSortableColumn="amount" pResizableColumn>
-                        Amount <p-sortIcon field="amount" />
-                    </th>
-                    <th pSortableColumn="requestDate" pResizableColumn>
-                        Request Date <p-sortIcon field="requestDate" />
-                    </th>
-                    <th pSortableColumn="refundDate" pResizableColumn>
-                        Refund Date <p-sortIcon field="refundDate" />
-                    </th>
-                    <th class="text-right" pSortableColumn="refundedAmount" pResizableColumn>
-                        Refunded Amount <p-sortIcon field="refundedAmount" />
-                    </th>
-                    <th pSortableColumn="paymentMethod" pResizableColumn>
-                        Payment Method <p-sortIcon field="paymentMethod" />
-                    </th> -->
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -197,6 +159,18 @@
                                 [matchMode]="'equals'" [placeholder]="'Search by '+ col.header"
                                 [ariaLabel]="'Filter '+ col.header" locale="en-US" minFractionDigits="2"
                                 maxFractionDigits="2">
+                            </p-columnFilter>
+
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'service'"
+                                [field]="col.field" matchMode="in" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-multiSelect [ngModel]="value" [options]="serviceList" optionLabel="label"
+                                        placeholder="Select service" (onChange)="filter($event.value)" appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option.label}}</p>
+                                        </ng-template>
+                                    </p-multiSelect>
+                                </ng-template>
                             </p-columnFilter>
 
                             <ngContainer *ngIf="col.type == types.dateTime && col.field == 'requestDate'">
@@ -272,156 +246,47 @@
                             </ngContainer>
                         </ng-container>
                     </th>
-                    <!-- <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.refNo">
-                        <p-columnFilter type="text" matchMode="contains" field="refNo" placeholder="Search by Ref. No."
-                            ariaLabel="Filter Ref. No." />
+                    <th class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='amount') || (selectedColumns[selectedColumns?.length-1]?.field =='refundedAmount')">
                     </th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.service">
-                        <p-columnFilter field="service" matchMode="in" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="serviceList" optionLabel="label"
-                                    placeholder="Select service" (onChange)="filter($event.value)" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option.label}}</p>
-                                    </ng-template>
-                                </p-multiSelect>
-                            </ng-template>
-                        </p-columnFilter>                      
-                    </th>
-                    <th>
-                        <p-columnFilter type="numeric" matchMode="contains" field="agentCode"
-                            placeholder="Search by Agent Code" ariaLabel="Filter Agent Code" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="agentName"
-                            placeholder="Search by Agent Name" ariaLabel="Filter Agent Name" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pspName"
-                            placeholder="Search by PSP Name" ariaLabel="Filter PSP Name" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="pspRefNo"
-                            placeholder="Search by PSP Ref. No." ariaLabel="Filter PSP Ref. No." />
-                    </th>
-                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.type">
-                        <p-columnFilter field="type" matchMode="in" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="typeList" optionLabel="label"
-                                    placeholder="Select Type" (onChange)="filter($event.value)" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option.label}}</p>
-                                    </ng-template>
-                                </p-multiSelect>
-                            </ng-template>
-                        </p-columnFilter>               
-                    </th>
-                    <th>                       
-                    </th>
-                    <th>
-                        <p-columnFilter *ngIf="(selectionRefundOption$ | async) != 'custom_date_range'"
-                            field="requestDate" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                    [options]="_filterService.dateRangeContractingList" optionLabel="label"
-                                    placeholder="Select Option" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <div (click)="onContractionOption(option, primengTable, 'requestDate')">
-                                            <div>{{option.label}}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-
-                        <ng-container *ngIf="(selectionRefundOption$ | async) == 'custom_date_range'">
-                            <div class="relative inline-block">
-                                <p-columnFilter field="requestDate" matchMode="custom" [showMenu]="false">
-                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                        <p-calendar selectionMode="range" [ngModel]="value"
-                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
-                                        </p-calendar>
-                                    </ng-template>
-                                </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute"
-                                    style="top:50%; transform: translatey(-50%); right: 25px;"
-                                    (click)="onContractionOption('', '', '')">cancel</mat-icon>
-                            </div>
-                        </ng-container>
-                    </th>
-
-                    <th>
-                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
-                            field="refundDate" matchMode="custom" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
-                                    [options]="_filterService.dateRangeList" optionLabel="label"
-                                    placeholder="Select Option" appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'refundDate')">
-                                            <div>{{option.label}}</div>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-
-                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
-                            <div class="relative inline-block">
-                                <p-columnFilter field="refundDate" matchMode="custom" [showMenu]="false">
-                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                        <p-calendar selectionMode="range" [ngModel]="value"
-                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
-                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
-                                        </p-calendar>
-                                    </ng-template>
-                                </p-columnFilter>
-                                <mat-icon class="icon-size-4 cursor-pointer absolute"
-                                    style="top:50%; transform: translatey(-50%); right: 25px;"
-                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
-                            </div>
-                        </ng-container>
-                    </th>                  
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="paymentMethod"
-                            placeholder="Search by Payment Method" ariaLabel="Filter Payment Method" />
-                    </th> -->
                 </tr>
             </ng-template>
 
-            <ng-template pTemplate="body" let-element>
+            <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.refNo">
-                        {{element.refNo || "-"}}
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
+                        <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
+                            <span [ngClass]="col.field == 'type' ? 'text-red-600' : ''">
+                                {{ element[col.field] || '-' }}
+                            </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.dateTime">
+                            {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.number">
+                            <span>
+                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
+                                (0).toFixed(col?.fixVal || 0)}}
+                            </span>
+                        </ng-container>
                     </td>
-                    <td>
-                        {{element.service || "-"}}
+                    <td class="w-full"
+                        *ngIf="(selectedColumns[selectedColumns?.length-1]?.field =='amount') || (selectedColumns[selectedColumns?.length-1]?.field =='refundedAmount')">
                     </td>
-                    <td>{{element.agentCode || "-" }}</td>
-                    <td>{{element.agentName || "-" }}</td>
-                    <td>{{element.pspName || "-"}}</td>
-                    <td>{{element.pspRefNo || "-"}}</td>
-                    <td class="text-red-600">{{element.type || "-"}}</td>
-                    <td class="text-right">{{element.amount ? (element.amount.toFixed(2) | number:'1.2-2') : "0"}}</td>
-                    <td>{{(element.requestDate | date: "dd-MM-yyyy HH:mm:ss") || "-"}}</td>
-                    <td>
-                        {{(element.refundDate | date: "dd-MM-yyyy HH:mm:ss") || "-"}}
-                    </td>
-                    <td class="text-right">{{element.refundedAmount ? (element.refundedAmount.toFixed(2) |
-                        number:'1.2-2') : "0"}}</td>
-                    <td>{{element.paymentMethod || "-"}}</td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="12" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
-
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
+    </div>
 </div>

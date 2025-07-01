@@ -128,10 +128,10 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       { field: 'pspName', header: 'PSP Name', type: Types.text },
       { field: 'pspRefNo', header: 'PSP Ref. No.', type: Types.text },
       { field: 'type', header: 'Type', type: Types.select, isCustomColor: true },
-      { field: 'amount', header: 'Amount', type: Types.number, fixVal: 2, isHideFilter: true },
+      { field: 'amount', header: 'Amount', type: Types.number, fixVal: 2, isHideFilter: true , class:'text-right' },
       { field: 'requestDate', header: 'Request Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'refundDate', header: 'Refund Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
-      { field: 'refundedAmount', header: 'Refunded Amount', type: Types.number, fixVal: 2, isHideFilter: true },
+      { field: 'refundedAmount', header: 'Refunded Amount', type: Types.number, fixVal: 2, isHideFilter: true  ,class:'text-right'},
       { field: 'paymentMethod', header: 'Payment Method', type: Types.text }
     ];
     this.cols.unshift(...this.selectedColumns);
