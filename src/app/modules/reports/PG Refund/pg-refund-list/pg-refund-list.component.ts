@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Type } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { PgRefundService } from 'app/services/pg-refund.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
@@ -27,6 +27,7 @@ import { DateTime } from 'luxon';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { dateRangeContracting } from 'app/common/const';
 import { CommonUtils } from 'app/utils/commonutils';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-pg-refund-list',
@@ -81,6 +82,12 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
   selectedAgent: any;
   selectedRM: any;
 
+  types = Types;
+  cols: Column[] = [];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+
   // serviceList = ['Airline', 'Hotel', 'Bus', 'Visa'];
   serviceList = [
     { label: 'Airline', value: 'Airline' },
@@ -112,6 +119,23 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
     this.updateDate(dateRangeContracting.lastMonth, false)
 
     this._filterService.applyDefaultFilter(this.filter_table_name);
+
+    this.selectedColumns = [
+      { field: 'refNo', header: 'Ref. No.', type: Types.text },
+      { field: 'service', header: 'Service', type: Types.select },
+      { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
+      { field: 'agentName', header: 'Agent Name', type: Types.text },
+      { field: 'pspName', header: 'PSP Name', type: Types.text },
+      { field: 'pspRefNo', header: 'PSP Ref. No.', type: Types.text },
+      { field: 'type', header: 'Type', type: Types.select, isCustomColor: true },
+      { field: 'amount', header: 'Amount', type: Types.number, fixVal: 2, isHideFilter: true },
+      { field: 'requestDate', header: 'Request Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'refundDate', header: 'Refund Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'refundedAmount', header: 'Refunded Amount', type: Types.number, fixVal: 2, isHideFilter: true },
+      { field: 'paymentMethod', header: 'Payment Method', type: Types.text }
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
@@ -138,6 +162,7 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
   }
@@ -164,8 +189,37 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
   }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -321,11 +375,21 @@ export class PgRefundListComponent extends BaseListingComponent implements OnDes
   onContractionOption(option: any, primengTable: any, field: any, key?: any) {
     // this.selectionDateDropdown = option.id_by_value;
     this.selectedRefundDateSubject.next(option.id_by_value);
-   
-    if(option.id_by_value && option.id_by_value != 'custom_date_range'){
-        primengTable.filter(option, field, 'custom');
-    } 
-}
+
+    if (option.id_by_value && option.id_by_value != 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    }
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+  }
 
 }
 
