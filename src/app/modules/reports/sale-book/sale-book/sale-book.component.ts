@@ -25,7 +25,7 @@ import { SaleFilterComponent } from './sale-filter/sale-filter.component';
 import { DateTime } from 'luxon';
 import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { FlightTabService } from 'app/services/flight-tab.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
@@ -102,6 +102,12 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 	sortColumn: any = 'inquiry_date';
 	filterConfig = {}
 
+	types = Types;
+	cols: Column[] = [];
+	selectedColumns: Column[] = [];
+	exportCol: Column[] = [];
+	activeFiltData: any = {};
+
 
 	dateBy = [{ value: 'BookingDate', label: 'Booking Date' }, { value: 'InvoiceDate', label: 'Invoice Date' }, { value: 'TravelDate', label: 'Travel Date' }];
 	ServicesBy = [{ value: 'Airline', label: 'Airline' }, { value: 'Hotel', label: 'Hotel' }, { value: 'Bus', label: 'Bus' }, { value: 'Visa', label: 'Visa' }, { value: 'Insurance', label: 'Insurance' }, { value: 'Tech Product', label: 'Tech Product' }, { value: 'OSB', label: 'OSB' }];
@@ -133,6 +139,57 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 		};
 		this.saleFilter.FromDate.setDate(1);
 		this.saleFilter.FromDate.setMonth(this.saleFilter.FromDate.getMonth());
+
+		this.selectedColumns = [
+			{ field: 'agent_code', header: 'Agent Code', type: Types.text },
+			{ field: 'master_agent', header: 'Agent', type: Types.select },
+			{ field: 'bill_to', header: 'Bill To', type: Types.text },
+			{ field: 'service_type', header: 'Service Type', type: Types.select },
+			{ field: 'sales_type', header: 'Sales Type', type: Types.text },
+			{ field: 'agent_pan_no', header: 'Agent PAN No.', type: Types.text },
+			{ field: 'agent_gst_no', header: 'Agent GST No.', type: Types.text },
+			{ field: 'agent_pincode', header: 'Agent Pincode', type: Types.text },
+			{ field: 'agent_state', header: 'Agent State', type: Types.text },
+			{ field: 'booking_date', header: 'Booking Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+			{ field: 'travel_date', header: 'Travel Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+			{ field: 'inquiry_date', header: 'Inquiry / Completed Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+			{ field: 'invoice_date', header: 'Invoice Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+			{ field: 'invoice_no', header: 'Invoice No.', type: Types.text },
+			{ field: 'destination', header: 'Destination', type: Types.text },
+			{ field: 'pax', header: 'Pax', type: Types.number, fixVal: 0, class: 'text-center' },
+			{ field: 'booking_ref_no', header: 'Booking Reference No.', type: Types.text },
+			{ field: 'pnr', header: 'PNR', type: Types.text },
+			{ field: 'supplier_booking_ref_no', header: 'Supplier Booking Ref. No.', type: Types.text },
+			{ field: 'gds_pnr', header: 'GDS PNR', type: Types.text },
+			{ field: 'purchase_amount', header: 'Purchase Amount', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'commission_income', header: 'Commission Income', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'tds_on_commission_income', header: 'TDS On Commission Income', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'net_purchase', header: 'Net Purchase', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'service_charge', header: 'Service Charge', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'service_charge_tax', header: 'Service Charge Tax', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'sgst', header: 'SGST', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'cgst', header: 'CGST', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'igst', header: 'IGST', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'sale_price', header: 'Sale Price', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'commission_passedon', header: 'Commission Passed On', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'tds_on_commission_passedon', header: 'TDS On Commission Passed On', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'commission_given', header: 'Commission Given', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'tds_on_commission_given', header: 'Tds On Commission Given', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'booking_currency', header: 'Booking Currency', type: Types.text },
+			{ field: 'roe', header: 'ROE', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'billing_company', header: 'Billing Company', type: Types.select },
+			{ field: 'supplier', header: 'Supplier', type: Types.select },
+			{ field: 'gst_number_passed_to_supplier', header: 'GST Number Passed To Supplier', type: Types.text },
+			{ field: 'travel_type', header: 'Travel Type', type: Types.text },
+			{ field: 'ticket_status', header: 'Ticket Status', type: Types.text },
+			{ field: 'booking_type', header: 'Booking Type', type: Types.text },
+			{ field: 'supplier_invoice_number', header: 'Supplier Invoice No.', type: Types.text },
+			{ field: 'payment_mode', header: 'Payment Mode', type: Types.text },
+			{ field: 'cashback', header: 'Cashback', type: Types.number, fixVal: 2, class: 'text-right' },
+			{ field: 'cashback_tds', header: 'Cashback TDS', type: Types.number, fixVal: 2, class: 'text-right' }
+		];
+		this.cols.unshift(...this.selectedColumns);
+		this.exportCol = cloneDeep(this.cols);
 	}
 
 	ngOnInit() {
@@ -178,6 +235,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			}
 			this.primengTable['filters'] = resp['table_config'];
 			this.isFilterShow = true;
+			this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
 			this.primengTable._filter();
 		});
 	}
@@ -223,7 +281,35 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			// this.sortColumn = filterData['sortColumn'];
 
 			this.primengTable['filters'] = filterData['table_config'];
+			this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+			this.onColumnsChange();
+		} else {
+			this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+			this.onColumnsChange();
 		}
+	}
+
+	onColumnsChange(): void {
+		this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+	}
+
+	checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+		if (col.length) return col;
+		else {
+			var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+			if (!Col.length)
+				return oldCol;
+			else
+				return Col;
+		}
+	}
+
+	isDisplayHashCol(): boolean {
+		return this.selectedColumns.length > 0;
+	}
+
+	onSelectedColumnsChange(): void {
+		this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
 	}
 
 	getAgent(value: string) {
@@ -442,7 +528,7 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 				{ header: 'Supplier Invoice Number', property: 'supplier_invoice_number' },
 				{ header: 'Payment Mode', property: 'payment_mode' },
 				{ header: 'Cashback', property: 'cashback' },
-                { header: 'Cashback TDS', property: 'cashback_tds' },
+				{ header: 'Cashback TDS', property: 'cashback_tds' },
 			],
 			this.tempData, "Sale Book", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 40 } }]);
 		// });
@@ -466,5 +552,15 @@ export class SaleBookComponent extends BaseListingComponent implements OnDestroy
 			this.settingsUpdatedSubscription.unsubscribe();
 			this._filterService.activeFiltData = {};
 		}
+	}
+
+	displayColCount(): number {
+		return this.selectedColumns.length + 1;
+	}
+
+
+	isValidDate(value: any): boolean {
+		const date = new Date(value);
+		return value && !isNaN(date.getTime());
 	}
 }
