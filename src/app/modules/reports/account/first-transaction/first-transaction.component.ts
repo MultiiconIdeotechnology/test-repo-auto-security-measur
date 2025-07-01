@@ -2,7 +2,7 @@ import { filter_module_name, messages, module_name, Security } from 'app/securit
 import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
@@ -20,6 +20,7 @@ import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-first-transaction',
@@ -62,9 +63,14 @@ export class FirstTransactionComponent
     appConfig = AppConfig;
     settings: any;
     agentList: any[] = [];
-    cols: Column[];
     isFilterShow: boolean = false;
     selectedAgent: any
+
+    types = Types;
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
     constructor(
         private accountService: AccountService,
@@ -78,6 +84,19 @@ export class FirstTransactionComponent
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name)
+        this.selectedColumns = [
+            { field: 'first_transaction_date_time', header: 'Transaction Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss', isFrozen: false },
+            { field: 'agent_code', header: 'Agent Code', type: Types.number , fixVal:0 },
+            { field: 'agency_name', header: 'Agency Name', type: Types.select },
+            { field: 'gst_number', header: 'GST / VAT No', type: Types.text },
+            { field: 'pan_number', header: 'PAN', type: Types.text },
+            { field: 'country', header: 'Country', type: Types.text },
+            { field: 'state_name', header: 'State', type: Types.text },
+            { field: 'address_line1', header: 'Address', type: Types.text },
+            { field: 'pincode', header: 'Pincode', type: Types.text }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit() {
@@ -101,6 +120,7 @@ export class FirstTransactionComponent
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
@@ -126,7 +146,36 @@ export class FirstTransactionComponent
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
 
     getAgent(value: string) {
@@ -205,6 +254,16 @@ export class FirstTransactionComponent
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
     }
 
 }
