@@ -835,16 +835,57 @@ export class AirlineComponent implements OnInit {
         this.layoverPoints = Linq.groupBy(lypoints, x => x.layoverAt).filter(item => item.key !== '');
         this.layoverPoints.sort((a, b) => a.key?.localeCompare(b.key));
 
-     
 
-        this.supplierList = Array.from(
-          new Set(this.flights.map(flight => flight.supplier_name).filter(Boolean))
-        ).map(name => ({
-          supplier_name: name,
-          isSelected: false
-        }));
-        console.log("this.supplierList", this.supplierList);
-        
+
+        // this.supplierList = Array.from(
+        //   new Set(this.flights.map(flight => flight.supplier_name).filter(Boolean))
+        // ).map(name => ({
+        //   supplier_name: name,
+        //   isSelected: false
+        // }));
+        // console.log("this.supplierList", this.supplierList);
+
+        this.supplierList = [{
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        },
+        {
+          "supplier_name": "Tripjack_air",
+          "isSelected": false
+        }]
+
 
         // to get the list for airport code to filter (departure and arrival)
         this.Allflights.forEach(flight => {
@@ -921,7 +962,7 @@ export class AirlineComponent implements OnInit {
           this.searchFlights();
           this.priority = 1;
           this.systemTraceId = '';
-          
+
           this.isLoadingProcessing = true;
         }
         else {

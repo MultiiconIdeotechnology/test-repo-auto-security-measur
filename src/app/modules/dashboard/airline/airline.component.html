@@ -601,7 +601,7 @@
       <div *ngIf="oneWay && flights.length > 0">
         <div class="flex flex-col rounded-lg mb-0 relative bg-card px-10 py-[10px]"
           style="box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);">
-          <ngx-slick-carousel class="carousel fixedDepartCarousel" #slickModal4="slick-carousel"
+          <ngx-slick-carousel class="carousel fixedDepartCarousel px-3" #slickModal4="slick-carousel"
             [config]="fixedFareDateSlideConfig">
             <div ngxSlickItem *ngFor="let data of supplierList; let i = index; let last = last;"
               class="theme-black-text mr-0 font-medium text-base   text-center cursor-pointer"
