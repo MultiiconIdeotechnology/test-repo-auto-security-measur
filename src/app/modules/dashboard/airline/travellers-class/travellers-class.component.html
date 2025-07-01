@@ -12,7 +12,7 @@
                 <div class="flex-grow flex flex-row space-x-2">
                     <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
                         (click)="toggleSelection(i,'adult')"
-                        [ngClass]="{'hidden': i === 0, 'secondary-bg primary-text': data.adult === i}"
+                        [ngClass]="{'hidden': i === 0, 'bg-gray-500 primary-text': data.adult === i}"
                         *ngFor="let i of 10 | enumerate">{{i}}</div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                 <div class="flex-grow flex flex-row space-x-2">
                     <div></div>
                     <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
-                        (click)="toggleSelection(i,'child')" [ngClass]="{'secondary-bg primary-text': data.child === i}"
+                        (click)="toggleSelection(i,'child')" [ngClass]="{'bg-gray-500 primary-text': data.child === i}"
                         *ngFor="let i of 9 | enumerate">{{i}}</div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                     <div></div>
                     <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
                         (click)="toggleSelection(i,'infant')"
-                        [ngClass]="{'secondary-bg primary-text': data.infant === i}" *ngFor="let i of 9 | enumerate">
+                        [ngClass]="{'bg-gray-500 primary-text': data.infant === i}" *ngFor="let i of 9 | enumerate">
                         {{i}}</div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                 <div class="flex-grow flex flex-row space-x-2">
                     <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
                         (click)="toggleSelection(i,'adult')"
-                        [ngClass]="{'hidden': i === 0, 'secondary-bg primary-text': data.adult === i}"
+                        [ngClass]="{'hidden': i === 0, 'bg-gray-500 primary-text': data.adult === i}"
                         *ngFor="let i of 10 | enumerate">{{i}}</div>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                 <div class="flex-grow flex flex-row space-x-2">
                     <div></div>
                     <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
-                        (click)="toggleSelection(i,'child')" [ngClass]="{'secondary-bg primary-text': data.child === i}"
+                        (click)="toggleSelection(i,'child')" [ngClass]="{'bg-gray-500 primary-text': data.child === i}"
                         *ngFor="let i of 9 | enumerate">{{i}}</div>
                 </div>
             </div>
@@ -142,7 +142,7 @@
                     <div></div>
                     <div class="flex flex-row justify-center items-center h-6 w-6 rounded-full cursor-pointer text-sm font-semibold"
                         (click)="toggleSelection(i,'infant')"
-                        [ngClass]="{'secondary-bg primary-text': data.infant === i}" *ngFor="let i of 9 | enumerate">
+                        [ngClass]="{'bg-gray-500 primary-text': data.infant === i}" *ngFor="let i of 9 | enumerate">
                         {{i}}</div>
                 </div>
             </div>

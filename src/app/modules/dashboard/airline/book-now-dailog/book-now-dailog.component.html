@@ -8,122 +8,124 @@
     </button>
   </div>
 
-  <div class="flex gap-3 p-5" *ngIf="flightData?.displaySegments.length > 0 && !isLoading">
-    <ng-container *ngFor="let ds of flightData.displaySegments;let i=index;">
-      <div
-        class="first relative flex flex-col white-bg rounded-md  overflow-x-hidden border ">
-        <div
-          class="upSide relative flex mobile:justify-between pt-5 px-5 pb-7 border-b border-dashed border-gray-border">
-          <div class="flex items-center">
-            <img loading="lazy" class="w-12 h-12 mobile:w-7 mobile:h-7 object-contain mr-3" [src]="ds.airline_logo"
-              alt="Logo">
+  <div class="flex gap-3 px-5 pt-5" *ngIf="!isLoading">
+    <div *ngIf="flightData?.displaySegments.length > 0">
+      <ng-container *ngFor="let ds of flightData.displaySegments;let i=index;" >
+        <div class="first relative flex flex-col white-bg rounded-md  overflow-x-hidden border mb-5" >
+          <div
+            class="upSide relative flex mobile:justify-between pt-5 px-5 pb-7 border-b border-dashed border-gray-border">
+            <div class="flex items-center">
+              <img loading="lazy" class="w-12 h-12 mobile:w-7 mobile:h-7 object-contain mr-3" [src]="ds.airline_logo"
+                alt="Logo">
 
-            <div>
-              <div class="light-text text-md font-medium">{{ds.airlineName}}</div>
-              <div class="light-text text-sm font-medium"><span>{{ds.airlineCode}} -
-                  {{ds.flightNumber}}</span>
-                <p class="text-sm font-normal" [ngClass]="{'text-red-500': searchTravellClass != ds.cabinClass}">
-                  {{ds.cabinClass}}
-                </p>
-                <p [ngClass]="ds?.is_refundable ? 'text-green-500':'text-red-500'">
-                  {{ds.is_refundable ? 'Refundable' : 'Non-Refundable'}}</p>
+              <div>
+                <div class="light-text text-md font-medium">{{ds.airlineName}}</div>
+                <div class="light-text text-sm font-medium"><span>{{ds.airlineCode}} -
+                    {{ds.flightNumber}}</span>
+                  <p class="text-sm font-normal" [ngClass]="{'text-red-500': searchTravellClass != ds.cabinClass}">
+                    {{ds.cabinClass}}
+                  </p>
+                  <p [ngClass]="ds?.is_refundable ? 'text-green-500':'text-red-500'">
+                    {{ds.is_refundable ? 'Refundable' : 'Non-Refundable'}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="pl-12 mobile:pl-1 mobile:flex mobile:items-center">
+              <div class="flex items-center">
+                <span class="font-semibold text-lg mobile:text-base flex items-end relative mobile:items-center">
+                  <span>{{ds.originCityCode}}</span>
+                  <mat-icon
+                    class="text-gray-500 mobile:icon-size-4 mobile:mx-0.5 mx-3 text-2xl">arrow_forward</mat-icon>
+                  <span>{{ds.destinationCityCode}}</span>
+                </span>
+                <span class="text-gray pl-5 mobile:text-md mobile:pl-1 mobile:text-center">
+                  {{ds.depTime | date: 'EEE, dd-MM-yyyy'}}
+                </span>
+              </div>
+              <!-- <div class="light-text text-md pt-1">{{ds.remark}}</div> -->
+            </div>
+            <div *ngIf="i === 0" (click)="opendialog(flightData)"
+              class="cursor-pointer absolute right-[14px] mobile:top-[4px] mobile:right-[5px] top-[14px]">
+              <mat-icon class="text-gray text-3xl mobile:icon-size-4 opacity-75" [matTooltip]="'Info'">info</mat-icon>
+            </div>
+          </div>
+          <div
+            class="pt-6 px-7 pb-5 flex items-center justify-around mobile:flex-col mobile:items-start mobile:px-4 mobile:py-3">
+            <div class="flex items-center">
+              <div class="flex flex-col max-w-[170px] mobile:max-w-full">
+                <span class="text-xl mobile:text-lg font-semibold">{{ds.depTime | date:
+                  'HH:mm'}}</span>
+                <span class="text-md font-medium">
+                  {{ds.depTime | date: 'EEE, dd-MM-yyyy'}}
+                </span>
+                <span class="text-md text-gray-400  font-medium">{{ds.originTerminal}}
+                  {{ds.originTerminal? '-':''}}
+                  {{ds.originAirportName}}{{ds.originCityName? ',':''}}
+                  {{ds.originCityName}}</span>
+              </div>
+              <div class="flex mobile:mx-2 mx-7 items-center z-[1] relative">
+                <span class="absolute left-[50%] top-[-22px] translate-x-[-50%] text-gray text-sm">{{ds.multicityStop
+                  > 0 ? (ds.multicityStop + ' Stops') : 'Non Stop'}}</span>
+                <span
+                  class="absolute left-[50%] bottom-[-22px] translate-x-[-50%] text-gray text-sm">{{ds.totalDuration}}</span>
+                <span
+                  class="block w-2 h-2 bg-primary rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
+                <span
+                  class="border-dashed border-b border-gray-border min-w-30 mobile:min-w-24 relative flex justify-center items-center">
+                  <mat-icon class="absolute top-[-11px] rotate-90 orange-text z-10">flight</mat-icon>
+                </span>
+                <span
+                  class="block w-2 h-2 bg-primary rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
+              </div>
+              <div class="flex flex-col max-w-[170px] mobile:max-w-full">
+                <span class="text-xl mobile:text-lg  font-semibold">{{ds.arrTime | date:
+                  'HH:mm'}}</span>
+                <span class="text-md font-medium">
+                  {{ds.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
+                <span class="text-md text-gray-400 font-medium">{{ds.destinationTerminal}}
+                  {{ds.destinationTerminal? '-':''}}
+                  {{ds.destinationAirportName}}{{ds.destinationCityName? ',':''}}
+                  {{ds.destinationCityName}}</span>
+              </div>
+            </div>
+            <div class="flex items-center min-w-[270px] mobile:min-w-full">
+              <div class="flex flex-col pl-2 mobile:pl-0">
+                <span class="font-semibold">Baggage</span>
+                <span class="text-gray text-sm">Adult</span>
+                <span class="text-gray text-sm" *ngIf="flightData?.child > 0">Child</span>
+              </div>
+              <div class="flex flex-col mx-6">
+                <span class="font-semibold">Check in</span>
+                <span class="text-gray text-sm">{{ds.adultBaggage || '-'}}</span>
+                <span class="text-gray text-sm" *ngIf="flightData?.child > 0">{{ds.childBaggage || '-'}}</span>
+              </div>
+              <div class="flex flex-col mr-6">
+                <span class="font-semibold">Cabin</span>
+                <span class="text-gray text-sm">{{ds.adultCabinBaggage || '-'}}</span>
+                <span class="text-gray text-sm" *ngIf="flightData?.child > 0">{{ds.childCabinBaggage || '-'}}</span>
               </div>
             </div>
           </div>
-          <div class="pl-12 mobile:pl-1 mobile:flex mobile:items-center">
-            <div class="flex items-center">
-              <span class="font-semibold text-lg mobile:text-base flex items-end relative mobile:items-center">
-                <span>{{ds.originCityCode}}</span>
-                <mat-icon class="text-gray-500 mobile:icon-size-4 mobile:mx-0.5 mx-3 text-2xl">arrow_forward</mat-icon>
-                <span>{{ds.destinationCityCode}}</span>
-              </span>
-              <span class="text-gray pl-5 mobile:text-md mobile:pl-1 mobile:text-center">
-                {{ds.depTime | date: 'EEE, dd-MM-yyyy'}}
-              </span>
-            </div>
-            <!-- <div class="light-text text-md pt-1">{{ds.remark}}</div> -->
-          </div>
-          <div *ngIf="i === 0" (click)="opendialog(flightData)"
-            class="cursor-pointer absolute right-[14px] mobile:top-[4px] mobile:right-[5px] top-[14px]">
-            <mat-icon class="text-gray text-3xl mobile:icon-size-4 opacity-75" [matTooltip]="'Info'">info</mat-icon>
-          </div>
         </div>
-        <div
-          class="pt-6 px-7 pb-5 flex items-center justify-around mobile:flex-col mobile:items-start mobile:px-4 mobile:py-3">
-          <div class="flex items-center">
-            <div class="flex flex-col max-w-[170px] mobile:max-w-full">
-              <span class="text-xl mobile:text-lg font-semibold">{{ds.depTime | date:
-                'HH:mm'}}</span>
-              <span class="text-md font-medium">
-                {{ds.depTime | date: 'EEE, dd-MM-yyyy'}}
-              </span>
-              <span class="text-md text-gray-400  font-medium">{{ds.originTerminal}}
-                {{ds.originTerminal? '-':''}}
-                {{ds.originAirportName}}{{ds.originCityName? ',':''}}
-                {{ds.originCityName}}</span>
-            </div>
-            <div class="flex mobile:mx-2 mx-7 items-center z-[1] relative">
-              <span class="absolute left-[50%] top-[-22px] translate-x-[-50%] text-gray text-sm">{{ds.multicityStop
-                > 0 ? (ds.multicityStop + ' Stops') : 'Non Stop'}}</span>
-              <span
-                class="absolute left-[50%] bottom-[-22px] translate-x-[-50%] text-gray text-sm">{{ds.totalDuration}}</span>
-              <span
-                class="block w-2 h-2 bg-primary rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
-              <span
-                class="border-dashed border-b border-gray-border min-w-30 mobile:min-w-24 relative flex justify-center items-center">
-                <mat-icon class="absolute top-[-11px] rotate-90 orange-text z-10">flight</mat-icon>
-              </span>
-              <span
-                class="block w-2 h-2 bg-primary rounded-full border border-white outline-1 outline primary-outline ng-star-inserted"></span>
-            </div>
-            <div class="flex flex-col max-w-[170px] mobile:max-w-full">
-              <span class="text-xl mobile:text-lg  font-semibold">{{ds.arrTime | date:
-                'HH:mm'}}</span>
-              <span class="text-md font-medium">
-                {{ds.arrTime | date: 'EEE, dd-MM-yyyy'}}</span>
-              <span class="text-md text-gray-400 font-medium">{{ds.destinationTerminal}}
-                {{ds.destinationTerminal? '-':''}}
-                {{ds.destinationAirportName}}{{ds.destinationCityName? ',':''}}
-                {{ds.destinationCityName}}</span>
-            </div>
-          </div>
-          <div class="flex items-center min-w-[270px] mobile:min-w-full">
-            <div class="flex flex-col pl-2 mobile:pl-0">
-              <span class="font-semibold">Baggage</span>
-              <span class="text-gray text-sm">Adult</span>
-              <span class="text-gray text-sm" *ngIf="flightData?.child > 0">Child</span>
-            </div>
-            <div class="flex flex-col mx-6">
-              <span class="font-semibold">Check in</span>
-              <span class="text-gray text-sm">{{ds.adultBaggage || '-'}}</span>
-              <span class="text-gray text-sm" *ngIf="flightData?.child > 0">{{ds.childBaggage || '-'}}</span>
-            </div>
-            <div class="flex flex-col mr-6">
-              <span class="font-semibold">Cabin</span>
-              <span class="text-gray text-sm">{{ds.adultCabinBaggage || '-'}}</span>
-              <span class="text-gray text-sm" *ngIf="flightData?.child > 0">{{ds.childCabinBaggage || '-'}}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </ng-container>
+      </ng-container>
 
+      
+    </div>
     <div class="overflow-hidden rounded-2xl bg-card border w-72 h-fit">
       <div class="dark:bg-[#364459] bg-gray-200 px-5 py-[10px] text-lg">Price Information</div>
       <div class="px-5 py-[8px] justify-between flex">
         <span>Base Fare</span>
-        <span>{{flightData.purchasePrice}}</span>
+        <span>{{flightData?.purchasePrice}}</span>
       </div>
       <div class="px-5 py-[8px] justify-between flex">
         <span>Taxes & Fees</span>
-        <span>{{flightData.tax}}</span>
+        <span>{{flightData?.tax}}</span>
       </div>
       <div class="px-5 py-[8px] justify-between border-dashed border-t flex">
         <span class="font-medium">Grand Total</span>
         <span class="font-medium">{{(flightData.purchasePrice + flightData.tax).toFixed(2)}}</span>
       </div>
     </div>
-
   </div>
 
   <div class="px-10 py-15 text-center text-primary text-xl font-medium" *ngIf="isLoading">

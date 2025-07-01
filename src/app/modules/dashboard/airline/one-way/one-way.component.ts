@@ -265,7 +265,6 @@ export class OneWayComponent {
       traceId: flight.traceId,
       infantCount: flight.infantCount,
       resultIndex: flight.resultIndex, // This key to get resultIndex in detail page
-      // resultIndex: this.airlineDashboardService.generateUniqueKey(), // This key to get resultIndex in detail page
       ret_searchCachingFileName: flight.return_caching_file_name,
       is_domestic: flight.is_domestic,
       provider_id_enc: flight.provider_id_enc,
@@ -279,7 +278,7 @@ export class OneWayComponent {
       filename: this.filename,
       travellClass: this.cabinClassSearch,
     };
-    console.log("json", json);
+    console.log("one json", json);
 
     this.matDialog
       .open(BookNowDailogComponent, {

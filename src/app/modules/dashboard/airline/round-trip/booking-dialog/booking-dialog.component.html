@@ -1,7 +1,7 @@
 <div
     class="flex flex-col max-w-256 md:min-w-256 max-h-screen -m-6 mobile:min-w-full mobile:w-full mobile:max-w-full mobile:m-0">
     <!-- Header -->
-    <div class="flex flex-0 items-center justify-between mobile:sticky mobile:top-0 px-4 h-15 bg-white shadow-lg z-10">
+    <div class="flex flex-0 items-center justify-between mobile:sticky mobile:top-0 px-4 h-15 bg-primary shadow-lg z-10">
         <div class="text-xl mobile:text-lg font-medium">
             You have more fares to select from
         </div>
@@ -32,8 +32,8 @@
                             </div>
                         </div>
                         <!-- Fare Filter -->
-                        <div class="bg-lightgray rounded p-[10px] cursor-pointer" (click)="onFilterIconClickDep($event)">
-                            <img class="w-[18px]" src="assets/icons/filter_far.svg">
+                        <div class="bg-gray-500 rounded p-[10px] cursor-pointer" (click)="onFilterIconClickDep($event)">
+                            <img class="w-[18px] fill-white" src="assets/icons/filter_far.svg">
                         </div>
 
                         <!-- Fare Filter popup-->
@@ -92,7 +92,7 @@
 
             <div class="px-7 py-2 mt-2 mobile:px-1.5 relative">
                 <div
-                    class="sky-blue-bg rounded-md px-4 mobile:pr-2 mobile:pl-2 py-2 flex items-center justify-between mobile:justify-start mobile:flex-col flex-wrap">
+                    class="bg-primary rounded-md px-4 mobile:pr-2 mobile:pl-2 py-2 flex items-center justify-between mobile:justify-start mobile:flex-col flex-wrap">
                     <div class="flex items-center">
                         <span
                             class="text-base font-semibold mobile:text-md">{{depflight.flightStopSegments[0].originCityName
@@ -220,8 +220,8 @@
                         </div>
 
                         <!-- Fare Filter -->
-                        <div class="bg-lightgray rounded p-[10px] cursor-pointer" (click)="onFilterIconClickRet($event)">
-                            <img class="w-[18px] max-w-[18px]" src="assets/icons/filter_far.svg">
+                        <div class="bg-gray-500 rounded p-[10px] cursor-pointer" (click)="onFilterIconClickRet($event)">
+                            <img class="w-[18px] max-w-[18px] fill-white" src="assets/icons/filter_far.svg">
                         </div>
 
                         <!-- Fare Filter popup-->
@@ -281,7 +281,7 @@
 
         <div class="px-7 py-2 mobile:px-1.5">
             <div
-                class="sky-blue-bg rounded-md px-4 py-2 flex items-center justify-between mobile:pr-2 mobile:pl-2 mobile:justify-start mobile:flex-col">
+                class="bg-primary rounded-md px-4 py-2 flex items-center justify-between mobile:pr-2 mobile:pl-2 mobile:justify-start mobile:flex-col">
                 <div class="flex items-center">
                     <span
                         class="text-base font-semibold mobile:text-md">{{retflight.flightStopSegments[0].originCityName

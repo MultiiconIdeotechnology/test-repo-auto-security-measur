@@ -51,7 +51,7 @@ export class BookNowDailogComponent implements OnInit {
   record: any;
   flightData: any;
   supplier: any;
-  isLoading:boolean = true;
+  isLoading: boolean = true;
 
   constructor(
     public matDialogRef: MatDialogRef<BookNowDailogComponent>,
@@ -67,7 +67,6 @@ export class BookNowDailogComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.commanService.raiseLoader(true);
     const model = {
       adult: this.record.adultCount,
       child: this.record.childCount,
@@ -89,18 +88,18 @@ export class BookNowDailogComponent implements OnInit {
     }
     this.airlineDashboardService.fareQuote(model).subscribe({
       next: res => {
-        this.isLoading = false 
+        this.isLoading = false
         if (res.data) {
           this.flightData = res.data
         } else {
+          if (res.error) {
+            this.alertService.showToast('error', res.error);
+          }
           this.matDialogRef.close()
         }
-
-      }, error: (err) => {
-        this.isLoading = false 
-
-        // this.nobookingData = true;
-        this.alertService.showToast('error', err);
+      }, error: (error) => {
+        this.isLoading = false
+        this.alertService.showToast('error', error);
         this.matDialogRef.close()
       }
     });

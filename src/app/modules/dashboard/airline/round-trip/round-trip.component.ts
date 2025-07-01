@@ -27,6 +27,7 @@ import { FareRuleComponent } from './fare-rule/fare-rule.component';
 import { AirlineDashboardService } from 'app/services/airline-dashboard.service';
 import { BookingDialogComponent } from './booking-dialog/booking-dialog.component';
 import { DetailDialogeComponent } from './detail-dialoge/detail-dialoge.component';
+import { BookNowDailogComponent } from '../book-now-dailog/book-now-dailog.component';
 
 @Component({
   selector: 'app-round-trip',
@@ -161,9 +162,9 @@ export class RoundTripComponent implements OnChanges {
     const json = {
       adultCount: flight.adultCount,
       childCount: flight.childCount,
-      traceId: flight.traceId,
-      resultIndex: this.airlineDashboardService.generateUniqueKey(), // This key to get resultIndex in detail page
       infantCount: flight.infantCount,
+      traceId: flight.traceId,
+      resultIndex: flight.resultIndex, // This key to get resultIndex in detail page
       is_domestic: flight.is_domestic,
       provider_id_enc: flight.provider_id_enc,
       returnId: '', // retflight?.id this is store in local data
@@ -174,38 +175,51 @@ export class RoundTripComponent implements OnChanges {
       purchasePrice: flight.tempSalePrice
     };
 
-    let queryParams: any = {
-      flight: JSON.stringify(json),
-      searchdateTime: DateTime.fromISO(this.searchdateTime.toString()).toFormat('yyyy-MM-dd'),
-      returnDate: DateTime.fromISO(this.returnDate.toString()).toFormat('yyyy-MM-dd'),
-      filename: this.filename,
-      travellClass: this.cabinClassSearch,
-      caching_file_name: flight.caching_file_name || '',
-      return_caching_file_name: retflight?.caching_file_name || '',
-    };
-
-    let baggageDetail = [];
-    baggageDetail.push({
-      adultBaggage: flight?.checkinBaggageStr || "0",
-      adultCabinBaggage: flight?.cabinBaggageStr || "0",
-      childBaggage: "0",
-      childCabinBaggage: "0",
-      isRefundable: flight?.is_refundable || false,
-    },
-      {
-        adultBaggage: retflight?.checkinBaggageStr || "0",
-        adultCabinBaggage: retflight?.cabinBaggageStr || "0",
-        childBaggage: "0",
-        childCabinBaggage: "0",
-        isRefundable: retflight?.is_refundable || false,
+    this.matDialog
+      .open(BookNowDailogComponent, {
+        data: { data: json, supplier: flight.supplier_name },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          // this.refreshItems();
+        }
       });
-    const selectedflightData = {
-      baggageDetail: baggageDetail,
-      flightType: 'rt'
-    };
-    // this.cacheService.MainFilterChanged(selectedflightData, 'selected-flight');
-    this.airlineDashboardService.addFlightRecord(json.resultIndex, flight.resultIndex, retflight?.id);
-    Linq.recirect('/flights/detail/booking', queryParams)
+
+
+    // let queryParams: any = {
+    //   flight: JSON.stringify(json),
+    //   searchdateTime: DateTime.fromISO(this.searchdateTime.toString()).toFormat('yyyy-MM-dd'),
+    //   returnDate: DateTime.fromISO(this.returnDate.toString()).toFormat('yyyy-MM-dd'),
+    //   filename: this.filename,
+    //   travellClass: this.cabinClassSearch,
+    //   caching_file_name: flight.caching_file_name || '',
+    //   return_caching_file_name: retflight?.caching_file_name || '',
+    // };
+
+    // let baggageDetail = [];
+    // baggageDetail.push({
+    //   adultBaggage: flight?.checkinBaggageStr || "0",
+    //   adultCabinBaggage: flight?.cabinBaggageStr || "0",
+    //   childBaggage: "0",
+    //   childCabinBaggage: "0",
+    //   isRefundable: flight?.is_refundable || false,
+    // },
+    //   {
+    //     adultBaggage: retflight?.checkinBaggageStr || "0",
+    //     adultCabinBaggage: retflight?.cabinBaggageStr || "0",
+    //     childBaggage: "0",
+    //     childCabinBaggage: "0",
+    //     isRefundable: retflight?.is_refundable || false,
+    //   });
+    // const selectedflightData = {
+    //   baggageDetail: baggageDetail,
+    //   flightType: 'rt'
+    // };
+    // // this.cacheService.MainFilterChanged(selectedflightData, 'selected-flight');
+    // this.airlineDashboardService.addFlightRecord(json.resultIndex, flight.resultIndex, retflight?.id);
+    // Linq.recirect('/flights/detail/booking', queryParams)
   }
 
   getReturnSegment(segments: any[]): any {
@@ -241,12 +255,47 @@ export class RoundTripComponent implements OnChanges {
   }
 
   bookingDetails(depflight, retflight): void {
-    this.matDialog.open(BookingDialogComponent, {
-      data: { depflight: depflight, retflight: retflight, searchdateTime: this.searchdateTime, trip_type: this.trip_type, filename: this.filename, offervalue: this.offervalue, travellClass: this.cabinClassSearch },
-      disableClose: true,
-      panelClass: ''
-    }).afterClosed().subscribe(res => {
-    });
+    console.log("depflight", depflight);
+    console.log("retflight", retflight);
+
+    const json = {
+      adultCount: depflight.adultCount,
+      childCount: depflight.childCount,
+      traceId: depflight.traceId,
+      resultIndex: depflight.resultIndex, // This key to get resultIndex in detail page
+      infantCount: depflight.infantCount,
+      is_domestic: depflight.is_domestic,
+      provider_id_enc: depflight.provider_id_enc,
+      returnId: '', // this.selectedRetFlight[0].id this is store in local data
+      cabin_class: depflight.cabinClass,
+      // trip_type: this.data.trip_type,
+      returnDate: DateTime.fromISO(retflight.flightStopSegments[0].depTime.toString()).toFormat('yyyy-MM-dd'),
+      returnProviderId: depflight.provider_id_enc,
+      returnTraceId: depflight.traceId,
+      returnWayFilename: depflight.oneWayfilename,
+      purchasePrice: depflight.tempSalePrice + retflight.tempSalePrice,
+      caching_file_name: depflight.caching_file_name,
+      return_caching_file_name: depflight.caching_file_name
+    };
+
+    this.matDialog
+      .open(BookNowDailogComponent, {
+        data: { data: json, supplier: depflight.supplier_name },
+        disableClose: true,
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res) {
+          // this.refreshItems();
+        }
+      });
+
+    // this.matDialog.open(BookingDialogComponent, {
+    //   data: { depflight: depflight, retflight: retflight, searchdateTime: this.searchdateTime, trip_type: this.trip_type, filename: this.filename, offervalue: this.offervalue, travellClass: this.cabinClassSearch },
+    //   disableClose: true,
+    //   panelClass: ''
+    // }).afterClosed().subscribe(res => {
+    // });
   }
 
   isSamePlanes(plan1, plan2): boolean {

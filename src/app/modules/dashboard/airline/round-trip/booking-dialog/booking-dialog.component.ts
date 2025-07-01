@@ -80,6 +80,7 @@ export class BookingDialogComponent {
         private cdr: ChangeDetectorRef,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
+        console.log('data');
     }
 
     ngOnInit(): void {

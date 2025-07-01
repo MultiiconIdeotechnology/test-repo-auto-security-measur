@@ -18,7 +18,7 @@
             </div>
             <div *ngFor="let flight of depFlights">
                 <div class="relative border overflow-hidden rounded-lg my-4 mobile:my-2  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer white-bg"
-                    [ngClass]="{'shadow-xl primary-border' : SelectedDepartureFlight?.id === flight.id, 'border-gray-border' : SelectedDepartureFlight?.id !== flight.id}"
+                    [ngClass]="{'shadow-xl primary-border bg-card' : SelectedDepartureFlight?.id === flight.id, 'border-gray-border' : SelectedDepartureFlight?.id !== flight.id}"
                     (click)="SelectedDepartureFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedDepartureFlight = flight">
                     <div class="px-5">
                         <div *ngIf="user.is_admin" class="triangle text-center opacity-50"
@@ -158,7 +158,7 @@
             </div>
             <div *ngFor="let flight of retFlights">
                 <div class="relative border overflow-hidden rounded-lg mobile:my-2 my-4  pt-3 mobile:px-2 mobile:pt-2 cursor-pointer white-bg"
-                    [ngClass]="{'shadow-xl primary-border' : SelectedReturnFlight?.id === flight.id, 'border-gray-border' : SelectedReturnFlight?.id !== flight.id}"
+                    [ngClass]="{'shadow-xl primary-border bg-card' : SelectedReturnFlight?.id === flight.id, 'border-gray-border' : SelectedReturnFlight?.id !== flight.id}"
                     (click)="SelectedReturnFlight?.id === flight.id ? toggleFlightDetails(flight) : SelectedReturnFlight = flight">
                     <div class="px-5">
                         <div *ngIf="user.is_admin" class="triangle text-center opacity-50"
@@ -279,11 +279,11 @@
     </div>
 
     <div *ngIf="SelectedDepartureFlight && SelectedReturnFlight"
-        class="fixed bottom-4 w-full max-w-[960px] mobile:right-0 mobile:flex mobile:items-center mobile:justify-center mobile:w-full mobile:left-0 mobile:max-w-full rounded-lg overflow-hidden ml-0 white-text z-99 shadow-[0_0_15px_0_rgba(73,108,150,0.7)]">
+        class="fixed bottom-4 w-full max-w-[900px] mobile:right-0 mobile:flex mobile:items-center mobile:justify-center mobile:w-full mobile:left-0 mobile:max-w-full rounded-lg overflow-hidden ml-0 white-text z-99 shadow-[0_0_15px_0_rgba(73,108,150,0.7)]">
         <mat-icon
             class="light-gray-text absolute right-1 mobile:right-4 mobile:top-1.5 top-1 icon-size-4 cursor-pointer"
             (click)="SelectedReturnFlight = null; SelectedDepartureFlight = null;">cancel</mat-icon>
-        <div class="flex items-center primary-bg py-4 w-full mobile:w-[96%] mobile:rounded-lg">
+        <div class="flex items-center bg-primary py-4 w-full mobile:w-[96%] mobile:rounded-lg">
             <div class="flex w-[calc(100%-200px)] mobile:w-full mobile:flex-col">
                 <div class="border-sky border-r mobile:border-dotted px-8 w-[50%] mobile:w-full mobile:px-3">
                     <div class="pb-3">Departure <span

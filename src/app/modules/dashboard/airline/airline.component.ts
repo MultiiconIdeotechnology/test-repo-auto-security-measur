@@ -837,54 +837,15 @@ export class AirlineComponent implements OnInit {
 
 
 
-        // this.supplierList = Array.from(
-        //   new Set(this.flights.map(flight => flight.supplier_name).filter(Boolean))
-        // ).map(name => ({
-        //   supplier_name: name,
-        //   isSelected: false
-        // }));
-        // console.log("this.supplierList", this.supplierList);
+        this.supplierList = Array.from(
+          new Set(this.flights.map(flight => flight.supplier_name).filter(Boolean))
+        ).map(name => ({
+          supplier_name: name,
+          isSelected: false
+        }));
+        console.log("this.supplierList", this.supplierList);
 
-        this.supplierList = [{
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        },
-        {
-          "supplier_name": "Tripjack_air",
-          "isSelected": false
-        }]
+       
 
 
         // to get the list for airport code to filter (departure and arrival)
