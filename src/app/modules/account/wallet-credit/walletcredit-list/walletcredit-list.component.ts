@@ -15,7 +15,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name, walletCreditPermissions } from 'app/security';
 import { WalletService } from 'app/services/wallet-credit.service';
 import { WalletCreditEntryComponent } from '../wallet-credit-entry/wallet-credit-entry.component';
@@ -28,6 +28,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { UserService } from 'app/core/user/user.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 import { CreditLogsComponent } from './credit-logs/credit-logs.component';
+import { cloneDeep } from 'lodash';
 
 
 @Component({
@@ -74,12 +75,18 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
   agentList: any[] = [];
   selectedAgent: any = {};
 
+  types = Types;
   cols: Column[] = [
-    { field: 'entry_by', header: 'Entry By' },
-    { field: 'sub_agent_name', header: 'Sub Agent Name' },
-    { field: 'sub_agent_code', header: 'Sub Agent Code' },
+    { field: 'entry_by', header: 'Entry By', type: Types.text },
+    { field: 'sub_agent_name', header: 'Sub Agent Name', type: Types.text },
+    { field: 'sub_agent_code', header: 'Sub Agent Code', type: Types.text },
   ];
-  _selectedColumns: Column[];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+
+
+
   isFilterShow: boolean = false;
   selectedAction: string;
   actionList: any[] = [
@@ -87,10 +94,12 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     { label: 'No', value: 'No' },
   ]
 
-  defaulterActionList:any[] = [
+  defaulterActionList: any[] = [
     { label: 'Yes', value: true },
     { label: 'No', value: false },
   ]
+
+
 
   constructor(
     private walletService: WalletService,
@@ -107,6 +116,22 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
+
+    this.selectedColumns = [
+      { field: 'master_agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+      { field: 'master_agent_name', header: 'Agent', type: Types.select },
+      { field: 'credit_balance', header: 'Balance', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'expiry_date', header: 'Expiry', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'payment_cycle_policy_type', header: 'Policy Type', type: Types.text },
+      { field: 'payment_cycle_policy', header: 'Policy', type: Types.text },
+      { field: 'outstanding_on_due_date', header: 'Outstanding', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'over_due_count', header: 'Over Due', type: Types.number, fixVal: 0, class: 'text-right' },
+      { field: 'is_defaulter', header: 'Defaulter', type: Types.boolean },
+      { field: 'entry_date_time', header: 'Entry', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'is_enable', header: 'Active', type: Types.boolean },
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit() {
@@ -129,9 +154,9 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
         resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
       }
       this.primengTable['filters'] = resp['table_config'];
-      this._selectedColumns = resp['selectedColumns'] || [];
-
+      // this.selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
 
@@ -159,23 +184,52 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       this.primengTable['filters'] = filterData['table_config'];
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
-      this._selectedColumns = filterData['selectedColumns'] || [];
-    }
-  }
-
-  get selectedColumns(): Column[] {
-    return this._selectedColumns;
-  }
-
-  set selectedColumns(val: Column[]) {
-    if (Array.isArray(val)) {
-      this._selectedColumns = this.cols.filter(col =>
-        val.some(selectedCol => selectedCol.field === col.field)
-      );
+      // this.selectedColumns = filterData['selectedColumns'] || [];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
     } else {
-      this._selectedColumns = [];
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
   }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+
+  // get selectedColumns(): Column[] {
+  //   return this._selectedColumns;
+  // }
+
+  // set selectedColumns(val: Column[]) {
+  //   if (Array.isArray(val)) {
+  //     this._selectedColumns = this.cols.filter(col =>
+  //       val.some(selectedCol => selectedCol.field === col.field)
+  //     );
+  //   } else {
+  //     this._selectedColumns = [];
+  //   }
+  // }
 
   refreshItems(event?: any): void {
     this.isLoading = true;
@@ -212,13 +266,13 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       .afterClosed()
       .subscribe((res) => {
         if (res) {
-            this.alertService.showToast(
-              'success',
-              'New record added',
-              'top-right',
-              true
-            );
-            this.refreshItems();
+          this.alertService.showToast(
+            'success',
+            'New record added',
+            'top-right',
+            true
+          );
+          this.refreshItems();
         }
       });
   }
@@ -294,9 +348,9 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
                   this.alertService.showToast('error', err);
                 }
               });
-              
-            }
-            
+
+          }
+
           // Method to execute a function after verifying OTP if needed
           this._userService.verifyAndExecute(
             { title: title },
@@ -306,7 +360,7 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       });
   }
 
-  creditLogs(record:any) {
+  creditLogs(record: any) {
     if (!Security.hasPermission(walletCreditPermissions.changeExpiryPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
@@ -314,11 +368,11 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
     this.matDialog
       .open(CreditLogsComponent, {
         data: record,
-        panelClass:'zero-dialog',
+        panelClass: 'zero-dialog',
         disableClose: true,
-        backdropClass:'custom-dialog-backdrop',
-        maxWidth:'1260px',
-        minWidth:'900px'
+        backdropClass: 'custom-dialog-backdrop',
+        maxWidth: '1260px',
+        minWidth: '900px'
       })
       .afterClosed()
       .subscribe((res) => {
@@ -409,6 +463,16 @@ export class WalletcreditListComponent extends BaseListingComponent implements O
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
     }
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 
 }
