@@ -1,6 +1,6 @@
 <div class="mx-auto pt-10 max-w-[1200px] min-w-[1200px]">
   <!-- Loader -->
-  <div class="absolute inset-x-0 top-0" *ngIf="isLoadingProcessing">
+  <div class="absolute inset-x-0 top-0 z-999" *ngIf="isLoadingProcessing">
     <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
   </div>
 
@@ -300,7 +300,7 @@
         <span *ngIf="is_search_complete">Total <span class="font-semibold text-lg"> {{loading ? '0':totalflights()}}
           </span> flights found</span>
         <span *ngIf="!is_search_complete" class="font-semibold flex items-center justify-center">
-          <!-- <mat-icon [svgIcon]="'heroicons_outline:arrow-path'" class="animate-spin theme-black-text icon-size-5"></mat-icon> -->
+          <mat-icon [svgIcon]="'heroicons_outline:arrow-path'" class=" theme-black-text icon-size-5" [ngClass]="{'animate-spin' : isLoadingProcessing }"></mat-icon>
           <span class="py-1 pl-4">Fetching best price</span>
         </span>
         <div *ngIf="is_search_complete" class="green-toggle" [matTooltip]="'Show Offer Price'"
