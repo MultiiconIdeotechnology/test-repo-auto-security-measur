@@ -266,16 +266,16 @@ export class RoundTripComponent implements OnChanges {
       infantCount: depflight.infantCount,
       is_domestic: depflight.is_domestic,
       provider_id_enc: depflight.provider_id_enc,
-      returnId: '', // this.selectedRetFlight[0].id this is store in local data
+      returnId: retflight.resultIndex, // this.selectedRetFlight[0].id this is store in local data
       cabin_class: depflight.cabinClass,
       // trip_type: this.data.trip_type,
       returnDate: DateTime.fromISO(retflight.flightStopSegments[0].depTime.toString()).toFormat('yyyy-MM-dd'),
-      returnProviderId: depflight.provider_id_enc,
-      returnTraceId: depflight.traceId,
+      returnProviderId: retflight.provider_id_enc,
+      returnTraceId: retflight.traceId,
       returnWayFilename: depflight.oneWayfilename,
       purchasePrice: depflight.tempSalePrice + retflight.tempSalePrice,
       caching_file_name: depflight.caching_file_name,
-      return_caching_file_name: depflight.caching_file_name
+      return_caching_file_name: retflight.caching_file_name
     };
 
     this.matDialog
