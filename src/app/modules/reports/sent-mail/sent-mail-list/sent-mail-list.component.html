@@ -27,6 +27,17 @@
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
+            <!-- Select Columns Button and Select Box Code -->
+            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                [disabled]="isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+                    (onChange)="onSelectedColumnsChange()" />
+            </p-overlayPanel>
+
             <!------Refresh------>
             <button class="ml-4" mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
                 (click)="refreshItems()">
@@ -49,126 +60,96 @@
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [columns]="selectedColumns" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['sender_email_address', 'status', 'email_send_to', 'msg_subject', 'fail_reason', 'send_date_time']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <!-- <th class="text-center left-[-1px]" pFrozenColumn>#</th> -->
-                    <th class="min-w-[50px] max-w-[50px] dark:bg-[#1e293b]" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [ngClass]="{'left-0': !frozenObj?.reference_no}">
+                    <!-- <th class="left-[-1px] text-center w-1 dark:bg-gray-800" *ngIf="isDisplayHashCol()" pFrozenColumn>
+                    </th> -->
+
+                    <th *ngFor="let col of columns; let isLast = last" [pSortableColumn]="col.field" pResizableColumn
+                        [ngClass]="{ 'w-full': isLast}" [class]="col.class">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col?.field" *ngIf="!col?.isDisableSort"/>
                     </th>
-                    <th pSortableColumn="sender_email_address" pResizableColumn>
-                        Sender Email <p-sortIcon field="sender_email_address" />
-                    </th>
-                    <th pSortableColumn="status" pResizableColumn>
-                        Status <p-sortIcon field="status" />
-                    </th>
-                    <th pSortableColumn="email_send_to" pResizableColumn>
-                        Email Send To <p-sortIcon field="email_send_to" />
-                    </th>
-                    <th pSortableColumn="msg_subject" pResizableColumn>
-                        Subject <p-sortIcon field="msg_subject" />
-                    </th>
-                    <th pSortableColumn="fail_reason" pResizableColumn>
-                        Fail Reason <p-sortIcon field="fail_reason" />
-                    </th>
-                    <th pSortableColumn="send_date_time" pResizableColumn>
-                        Send Date <p-sortIcon field="send_date_time" />
-                    </th>
+                   
                 </tr>
 
                 <tr *ngIf="isFilterShow">
-                    <th alignFrozen="left" pFrozenColumn  class="min-w-[50px] max-w-[50px]">
+                    <!-- <th class="left-[-1px] bg-gray-50 dark:bg-gray-800" pFrozenColumn></th> -->
+                    <th *ngFor="let col of columns">
+                        <ng-container *ngIf="!col?.isHideFilter">
+                            <!-- Text -->
+                            <p-columnFilter *ngIf="(col.type == types.text)" [type]="'text'" [field]="col.field"
+                                [placeholder]="'Search by '+ col.header" [ariaLabel]="'Filter '+ col.header"
+                                matchMode="contains" />
 
-                    </th>
+                            <p-columnFilter *ngIf="col.type == types.select && col.field == 'status' "
+                                [field]="col.field" matchMode="equals" [showMenu]="false">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                        (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                        appendTo="body">
+                                        <ng-template let-option pTemplate="item">
+                                            <p>{{option}}</p>
+                                        </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
 
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="sender_email_address"
-                            placeholder="Search by Sender Email" ariaLabel="Filter Sender Email" />
-                    </th>
-                    <th>
-                        <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
-                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
-                                    appendTo="body">
-                                    <ng-template let-option pTemplate="item">
-                                        <p>{{option}}</p>
-                                    </ng-template>
-                                </p-dropdown>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="equals" field="email_send_to"
-                            placeholder="Search by Email Send To" ariaLabel="Email Send To" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="equals" field="msg_subject"
-                            placeholder="Search by Subject" ariaLabel="Subject" />
-                    </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="equals" field="fail_reason"
-                            placeholder="Search by Fail Reason" ariaLabel="Fail Reason" />
-                    </th>
-                    <th>
-                        <p-columnFilter field="send_date_time" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                    appendTo="body" placeholder="Search by Date">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
-                    </th>
+                            <!--date picker-->
+                            <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">
+                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                    <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" [ngModel]="value"
+                                        appendTo="body" placeholder="Search by Signup">
+                                    </p-calendar>
+                                </ng-template>
+                            </p-columnFilter>
+                        </ng-container>
+                    </th>              
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td alignFrozen="left" pFrozenColumn class="text-center">
-                        <span (click)="template(element.id)">
-                            <mat-icon class="mat-18 text-blue-800 mt-1 icon-size-5 cursor-pointer">visibility
-                            </mat-icon>
-                        </span>
-                    </td>
-                    <td>
-                        <span>
-                            {{element.sender_email_address || "-"}}
-                        </span>
-                    </td>
-                    <td>
-                        <span [ngClass]="getStatusColor(element.status)">
-                            {{element.status || "-"}}
-                        </span>
-                    </td>
-                    <td>
-                        {{element.email_send_to || "-"}}
-                    </td>
-                    <td>
-                        {{element.msg_subject || "-"}}
-                    </td>
-                    <td>
-                        {{element.fail_reason || "-"}}
-                    </td>
-                    <td>
-                        {{(element.send_date_time | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
-                    </td>
+                    <td *ngFor="let col of columns" [ngClass]="col.class">
+                        <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
+                            <span
+                                [ngClass]="col.isCustomColor ? (getStatusColor(element[col.field]) || getStatusColorP(element[col.field])) : ''">
+                                {{ element[col.field] || '-' }}
+                            </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="col.type == types.link">
+                            <span (click)="template(element.id)">
+                                <mat-icon class="mat-18 text-blue-800 mt-1 icon-size-5 cursor-pointer">visibility
+                                </mat-icon>
+                            </span>
+                        </ng-container>
+
+
+                        <ng-container *ngIf="col.type == types.date">
+                            {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
+                        </ng-container>
+                    </td>              
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="20" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
+    </div>
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
     </div>
 </div>

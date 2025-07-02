@@ -20,7 +20,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatDialog } from '@angular/material/dialog';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { module_name, filter_module_name } from 'app/security';
 import { AgentService } from 'app/services/agent.service';
 import { EntityService } from 'app/services/entity.service';
@@ -30,6 +30,7 @@ import { Subscription } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { ViewTemplateComponent } from '../view-template/view-template.component';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-sent-mail-list',
@@ -70,12 +71,17 @@ export class SentMailListComponent extends BaseListingComponent {
   dataList = [];
   total = 0;
   isFilterShow: boolean;
-  cols: any;
   agentList: any[];
   selectedAgent: any;
   _selectedColumns: any;
 
   statusList = ['Success', 'Pending', 'Failed']
+
+  types = Types;
+  cols: Column[] = [];
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
 
   constructor(
     private matDialog: MatDialog,
@@ -92,6 +98,18 @@ export class SentMailListComponent extends BaseListingComponent {
     this.sortDirection = 'desc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
+
+    this.selectedColumns = [
+      { field: 'id', header: '#', type: Types.link, isHideFilter: true, isDisableSort: true },
+      { field: 'sender_email_address', header: 'Sender Email', type: Types.text },
+      { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
+      { field: 'email_send_to', header: 'Email Send To', type: Types.text },
+      { field: 'msg_subject', header: 'Subject', type: Types.text },
+      { field: 'fail_reason', header: 'Fail Reason', type: Types.text },
+      { field: 'send_date_time', header: 'Send Date', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+    ];
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit() {
@@ -117,6 +135,7 @@ export class SentMailListComponent extends BaseListingComponent {
       this.primengTable['filters'] = resp['table_config'];
       this._selectedColumns = resp['selectedColumns'] || [];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.primengTable._filter();
     });
   }
@@ -139,9 +158,37 @@ export class SentMailListComponent extends BaseListingComponent {
       }
 
       this.primengTable['filters'] = filterData['table_config'];
-      this._selectedColumns = filterData['selectedColumns'] || [];
+      //this._selectedColumns = filterData['selectedColumns'] || [];
       this.isFilterShow = true;
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col;
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  onSelectedColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
   }
 
   refreshItems(event?: any) {
@@ -169,7 +216,7 @@ export class SentMailListComponent extends BaseListingComponent {
     });
   }
 
-  template(record: any){
+  template(record: any) {
     this.matDialog.open(ViewTemplateComponent, {
       panelClass: 'app-view-for-template',
       data: record,
@@ -218,5 +265,14 @@ export class SentMailListComponent extends BaseListingComponent {
         ],
         data.data, "Sent Mail", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
     });
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
   }
 }
