@@ -107,7 +107,7 @@
                         [ngClass]="{ 'w-full': isLast}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
-                    </th>                
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -261,7 +261,7 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns">
                 <tr>
-                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn  *ngIf="isDisplayHashCol()">
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
@@ -293,7 +293,8 @@
                     <td *ngFor="let col of columns" [ngClass]="col.class">
 
                         <ng-container *ngIf="(col.type === types.text || col.type === types.select)">
-                            <span [ngClass]="col.isCustomColor ? (getStatusColor(element[col.field]) || getStatusColorP(element[col.field])) : ''">
+                            <span
+                                [ngClass]="col.isCustomColor ? (getStatusColor(element[col.field]) || getStatusColorP(element[col.field])) : ''">
                                 {{ element[col.field] || '-' }}
                             </span>
                         </ng-container>
@@ -307,22 +308,24 @@
                         </ng-container>
 
                         <ng-container *ngIf="col.type == types.link">
-                           <span class="inline-block cursor-pointer border-b border-gray-500"
-                            (click)="callHistory(element)">
+                            <span class="inline-block cursor-pointer border-b border-gray-500"
+                                (click)="callHistory(element)">
                                 {{element[col.field]}}
                             </span>
                         </ng-container>
-                    </td>               
+                    </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-                <tr class="h-14">
-                    <td colspan="18" class="text-center font-semibold text-lg">
-                        {{getNodataText()}}
+                <tr class="h-14" *ngIf="selectedColumns?.length">
+                    <td [attr.colspan]="displayColCount()" class="text-center font-semibold text-lg">{{getNodataText()}}
                     </td>
                 </tr>
             </ng-template>
         </p-table>
+    </div>
+    <div class="text-center mt-5" *ngIf="selectedColumns && !selectedColumns?.length"> No column to display! Please
+        Select a column
     </div>
 </div>
