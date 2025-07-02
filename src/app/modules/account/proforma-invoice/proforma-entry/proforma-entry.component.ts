@@ -112,8 +112,8 @@ export class ProformaEntryComponent {
             { name: 'Invoice No.', value: this.referralData.invoice_no },
             { name: 'Invoice Date', value: this.referralData.invoice_date ? DateTime.fromISO(this.referralData.invoice_date).toFormat('dd-MM-yyyy').toString() : '' },
             { name: 'Currency', value: this.referralData.currency },
-            { name: 'tax', value: this.referralData.tax },
             { name: 'Taxable Amount', value: this.referralData.taxable_amount },
+            { name: 'Tax', value: this.referralData.tax },
             { name: 'Total Amount', value: this.referralData.total_amount },
           ]
         }
@@ -138,7 +138,7 @@ export class ProformaEntryComponent {
             this.compnyAllList = data
           }
           this.compnyList = data
-          this.formGroup.get('company_id').setValue(this.compnyList[0]?.id);
+          this.formGroup.get('company_id').setValue(this.compnyList[0]?.company_id);
         }
       });
 
