@@ -106,7 +106,7 @@ export class AccountService {
     return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterReport", model);
   }
 
-  manageServiceFee(model) {
+  manageServiceFee(model): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "AirBooking/manageServiceFee", model);
   }
 

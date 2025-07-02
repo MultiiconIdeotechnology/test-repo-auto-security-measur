@@ -20,7 +20,7 @@ import { Linq } from 'app/utils/linq';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { AgentService } from 'app/services/agent.service';
-import { Subscription } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
@@ -32,6 +32,7 @@ import { AmendmentRequestEntryComponent } from 'app/modules/booking/amendment-re
 import { SupplierService } from 'app/services/supplier.service';
 import { dateRange } from 'app/common/const';
 import { CommonUtils } from 'app/utils/commonutils';
+import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 
 @Component({
   selector: 'app-purchase-register-2.0',
@@ -82,9 +83,9 @@ export class PurchaseRegisterComponent
   isDateChange: boolean = false;
   supplierList: any = [];
   selectedTab = 0;
-  lastSearchString:any = {
-    bontonFilter:'',
-    dmccFilter:''
+  lastSearchString: any = {
+    bontonFilter: '',
+    dmccFilter: ''
   }
 
   tableTypeList: any = [{ label: 'Bonton', value: 'bonton', index: 0 }, { label: 'Bonton DMCC', value: 'dmcc', index: 1 }];
@@ -105,6 +106,7 @@ export class PurchaseRegisterComponent
   constructor(
     private _filterService: CommonFilterService,
     private supplierService: SupplierService,
+    private sidebarDialogService: SidebarCustomModalService,
   ) {
     super('');
     this.dateRanges = CommonUtils.valuesArray(dateRange);
@@ -122,6 +124,11 @@ export class PurchaseRegisterComponent
 
     this.endDate.valueChanges.subscribe(end => {
       this.isDateChange = true;
+    });
+
+    this.sidebarDialogService.onModalChange().pipe(takeUntil(this._unsubscribeAll)).subscribe((res: any) => {
+      if (res?.key == "manager-service-status")
+        this.onRefreshCall();
     });
   }
 
@@ -148,7 +155,7 @@ export class PurchaseRegisterComponent
     this.currentModule = module_name[this.moduleMap[this.activeTab].module_name];
     this.currentFilterModule = filter_module_name[this.moduleMap[this.activeTab].filter_table_name];
 
-    if(this.activeTab == 0){
+    if (this.activeTab == 0) {
       this.searchInputControl.patchValue(this.lastSearchString['bontonFilter']);
     } else {
       this.searchInputControl.patchValue(this.lastSearchString['dmccFilter']);
@@ -192,7 +199,7 @@ export class PurchaseRegisterComponent
       }
     } else if (this.activeTab == 1) {
       this.lastSearchString.bontonFilter = val; // remove this line if filter value needed to be saved for dmcc 
-       this.lastSearchString.dmccFilter = val;  
+      this.lastSearchString.dmccFilter = val;
       this.dmccTableComponent.searchInputControl.patchValue(val);
       if (val == '') {
         this.dmccTableComponent.refreshItems();
