@@ -96,8 +96,8 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
 
     types = Types;
     cols: Column[] = [
-        { field: 'lead_assign_by', header: 'Assign By' },
-        { field: 'lead_assign_by_date', header: 'Assign By Date' },
+        { field: 'lead_assign_by', header: 'Assign By', type: Types.text },
+        { field: 'lead_assign_by_date', header: 'Assign By Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
     ];
     selectedColumns: Column[] = [];
     exportCol: Column[] = [];
@@ -163,7 +163,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
         };
         this._filterService.applyDefaultFilter(this.filter_table_name);
         this.selectedColumns = [
-            { field: 'calls', header: 'Calls', isHideFilter: true, type: Types.number, class: 'text-center' },
+            { field: 'calls', header: 'Calls', isHideFilter: true, type: Types.link, class: 'text-center' },
             { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'priority_text', header: 'Priority', type: Types.select, isCustomColor: true },
             { field: 'agency_name', header: 'Agency', type: Types.text },
@@ -177,7 +177,7 @@ export class LeadRegisterComponent extends BaseListingComponent implements OnDes
             { field: 'country_name', header: 'Country', type: Types.text },
             { field: 'kycStarted', header: 'KYC Started', type: Types.boolean },
             { field: 'lastCallFeedback', header: 'Last Feedback', type: Types.text },
-            { field: 'lastCall', header: 'Last Call', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'lastCall', header: 'Last Call', type: Types.date, dateFormat: 'dd-MM-yyyy' },
             { field: 'leadDate', header: 'Lead Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' }
         ];
         this.cols.unshift(...this.selectedColumns);

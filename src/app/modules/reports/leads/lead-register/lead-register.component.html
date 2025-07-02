@@ -107,66 +107,7 @@
                         [ngClass]="{ 'w-full': isLast}" [class]="col.class">
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
-                    </th>
-                    <!-- <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th class="min-w-[110px] text-center dark:bg-[#1e293b]" pSortableColumn="calls" pResizableColumn
-                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.calls"
-                        [ngClass]="{'left-0': !frozenObj?.calls}">
-                        Calls <p-sortIcon field="calls" />
-                        <span class="float-right" (click)="isFrozenColumn('calls');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.calls" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.calls" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                    <th pSortableColumn="status" pResizableColumn>
-                        Status <p-sortIcon field="status" />
-                    </th>
-                    <th pSortableColumn="priority_text" pResizableColumn>
-                        Priority <p-sortIcon field="priority_text" />
-                    </th>
-                    <th pSortableColumn="agency_name" pResizableColumn>
-                        Agency <p-sortIcon field="agency_name" />
-                    </th>
-                    <th pSortableColumn="rmName" pResizableColumn>
-                        RM <p-sortIcon field="rmName" />
-                    </th>
-                    <th pSortableColumn="lead_type" pResizableColumn>
-                        Type <p-sortIcon field="lead_type" />
-                    </th>
-                    <th pSortableColumn="lead_source" pResizableColumn>
-                        Source <p-sortIcon field="lead_source" />
-                    </th>
-                    <th pSortableColumn="contact_person_name" pResizableColumn>
-                        Contact Person <p-sortIcon field="contact_person_name" />
-                    </th>
-                    <th pSortableColumn="contact_person_email" pResizableColumn>
-                        Email <p-sortIcon field="contact_person_email" />
-                    </th>
-                    <th pSortableColumn="contact_person_mobile" pResizableColumn>
-                        Mobile <p-sortIcon field="contact_person_mobile" />
-                    </th>
-                    <th pSortableColumn="cityName" pResizableColumn>
-                        City <p-sortIcon field="cityName" />
-                    </th>
-                    <th pSortableColumn="country_name" pResizableColumn>
-                        Country <p-sortIcon field="country_name" />
-                    </th>
-                    <th pSortableColumn="kycStarted" pResizableColumn>
-                        KYC Started <p-sortIcon field="kycStarted" />
-                    </th>
-                    <th pSortableColumn="lastCallFeedback" pResizableColumn>
-                        Last Feedback <p-sortIcon field="lastCallFeedback" />
-                    </th>
-                    <th pSortableColumn="lastCall" pResizableColumn>
-                        Last Call <p-sortIcon field="lastCall" />
-                    </th>
-                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'"
-                        pSortableColumn="leadDate" pResizableColumn>
-                        Lead Date <p-sortIcon field="leadDate" />
-                    </th>
-                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
-                        {{col.header}} <p-sortIcon [field]="col.field" />
-                    </th> -->
+                    </th>                
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -361,80 +302,17 @@
                             {{ element[col.field] ? 'Yes' : 'No' }}
                         </ng-container>
 
-
                         <ng-container *ngIf="col.type == types.dateTime || col.type == types.date">
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
 
-                        <ng-container *ngIf="col.type == types.number">
-                            <span>
-                                {{element[col.field] ? (element[col.field]).toFixed(col?.fixVal || 0) :
-                                (0).toFixed(col?.fixVal || 0)}}
+                        <ng-container *ngIf="col.type == types.link">
+                           <span class="inline-block cursor-pointer border-b border-gray-500"
+                            (click)="callHistory(element)">
+                                {{element[col.field]}}
                             </span>
                         </ng-container>
-
-                    </td>
-                    <!-- <td class="text-center" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.calls">
-                        <span class="inline-block cursor-pointer border-b border-gray-500"
-                            (click)="callHistory(element)">
-                            {{element['calls']}}
-                        </span>
-                    </td>
-                    <td>
-                        <span [ngClass]="getStatusColor(element.status)">{{element.status || "-"}}</span>
-                    </td>
-                    <td>
-                        <span [ngClass]="getStatusColorP(element.priority_text)">{{ element.priority_text ||
-                            "-"}}</span>
-                    </td>
-                    <td>
-                        {{element.agency_name || "-"}}
-                    </td>
-                    <td>
-                        {{element.rmName || "-"}}
-                    </td>
-                    <td>
-                        {{element.lead_type || "-"}}
-                    </td>
-                    <td>
-                        {{element.lead_source || "-"}}
-                    </td>
-                    <td>
-                        {{element.contact_person_name || "-"}}
-                    </td>
-                    <td>
-                        {{element.contact_person_email || "-"}}
-                    </td>
-                    <td>
-                        {{element.contact_person_mobile || "-"}}
-                    </td>
-                    <td>
-                        {{element.cityName || "-"}}
-                    </td>
-                    <td>
-                        {{element.country_name || "-"}}
-                    </td>
-                    <td>
-                        {{element.kycStarted ? 'Yes' : 'No'}}
-                    </td>
-                    <td>
-                        {{element.lastCallFeedback || "-"}}
-                    </td>
-                    <td>
-                        {{(element.lastCall | date: 'dd-MM-yyyy') || "-"}}
-                    </td>
-                    <td>
-                        {{(element.leadDate | date: 'dd-MM-yyyy') || "-"}}
-                    </td>
-                    <td *ngFor="let col of columns">
-                        <ng-container *ngIf="col.field == 'lead_assign_by'">
-                            {{element[col.field] || "System"}}
-                        </ng-container>
-
-                        <ng-container *ngIf="col.field == 'lead_assign_by_date'">
-                            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
-                        </ng-container>
-                    </td> -->
+                    </td>               
                 </tr>
             </ng-template>
 
