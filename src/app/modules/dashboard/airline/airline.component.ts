@@ -36,6 +36,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { EnumeratePipe } from 'app/enurable.pipe';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RoundTripComponent } from './round-trip/round-trip.component';
+import { PointListComponent } from './point-list/point-list.component';
 
 @Component({
   selector: 'app-airline',
@@ -990,17 +991,17 @@ export class AirlineComponent implements OnInit {
   }
 
   Points(v?): void {
-    // this.matDialog.open(PointListComponent, {
-    //   data: { layoverPoints: this.layoverPoints, name: v },
-    //   panelClass: [CommonUtils.isMobileView() ? 'full-screen-model' : ''],
-    //   disableClose: true
-    // }).afterClosed().subscribe(res => {
-    //   if (v === 'layover') {
-    //     this.selectedLPoints = res;
-    //     this.lPoint = this.selectedLPoints;
-    //   }
-    //   this.DataFilter(false, null, 'priceRange');
-    // })
+    this.matDialog.open(PointListComponent, {
+      data: { layoverPoints: this.layoverPoints, name: v },
+      panelClass: '',
+      disableClose: true
+    }).afterClosed().subscribe(res => {
+      if (v === 'layover') {
+        this.selectedLPoints = res;
+        this.lPoint = this.selectedLPoints;
+      }
+      this.DataFilter(false, null, 'priceRange');
+    })
   }
 
   DataFilter(isPaginatorEvent?: boolean, event?: any, key?: string): void {

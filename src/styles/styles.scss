@@ -1231,9 +1231,9 @@ div:where(.swal2-container) button:where(.swal2-close) {
   .fare_cal .p-calendar .p-inputtext.p-component {
     border: none;
     background: transparent;
-    color: #ffffff;
+    // color: #ffffff;
     padding: 0px;
-    font-weight: 400;
+    font-weight: 600;
     cursor: pointer;
     padding-top: 2px;
     border-radius: 0px;
@@ -1269,16 +1269,20 @@ div:where(.swal2-container) button:where(.swal2-close) {
     margin: 2px auto;
   }
 
+   .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr td .p-ripple.p-disabled{
+    pointer-events: none;
+   }
+
   .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-header .p-datepicker-title button {
     font-size: 14px;
     font-weight: 600;
-    color: #ffffff;
+    // color: #ffffff;
   }
 
   .fare_cal .p-calendar .p-datepicker.p-component .p-datepicker-group-container .p-datepicker-group .p-datepicker-calendar-container .p-datepicker-calendar tbody tr td .p-ripple.p-element span:nth-child(1) {
     background: transparent;
     font-weight: 600;
-    color: #ffffff;
+    // color: #ffffff;
     font-size: 14px;
   }
 

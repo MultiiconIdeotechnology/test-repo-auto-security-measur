@@ -1,6 +1,6 @@
 <div class="mx-auto pt-10 max-w-[1200px] min-w-[1200px]">
   <!-- Loader -->
-  <div class="absolute inset-x-0 top-0 z-999" *ngIf="isLoadingProcessing">
+  <div class="absolute inset-x-0 top-0 z-99999" *ngIf="isLoadingProcessing">
     <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
   </div>
 
@@ -94,7 +94,7 @@
           *ngIf="formGroup.get('type').value != 'ow' && formGroup.get('type').value != 'rt'">
           <span class="text-gray text-md text-secondary">Departure</span>
           <div class="flex flex-row">
-            <input class="font-semibold" [min]="minDate" (click)="picker.open()" [readonly]="true"
+            <input class="font-semibold dark:text-white" [min]="minDate" (click)="picker.open()" [readonly]="true"
               [matDatepicker]="picker" formControlName="departureDate" />
           </div>
           <mat-datepicker #picker></mat-datepicker>
@@ -156,117 +156,7 @@
         </div>
       </div>
 
-      <!-- <div class="w-full space-y-3 flex flex-col" *ngIf="formGroup.get('type').value === 'mc' && formDataList">
-        <div class="w-full flex" *ngFor="let formData of formDataList; let i = index">
-          <div class="flex w-[calc(100%-260px)] pr-3">
-            <div class="flex flex-row items-center w-[60%] pr-3">
-              <div class="flex flex-col min-w-[49%] max-w-[49%] w-full p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg -mr-3 cursor-pointer"
-                (click)="openFromMultiCityDropdown(i)">
-                <span class="text-gray text-md text-secondary">From</span>
-                <mat-select #fromMultiCitySelect class="font-semibold" [ngModelOptions]="{ standalone: true }"
-                  [(ngModel)]="formData.fromCity" [compareWith]="compareWith" required>
-                  <mat-option>
-                    <ngx-mat-select-search placeholderLabel="Search City" noEntriesFoundLabel="'no matching city found'"
-                      [(ngModel)]="formData.filterfrom" [ngModelOptions]="{
-                                                standalone: true
-                                            }" (input)="
-                                                filterfrom(
-                                                    $event.target.value,
-                                                    formData,
-                                                    'from'
-                                                )
-                                            ">
-                    </ngx-mat-select-search>
-                  </mat-option>
-                  <mat-option *ngFor="let ct of formData.fromListData" [value]="ct">
-                    <div class="flex flex-col h-15 justify-center">
-                      <span class="font-medium">{{ ct.display_name }},
-                        {{ ct.country }}</span>
-                      <span class="text-sm text-gray -mt-1">{{ ct.airport_name }}</span>
-                    </div>
-                  </mat-option>
-                </mat-select>
-              </div>
-
-              <div (click)="switch(i)"
-                class="flex flex-row justify-center items-center w-9 h-9 bg-card rounded-full z-20 cursor-pointer"
-                [matTooltip]="'Switch'">
-                <mat-icon svgIcon="heroicons_outline:arrows-right-left" class="primary-text icon-size-4"></mat-icon>
-              </div>
-
-              <div
-                class="flex flex-col min-w-[49%] max-w-[49%] p-3 pl-4 items-start dark:bg-[#0f172a] bg-gray-200 rounded-lg -ml-3 cursor-pointer"
-                (click)="openToMultiCityDropdown(i)">
-                <span class="text-gray text-md text-secondary">To</span>
-                <mat-select #toMultiCitySelect class="font-semibold" [ngModelOptions]="{ standalone: true }"
-                  [(ngModel)]="formData.toCity" [compareWith]="compareWith" required
-                  (ngModelChange)="changeValue($event, i, 'to')">
-                  <mat-option>
-                    <ngx-mat-select-search placeholderLabel="Search City" noEntriesFoundLabel="'no matching city found'"
-                      [(ngModel)]="formData.filterto" [ngModelOptions]="{
-                                                standalone: true
-                                            }" (input)="
-                                                filterfrom(
-                                                    $event.target.value,
-                                                    formData,
-                                                    'to'
-                                                )
-                                            ">
-                    </ngx-mat-select-search>
-                  </mat-option>
-                  <mat-option *ngFor="let ct of formData.toListData" [value]="ct">
-                    <div class="flex flex-col h-15 justify-center">
-                      <span class="font-medium">{{ ct.display_name }},
-                        {{ ct.country }}</span>
-                      <span class="text-sm text-gray -mt-1">{{ ct.airport_name }}</span>
-                    </div>
-                  </mat-option>
-                </mat-select>
-              </div>
-            </div>
-
-            <div class="flex flex-row items-center space-x-3 w-[40%]">
-              <div class="flex flex-col w-full dark:bg-[#0f172a] bg-gray-200 rounded-lg p-3">
-                <span class="text-gray text-md text-secondary">Departure</span>
-                <div class="flex flex-row" (click)="picker.open()">
-                  <input class="font-semibold" [ngModelOptions]="{ standalone: true }" [min]="
-                                            i == 0
-                                                ? minDate
-                                                : formDataList[i - 1]
-                                                      ?.departureDate
-                                        " [readonly]="true" [matDatepicker]="picker"
-                    [(ngModel)]="formData.departureDate" (ngModelChange)="changeDate($event, i)" />
-                </div>
-                <mat-datepicker #picker></mat-datepicker>
-              </div>
-            </div>
-          </div>
-
-          <div *ngIf="i === 0" class="flex flex-col flex-grow p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg w-[240px]">
-            <span class="text-gray text-md text-secondary">Travellers | Class | Fare</span>
-            <span
-              [matTooltip]="formGroup.get('adult').value + formGroup.get('child').value + formGroup.get('infant').value + 'Pax, ' +  formGroup.get('cabinClass').value + ', '+ formGroup.get('fareType').value "
-              class="font-semibold cursor-pointer" (click)="travellersClass()">{{
-              formGroup.get("adult").value +
-              formGroup.get("child").value +
-              formGroup.get("infant").value
-              }}
-              Pax, {{ formGroup.get("cabinClass").value }}, {{ formGroup.get("fareType").value }}</span>
-          </div>
-
-          <div *ngIf="i != 0 && i === formDataList.length - 1" class="flex items-center space-x-1">
-            <button *ngIf="i > 1" mat-flat-button class="min-h-8 min-w-12 px-1 rounded-md bg-transparent"
-              (click)="removeCity(i)">
-              <mat-icon class="material-symbols-outlined primary-text"><span
-                  class="primary-text text-3xl">close</span></mat-icon>
-            </button>
-            <button *ngIf="i < 4" class="!border primary-border bg-transparent px-4 h-8 min-h-8 rounded-md"
-              (click)="addCity(i)">
-              <span class="primary-text font-medium">Add City</span>
-            </button>
-          </div>
-        </div>
-      </div> -->
+     
 
       <div class="flex flex-col flex-grow p-3 dark:bg-[#0f172a] bg-gray-200 rounded-lg"
         *ngIf="formGroup.get('type').value != 'mc' && formGroup.get('type').value != 'gi'">
@@ -300,7 +190,8 @@
         <span *ngIf="is_search_complete">Total <span class="font-semibold text-lg"> {{loading ? '0':totalflights()}}
           </span> flights found</span>
         <span *ngIf="!is_search_complete" class="font-semibold flex items-center justify-center">
-          <mat-icon [svgIcon]="'heroicons_outline:arrow-path'" class=" theme-black-text icon-size-5" [ngClass]="{'animate-spin' : isLoadingProcessing }"></mat-icon>
+          <mat-icon [svgIcon]="'heroicons_outline:arrow-path'" class=" theme-black-text icon-size-5"
+            [ngClass]="{'animate-spin' : isLoadingProcessing }"></mat-icon>
           <span class="py-1 pl-4">Fetching best price</span>
         </span>
         <div *ngIf="is_search_complete" class="green-toggle" [matTooltip]="'Show Offer Price'"
@@ -390,10 +281,32 @@
                   Return Journey
                 </span>
               </div>
-
+              <div class="sub-title">
+                <span class="font-semibold pb-2 flex">
+                  <span class="text-lg" *ngIf="trip_type !== 'RETURN'">{{
+                    filter.value[0].title}}</span>
+                  <span class="text-lg" *ngIf="trip_type === 'RETURN'">
+                    <span *ngIf="(i === 0)||(i === 3)">{{ filter.value[0].title}}</span>
+                    <span *ngIf="i === 1">{{ filter.value[0].title}} from
+                      {{this.formDataList[0].fromCity?.city}}</span>
+                    <span *ngIf="i === 2">{{ filter.value[0].title}} at
+                      {{this.formDataList[0].toCity?.city}}</span>
+                    <span *ngIf="i === 4">{{ filter.value[0].title}} from
+                      {{this.formDataList[0].toCity?.city}}</span>
+                    <span *ngIf="i === 5">{{ filter.value[0].title}} at
+                      {{this.formDataList[0].fromCity?.city}}</span>
+                  </span>
+                </span>
+                <div class="flex justify-between items-center" *ngFor="let f of filter.value">
+                  <mat-checkbox [(ngModel)]="f.is_selected" (change)="DataFilter()">
+                    <span> {{ f.name }}</span>
+                  </mat-checkbox>
+                </div>
+              </div>
               <div class="sub"></div>
             </div>
 
+            <!-- Arrival Airports -->
             <ng-container
               *ngIf="(i == 2 && arrivalAirportObj?.arrivalAirport?.length > 1) || (i == 5 && arrivalAirportObj?.retarrivalAirport?.length > 1)">
               <div class="border-t border-dashed border-gray-border w-full pt-3 px-4">
@@ -600,13 +513,15 @@
       <!------One Way Fare Date Calendar-------->
       <div *ngIf=" flights.length > 0">
         <div class="flex flex-col rounded-lg mb-0 relative bg-card "
-          style="box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);" [ngClass]="supplierList.length > 7 ? 'px-10 py-[10px]': 'py-[10px]'">
+          style="box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);"
+          [ngClass]="supplierList.length > 7 ? 'px-10 py-[10px]': 'py-[10px]'">
           <ngx-slick-carousel class="carousel fixedDepartCarousel pr-3" #slickModal4="slick-carousel"
             [config]="fixedFareDateSlideConfig">
             <div ngxSlickItem *ngFor="let data of supplierList; let i = index; let last = last;"
               class="theme-black-text mr-0 font-medium text-base   text-center cursor-pointer"
               [ngClass]="[contents ? 'pointer-events-none opacity-90' : '', !last ? 'border-r dark:border-r-gray-600' : '']">
-              <div class="grid p-2 px-5" (click)="supplierFilter(data)" [ngClass]="{'dark:bg-primary bg-gray-200 rounded-lg mx-2': data.isSelected }">
+              <div class="grid p-2 px-5" (click)="supplierFilter(data)"
+                [ngClass]="{'dark:bg-primary bg-gray-200 rounded-lg mx-2': data.isSelected }">
                 <span class="dark:text-white text-sm font-semibold">{{data.supplier_name}} </span>
               </div>
             </div>
