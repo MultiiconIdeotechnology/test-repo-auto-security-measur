@@ -1,3 +1,10 @@
+    <div class="flex flex-col flex-auto min-w-0 sm:overflow-hidden dark:bg-transparent">
+
+    <p-overlayPanel #op>
+        <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+            [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns"
+            (onChange)="onColumnsChange()" />
+    </p-overlayPanel>
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
         <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
@@ -216,5 +223,5 @@
             </ng-template>
         </p-table>
     </div>
-
+</div>
 <!-- </div> -->

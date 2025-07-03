@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { module_name, Security, saleProductPermissions, filter_module_name, messages } from 'app/security';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
@@ -28,6 +28,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AgentProductInfoComponent } from 'app/modules/crm/agent/product-info/product-info.component';
 import { Linq } from 'app/utils/linq';
 import { Routes } from 'app/common/const';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 @Component({
     selector: 'app-tech-service',
     standalone: true,
@@ -61,6 +63,7 @@ import { Routes } from 'app/common/const';
 export class TechServiceComponent extends BaseListingComponent {
     @Input() isFilterShow: boolean = false;
     @Output() isFilterShowEvent = new EventEmitter(false);
+    @ViewChild('op') overlayPanel!: OverlayPanel;
     dataList = [];
     total = 0;
     module_name = module_name.products_tech_service;
@@ -82,6 +85,17 @@ export class TechServiceComponent extends BaseListingComponent {
         Expired: 'text-red-800'
     }
     itemStatusList: any[] = ['Inprocess', 'Pending', 'Blocked', 'Delivered'];
+
+    index = {
+        installment_amount: -1,
+        due_Amount: -1
+    };
+    types = Types;
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+
     constructor(
         private productTechService: ProductTechService,
         private _userService: UserService,
@@ -103,10 +117,35 @@ export class TechServiceComponent extends BaseListingComponent {
             .subscribe((user: any) => {
                 this.user = user;
             });
+        this.selectedColumns = [
+            { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agency_name', header: 'Agent', type: Types.select },
+            { field: 'rm', header: 'RM', type: Types.select },
+            { field: 'product', header: 'Product name', type: Types.link },
+            { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'installment_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+            { field: 'due_Amount', header: 'Due Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+            { field: 'installment_date', header: 'Installment Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
 
     ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            if (resp['gridName'] != this.filter_table_name) return;
+            this.activeFiltData = resp;
+            this.sortColumn = resp['sortColumn'];
+            //this.selectDateRanges(resp['table_config']);
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            this.primengTable['filters'] = resp['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+            this.primengTable._filter();
+        });
+
         this.agentList = this._filterService.agentListByValue;
         this.employeeList = this._filterService.rmListByValue;
 
@@ -136,7 +175,57 @@ export class TechServiceComponent extends BaseListingComponent {
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+
+        this.getColIndex();
+    }
+
+    getColIndex(): void { //  add new
+        this.index.installment_amount = this.selectedColumns.findIndex((item: any) => item.field == 'installment_amount');
+        this.index.due_Amount = this.selectedColumns.findIndex((item: any) => item.field == 'due_Amount');
+    }
+
+    isAnyIndexMatch(): boolean { //  add new
+        const len = this.selectedColumns?.length - 1;
+        return len == this.index.installment_amount || len == this.index.due_Amount;
+    }
+
+    isDisplayFooter(): boolean { //  add new
+        return this.selectedColumns.some(x => x.field == 'installment_amount' || x.field == 'tds' || x.field == 'due_Amount');
+    }
+
+    isNotDisplay(field: string): boolean { //  add new
+        return field != "installment_amount" && field != "tds" && field != "due_Amount"
+    }
+
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     refreshItems(event?: any): void {
@@ -275,6 +364,17 @@ export class TechServiceComponent extends BaseListingComponent {
 
     ngOnDestroy(): void {
         this.settingsUpdatedSubscription.unsubscribe();
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 
 }

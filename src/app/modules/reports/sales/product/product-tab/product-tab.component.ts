@@ -144,7 +144,7 @@ export class ProductTabComponent extends BaseListingComponent {
   }
 
    get isMoreColumnsDispley(): boolean {
-    return this.activeTab != 0 && this.activeTab != 2 && this.activeTab != 3;
+    return this.activeTab != 0;
   }
 
     // saved filter on respective component
