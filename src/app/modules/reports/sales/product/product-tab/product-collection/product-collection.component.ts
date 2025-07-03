@@ -1,5 +1,5 @@
 import { NgIf, DatePipe, CommonModule, NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -14,7 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterOutlet } from '@angular/router';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, module_name, poductCollectionPermissions } from 'app/security';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
@@ -31,6 +31,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { ProductTabComponent } from '../product-tab.component';
 import { RefferralService } from 'app/services/referral.service';
 import { UserService } from 'app/core/user/user.service';
+import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-product-collection',
@@ -55,13 +57,16 @@ import { UserService } from 'app/core/user/user.service';
         MatSelectModule,
         NgxMatSelectSearchModule,
         MatTabsModule,
-        PrimeNgImportsModule
+        PrimeNgImportsModule,
+        OverlayPanelModule
+
     ],
 })
 
 export class ProductCollectionComponent extends BaseListingComponent implements OnDestroy {
-    @Input() isFilterShow:boolean = false;
+    @Input() isFilterShow: boolean = false;
     @Output() isFilterShowEvent = new EventEmitter(false);
+    @ViewChild('op') overlayPanel!: OverlayPanel;
     module_name = module_name.products_collection;
     filter_table_name = filter_module_name.products_collection;
     private settingsUpdatedSubscription: Subscription;
@@ -73,6 +78,17 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     selectedRM: any;
     employeeList: any = [];
     user: any = {};
+
+    index = {
+        installment_amount: -1,
+        due_Amount: -1
+    };
+    types = Types;
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+
 
     statusList: any[] = [
         { label: 'Inprocess', value: 'Inprocess' },
@@ -96,18 +112,43 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
         this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.userService.user$
-        .pipe(takeUntil(this._unsubscribeAll))
-        .subscribe((user: any) => {
-            this.user = user;
-        });
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((user: any) => {
+                this.user = user;
+            });
+        this.selectedColumns = [
+            { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agency_name', header: 'Agent', type: Types.select },
+            { field: 'rm', header: 'RM', type: Types.select },
+            { field: 'product', header: 'Product name', type: Types.link },
+            { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'installment_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+            { field: 'due_Amount', header: 'Due Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+            { field: 'installment_date', header: 'Installment Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
+        this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+            if (resp['gridName'] != this.filter_table_name) return;
+            this.activeFiltData = resp;
+            this.sortColumn = resp['sortColumn'];
+            //this.selectDateRanges(resp['table_config']);
+            this.primengTable['_sortField'] = resp['sortColumn'];
+            this.isFilterShow = true;
+            this.primengTable['filters'] = resp['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+            this.primengTable._filter();
+        });
         this.agentList = this._filterService.agentListByValue;
         this.employeeList = this._filterService.rmListByValue;
 
         // common filter
         this.startSubscription();
+
     }
 
     ngAfterViewInit() {
@@ -118,7 +159,7 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
             this.selectedAgent = filterData['table_config']['agency_name']?.value;
             this.selectedRM = filterData['table_config']['rm']?.value;
 
-            
+
             if (this.selectedAgent && this.selectedAgent.id) {
                 const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                 if (!match) {
@@ -132,8 +173,58 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
             }
             this.isFilterShowEvent.emit(true);
             this.primengTable['filters'] = filterData['table_config'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
+        }
+
+        this.getColIndex();
+    }
+
+    getColIndex(): void { //  add new
+        this.index.installment_amount = this.selectedColumns.findIndex((item: any) => item.field == 'installment_amount');
+        this.index.due_Amount = this.selectedColumns.findIndex((item: any) => item.field == 'due_Amount');
+    }
+
+    isAnyIndexMatch(): boolean { //  add new
+        const len = this.selectedColumns?.length - 1;
+        return len == this.index.installment_amount || len == this.index.due_Amount;
+    }
+
+    isDisplayFooter(): boolean { //  add new
+        return this.selectedColumns.some(x => x.field == 'installment_amount' || x.field == 'tds' || x.field == 'due_Amount');
+    }
+
+    isNotDisplay(field: string): boolean { //  add new
+        return field != "installment_amount" && field != "tds" && field != "due_Amount"
+    }
+
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
         }
     }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
+    }
+
 
     // function to get the Agent list from api
     getAgent(value: string) {
@@ -238,17 +329,17 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
     // Status
     getStatusColor(status: string): string {
         if (status == 'Pending') {
-          return 'text-blue-600';
+            return 'text-blue-600';
         } else if (status == 'Inprocess') {
-          return 'text-yellow-600';
+            return 'text-yellow-600';
         } else if (status == 'Delivered') {
-          return 'text-green-600';
+            return 'text-green-600';
         } else if (status == 'Blocked') {
-          return 'text-red-600';
+            return 'text-red-600';
         } else {
-          return '';
+            return '';
         }
-      }
+    }
 
     exportExcel(): void {
         // if (!Security.hasExportDataPermission(this.module_name)) {
@@ -310,23 +401,23 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
                     }
                 }
                 this.selectedRM = resp['table_config']['rm']?.value;
-    
+
                 if (resp['table_config']['installment_date']?.value && Array.isArray(resp['table_config']['installment_date']?.value)) {
                     this._filterService.selectionDateDropdown = 'custom_date_range';
                     this._filterService.rangeDateConvert(resp['table_config']['installment_date']);
                 }
-    
+
                 this.primengTable['filters'] = resp['table_config'];
                 this.isFilterShow = true;
                 this.primengTable._filter();
             });
         }
-      }
+    }
 
     stopSubscription() {
         if (this.settingsUpdatedSubscription) {
-          this.settingsUpdatedSubscription.unsubscribe();
-          this.settingsUpdatedSubscription = undefined;
+            this.settingsUpdatedSubscription.unsubscribe();
+            this.settingsUpdatedSubscription = undefined;
         }
     }
 
@@ -335,5 +426,16 @@ export class ProductCollectionComponent extends BaseListingComponent implements 
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }

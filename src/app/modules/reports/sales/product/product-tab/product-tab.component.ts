@@ -134,6 +134,19 @@ export class ProductTabComponent extends BaseListingComponent {
         }
     }
 
+    
+  toggleOverlayPanel(event: MouseEvent) {
+    switch (this.activeTab) {
+      case 1:
+        this.collectionComponent.toggleOverlayPanel(event);
+        break;
+    }
+  }
+
+   get isMoreColumnsDispley(): boolean {
+    return this.activeTab != 0 && this.activeTab != 2 && this.activeTab != 3;
+  }
+
     // saved filter on respective component
     onSaveFilter(){
         if(this.activeTab == 0){
