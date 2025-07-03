@@ -24,6 +24,7 @@ import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { ReplaySubject } from 'rxjs/internal/ReplaySubject';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-documents-list',
@@ -63,18 +64,18 @@ export class DocumentsListComponent
     filter_table_name = filter_module_name.kyc_documents;
     private settingsUpdatedSubscription: Subscription;
 
-   
+
 
     types = Types;
-      cols: Column[] = [
-         { field: 'rejection_note', header: 'Rejection Note', type: 'text' },
-        { field: 'reject_date_time', header: 'Reject Date Time', type: 'date' },
-      ];
-      selectedColumns: Column[] = [];
-      exportCol: Column[] = [];
-      activeFiltData: any = {};
+    cols: Column[] = [
+        { field: 'rejection_note', header: 'Rejection Note', type: Types.text },
+        { field: 'reject_date_time', header: 'Reject Date Time', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+    ];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
-    
+
     isFilterShow: boolean = false;
     selectedStatus: string;
     selectedDocument: any;
@@ -114,6 +115,19 @@ export class DocumentsListComponent
             Particular: '',
             DocName: ''
         }
+
+        this.selectedColumns = [
+            { field: 'file_url', header: 'Document', type: Types.link, isHideFilter: true , class:'text-center' },
+            { field: 'document_of', header: 'Document Of', type: Types.select },
+            { field: 'is_audited', header: 'Status', type: Types.select },
+            { field: 'document_user_name', header: 'Particular', type: Types.text },
+            { field: 'kyc_profile_name', header: 'Profile', type: Types.text },
+            { field: 'kyc_profile_doc_name', header: 'Profile Doc', type: Types.select },
+            { field: 'audit_by_name', header: 'Audited By', type: Types.text },
+            { field: 'entry_date_time', header: 'Upload', type: Types.date, dateFormat: 'dd-MM-yyyy HH:mm:ss' }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -134,6 +148,7 @@ export class DocumentsListComponent
             this.primengTable['filters'] = resp['table_config'];
             this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
 
@@ -151,11 +166,39 @@ export class DocumentsListComponent
                 filterData['table_config']['reject_date_time'].value = new Date(filterData['table_config']['reject_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this.selectedColumns = filterData['selectedColumns'] || [];
+            // this.selectedColumns = filterData['selectedColumns'] || [];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
 
     // get selectedColumns(): Column[] {
@@ -369,4 +412,15 @@ export class DocumentsListComponent
             }
         })
     }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+    }
+
 }
