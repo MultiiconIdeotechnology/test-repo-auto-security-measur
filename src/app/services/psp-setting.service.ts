@@ -53,4 +53,7 @@ export class PspSettingService {
     return this.http.post<any>(this.baseUrl + 'Company/getCompanyCombo', {filter});
   }
 
+  TecProductMasterCombo(filter:string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'TecProductMaster/TecProductMasterCombo', {filter});
+  }
 }
