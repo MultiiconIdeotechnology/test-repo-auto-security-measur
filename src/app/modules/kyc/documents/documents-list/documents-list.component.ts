@@ -4,7 +4,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DocumentsEntryComponent } from '../documents-entry/documents-entry.component';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { MatMenuModule } from '@angular/material/menu';
@@ -62,12 +62,19 @@ export class DocumentsListComponent
     module_name = module_name.kycdocument;
     filter_table_name = filter_module_name.kyc_documents;
     private settingsUpdatedSubscription: Subscription;
-    _selectedColumns: Column[];
 
-    cols: any = [
-        { field: 'rejection_note', header: 'Rejection Note', type: 'text' },
+   
+
+    types = Types;
+      cols: Column[] = [
+         { field: 'rejection_note', header: 'Rejection Note', type: 'text' },
         { field: 'reject_date_time', header: 'Reject Date Time', type: 'date' },
-    ];
+      ];
+      selectedColumns: Column[] = [];
+      exportCol: Column[] = [];
+      activeFiltData: any = {};
+
+    
     isFilterShow: boolean = false;
     selectedStatus: string;
     selectedDocument: any;
@@ -125,7 +132,7 @@ export class DocumentsListComponent
                 resp['table_config']['reject_date_time'].value = new Date(resp['table_config']['reject_date_time'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
-            this._selectedColumns = resp['selectedColumns'] || [];
+            this.selectedColumns = resp['selectedColumns'] || [];
             this.isFilterShow = true;
             this.primengTable._filter();
         });
@@ -144,26 +151,26 @@ export class DocumentsListComponent
                 filterData['table_config']['reject_date_time'].value = new Date(filterData['table_config']['reject_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            this._selectedColumns = filterData['selectedColumns'] || [];
+            this.selectedColumns = filterData['selectedColumns'] || [];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
             // this.sortColumn = filterData['sortColumn'];
             this.isFilterShow = true;
         }
     }
 
-    get selectedColumns(): Column[] {
-        return this._selectedColumns;
-    }
+    // get selectedColumns(): Column[] {
+    //     return this._selectedColumns;
+    // }
 
-    set selectedColumns(val: Column[]) {
-        if (Array.isArray(val)) {
-            this._selectedColumns = this.cols.filter(col =>
-                val.some(selectedCol => selectedCol.field === col.field)
-            );
-        } else {
-            this._selectedColumns = [];
-        }
-    }
+    // set selectedColumns(val: Column[]) {
+    //     if (Array.isArray(val)) {
+    //         this._selectedColumns = this.cols.filter(col =>
+    //             val.some(selectedCol => selectedCol.field === col.field)
+    //         );
+    //     } else {
+    //         this._selectedColumns = [];
+    //     }
+    // }
 
 
     getFilter(): any {

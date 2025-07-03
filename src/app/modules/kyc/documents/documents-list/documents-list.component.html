@@ -4,7 +4,7 @@
         class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
         <!-- Title -->
         <div class="text-3xl font-extrabold tracking-tight">
-            {{ module_name }}
+            {{ module_name }} 
         </div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
@@ -29,7 +29,7 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable,_selectedColumns)"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable,selectedColumns)"
                 matTooltip="Saved Filter" [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
