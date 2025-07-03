@@ -191,8 +191,7 @@
 
                                 <ng-container *ngIf="(selectionRefundOption$ | async) == 'custom_date_range'">
                                     <div class="relative inline-block">
-                                        <p-columnFilter field="amendment_request_time" matchMode="custom"
-                                            [showMenu]="false">
+                                        <p-columnFilter field="requestDate" matchMode="custom" [showMenu]="false">
                                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                                 <p-calendar selectionMode="range" [ngModel]="value"
                                                     (ngModelChange)="onDateRangeChange($event, filter)"
@@ -229,7 +228,7 @@
                                 <ng-container
                                     *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
                                     <div class="relative inline-block">
-                                        <p-columnFilter field="updated_date_time" matchMode="custom" [showMenu]="false">
+                                        <p-columnFilter field="refundDate" matchMode="custom" [showMenu]="false">
                                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                                 <p-calendar selectionMode="range" [ngModel]="value"
                                                     (ngModelChange)="onDateRangeChange($event, filter)"

@@ -13,7 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name } from 'app/security';
 import { RefferralService } from 'app/services/referral.service';
 import { ToasterService } from 'app/services/toaster.service';
@@ -32,6 +32,7 @@ import { ReferralListSpentDialogComponent } from './referral-list-spent-dialog/r
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
 import { StatusChangeLogComponent } from './status-change-log/status-change-log.component';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-referral-list',
@@ -71,7 +72,6 @@ export class ReferralListComponent extends BaseListingComponent {
     isFilterShow: boolean = false;
     employeeList: any[] = [];
     selectedRm: any;
-    selectedColumns: Column[];
     destroy$ = new Subject<any>();
 
     linkList: any[] = [
@@ -101,10 +101,16 @@ export class ReferralListComponent extends BaseListingComponent {
 
     // statusList: any[] = []
 
+
+
+    types = Types;
     cols: Column[] = [
-        { field: 'entry_by_name', header: 'Entry By' },
-        { field: 'referral_link', header: 'Link' }
+        { field: 'entry_by_name', header: 'Entry By', type: Types.text },
+        { field: 'referral_link', header: 'Link', type: Types.link }
     ];
+    selectedColumns: Column[] = [];
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
 
     constructor(
         public alertService: ToasterService,
@@ -122,6 +128,20 @@ export class ReferralListComponent extends BaseListingComponent {
         this.sortColumn = 'entry_date_time';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+
+        this.selectedColumns = [
+            { field: 'referral_code', header: 'Code', type: Types.text },
+            { field: 'campaign_category', header: 'Category', type: Types.select },
+            { field: 'referral_link_for', header: 'Type', type: Types.select },
+            { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'relationship_manager_id', header: 'RM', type: Types.select },
+            { field: 'campaign_name', header: 'Title', type: Types.text },
+            { field: 'start_date', header: 'Start Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'entry_date_time', header: 'Entry Time', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' }
+        ];
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -151,6 +171,7 @@ export class ReferralListComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShow = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.primengTable._filter();
         });
     }
@@ -171,9 +192,35 @@ export class ReferralListComponent extends BaseListingComponent {
             }
 
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col;
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+    onSelectedColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
     }
 
     refreshItems(event?: any): void {
@@ -387,4 +434,15 @@ export class ReferralListComponent extends BaseListingComponent {
         this.destroy$.next(null);
         this.destroy$.complete();
     }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+    }
+
 }
