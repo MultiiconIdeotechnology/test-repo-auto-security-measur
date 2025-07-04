@@ -131,9 +131,9 @@ export class ProductReceiptsComponent extends BaseListingComponent implements On
             { field: 'campaign_code', header: 'Campaign Code', type: Types.text },
             { field: 'rm_name', header: 'RM', type: Types.select },
             { field: 'product_name', header: 'Product name', type: Types.link },
-            { field: 'payment_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
-            { field: 'actual_amount', header: 'Without Tax', type: Types.number, fixVal: 0, class: 'text-right' }, 
-            { field: 'final_amount', header: 'With Tax', type: Types.number, fixVal: 0, class: 'text-right' },
+            { field: 'payment_amount', header: 'Amount', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'actual_amount', header: 'Without Tax', type: Types.number, fixVal: 2, class: 'text-right' }, 
+            { field: 'final_amount', header: 'With Tax', type: Types.number, fixVal: 2, class: 'text-right' },
             { field: 'receipt_status', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'audit_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
         ];

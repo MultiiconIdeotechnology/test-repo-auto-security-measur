@@ -86,10 +86,6 @@ export class TechServiceComponent extends BaseListingComponent {
     }
     itemStatusList: any[] = ['Inprocess', 'Pending', 'Blocked', 'Delivered'];
 
-    index = {
-        installment_amount: -1,
-        due_Amount: -1
-    };
     types = Types;
     selectedColumns: Column[] = [];
     exportCol: Column[] = [];
@@ -118,14 +114,18 @@ export class TechServiceComponent extends BaseListingComponent {
                 this.user = user;
             });
         this.selectedColumns = [
+
             { field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
-            { field: 'agency_name', header: 'Agent', type: Types.select },
+            { field: 'agency_name', header: 'Agency Name', type: Types.select },
             { field: 'rm', header: 'RM', type: Types.select },
-            { field: 'product', header: 'Product name', type: Types.link },
-            { field: 'status', header: 'Status', type: Types.select, isCustomColor: true },
-            { field: 'installment_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
-            { field: 'due_Amount', header: 'Due Amount', type: Types.number, fixVal: 0, class: 'text-right' },
-            { field: 'installment_date', header: 'Installment Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'item_code', header: 'Item Code', type: Types.text },
+            { field: 'item', header: 'Item', type: Types.text },
+            { field: 'product', header: 'Product', type: Types.link },
+            { field: 'product_status', header: 'Product Status', type: Types.select, isCustomColor: true },
+            { field: 'item_status', header: 'Item Status', type: Types.select, isCustomColor: true },
+            { field: 'expiry_date', header: 'Expiry Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+            { field: 'product_amount', header: 'Product Amount', type: Types.number, fixVal: 2, class: 'text-right' },
+            { field: 'due_amount', header: 'Due Amount', type: Types.number, fixVal: 2, class: 'text-right' }
         ];
 
         this.cols.unshift(...this.selectedColumns);
@@ -182,27 +182,7 @@ export class TechServiceComponent extends BaseListingComponent {
             this.onColumnsChange();
         }
 
-        this.getColIndex();
     }
-
-    getColIndex(): void { //  add new
-        this.index.installment_amount = this.selectedColumns.findIndex((item: any) => item.field == 'installment_amount');
-        this.index.due_Amount = this.selectedColumns.findIndex((item: any) => item.field == 'due_Amount');
-    }
-
-    isAnyIndexMatch(): boolean { //  add new
-        const len = this.selectedColumns?.length - 1;
-        return len == this.index.installment_amount || len == this.index.due_Amount;
-    }
-
-    isDisplayFooter(): boolean { //  add new
-        return this.selectedColumns.some(x => x.field == 'installment_amount' || x.field == 'tds' || x.field == 'due_Amount');
-    }
-
-    isNotDisplay(field: string): boolean { //  add new
-        return field != "installment_amount" && field != "tds" && field != "due_Amount"
-    }
-
 
     onColumnsChange(): void {
         this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
