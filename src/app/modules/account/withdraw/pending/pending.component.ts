@@ -17,7 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { AppConfig } from 'app/config/app-config';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Security, filter_module_name, messages, module_name, withdrawPermissions } from 'app/security';
 import { WithdrawService } from 'app/services/withdraw.service';
 import { DateTime } from 'luxon';
@@ -34,6 +34,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-wpending',
@@ -68,7 +70,7 @@ import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
   ],
 })
 export class WPendingComponent extends BaseListingComponent {
-
+  @ViewChild('op') overlayPanel!: OverlayPanel;
   @ViewChild('tabGroup') tabGroup;
   @Input() isFilterShowPending: boolean;
   @Output() isFilterShowPendingChange = new EventEmitter<boolean>();
@@ -91,14 +93,18 @@ export class WPendingComponent extends BaseListingComponent {
   data: any
   filter: any = {}
   agentList: any[] = [];
-  selectedEmployee:any;
+  selectedEmployee: any;
+
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
 
   withdrawList = [
     { label: 'Deduction', value: 'Deduction' },
     { label: 'Bank Withdraw', value: 'Bank Withdraw' },
   ];
-
-  cols = [];
 
   protected masterService: MasterService;
 
@@ -132,6 +138,19 @@ export class WPendingComponent extends BaseListingComponent {
         this.refreshItemsPending()
       }
     })
+    this.selectedColumns = [
+
+      { field: 'withdraw_ref_no', header: 'Ref. No.', type: Types.text },
+      { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'withdraw_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+      { field: 'agent_Code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+      { field: 'agent_name', header: 'Agency Name', type: Types.select },
+      { field: 'account_number', header: 'Bank', type: Types.link },
+      { field: 'withdraw_type', header: 'Withdraw Type', type: Types.select },
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
@@ -150,11 +169,12 @@ export class WPendingComponent extends BaseListingComponent {
       // this.sortColumn = resp['sortColumn'];
       // this.primengTable['_sortField'] = resp['sortColumn'];
       if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
-				this._filterService.selectionDateDropdown = 'custom_date_range';
-				this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-			}
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowPending = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.isFilterShowPendingChange.emit(this.isFilterShowPending);
       this.primengTable._filter();
     });
@@ -177,21 +197,50 @@ export class WPendingComponent extends BaseListingComponent {
         }
       }, 1000);
       if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
-				this._filterService.selectionDateDropdown = 'custom_date_range';
-				this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
-			}
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+      }
 
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+
+  toggleOverlayPanel(event: MouseEvent) {
+    this.overlayPanel.toggle(event);
   }
 
   getAgentList(value: string) {
     this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
       this.agentList = data;
 
-      for(let i in this.agentList){
+      for (let i in this.agentList) {
         this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
       }
     })
@@ -348,4 +397,15 @@ export class WPendingComponent extends BaseListingComponent {
       this._filterService.activeFiltData = {};
     }
   }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+
+  }
+
 }

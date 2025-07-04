@@ -169,6 +169,21 @@ export class WithdrawListComponent extends BaseListingComponent implements OnDes
     }
   }
 
+  toggleOverlayPanel(event: MouseEvent) {
+    switch (this.tab) {
+      case 'Pending':
+        this.pending.toggleOverlayPanel(event);
+        break;
+      case 'Audited':
+        this.audited.toggleOverlayPanel(event);
+        break;
+      case 'Rejected':
+        this.rejected.toggleOverlayPanel(event);
+        break;
+    }
+
+  }
+
   // ngAfterViewInit(): void {
   //   this.apiCalls = {
   //     Pending: false,

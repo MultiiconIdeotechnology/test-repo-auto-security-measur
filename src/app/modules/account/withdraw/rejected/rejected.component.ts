@@ -31,10 +31,12 @@ import { takeUntil, debounceTime, Subject, Subscription } from 'rxjs';
 import { InfoWithdrawComponent } from '../info-withdraw/info-withdraw.component';
 import { EntityService } from 'app/services/entity.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-wrejected',
@@ -74,6 +76,7 @@ import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
 export class WRejectedComponent extends BaseListingComponent {
   @Input() isFilterShowReject: boolean;
   @Output() isFilterShowRejectedChange = new EventEmitter<boolean>();
+  @ViewChild('op') overlayPanel!: OverlayPanel;
 
   searchInputControlRejected = new FormControl('');
   public withdrawRejectSubscription: Subscription;
@@ -92,14 +95,18 @@ export class WRejectedComponent extends BaseListingComponent {
   data: any;
   filter: any = {};
   agentList: any[] = [];
-  selectedEmployee:any;
+  selectedEmployee: any;
 
   withdrawList = [
     { label: 'Deduction', value: 'Deduction' },
     { label: 'Bank Withdraw', value: 'Bank Withdraw' },
   ];
 
-  cols = [];
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
   protected masterService: MasterService;
 
   constructor(
@@ -129,6 +136,19 @@ export class WRejectedComponent extends BaseListingComponent {
         this.refreshItemsRejected()
       }
     })
+    this.selectedColumns = [
+
+      { field: 'withdraw_ref_no', header: 'Ref. No.', type: Types.text },
+      { field: 'entry_date_time', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'withdraw_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+      { field: 'agent_Code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+      { field: 'agent_name', header: 'Agency Name', type: Types.select },
+      { field: 'account_number', header: 'Bank', type: Types.link },
+      { field: 'withdraw_type', header: 'Withdraw Type', type: Types.select },
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
   }
 
   ngOnInit(): void {
@@ -147,50 +167,77 @@ export class WRejectedComponent extends BaseListingComponent {
         }
       }
       if (resp['table_config']['entry_date_time']?.value && Array.isArray(resp['table_config']['entry_date_time']?.value)) {
-				this._filterService.selectionDateDropdown = 'custom_date_range';
-				this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-			}
-   
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+      }
+
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowReject = true;
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
       this.isFilterShowRejectedChange.emit(this.isFilterShowReject);
       this.primengTable._filter();
     });
   }
 
   ngAfterViewInit(): void {
-       if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-        this.isFilterShowReject = true;
-        this.isFilterShowRejectedChange.emit(this.isFilterShowReject);
-        let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-        setTimeout(() => {
-          this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
-          if (this.selectedEmployee && this.selectedEmployee.id) {
-            const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
-            if (!match) {
-              this.agentList.push(this.selectedEmployee);
-            }
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShowReject = true;
+      this.isFilterShowRejectedChange.emit(this.isFilterShowReject);
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      setTimeout(() => {
+        this.selectedEmployee = filterData['table_config']['agent_id_filters']?.value;
+        if (this.selectedEmployee && this.selectedEmployee.id) {
+          const match = this.agentList.find((item: any) => item.id == this.selectedEmployee?.id);
+          if (!match) {
+            this.agentList.push(this.selectedEmployee);
           }
-        }, 1000);
-        if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
-          this._filterService.selectionDateDropdown = 'custom_date_range';
-          this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
         }
-
-        this.primengTable['filters'] = filterData['table_config'];
-        // this.primengTable['_sortField'] = filterData['sortColumn'];
-        // this.sortColumn = filterData['sortColumn'];
+      }, 1000);
+      if (filterData['table_config']['entry_date_time']?.value && Array.isArray(filterData['table_config']['entry_date_time']?.value)) {
+        this._filterService.selectionDateDropdown = 'custom_date_range';
+        this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
       }
+
+      this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
+    }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+  toggleOverlayPanel(event: MouseEvent) {
+    this.overlayPanel.toggle(event);
   }
 
   getAgentList(value: string) {
-      this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
-        this.agentList = data;
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.agentList = data;
 
-        for(let i in this.agentList){
-          this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
-        }
-      })
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+      }
+    })
   }
 
   view(record) {
@@ -305,5 +352,15 @@ export class WRejectedComponent extends BaseListingComponent {
       this._filterService.activeFiltData = {};
     }
   }
-  
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+
+  }
+
 }
