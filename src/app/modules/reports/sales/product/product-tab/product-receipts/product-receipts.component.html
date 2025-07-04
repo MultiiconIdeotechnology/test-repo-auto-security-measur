@@ -23,57 +23,7 @@
                         {{ col.header }}
                         <p-sortIcon [field]="col?.field" />
                     </th>
-                    <th *ngIf="selectedColumns?.length && isAnyIndexMatch()" class="w-full"></th>
-                    <!-- <th class="min-w-[145px]" pSortableColumn="receipt_ref_no" pResizableColumn alignFrozen="left"
-                        pFrozenColumn [frozen]="frozenObj?.receipt_ref_no"
-                        [ngClass]="{'left-0': !frozenObj?.receipt_ref_no}">
-                        Reference No. <p-sortIcon field="receipt_ref_no" />
-                        <span class="float-right" (click)="isFrozenColumn('receipt_ref_no');$event.stopPropagation()">
-                            <i *ngIf="!frozenObj?.receipt_ref_no" class="pi pi-lock-open icon-size-3"></i>
-                            <i *ngIf="frozenObj?.receipt_ref_no" class="pi pi-lock icon-size-3"></i>
-                        </span>
-                    </th>
-                    
-                    <th pSortableColumn="agent_Code" pResizableColumn>
-                        Agent Code <p-sortIcon field="agent_Code" />
-                    </th>
-                    
-                    <th pSortableColumn="agent_name" pResizableColumn>
-                        Agent <p-sortIcon field="agent_name" />
-                    </th>
-
-                    <th pSortableColumn="campaign_code" pResizableColumn>
-                        Campaign Code <p-sortIcon field="campaign_code" />
-                    </th>
-
-                    <th pSortableColumn="rm_name" pResizableColumn>
-                        RM <p-sortIcon field="rm_name" />
-                    </th>
-
-                    <th pSortableColumn="product_name" pResizableColumn>
-                        Product name <p-sortIcon field="product_name" />
-                    </th>
-
-                    <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
-                        Amount <p-sortIcon field="payment_amount" />
-                    </th>
-
-                    <th class="text-right" pSortableColumn="payment_amount" pResizableColumn>
-                        Without Tax <p-sortIcon field="payment_amount" />
-                    </th>
-
-                    <th class="text-right" pSortableColumn="final_amount" pResizableColumn>
-                        With Tax <p-sortIcon field="final_amount" />
-                    </th>
-                    
-                    <th pSortableColumn="receipt_status" pResizableColumn>
-                        Status <p-sortIcon field="receipt_status" />
-                    </th>
-
-                    <th [ngClass]="_filterService.selectionDateDropdown == 'Custom Date Range' ? 'min-max-width': 'min-w-[200px]'"
-                        pSortableColumn="audit_date_time" pResizableColumn>
-                        Date <p-sortIcon field="audit_date_time" />
-                    </th> -->
+                    <th *ngIf="selectedColumns?.length && isAnyIndexMatch()" class="w-full"></th>                
                 </tr>
 
                 <tr *ngIf="isFilterShow">
@@ -189,7 +139,7 @@
                 <tr>
                     <td *ngFor="let col of columns;let isLast = last" [ngClass]="col.class">
                         <ng-container
-                            *ngIf="(col.type === types.text || col.type === types.select) && col.field  != 'agency_name'">
+                            *ngIf="(col.type === types.text || col.type === types.select) && col.field  != 'agent_name'">
                             <span [ngClass]="col.isCustomColor ? getStatusIndicatorClass(element[col.field]) : ''">
                                 {{ element[col.field] || '-' }}
                             </span>
@@ -217,62 +167,7 @@
                             {{isValidDate(element[col.field])? (element[col.field] | date: col.dateFormat): "-"}}
                         </ng-container>
                     </td>
-                    <td *ngIf="selectedColumns?.length && isAnyIndexMatch()" class="w-full"></td>
-                    <!-- <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.receipt_ref_no">
-                        <span>
-                            {{element.receipt_ref_no || "-"}}
-                        </span>
-                    </td>
-                    <td>
-                        {{element.agent_Code || "-"}}
-                    </td>
-
-                    <td>
-                        <a target="_blank" class="cursor-pointer border-b border-gray-500 truncate"
-                            (click)="viewAgentData(element)">
-                            {{element.agent_name}}
-                        </a>
-                    </td>
-                    <td>
-                        {{element.campaign_code || "-"}}
-                    </td>
-
-                    <td>
-                        {{element.rm_name || "-"}}
-                    </td>
-
-                    <td>
-                        <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">
-                            {{element.product_name || "-"}}
-                        </span>
-                    </td>
-
-                    <td class="text-right">
-                        {{(element.payment_amount.toFixed(2) || 0) | currency: element.payment_currency : 'symbol' :
-                        '1.2-2'}}
-                    </td>
-
-                    <td class="text-right">
-                        {{element.actual_currency_symbol}} {{element.actual_amount ? (element.actual_amount.toFixed(2) |
-                        number: '1.2-2') : 0}}
-                    </td>
-
-                    <td class="text-right">
-                        {{element.currencySymbol}} {{element.final_amount ? (element.final_amount.toFixed(2) |
-                        number:'1.2-2'): 0}}
-                    </td>
-
-                    <td>
-                        <span class="text-center justify-left"
-                            [ngClass]="element.receipt_status == 'Confirmed' ? 'text-green-600' : element.receipt_status == 'Pending' ? 'text-blue-600' :'text-red-600'">
-                            {{element.receipt_status || "-"}}
-                        </span>
-                    </td>
-
-                    <td>
-                        {{(element.audit_date_time | date: 'dd-MM-yyyy') || "-"}}
-                    </td> -->
-
+                    <td *ngIf="selectedColumns?.length && isAnyIndexMatch()" class="w-full"></td>           
                 </tr>
             </ng-template>
             <!--footer-->
@@ -298,28 +193,6 @@
                     </tr>
                 </ng-container>
             </ng-template>
-
-            <!-- <ng-template pTemplate="footer">
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="text-right">
-                        {{total_amount ? (total_amount?.toFixed(2) | number:'1.2-2') : 0}}
-                    </td>
-                    <td class="text-right">
-                        {{total_actual_amount ? (total_actual_amount?.toFixed(2) | number:'1.2-2') : 0}}
-                    </td>
-                    <td class="text-right">
-                        {{finalAmountTotal ? (finalAmountTotal?.toFixed(2) | number:'1.2-2') : 0}}
-                    </td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </ng-template> -->
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14" *ngIf="selectedColumns?.length">
