@@ -1,5 +1,5 @@
 import { NgIf, NgFor, DatePipe, CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -25,12 +25,14 @@ import { EntityService } from 'app/services/entity.service';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 import { Excel } from 'app/utils/export/excel';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
 import { UserService } from 'app/core/user/user.service';
 import { IndianNumberPipe } from '@fuse/pipes/indianNumberFormat.pipe';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
 	selector: 'app-pending',
@@ -67,6 +69,7 @@ export class PendingComponent extends BaseListingComponent {
 	@Input() isFilterShowPending: boolean
 	@Input() filterApiData: any;
 	@Output() isFilterShowPendingChange = new EventEmitter<boolean>();
+	@ViewChild('op') overlayPanel!: OverlayPanel;
 	searchInputControlPending = new FormControl('');
 	filter_table_name = filter_module_name.wallet_recharge_pending;
 	module_name = module_name.wallet
@@ -90,7 +93,11 @@ export class PendingComponent extends BaseListingComponent {
 	selectedPSP: any;
 	public settingsUpdatedSubscription: Subscription;
 
-	cols = [];
+	types = Types;
+	selectedColumns: Column[] = [];
+	exportCol: Column[] = [];
+	activeFiltData: any = {};
+	cols: Column[] = [];
 
 	constructor(
 		private walletService: WalletService,
@@ -120,6 +127,22 @@ export class PendingComponent extends BaseListingComponent {
 		this.pendingFilter.FromDate.setDate(1);
 		this.pendingFilter.FromDate.setMonth(this.pendingFilter.FromDate.getMonth());
 		this._filterService.applyDefaultFilter(this.filter_table_name);
+		this.selectedColumns = [
+
+			{ field: 'reference_number', header: 'Ref. No', type: Types.text },
+			{ field: 'request_date_time', header: 'Request', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+			{ field: 'agent_code', header: 'Agent Code', type: Types.number, fixVal: 0 },
+			{ field: 'recharge_for_name', header: 'Agent', type: Types.select },
+			{ field: 'currency', header: 'Currency', type: Types.text },
+			{ field: 'recharge_amount', header: 'Amount', type: Types.number, fixVal: 0, class: 'text-right' },
+			{ field: 'mop', header: 'MOP', type: Types.select },
+			{ field: 'psp_name', header: 'PSP', type: Types.select },
+			{ field: 'filename', header: 'Attachment', type: Types.link, isHideFilter: true },
+			{ field: 'user_remark', header: 'Remark', type: Types.text }
+		];
+
+		this.cols.unshift(...this.selectedColumns);
+		this.exportCol = cloneDeep(this.cols);
 	}
 
 	ngOnInit(): void {
@@ -128,7 +151,7 @@ export class PendingComponent extends BaseListingComponent {
 			this.mopList = this.filterApiData.mopData;
 			this.pspList = this.filterApiData.pspData;
 		}, 1000);
-		
+
 		this._filterService.updateSelectedOption('');
 		this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
 			this._filterService.updateSelectedOption('');
@@ -164,6 +187,7 @@ export class PendingComponent extends BaseListingComponent {
 			// this.sortColumn = resp['sortColumn'];
 			// this.primengTable['_sortField'] = resp['sortColumn'];
 			this.primengTable['filters'] = resp['table_config'];
+			this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
 			this.primengTable._filter();
 		});
 	}
@@ -210,10 +234,36 @@ export class PendingComponent extends BaseListingComponent {
 				this._filterService.rangeDateConvert(filterData.table_config.request_date_time);
 			}
 			this.primengTable['filters'] = filterData['table_config'];
-
-			// this.primengTable['_sortField'] = filterData['sortColumn'];
-			// this.sortColumn = filterData['sortColumn'];
+			this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+			this.onColumnsChange();
+		} else {
+			this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+			this.onColumnsChange();
 		}
+	}
+
+	onColumnsChange(): void {
+		this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+	}
+
+	checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+		if (col.length) return col
+		else {
+			var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+			if (!Col.length)
+				return oldCol;
+			else
+				return Col;
+		}
+	}
+
+	isDisplayHashCol(): boolean {
+		return this.selectedColumns.length > 0;
+	}
+
+
+	toggleOverlayPanel(event: MouseEvent) {
+		this.overlayPanel.toggle(event);
 	}
 
 	ngOnChanges() {
@@ -486,6 +536,17 @@ export class PendingComponent extends BaseListingComponent {
 			this.settingsUpdatedSubscription.unsubscribe();
 			this._filterService.activeFiltData = {};
 		}
+
+	}
+
+	displayColCount(): number {
+		return this.selectedColumns.length + 1;
+	}
+
+
+	isValidDate(value: any): boolean {
+		const date = new Date(value);
+		return value && !isNaN(date.getTime());
 
 	}
 
