@@ -29,9 +29,11 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Subject } from 'rxjs';
 import { LeadStatusChangedLogComponent } from '../lead-status-changed-log/lead-status-changed-log.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-archive',
@@ -69,27 +71,33 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
         PrimeNgImportsModule
     ]
 })
-export class ArchiveComponent extends BaseListingComponent{
+export class ArchiveComponent extends BaseListingComponent {
     @Input() isFilterShowArchive: boolean;
     @Output() isFilterShowArchiveChange = new EventEmitter<boolean>()
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginatorArchive: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
+    @ViewChild('op') overlayPanel!: OverlayPanel;
 
     Mainmodule: any;
     module_name = module_name.lead
     filter_table_name = filter_module_name.leads_archive;
     private settingsUpdatedSubscription: Subscription;
-    cols = [];
     total = 0;
     deadLeadId: any;
-    statusList = [ 'Converted', 'Dead'];
+    statusList = ['Converted', 'Dead'];
     dataList: any;
     appConfig = AppConfig;
     isLoading: any;
     searchInputControlArchive = new FormControl('');
     data: any
     filter: any = {}
+
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
 
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
@@ -109,6 +117,19 @@ export class ArchiveComponent extends BaseListingComponent{
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'lead_status', header: 'Status', type: Types.select },
+            { field: 'agency_name', header: 'Agency', type: Types.text },
+            { field: 'contact_person_email', header: 'Email', type: Types.text },
+            { field: 'contact_person_mobile', header: 'Mobile', type: Types.text },
+            { field: 'last_call_date_time', header: 'Last Status Date', type: Types.date },
+            { field: 'last_call_feedback', header: 'Last Remark', type: Types.text },
+            { field: 'lead_source', header: 'Source', type: Types.text },
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
 
@@ -128,6 +149,7 @@ export class ArchiveComponent extends BaseListingComponent{
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowArchive = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowArchiveChange.emit(this.isFilterShowArchive);
             this.primengTable._filter();
         });
@@ -150,9 +172,36 @@ export class ArchiveComponent extends BaseListingComponent{
                 this._filterService.rangeDateConvert(filterData['table_config']['last_call_date_time']);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     getStatusColor(status: string): string {
@@ -177,7 +226,7 @@ export class ArchiveComponent extends BaseListingComponent{
 
     refreshItems(event?: any) {
         this.isLoading = true;
-        if(this.searchInputControlArchive.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
+        if (this.searchInputControlArchive.value) { // Aa condtion tyarej add karivi jyare searchInput global variable na use karo hoy tyare
             event = {};
             event.first = event?.first || 0;
         }
@@ -248,5 +297,15 @@ export class ArchiveComponent extends BaseListingComponent{
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }

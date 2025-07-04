@@ -77,10 +77,10 @@ export class CRMLeadListComponent implements OnDestroy {
     dataList = [];
     dataListArchive = [];
     total = 0;
-    cols: Column[] = [
-        { field: 'lead_assign_by', header: 'Assign By' },
-        { field: 'lead_assign_by_date', header: 'Assign By Date' },
-    ];
+    // cols: Column[] = [
+    //     { field: 'lead_assign_by', header: 'Assign By' },
+    //     { field: 'lead_assign_by_date', header: 'Assign By Date' },
+    // ];
 
     constructor(
         private alertService: ToasterService,
@@ -126,6 +126,18 @@ export class CRMLeadListComponent implements OnDestroy {
                 // }
                 break;
         }
+    }
+
+    toggleOverlayPanel(event: MouseEvent) {
+        switch (this.tab) {
+            case 'Inbox':
+                this.inbox.toggleOverlayPanel(event);
+                break;
+            case 'archive':
+                this.archive.toggleOverlayPanel(event);
+                break;
+        }
+
     }
 
     openTabFiterDrawer() {
@@ -196,8 +208,8 @@ export class CRMLeadListComponent implements OnDestroy {
         });
     }
 
-    onleadSubmit(key:string){
-        if(key == 'submit'){
+    onleadSubmit(key: string) {
+        if (key == 'submit') {
             this.inbox?.refreshItems()
         }
     }
