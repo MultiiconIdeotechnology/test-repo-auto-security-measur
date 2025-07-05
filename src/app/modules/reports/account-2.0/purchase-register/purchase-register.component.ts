@@ -68,6 +68,7 @@ export class PurchaseRegisterComponent
 
   @ViewChild('bontonTable') bontonTableComponent: BontonComponent;
   @ViewChild('dmccTable') dmccTableComponent: BontonDmccComponent;
+  
 
   activeTab: any = 0;
   selectedTableKey: any;
@@ -174,6 +175,14 @@ export class PurchaseRegisterComponent
       if (this.dmccTableComponent) {
         this.dmccTableComponent.refreshItems();
       }
+    }
+  }
+
+  toggleOverlayPanel(event: MouseEvent) {
+    if (this.activeTab === 0 && this.bontonTableComponent) {
+      this.bontonTableComponent.toggleOverlayPanel(event);
+    } else if (this.activeTab === 1 && this.dmccTableComponent) {
+      this.dmccTableComponent.toggleOverlayPanel(event);
     }
   }
 

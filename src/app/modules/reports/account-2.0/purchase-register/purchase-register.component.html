@@ -11,7 +11,8 @@
             <!------Global Search------>
             <div class="flex ctm_search">
                 <input #inputRef matInput [formControl]="searchInputControl" [autocomplete]="'off'"
-                    [placeholder]="'Search'" (input)="onInputChange(inputRef.value)" (keyup.enter)="onGlobalSearch(inputRef.value)" />
+                    [placeholder]="'Search'" (input)="onInputChange(inputRef.value)"
+                    (keyup.enter)="onGlobalSearch(inputRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                     (click)="onGlobalSearch(inputRef.value)"></mat-icon>
             </div>
@@ -29,6 +30,11 @@
             <button mat-flat-button [color]="'primary'" (click)="onSaveFilter()" matTooltip="Saved Filter"
                 [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <button class="rounded-full ml-4" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                (click)="toggleOverlayPanel($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
             </button>
 
             <!------Refresh------>
@@ -64,8 +70,7 @@
         <div class="justify-center items-center w-[255px]">
             <div *ngIf="date.value !== dateRangeList.setCustomDate" class="w-full flex flex-row justify-between">
                 <mat-form-field class="w-full">
-                    <mat-select [formControl]="date" #dateRange
-                        (selectionChange)="updateDate($event.value)">
+                    <mat-select [formControl]="date" #dateRange (selectionChange)="updateDate($event.value)">
                         <mat-option *ngFor="let item of dateRanges" [value]="item">{{item}}</mat-option>
                     </mat-select>
                     <!-- <mat-icon svgIcon="heroicons_mini:chevron-down" (click)="dateRange.open()"
@@ -75,8 +80,9 @@
 
             <div *ngIf="date.value === dateRangeList.setCustomDate" class="w-full flex flex-row items-center space-x-1">
                 <mat-form-field class="w-full">
-                    <mat-date-range-input [rangePicker]="picker" >
-                        <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly
+                            #dateRangeStart />
                         <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
                     </mat-date-range-input>
                     <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -91,23 +97,23 @@
                 <mat-option *ngFor="let item of tableTypeList;" [value]="item">{{item.label}}</mat-option>
             </mat-select>
         </mat-form-field>
-<!-- *ngIf="selectedTableKey?.value == 'dmcc' || isDateChange" -->
-        <button  class="translate-y-[-10px]" mat-flat-button
-            [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading" (click)="onRefreshCall()">
+        <!-- *ngIf="selectedTableKey?.value == 'dmcc' || isDateChange" -->
+        <button class="translate-y-[-10px]" mat-flat-button [color]="'primary'" matTooltip="Refresh"
+            [disabled]="isLoading" (click)="onRefreshCall()">
             <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
         </button>
     </div>
 
 
     <!----------------Table----------------->
-    <app-bonton #bontonTable *ngIf="selectedTab == 0"  [isFilterShow]="moduleMap[0].isFiltershow"
-        [startDate]="startDate" [endDate]="endDate" [supplierList]="supplierList" [lastSearchString]="lastSearchString"
+    <app-bonton #bontonTable *ngIf="selectedTab == 0" [isFilterShow]="moduleMap[0].isFiltershow" [startDate]="startDate"
+        [endDate]="endDate" [supplierList]="supplierList" [lastSearchString]="lastSearchString"
         (isFilterShowEvent)="moduleMap[0].isFiltershow = $event">
     </app-bonton>
 
-    <app-bonton-dmcc #dmccTable  *ngIf="selectedTab == 1"
-        [isFilterShow]="moduleMap[1].isFiltershow" [startDate]="startDate" [endDate]="endDate" [lastSearchString]="lastSearchString"
-        [supplierList]="supplierList" (isFilterShowEvent)="moduleMap[1].isFiltershow = $event">
+    <app-bonton-dmcc #dmccTable *ngIf="selectedTab == 1" [isFilterShow]="moduleMap[1].isFiltershow"
+        [startDate]="startDate" [endDate]="endDate" [lastSearchString]="lastSearchString" [supplierList]="supplierList"
+        (isFilterShowEvent)="moduleMap[1].isFiltershow = $event">
     </app-bonton-dmcc>
 </div>
 

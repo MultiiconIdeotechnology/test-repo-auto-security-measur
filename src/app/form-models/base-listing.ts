@@ -42,6 +42,7 @@ export interface Column {
     isRangePicker?: boolean;
     class?: string;
     fixVal?: number;
+    isNotFixed ?:boolean;
     isHideFilter?: boolean;
     isDisableSort?: boolean;
     isSelectStatus?: boolean;

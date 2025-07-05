@@ -1,8 +1,8 @@
 import { filter_module_name, messages, module_name, Security } from 'app/security';
-import { Component, EventEmitter, HostListener, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, Output, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseListingComponent, Column } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
@@ -26,6 +26,8 @@ import { Linq } from 'app/utils/linq';
 import { EntityService } from 'app/services/entity.service';
 import { Router } from '@angular/router';
 import { CurrencyService } from 'app/services/currency.service';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 
 @Component({
@@ -54,6 +56,7 @@ import { CurrencyService } from 'app/services/currency.service';
 export class BontonDmccComponent extends BaseListingComponent
   implements OnDestroy {
   // module_name = module_name.purchaseRegister;
+  @ViewChild('op2') overlayPanel!: OverlayPanel;
   @Input() isFilterShow: boolean = false;
   @Output() isFilterShowEvent = new EventEmitter(false);
   @Input() startDate: any;
@@ -71,6 +74,13 @@ export class BontonDmccComponent extends BaseListingComponent
   currencyList: any[] = [];
   selectedCurrency: any;
   customScrollH: any;
+
+  types = Types;
+  selectedColumns: Column[] = [];
+  exportCol: Column[] = [];
+  activeFiltData: any = {};
+  cols: Column[] = [];
+
 
   tableFieldArr: any[] = [
     { field: 'date', header: 'Date', type: 'custom', matchMode: 'custom' },
@@ -101,9 +111,41 @@ export class BontonDmccComponent extends BaseListingComponent
     this.sortColumn = 'date';
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
+    this.selectedColumns = [
+
+      { field: 'date', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+      { field: 'name', header: 'Name', type: Types.select },
+      { field: 'invoiceNo', header: 'Invoice No', type: Types.text },
+      { field: 'refNo', header: 'Ref. No', type: Types.link },
+      { field: 'pnr', header: 'PNR', type: Types.text },
+      { field: 'currency', header: 'Currency', type: Types.select },
+      { field: 'roe', header: 'ROE', type: Types.number, class: 'text-right', isNotFixed: true },  ///
+      { field: 'baseFare', header: 'Base Fare', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'serviceCharge', header: 'Service charge', type: Types.number,  fixVal: 2,class: 'text-right' },
+      { field: 'tax', header: 'TAX', type: Types.number,  fixVal: 2,class: 'text-right' },
+      { field: 'totalPurchase', header: 'Total Purchase', type: Types.number, fixVal: 2, class: 'text-right' },
+      { field: 'discount', header: 'Discount', type: Types.number, fixVal: 2, class: 'text-right' }
+
+    ];
+
+    this.cols.unshift(...this.selectedColumns);
+    this.exportCol = cloneDeep(this.cols);
+
   }
 
   ngOnInit(): void {
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+      if (resp['gridName'] != this.filter_table_name) return;
+      this.activeFiltData = resp;
+      this.sortColumn = resp['sortColumn'];
+      // this.selectDateRanges(resp['table_config']);
+      this.primengTable['_sortField'] = resp['sortColumn'];
+      this.isFilterShow = true;
+      this.primengTable['filters'] = resp['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
+      this.primengTable._filter();
+    });
+
     this.getCustomHeight();
 
     this.getCurrencyList();
@@ -125,7 +167,36 @@ export class BontonDmccComponent extends BaseListingComponent
       }
       this.isFilterShowEvent.emit(true);
       this.primengTable['filters'] = filterData['table_config'];
+      this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+      this.onColumnsChange();
+    } else {
+      this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+      this.onColumnsChange();
     }
+  }
+
+  onColumnsChange(): void {
+    this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+  }
+
+  checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+    if (col.length) return col
+    else {
+      var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+      if (!Col.length)
+        return oldCol;
+      else
+        return Col;
+    }
+  }
+
+  isDisplayHashCol(): boolean {
+    return this.selectedColumns.length > 0;
+  }
+
+
+  toggleOverlayPanel(event: MouseEvent) {
+    this.overlayPanel.toggle(event);
   }
 
   getCustomHeight() {
@@ -244,7 +315,7 @@ export class BontonDmccComponent extends BaseListingComponent
 
   exportExcel(): void {
     if (!Security.hasExportDataPermission(this.module_name)) {
-        return this.alertService.showToast('error',messages.permissionDenied);
+      return this.alertService.showToast('error', messages.permissionDenied);
     }
 
     const filterReq = this.getNewFilterReq({});
@@ -332,5 +403,15 @@ export class BontonDmccComponent extends BaseListingComponent
 
     this.destroy$.next(null);
     this.destroy$.complete();
+  }
+
+  displayColCount(): number {
+    return this.selectedColumns.length + 1;
+  }
+
+  isValidDate(value: any): boolean {
+    const date = new Date(value);
+    return value && !isNaN(date.getTime());
+
   }
 }
