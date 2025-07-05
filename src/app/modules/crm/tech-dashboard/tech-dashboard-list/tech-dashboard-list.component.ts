@@ -155,6 +155,24 @@ export class CRMTechDashboardListComponent implements OnDestroy {
         }
     }
 
+      toggleOverlayPanel(event: MouseEvent) {
+    switch (this.tabNameStr) {
+      case 'Pending':
+        this.pending.toggleOverlayPanel(event);
+        break;
+      case 'Completed':
+        this.completed.toggleOverlayPanel(event);
+        break;
+      case 'Blocked':
+        this.blocked.toggleOverlayPanel(event);
+        break;
+        case 'Expired':
+        this.expired.toggleOverlayPanel(event);
+        break;
+    }
+
+  }
+
     refreshItemsTab(tabString: any): void {
         switch (tabString) {
             case 'Pending':

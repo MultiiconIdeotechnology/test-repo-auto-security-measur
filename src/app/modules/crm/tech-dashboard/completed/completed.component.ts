@@ -29,13 +29,15 @@ import { PendingWLSettingComponent } from '../pending-wl-setting/pending-wl-sett
 import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
+import { cloneDeep } from 'lodash';
+import { OverlayPanel } from 'primeng/overlaypanel';
 
 @Component({
     selector: 'app-crm-tech-dashboard-completed',
@@ -80,12 +82,12 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortArchive: MatSort;
+    @ViewChild('op') overlayPanel!: OverlayPanel;
 
     Mainmodule: any;
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_completed;
     private settingsUpdatedSubscription: Subscription;
-    cols = [];
     total = 0;
     dataList: any;
     appConfig = AppConfig;
@@ -96,6 +98,12 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     selectedAgent: any;
     agentList: any[] = [];
     filter: any = {}
+
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
 
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     public key: any;
@@ -116,21 +124,33 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+        this.selectedColumns = [
+            { field: 'item_code', header: 'Item Code', type: Types.text },
+            { field: 'item_name', header: 'Item', type: Types.select },
+            { field: 'product_name', header: 'Product', type: Types.select },
+            { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agency_name', header: 'Agency Name', type: Types.select },
+            { field: 'activation_date_sub', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'expiry_date_sub', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
         this.agentList = this._filterService.agentListByValue;
-        
+
         // common filter
         this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
             // this.sortColumn = resp['sortColumn'];
-                this.selectedAgent = resp['table_config']['agency_name']?.value;
-                if (this.selectedAgent && this.selectedAgent.id) {
-                    const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-                    if (!match) {
-                        this.agentList.push(this.selectedAgent);
-                    }
+            this.selectedAgent = resp['table_config']['agency_name']?.value;
+            if (this.selectedAgent && this.selectedAgent.id) {
+                const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
+                if (!match) {
+                    this.agentList.push(this.selectedAgent);
                 }
+            }
 
             // this.primengTable['_sortField'] = resp['sortColumn'];
             if (resp['table_config']['activation_date_sub'].value) {
@@ -141,6 +161,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowCompleted = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowCompletedChange.emit(this.isFilterShowCompleted);
             this.primengTable._filter();
         });
@@ -155,7 +176,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             setTimeout(() => {
                 this.selectedAgent = filterData['table_config']['agency_name']?.value;
                 if (this.selectedAgent && this.selectedAgent.id) {
-    
+
                     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
                     if (!match) {
                         this.agentList.push(this.selectedAgent);
@@ -169,9 +190,36 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                 filterData['table_config']['expiry_date_sub'].value = new Date(filterData['table_config']['expiry_date_sub'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
 
@@ -220,9 +268,9 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         });
     }
 
-   // Api call to Get Agent data
-   getAgent(value: string) {
-       this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+    // Api call to Get Agent data
+    getAgent(value: string) {
+        this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
             this.agentList = data;
 
             for (let i in this.agentList) {
@@ -254,33 +302,33 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     //     });
     // }
 
-    wlSetting(record:any){
+    wlSetting(record: any) {
         if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
-    
-            this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
-                next: (data) => {
-                    this.isLoading = false;
-                    this.getWLSettingList = data[0];
-    
-                    this.matDialog.open(DomainSslVerificationComponent, {
-                        disableClose: true,
-                        data: {record:record, wlSettingList:this.getWLSettingList, from:'completed'},
-                        panelClass: ['custom-dialog-modal-md'],
-                        autoFocus: false,
-                      }).afterClosed().subscribe((res:any) => {
-                        if(res && res == 'completed'){
-                            this.refreshItems();
-                        }
-                    })
-                },
-                error: (err) => {
-                    this.alertService.showToast('error', err, 'top-right', true);
-                    this.isLoading = false;
-                },
-            });
-        }
+
+        this.crmService.getWLSettingListTwoParams(record?.code, record?.item_name).subscribe({
+            next: (data) => {
+                this.isLoading = false;
+                this.getWLSettingList = data[0];
+
+                this.matDialog.open(DomainSslVerificationComponent, {
+                    disableClose: true,
+                    data: { record: record, wlSettingList: this.getWLSettingList, from: 'completed' },
+                    panelClass: ['custom-dialog-modal-md'],
+                    autoFocus: false,
+                }).afterClosed().subscribe((res: any) => {
+                    if (res && res == 'completed') {
+                        this.refreshItems();
+                    }
+                })
+            },
+            error: (err) => {
+                this.alertService.showToast('error', err, 'top-right', true);
+                this.isLoading = false;
+            },
+        });
+    }
 
     link(record): void {
         if (!Security.hasPermission(techDashPermissions.linkPermissions)) {
@@ -397,6 +445,16 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 
     // techDate(record): void {

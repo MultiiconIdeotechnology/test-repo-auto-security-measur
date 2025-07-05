@@ -31,13 +31,15 @@ import { techDashboardStatusChangedLogComponent } from '../techdashboard-status-
 import { PendingLinkComponent } from '../pending-link/pending-link.component';
 import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { AgentService } from 'app/services/agent.service';
 import { Subscription } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
 import { MobileProductActivateDialogComponent } from '../domain-ssl-verification/mobile-product-activate-dialog/mobile-product-activate-dialog.component';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
@@ -83,12 +85,12 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     @ViewChild('tabGroup') tabGroup;
     @ViewChild(MatPaginator) public _paginator: MatPaginator;
     @ViewChild(MatSort) public _sortInbox: MatSort;
+    @ViewChild('op') overlayPanel!: OverlayPanel;
 
     Mainmodule: any;
     module_name = module_name.techDashboard;
     filter_table_name = filter_module_name.tech_dashboard_pending;
     private settingsUpdatedSubscription: Subscription;
-    cols = [];
     dataList = [];
     getWLSettingList: any = [];
     searchInputControlPending = new FormControl('');
@@ -106,6 +108,12 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     agentList: any[] = [];
     filter: any = {}
 
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+
     constructor(
         private crmService: CrmService,
         private conformationService: FuseConfirmationService,
@@ -120,6 +128,20 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'item_code', header: 'Item Code', type: Types.text },
+            { field: 'item_name', header: 'Item', type: Types.select },
+            { field: 'product_name', header: 'Product', type: Types.select },
+            { field: 'product_status', header: 'Status', type: Types.select, isCustomColor: true },
+            { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agency_name', header: 'Agency Name', type: Types.select },
+            { field: 'integration_start_date_time', header: 'Start Int. Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'entry_date_time', header: 'Entry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -143,6 +165,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPending = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowPendingChange.emit(this.isFilterShowPending);
             this.primengTable._filter();
         });
@@ -171,9 +194,36 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                 filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     refreshItems(event?: any): void {
@@ -499,5 +549,15 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             this.settingsUpdatedSubscription.unsubscribe();
             this._filterService.activeFiltData = {};
         }
+    }
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }

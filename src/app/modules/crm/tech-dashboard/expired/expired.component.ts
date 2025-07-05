@@ -30,7 +30,7 @@ import { Subject } from 'rxjs';
 import { PendingWLSettingComponent } from '../pending-wl-setting/pending-wl-setting.component';
 import { TechInfoTabsComponent } from '../info-tabs/info-tabs.component';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { BaseListingComponent } from 'app/form-models/base-listing';
+import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { DateTime } from 'luxon';
 import { AgentService } from 'app/services/agent.service';
@@ -39,6 +39,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { Excel } from 'app/utils/export/excel';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-crm-tech-dashboard-expired',
@@ -80,7 +82,7 @@ import { DomainSslVerificationComponent } from '../domain-ssl-verification/domai
 export class TechDashboardExpiredComponent extends BaseListingComponent {
     @Input() isFilterShowExpired: boolean;
     @Output() isFilterShowExpiredChange = new EventEmitter<boolean>();
-    cols = [];
+    @ViewChild('op') overlayPanel!: OverlayPanel;
     total = 0;
 
     dataList: any;
@@ -105,6 +107,12 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     agentList: any[] = [];
     filter: any = {}
 
+    types = Types;
+    exportCol: Column[] = [];
+    activeFiltData: any = {};
+    cols: Column[] = [];
+    selectedColumns: Column[] = [];
+
     constructor(
         private crmService: CrmService,
         private matDialog: MatDialog,
@@ -119,6 +127,20 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
+
+        this.selectedColumns = [
+            { field: 'item_code', header: 'Item Code', type: Types.text },
+            { field: 'item_name', header: 'Item', type: Types.select },
+            { field: 'product_name', header: 'Product', type: Types.select },
+            { field: 'agentCode', header: 'Agent Code', type: Types.number, fixVal: 0 },
+            { field: 'agency_name', header: 'Agency Name', type: Types.select },
+            { field: 'activation_date', header: 'Activation Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'expiry_date', header: 'Expiry Date', type: Types.date, dateFormat: 'dd-MM-yyyy' },
+            { field: 'rm', header: 'RM', type: Types.text }
+        ];
+
+        this.cols.unshift(...this.selectedColumns);
+        this.exportCol = cloneDeep(this.cols);
     }
 
     ngOnInit(): void {
@@ -144,6 +166,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowExpired = true;
+            this.selectedColumns = this.checkSelectedColumn(resp['selectedColumns'] || [], this.selectedColumns);
             this.isFilterShowExpiredChange.emit(this.isFilterShowExpired);
             this.primengTable._filter();
         });
@@ -172,9 +195,36 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
                 filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
+            this.selectedColumns = this.checkSelectedColumn(filterData['selectedColumns'] || [], this.selectedColumns);
+            this.onColumnsChange();
+        } else {
+            this.selectedColumns = this.checkSelectedColumn([], this.selectedColumns);
+            this.onColumnsChange();
         }
+    }
+
+    onColumnsChange(): void {
+        this._filterService.setSelectedColumns({ name: this.filter_table_name, columns: this.selectedColumns });
+    }
+
+    checkSelectedColumn(col: any[], oldCol: Column[]): any[] {
+        if (col.length) return col
+        else {
+            var Col = this._filterService.getSelectedColumns({ name: this.filter_table_name })?.columns || [];
+            if (!Col.length)
+                return oldCol;
+            else
+                return Col;
+        }
+    }
+
+    isDisplayHashCol(): boolean {
+        return this.selectedColumns.length > 0;
+    }
+
+
+    toggleOverlayPanel(event: MouseEvent) {
+        this.overlayPanel.toggle(event);
     }
 
     getStatusColor(status: string): string {
@@ -262,7 +312,7 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
     //     });
     // }
 
-    wlSetting(record:any){
+    wlSetting(record: any) {
         if (!Security.hasPermission(techDashPermissions.wlSettingPermissions)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -274,11 +324,11 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
 
                 this.matDialog.open(DomainSslVerificationComponent, {
                     disableClose: true,
-                    data: {record:record, wlSettingList:this.getWLSettingList, from:'expired'},
+                    data: { record: record, wlSettingList: this.getWLSettingList, from: 'expired' },
                     panelClass: ['custom-dialog-modal-md'],
                     autoFocus: false,
-                  }).afterClosed().subscribe((res:any) => {
-                    if(res && res == 'expired'){
+                }).afterClosed().subscribe((res: any) => {
+                    if (res && res == 'expired') {
                         this.refreshItems();
                     }
                 })
@@ -436,5 +486,16 @@ export class TechDashboardExpiredComponent extends BaseListingComponent {
                 ],
                 data.data, "Expired", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });
+    }
+
+
+    displayColCount(): number {
+        return this.selectedColumns.length + 1;
+    }
+
+    isValidDate(value: any): boolean {
+        const date = new Date(value);
+        return value && !isNaN(date.getTime());
+
     }
 }
