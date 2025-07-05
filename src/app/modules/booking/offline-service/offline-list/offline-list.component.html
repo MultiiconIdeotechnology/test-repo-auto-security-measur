@@ -106,7 +106,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'agent_name'"
+                            <ng-container *ngIf="col.type == types.select && col.field == 'agent_name'"
                                 [field]="col.field">
                                 <p-columnFilter class="searchableDropdown" field="agency_name_agent_id"
                                     matchMode="equals" [showMenu]="false">
@@ -130,9 +130,9 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'sales_person'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'sales_person'">
                                 <p-columnFilter class="searchableDropdown" field="sales_person_flitres"
                                     matchMode="equals" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -148,7 +148,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <!--date picker-->
                             <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">

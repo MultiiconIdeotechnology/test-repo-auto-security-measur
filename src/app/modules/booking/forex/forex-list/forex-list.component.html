@@ -167,7 +167,7 @@
                                 </ng-container>
                             </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'supplier_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'supplier_name'">
                                 <p-columnFilter class="searchableDropdown" field="supplier_id_filters"
                                     matchMode="equals" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -184,9 +184,9 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'agent'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'agent'">
                                 <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -207,7 +207,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter *ngIf="col.type == types.select && col.field == 'rate_for'"
                                 [field]="col.field" matchMode="equals" [showMenu]="false">
@@ -222,7 +222,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'city_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'city_name'">
                                 <p-columnFilter class="searchableDropdown" field="city_id_filters" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -239,7 +239,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter class="searchableDropdown"
                                 *ngIf="col.type == types.select && col.field == 'from_currency'" [field]="col.field"

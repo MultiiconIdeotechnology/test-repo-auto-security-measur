@@ -129,11 +129,11 @@ export class CRMLeadListComponent implements OnDestroy {
     }
 
     toggleOverlayPanel(event: MouseEvent) {
-        switch (this.tab) {
+        switch (this.tabNameStr) {
             case 'Inbox':
                 this.inbox.toggleOverlayPanel(event);
                 break;
-            case 'archive':
+            case 'Archive':
                 this.archive.toggleOverlayPanel(event);
                 break;
         }

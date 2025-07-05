@@ -92,7 +92,7 @@
                                     </ng-template>
                                 </p-columnFilter>
     
-                                <ngContainer *ngIf="col.type == types.select && col.field == 'profile_name'">
+                                <ng-container *ngIf="col.type == types.select && col.field == 'profile_name'">
                                     <p-columnFilter class="searchableDropdown" field="profile_name_id_filters"
                                         matchMode="equals" [showMenu]="false">
                                         <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -106,7 +106,7 @@
                                             </p-dropdown>
                                         </ng-template>
                                     </p-columnFilter>
-                                </ngContainer>
+                                </ng-container>
     
                                 <p-columnFilter *ngIf="col.type == types.select && col.field == 'is_rejected'"
                                     [field]="col.field" matchMode="equals" [showMenu]="false">

@@ -100,7 +100,7 @@
                                 [field]="col.field" [placeholder]="'Search by '+ col.header"
                                 [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
-                            <ngContainer *ngIf="col.type == types.dateTime && col.field == 'start_date'">
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'start_date'">
                                 <p-columnFilter
                                     *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
                                     field="start_date" matchMode="custom" [showMenu]="false">
@@ -134,9 +134,9 @@
                                             (click)="onLocalOption('', '', '')">cancel</mat-icon>
                                     </div>
                                 </ng-container>
-                            </ngContainer>
+                            </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.dateTime && col.field == 'entry_date_time'">
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'entry_date_time'">
                                 <p-columnFilter
                                     *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
                                     field="entry_date_time" matchMode="custom" [showMenu]="false">
@@ -171,7 +171,7 @@
                                             (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
                                     </div>
                                 </ng-container>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter *ngIf="col.type == types.select && col.field == 'campaign_category'"
                                 [field]="col.field" matchMode="equals" [showMenu]="false">

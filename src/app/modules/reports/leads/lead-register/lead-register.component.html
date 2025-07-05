@@ -145,7 +145,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'rmName'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'rmName'">
                                 <p-columnFilter class="searchableDropdown" field="rm_Id" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -161,7 +161,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter *ngIf="col.type == types.select && col.field == 'lead_type'"
                                 [field]="col.field" matchMode="contains" [showMenu]="false">
@@ -193,7 +193,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.boolean && col.field == 'kycStarted'">
+                            <ng-container *ngIf="col.type == types.boolean && col.field == 'kycStarted'">
                                 <p-columnFilter field="KYCStarted_filter" matchMode="equals" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                         <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="kycList"
@@ -205,7 +205,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <!--date picker-->
                             <p-columnFilter *ngIf="col.type == types.date" type="date" [field]="col.field">

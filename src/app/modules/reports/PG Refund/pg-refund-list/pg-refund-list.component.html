@@ -173,7 +173,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.dateTime && col.field == 'requestDate'">
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'requestDate'">
                                 <p-columnFilter *ngIf="(selectionRefundOption$ | async) != 'custom_date_range'"
                                     [field]="col.field" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -205,9 +205,9 @@
                                             (click)="onLocalOption('', '', '')">cancel</mat-icon>
                                     </div>
                                 </ng-container>
-                            </ngContainer>
+                            </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.dateTime && col.field == 'refundDate'">
+                            <ng-container *ngIf="col.type == types.dateTime && col.field == 'refundDate'">
                                 <p-columnFilter
                                     *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
                                     [field]="col.field" matchMode="custom" [showMenu]="false">
@@ -242,7 +242,7 @@
                                             (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
                                     </div>
                                 </ng-container>
-                            </ngContainer>
+                            </ng-container>
                         </ng-container>
                     </th>
                     <th class="w-full"

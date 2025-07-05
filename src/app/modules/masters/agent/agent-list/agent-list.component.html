@@ -121,7 +121,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'relation_manager_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'relation_manager_name'">
                                 <p-columnFilter class="searchableDropdown" field="rm_id_filters" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -137,7 +137,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter class="searchableDropdown"
                                 *ngIf="col.type == types.select && col.field == 'currency'" [field]="col.field"
@@ -219,7 +219,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'markup_profile_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'markup_profile_name'">
                                 <p-columnFilter class="searchableDropdown" field="markup_id_filter" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -236,7 +236,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter class="searchableDropdown"
                                 *ngIf="col.type == types.select && col.field == 'kyc_profile_name'"

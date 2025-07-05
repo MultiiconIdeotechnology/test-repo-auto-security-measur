@@ -86,7 +86,7 @@
                                 </ng-container>
                             </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'agent_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'agent_name'">
                                 <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -110,7 +110,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter *ngIf="col.type == types.select && col.field == 'withdraw_type'"
                                 [field]="col.field" matchMode="equals" [showMenu]="false">

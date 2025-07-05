@@ -152,7 +152,7 @@
                                 </ng-container>
                             </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'agent_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'agent_name'">
                                 <p-columnFilter class="searchableDropdown" field="agent_id_filters" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -173,7 +173,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <!--2 digit point number-->
                             <p-columnFilter *ngIf="col.type == types.number" [type]="'numeric'" [field]="col.field"
@@ -191,7 +191,7 @@
                                 </ng-template>
                             </p-columnFilter>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'supplier_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'supplier_name'">
                                 <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -207,7 +207,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                         </ng-container>
                     </th>

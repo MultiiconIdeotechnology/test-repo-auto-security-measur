@@ -134,7 +134,7 @@ export class InboxComponent extends BaseListingComponent {
             { field: 'lead_status', header: 'Status', type: Types.select, isCustomColor: true },
             { field: 'lead_type', header: 'Type', type: Types.select },
             { field: 'call_purpose', header: 'Purpose', type: Types.text },
-            { field: 'last_call_date_time', header: 'Last Call', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
+            { field: 'last_call_date_time', header: 'Last Call', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
             { field: 'assignByName', header: 'Assigned By', type: Types.text },
             { field: 'lead_source', header: 'Source', type: Types.text },
             { field: 'entry_date_time', header: 'Lead Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm' },

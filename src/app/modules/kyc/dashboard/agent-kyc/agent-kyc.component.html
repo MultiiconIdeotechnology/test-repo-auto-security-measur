@@ -100,7 +100,7 @@
                                 [field]="col.field" [placeholder]="'Search by '+ col.header"
                                 [ariaLabel]="'Filter '+ col.header" matchMode="contains" />
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'kyc_profile'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'kyc_profile'">
                                 <p-columnFilter class="searchableDropdown" field="kyc_profile_id_filters"
                                     matchMode="equals" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -114,7 +114,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter class="searchableDropdown"
                                 *ngIf="col.type == types.select && col.field == 'relation_manager'" [field]="col.field"

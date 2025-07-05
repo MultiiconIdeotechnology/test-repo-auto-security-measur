@@ -119,11 +119,11 @@ export class ArchiveComponent extends BaseListingComponent {
         this._filterService.applyDefaultFilter(this.filter_table_name);
 
         this.selectedColumns = [
-            { field: 'lead_status', header: 'Status', type: Types.select },
+            { field: 'lead_status', header: 'Status', type: Types.select , isCustomColor:true},
             { field: 'agency_name', header: 'Agency', type: Types.text },
             { field: 'contact_person_email', header: 'Email', type: Types.text },
             { field: 'contact_person_mobile', header: 'Mobile', type: Types.text },
-            { field: 'last_call_date_time', header: 'Last Status Date', type: Types.date },
+            { field: 'last_call_date_time', header: 'Last Status Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
             { field: 'last_call_feedback', header: 'Last Remark', type: Types.text },
             { field: 'lead_source', header: 'Source', type: Types.text },
         ];

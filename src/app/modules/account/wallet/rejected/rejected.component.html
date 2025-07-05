@@ -95,7 +95,7 @@
                                 </ng-container>
                             </ng-container>
 
-                            <ngContainer *ngIf="col.type == types.select && col.field == 'recharge_for_name'">
+                            <ng-container *ngIf="col.type == types.select && col.field == 'recharge_for_name'">
                                 <p-columnFilter class="searchableDropdown" field="agent_code_filter" matchMode="equals"
                                     [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -116,7 +116,7 @@
                                         </p-dropdown>
                                     </ng-template>
                                 </p-columnFilter>
-                            </ngContainer>
+                            </ng-container>
 
                             <p-columnFilter class="searchableDropdown"
                                 *ngIf="col.type == types.select && col.field == 'mop'" [field]="col.field"
