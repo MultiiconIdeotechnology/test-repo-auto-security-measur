@@ -34,7 +34,7 @@
             </button>
 
             <!-- Select Columns Button and Select Box Code -->
-            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+            <button class="rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
                 [disabled]="isLoading" (click)="op.toggle($event)">
                 <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
             </button>
@@ -283,7 +283,7 @@
                             </span>
                         </ng-container>
 
-                        <ng-container *ngIf="col.type === types.link &&col.field == 'referral_link'">
+                        <ng-container *ngIf="col.type === types.link && col.field == 'referral_link'">
                             <a class="underline" [href]="element[col.field]" target="_blank" rel="noopener noreferrer">
                                 {{ element[col.field] }}
                             </a>
