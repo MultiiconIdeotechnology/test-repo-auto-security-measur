@@ -24,6 +24,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 import { CancellationPolicyComponent } from '../../bus/cancellation-policy/cancellation-policy.component';
+import { CommonUtils } from 'app/utils/commonutils';
 
 @Component({
   selector: 'app-cab-booking-details',
@@ -151,6 +152,22 @@ export class CabBookingDetailsComponent {
             })
         }
       }
+    })
+  }
+
+   getCopy(copyOf): void {
+    this.cabService.downloadCabQuotationV2(this.bookingDetail.id).subscribe({
+      next: (res) => {
+        this.bookingDetail.copy = res.copy;
+        this.bookingDetail.customer_copy = res.customer_copy;
+        if (copyOf === 'agent') {
+          CommonUtils.downloadPdf(this.bookingDetail.copy, 'holiday_quotation.pdf');
+        }
+        else {
+          CommonUtils.downloadPdf(this.bookingDetail.customer_copy, 'holiday_quotation.pdf');
+        }
+      }, error: (err) => {
+      },
     })
   }
 
