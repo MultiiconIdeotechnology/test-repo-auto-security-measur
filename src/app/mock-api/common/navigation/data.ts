@@ -229,6 +229,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'ACCOUNT_PAYMENTLINK_VIEW',
                 icon: 'heroicons_outline:link',
                 link: Routes.account.payment_link_path
+            },
+            {
+                id: 'account.proforma_invoice',
+                title: 'Proforma Invoice',
+                type: 'basic',
+                pid: 'ACCOUNT_PROFORMAINVOICE_VIEW',
+                icon: 'heroicons_outline:newspaper',
+                link: Routes.account.proforma_invoice_path
             }
         ]
     },
