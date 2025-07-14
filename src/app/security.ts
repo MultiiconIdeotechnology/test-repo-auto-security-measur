@@ -325,6 +325,8 @@ export const module_name = {
     tech_rm_monthly_report: 'RM Monthly Anaytics',
     tech_product_monthly_report:'Product Monthly Analytics',
     cab_inventory: 'Cab',
+    fare_type_mapper:'Fare Type Mapper',
+    
 
     // account2.0
     purchase_register_2: 'Purchase Register-2',
@@ -344,6 +346,11 @@ export const filter_module_name = {
     tech_dashboard_blocked: "tech_dashboard_blocked",
     tech_dashboard_expired: "tech_dashboard_expired",
     referral_link: "referral_link",
+
+
+    //  Fare Type Mapper
+    fare_type_mapper_common_fare_type: "fare_type_mapper_common_fare_type",
+    fare_type_mapper_supplier_fare_type_mapper: "fare_type_mapper_supplier_fare_type_mapper",
 
     // masters
     city_master: "city_master",
@@ -819,4 +826,10 @@ export const supplierAPIPermissions = {
 export const PSPPermissions = {
     setDefaultPermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Set Default', category_name: category_name.action },
     enableDisablePermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const fareTypeMApperPermissions = {
+   commonFareTypeTabTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab', category_name: category_name.view },
+   supplierFareTypeMapperTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Supplier Fare Type Mapper Tab', category_name: category_name.view },
+   
 }

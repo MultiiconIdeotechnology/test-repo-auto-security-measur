@@ -1,0 +1,98 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-8 border-b">
+        <div class="text-3xl font-extrabold tracking-tight">
+            {{ module_name }}
+        </div>
+
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+
+            <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'"> -->
+
+            <!-- <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
+                <ng-container *ngIf="tabNameStr == 'Pending'">
+                    <input matInput [formControl]="searchInputControlPending" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
+                </ng-container>
+                <ng-container *ngIf="tabNameStr == 'Completed'">
+                    <input matInput [formControl]="searchInputControlCompleted" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
+                </ng-container>
+                <ng-container *ngIf="tabNameStr == 'Expired'">
+                    <input matInput [formControl]="searchInputControlExpired" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
+                </ng-container>
+
+                <ng-container *ngIf="tabNameStr == 'Blocked'">
+                    <input matInput [formControl]="searchInputControlBlocked" [autocomplete]="'off'"
+                        [placeholder]="'Search'">
+                </ng-container>
+            </mat-form-field> -->
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Comman Fare Type'">
+                <input #commonFareTypeRef matInput [formControl]="searchInputControlCommonFareType" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="commonFareTypeRefresh(commonFareTypeRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="commonFareTypeRefresh(commonFareTypeRef.value)"></mat-icon>
+            </div>
+
+            <div class="flex ctm_search" *ngIf="tabNameStr == 'Supplier Fare Type Mapper'">
+                <input #supplierFareTypeMapperRef matInput [formControl]="searchInputControlSupplierFareTypeMapper" [autocomplete]="'off'"
+                    [placeholder]="'Search'" (keyup.enter)="supplierFareTypeMapperRefresh(supplierFareTypeMapperRef.value)" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="supplierFareTypeMapperRefresh(supplierFareTypeMapperRef.value)"></mat-icon>
+            </div>
+
+           
+
+            <!------global filter------>
+            <button *ngIf="this.tabNameStr == 'Comman Fare Type'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="commonFareType?.isLoading"
+                (click)="isFilterShowCommonFarType  = !isFilterShowCommonFarType">
+                <img *ngIf="!isFilterShowCommonFarType" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowCommonFarType" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <button *ngIf="this.tabNameStr == 'Supplier Fare Type Mapper'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
+                matTooltip="Advanced Filter" [disabled]="supplierFareTypeMapper?.isLoading"
+                (click)="isFilterShowSupplierFareType  = !isFilterShowSupplierFareType ">
+                <img *ngIf="!isFilterShowSupplierFareType" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
+                    alt="c">
+                <img *ngIf="isFilterShowSupplierFareType " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
+                    alt="c">
+            </button>
+
+            <!--Refresh -->
+             <ng-container *ngIf="tabNameStr == 'Comman Fare Type'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Comman Fare Type')" matTooltip="Refresh">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+            </ng-container>
+            <ng-container *ngIf="tabNameStr == 'Supplier Fare Type Mapper'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Supplier Fare Type Mapper')" matTooltip="Refresh">
+                    <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+                </button>
+            </ng-container>
+        </div>
+    </div>
+
+    <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
+        <mat-tab label="Comman Fare Type" [aria-label]="'Comman Fare Type'" *ngIf="getTabsPermission('commonFareType')">
+            <ng-container *ngIf="tabNameStr == 'Comman Fare Type'">
+                <app-common-faretype #commonFareType
+                    [(isFilterShowCommonFarType)]="isFilterShowCommonFarType"></app-common-faretype>
+            </ng-container>
+        </mat-tab>
+
+        <mat-tab label="Supplier Fare Type Mapper" [aria-label]="'Supplier Fare Type Mapper'"
+            *ngIf="getTabsPermission('supplierFareTypeMapper')">
+            <ng-container *ngIf="tabNameStr == 'Supplier Fare Type Mapper'">
+                <app-supplier-faretype-mapper-tab #supplierFareTypeMapper
+                    [(isFilterShowSupplierFareType)]="isFilterShowSupplierFareType"></app-supplier-faretype-mapper-tab>
+            </ng-container>
+        </mat-tab>
+
+    </mat-tab-group>
+</div>
