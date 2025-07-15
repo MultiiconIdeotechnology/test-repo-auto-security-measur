@@ -30,51 +30,73 @@
             </mat-form-field> -->
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Comman Fare Type'">
-                <input #commonFareTypeRef matInput [formControl]="searchInputControlCommonFareType" [autocomplete]="'off'"
-                    [placeholder]="'Search'" (keyup.enter)="commonFareTypeRefresh(commonFareTypeRef.value)" />
+                <input #commonFareTypeRef matInput [formControl]="searchInputControlCommonFareType"
+                    [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="commonFareTypeRefresh(commonFareTypeRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                     (click)="commonFareTypeRefresh(commonFareTypeRef.value)"></mat-icon>
             </div>
 
             <div class="flex ctm_search" *ngIf="tabNameStr == 'Supplier Fare Type Mapper'">
-                <input #supplierFareTypeMapperRef matInput [formControl]="searchInputControlSupplierFareTypeMapper" [autocomplete]="'off'"
-                    [placeholder]="'Search'" (keyup.enter)="supplierFareTypeMapperRefresh(supplierFareTypeMapperRef.value)" />
+                <input #supplierFareTypeMapperRef matInput [formControl]="searchInputControlSupplierFareTypeMapper"
+                    [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="supplierFareTypeMapperRefresh(supplierFareTypeMapperRef.value)" />
                 <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
                     (click)="supplierFareTypeMapperRefresh(supplierFareTypeMapperRef.value)"></mat-icon>
             </div>
 
-           
+
 
             <!------global filter------>
-            <button *ngIf="this.tabNameStr == 'Comman Fare Type'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="commonFareType?.isLoading"
+            <button *ngIf="this.tabNameStr == 'Comman Fare Type'" class="ml-4 rounded-full" mat-flat-button
+                [color]="'primary'" matTooltip="Advanced Filter" [disabled]="commonFareType?.isLoading"
                 (click)="isFilterShowCommonFarType  = !isFilterShowCommonFarType">
-                <img *ngIf="!isFilterShowCommonFarType" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
-                    alt="c">
-                <img *ngIf="isFilterShowCommonFarType" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
-                    alt="c">
+                <img *ngIf="!isFilterShowCommonFarType" class="w-5 cursor-pointer pt-1"
+                    src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShowCommonFarType" class="w-5 cursor-pointer pt-1"
+                    src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
-            <button *ngIf="this.tabNameStr == 'Supplier Fare Type Mapper'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'"
-                matTooltip="Advanced Filter" [disabled]="supplierFareTypeMapper?.isLoading"
+            <button *ngIf="this.tabNameStr == 'Supplier Fare Type Mapper'" class="ml-4 rounded-full" mat-flat-button
+                [color]="'primary'" matTooltip="Advanced Filter" [disabled]="supplierFareTypeMapper?.isLoading"
                 (click)="isFilterShowSupplierFareType  = !isFilterShowSupplierFareType ">
-                <img *ngIf="!isFilterShowSupplierFareType" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg"
-                    alt="c">
-                <img *ngIf="isFilterShowSupplierFareType " class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg"
-                    alt="c">
+                <img *ngIf="!isFilterShowSupplierFareType" class="w-5 cursor-pointer pt-1"
+                    src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShowSupplierFareType " class="w-5 cursor-pointer pt-1"
+                    src="assets/icons/filter-remove.svg" alt="c">
             </button>
+
+            <!-- Select Columns Button and Select Box Code -->
+            <!-- <button *ngIf="this.tabNameStr == 'Comman Fare Type'" class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+               [disabled]="commonFareType?.isLoading" (click)="op.toggle($event)">
+                <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+            </button>
+            <p-overlayPanel #op>
+                <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" class="overlay-panel"
+                    [style]="{'max-width': '220px'}" display="chip" placeholder="Choose Columns" />
+            </p-overlayPanel> -->
+
 
             <!--Refresh -->
-             <ng-container *ngIf="tabNameStr == 'Comman Fare Type'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Comman Fare Type')" matTooltip="Refresh">
+            <ng-container *ngIf="tabNameStr == 'Comman Fare Type'">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Comman Fare Type')"
+                    matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Supplier Fare Type Mapper'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Supplier Fare Type Mapper')" matTooltip="Refresh">
+                <button class="ml-4" mat-flat-button [color]="'primary'"
+                    (click)="refreshItemsTab('Supplier Fare Type Mapper')" matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
             </ng-container>
+
+            <!-- Add -->
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createInternal()"
+                *ngIf="tabNameStr == 'Comman Fare Type'">
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2 mr-1">Add</span>
+            </button>
         </div>
     </div>
 
@@ -96,3 +118,6 @@
 
     </mat-tab-group>
 </div>
+
+<!--Add Common fare type-->
+<app-common-fareType-entry></app-common-fareType-entry>

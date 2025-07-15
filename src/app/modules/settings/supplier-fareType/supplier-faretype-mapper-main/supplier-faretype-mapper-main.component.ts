@@ -19,12 +19,12 @@ import { Security, fareTypeMApperPermissions, filter_module_name, module_name, t
 import { takeUntil, debounceTime, Subject } from 'rxjs';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
-import { TechDashboardPendingComponent } from 'app/modules/crm/tech-dashboard/pending/pending.component';
-import { TechDashboardCompletedComponent } from 'app/modules/crm/tech-dashboard/completed/completed.component';
-import { TechDashboardExpiredComponent } from 'app/modules/crm/tech-dashboard/expired/expired.component';
-import { TechDashboardBlockedComponent } from 'app/modules/crm/tech-dashboard/blocked/blocked.component';
 import { CommonFaretypeComponent } from './common-faretype/common-faretype.component';
 import { SupplierFaretypeMapperTabComponent } from './supplier-faretype-mapper-tab/supplier-faretype-mapper-tab.component';
+import { EntityService } from 'app/services/entity.service';
+import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
+import { CommonFareTypeEntryComponent } from "./common-faretype/common-fareType-entry/common-fareType-entry.component";
+import { Column } from 'app/form-models/base-listing';
 
 @Component({
     selector: 'app-supplier-faretype-mapper-main',
@@ -48,15 +48,9 @@ import { SupplierFaretypeMapperTabComponent } from './supplier-faretype-mapper-t
         MatDividerModule,
         CommonModule,
         MatTabsModule,
-        TechDashboardPendingComponent,
-        TechDashboardCompletedComponent,
-        TechDashboardExpiredComponent,
-        TechDashboardBlockedComponent,
-
         CommonFaretypeComponent,
-        SupplierFaretypeMapperTabComponent
-
-
+        SupplierFaretypeMapperTabComponent,
+        CommonFareTypeEntryComponent
     ],
     templateUrl: './supplier-faretype-mapper-main.component.html',
     styleUrls: ['./supplier-faretype-mapper-main.component.scss']
@@ -64,8 +58,7 @@ import { SupplierFaretypeMapperTabComponent } from './supplier-faretype-mapper-t
 export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     @ViewChild('commonFareType') commonFareType: CommonFaretypeComponent;
     @ViewChild('supplierFareTypeMapper') supplierFareTypeMapper: SupplierFaretypeMapperTabComponent;
-    // @ViewChild('commontFareType') commontFareType: CommonFaretypeComponent;
-    // @ViewChild('supplierFareTypeMapper') supplierFareTypeMapper: SupplierFaretypeMapperTabComponent;
+
 
     module_name = module_name.fare_type_mapper;
     filter_table_name = filter_module_name;
@@ -86,10 +79,13 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     itemList = [];
     dataListArchive = [];
     total = 0;
+    record: any;
+    selectedColumns: Column[];
 
     constructor(
         public _filterService: CommonFilterService,
-        private globalSearchService: GlobalSearchService
+        private globalSearchService: GlobalSearchService,
+        private sidebarDialogService: SidebarCustomModalService,
     ) { }
 
     public getTabsPermission(tab: string): boolean {
@@ -103,8 +99,9 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     }
 
     ngOnInit(): void {
-        this.globalSearchService.getItemList();
-        this.globalSearchService.getProductList();
+        
+        this.commonFareType?.refreshItems();
+        //this.globalSearchService.getProductList();
     }
 
     public tabChanged(event: any): void {
@@ -136,6 +133,8 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
         }
     }
 
+    
+
     refreshItemsTab(tabString: any): void {
         switch (tabString) {
             case 'Comman Fare Type':
@@ -147,6 +146,12 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
 
         }
     }
+
+    createInternal(): void {
+        this.sidebarDialogService.openModal('common-fareType-create', null)
+    }
+
+      
 
     exportExcel(): void {
         // if (this.tab == 'blocked')

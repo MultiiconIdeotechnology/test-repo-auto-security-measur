@@ -830,6 +830,7 @@ export const PSPPermissions = {
 
 export const fareTypeMApperPermissions = {
    commonFareTypeTabTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab', category_name: category_name.view },
+   deleteFareTypePermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab Delete', category_name: category_name.delete },
    supplierFareTypeMapperTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Supplier Fare Type Mapper Tab', category_name: category_name.view },
    
 }

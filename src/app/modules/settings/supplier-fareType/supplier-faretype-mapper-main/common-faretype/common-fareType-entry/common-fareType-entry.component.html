@@ -1,0 +1,31 @@
+<fuse-drawer class="min-w-[400px] z-999" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'"
+    #settingsDrawer>
+
+    <div class="w-full">
+        <div class="flex justify-between border-b-2 border-gray-border px-5 py-4 h-15 sticky top-0">
+            <span class="text-lg font-semibold">{{title}}</span>
+            <mat-icon svgIcon="close" class=" icon-size-6 cursor-pointer "
+                (click)="settingsDrawer.close(null)"></mat-icon>
+        </div>
+
+        <div>
+            <div class="px-5 py-2 h-[calc(100vh-120px)] overflow-auto">
+                <form [formGroup]="formGroup" class="flex flex-col gap-2">
+
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Fare Type</mat-label>
+                        <input matInput required formControlName="fare_type" placeholder="Corporate,SME" />
+                    </mat-form-field>           
+                </form>
+
+            </div>
+
+            <div class="flex items-center justify-end border-t px-5 py-4 gap-3 h-15 sticky bottom-0">
+                <button mat-stroked-button (click)="settingsDrawer.close(null)">Close</button>
+                <button mat-flat-button [color]="'primary'" (click)="submit()" [disabled]="disableBtn">
+                    {{buttonLabel}}
+                </button>
+            </div>
+        </div>
+    </div>
+</fuse-drawer>

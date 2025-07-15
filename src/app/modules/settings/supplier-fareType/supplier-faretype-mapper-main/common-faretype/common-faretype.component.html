@@ -1,0 +1,100 @@
+<div class="table-container paginator-bottom">
+    <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+        columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+        [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+        [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeightWTab"
+        [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [globalFilterFields]=""
+        styleClass="p-datatable-gridlines p-datatable-sm">
+
+        <ng-template pTemplate="header">
+            <tr>
+                <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+                <th pSortableColumn="fare_type" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+                    class="dark:bg-[#1e293b]" [frozen]="frozenObj?.fare_type"
+                    [ngClass]="{'left-0': !frozenObj?.fare_type}">
+                    Fare Type <p-sortIcon field="fare_type" />
+                    <span class="float-right" (click)="isFrozenColumn('fare_type');$event.stopPropagation()">
+                        <i *ngIf="!frozenObj?.fare_type" class="pi pi-lock-open icon-size-3"></i>
+                        <i *ngIf="frozenObj?.fare_type" class="pi pi-lock icon-size-3"></i>
+                    </span>
+                </th>
+
+                <th pSortableColumn="entry_date_time" pResizableColumn>
+                    Create Date <p-sortIcon field="entry_date_time" />
+                </th>
+                <th pSortableColumn="modify_date_time" pResizableColumn>
+                    Modify Date <p-sortIcon field="modify_date_time" />
+                </th>
+            </tr>
+
+            <tr *ngIf="isFilterShowPending">
+                <th class=" left-[-1px]" pFrozenColumn></th>
+                <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.item_code" class="min-w-[110px]">
+                    <p-columnFilter field="item_code" type="text" placeholder="Search by Item code"
+                        ariaLabel="Filter Item code"></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="entry_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Entry Date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="modify_date_time" type="date">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                            <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
+                                [ngModel]="value" placeholder="Search by Modify Date">
+                            </p-calendar>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-element let-i="rowIndex">
+            <tr>
+                <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+                    <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+                        <mat-icon> more_vert </mat-icon>
+                    </span>
+
+                    <mat-menu #optionMenu>
+                        <!-- <button mat-menu-item (click)="viewDetail(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600">Info</span>
+                        </button> -->
+                        <button mat-menu-item (click)="editFareType(element)">
+                            <mat-icon class="mat-18">edit</mat-icon>
+                            <span style="font-weight: 600">Edit</span>
+                        </button>
+                        <button mat-menu-item (click)="deleteFareType(element)">
+                            <mat-icon class="mat-18">delete</mat-icon>
+                            <span style="font-weight: 600">Delete</span>
+                        </button>
+                    </mat-menu>
+                </td>
+                <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.item_code">
+                    {{element.fare_type || '-'}}
+                </td>
+                <td>
+                    {{(element.entry_date_time | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+                <td class="w-full">
+                    {{(element.modify_date_time | date: 'dd-MM-yyyy') || "-"}}
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr class="h-14">
+                <td colspan="4" class="text-center font-semibold text-lg">
+                    {{getNodataText()}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
