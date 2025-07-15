@@ -1,3 +1,120 @@
-<p>
-  supplier-faretype-mapper-tab works!
-</p>
+<div class="table-container paginator-bottom">
+  <p-table #datatable [value]="dataList" [columns]="selectedColumns" [sortField]="sortColumn" [sortOrder]="-1"
+    [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading"
+    [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+    [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+    [scrollable]="true" [scrollHeight]="scrollHeightWTab" [showCurrentPageReport]="true" [showPageLinks]="false"
+    [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+    [globalFilterFields]="" styleClass="p-datatable-gridlines p-datatable-sm">
+
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
+        <th pSortableColumn="supplier_name" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+          class="dark:bg-[#1e293b]" [frozen]="frozenObj?.supplier_name"
+          [ngClass]="{'left-0': !frozenObj?.supplier_name}">
+          Supplier <p-sortIcon field="supplier_name" />
+          <span class="float-right" (click)="isFrozenColumn('supplier_name');$event.stopPropagation()">
+            <i *ngIf="!frozenObj?.supplier_name" class="pi pi-lock-open icon-size-3"></i>
+            <i *ngIf="frozenObj?.supplier_name" class="pi pi-lock icon-size-3"></i>
+          </span>
+        </th>
+        <th pSortableColumn="supplier_fare_type" pResizableColumn>
+          Supplier Fare Type <p-sortIcon field="supplier_fare_type" />
+        </th>
+        <th pSortableColumn="bonton_fare_type" pResizableColumn>
+          Bonton Fare Type <p-sortIcon field="bonton_fare_type" />
+        </th>
+        <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+          [ngClass]="{'w-full': isLast }">
+          {{col.header}} <p-sortIcon [field]="col.field" />
+        </th>
+      </tr>
+
+      <tr *ngIf="isFilterShowSupplierFareType">
+        <th class=" left-[-1px]" pFrozenColumn></th>
+        <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name" class="min-w-[110px]">
+          <p-columnFilter field="supplier_name" type="text" placeholder="Search by Supplier Name"
+            ariaLabel="Filter Supplier Name"></p-columnFilter>
+        </th>
+        <th>
+          <p-columnFilter type="text" matchMode="contains" field="supplier_fare_type" placeholder="Search by type"
+            ariaLabel="Filter Type" />
+        </th>
+        <th>
+          <p-columnFilter type="text" matchMode="contains" field="invoice_no" placeholder="Search by Type"
+            ariaLabel="Filter Type" />
+        </th>
+
+        <th *ngFor="let col of columns">
+          <p-columnFilter *ngIf="col.field == 'entry_date_time'" field="entry_date_time" type="date">
+            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+              <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                placeholder="Search by Create date">
+              </p-calendar>
+            </ng-template>
+          </p-columnFilter>
+
+          <p-columnFilter *ngIf="col.field == 'modify_date_time'" field="modify_date_time" type="date">
+            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+              <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy" appendTo="body"
+                placeholder="Search by Modify date">
+              </p-calendar>
+            </ng-template>
+          </p-columnFilter>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-element let-i="rowIndex" let-columns="columns">
+      <tr>
+        <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
+          <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
+            <mat-icon> more_vert </mat-icon>
+          </span>
+
+          <mat-menu #optionMenu>
+            <!-- <button mat-menu-item (click)="viewDetail(element)">
+                            <mat-icon class="mat-18">info</mat-icon>
+                            <span style="font-weight: 600">Info</span>
+                        </button> -->
+            <button mat-menu-item (click)="editSupplierFareType(element)">
+              <mat-icon class="mat-18">edit</mat-icon>
+              <span style="font-weight: 600">Edit</span>
+            </button>
+            <button mat-menu-item (click)="deleteFareType(element)">
+              <mat-icon class="mat-18">delete</mat-icon>
+              <span style="font-weight: 600">Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+        <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name">
+          {{element.supplier_name || '-'}}
+        </td>
+         <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_fare_type">
+          {{element.supplier_fare_type || '-'}}
+        </td>
+         <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.bonton_fare_type">
+          {{element.bonton_fare_type || '-'}}
+        </td>
+        <td *ngFor="let col of columns">
+          <ng-container *ngIf="col.field == 'entry_date_time'">
+            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+          </ng-container>
+
+          <ng-container *ngIf="col.field == 'modify_date_time'">
+            {{(element[col.field] | date : "dd-MM-yyyy") || '-'}}
+          </ng-container>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr class="h-14">
+        <td colspan="6" class="text-center font-semibold text-lg">
+          {{getNodataText()}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

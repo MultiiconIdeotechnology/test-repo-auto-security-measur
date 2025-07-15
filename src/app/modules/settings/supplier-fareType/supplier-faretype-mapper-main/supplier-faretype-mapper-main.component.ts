@@ -25,33 +25,37 @@ import { EntityService } from 'app/services/entity.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { CommonFareTypeEntryComponent } from "./common-faretype/common-fareType-entry/common-fareType-entry.component";
 import { Column } from 'app/form-models/base-listing';
+import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { SupplierTypeEntryComponent } from "./supplier-faretype-mapper-tab/supplier-type-entry/supplier-type-entry.component";
 
 @Component({
     selector: 'app-supplier-faretype-mapper-main',
     standalone: true,
     imports: [
-        NgIf,
-        NgFor,
-        DatePipe,
-        ReactiveFormsModule,
-        MatIconModule,
-        MatInputModule,
-        MatButtonModule,
-        MatProgressBarModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatSortModule,
-        MatFormFieldModule,
-        MatMenuModule,
-        MatDialogModule,
-        MatTooltipModule,
-        MatDividerModule,
-        CommonModule,
-        MatTabsModule,
-        CommonFaretypeComponent,
-        SupplierFaretypeMapperTabComponent,
-        CommonFareTypeEntryComponent
-    ],
+    PrimeNgImportsModule,
+    NgIf,
+    NgFor,
+    DatePipe,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatMenuModule,
+    MatDialogModule,
+    MatTooltipModule,
+    MatDividerModule,
+    CommonModule,
+    MatTabsModule,
+    CommonFaretypeComponent,
+    SupplierFaretypeMapperTabComponent,
+    CommonFareTypeEntryComponent,
+    SupplierTypeEntryComponent
+],
     templateUrl: './supplier-faretype-mapper-main.component.html',
     styleUrls: ['./supplier-faretype-mapper-main.component.scss']
 })
@@ -64,8 +68,8 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     filter_table_name = filter_module_name;
     public apiCalls: any = {};
     tabName: any
-    tabNameStr: any = 'Comman Fare Type'
-    tab: string = 'Comman Fare Type';
+    tabNameStr: any = 'Common'
+    tab: string = 'Common';
 
     isSecond: boolean = true;
     isThird: boolean = true;
@@ -80,7 +84,17 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     dataListArchive = [];
     total = 0;
     record: any;
-    selectedColumns: Column[];
+    _selectedColumns: Column[];
+
+    cols: Column[] = [
+        { field: 'entry_date_time', header: 'Create Date' },
+        { field: 'modify_date_time', header: 'Modify Date' },
+    ];
+
+      cols1: Column[] = [
+        { field: 'entry_date_time', header: 'Create Date' },
+        { field: 'modify_date_time', header: 'Modify Date' },
+    ];
 
     constructor(
         public _filterService: CommonFilterService,
@@ -99,7 +113,6 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     }
 
     ngOnInit(): void {
-        
         this.commonFareType?.refreshItems();
         //this.globalSearchService.getProductList();
     }
@@ -110,12 +123,12 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
         this.tabName = tabName;
 
         switch (this.tabNameStr) {
-            case 'Comman Fare Type':
+            case 'Common':
                 this.tab = 'commonFareType';
                 this.commonFareType?.refreshItems();
                 break;
 
-            case 'Supplier Fare Type Mapper':
+            case 'Supplier':
                 this.tab = 'supplierFareTypeMapper';
                 if (this.isSecond) {
                     this.supplierFareTypeMapper?.refreshItems();
@@ -126,21 +139,21 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     }
 
     openTabFiterDrawer() {
-        if (this.tabNameStr == 'Comman Fare Type') {
+        if (this.tabNameStr == 'Common') {
             this._filterService.openDrawer(this.filter_table_name.fare_type_mapper_common_fare_type, this.commonFareType.primengTable);
         } else {
             this._filterService.openDrawer(this.filter_table_name.fare_type_mapper_supplier_fare_type_mapper, this.supplierFareTypeMapper.primengTable);
         }
     }
 
-    
+
 
     refreshItemsTab(tabString: any): void {
         switch (tabString) {
-            case 'Comman Fare Type':
+            case 'Common':
                 this.commonFareType?.refreshItems();
                 break;
-            case 'Supplier Fare Type Mapper':
+            case 'Supplier':
                 this.supplierFareTypeMapper?.refreshItems();
                 break;
 
@@ -151,7 +164,11 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
         this.sidebarDialogService.openModal('common-fareType-create', null)
     }
 
-      
+    createInternalSupplier():void {
+         this.sidebarDialogService.openModal('supplier-fareType-create', null)
+    }
+
+
 
     exportExcel(): void {
         // if (this.tab == 'blocked')

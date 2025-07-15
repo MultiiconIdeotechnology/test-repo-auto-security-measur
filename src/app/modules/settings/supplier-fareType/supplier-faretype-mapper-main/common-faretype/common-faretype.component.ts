@@ -1,6 +1,5 @@
-import { L } from '@angular/cdk/keycodes';
 import { CommonModule, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,6 +37,7 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
   styleUrls: ['./common-faretype.component.scss']
 })
 export class CommonFaretypeComponent extends BaseListingComponent {
+  @Input() selectedColumns: Column[];
   @Input() isFilterShowCommonFarType: boolean;
   @Output() isFilterShowCommonFarTypeChange = new EventEmitter<boolean>();
   @Input() dropdownFirstCallObj: any;
@@ -51,10 +51,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
   private settingsUpdatedSubscription: Subscription;
   cols = [];
   dataList = [];
-  getWLSettingList: any = [];
   searchInputControlCommonFareType = new FormControl('');
-  deadLeadId: any;
-  statusList = ['Pending', 'Inprocess', 'Delivered', 'Google Closed Testing', 'Waiting for Customer Update', 'Waiting for Account Activation', 'Rejected from Store',];
   isLoading = false;
   public _unsubscribeAll: Subject<any> = new Subject<any>();
   public key: any;
@@ -63,8 +60,6 @@ export class CommonFaretypeComponent extends BaseListingComponent {
   total = 0;
   appConfig = AppConfig;
   data: any
-  selectedAgent: any;
-  agentList: any[] = [];
   filter: any = {}
 
   private destroy$: Subject<any> = new Subject<any>();
@@ -80,34 +75,19 @@ export class CommonFaretypeComponent extends BaseListingComponent {
   ) {
     super(module_name.techDashboard);
     this.key = this.module_name;
-    this.sortColumn = 'entry_date_time';
-    this.sortDirection = 'desc';
+    this.sortColumn = 'fare_type';
+    this.sortDirection = 'asc';
     this.Mainmodule = this;
     this._filterService.applyDefaultFilter(this.filter_table_name);
   }
 
   ngOnInit(): void {
-    // this.agentList = this._filterService.agentListByValue;
-    // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-    //   this.selectedAgent = resp['table_config']['agency_name']?.value;
-    //   if (this.selectedAgent && this.selectedAgent.id) {
-    //     const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-    //     if (!match) {
-    //       this.agentList.push(this.selectedAgent);
-    //     }
-    //   }
-
-    //   if (resp['table_config']['integration_start_date_time'].value) {
-    //     resp['table_config']['integration_start_date_time'].value = new Date(resp['table_config']['integration_start_date_time'].value);
-    //   }
-    //   if (resp['table_config']['entry_date_time'].value) {
-    //     resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
-    //   }
-    //   this.primengTable['filters'] = resp['table_config'];
-    //   this.isFilterShowCommonFarType = true;
-    //   this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
-    //   this.primengTable._filter();
-    // });
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {   
+      this.primengTable['filters'] = resp['table_config'];
+      this.isFilterShowCommonFarType = true;
+      this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
+      this.primengTable._filter();
+    });
     this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
       if (res && res.key == 'create-response-fareType') {
         let index = this.dataList.findIndex((item: any) => item.id == res.data.id);
@@ -123,29 +103,14 @@ export class CommonFaretypeComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
-    // if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-    //   this.isFilterShowCommonFarType = true;
-    //   this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
-    //   let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-    //   setTimeout(() => {
-    //     this.selectedAgent = filterData['table_config']['agency_name']?.value;
-    //     if (this.selectedAgent && this.selectedAgent.id) {
-    //       const match = this.agentList.find((item: any) => item.id == this.selectedAgent?.id);
-    //       if (!match) {
-    //         this.agentList.push(this.selectedAgent);
-    //       }
-    //     }
-    //   }, 1000);
-
-    //   if (filterData['table_config']['integration_start_date_time'].value) {
-    //     filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);
-    //   }
-    //   if (filterData['table_config']['entry_date_time'].value) {
-    //     filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
-    //   }
-    //   this.primengTable['filters'] = filterData['table_config'];
-
-    // }
+   if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+            this.isFilterShowCommonFarType = true;
+            this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
+            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);         
+            this.primengTable['filters'] = filterData['table_config'];
+            // this.primengTable['_sortField'] = filterData['sortColumn'];
+            // this.sortColumn = filterData['sortColumn'];
+        }
   }
 
   refreshItems(event?: any): void {
@@ -182,7 +147,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
     // });
   }
 
-  editFareType(record:any): void {      
+  editFareType(record: any): void {
     this.sidebarDialogService.openModal('common-fareType-edit', { data: record, title: 'Modify', edit: true });
   }
 
@@ -198,7 +163,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
       if (res === 'confirmed') {
         this.commonFareTypeService.delete(record.id).subscribe({
           next: () => {
-            this.alertService.showToast('success', "Fare Type has been deleted!", "top-right", true);
+            this.alertService.showToast('success', "Common Fare Type has been deleted!", "top-right", true);
             this.refreshItems();
           }, error: (err) => {
             this.alertService.showToast('error', err, 'top-right', true);

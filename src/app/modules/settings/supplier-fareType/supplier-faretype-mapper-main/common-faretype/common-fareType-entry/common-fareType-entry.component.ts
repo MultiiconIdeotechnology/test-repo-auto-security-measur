@@ -16,8 +16,7 @@ import { DataManagerService } from 'app/services/data-manager.service';
 import { RefferralService } from 'app/services/referral.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { debounceTime, distinctUntilChanged, filter, startWith, Subject, switchMap, takeUntil } from 'rxjs';
-import { PspSettingService } from 'app/services/psp-setting.service';
+import {  Subject, takeUntil } from 'rxjs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
@@ -28,22 +27,7 @@ import { CommonFareTypeService } from 'app/services/commonFareType.service';
 
 @Component({
     selector: 'app-common-fareType-entry',
-    templateUrl: './common-fareType-entry.component.html',
-    styles: [
-        ` app-crm-lead-entry {
-                  position: static;
-                  display: block;
-                  flex: none;
-                  width: auto;
-              }
-  
-              @media (screen and min-width: 1280px) {
-                  empty-layout + app-crm-lead-entry .settings-cog {
-                      right: 0 !important;
-                  }
-              }
-          `,
-    ],
+    templateUrl: './common-fareType-entry.component.html',  
     standalone: true,
     imports: [
         CommonModule,
@@ -89,13 +73,10 @@ export class CommonFareTypeEntryComponent {
     constructor(
         private sidebarDialogService: SidebarCustomModalService,
         private builder: FormBuilder,
-        private accountService: AccountService,
         private _filterService: CommonFilterService,
         private dataManagerService: DataManagerService,
         private referralService: RefferralService,
         private alertService: ToasterService,
-        private pspsettingService: PspSettingService,
-
         private commonFareTypeService: CommonFareTypeService
     ) {
         this.formGroup = this.builder.group({
@@ -113,6 +94,7 @@ export class CommonFareTypeEntryComponent {
                     this.settingsDrawer.open();
                     this.title = 'Add';
                     this.buttonLabel = "Create";
+                    this.resetForm();
                 } else if (res['type'] == 'common-fareType-edit') {
                     this.settingsDrawer.open();
                     this.title = 'Modify';
@@ -156,7 +138,7 @@ export class CommonFareTypeEntryComponent {
                 this.resetForm();
                 if (data.id) {
                     let resData = {
-                        id: data?.id,
+                        id: '',
                         fare_type: data?.fare_type,
                         entry_date_time: data?.entry_date_time,
                         modify_date_time: data?.modify_date_time,
@@ -173,9 +155,6 @@ export class CommonFareTypeEntryComponent {
         });
 
     }
-
-
-
 
 }
 
