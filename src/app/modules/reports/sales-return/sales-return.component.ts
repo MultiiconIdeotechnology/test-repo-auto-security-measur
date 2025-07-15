@@ -336,6 +336,7 @@ export class SalesReturnComponent extends BaseListingComponent implements OnDest
         Excel.export(
             'Sales Return',
             [
+                { header: 'AgentId', property: 'agentid' },
                 { header: 'Agent', property: 'agent' },
                 { header: 'Bill To', property: 'bill_to' },
                 { header: 'Supplier', property: 'supplier' },
