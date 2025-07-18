@@ -32,30 +32,30 @@ import { SupplierTypeEntryComponent } from "./supplier-faretype-mapper-tab/suppl
     selector: 'app-supplier-faretype-mapper-main',
     standalone: true,
     imports: [
-    PrimeNgImportsModule,
-    NgIf,
-    NgFor,
-    DatePipe,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatInputModule,
-    MatButtonModule,
-    MatProgressBarModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatFormFieldModule,
-    MatMenuModule,
-    MatDialogModule,
-    MatTooltipModule,
-    MatDividerModule,
-    CommonModule,
-    MatTabsModule,
-    CommonFaretypeComponent,
-    SupplierFaretypeMapperTabComponent,
-    CommonFareTypeEntryComponent,
-    SupplierTypeEntryComponent
-],
+        PrimeNgImportsModule,
+        NgIf,
+        NgFor,
+        DatePipe,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatInputModule,
+        MatButtonModule,
+        MatProgressBarModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatFormFieldModule,
+        MatMenuModule,
+        MatDialogModule,
+        MatTooltipModule,
+        MatDividerModule,
+        CommonModule,
+        MatTabsModule,
+        CommonFaretypeComponent,
+        SupplierFaretypeMapperTabComponent,
+        CommonFareTypeEntryComponent,
+        SupplierTypeEntryComponent
+    ],
     templateUrl: './supplier-faretype-mapper-main.component.html',
     styleUrls: ['./supplier-faretype-mapper-main.component.scss']
 })
@@ -87,11 +87,11 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     _selectedColumns: Column[];
 
     cols: Column[] = [
-        { field: 'entry_date_time', header: 'Create Date' },
-        { field: 'modify_date_time', header: 'Modify Date' },
+        { field: 'entry_date_time', header: 'Create Date', type: 'date' },
+        { field: 'modify_date_time', header: 'Modify Date', type: 'date' },
     ];
 
-      cols1: Column[] = [
+    cols1: Column[] = [
         { field: 'entry_date_time', header: 'Create Date' },
         { field: 'modify_date_time', header: 'Modify Date' },
     ];
@@ -164,8 +164,8 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
         this.sidebarDialogService.openModal('common-fareType-create', null)
     }
 
-    createInternalSupplier():void {
-         this.sidebarDialogService.openModal('supplier-fareType-create', null)
+    createInternalSupplier(): void {
+        this.sidebarDialogService.openModal('supplier-fareType-create', null)
     }
 
 
