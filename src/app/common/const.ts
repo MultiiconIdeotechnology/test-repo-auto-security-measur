@@ -290,6 +290,9 @@ export const Routes = {
         
         purchase_register_path_2: 'account/purchase_register_2',
         purchase_register_route_2: 'account/purchase_register_2',
+
+        sale_register_path_2: 'account/sale_register_2',
+        sale_register_route_2: 'account/sale_register_2',
     },
 
     leads:{
