@@ -12,7 +12,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
-import { AppConfig } from 'app/config/app-config';
 import { AccountService } from 'app/services/account.service';
 import { Excel } from 'app/utils/export/excel';
 import { DateTime } from 'luxon';
@@ -118,7 +117,7 @@ export class BontonComponent extends BaseListingComponent implements OnDestroy {
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.selectedColumns = [
-      { field: 'is_live_invoice', header: '#', type: Types.select, isDisableSort:true , class:'text-center'},
+      { field: 'is_live_invoice', header: '#', type: Types.select, isDisableSort: true, class: 'text-center' },
       { field: 'date', header: 'Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy HH:mm:ss' },
       { field: 'supplier_Name', header: 'Name', type: Types.select },
       { field: 'invoive_No', header: 'Invoice No', type: Types.text },
