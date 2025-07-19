@@ -82,7 +82,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
   }
 
   ngOnInit(): void {
-    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {   
+    this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
       this.primengTable['filters'] = resp['table_config'];
       this.isFilterShowCommonFarType = true;
       this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
@@ -103,14 +103,14 @@ export class CommonFaretypeComponent extends BaseListingComponent {
 
   ngAfterViewInit() {
     // Defult Active filter show
-   if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-            this.isFilterShowCommonFarType = true;
-            this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
-            let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);         
-            this.primengTable['filters'] = filterData['table_config'];
-            // this.primengTable['_sortField'] = filterData['sortColumn'];
-            // this.sortColumn = filterData['sortColumn'];
-        }
+    if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+      this.isFilterShowCommonFarType = true;
+      this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
+      let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+      this.primengTable['filters'] = filterData['table_config'];
+      // this.primengTable['_sortField'] = filterData['sortColumn'];
+      // this.sortColumn = filterData['sortColumn'];
+    }
   }
 
   refreshItems(event?: any): void {
@@ -137,14 +137,6 @@ export class CommonFaretypeComponent extends BaseListingComponent {
     else if (this.searchInputControlCommonFareType.value)
       return `no search results found for \'${this.searchInputControlCommonFareType.value}\'.`;
     else return 'No data to display';
-  }
-
-
-  viewDetail(record): void {
-    // this.matDialog.open(TechInfoTabsComponent, {
-    //   data: { data: record, readonly: true },
-    //   disableClose: true,
-    // });
   }
 
   editFareType(record: any): void {
