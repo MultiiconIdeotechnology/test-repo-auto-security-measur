@@ -104,7 +104,7 @@
         <mat-tab label="Common" [aria-label]="'Common'" *ngIf="getTabsPermission('commonFareType')">
             <ng-container *ngIf="tabNameStr == 'Common'">
                 <app-common-faretype #commonFareType [(isFilterShowCommonFarType)]="isFilterShowCommonFarType"
-                    ></app-common-faretype>
+                    [selectedColumns]="_selectedColumns"></app-common-faretype>
             </ng-container>
         </mat-tab>
 

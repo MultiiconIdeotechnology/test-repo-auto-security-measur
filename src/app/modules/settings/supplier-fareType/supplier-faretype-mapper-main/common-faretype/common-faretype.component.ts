@@ -88,6 +88,24 @@ export class CommonFaretypeComponent extends BaseListingComponent {
       this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
       this.primengTable._filter();
     });
+    // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
+    //   if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
+    //     this._filterService.updateSelectedOption('custom_date_range');
+    //     this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
+    //   }
+
+    //   if (resp['table_config']['modify_date_time']?.value != null && resp['table_config']['modify_date_time'].value.length) {
+    //     this._filterService.updatedSelectionOptionTwo('custom_date_range');
+    //     this._filterService.rangeDateConvert(resp['table_config']['modify_date_time']);
+    //   }
+
+
+    //   this.primengTable['filters'] = resp['table_config'];
+    //   this.isFilterShowCommonFarType = true;
+    //   this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
+    //   this.primengTable._filter();
+    // });
+
     this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
       if (res && res.key == 'create-response-fareType') {
         let index = this.dataList.findIndex((item: any) => item.id == res.data.id);
@@ -111,18 +129,43 @@ export class CommonFaretypeComponent extends BaseListingComponent {
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
     }
+    // if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
+    //   this.isFilterShowCommonFarType = true;
+    //   this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
+    //   let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
+    //   if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
+    //     this._filterService.updateSelectedOption('custom_date_range');
+    //     this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
+    //   }
+    //   if (filterData['table_config']['modify_date_time']?.value != null && filterData['table_config']['modify_date_time'].value.length) {
+    //     this._filterService.updateSelectedOption('custom_date_range');
+    //     this._filterService.rangeDateConvert(filterData['table_config']['modify_date_time']);
+    //   }
+
+    //   this.primengTable['filters'] = filterData['table_config'];
+
+    // }
+  }
+
+  onOptionClick(option: any, primengTable: any, field: string) {
+    const value = option?.id_by_value ?? '';
+    const current = this.selectionMap();
+    this.selectionMap.set({ ...current, [field]: value });
+
+    if (value && value !== 'custom_date_range') {
+      primengTable.filter(option, field, 'custom');
+    }
   }
 
   refreshItems(event?: any): void {
     this.isLoading = true;
     const filterReq = this.getNewFilterReq(event);
     filterReq['Filter'] = this.searchInputControlCommonFareType.value;
-
     this.commonFareTypeService.getcommonFareTypeList(filterReq).subscribe({
       next: (data) => {
-        this.isLoading = false;
         this.dataList = data.data;
         this.totalRecords = data.total;
+        this.isLoading = false;
       },
       error: (err) => {
         this.alertService.showToast('error', err, 'top-right', true);

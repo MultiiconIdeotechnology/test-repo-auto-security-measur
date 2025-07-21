@@ -27,7 +27,7 @@ import { CommonFilterService } from "app/core/common-filter/common-filter.servic
 export interface Column {
     field: string;
     header: string;
-    type?: string
+    type?:string;
 }
 
 @Component({
@@ -64,7 +64,7 @@ export abstract class BaseListingComponent implements OnInit {
     scrollHeightWTab: string;
     //#endregion
     frozenObj: any = {};
-    // for Date dropdown custom logic
+     // for Date dropdown custom logic
     selectionMap = signal<Record<string, string>>({});
 
     protected masterService: MasterService;
@@ -89,7 +89,7 @@ export abstract class BaseListingComponent implements OnInit {
         this.masterService = ReflectionInjector.get(MasterService);
         this.alertService = ReflectionInjector.get(ToasterService);
         this.commonFilterService = ReflectionInjector.get(CommonFilterService);
-
+        
         this.updateScrollHeight();
     }
 
@@ -158,7 +158,7 @@ export abstract class BaseListingComponent implements OnInit {
 
     }
 
-    resetPrimengTable() {
+    resetPrimengTable(){
         this.primengTable?.reset();
     }
 
@@ -304,7 +304,7 @@ export abstract class BaseListingComponent implements OnInit {
 
     //#region Delete Entry
 
-    public delete(model?: any, index?: number): void {
+    public delete(model?: any, index?:number): void {
         if (!Security.hasDeleteEntryPermission(this.module)) {
             return this.alertService.showToast('error', messages.permissionDenied);
         }
@@ -312,7 +312,7 @@ export abstract class BaseListingComponent implements OnInit {
         this.deleteInternal(model, index);
     }
 
-    protected deleteInternal(model: any, index?: number): void {
+    protected deleteInternal(model: any, index?:number): void {
     }
 
     //#endregion
@@ -392,21 +392,21 @@ export abstract class BaseListingComponent implements OnInit {
             adjustedEndDate.setHours(23, 59, 59, 999);
 
             filter([adjustedStartDate, adjustedEndDate]);
-        }
+        } 
     }
 
-    // dynamic date dropdown logic 
+        // dynamic date dropdown logic 
     getSelection(field: string) {
         return this.selectionMap()[field] || '';
     }
-
-    rangeDateConvert(dateArr: any) {
+   
+   rangeDateConvert(dateArr: any) {
         dateArr.value[0] = new Date(dateArr.value[0]);
         dateArr.value[1] = new Date(dateArr.value[1]);
         dateArr.value.join(",");
     }
-
-    // saved date range custom filter restore
+	
+	   // saved date range custom filter restore
     restoreDateFilter(field: string, config: any) {
         const fieldData = config?.[field];
 
