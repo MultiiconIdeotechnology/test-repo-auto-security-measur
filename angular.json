@@ -108,20 +108,20 @@
                             ],
                             "outputHashing": "all"
                         },
-                        "staging": {
+                        "developer": {
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.staging.ts"
+                                    "with": "src/environments/environment.developer.ts"
                                 }
                             ],
                             "outputHashing": "all"
                         },
-                        "local": {
+                        "uat": {
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.local.ts"
+                                    "with": "src/environments/environment.uat.ts"
                                 }
                             ],
                             "outputHashing": "all"
@@ -143,11 +143,11 @@
                         "production": {
                             "browserTarget": "fuse:build:production"
                         },
-                        "staging": {
-                            "browserTarget": "fuse:build:staging"
+                        "developer": {
+                            "browserTarget": "fuse:build:developer"
                         },
-                        "local": {
-                            "browserTarget": "fuse:build:local"
+                        "uat": {
+                            "browserTarget": "fuse:build:uat"
                         },
                         "development": {
                             "browserTarget": "fuse:build:development"
