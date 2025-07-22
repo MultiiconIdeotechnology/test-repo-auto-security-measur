@@ -2,6 +2,14 @@
     <form [formGroup]="airlineForm">
         <div class="grid grid-cols-4 gap-4">
             <!-- Dropdown 1 -->
+            <mat-form-field class="flex-grow">
+                <mat-label>Service</mat-label>
+                <input matInput type="text" formControlName="service" />
+                <mat-error *ngIf="airlineForm.get('service').hasError('required')">
+                   Service Name is required
+                </mat-error>
+            </mat-form-field>
+
             <mat-form-field class="w-full">
                 <mat-label>Supplier</mat-label>
                 <mat-select formControlName="supplier_id" required>

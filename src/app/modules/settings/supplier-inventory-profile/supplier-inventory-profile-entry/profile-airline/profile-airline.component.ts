@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -57,8 +57,9 @@ export class ProfileAirlineComponent {
   ngOnInit(): void {
     this.airlineForm = this.formBuilder.group({
       id: [''],
+      service:['',Validators.required],
       supplier_id: [''],
-      // /supplierfilter: [''],
+      supplierFilter: ['',Validators.required],
       dropdown1: [''],
       dropdown2: [''],
       dropdown3: [''],
@@ -96,9 +97,9 @@ export class ProfileAirlineComponent {
       .subscribe({
         next: (data) => {
           this.SupplierList = data;
-          this.airlineForm
-            .get('supplier_id')
-            .patchValue(this.SupplierList[0].id);
+          // this.airlineForm
+          //   .get('supplier_id')
+          //   .patchValue(this.SupplierList[0].id);
         },
       });
   }
