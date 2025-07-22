@@ -1,0 +1,150 @@
+<div class="p-2">
+    <form [formGroup]="airlineForm">
+        <div class="grid grid-cols-4 gap-4">
+            <!-- Dropdown 1 -->
+            <mat-form-field class="w-full">
+                <mat-label>Supplier</mat-label>
+                <mat-select formControlName="supplier_id" required>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching product found'" [formControlName]="'supplierFilter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of SupplierList" [value]="ct.id">{{ct.company_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Dropdown 2 -->
+            <mat-form-field class="w-full">
+                <mat-label>Dropdown 2</mat-label>
+                <mat-select formControlName="dropdown2">
+                    <mat-option value="opt1">Option A</mat-option>
+                    <mat-option value="opt2">Option B</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Dropdown 3 -->
+            <mat-form-field class="w-full">
+                <mat-label>Dropdown 3</mat-label>
+                <mat-select formControlName="dropdown3">
+                    <mat-option value="opt1">Yes</mat-option>
+                    <mat-option value="opt2">No</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Dropdown 4 -->
+            <mat-form-field class="w-full">
+                <mat-label>Dropdown 4</mat-label>
+                <mat-select formControlName="dropdown4">
+                    <mat-option value="opt1">Alpha</mat-option>
+                    <mat-option value="opt2">Beta</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Dropdown 5 -->
+            <mat-form-field class="w-full">
+                <mat-label>Dropdown 5</mat-label>
+                <mat-select formControlName="dropdown5">
+                    <mat-option value="opt1">Red</mat-option>
+                    <mat-option value="opt2">Green</mat-option>
+                    <mat-option value="opt3">Blue</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Dropdown 6 -->
+            <mat-form-field class="w-full">
+                <mat-label>Dropdown 6</mat-label>
+                <mat-select formControlName="dropdown6">
+                    <mat-option value="1">Item 1</mat-option>
+                    <mat-option value="2">Item 2</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Dropdown 7 -->
+            <mat-form-field class="w-full">
+                <mat-label>Dropdown 7</mat-label>
+                <mat-select formControlName="dropdown7">
+                    <mat-option value="a">A</mat-option>
+                    <mat-option value="b">B</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Dropdown 8 -->
+            <mat-form-field class="w-full">
+                <mat-label>Dropdown 8</mat-label>
+                <mat-select formControlName="dropdown8">
+                    <mat-option value="opt1">Basic</mat-option>
+                    <mat-option value="opt2">Advanced</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Add more dropdowns up to 16 if needed -->
+        </div>
+
+        <!-- Save Button -->
+        <div class="flex justify-end mt-6">
+            <button mat-flat-button color="primary" type="submit">
+                Save
+            </button>
+        </div>
+    </form>
+
+    <!-- Divider -->
+    <mat-divider class="my-6"></mat-divider>
+
+    <!-- Search & Refresh -->
+    <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-2">
+            <span class="text-sm font-medium">Search:</span>
+            <input type="text" pInputText [(ngModel)]="globalFilter"
+                (input)="tableRef.filterGlobal($event.target.value, 'contains')" placeholder="Search..."
+                class="w-64 h-9 px-2" />
+        </div>
+
+        <button class="ml-4" mat-flat-button [color]="'primary'" (click)="onRefresh()" matTooltip="Refresh">
+            <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+        </button>
+
+    </div>
+
+    <!-- Table -->
+    <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
+        [globalFilterFields]="['supplier', 'usertype', 'triptype']" [scrollable]="true" scrollHeight="300px"
+        [resizableColumns]="true" columnResizeMode="fit" styleClass="p-datatable-sm p-datatable-gridlines">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 60px" class="text-center">#</th>
+                <th pResizableColumn>Supplier</th>
+                <th pResizableColumn>User Type</th>
+                <th pResizableColumn>Is Enable</th>
+                <th pResizableColumn>Trip Type</th>
+
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+            <tr>
+                <!-- Index -->
+                <td class="flex flex-row items-center">
+                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm text-blue-500"
+                        (click)="onEdit(row)"></button>
+                    <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
+                        (click)="onDelete(row)"></button>
+                </td>
+
+                <!-- Data Fields -->
+                <td>{{ row.supplier }}</td>
+                <td>{{ row.usertype }}</td>
+                <td>
+                    {{ row.isEnable ? 'True' : 'False' }}
+                </td>
+
+                <td>{{ row.triptype }}</td>
+
+
+            </tr>
+        </ng-template>
+    </p-table>
+
+
+</div>

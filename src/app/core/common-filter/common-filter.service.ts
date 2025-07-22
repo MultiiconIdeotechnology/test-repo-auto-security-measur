@@ -32,6 +32,8 @@ export class CommonFilterService {
     agentListSubject = new BehaviorSubject<any>("");
     agentList$ = this.agentListSubject.asObservable();
 
+    private key = 'globalSelectedColumns';
+
     // Public method to update the BehaviorSubject value
     updateSelectedOption(option: string): void {
         this.selectedOptionSubject.next(option);
@@ -243,6 +245,39 @@ export class CommonFilterService {
 
             this.rmListSubject.next(this.rmListByValue);
         });
+    }
+
+     private getAllSelectedColumns(): any[] {
+        const data = localStorage.getItem(this.key);
+        if (data && data?.trim() != '' && data != undefined) {
+            return JSON.parse(data);
+        } else return [];
+    }
+
+    getSelectedColumns(params: { name?: string }): any {
+        const data = this.getAllSelectedColumns()
+        return data.find(x => x.name == params.name);
+    }
+
+    setSelectedColumns(params: { name?: string, columns?: any[] }): void {
+        var colList = this.getAllSelectedColumns();
+        if (colList?.length) {
+            var colVal = colList.find(x => x.name == params.name);
+            if (colVal) {
+                const index = colList.findIndex(x => x.name == params.name);
+                colList[index] = params;
+            } else {
+                colList.push(params);
+            }
+        } else {
+            colList = [params];
+        }
+
+        localStorage.setItem(this.key, JSON.stringify(colList));
+    }
+
+    clearSelectedColumns(): void {
+        localStorage.removeItem(this.key);
     }
 
 }

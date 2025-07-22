@@ -24,9 +24,41 @@ import { LazyLoadEvent } from "primeng/api";
 import { Table } from "primeng/table";
 import { CommonFilterService } from "app/core/common-filter/common-filter.service";
 
+// export interface Column {
+//     field: string;
+//     header: string;
+// }
 export interface Column {
     field: string;
     header: string;
+    // type: Types;
+    type?: string;
+    dateFormat?: string;
+    bulletField?: string;
+    isCustomColor?: boolean;
+    enableTooltip?: string;
+    disableTooltip?: string;
+    isRangePicker?: boolean;
+    class?: string;
+    fixVal?: number;
+    isHideFilter?: boolean;
+    isDisableSort?: boolean;
+    isSelectStatus?: boolean;
+
+    action?: (row: any) => void;
+}
+
+export enum Types {
+    text = 'text',
+    boolean = 'boolean',
+    select = 'select',
+    singleBulletPoint = 'single-bullet-point',
+    bulletPoint = 'bullet-point',
+    dateTime = 'date-time',
+    date = 'date',
+    link = 'link',
+    number = 'number',
+    numeric = 'numeric',
 }
 
 @Component({

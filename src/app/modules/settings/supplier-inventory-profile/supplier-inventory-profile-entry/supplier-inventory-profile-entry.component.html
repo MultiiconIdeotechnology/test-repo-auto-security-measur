@@ -1,0 +1,42 @@
+<fuse-drawer class="min-w-[900px] z-[999]" fixed [mode]="'over'" [name]="'settingsDrawer'" [position]="'right'" #settingsDrawer>
+    <div class="w-full h-full flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-gray-300 px-6 pt-12 pb-8 h-16 sticky top-0 z-10">
+            <div class="flex items-center space-x-4 w-full">
+                <label class="text-normal font-medium min-w-max">Profile</label>
+                <mat-form-field class="w-full max-w-[400px]" appearance="outline">
+                    <input matInput type="text" placeholder="Enter profile name" />
+                </mat-form-field>
+            </div>
+            <mat-icon svgIcon="close" class="icon-size-6 cursor-pointer ml-4"
+                (click)="settingsDrawer.close(null)">
+            </mat-icon>
+        </div>
+
+        <!-- Tab Group -->
+        <div class="flex flex-col flex-auto min-w-0 overflow-hidden">
+            <mat-tab-group class="custom-tab lead_tab h-full">
+                <mat-tab label="Airline" aria-label="Airline">
+                    <div class="p-5">
+                       <app-profile-airline></app-profile-airline>
+                    </div>
+                </mat-tab>
+                <mat-tab label="Bus" aria-label="Bus">
+                    <div class="p-5">
+                        Bus settings content
+                    </div>
+                </mat-tab>
+                <mat-tab label="Hotel" aria-label="Hotel">
+                    <div class="p-5">
+                        Hotel settings content
+                    </div>
+                </mat-tab>
+                <mat-tab label="Insurance" aria-label="Insurance">
+                    <div class="p-5">
+                        Insurance settings content
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+</fuse-drawer>

@@ -164,8 +164,8 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.bus_path, loadChildren: () => import('app/modules/reports/contracting/bus/bus.routes') },
             { path: Routes.reports.agents_rmwise_agents_path, loadChildren: () => import('app/modules/reports/agents/agent-rmwise/agent-rmwise.routes') },
             { path: Routes.reports.campaign_summary_path, loadChildren: () => import('app/modules/reports/campaign/campaign-summary/campaign-summary/campaign-summary.routes') },
-            { path: Routes.reports.campaign_register_path, loadChildren: () => import('app/modules/reports/campaign/campaign-register/campaign-register.routes')},
-            { path: Routes.reports.campaign_summary_report_path, loadChildren: () => import('app/modules/reports/campaign/campaign-summary-report/campaign-summary-report.routes')},
+            { path: Routes.reports.campaign_register_path, loadChildren: () => import('app/modules/reports/campaign/campaign-register/campaign-register.routes') },
+            { path: Routes.reports.campaign_summary_report_path, loadChildren: () => import('app/modules/reports/campaign/campaign-summary-report/campaign-summary-report.routes') },
             { path: Routes.reports.leads_rmwise_path, loadChildren: () => import('app/modules/reports/leads/lead-rmwise/lead-rmwise.routes') },
             { path: Routes.reports.products_path, loadChildren: () => import('app/modules/reports/sales/product/product-tab/sales-product/sales-product.routes') },
             { path: Routes.reports.pg_refund_path, loadChildren: () => import('app/modules/reports/PG Refund/pg-refund-list/pg-refund.routes') },
@@ -173,9 +173,9 @@ export const appRoutes: Route[] = [
             { path: Routes.reports.tech_summary_path, loadChildren: () => import('app/modules/reports/tech-business/tech-business-summary/tech-business-summary.routes') },
             { path: Routes.reports.tech_rm_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/rm-monthly-analytics/rm-monthly-analytics.routes') },
             { path: Routes.reports.tech_product_monthly_path, loadChildren: () => import('app/modules/reports/tech-business/product-monthly-analytics/product-monthly-analytics.routes') },
-            { path: Routes.reports.supplier_balance_path, loadChildren: () => import('app/modules/reports/account/supplier-wallet-balance/supplier-wallet.routes')},
-            { path: Routes.reports.sent_mail_path, loadChildren: () => import('app/modules/reports/sent-mail/sent-mail-list/sent-mail-list.routes')},
-            { path: Routes.reports.report_potential_lead_path, loadChildren: () => import('app/modules/reports/sales/report-potential-lead/report-potential-lead.route')},
+            { path: Routes.reports.supplier_balance_path, loadChildren: () => import('app/modules/reports/account/supplier-wallet-balance/supplier-wallet.routes') },
+            { path: Routes.reports.sent_mail_path, loadChildren: () => import('app/modules/reports/sent-mail/sent-mail-list/sent-mail-list.routes') },
+            { path: Routes.reports.report_potential_lead_path, loadChildren: () => import('app/modules/reports/sales/report-potential-lead/report-potential-lead.route') },
 
 
             // MY BOOKINGS
@@ -201,6 +201,7 @@ export const appRoutes: Route[] = [
             { path: Routes.settings.pspsetting_path, loadChildren: () => import('app/modules/settings/psp-setting/psp.routes') },
             { path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes') },
             { path: Routes.settings.cashback_parameters_path, loadChildren: () => import('app/modules/settings/cashback-parameter/cashback-parameter.route') },
+            { path: Routes.settings.supplier_inventory_profile_path, loadChildren: () => import('app/modules/settings/supplier-inventory-profile/supplier-inventory-profile.route') },
 
         ]
     },

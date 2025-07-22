@@ -209,6 +209,7 @@ export const module_name = {
     city: "City",
     cachingparameters: "Caching Parameters",
     cashbackparameters: "Cashback Parameters",
+    supplierinventoryprofile: 'Supplier Inventory Profile',
     department: "Department",
     document: 'Types of Documents',
     kycprofile: 'KYC Profile',
@@ -328,6 +329,8 @@ export const module_name = {
 
     // account2.0
     purchase_register_2: 'Purchase Register-2',
+
+    
 };
 
 export const filter_module_name = {
@@ -462,6 +465,7 @@ export const filter_module_name = {
     markup_profile: "markup_profile",
     erp_settings: "erp_settings",
     cashback_parameters_master: "cashback_parameters_master",
+    supplier_inventory_profile: "supplier_inventory_profile",
 
 }
 

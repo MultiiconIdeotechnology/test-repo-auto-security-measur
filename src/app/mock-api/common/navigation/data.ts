@@ -1125,6 +1125,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
                 icon: 'heroicons_outline:wallet',
                 link: Routes.settings.cashback_parameters_route
+            },
+            {
+                id: 'settings.supplierinventoryprofile',
+                title: 'Supplier Inventory Profile',
+                type: 'basic',
+                pid: 'SETTINGS_SUPPLIERINVENTORYPROFILE_VIEW',
+                icon: 'heroicons_outline:wallet',
+                link: Routes.settings.supplier_inventory_profile_route
             }
         ]
     }

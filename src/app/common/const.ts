@@ -499,5 +499,8 @@ export const Routes = {
 
         cashback_parameters_path: 'settings/cashback_parameters',
         cashback_parameters_route: '/settings/cashback_parameters',
+
+        supplier_inventory_profile_path: 'settings/supplier_inventory-profile',
+        supplier_inventory_profile_route: '/settings/supplier_inventory-profile',
     }
 }
