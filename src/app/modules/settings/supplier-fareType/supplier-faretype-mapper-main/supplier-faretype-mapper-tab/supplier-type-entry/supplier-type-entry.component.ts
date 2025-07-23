@@ -119,9 +119,6 @@ export class SupplierTypeEntryComponent {
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res) {
         this.getSupplierCombo();
-
-        // this.getSupplierFareTypeCombo();
-
         this.getBontonFareTypeCombo();
         if (res['type'] == 'supplier-fareType-create') {
           this.settingsDrawer.open();
@@ -129,12 +126,7 @@ export class SupplierTypeEntryComponent {
           this.resetForm();
           this.isEdit = false;
           this.buttonLabel = "Create";
-          // this.formGroup.get('sup_id').valueChanges
-          //   .pipe(filter(value => !!value))
-          //   .subscribe(supplierId => {
-          //     this.getSupplierFareTypeCombo('', supplierId);
-          //   });
-
+         
         } else if (res['type'] == 'Supplier common-fareType-edit') {
           this.settingsDrawer.open();
           this.title = 'Modify';
@@ -147,13 +139,12 @@ export class SupplierTypeEntryComponent {
 
 
 
-            // ✅ Find matching objects
+            //  Find matching objects
             const supplierFareTypeObj = this.supplierFareTypeList.find(x => x.class_of_service === supplierFareTypeId)?.class_of_service;
             const bontonFareTypeObj = this.bontonFareTypeList.find(x => x.id === bontonFareTypeId);
             this.formGroup.patchValue({
               id: res?.data?.data?.id || '',
-              supplier_id: supplierId || '',
-              // company_name:res?.data?.data?.sup_type || '',
+              supplier_id: supplierId || '',           
               supplier_fare_type: res.data.data.supplier_fare_type || '',
               supplier_fare_type_filter: res.data.data.supplier_fare_type || '',
               bonton_fare_type_id: bontonFareTypeObj || ''
@@ -189,26 +180,6 @@ export class SupplierTypeEntryComponent {
 
 
   getBontonFareTypeCombo() {
-    // this.formGroup
-    //   .get('bonton_fare_type')
-    //   .valueChanges.pipe(
-    //     filter((search) => !!search),
-    //     startWith(''),
-    //     debounceTime(200),
-    //     distinctUntilChanged(),
-    //     switchMap((value: any) => {
-    //       return this.commonFareTypeService.getCommonFareTypeCombo(value);
-    //     })
-    //   )
-    //   .subscribe({
-    //     next: data => {
-    //       if (!this.bontonFareTypeAllList?.length) {
-    //         this.bontonFareTypeAllList = data
-    //       }
-    //       this.bontonFareTypeList = data
-    //       // this.formGroup.get('bonton_fare_type_id').setValue(this.bontonFareTypeList[0]?.id);
-    //     }
-    //   });
       this.cacheService.getOrAdd(CacheLabel.getCommonFareTypeCombo,
       this.commonFareTypeService.getCommonFareTypeCombo('')).subscribe({
         next: data => {
