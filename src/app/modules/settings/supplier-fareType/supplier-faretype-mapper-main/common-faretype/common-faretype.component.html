@@ -82,7 +82,7 @@
                     </ng-container>
 
                     <ng-container *ngIf="col.type == 'date' && col.field == 'modify_date_time'">
-                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
                             field="modify_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -98,7 +98,7 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                        <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="modify_date_time" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">

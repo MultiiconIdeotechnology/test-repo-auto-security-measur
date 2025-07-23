@@ -11,8 +11,7 @@
       <tr>
         <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
         <th pSortableColumn="company_name" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-          class="dark:bg-[#1e293b]" [frozen]="frozenObj?.company_name"
-          [ngClass]="{'left-0': !frozenObj?.company_name}">
+          class="dark:bg-[#1e293b]" [frozen]="frozenObj?.company_name" [ngClass]="{'left-0': !frozenObj?.company_name}">
           Supplier <p-sortIcon field="company_name" />
           <span class="float-right" (click)="isFrozenColumn('company_name');$event.stopPropagation()">
             <i *ngIf="!frozenObj?.company_name" class="pi pi-lock-open icon-size-3"></i>
@@ -81,7 +80,7 @@
           </ng-container>
 
           <ng-container *ngIf="col.type == 'date' && col.field == 'modify_date_time'">
-            <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+            <p-columnFilter *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
               field="modify_date_time" matchMode="custom" [showMenu]="false">
               <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -96,7 +95,7 @@
               </ng-template>
             </p-columnFilter>
 
-            <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+            <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
               <div class="relative inline-block">
                 <p-columnFilter field="modify_date_time" matchMode="custom" [showMenu]="false">
                   <ng-template pTemplate="filter" let-value let-filter="filterCallback">

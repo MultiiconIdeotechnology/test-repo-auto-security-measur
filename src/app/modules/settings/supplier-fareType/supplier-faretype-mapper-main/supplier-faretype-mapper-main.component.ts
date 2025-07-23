@@ -92,8 +92,8 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     ];
 
     cols1: Column[] = [
-        { field: 'entry_date_time', header: 'Create Date' },
-        { field: 'modify_date_time', header: 'Modify Date' },
+        { field: 'entry_date_time', header: 'Create Date' , type: 'date'},
+        { field: 'modify_date_time', header: 'Modify Date', type: 'date' },
     ];
 
     constructor(

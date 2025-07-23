@@ -12,8 +12,6 @@ import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatSidenav } from '@angular/material/sidenav';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { DataManagerService } from 'app/services/data-manager.service';
-import { RefferralService } from 'app/services/referral.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { debounceTime, distinctUntilChanged, filter, startWith, Subject, switchMap, takeUntil } from 'rxjs';
@@ -22,7 +20,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { CommonFareTypeService } from 'app/services/commonFareType.service';
-import { FlightTabService } from 'app/services/flight-tab.service';
+import { cloneDeep } from 'lodash';
+import { CacheLabel, CacheService } from 'app/services/cache.service';
 
 @Component({
   selector: 'app-supplier-type-entry',
@@ -80,16 +79,14 @@ export class SupplierTypeEntryComponent {
     private sidebarDialogService: SidebarCustomModalService,
     private builder: FormBuilder,
     private _filterService: CommonFilterService,
-    private dataManagerService: DataManagerService,
-    private referralService: RefferralService,
+    private cacheService: CacheService,
     private alertService: ToasterService,
     private commonFareTypeService: CommonFareTypeService,
-    private flighttabService: FlightTabService,
   ) {
     this.formGroup = this.builder.group({
       id: [''],
       supplier_id: '',
-     // company_name:'',
+      // company_name:'',
       sup_type: '',
 
       supplier_fare_type: [''],
@@ -99,7 +96,21 @@ export class SupplierTypeEntryComponent {
       bonton_fare_type_id: ['']
 
     })
-    this.getSupplierCombo();
+    this.formGroup.get('sup_type').valueChanges.subscribe(res => {
+      const val = res?.trim()?.toLowerCase();
+      if (!val)
+        this.supplierList = this.supplierAllList;
+      else
+        this.supplierList = this.supplierAllList.filter(x => x?.company_name?.toLowerCase().includes(val));
+    })
+
+      this.formGroup.get('bonton_fare_type').valueChanges.subscribe(res => {
+      const val = res?.trim()?.toLowerCase();
+      if (!val)
+        this.bontonFareTypeList = this.bontonFareTypeAllList;
+      else
+        this.bontonFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
+    })
   }
 
   ngOnInit(): void {
@@ -107,6 +118,7 @@ export class SupplierTypeEntryComponent {
     // subscribing to modalchange on create and modify
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res) {
+        this.getSupplierCombo();
 
         // this.getSupplierFareTypeCombo();
 
@@ -115,6 +127,7 @@ export class SupplierTypeEntryComponent {
           this.settingsDrawer.open();
           this.title = 'Add';
           this.resetForm();
+          this.isEdit = false;
           this.buttonLabel = "Create";
           // this.formGroup.get('sup_id').valueChanges
           //   .pipe(filter(value => !!value))
@@ -127,8 +140,7 @@ export class SupplierTypeEntryComponent {
           this.title = 'Modify';
           this.buttonLabel = "Update";
           if (res?.data?.data?.id) {
-            console.log("res?.data?.data", res?.data?.data);
-
+            this.isEdit = true;
             const supplierId = res.data.data.supplierId;
             const supplierFareTypeId = res.data.data.supplier_fare_type;
             const bontonFareTypeId = res.data.data.bonton_fare_type_id;
@@ -141,7 +153,7 @@ export class SupplierTypeEntryComponent {
             this.formGroup.patchValue({
               id: res?.data?.data?.id || '',
               supplier_id: supplierId || '',
-             // company_name:res?.data?.data?.sup_type || '',
+              // company_name:res?.data?.data?.sup_type || '',
               supplier_fare_type: res.data.data.supplier_fare_type || '',
               supplier_fare_type_filter: res.data.data.supplier_fare_type || '',
               bonton_fare_type_id: bontonFareTypeObj || ''
@@ -157,23 +169,11 @@ export class SupplierTypeEntryComponent {
 
   // ✅ Load Supplier Combo with Search
   getSupplierCombo(): void {
-    this.formGroup
-      .get('sup_type')
-      .valueChanges.pipe(
-        filter((search) => !!search),
-        startWith(''),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((value: any) => {
-          return this.commonFareTypeService.getFareypeSupplierBoCombo('Airline', value);
-        })
-      )
-      .subscribe({
+    this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBoCombo,
+      this.commonFareTypeService.getFareypeSupplierBoCombo('Airline', '')).subscribe({
         next: data => {
-          if (!this.supplierAllList?.length) {
-            this.supplierAllList = data;
-          }
-          this.supplierList = data;
+          this.supplierAllList = cloneDeep(data);
+          this.supplierList = this.supplierAllList;
         }
       });
   }
@@ -189,24 +189,31 @@ export class SupplierTypeEntryComponent {
 
 
   getBontonFareTypeCombo() {
-    this.formGroup
-      .get('bonton_fare_type')
-      .valueChanges.pipe(
-        filter((search) => !!search),
-        startWith(''),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((value: any) => {
-          return this.commonFareTypeService.getCommonFareTypeCombo(value);
-        })
-      )
-      .subscribe({
+    // this.formGroup
+    //   .get('bonton_fare_type')
+    //   .valueChanges.pipe(
+    //     filter((search) => !!search),
+    //     startWith(''),
+    //     debounceTime(200),
+    //     distinctUntilChanged(),
+    //     switchMap((value: any) => {
+    //       return this.commonFareTypeService.getCommonFareTypeCombo(value);
+    //     })
+    //   )
+    //   .subscribe({
+    //     next: data => {
+    //       if (!this.bontonFareTypeAllList?.length) {
+    //         this.bontonFareTypeAllList = data
+    //       }
+    //       this.bontonFareTypeList = data
+    //       // this.formGroup.get('bonton_fare_type_id').setValue(this.bontonFareTypeList[0]?.id);
+    //     }
+    //   });
+      this.cacheService.getOrAdd(CacheLabel.getCommonFareTypeCombo,
+      this.commonFareTypeService.getCommonFareTypeCombo('')).subscribe({
         next: data => {
-          if (!this.bontonFareTypeAllList?.length) {
-            this.bontonFareTypeAllList = data
-          }
-          this.bontonFareTypeList = data
-          // this.formGroup.get('bonton_fare_type_id').setValue(this.bontonFareTypeList[0]?.id);
+          this.bontonFareTypeAllList = cloneDeep(data);
+          this.bontonFareTypeList = this.bontonFareTypeAllList;
         }
       });
   }
@@ -247,14 +254,13 @@ export class SupplierTypeEntryComponent {
     const json = this.formGroup.getRawValue();
     const model = {
       id: json.id,
-      
+
       supplier_id: json.supplier_id,
       supplier_fare_type: json.supplier_fare_type,
 
       bonton_fare_type: json.bonton_fare_type_id.fare_type,
       bonton_fare_type_id: json.bonton_fare_type_id.id
     }
-    console.log("json>>", json);
 
     //return
     this.disableBtn = true
@@ -264,7 +270,6 @@ export class SupplierTypeEntryComponent {
         this.alertService.showToast('success', this.isEdit ? 'Supplier Fare type updated successfully' : 'Supplier Fare type created successfully');
         this.resetForm();
         if (data.id) {
-          console.log("data modify", data)
           let resData = {
             "id": data.id,
             "supplierId": data?.supplier_id,
@@ -273,7 +278,7 @@ export class SupplierTypeEntryComponent {
             "bonton_fare_type_id": data?.bonton_fare_type_id,
             "bonton_fare_type": data?.bonton_fare_type,
             "entry_date_time": data?.entry_date_time,
-            "modify_date_time": null
+            "modify_date_time": data?.modify_date_time
           }
 
           this.sidebarDialogService.close({ data: resData, key: 'create-response-supplier-fareType' });
