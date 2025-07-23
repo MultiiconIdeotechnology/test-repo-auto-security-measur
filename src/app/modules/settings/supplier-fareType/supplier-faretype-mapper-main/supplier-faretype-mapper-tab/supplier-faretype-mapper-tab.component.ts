@@ -90,8 +90,10 @@ export class SupplierFaretypeMapperTabComponent extends BaseListingComponent {
       this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowSupplierFareType);
       this.primengTable._filter();
     });
+
+
     this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
-      if (res && res.key == 'create-response-fareType') {
+      if (res && res.key == 'create-response-supplier-fareType') {
         let index = this.dataList.findIndex((item: any) => item.id == res.data.id);
         if (index != -1) {
           this.dataList[index] = res.data;
@@ -160,13 +162,14 @@ export class SupplierFaretypeMapperTabComponent extends BaseListingComponent {
     const label: string = 'Delete'
     this.conformationService.open({
       title: label,
-      message: `Are you sure you want to delete the ${record.fare_type} ? `
+      message: `Are you sure you want to delete the ${record.company_name} ? `
     }).afterClosed().subscribe(res => {
       if (res === 'confirmed') {
         this.commonFareTypeService.deleteSupplierFareTypeMapper(record.id).subscribe({
           next: () => {
             this.alertService.showToast('success', "Supplier Fare Type has been deleted!", "top-right", true);
-            this.refreshItems();
+            this.dataList = this.dataList.filter(x => x.id !== record.id);
+            this.totalRecords--;
           }, error: (err) => {
             this.alertService.showToast('error', err, 'top-right', true);
           }

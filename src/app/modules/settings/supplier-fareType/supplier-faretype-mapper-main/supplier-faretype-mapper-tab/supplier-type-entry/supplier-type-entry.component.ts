@@ -88,15 +88,18 @@ export class SupplierTypeEntryComponent {
   ) {
     this.formGroup = this.builder.group({
       id: [''],
-      sup_id: '',
+      supplier_id: '',
+     // company_name:'',
       sup_type: '',
 
-      supplier_id: [''],
       supplier_fare_type: [''],
+      supplier_fare_type_filter: [''],
 
       bonton_fare_type: [''],
       bonton_fare_type_id: ['']
+
     })
+    this.getSupplierCombo();
   }
 
   ngOnInit(): void {
@@ -104,37 +107,43 @@ export class SupplierTypeEntryComponent {
     // subscribing to modalchange on create and modify
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res) {
-        this.getSupplierCombo();
+
         // this.getSupplierFareTypeCombo();
-        this.formGroup.get('sup_id').valueChanges
-          .pipe(filter(value => !!value))
-          .subscribe(supplierId => {
-            this.getSupplierFareTypeCombo('', supplierId);
-          });
+
         this.getBontonFareTypeCombo();
         if (res['type'] == 'supplier-fareType-create') {
           this.settingsDrawer.open();
           this.title = 'Add';
-          this.buttonLabel = "Create";
           this.resetForm();
+          this.buttonLabel = "Create";
+          // this.formGroup.get('sup_id').valueChanges
+          //   .pipe(filter(value => !!value))
+          //   .subscribe(supplierId => {
+          //     this.getSupplierFareTypeCombo('', supplierId);
+          //   });
+
         } else if (res['type'] == 'Supplier common-fareType-edit') {
           this.settingsDrawer.open();
           this.title = 'Modify';
           this.buttonLabel = "Update";
           if (res?.data?.data?.id) {
-            console.log("res?.data?.data",res?.data?.data);
-            
-            const supplierId = res.data.data.id;
-            const supplierFareTypeId = res.data.data.supplierId;
+            console.log("res?.data?.data", res?.data?.data);
+
+            const supplierId = res.data.data.supplierId;
+            const supplierFareTypeId = res.data.data.supplier_fare_type;
             const bontonFareTypeId = res.data.data.bonton_fare_type_id;
 
+
+
             // ✅ Find matching objects
-            const supplierFareTypeObj = this.supplierFareTypeList.find(x => x.id === supplierFareTypeId);
+            const supplierFareTypeObj = this.supplierFareTypeList.find(x => x.class_of_service === supplierFareTypeId)?.class_of_service;
             const bontonFareTypeObj = this.bontonFareTypeList.find(x => x.id === bontonFareTypeId);
             this.formGroup.patchValue({
-              sup_id: supplierId || '',
-              supplier_id: supplierFareTypeObj || '',
-              supplier_fare_type:res?.data?.data?.id || '', 
+              id: res?.data?.data?.id || '',
+              supplier_id: supplierId || '',
+             // company_name:res?.data?.data?.sup_type || '',
+              supplier_fare_type: res.data.data.supplier_fare_type || '',
+              supplier_fare_type_filter: res.data.data.supplier_fare_type || '',
               bonton_fare_type_id: bontonFareTypeObj || ''
             });
           }
@@ -202,7 +211,7 @@ export class SupplierTypeEntryComponent {
       });
   }
 
-  compareWithFareTypeSupplier = (a: any, b: any) => a && b && a.id === b.id;
+  //compareWithFareTypeSupplier = (a: any, b: any) => a && b && a.class_of_service == b.supplier_fare_type;
   compareWithFareTypeBonton = (a: any, b: any) => a && b && a.id === b.id;
   compareWith = (a: any, b: any) => a === b; // for IDs
 
@@ -214,7 +223,7 @@ export class SupplierTypeEntryComponent {
     this.formGroup?.patchValue({
       id: '',
 
-      sup_id: '',
+      supplier_fare_type_filter: '',
       sup_type: '',
 
       supplier_id: '',
@@ -237,12 +246,10 @@ export class SupplierTypeEntryComponent {
 
     const json = this.formGroup.getRawValue();
     const model = {
-      id: '',
-      //air_id: json.air_id.id,
-      // airfilter: json.air_id.company_name,
-
-      supplier_id: json.supplier_id.supplier_id,
-      supplier_fare_type: json.supplier_id.class_of_service,
+      id: json.id,
+      
+      supplier_id: json.supplier_id,
+      supplier_fare_type: json.supplier_fare_type,
 
       bonton_fare_type: json.bonton_fare_type_id.fare_type,
       bonton_fare_type_id: json.bonton_fare_type_id.id
@@ -259,19 +266,17 @@ export class SupplierTypeEntryComponent {
         if (data.id) {
           console.log("data modify", data)
           let resData = {
-            // id: data?.id,
-            // fare_type: data?.fare_type,
-            // entry_date_time: data?.entry_date_time,
-            // modify_date_time: data?.modify_date_time,
-
-            id: '',
-            supplier_id: '',
-            supplier_fare_type: '',
-
-            bonton_fare_type: '',
-            bonton_fare_type_id: ''
+            "id": data.id,
+            "supplierId": data?.supplier_id,
+            "company_name": data?.supplier_name,
+            "supplier_fare_type": data?.supplier_fare_type,
+            "bonton_fare_type_id": data?.bonton_fare_type_id,
+            "bonton_fare_type": data?.bonton_fare_type,
+            "entry_date_time": data?.entry_date_time,
+            "modify_date_time": null
           }
-          this.sidebarDialogService.close({ data: resData, key: 'create-response-fareType' });
+
+          this.sidebarDialogService.close({ data: resData, key: 'create-response-supplier-fareType' });
           this.settingsDrawer.close();
         }
 
