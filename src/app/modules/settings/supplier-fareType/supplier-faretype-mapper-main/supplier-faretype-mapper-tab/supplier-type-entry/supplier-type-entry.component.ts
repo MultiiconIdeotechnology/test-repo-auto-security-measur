@@ -88,8 +88,8 @@ export class SupplierTypeEntryComponent {
   ) {
     this.formGroup = this.builder.group({
       id: [''],
-      air_id: '',
-      airfilter: '',
+      sup_id: '',
+      sup_type: '',
 
       supplier_id: [''],
       supplier_fare_type: [''],
@@ -105,7 +105,12 @@ export class SupplierTypeEntryComponent {
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
       if (res) {
         this.getSupplierCombo();
-        this.getSupplierFareTypeCombo();
+        // this.getSupplierFareTypeCombo();
+        this.formGroup.get('sup_id').valueChanges
+          .pipe(filter(value => !!value))
+          .subscribe(supplierId => {
+            this.getSupplierFareTypeCombo('', supplierId);
+          });
         this.getBontonFareTypeCombo();
         if (res['type'] == 'supplier-fareType-create') {
           this.settingsDrawer.open();
@@ -116,10 +121,24 @@ export class SupplierTypeEntryComponent {
           this.settingsDrawer.open();
           this.title = 'Modify';
           this.buttonLabel = "Update";
-          if (res?.data) {
-            this.isEdit = true;
-            this.formGroup.patchValue(res?.data?.data)
+          if (res?.data?.data?.id) {
+            console.log("res?.data?.data",res?.data?.data);
+            
+            const supplierId = res.data.data.id;
+            const supplierFareTypeId = res.data.data.supplierId;
+            const bontonFareTypeId = res.data.data.bonton_fare_type_id;
+
+            // ✅ Find matching objects
+            const supplierFareTypeObj = this.supplierFareTypeList.find(x => x.id === supplierFareTypeId);
+            const bontonFareTypeObj = this.bontonFareTypeList.find(x => x.id === bontonFareTypeId);
+            this.formGroup.patchValue({
+              sup_id: supplierId || '',
+              supplier_id: supplierFareTypeObj || '',
+              supplier_fare_type:res?.data?.data?.id || '', 
+              bonton_fare_type_id: bontonFareTypeObj || ''
+            });
           }
+
         }
       }
     });
@@ -127,9 +146,10 @@ export class SupplierTypeEntryComponent {
 
   }
 
-  getSupplierCombo() {
+  // ✅ Load Supplier Combo with Search
+  getSupplierCombo(): void {
     this.formGroup
-      .get('airfilter')
+      .get('sup_type')
       .valueChanges.pipe(
         filter((search) => !!search),
         startWith(''),
@@ -142,36 +162,22 @@ export class SupplierTypeEntryComponent {
       .subscribe({
         next: data => {
           if (!this.supplierAllList?.length) {
-            this.supplierAllList = data
+            this.supplierAllList = data;
           }
-          this.supplierList = data
-          //this.formGroup.get('air_id').setValue(this.supplierList[0]?.id);
+          this.supplierList = data;
         }
       });
   }
 
-  getSupplierFareTypeCombo() {
-    this.formGroup
-      .get('supplier_fare_type')
-      .valueChanges.pipe(
-        filter((search) => !!search),
-        startWith(''),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((value: any) => {
-          return this.commonFareTypeService.getSupplierFareTypeCombo(value);
-        })
-      )
-      .subscribe({
-        next: data => {
-          if (!this.supplierFareTypeAllList?.length) {
-            this.supplierFareTypeAllList = data
-          }
-          this.supplierFareTypeList = data
-          //this.formGroup.get('supplier_id').setValue(this.supplierFareTypeList[0]?.id);
-        }
-      });
+  getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
+    this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
+      next: data => {
+        this.supplierFareTypeAllList = data;
+        this.supplierFareTypeList = data;
+      }
+    });
   }
+
 
   getBontonFareTypeCombo() {
     this.formGroup
@@ -196,17 +202,10 @@ export class SupplierTypeEntryComponent {
       });
   }
 
-  public compareWith(v1: any, v2: any) {
-    return v1 && v2 && v1.id === v2.id;
-  }
+  compareWithFareTypeSupplier = (a: any, b: any) => a && b && a.id === b.id;
+  compareWithFareTypeBonton = (a: any, b: any) => a && b && a.id === b.id;
+  compareWith = (a: any, b: any) => a === b; // for IDs
 
-  public compareWithFareTypeSupplier(v1: any, v2: any) {
-    return v1 && v2 && v1.id === v2.id;
-  }
-
-  public compareWithFareTypeBonton(v1: any, v2: any) {
-    return v1 && v2 && v1.id === v2.id;
-  }
 
 
 
@@ -214,8 +213,9 @@ export class SupplierTypeEntryComponent {
   resetForm() {
     this.formGroup?.patchValue({
       id: '',
-      air_id: '',
-      airfilter: '',
+
+      sup_id: '',
+      sup_type: '',
 
       supplier_id: '',
       supplier_fare_type: '',
@@ -241,7 +241,7 @@ export class SupplierTypeEntryComponent {
       //air_id: json.air_id.id,
       // airfilter: json.air_id.company_name,
 
-      supplier_id: json.supplier_id.id,
+      supplier_id: json.supplier_id.supplier_id,
       supplier_fare_type: json.supplier_id.class_of_service,
 
       bonton_fare_type: json.bonton_fare_type_id.fare_type,
@@ -257,16 +257,14 @@ export class SupplierTypeEntryComponent {
         this.alertService.showToast('success', this.isEdit ? 'Supplier Fare type updated successfully' : 'Supplier Fare type created successfully');
         this.resetForm();
         if (data.id) {
-          debugger;
+          console.log("data modify", data)
           let resData = {
             // id: data?.id,
             // fare_type: data?.fare_type,
             // entry_date_time: data?.entry_date_time,
             // modify_date_time: data?.modify_date_time,
-            id: '',
-            air_id: '',
-            airfilter: '',
 
+            id: '',
             supplier_id: '',
             supplier_fare_type: '',
 

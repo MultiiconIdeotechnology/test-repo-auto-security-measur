@@ -10,13 +10,13 @@
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th class="w-5 text-center left-[-1px]" pFrozenColumn>#</th>
-        <th pSortableColumn="supplier_name" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
-          class="dark:bg-[#1e293b]" [frozen]="frozenObj?.supplier_name"
-          [ngClass]="{'left-0': !frozenObj?.supplier_name}">
-          Supplier <p-sortIcon field="supplier_name" />
-          <span class="float-right" (click)="isFrozenColumn('supplier_name');$event.stopPropagation()">
-            <i *ngIf="!frozenObj?.supplier_name" class="pi pi-lock-open icon-size-3"></i>
-            <i *ngIf="frozenObj?.supplier_name" class="pi pi-lock icon-size-3"></i>
+        <th pSortableColumn="company_name" pResizableColumn pResizableColumn alignFrozen="left" pFrozenColumn
+          class="dark:bg-[#1e293b]" [frozen]="frozenObj?.company_name"
+          [ngClass]="{'left-0': !frozenObj?.company_name}">
+          Supplier <p-sortIcon field="company_name" />
+          <span class="float-right" (click)="isFrozenColumn('company_name');$event.stopPropagation()">
+            <i *ngIf="!frozenObj?.company_name" class="pi pi-lock-open icon-size-3"></i>
+            <i *ngIf="frozenObj?.company_name" class="pi pi-lock icon-size-3"></i>
           </span>
         </th>
         <th pSortableColumn="supplier_fare_type" pResizableColumn>
@@ -33,8 +33,8 @@
 
       <tr *ngIf="isFilterShowSupplierFareType">
         <th class=" left-[-1px]" pFrozenColumn></th>
-        <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name" class="min-w-[110px]">
-          <p-columnFilter field="supplier_name" type="text" placeholder="Search by Supplier Name"
+        <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name" class="min-w-[110px]">
+          <p-columnFilter field="company_name" type="text" placeholder="Search by Supplier Name"
             ariaLabel="Filter Supplier Name"></p-columnFilter>
         </th>
         <th>
@@ -139,8 +139,8 @@
             </button>
           </mat-menu>
         </td>
-        <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_name">
-          {{element.supplier_name || '-'}}
+        <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.company_name">
+          {{element.company_name || '-'}}
         </td>
         <td class="text-left min-w-[140px]" alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.supplier_fare_type">
           {{element.supplier_fare_type || '-'}}

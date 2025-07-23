@@ -40,16 +40,24 @@ export class CommonFareTypeService {
     return this.http.post<any>(this.baseUrl + 'SupplierFareTypeMapper/create', model);
   }
 
-   deleteSupplierFareTypeMapper(id: string): Observable<any> {
+  deleteSupplierFareTypeMapper(id: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'SupplierFareTypeMapper/delete', { id: id });
   }
 
-   getSupplierFareTypeCombo(filter?: string): Observable<any[]> {
-    return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', { filter });
+  getSupplierFareTypeCombo(supplier_id: string, filter?: string): Observable<any[]> {
+    return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
+      supplier_id: supplier_id,
+      filter: filter,
+    });
   }
-   
-    getFareypeSupplierBoCombo(type?: string,filter?: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type , filter });
+
+
+  getFareypeSupplierBoCombo(type?: string, filter?: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type, filter });
   }
+
+  // getSupplierFareTypeMapperCombo(filter?: string): Observable<any[]> {
+  //   return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeMapperCombo', { filter });
+  // }
 
 }

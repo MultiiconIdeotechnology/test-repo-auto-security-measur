@@ -12,50 +12,52 @@
             <div class="px-5 py-2 h-[calc(100vh-120px)] overflow-auto">
                 <form [formGroup]="formGroup" class="flex flex-col gap-2">
 
-                   <mat-form-field class="flex-grow">
+                    <!-- Supplier Combo -->
+                    <mat-form-field class="flex-grow">
                         <mat-label>Supplier</mat-label>
-                        <mat-select required formControlName="air_id" [compareWith]="compareWith">
+                        <mat-select required formControlName="sup_id" [compareWith]="compareWith">
                             <mat-option>
                                 <ngx-mat-select-search placeholderLabel="Search"
-                                    noEntriesFoundLabel="'no matching found'"
-                                    [formControlName]="'airfilter'">
+                                    noEntriesFoundLabel="'no matching found'" [formControlName]="'sup_type'">
                                 </ngx-mat-select-search>
                             </mat-option>
-                            <mat-option *ngFor="let ct of supplierList" [value]="ct">
+                            <mat-option *ngFor="let ct of supplierList" [value]="ct.id">
                                 <span>{{ ct.company_name }}</span>
                             </mat-option>
                         </mat-select>
-                    </mat-form-field>     
-                    
+                    </mat-form-field>
+
+                    <!-- Supplier Fare Type Combo -->
                     <mat-form-field class="flex-grow">
                         <mat-label>Supplier Fare Type</mat-label>
                         <mat-select required formControlName="supplier_id" [compareWith]="compareWithFareTypeSupplier">
                             <mat-option>
                                 <ngx-mat-select-search placeholderLabel="Search"
-                                    noEntriesFoundLabel="'no matching found'"
-                                    [formControlName]="'supplier_fare_type'">
+                                    noEntriesFoundLabel="'no matching found'" [formControlName]="'supplier_fare_type'">
                                 </ngx-mat-select-search>
-                            </mat-option> 
+                            </mat-option>
                             <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct">
                                 <span>{{ ct.class_of_service }}</span>
                             </mat-option>
                         </mat-select>
-                    </mat-form-field>     
-                    
-                       <mat-form-field class="flex-grow">
+                    </mat-form-field>
+
+
+
+                    <mat-form-field class="flex-grow">
                         <mat-label>Bonton Fare Type</mat-label>
-                        <mat-select required formControlName="bonton_fare_type_id" [compareWith]="compareWithFareTypeBonton">
+                        <mat-select required formControlName="bonton_fare_type_id"
+                            [compareWith]="compareWithFareTypeBonton">
                             <mat-option>
                                 <ngx-mat-select-search placeholderLabel="Search"
-                                    noEntriesFoundLabel="'no matching found'"
-                                    [formControlName]="'bonton_fare_type'">
+                                    noEntriesFoundLabel="'no matching found'" [formControlName]="'bonton_fare_type'">
                                 </ngx-mat-select-search>
                             </mat-option>
                             <mat-option *ngFor="let ct of bontonFareTypeList" [value]="ct">
                                 <span>{{ ct.fare_type }}</span>
                             </mat-option>
                         </mat-select>
-                    </mat-form-field>      
+                    </mat-form-field>
                 </form>
 
             </div>
