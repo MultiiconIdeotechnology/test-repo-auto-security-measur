@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -8,6 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSidenav } from '@angular/material/sidenav';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CacheLabel, CacheService } from 'app/services/cache.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
@@ -42,6 +43,7 @@ import { debounceTime, distinctUntilChanged, filter, startWith, switchMap } from
 })
 export class ProfileAirlineComponent {
   @Input() profileName: string;
+  @Output() closeDrawer = new EventEmitter<void>();
   airlineForm: FormGroup;
 
   globalFilter: string = '';

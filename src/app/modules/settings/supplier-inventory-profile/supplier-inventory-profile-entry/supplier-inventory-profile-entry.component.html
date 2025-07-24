@@ -20,7 +20,7 @@
                 <mat-tab label="Airline" aria-label="Airline">
                     <div class="p-5">
                         <!-- Pass profile name as input -->
-                        <app-profile-airline [profileName]="profileName"></app-profile-airline>
+                        <app-profile-airline [profileName]="profileName"  (closeDrawer)="settingsDrawer.close()"></app-profile-airline>
                     </div>
                 </mat-tab>
                 <mat-tab label="Bus" aria-label="Bus">

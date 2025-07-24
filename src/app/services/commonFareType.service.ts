@@ -44,16 +44,17 @@ export class CommonFareTypeService {
     return this.http.post<any>(this.baseUrl + 'SupplierFareTypeMapper/delete', { id: id });
   }
 
-  getSupplierFareTypeCombo(supplier_id: string, filter?: string): Observable<any[]> {
+  getSupplierFareTypeCombo(supplier_id: string, filter?: string, is_active: boolean = false): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
       supplier_id: supplier_id,
       filter: filter,
+      is_active: is_active
     });
   }
 
 
-  getFareypeSupplierBoCombo(type?: string, filter?: string ,is_active?:boolean): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type, filter,is_active });
+  getFareypeSupplierBoCombo(type?: string, filter?: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type, filter });
   }
 
   // getSupplierFareTypeMapperCombo(filter?: string): Observable<any[]> {

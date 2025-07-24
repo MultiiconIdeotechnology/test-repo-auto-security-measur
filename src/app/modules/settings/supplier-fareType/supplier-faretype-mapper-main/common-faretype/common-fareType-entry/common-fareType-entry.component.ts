@@ -74,10 +74,9 @@ export class CommonFareTypeEntryComponent {
         private sidebarDialogService: SidebarCustomModalService,
         private builder: FormBuilder,
         private _filterService: CommonFilterService,
-        private dataManagerService: DataManagerService,
-        private referralService: RefferralService,
         private alertService: ToasterService,
-        private commonFareTypeService: CommonFareTypeService
+        private commonFareTypeService: CommonFareTypeService,     
+
     ) {
         this.formGroup = this.builder.group({
             id: [''],

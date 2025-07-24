@@ -155,10 +155,9 @@ export class SupplierTypeEntryComponent {
             this.supplierFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
         })
         this.resetForm();
-        
+        this.getSupplierCombo();
 
         if (res['type'] == 'supplier-fareType-create') {
-          this.getSupplierCombo(false);
           this.settingsDrawer.open();
           this.title = 'Add';
           this.resetForm();
@@ -166,7 +165,6 @@ export class SupplierTypeEntryComponent {
           this.buttonLabel = "Create";
 
         } else if (res['type'] == 'Supplier common-fareType-edit') {
-            this.getSupplierCombo(true);
           this.settingsDrawer.open();
           this.title = 'Modify';
           this.buttonLabel = "Update";
@@ -198,43 +196,28 @@ export class SupplierTypeEntryComponent {
   }
 
   // ✅ Load Supplier Combo with Search
-  getSupplierCombo(is_active: boolean): void {
-    // this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBoCombo,
-    //   this.commonFareTypeService.getFareypeSupplierBoCombo('Airline', '',is_active)).subscribe({
-    //     next: data => {
-    //       this.supplierAllList = cloneDeep(data);
-    //       this.supplierList = this.supplierAllList;
-    //     }
-    //   });
-     const observable = this.commonFareTypeService.getFareypeSupplierBoCombo('Airline', '', is_active);
-
-      if(is_active) {
-        this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBoCombo, observable).subscribe({
-          next: data => {
-            this.supplierAllList = cloneDeep(data);
-            this.supplierList = this.supplierAllList;
-          }
-        });
-      } else {
-        // Create → don't cache, fetch fresh
-        observable.subscribe({
-          next: data => {
-            this.supplierAllList = cloneDeep(data);
-            this.supplierList = this.supplierAllList;
-          }
-        });
-      }
+  getSupplierCombo(): void {
+    this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBoCombo,
+      this.commonFareTypeService.getFareypeSupplierBoCombo('Airline', '')).subscribe({
+        next: data => {
+          this.supplierAllList = cloneDeep(data);
+          this.supplierList = this.supplierAllList;
+        }
+      });
   }
 
-  getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
-    // this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
-    //   next: data => {
-    //     this.supplierFareTypeAllList = data;
-    //     this.supplierFareTypeList = data;
-    //   }
-    // });
+  // getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
+  //   this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
+  //     next: data => {
+  //       this.supplierFareTypeAllList = data;
+  //       this.supplierFareTypeList = [...data]; // show full list initially
+  //     }
+  //   });
+  // }
+  
 
-    this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
+  getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
+    this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter , (this.formGroup.get('id').value?.trim() != '' && this.formGroup.get('id').value != null)).subscribe({
       next: data => {
         this.supplierFareTypeAllList = data;
         this.supplierFareTypeList = [...data]; // show full list initially
