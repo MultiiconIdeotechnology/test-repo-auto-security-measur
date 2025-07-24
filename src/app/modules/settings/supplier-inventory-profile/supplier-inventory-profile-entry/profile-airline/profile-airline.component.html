@@ -2,14 +2,6 @@
     <form [formGroup]="airlineForm">
         <div class="grid grid-cols-4 gap-4">
             <!-- Dropdown 1 -->
-            <mat-form-field class="flex-grow">
-                <mat-label>Service</mat-label>
-                <input matInput type="text" formControlName="service" />
-                <mat-error *ngIf="airlineForm.get('service').hasError('required')">
-                   Service Name is required
-                </mat-error>
-            </mat-form-field>
-
             <mat-form-field class="w-full">
                 <mat-label>Supplier</mat-label>
                 <mat-select formControlName="supplier_id" required>
@@ -21,6 +13,35 @@
                     <mat-option *ngFor="let ct of SupplierList" [value]="ct.id">{{ct.company_name}}</mat-option>
                 </mat-select>
             </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>User Type</mat-label>
+                <mat-select formControlName="user_type">
+                    <mat-option *ngFor="let type of userType" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Trip Type</mat-label>
+                <mat-select formControlName="trip_type">
+                    <mat-option *ngFor="let type of tripTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Route Type</mat-label>
+                <mat-select formControlName="route_type">
+                    <mat-option *ngFor="let type of routeTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
 
             <!-- Dropdown 2 -->
             <mat-form-field class="w-full">

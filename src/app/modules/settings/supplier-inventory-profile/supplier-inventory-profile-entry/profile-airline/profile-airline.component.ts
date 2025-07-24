@@ -46,6 +46,10 @@ export class ProfileAirlineComponent {
   ];
 
   searchText = '';
+  userType: string[] = ['B2B', 'B2C'];
+  tripTypeList: string[] = ['International', 'Both', 'Domestic'];
+  routeTypeList: string[] = ['All', 'One Way', 'Round Trip', 'MultiCity'];
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -57,9 +61,11 @@ export class ProfileAirlineComponent {
   ngOnInit(): void {
     this.airlineForm = this.formBuilder.group({
       id: [''],
-      service:['',Validators.required],
       supplier_id: [''],
       supplierFilter: ['',Validators.required],
+      user_type:['',Validators.required],
+      trip_type:['',Validators.required],
+
       dropdown1: [''],
       dropdown2: [''],
       dropdown3: [''],
