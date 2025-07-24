@@ -52,8 +52,8 @@ export class CommonFareTypeService {
   }
 
 
-  getFareypeSupplierBoCombo(type?: string, filter?: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type, filter });
+  getFareypeSupplierBoCombo(type?: string, filter?: string ,is_active?:boolean): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type, filter,is_active });
   }
 
   // getSupplierFareTypeMapperCombo(filter?: string): Observable<any[]> {
