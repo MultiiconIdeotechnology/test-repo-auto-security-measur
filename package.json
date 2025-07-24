@@ -9,6 +9,7 @@
         "ng": "ng",
         "start": "ng serve",
         "s:start": "ng serve --port 4850",
+        "y:start": "ng serve --port 1333",
         "o:start": "ng serve --port 4100",
         "g:start": "ng serve --port 4800",
         "build:developer": "ng build --configuration=developer",
