@@ -202,6 +202,7 @@ export const appRoutes: Route[] = [
             { path: Routes.settings.caching_parameters_path, loadChildren: () => import('app/modules/masters/caching-parameters/caching-parameters-list/caching-parameters-list.routes') },
             { path: Routes.settings.cashback_parameters_path, loadChildren: () => import('app/modules/settings/cashback-parameter/cashback-parameter.route') },
             { path: Routes.settings.supplier_inventory_profile_path, loadChildren: () => import('app/modules/settings/supplier-inventory-profile/supplier-inventory-profile.route') },
+             { path: Routes.settings.supplier_faretype_mapper_path, loadChildren: () => import('app/modules/settings/supplier-fareType/supplier-faretype-mapper-main/supplier-faretype-mapper.route') },
 
         ]
     },

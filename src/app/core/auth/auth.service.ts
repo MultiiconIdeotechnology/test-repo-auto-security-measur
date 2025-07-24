@@ -9,6 +9,7 @@ import { BehaviorSubject, catchError, Observable, of, switchMap, throwError } fr
 import { FuseNavigationItem, Navigations } from '@fuse/components/navigation';
 import { MatDialog } from '@angular/material/dialog';
 import { SetPasswordComponent } from 'app/layout/common/user/set-password/set-password.component';
+import { CacheService } from 'app/services/cache.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
     constructor(
         private _httpClient: HttpClient,
         private _userService: UserService,
+        private cacheService: CacheService,
         private matDialog: MatDialog
     ) {
         var user = localStorage.getItem('user');
@@ -212,6 +214,7 @@ export class AuthService {
         localStorage.removeItem('isAuthEnabled');
 
         this._userService.user = null;
+        this.cacheService.clear();
         this.user = null;
 
         // Set the authenticated flag to false
