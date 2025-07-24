@@ -104,7 +104,7 @@ export class SupplierTypeEntryComponent {
         this.supplierList = this.supplierAllList.filter(x => x?.company_name?.toLowerCase().includes(val));
     })
 
-      this.formGroup.get('bonton_fare_type').valueChanges.subscribe(res => {
+    this.formGroup.get('bonton_fare_type').valueChanges.subscribe(res => {
       const val = res?.trim()?.toLowerCase();
       if (!val)
         this.bontonFareTypeList = this.bontonFareTypeAllList;
@@ -126,7 +126,7 @@ export class SupplierTypeEntryComponent {
           this.resetForm();
           this.isEdit = false;
           this.buttonLabel = "Create";
-         
+
         } else if (res['type'] == 'Supplier common-fareType-edit') {
           this.settingsDrawer.open();
           this.title = 'Modify';
@@ -144,7 +144,7 @@ export class SupplierTypeEntryComponent {
             const bontonFareTypeObj = this.bontonFareTypeList.find(x => x.id === bontonFareTypeId);
             this.formGroup.patchValue({
               id: res?.data?.data?.id || '',
-              supplier_id: supplierId || '',           
+              supplier_id: supplierId || '',
               supplier_fare_type: res.data.data.supplier_fare_type || '',
               supplier_fare_type_filter: res.data.data.supplier_fare_type || '',
               bonton_fare_type_id: bontonFareTypeObj || ''
@@ -180,7 +180,7 @@ export class SupplierTypeEntryComponent {
 
 
   getBontonFareTypeCombo() {
-      this.cacheService.getOrAdd(CacheLabel.getCommonFareTypeCombo,
+    this.cacheService.getOrAdd(CacheLabel.getCommonFareTypeCombo,
       this.commonFareTypeService.getCommonFareTypeCombo('')).subscribe({
         next: data => {
           this.bontonFareTypeAllList = cloneDeep(data);

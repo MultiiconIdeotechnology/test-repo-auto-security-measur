@@ -48,5 +48,7 @@ export class CacheService {
 
 export enum CacheLabel {
   getFareypeSupplierBoCombo,
-  getCommonFareTypeCombo
+  getCommonFareTypeCombo,
+  getAirlineCombo,
+  getAirportMstCombo
 }

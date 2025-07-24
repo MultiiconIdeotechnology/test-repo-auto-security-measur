@@ -1,7 +1,7 @@
 <div class="p-2">
     <form [formGroup]="airlineForm">
         <div class="grid grid-cols-4 gap-4">
-            <!-- Dropdown 1 -->
+
             <mat-form-field class="w-full">
                 <mat-label>Supplier</mat-label>
                 <mat-select formControlName="supplier_id" required>
@@ -41,73 +41,99 @@
                 </mat-select>
             </mat-form-field>
 
-
-
-            <!-- Dropdown 2 -->
             <mat-form-field class="w-full">
-                <mat-label>Dropdown 2</mat-label>
-                <mat-select formControlName="dropdown2">
-                    <mat-option value="opt1">Option A</mat-option>
-                    <mat-option value="opt2">Option B</mat-option>
+                <mat-label>Airline</mat-label>
+                <mat-select multiple required formControlName="airline_id" (selectionChange)="clickOtherRoles($event)">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching Airline found'" [formControlName]="'airlineFilter'"
+                            (input)="filterAirlineCarrier($event.target.value)">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option value="All" (onSelectionChange)="clickAllRoles($event)">
+                        <span class="font-normal">All</span>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of AirlineList" [value]="ct.id">{{ct.short_code}}</mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <!-- Dropdown 3 -->
             <mat-form-field class="w-full">
-                <mat-label>Dropdown 3</mat-label>
-                <mat-select formControlName="dropdown3">
-                    <mat-option value="opt1">Yes</mat-option>
-                    <mat-option value="opt2">No</mat-option>
+                <mat-label>Fare Class</mat-label>
+                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)">
+                    <mat-option [value]="'All'" (onSelectionChange)="onAllFareClassToggle($event)">
+                        All
+                    </mat-option>
+                    <mat-option *ngFor="let item of fareClassList.slice(1)" [value]="item">
+                        {{ item }}
+                    </mat-option>
+
                 </mat-select>
             </mat-form-field>
 
-            <!-- Dropdown 4 -->
+            <!--Fare Type Class -->
+
             <mat-form-field class="w-full">
-                <mat-label>Dropdown 4</mat-label>
-                <mat-select formControlName="dropdown4">
-                    <mat-option value="opt1">Alpha</mat-option>
-                    <mat-option value="opt2">Beta</mat-option>
+                <mat-label>Fare Type/Class Visibility</mat-label>
+                <mat-select formControlName="fare_type_class_visible_type">
+                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <!-- Dropdown 5 -->
+
             <mat-form-field class="w-full">
-                <mat-label>Dropdown 5</mat-label>
-                <mat-select formControlName="dropdown5">
-                    <mat-option value="opt1">Red</mat-option>
-                    <mat-option value="opt2">Green</mat-option>
-                    <mat-option value="opt3">Blue</mat-option>
+                <mat-label>Fare Type</mat-label>
+                <mat-select formControlName="fare_type">
+                    <mat-option *ngFor="let fare of fareTypeList" [value]="fare">
+                        {{ fare }}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <!-- Dropdown 6 -->
             <mat-form-field class="w-full">
-                <mat-label>Dropdown 6</mat-label>
-                <mat-select formControlName="dropdown6">
-                    <mat-option value="1">Item 1</mat-option>
-                    <mat-option value="2">Item 2</mat-option>
+                <mat-label>Airport Codes</mat-label>
+                <mat-select multiple required formControlName="airport_code_id"
+                    (selectionChange)="clickOtherCodes($event)">
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching City found'"
+                            [formControlName]="'airport_code_filter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option value="All" (onSelectionChange)="clickAllCodes($event)">
+                        <span class="font-normal">All</span>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id">{{ct.display_name}}</mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <!-- Dropdown 7 -->
+
             <mat-form-field class="w-full">
-                <mat-label>Dropdown 7</mat-label>
-                <mat-select formControlName="dropdown7">
-                    <mat-option value="a">A</mat-option>
-                    <mat-option value="b">B</mat-option>
+                <mat-label>Airport Codes Visibility</mat-label>
+                <mat-select formControlName="airport_codes_visible_type">
+                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
 
-            <!-- Dropdown 8 -->
-            <mat-form-field class="w-full">
-                <mat-label>Dropdown 8</mat-label>
-                <mat-select formControlName="dropdown8">
-                    <mat-option value="opt1">Basic</mat-option>
-                    <mat-option value="opt2">Advanced</mat-option>
+            <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Stops</mat-label>
+                <mat-select multiple formControlName="stops" (selectionChange)="onStopsChange($event)">
+                    <mat-option [value]="'All'" (onSelectionChange)="onSelectAllStops($event)">
+                        All
+                    </mat-option>
+                    <mat-option *ngFor="let stop of stopList" [value]="stop">
+                        {{ stop }} Stop{{ stop > 1 ? 's' : '' }}
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
+           
+            <div class="flex flex-row">
+                <mat-checkbox class="example-margin ml-[-8px]" formControlName="is_enable">
+                   Is Enabled</mat-checkbox>
+            </div>
 
-            <!-- Add more dropdowns up to 16 if needed -->
         </div>
 
         <!-- Save Button -->
