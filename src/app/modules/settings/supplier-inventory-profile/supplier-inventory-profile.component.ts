@@ -18,6 +18,7 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { MatDividerModule } from '@angular/material/divider';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { SupplierInventoryProfileEntryComponent } from './supplier-inventory-profile-entry/supplier-inventory-profile-entry.component';
+import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
 
 @Component({
   selector: 'app-supplier-inventory-profile',
@@ -60,7 +61,7 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
   ]
 
   constructor(
-    private itemService: ItemService,
+    private supplierInventoryProfileService: SupplierInventoryProfileService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     public _filterService: CommonFilterService,
@@ -75,7 +76,7 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
 
     this.selectedColumns = [
       { field: 'profile_name', header: 'Profile Name', type: Types.text },
-      { field: 'createdDate', header: 'Created Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
+      { field: 'entry_date_time', header: 'Created Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
     ];
 
     this.cols.unshift(...this.selectedColumns);
@@ -146,7 +147,7 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
   refreshItems(event?: any): void {
     this.isLoading = true;
 
-    this.itemService.getItemMasterList(this.getNewFilterReq(event)).subscribe({
+    this.supplierInventoryProfileService.getSupplierInventoryProfileList(this.getNewFilterReq(event)).subscribe({
       next: data => {
         this.isLoading = false;
         this.dataList = data.data;
@@ -176,24 +177,24 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
   }
 
 
-  deleteInternal(record): void {
-    const label: string = 'Delete Item'
-    this.conformationService.open({
-      title: label,
-      message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.item_name + ' ?'
-    }).afterClosed().subscribe(res => {
-      if (res === 'confirmed') {
-        this.itemService.delete(record.id).subscribe({
-          next: () => {
-            this.alertService.showToast('success', "Item has been deleted!", "top-right", true);
-            this.refreshItems();
-          }, error: (err) => {
-            this.alertService.showToast('error', err, 'top-right', true);
-          }
-        })
-      }
-    })
-  }
+  // deleteInternal(record): void {
+  //   const label: string = 'Delete Item'
+  //   this.conformationService.open({
+  //     title: label,
+  //     message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.item_name + ' ?'
+  //   }).afterClosed().subscribe(res => {
+  //     if (res === 'confirmed') {
+  //       this.itemService.delete(record.id).subscribe({
+  //         next: () => {
+  //           this.alertService.showToast('success', "Item has been deleted!", "top-right", true);
+  //           this.refreshItems();
+  //         }, error: (err) => {
+  //           this.alertService.showToast('error', err, 'top-right', true);
+  //         }
+  //       })
+  //     }
+  //   })
+  // }
 
 
   getNodataText(): string {

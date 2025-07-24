@@ -15,8 +15,8 @@
                     <!-- Supplier Combo -->
                     <mat-form-field class="flex-grow">
                         <mat-label>Supplier</mat-label>
-                        <mat-select required formControlName="supplier_id" [compareWith]="compareWith" 
-                        (selectionChange)="getSupplierFareTypeCombo('', $event.value)">
+                        <mat-select required formControlName="supplier_id" [compareWith]="compareWith"
+                            (selectionChange)="getSupplierFareTypeCombo('', $event.value)">
                             <mat-option>
                                 <ngx-mat-select-search placeholderLabel="Search"
                                     noEntriesFoundLabel="'no matching found'" [formControlName]="'sup_type'">
@@ -29,10 +29,9 @@
                     </mat-form-field>
 
                     <!-- Supplier Fare Type Combo -->
-                    <mat-form-field class="flex-grow">
+                    <!-- <mat-form-field class="flex-grow">
                         <mat-label>Supplier Fare Type</mat-label>
-                        <mat-select required formControlName="supplier_fare_type">
-                             <!-- [compareWith]="compareWithFareTypeSupplier" -->
+                        <mat-select required formControlName="supplier_fare_type">                           
                             <mat-option>
                                 <ngx-mat-select-search placeholderLabel="Search"
                                     noEntriesFoundLabel="'no matching found'" [formControlName]="'supplier_fare_type_filter'">
@@ -42,7 +41,21 @@
                                 <span>{{ ct.class_of_service }}</span>
                             </mat-option>
                         </mat-select>
+                    </mat-form-field> -->
+                    
+                    <!-- Supplier Fare Type Combo with Autocomplete -->
+                    <mat-form-field class="flex-grow">
+                        <mat-label>Supplier Fare Type</mat-label>
+                        <input type="text" matInput formControlName="supplier_fare_type" [matAutocomplete]="auto"
+                            required>
+                        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                            <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct.class_of_service">
+                                {{ ct.class_of_service }}
+                            </mat-option>
+                        </mat-autocomplete>
                     </mat-form-field>
+
+
 
                     <mat-form-field class="flex-grow">
                         <mat-label>Bonton Fare Type</mat-label>

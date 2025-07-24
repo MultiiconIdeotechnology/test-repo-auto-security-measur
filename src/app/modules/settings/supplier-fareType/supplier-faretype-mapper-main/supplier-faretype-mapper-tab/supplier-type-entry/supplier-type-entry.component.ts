@@ -22,6 +22,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { CommonFareTypeService } from 'app/services/commonFareType.service';
 import { cloneDeep } from 'lodash';
 import { CacheLabel, CacheService } from 'app/services/cache.service';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-supplier-type-entry',
@@ -49,6 +50,7 @@ import { CacheLabel, CacheService } from 'app/services/cache.service';
     MatDatepickerModule,
     MatMenuModule,
     NgxMatTimepickerModule,
+    MatAutocompleteModule
 
   ],
 
@@ -89,13 +91,14 @@ export class SupplierTypeEntryComponent {
       // company_name:'',
       sup_type: '',
 
-      supplier_fare_type: [''],
+      supplier_fare_type: [null],
       supplier_fare_type_filter: [''],
 
       bonton_fare_type: [''],
       bonton_fare_type_id: ['']
 
     })
+
     this.formGroup.get('sup_type').valueChanges.subscribe(res => {
       const val = res?.trim()?.toLowerCase();
       if (!val)
@@ -111,15 +114,49 @@ export class SupplierTypeEntryComponent {
       else
         this.bontonFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
     })
+
+    // this.formGroup.get('supplier_fare_type_filter').valueChanges.subscribe(res => {
+    //   const val = res?.trim()?.toLowerCase();
+    //   if (!val)
+    //     this.supplierFareTypeList = this.supplierFareTypeAllList;
+    //   else
+    //     this.supplierFareTypeList = this.supplierFareTypeAllList.filter(x => x?.class_of_service?.toLowerCase().includes(val));
+    // })
+    this.formGroup.get('supplier_fare_type')?.valueChanges
+      .pipe(debounceTime(200), distinctUntilChanged())
+      .subscribe(val => {
+        const inputVal = val?.toLowerCase() || '';
+        this.supplierFareTypeList = inputVal
+          ? this.supplierFareTypeAllList.filter(x =>
+            x.class_of_service?.toLowerCase().includes(inputVal)
+          )
+          : [...this.supplierFareTypeAllList];
+      });
+
   }
 
   ngOnInit(): void {
 
     // subscribing to modalchange on create and modify
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
-      if (res) {
+      if (res && (res?.['type'] == 'supplier-fareType-create' || res?.['type'] == 'Supplier common-fareType-edit')) {
+        this.cacheService.getOrAdd(CacheLabel.getCommonFareTypeCombo,
+          this.commonFareTypeService.getCommonFareTypeCombo('')).subscribe({
+            next: data => {
+              this.bontonFareTypeAllList = cloneDeep(data);
+              this.bontonFareTypeList = this.bontonFareTypeAllList;
+            }
+          });
+        this.formGroup.get('bonton_fare_type').valueChanges.subscribe(res => {
+          const val = res?.trim()?.toLowerCase();
+          if (!val)
+            this.supplierFareTypeList = this.bontonFareTypeAllList;
+          else
+            this.supplierFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
+        })
+        this.resetForm();
         this.getSupplierCombo();
-        this.getBontonFareTypeCombo();
+
         if (res['type'] == 'supplier-fareType-create') {
           this.settingsDrawer.open();
           this.title = 'Add';
@@ -170,10 +207,17 @@ export class SupplierTypeEntryComponent {
   }
 
   getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
+    // this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
+    //   next: data => {
+    //     this.supplierFareTypeAllList = data;
+    //     this.supplierFareTypeList = data;
+    //   }
+    // });
+
     this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
       next: data => {
         this.supplierFareTypeAllList = data;
-        this.supplierFareTypeList = data;
+        this.supplierFareTypeList = [...data]; // show full list initially
       }
     });
   }

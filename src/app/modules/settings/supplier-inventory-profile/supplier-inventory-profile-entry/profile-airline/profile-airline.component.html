@@ -1,16 +1,19 @@
 <div class="p-2">
     <form [formGroup]="airlineForm">
         <div class="grid grid-cols-4 gap-4">
-
-            <mat-form-field class="w-full">
+            <!-- Supplier Combo -->
+            <mat-form-field class="flex-grow">
                 <mat-label>Supplier</mat-label>
-                <mat-select formControlName="supplier_id" required>
+                <mat-select required formControlName="supplier_id" [compareWith]="compareWith"
+                    (selectionChange)="getSupplierFareTypeCombo('', $event.value)">
                     <mat-option>
-                        <ngx-mat-select-search placeholderLabel="Search"
-                            noEntriesFoundLabel="'no matching product found'" [formControlName]="'supplierFilter'">
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
+                            [formControlName]="'sup_type'">
                         </ngx-mat-select-search>
                     </mat-option>
-                    <mat-option *ngFor="let ct of SupplierList" [value]="ct.id">{{ct.company_name}}</mat-option>
+                    <mat-option *ngFor="let ct of supplierList" [value]="ct.id">
+                        <span>{{ ct.company_name }}</span>
+                    </mat-option>
                 </mat-select>
             </mat-form-field>
 
@@ -70,18 +73,6 @@
                 </mat-select>
             </mat-form-field>
 
-            <!--Fare Type Class -->
-
-            <mat-form-field class="w-full">
-                <mat-label>Fare Type/Class Visibility</mat-label>
-                <mat-select formControlName="fare_type_class_visible_type">
-                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
-                        {{ type }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-
-
             <mat-form-field class="w-full">
                 <mat-label>Fare Type</mat-label>
                 <mat-select formControlName="fare_type">
@@ -90,6 +81,37 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
+
+
+            <!-- Supplier Fare Type class Combo -->
+            <mat-form-field class="flex-grow">
+                <mat-label>Fare Type Class</mat-label>
+                <mat-select multiple required formControlName="fare_type_class"  (selectionChange)="clickOtherFareTypeClass($event)">
+                    <!-- [compareWith]="compareWithFareTypeSupplier" -->
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
+                            [formControlName]="'supplier_fare_type_filter'">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                     <mat-option value="All" (onSelectionChange)="clickAllFarTypeClass($event)">
+                        <span class="font-normal">All</span>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct.class_of_service">
+                        <span>{{ ct.class_of_service }}</span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
+                <mat-label>Fare Type Class Visibility</mat-label>
+                <mat-select formControlName="fare_type_class_visible_type">
+                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
 
             <mat-form-field class="w-full">
                 <mat-label>Airport Codes</mat-label>
@@ -128,17 +150,17 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-           
+
             <div class="flex flex-row">
                 <mat-checkbox class="example-margin ml-[-8px]" formControlName="is_enable">
-                   Is Enabled</mat-checkbox>
+                    Is Enabled</mat-checkbox>
             </div>
 
         </div>
 
         <!-- Save Button -->
         <div class="flex justify-end mt-6">
-            <button mat-flat-button color="primary" type="submit">
+            <button mat-flat-button color="primary" (click)="submit()">
                 Save
             </button>
         </div>

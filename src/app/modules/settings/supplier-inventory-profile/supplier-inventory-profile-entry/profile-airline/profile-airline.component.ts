@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -41,22 +41,24 @@ import { debounceTime, distinctUntilChanged, filter, startWith, switchMap } from
   ]
 })
 export class ProfileAirlineComponent {
+  @Input() profileName: string;
   airlineForm: FormGroup;
 
   globalFilter: string = '';
-  SupplierList: any[] = [];
+
+  supplierList: any[] = [];
+  supplierAllList: any[] = [];
+
+  supplierFareTypeList: any[] = [];
+  supplierFareTypeAllList: any[] = [];
+
   AirlineList: any[] = [];
   AllAirline: any[] = [];
   airPortcodeList: any[] = [];
   allAirPortCode: any[] = [];
 
 
-  dataList = [
-    { supplier: 'IndiGo', usertype: 'Agent', isEnable: true, triptype: 'One-Way' },
-    { supplier: 'Air India', usertype: 'Admin', isEnable: false, triptype: 'Round-Trip' },
-    { supplier: 'SpiceJet', usertype: 'Agent', isEnable: true, triptype: 'Multi-City' }
-    // add more mock or API data
-  ];
+  dataList: any[] = [];
 
   searchText = '';
   userType: string[] = ['B2B', 'B2C'];
@@ -84,10 +86,14 @@ export class ProfileAirlineComponent {
   ) {
     this.airlineForm = this.formBuilder.group({
       id: [''],
+
       supplier_id: [''],
-      supplierFilter: ['', Validators.required],
-      user_type: ['', Validators.required],
-      trip_type: ['', Validators.required],
+      sup_type: [''],
+      fare_type_class: [''],
+      supplier_fare_type_filter: [''],
+
+      user_type: [''],
+      trip_type: ['',],
       route_type: [''],
       airline_id: [''],
       airlineFilter: [''],
@@ -101,6 +107,13 @@ export class ProfileAirlineComponent {
       is_enable: [true]
     });
 
+    this.airlineForm.get('sup_type').valueChanges.subscribe(res => {
+      const val = res?.trim()?.toLowerCase();
+      if (!val)
+        this.supplierList = this.supplierAllList;
+      else
+        this.supplierList = this.supplierAllList.filter(x => x?.company_name?.toLowerCase().includes(val));
+    })
 
     this.airlineForm.get('airlineFilter').valueChanges.subscribe(res => {
       const val = res?.trim()?.toLowerCase();
@@ -123,34 +136,28 @@ export class ProfileAirlineComponent {
 
 
   ngOnInit(): void {
-
-
-    this.supplierCombo();
+    this.getSupplierCombo();
     this.airlineCombo();
     this.getAirportMstCombo();
   }
 
-  supplierCombo() {
-    //supplier combo
-    this.airlineForm
-      .get('supplierFilter')
-      .valueChanges.pipe(
-        filter((search) => !!search),
-        startWith(''),
-        debounceTime(400),
-        distinctUntilChanged(),
-        switchMap((value: any) => {
-          return this.supplierInventoryProfileService.getSupplierComboOfflinePNR(value, 'Airline');
-        })
-      )
-      .subscribe({
-        next: (data) => {
-          this.SupplierList = data;
-          // this.airlineForm
-          //   .get('supplier_id')
-          //   .patchValue(this.SupplierList[0].id);
-        },
+  getSupplierCombo(): void {
+    this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBoCombo,
+      this.supplierInventoryProfileService.getFareypeSupplierBoCombo('Airline', '')).subscribe({
+        next: data => {
+          this.supplierAllList = cloneDeep(data);
+          this.supplierList = this.supplierAllList;
+        }
       });
+  }
+
+  getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
+    this.supplierInventoryProfileService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
+      next: data => {
+        this.supplierFareTypeAllList = data;
+        this.supplierFareTypeList = data;
+      }
+    });
   }
 
   airlineCombo(): void {
@@ -173,9 +180,7 @@ export class ProfileAirlineComponent {
       });
   }
 
-  // public compareWith(v1: any, v2: any) {
-  //   return v1 && v2 && v1.id === v2.id;
-  // }
+  compareWith = (a: any, b: any) => a === b; // for IDs
 
   //AirLine
   clickOtherRoles(event?): void {
@@ -226,6 +231,31 @@ export class ProfileAirlineComponent {
     }
   }
 
+  //Fare Type class
+  clickOtherFareTypeClass(event?): void {
+    if (event.source.value === 'All') return;
+
+    const allSelected = this.airlineForm.get('fare_type_class').value.find(x => x == 'All');
+    if (allSelected) {
+      const updatedClients = this.airlineForm.get('fare_type_class').value.filter(x => x !== 'All');
+      this.airlineForm.get('fare_type_class').patchValue(updatedClients, { emitEvent: false });
+    }
+  }
+
+  clickAllFarTypeClass(event: any): void {
+
+    if (event.source.value !== 'All') return;
+
+    const all = event.source.selected;
+
+    if (all) {
+      this.airlineForm.get('fare_type_class').patchValue(['All', ...this.supplierFareTypeList.map(x => x.id)], { emitEvent: false });
+    } else {
+      this.airlineForm.get('fare_type_class').patchValue([], { emitEvent: false });
+    }
+  }
+
+
 
   onAllFareClassToggle(event: any): void {
     if (event.source.selected) {
@@ -266,6 +296,77 @@ export class ProfileAirlineComponent {
   filterAirlineCarrier(val): void {
     const value = this.AllAirline.filter(x => x.short_code.toLowerCase().includes(val.toLowerCase()))
     this.AirlineList = value;
+  }
+
+  submit(): void {
+    if (this.airlineForm.invalid) {
+      this.airlineForm.markAllAsTouched();
+      this.toasterService.showToast('error', 'Please fill all required fields.', 'top-right', true);
+      return;
+    }
+
+    const formValue = this.airlineForm.value;
+
+    const payload = {
+      id: '', // Optional: update mode
+      profile_name: this.profileName,
+      is_default: false,
+      inventories: [
+        {
+          service: 'Airline',
+          supplier_id: formValue.supplier_id,
+          user_type: formValue.user_type,
+          trip_type: formValue.trip_type,
+          route_type: formValue.route_type,
+          airline: formValue.airline_id,
+          fare_class: formValue.fare_class,
+          fare_type: formValue.fare_type,
+          fare_type_class: formValue.fare_type_class,
+          fare_type_class_visible_type: formValue.fare_type_class_visible_type,
+          airport_codes: formValue.airport_code_id,
+          airport_codes_visible_type: formValue.airport_codes_visible_type,
+          stops: formValue.stops,
+          is_enable: formValue.is_enable
+        }
+      ]
+    };
+
+    this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
+      next: (res) => {
+        this.toasterService.showToast('success', 'Profile saved successfully.', 'top-right');
+
+        // ✅ Add to grid dataList
+        const addedRow = {
+          supplier: this.getSupplierNameById(formValue.supplier_id), // helper method below
+          usertype: formValue.user_type,
+          isEnable: formValue.is_enable,
+          triptype: formValue.trip_type,
+          // add more fields if needed
+        };
+
+        this.dataList.unshift(addedRow); // Add to the top of the table
+
+        // ✅ Reset form
+        this.airlineForm.reset();
+
+        // Optional: reset multi-selects manually if needed
+        this.airlineForm.patchValue({
+          is_enable: false,
+          airline_id: [],
+          fare_class: [],
+          airport_code_id: [],
+          stops: []
+        });
+      },
+      error: () => {
+        this.toasterService.showToast('error', 'Something went wrong.', 'top-right');
+      }
+    });
+  }
+
+  getSupplierNameById(id: number | string): string {
+    const supplier = this.supplierList.find(s => s.id === id);
+    return supplier ? supplier.company_name : '';
   }
 
   onRefresh(): void {

@@ -24,4 +24,25 @@ export class SupplierInventoryProfileService {
   getAirportMstCombo(filter: string): Observable<any[]> {
     return this.http.post<any>(this.baseUrl + 'AirportMst/getAirportMstCombo', { filter });
   }
+
+  getSupplierFareTypeCombo(supplier_id: string, filter?: string): Observable<any[]> {
+    return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
+      supplier_id: supplier_id,
+      filter: filter,
+    });
+  }
+
+  getFareypeSupplierBoCombo(type?: string, filter?: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type, filter });
+  }
+
+  
+  createSupplierInventoryProfile(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/create', model);
+  } 
+  
+    getSupplierInventoryProfileList(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/getSupplierInventoryProfileList', model);
+  }
+
 }

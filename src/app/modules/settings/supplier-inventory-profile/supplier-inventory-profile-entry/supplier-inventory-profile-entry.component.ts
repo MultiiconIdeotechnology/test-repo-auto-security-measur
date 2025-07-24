@@ -5,15 +5,14 @@ import { Subject, takeUntil } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatInputModule } from '@angular/material/input';
-import { FormBuilder, ReactiveFormsModule, FormGroup, Validators, FormControl, FormsModule } from '@angular/forms';
+import {  ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { DataManagerService } from 'app/services/data-manager.service';
-import { RefferralService } from 'app/services/referral.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProfileAirlineComponent } from './profile-airline/profile-airline.component';
@@ -48,6 +47,7 @@ export class SupplierInventoryProfileEntryComponent {
   tabsTitle = 'Settings';
   tabs = ['Airline', 'Bus', 'Hotel', 'Insurance'];
   activeTab = 'Airline';
+  profileName: string = '';
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
@@ -74,7 +74,6 @@ export class SupplierInventoryProfileEntryComponent {
           this.buttonLabel = "Save";
         }
       }
-
 
     });
 

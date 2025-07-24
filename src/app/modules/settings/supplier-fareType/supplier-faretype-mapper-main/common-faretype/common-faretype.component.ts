@@ -13,6 +13,7 @@ import { AppConfig } from 'app/config/app-config';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
 import { fareTypeMApperPermissions, filter_module_name, messages, module_name, Security } from 'app/security';
+import { CacheLabel, CacheService } from 'app/services/cache.service';
 import { CommonFareTypeService } from 'app/services/commonFareType.service';
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
@@ -72,6 +73,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
     public _filterService: CommonFilterService,
     public globalSearchService: GlobalSearchService,
     private sidebarDialogService: SidebarCustomModalService,
+    private cacheService: CacheService
   ) {
     super(module_name.techDashboard);
     this.key = this.module_name;
@@ -88,23 +90,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
       this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
       this.primengTable._filter();
     });
-    // this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp) => {
-    //   if (resp['table_config']['entry_date_time']?.value != null && resp['table_config']['entry_date_time'].value.length) {
-    //     this._filterService.updateSelectedOption('custom_date_range');
-    //     this._filterService.rangeDateConvert(resp['table_config']['entry_date_time']);
-    //   }
-
-    //   if (resp['table_config']['modify_date_time']?.value != null && resp['table_config']['modify_date_time'].value.length) {
-    //     this._filterService.updatedSelectionOptionTwo('custom_date_range');
-    //     this._filterService.rangeDateConvert(resp['table_config']['modify_date_time']);
-    //   }
-
-
-    //   this.primengTable['filters'] = resp['table_config'];
-    //   this.isFilterShowCommonFarType = true;
-    //   this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
-    //   this.primengTable._filter();
-    // });
+    
 
     this.sidebarDialogService.onModalChange().pipe((takeUntil(this.destroy$))).subscribe((res: any) => {
       if (res && res.key == 'create-response-fareType') {
@@ -115,6 +101,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
           this.dataList.unshift(res.data);
         }
       }
+      this.cacheService.remove(CacheLabel.getCommonFareTypeCombo);
     })
 
   }
@@ -129,22 +116,7 @@ export class CommonFaretypeComponent extends BaseListingComponent {
       // this.primengTable['_sortField'] = filterData['sortColumn'];
       // this.sortColumn = filterData['sortColumn'];
     }
-    // if (this._filterService.activeFiltData && this._filterService.activeFiltData.grid_config) {
-    //   this.isFilterShowCommonFarType = true;
-    //   this.isFilterShowCommonFarTypeChange.emit(this.isFilterShowCommonFarType);
-    //   let filterData = JSON.parse(this._filterService.activeFiltData.grid_config);
-    //   if (filterData['table_config']['entry_date_time']?.value != null && filterData['table_config']['entry_date_time'].value.length) {
-    //     this._filterService.updateSelectedOption('custom_date_range');
-    //     this._filterService.rangeDateConvert(filterData['table_config']['entry_date_time']);
-    //   }
-    //   if (filterData['table_config']['modify_date_time']?.value != null && filterData['table_config']['modify_date_time'].value.length) {
-    //     this._filterService.updateSelectedOption('custom_date_range');
-    //     this._filterService.rangeDateConvert(filterData['table_config']['modify_date_time']);
-    //   }
 
-    //   this.primengTable['filters'] = filterData['table_config'];
-
-    // }
   }
 
   onOptionClick(option: any, primengTable: any, field: string) {
@@ -199,7 +171,10 @@ export class CommonFaretypeComponent extends BaseListingComponent {
         this.commonFareTypeService.delete(record.id).subscribe({
           next: () => {
             this.alertService.showToast('success', "Common Fare Type has been deleted!", "top-right", true);
-            this.refreshItems();
+            this.dataList = this.dataList.filter(x => x.id !== record.id);
+            this.totalRecords--;
+            this.cacheService.remove(CacheLabel.getCommonFareTypeCombo);
+
           }, error: (err) => {
             this.alertService.showToast('error', err, 'top-right', true);
           }
