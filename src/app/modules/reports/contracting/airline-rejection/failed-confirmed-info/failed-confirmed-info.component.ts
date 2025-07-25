@@ -116,13 +116,7 @@ export class FailedConfirmedInfoComponent extends BaseListingComponent implement
     request['To_Date'] = this.record.To_Date;
     request['carrier'] = this.record.carrier;
     request['filterArea'] = this.record.filterArea;
-    
-    const hasColumeFiltersDate = !!request.columeFilters?.ticket_Date_Time;
-    if (hasColumeFiltersDate) {
-      request['From_Date'] = '';
-      request['To_Date'] = '';
-    }
-
+  
     this.airlineSummaryService.airlineRejectionBookingDetailsAnalysis(request).subscribe({
       next: (data) => {
         this.dataList = data.data;
