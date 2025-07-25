@@ -150,9 +150,9 @@ export class SupplierTypeEntryComponent {
         this.formGroup.get('bonton_fare_type').valueChanges.subscribe(res => {
           const val = res?.trim()?.toLowerCase();
           if (!val)
-            this.supplierFareTypeList = this.bontonFareTypeAllList;
+            this.bontonFareTypeList = this.bontonFareTypeAllList;
           else
-            this.supplierFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
+            this.bontonFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
         })
         this.resetForm();
         this.getSupplierCombo();
