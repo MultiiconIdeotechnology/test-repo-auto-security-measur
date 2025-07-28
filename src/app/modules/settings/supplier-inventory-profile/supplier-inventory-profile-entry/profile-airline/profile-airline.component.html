@@ -5,14 +5,14 @@
             <!-- Supplier Combo -->
             <mat-form-field class="flex-grow">
                 <mat-label>Supplier</mat-label>
-                <mat-select required formControlName="supplier_id" [compareWith]="compareWith"
-                    (selectionChange)="getSupplierFareTypeCombo('', $event.value)">
+                <mat-select required formControlName="supplier_id" 
+                     (selectionChange)="onSupplierChange($event.value)">
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
                             [formControlName]="'sup_type'">
                         </ngx-mat-select-search>
                     </mat-option>
-                    <mat-option *ngFor="let ct of supplierList" [value]="ct.id">
+                    <mat-option *ngFor="let ct of supplierList" [value]="ct">
                         <span>{{ ct.company_name }}</span>
                     </mat-option>
                 </mat-select>

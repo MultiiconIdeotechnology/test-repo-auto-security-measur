@@ -84,6 +84,7 @@ export class SupplierInventoryProfileEntryComponent {
           this.type = 'create'
           this.settingsDrawer.open();
           this.title = 'Create';
+          this.profile_name = '';
           this.buttonLabel = "Create";
         } else if (res['type'] == 'edit') {
           this.type = 'edit'
@@ -91,6 +92,7 @@ export class SupplierInventoryProfileEntryComponent {
           console.log("main-modify", res);
           this.settingsDrawer.open();
           this.title = 'Modify';
+          this.profile_name = res?.data?.profile_name
           this.buttonLabel = "Save";
 
           //call get all data apin 
