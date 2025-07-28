@@ -1,4 +1,5 @@
 <div class="p-2">
+    
     <form [formGroup]="airlineForm">
         <div class="grid grid-cols-4 gap-4">
             <!-- Supplier Combo -->
@@ -86,14 +87,15 @@
             <!-- Supplier Fare Type class Combo -->
             <mat-form-field class="flex-grow">
                 <mat-label>Fare Type Class</mat-label>
-                <mat-select multiple required formControlName="fare_type_class"  (selectionChange)="clickOtherFareTypeClass($event)">
+                <mat-select multiple required formControlName="fare_type_class"
+                    (selectionChange)="clickOtherFareTypeClass($event)">
                     <!-- [compareWith]="compareWithFareTypeSupplier" -->
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
                             [formControlName]="'supplier_fare_type_filter'">
                         </ngx-mat-select-search>
                     </mat-option>
-                     <mat-option value="All" (onSelectionChange)="clickAllFarTypeClass($event)">
+                    <mat-option value="All" (onSelectionChange)="clickAllFarTypeClass($event)">
                         <span class="font-normal">All</span>
                     </mat-option>
                     <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct.class_of_service">
@@ -160,68 +162,71 @@
 
         <!-- Save Button -->
         <div class="flex justify-end mt-6">
-            <button mat-flat-button color="primary" (click)="submit()">
+            <button mat-flat-button color="primary" (click)="submit()" [disabled]="disableBtn">
                 Save
             </button>
         </div>
     </form>
 
-    <!-- Divider -->
-    <mat-divider class="my-6"></mat-divider>
 
+    <mat-divider class="my-6"></mat-divider>
     <!-- Search & Refresh -->
-    <div class="flex justify-between items-center mb-3">
-        <div class="flex items-center gap-2">
-            <span class="text-sm font-medium">Search:</span>
-            <input type="text" pInputText [(ngModel)]="globalFilter"
-                (input)="tableRef.filterGlobal($event.target.value, 'contains')" placeholder="Search..."
-                class="w-64 h-9 px-2" />
+    <div>
+        <!-- Divider -->
+
+        <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium">Search:</span>
+                <input type="text" pInputText [(ngModel)]="globalFilter"
+                    (input)="tableRef.filterGlobal($event.target.value, 'contains')" placeholder="Search..."
+                    class="w-64 h-9 px-2" />
+            </div>
+
+            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="onRefresh()" matTooltip="Refresh">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
         </div>
 
-        <button class="ml-4" mat-flat-button [color]="'primary'" (click)="onRefresh()" matTooltip="Refresh">
-            <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-        </button>
+        <!-- Table -->
+        <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
+            [globalFilterFields]="['supplier', 'usertype', 'triptype']" [scrollable]="true" scrollHeight="300px"
+            [resizableColumns]="true" columnResizeMode="fit" styleClass="p-datatable-sm p-datatable-gridlines">
+
+            <!-- Header -->
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 60px" class="text-center">#</th>
+                    <th pResizableColumn>Supplier</th>
+                    <th pResizableColumn>User Type</th>
+                    <th pResizableColumn>Is Enable</th>
+                    <th pResizableColumn>Trip Type</th>
+                </tr>
+            </ng-template>
+
+            <!-- Body -->
+            <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+                <tr>
+                    <td class="flex flex-row items-center">
+                        <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
+                            (click)="onDelete(row)"></button>
+                    </td>
+                    <td>{{ row.supplier }}</td>
+                    <td>{{ row.usertype }}</td>
+                    <td>{{ row.isEnable ? 'True' : 'False' }}</td>
+                    <td>{{ row.triptype }}</td>
+                </tr>
+            </ng-template>
+
+            <!-- Empty Message -->
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5" class="text-center text-gray-500 py-4">No data available</td>
+                </tr>
+            </ng-template>
+
+        </p-table>
 
     </div>
-
-    <!-- Table -->
-    <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
-        [globalFilterFields]="['supplier', 'usertype', 'triptype']" [scrollable]="true" scrollHeight="300px"
-        [resizableColumns]="true" columnResizeMode="fit" styleClass="p-datatable-sm p-datatable-gridlines">
-        <ng-template pTemplate="header">
-            <tr>
-                <th style="width: 60px" class="text-center">#</th>
-                <th pResizableColumn>Supplier</th>
-                <th pResizableColumn>User Type</th>
-                <th pResizableColumn>Is Enable</th>
-                <th pResizableColumn>Trip Type</th>
-
-            </tr>
-        </ng-template>
-
-        <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
-            <tr>
-                <!-- Index -->
-                <td class="flex flex-row items-center">
-                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm text-blue-500"
-                        (click)="onEdit(row)"></button>
-                    <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
-                        (click)="onDelete(row)"></button>
-                </td>
-
-                <!-- Data Fields -->
-                <td>{{ row.supplier }}</td>
-                <td>{{ row.usertype }}</td>
-                <td>
-                    {{ row.isEnable ? 'True' : 'False' }}
-                </td>
-
-                <td>{{ row.triptype }}</td>
-
-
-            </tr>
-        </ng-template>
-    </p-table>
-
 
 </div>

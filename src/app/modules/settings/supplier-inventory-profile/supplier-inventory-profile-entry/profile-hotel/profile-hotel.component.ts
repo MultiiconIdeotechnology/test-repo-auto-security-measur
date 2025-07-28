@@ -18,31 +18,31 @@ import { ToasterService } from 'app/services/toaster.service';
 import { cloneDeep } from 'lodash';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Table } from 'primeng/table';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
-  selector: 'app-profile-airline',
-  templateUrl: './profile-airline.component.html',
-  styleUrls: ['./profile-airline.component.scss'],
+  selector: 'app-profile-hotel',
+  templateUrl: './profile-hotel.component.html',
+  styleUrls: ['./profile-hotel.component.scss'],
   standalone: true,
-  imports: [
-    MatSelectModule,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-    MatButtonModule,
-    CommonModule,
-    PrimeNgImportsModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatIconModule,
-    NgxMatSelectSearchModule,
-    MatOptionModule,
-    MatCheckboxModule,
-
-  ]
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [
+      MatSelectModule,
+      MatFormFieldModule,
+      ReactiveFormsModule,
+      MatButtonModule,
+      CommonModule,
+      PrimeNgImportsModule,
+      MatDividerModule,
+      MatButtonModule,
+      MatIconModule,
+      NgxMatSelectSearchModule,
+      MatOptionModule,
+      MatCheckboxModule,
+  
+    ]
 })
-export class ProfileAirlineComponent implements OnChanges {
-  @Input() profile_name: string = '';
+export class ProfileHotelComponent implements OnChanges {
+  @Input() profile_name: string;
   @Input() type: string;
   @Input() record: any;
   @Output() closeDrawer = new EventEmitter<void>();
@@ -50,7 +50,7 @@ export class ProfileAirlineComponent implements OnChanges {
   airlineForm: FormGroup;
 
   globalFilter: string = '';
-  disableBtn: boolean = false;
+
   supplierList: any[] = [];
   supplierAllList: any[] = [];
 
@@ -62,7 +62,7 @@ export class ProfileAirlineComponent implements OnChanges {
   airPortcodeList: any[] = [];
   allAirPortCode: any[] = [];
   currentEditId: string | null = null;
-  isEdit: boolean = false;
+
 
 
   dataList: any[] = [];
@@ -81,7 +81,7 @@ export class ProfileAirlineComponent implements OnChanges {
   ];
   fareTypeClassVisibleTypeList: string[] = ['Include', 'Exclude'];
   stopList: number[] = [0, 1, 2, 3, 4];
-  //profile_name:string
+
 
 
   constructor(
@@ -95,7 +95,6 @@ export class ProfileAirlineComponent implements OnChanges {
       id: [''],
 
       supplier_id: [''],
-      supplier_name: [''],
       sup_type: [''],
       fare_type_class: [''],
       supplier_fare_type_filter: [''],
@@ -114,33 +113,6 @@ export class ProfileAirlineComponent implements OnChanges {
       stops: [''],
       is_enable: [true]
     });
-
-
-
-
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.type === 'edit' && this.record?.id) {
-      this.currentEditId = this.record.id;
-      this.isEdit = true;
-      this.loadRecord(this.currentEditId);
-      if (this.record.profile_name) {
-        this.profile_name = this.record.profile_name;
-      }
-    } else if (this.type === 'create') {
-      this.isEdit = false;
-      console.log('Create mode - clearing form');
-      this.airlineForm.reset();
-      this.initializeForm();
-    }
-  }
-
-  ngOnInit(): void {
-    this.getSupplierCombo();
-    this.airlineCombo();
-    this.getAirportMstCombo();
-    this.initializeForm();
 
     this.airlineForm.get('sup_type').valueChanges.subscribe(res => {
       const val = res?.trim()?.toLowerCase();
@@ -166,17 +138,27 @@ export class ProfileAirlineComponent implements OnChanges {
         this.airPortcodeList = this.allAirPortCode.filter(x => x.display_name.toLowerCase().includes(val));
     });
 
-    this.airlineForm.get('supplier_fare_type_filter').valueChanges.subscribe(res => {
-      const val = res?.trim()?.toLowerCase();
-      if (!val)
-        this.supplierFareTypeList = this.supplierFareTypeAllList;
-      else
-        this.supplierFareTypeList = this.supplierFareTypeAllList.filter(x => x.class_of_service.toLowerCase().includes(val));
-    });
+
 
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.type === 'edit' && this.record?.id) {
+      this.currentEditId = this.record.id;
+      this.loadRecord(this.currentEditId);
+    } else if (this.type === 'create') {
+      console.log('Create mode - clearing form');
+      this.airlineForm.reset(); // 👈 clear existing values
+      this.initializeForm(); // 👈 if you want to set defaults
+    }
+  }
 
+  ngOnInit(): void {
+    this.getSupplierCombo();
+    this.airlineCombo();
+    this.getAirportMstCombo();
+    this.initializeForm();
+  }
 
   initializeForm(): void {
     this.airlineForm = this.formBuilder.group({
@@ -198,7 +180,6 @@ export class ProfileAirlineComponent implements OnChanges {
       profile_name: [''],
 
       supplier_id: [''],
-      supplier_name: [''],
       sup_type: [''],
       fare_type_class: [''],
       supplier_fare_type_filter: [''],
@@ -221,19 +202,16 @@ export class ProfileAirlineComponent implements OnChanges {
 
 
 
-
-
   loadRecord(requestId: string): void {
     this.supplierInventoryProfileService.getSupplierInventoryProfileRecord(requestId).subscribe(res => {
-      const record = res;
+      const record = res.data || res;
 
       // 🔥 FIX: Parse the settings string to JSON
-      const settingsArray = record.processedSettings || '[]';
+      const settingsArray = JSON.parse(record.settings || '[]');
       const setting = settingsArray?.[0];
 
       if (setting) {
         this.airlineForm.patchValue({
-          id: record.id,
           profile_name: record.profile_name,
           supplier_id: setting.supplier_id,
           user_type: setting.user_type,
@@ -243,30 +221,15 @@ export class ProfileAirlineComponent implements OnChanges {
           fare_class: setting.fare_class,
           fare_type: setting.fare_type,
           fare_type_class: setting.fare_type_class,
-          supplier_fare_type_filter: setting.fare_type_class,
           fare_type_class_visible_type: setting.fare_type_class_visible_type,
           airport_code_id: setting.airport_codes,
           airport_codes_visible_type: setting.airport_codes_visible_type,
           stops: setting.stops,
           is_enable: setting.is_enable
         });
+
         this.currentEditId = record.id;
         this.profile_name = record.profile_name;
-      }
-      //  Patch dataList from all settings
-      // this.dataList = (record.processedSettings || []).map((item: any) => ({
-      //   request_id: record.id,
-      //   supplier: item.supplier_id,
-      //   usertype: item.user_type,
-      //   isEnable: item.is_enable,
-      //   triptype: item.trip_type,
-
-      // }));
-      const storedList = localStorage.getItem('airlineProfileDataList');
-      if (storedList) {
-        this.dataList = JSON.parse(storedList);
-      } else {
-        this.dataList = []; // fallback
       }
     });
   }
@@ -283,9 +246,9 @@ export class ProfileAirlineComponent implements OnChanges {
   }
 
   getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
-    this.supplierInventoryProfileService.getSupplierFareTypeCombo(supplier_id, filter, (this.airlineForm.get('id').value?.trim() != '' && this.airlineForm.get('id').value != null)).subscribe({
+    this.supplierInventoryProfileService.getSupplierFareTypeCombo(supplier_id, filter).subscribe({
       next: data => {
-        this.supplierFareTypeAllList = cloneDeep(data);
+        this.supplierFareTypeAllList = data;
         this.supplierFareTypeList = data;
       }
     });
@@ -429,6 +392,7 @@ export class ProfileAirlineComponent implements OnChanges {
     this.AirlineList = value;
   }
 
+
   submit(): void {
     if (this.airlineForm.invalid) {
       this.airlineForm.markAllAsTouched();
@@ -437,92 +401,60 @@ export class ProfileAirlineComponent implements OnChanges {
     }
 
     const formValue = this.airlineForm.value;
-    const isEdit = this.isEdit && !!this.record?.id;
-    this.disableBtn = true;
-   
-
-    const _rec = {
-      service: 'Airline',
-      supplier_id: formValue.supplier_id,
-      supplier_name: formValue.supplier_id, // Add actual name if available
-      user_type: formValue.user_type,
-      trip_type: formValue.trip_type,
-      route_type: formValue.route_type,
-      airline: formValue.airline_id ? [formValue.airline_id] : [],
-      fare_class: formValue.fare_class ? [formValue.fare_class] : [],
-      fare_type: formValue.fare_type,
-      fare_type_class: formValue.fare_type_class ? [formValue.fare_type_class] : [],
-      fare_type_class_visible_type: formValue.fare_type_class_visible_type,
-      airport_codes: formValue.airport_code_id ? [formValue.airport_code_id] : [],
-      airport_codes_visible_type: formValue.airport_codes_visible_type,
-      stops: formValue.stops ? [Number(formValue.stops)] : [],
-      //star: [], // If you have star rating, assign here
-      is_enable: formValue.is_enable
-    };
-    const data = cloneDeep(this.dataList);
-    data.push(_rec);
-
 
     const payload = {
-      id: isEdit ? this.record.id : '',
+      id: this.currentEditId || '',  // Use the encrypted ID if editing
       profile_name: this.profile_name,
       is_default: false,
-      inventories: JSON.stringify(data)
-      // inventories: [
-      //   {
-      //     service: 'Airline',
-      //     supplier_id: formValue.supplier_id,
-      //     supplier_name:formValue.supplier_id, // Add actual name if available
-      //     user_type: formValue.user_type,
-      //     trip_type: formValue.trip_type,
-      //     route_type: formValue.route_type,
-      //     airline: formValue.airline_id ? [formValue.airline_id] : [],
-      //     fare_class: formValue.fare_class ? [formValue.fare_class] : [],
-      //     fare_type: formValue.fare_type,
-      //     fare_type_class: formValue.fare_type_class ? [formValue.fare_type_class] : [],
-      //     fare_type_class_visible_type: formValue.fare_type_class_visible_type,
-      //     airport_codes: formValue.airport_code_id ? [formValue.airport_code_id] : [],
-      //     airport_codes_visible_type: formValue.airport_codes_visible_type,
-      //     stops: formValue.stops ? [Number(formValue.stops)] : [],
-      //     //star: [], // If you have star rating, assign here
-      //     is_enable: formValue.is_enable
-      //   }
-      // ]
+      inventories: [
+        {
+          service: 'Airline',
+          supplier_id: formValue.supplier_id,
+          user_type: formValue.user_type,
+          trip_type: formValue.trip_type,
+          route_type: formValue.route_type,
+          airline: formValue.airline_id,
+          fare_class: formValue.fare_class,
+          fare_type: formValue.fare_type,
+          fare_type_class: formValue.fare_type_class,
+          fare_type_class_visible_type: formValue.fare_type_class_visible_type,
+          airport_codes: formValue.airport_code_id,
+          airport_codes_visible_type: formValue.airport_codes_visible_type,
+          stops: formValue.stops,
+          is_enable: formValue.is_enable
+        }
+      ]
     };
 
-   console.log("payload", payload);
-  // return
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
-        const message = isEdit ? 'Profile updated successfully.' : 'Profile created successfully.';
-        this.toasterService.showToast('success', message, 'top-right');
+        this.toasterService.showToast('success', 'Profile saved successfully.', 'top-right');
 
-        const request_id = isEdit ? this.record.id : res?.request_id;
-
-        const newRows = {
-          request_id : request_id,
-          supplier: _rec.supplier_id,
-          usertype: _rec.user_type,
-          isEnable: _rec.is_enable,
-          triptype: _rec.trip_type,
-          route_type: _rec.route_type,
-          airline: _rec.airline,
-          fare_type: _rec.fare_type,
-          fare_class: _rec.fare_class,
-          stops: _rec.stops
+        const updatedRow = {
+          request_id: this.currentEditId || res.request_id, // 🔐 track the same encrypted ID
+          supplier: this.getSupplierNameById(formValue.supplier_id),
+          usertype: formValue.user_type,
+          isEnable: formValue.is_enable,
+          triptype: formValue.trip_type
+          // other fields as needed
         };
 
-        this.dataList.unshift(newRows);
-        localStorage.setItem('airlineProfileDataList', JSON.stringify(this.dataList));
-        // this.dataList = [...this.dataList];
+        if (this.currentEditId) {
+          // 🔍 Match and update only the correct row by encrypted request_id
+          const index = this.dataList.findIndex(x => x.request_id === this.currentEditId);
+          if (index !== -1) {
+            this.dataList[index] = updatedRow;
+          }
+        } else {
+          // ➕ Add new row for create mode
+          this.dataList.unshift(updatedRow);
+        }
 
-        this.record = null;
+        this.currentEditId = null;
         this.resetForm();
-        this.disableBtn = false;
       },
       error: (error) => {
         this.toasterService.showToast('error', error, 'top-right');
-        this.disableBtn = false;
       }
     });
   }
@@ -540,6 +472,35 @@ export class ProfileAirlineComponent implements OnChanges {
     });
   }
 
+  // onEdit(row: any): void {
+  //   const requestId = row.request_id;
+  //   this.currentEditId = requestId; // ✅ Store current editing row ID
+
+  //   this.supplierInventoryProfileService.getSupplierInventoryProfileRecord(requestId).subscribe({
+  //     next: (res) => {
+  //       if (res) {
+  //         this.airlineForm.patchValue({
+  //           supplier_id: res.supplier_id,
+  //           user_type: res.user_type,
+  //           trip_type: res.trip_type,
+  //           route_type: res.route_type,
+  //           airline_id: res.airline,
+  //           fare_class: res.fare_class,
+  //           fare_type: res.fare_type,
+  //           fare_type_class: res.fare_type_class,
+  //           fare_type_class_visible_type: res.fare_type_class_visible_type,
+  //           airport_code_id: res.airport_codes,
+  //           airport_codes_visible_type: res.airport_codes_visible_type,
+  //           stops: res.stops,
+  //           is_enable: res.is_enable
+  //         });
+  //       }
+  //     },
+  //     error: (err) => {
+  //       this.toasterService.showToast('error', 'Failed to load profile', 'top-right');
+  //     }
+  //   });
+  // }
 
   onDelete(row: any): void {
     const index = this.dataList.indexOf(row);
@@ -560,3 +521,5 @@ export class ProfileAirlineComponent implements OnChanges {
   }
 
 }
+
+

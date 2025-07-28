@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatInputModule } from '@angular/material/input';
-import {  ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -16,6 +16,12 @@ import { DataManagerService } from 'app/services/data-manager.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProfileAirlineComponent } from './profile-airline/profile-airline.component';
+import { ProfileBusComponent } from './profile-bus/profile-bus.component';
+import { ProfileHotelComponent } from './profile-hotel/profile-hotel.component';
+import { ProfileInsuranceComponent } from './profile-insurance/profile-insurance.component';
+import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { MatDialog } from '@angular/material/dialog';
+import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
 
 @Component({
   selector: 'app-supplier-inventory-profile-entry',
@@ -34,12 +40,16 @@ import { ProfileAirlineComponent } from './profile-airline/profile-airline.compo
     NgxMatSelectSearchModule,
     FormsModule,
     MatTabsModule,
-    ProfileAirlineComponent
+    ProfileAirlineComponent,
+    ProfileBusComponent,
+    ProfileHotelComponent,
+    ProfileInsuranceComponent
 
   ],
 })
 export class SupplierInventoryProfileEntryComponent {
   @ViewChild('settingsDrawer') settingsDrawer: MatSidenav;
+  @ViewChild(ProfileAirlineComponent) profileComponentRef: ProfileAirlineComponent;
   private destroy$: Subject<any> = new Subject<any>();
   title: string = 'Create Link'
   buttonLabel: string = 'Create';
@@ -47,13 +57,19 @@ export class SupplierInventoryProfileEntryComponent {
   tabsTitle = 'Settings';
   tabs = ['Airline', 'Bus', 'Hotel', 'Insurance'];
   activeTab = 'Airline';
-  profileName: string = '';
+  profile_name: string = '';
+  type: string;
+  selectedRecord: any = null; // store the edit response
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
     private _filterService: CommonFilterService,
     private dataManagerService: DataManagerService,
     private alertService: ToasterService,
+    private conformationService: FuseConfirmationService,
+    private matDialog: MatDialog,
+    private supplierInventoryProfileService: SupplierInventoryProfileService,
+
   ) {
 
   }
@@ -65,18 +81,39 @@ export class SupplierInventoryProfileEntryComponent {
       if (res) {
         if (res['type'] == 'create') {
           // this.resetForm();
+          this.type = 'create'
           this.settingsDrawer.open();
           this.title = 'Create';
           this.buttonLabel = "Create";
         } else if (res['type'] == 'edit') {
+          this.type = 'edit'
+          this.selectedRecord = res?.data;
+          console.log("main-modify", res);
           this.settingsDrawer.open();
           this.title = 'Modify';
           this.buttonLabel = "Save";
+
+          //call get all data apin 
+
+
         }
       }
 
     });
 
+  }
+
+  Close(): void {
+    this.settingsDrawer.close()
+    console.log(this.selectedRecord)
+    if (this.selectedRecord)
+      this.selectedRecord.profile_name = this.profile_name;
+    else
+      this.selectedRecord = {
+        profile_name: this.profile_name,
+        entry_date_time : new Date()
+      }
+    this.sidebarDialogService.CloseSubject(this.selectedRecord)
   }
 
 }

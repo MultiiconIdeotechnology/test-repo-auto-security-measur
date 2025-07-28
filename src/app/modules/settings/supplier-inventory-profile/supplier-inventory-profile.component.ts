@@ -19,6 +19,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { SupplierInventoryProfileEntryComponent } from './supplier-inventory-profile-entry/supplier-inventory-profile-entry.component';
 import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
+import { ProfileInventoryInfoComponent } from './profile-inventory-info/profile-inventory-info.component';
 
 @Component({
   selector: 'app-supplier-inventory-profile',
@@ -39,7 +40,8 @@ import { SupplierInventoryProfileService } from 'app/services/supplier-inventory
     MatTooltipModule,
     PrimeNgImportsModule,
     MatDividerModule,
-    SupplierInventoryProfileEntryComponent
+    SupplierInventoryProfileEntryComponent,
+    ProfileInventoryInfoComponent
   ],
 })
 export class SupplierInventoryProfileComponent extends BaseListingComponent {
@@ -47,6 +49,7 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
   module_name = module_name.supplierinventoryprofile;
   filter_table_name = filter_module_name.supplier_inventory_profile;
   private settingsUpdatedSubscription: Subscription;
+  private _subs: Subscription;
   dataList = [];
   total = 0;
   isFilterShow: boolean = false;
@@ -80,6 +83,22 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
     ];
 
     this.cols.unshift(...this.selectedColumns);
+
+    this._subs = this.sidebarDialogService.onCloseSubjectChange().subscribe(res => {
+      console.log(res);
+      if (res) {
+        if (res?.id) {
+          const rec = this.dataList.find(x => x.id == res.id);
+          if (rec)
+            Object.assign(rec, res)
+        } else {
+          this.dataList.push(res);
+          this.paginator.length = this.paginator.length + 1;
+        }
+      }
+    })
+
+
   }
 
   ngOnInit(): void {
@@ -160,6 +179,30 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
 
   }
 
+  deleteProfile(record): void {
+    // if (!Security.hasPermission(fareTypeMApperPermissions.deleteFareTypePermissions)) {
+    //   return this.alertService.showToast('error', messages.permissionDenied);
+    // }
+    const label: string = 'Delete'
+    this.conformationService.open({
+      title: label,
+      message: `Are you sure you want to delete the ${record.profile_name} ? `
+    }).afterClosed().subscribe(res => {
+      if (res === 'confirmed') {
+        this.supplierInventoryProfileService.deleteSupplierInventoryProfileRecord(record.id).subscribe({
+          next: () => {
+            this.alertService.showToast('success', "Supplier Inventory Profile has been deleted!", "top-right", true);
+            this.dataList = this.dataList.filter(x => x.id !== record.id);
+            this.totalRecords--;
+
+          }, error: (err) => {
+            this.alertService.showToast('error', err, 'top-right', true);
+          }
+        })
+      }
+    })
+  }
+
   createSupplierProfile(): void {
     if (!Security.hasNewEntryPermission(module_name.supplierinventoryprofile)) {
       return this.alertService.showToast('error', messages.permissionDenied);
@@ -177,25 +220,12 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
   }
 
 
-  // deleteInternal(record): void {
-  //   const label: string = 'Delete Item'
-  //   this.conformationService.open({
-  //     title: label,
-  //     message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.item_name + ' ?'
-  //   }).afterClosed().subscribe(res => {
-  //     if (res === 'confirmed') {
-  //       this.itemService.delete(record.id).subscribe({
-  //         next: () => {
-  //           this.alertService.showToast('success', "Item has been deleted!", "top-right", true);
-  //           this.refreshItems();
-  //         }, error: (err) => {
-  //           this.alertService.showToast('error', err, 'top-right', true);
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
-
+  info(record): void {
+    // if (!Security.hasEditEntryPermission(module_name.supplierinventoryprofile)) {
+    //   return this.alertService.showToast('error', messages.permissionDenied);
+    // }
+    this.sidebarDialogService.openModal('info', record)
+  }
 
   getNodataText(): string {
     if (this.isLoading)
@@ -211,6 +241,9 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
     if (this.settingsUpdatedSubscription) {
       this.settingsUpdatedSubscription.unsubscribe();
       this._filterService.activeFiltData = {};
+    }
+    if (this._subs) {
+      this._subs.unsubscribe();
     }
   }
 

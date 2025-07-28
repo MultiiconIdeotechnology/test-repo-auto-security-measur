@@ -25,10 +25,18 @@ export class SupplierInventoryProfileService {
     return this.http.post<any>(this.baseUrl + 'AirportMst/getAirportMstCombo', { filter });
   }
 
-  getSupplierFareTypeCombo(supplier_id: string, filter?: string): Observable<any[]> {
+  // getSupplierFareTypeCombo(supplier_id: string, filter?: string): Observable<any[]> {
+  //   return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
+  //     supplier_id: supplier_id,
+  //     filter: filter,
+  //   });
+  // }
+  
+  getSupplierFareTypeCombo(supplier_id: string, filter?: string, is_active: boolean = false): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
       supplier_id: supplier_id,
       filter: filter,
+      is_active: is_active
     });
   }
 
@@ -36,13 +44,21 @@ export class SupplierInventoryProfileService {
     return this.http.post<any>(this.baseUrl + "Supplier/getSupplierBoCombo", { type: type, filter });
   }
 
-  
+
   createSupplierInventoryProfile(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/create', model);
-  } 
-  
-    getSupplierInventoryProfileList(model: any): Observable<any> {
+  }
+
+  getSupplierInventoryProfileList(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/getSupplierInventoryProfileList', model);
   }
 
+
+  getSupplierInventoryProfileRecord(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/getSupplierInventoryProfileRecord', { id: id });
+  }
+
+  deleteSupplierInventoryProfileRecord(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/delete', { id: id });
+  }
 }

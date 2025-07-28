@@ -147,12 +147,13 @@ export class SupplierTypeEntryComponent {
               this.bontonFareTypeList = this.bontonFareTypeAllList;
             }
           });
+
         this.formGroup.get('bonton_fare_type').valueChanges.subscribe(res => {
           const val = res?.trim()?.toLowerCase();
           if (!val)
             this.bontonFareTypeList = this.bontonFareTypeAllList;
           else
-            this.bontonFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
+            this.supplierFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
         })
         this.resetForm();
         this.getSupplierCombo();
@@ -214,10 +215,10 @@ export class SupplierTypeEntryComponent {
   //     }
   //   });
   // }
-  
+
 
   getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
-    this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter , (this.formGroup.get('id').value?.trim() != '' && this.formGroup.get('id').value != null)).subscribe({
+    this.commonFareTypeService.getSupplierFareTypeCombo(supplier_id, filter, (this.formGroup.get('id').value?.trim() != '' && this.formGroup.get('id').value != null)).subscribe({
       next: data => {
         this.supplierFareTypeAllList = data;
         this.supplierFareTypeList = [...data]; // show full list initially
