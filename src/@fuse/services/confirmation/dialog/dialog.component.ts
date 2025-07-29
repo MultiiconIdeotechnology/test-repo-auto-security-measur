@@ -74,7 +74,7 @@ export class FuseConfirmationDialogComponent {
     formGroup: FormGroup;
     formGroupDate: FormGroup;
     user: any = {};
-    userFlag: boolean = false;
+    userFlag: boolean = true;
     public _unsubscribeAll: Subject<any> = new Subject<any>();
     minDate = this.data.datepickerParameter;
     confirmData: any;
@@ -88,13 +88,15 @@ export class FuseConfirmationDialogComponent {
         public dialogRef: MatDialogRef<FuseConfirmationDialogComponent>,
         private userService: UserService,
         @Inject(MAT_DIALOG_DATA) public data: FuseConfirmationConfig) {
+            
         this.userService.user$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((user: any) => {
                 this.user = user;
-                this.userFlag = false;
+                this.userFlag = true;
                 if (this.user?.user_name == 'tech2.multiicon@gmail.com') {
-                    this.userFlag = true;
+                    //As par discussion with paresh sir minDate removed
+                    // this.userFlag = true;
                 }
             });
 

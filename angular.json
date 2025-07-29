@@ -55,10 +55,11 @@
                                 "glob": "_redirects",
                                 "input": "src",
                                 "output": "/"
-                            },{
+                            },
+                            {
                                 "glob": "*/",
                                 "input": ".well-known",
-                                "output": ".well-known" 
+                                "output": ".well-known"
                             }
                         ],
                         "stylePreprocessorOptions": {
@@ -107,11 +108,20 @@
                             ],
                             "outputHashing": "all"
                         },
-                        "staging": {
+                        "developer": {
                             "fileReplacements": [
                                 {
                                     "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.staging.ts"
+                                    "with": "src/environments/environment.developer.ts"
+                                }
+                            ],
+                            "outputHashing": "all"
+                        },
+                        "uat": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.uat.ts"
                                 }
                             ],
                             "outputHashing": "all"
@@ -133,8 +143,11 @@
                         "production": {
                             "browserTarget": "fuse:build:production"
                         },
-                        "staging": {
-                            "browserTarget": "fuse:build:staging"
+                        "developer": {
+                            "browserTarget": "fuse:build:developer"
+                        },
+                        "uat": {
+                            "browserTarget": "fuse:build:uat"
                         },
                         "development": {
                             "browserTarget": "fuse:build:development"

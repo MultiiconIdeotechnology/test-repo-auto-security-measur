@@ -1,5 +1,5 @@
 // import { MasterService } from './../services/master.service';
-import { Component, OnInit, ViewChild, ElementRef, Inject, HostListener } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef, Inject, HostListener, signal } from "@angular/core";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort, Sort } from "@angular/material/sort";
@@ -63,6 +63,8 @@ export abstract class BaseListingComponent implements OnInit {
     scrollHeightWTab: string;
     //#endregion
     frozenObj: any = {};
+     // for Date dropdown custom logic
+    selectionMap = signal<Record<string, string>>({});
 
     protected masterService: MasterService;
     protected alertService: ToasterService;
@@ -390,6 +392,33 @@ export abstract class BaseListingComponent implements OnInit {
 
             filter([adjustedStartDate, adjustedEndDate]);
         } 
+    }
+
+        // dynamic date dropdown logic 
+    getSelection(field: string) {
+        return this.selectionMap()[field] || '';
+    }
+   
+   rangeDateConvert(dateArr: any) {
+        dateArr.value[0] = new Date(dateArr.value[0]);
+        dateArr.value[1] = new Date(dateArr.value[1]);
+        dateArr.value.join(",");
+    }
+	
+	   // saved date range custom filter restore
+    restoreDateFilter(field: string, config: any) {
+        const fieldData = config?.[field];
+
+        if (fieldData?.value && fieldData.value.length) {
+            this.rangeDateConvert(fieldData);
+
+            const current = this.selectionMap();
+            this.selectionMap.set({ ...current, [field]: 'custom_date_range' });
+
+            setTimeout(() => {
+                this.primengTable.filter(fieldData.value, field, 'custom');
+            });
+        }
     }
 }
 

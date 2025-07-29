@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable,of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs';
 
 
@@ -11,11 +11,11 @@ import { tap } from 'rxjs';
 export class AccountService {
 
   private baseUrl = environment.apiUrl;
-  receiptDataList:any
-  isCollectionListLoaded:boolean = false;
-  isReceptionListLoaded:boolean = false;
+  receiptDataList: any
+  isCollectionListLoaded: boolean = false;
+  isReceptionListLoaded: boolean = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getPaymentList(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "Payment/getPaymentList", model);
@@ -42,9 +42,9 @@ export class AccountService {
   }
 
   getReceiptList(model: any): Observable<any> {
-      return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptList", model)
+    return this.http.post<any>(environment.apiUrl + "Receipt/getReceiptList", model)
   }
-  
+
   getCollectionList(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "AccountReport/getProductCollectionReport", model);
   }
@@ -69,8 +69,8 @@ export class AccountService {
     return this.http.post<any>(this.baseUrl + 'Receipt/delete', { id });
   }
 
-  reject(id: any, note?:string): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'Receipt/reject', { id:id, reject_reason:note });
+  reject(id: any, note?: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'Receipt/reject', { id: id, reject_reason: note });
   }
 
   downloadInvoice(bookingId: any): Observable<any> {
@@ -96,10 +96,43 @@ export class AccountService {
   getpurchaseRegister(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "AccountReport/PurchaseRegisterReport", model);
   }
-  
+
   allServiceAnalysis(model: any): Observable<any> {
     return this.http.post<any>(environment.apiUrl + "ContractReport/allServiceAnalysis", model);
   }
 
+  // account 2.0
+  // purchase register
+  getBontonPurchaseRegister(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterReport", model);
+  }
+
+  manageServiceFee(model): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "AirBooking/manageServiceFee", model);
+  }
+
+  getPurchaseRegisterDMCCReport(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getPurchaseRegisterDMCCReport", model);
+  }
+
+  GetProformaInvoiceList(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "ProformaInvoice/GetProformaInvoiceList", model);
+  }
+
+  create(model: any): Observable<any> {
+    return this.http.post<any>(environment.apiUrl + "ProformaInvoice/create", model);
+  }
+
+  PrintProformaInvoice(invoiceId: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'ProformaInvoice/PrintProformaInvoice', { invoiceId: invoiceId });
+  }
+  // sale register
+  getBontonSaleRegister(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getSaleRegisterReport", model);
+  }
+
+  getSaleRegisterDMCCReport(model: any) {
+    return this.http.post<any>(environment.apiUrl + "AccountReport/getSaleRegisterDMCCReport", model);
+  }
 
 }

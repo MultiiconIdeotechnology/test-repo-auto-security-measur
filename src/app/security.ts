@@ -248,6 +248,7 @@ export const module_name = {
     ledger: 'Agent Ledger',
     payment: 'Payments',
     paymentLink: 'Payment Link',
+    proformaInvoice: 'Proforma Invoice',
     receipt: 'Receipt',
     flight: 'Flight',
     bus: 'Bus',
@@ -303,6 +304,8 @@ export const module_name = {
     report_hotel: 'Hotel',
     report_bus: 'Bus',
     campaign_summary: 'Campaign Summary',
+    campaign_register: 'Campaign Register',
+    campaign_summary_report: 'Campaign Summary',
     agent_ledger: 'Agent Ledger',
     products: 'Products',
     // agentSummary: 'Agent Summary',
@@ -322,7 +325,10 @@ export const module_name = {
     tech_rm_monthly_report: 'RM Monthly Anaytics',
     tech_product_monthly_report:'Product Monthly Analytics',
     cab_inventory: 'Cab',
-    psp_setup:'PSP Setup'
+    psp_setup:'PSP Setup',
+
+    // account2.0
+    purchase_register_2: 'Purchase Register-2',
 };
 
 export const filter_module_name = {
@@ -368,6 +374,7 @@ export const filter_module_name = {
     account_payments: "account_payments",
     account_receipts: "account_receipts",
     payment_link: "payment_link",
+    proforma_invoice: "proforma_invoice",
     agent_wise_service_wise: "agent_wise_service_wise",
 
     //KYC
@@ -410,6 +417,8 @@ export const filter_module_name = {
     report_potential_lead: "report_potential_lead",
     airline_report: "airline_report",
     campaign_summary: "campaign_summary",
+    campaign_register: "campaign_register",
+    campaign_summary_report:'campaign_summary_report',
     report_sales_agent_summary: "report_sales_agent_summary",
     products_collection: 'products_collection',
     products_receipts: 'products_receipts',
@@ -425,6 +434,9 @@ export const filter_module_name = {
     supplier_wallet_balance:'supplier_wallet_balance',
     sent_mail: "sent_mail",
 
+    //report account 2.0
+    purchase_register_bonton: 'purchase_register_bonton',
+    purchase_register_bonton_dmcc:'purchase_register_bonton_dmcc',
 
     //Inventory
     activity: "activity",

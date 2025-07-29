@@ -1,0 +1,321 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden  dark:bg-transparent">
+
+    <!-- Header -->
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between max-sm:sticky max-sm:z-30 max-sm:top-0  dark:bg-gray-900 xl:py-4 py-3 px-6 md:px-8 border-b">
+        <!-- Loader -->
+        <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+            <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+        </div>
+        <div class=" xl:font-extrabold font-bold tracking-tight max-sm:flex max-sm:w-full max-sm:justify-between">
+            <span class="text-3xl">{{module_name}}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:gap-4 max-sm:mt-2 max-sm:justify-between">
+
+            <!------Global Search------>
+            <div class="flex ctm_search min-w-[16rem]">
+                <input matInput [formControl]="searchInputControl" [autocomplete]="'off'" [placeholder]="'Search'"
+                    (keyup.enter)="refreshItems()" />
+                <mat-icon class="icon-size-5 " matPrefix [svgIcon]="'heroicons_solid:magnifying-glass'"
+                    (click)="refreshItems()"></mat-icon>
+            </div>
+
+            <!-- Date Combo -->
+            <!-- <mat-form-field class="translate-y-[10px] min-w-[15rem]">
+                <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate [formControl]="startDate" placeholder="Start Date" readonly #dateRangeStart />
+                    <input matEndDate [formControl]="endDate" placeholder="End Date" readonly #dateRangeEnd />
+                </mat-date-range-input>
+                <mat-datepicker-toggle #sec matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field> -->
+
+            <div class="flex items-center gap-1">
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
+                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">From Month</span>
+                    <input matInput [matDatepicker]="fromMonth" [formControl]="startDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="fromMonth"></mat-datepicker-toggle>
+                    <mat-datepicker #fromMonth startView="multi-year"  (monthSelected)="setMonthAndYear($event, fromMonth)"
+                        panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+    
+                <mat-form-field class="translate-y-[10px] min-w-[6rem]"> 
+                    <span class="absolute top-[-12px] dark:bg-gray-900 bg-white text-gray-600 text-sm px-2 dark:text-gray-400">To Month</span>
+                    <input matInput [matDatepicker]="toMonth" [formControl]="endDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="toMonth"></mat-datepicker-toggle>
+                    <mat-datepicker #toMonth startView="multi-year"  (monthSelected)="setFromMonthAndYear($event, toMonth)"
+                        panelClass="example-month-picker">
+                    </mat-datepicker>
+                </mat-form-field>
+            </div>
+
+
+            <!------Global filter------>
+            <button class=" rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
+            <!------Common Filter------->
+            <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
+                <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
+            </button>
+
+            <!------Refresh------>
+            <button mat-flat-button [color]="'primary'" matTooltip="Refresh" [disabled]="isLoading"
+                (click)="refreshItems()">
+                <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+            </button>
+
+
+            <!---Excel--->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!----------------Table----------------->
+    <div class="table-container paginator-bottom">
+        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
+            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
+            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
+            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
+            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+            [globalFilterFields]="['campaign_name', 'campaign_type', 'campaign_code', 'relationship_manager_name', 'leads', 'no_of_signup', 'turnover', 'tech_GP', 'travel_GP', 'total_GP']"
+            styleClass="p-datatable-gridlines p-datatable-sm">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="campaignName" pResizableColumn
+                        alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaignName"
+                        [ngClass]="{'left-0': !frozenObj?.campaignName}">
+                        Name <p-sortIcon field="campaignName" />
+                        <span class="float-right" (click)="isFrozenColumn('campaignName');$event.stopPropagation()">
+                            <i *ngIf="!frozenObj?.campaignName" class="pi pi-lock-open icon-size-3"></i>
+                            <i *ngIf="frozenObj?.campaignName" class="pi pi-lock icon-size-3"></i>
+                        </span>
+                    </th>
+                    <th pSortableColumn="campaignCategory" pResizableColumn>
+                        Category <p-sortIcon field="campaignCategory" />
+                    </th>
+                    <th pSortableColumn="campaignType" pResizableColumn>
+                        Type <p-sortIcon field="campaignType" />
+                    </th>
+                    <th pSortableColumn="referralCode" pResizableColumn>
+                        Code <p-sortIcon field="referralCode" />
+                    </th>
+                    <th pSortableColumn="rm" pResizableColumn>
+                        RM <p-sortIcon field="rm" />
+                    </th>
+                    <th pSortableColumn="totalSpent" pResizableColumn>
+                        Total Spent <p-sortIcon field="totalSpent" />
+                    </th>
+                    <th pSortableColumn="leadCost" pResizableColumn>
+                        Lead Cost <p-sortIcon field="leadCost" />
+                    </th>
+                    <th pSortableColumn="cac" pResizableColumn>
+                        CAC <p-sortIcon field="cac" />
+                    </th>
+                    <th pSortableColumn="cRatio" pResizableColumn>
+                        C. Ratio % <p-sortIcon field="cRatio" />
+                    </th>
+                    <th pSortableColumn="advtRatio" pResizableColumn>
+                        Advt. Ratio <p-sortIcon field="advtRatio" />
+                    </th>
+                    <th pSortableColumn="leads" pResizableColumn>
+                        Leads <p-sortIcon field="leads" />
+                    </th>
+                    <th pSortableColumn="signUp" pResizableColumn>
+                        Signup <p-sortIcon field="signUp" />
+                    </th>
+                    <th pSortableColumn="turnover" pResizableColumn>
+                        Turnover <p-sortIcon field="turnover" />
+                    </th>
+                    <th pSortableColumn="techGP" pResizableColumn>
+                        Tech GP <p-sortIcon field="techGP" />
+                    </th>
+                    <th pSortableColumn="travelGP" pResizableColumn>
+                        Travel GP <p-sortIcon field="travelGP" />
+                    </th>
+                    <th pSortableColumn="totalGP" pResizableColumn>
+                        Total GP <p-sortIcon field="totalGP" />
+                    </th>
+
+                </tr>
+
+                <tr *ngIf="isFilterShow">
+                    <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaignName">
+                        <p-columnFilter type="text" matchMode="contains" field="campaignName"
+                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="campaignCategory"
+                            placeholder="Search by Category" ariaLabel="Filter Category" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="campaignType"
+                            placeholder="Search by Type" ariaLabel="Filter Type" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="referralCode"
+                            placeholder="Search by Code" ariaLabel="Filter Code" />
+                    </th>
+                    <th>
+                        <p-columnFilter class="searchableDropdown" field="rm" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="rmList" optionLabel="employee_name"
+                                    [(ngModel)]="selectedRm" [filter]="true" filterBy="employee_name"
+                                    (onChange)="filter($event.value)" [showClear]="true" appendTo="body"
+                                    placeholder="Select RM">
+                                    <ng-template let-employee pTemplate="item">
+                                        <div>{{employee.employee_name}}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="totalSpent"
+                            placeholder="Filter Total Spent" ariaLabel="Filter Total Spent" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="leadCost"
+                            placeholder="Filter Lead Cost" ariaLabel="Filter Lead Cost" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="cac" placeholder="Filter CAC"
+                            ariaLabel="Filter CAC" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="cRatio" placeholder="Filter C. Ratio %"
+                            ariaLabel="Filter C. Ratio %" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="advtRatio"
+                            placeholder="Filter Advt. Ratio" ariaLabel="Filter Advt. Ratio" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="leads" placeholder="Filter Leads"
+                            ariaLabel="Filter Leads" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="signUp" placeholder="Filter Signup"
+                            ariaLabel="Filter Signup" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="turnover" placeholder="Filter Turnover"
+                            ariaLabel="Filter Turnover" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="techGP" placeholder="Filter Tech GP"
+                            ariaLabel="Filter Tech GP" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="travelGP"
+                            placeholder="Filter Travel GP" ariaLabel="Filter Travel GP" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="totalGpCombined"
+                            placeholder="Filter Total GP" ariaLabel="Filter Total GP" />
+                    </th>
+
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-element>
+                <tr>
+                    <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.campaignName">
+                        {{element.campaignName || "-"}}
+                    </td>
+                    <td>{{ element.campaignCategory || "-" }}</td>
+                    <td>{{ element.campaignType || "-" }}</td>
+                    <td>{{ element.referralCode || "-" }}</td>
+                    <td>{{ element.rm || "-" }}</td>
+                    <td class="text-right">
+                        {{ element.totalSpent ? (element.totalSpent.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.leadCost ? (element.leadCost.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.cac ? (element.cac.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.cRatio ? (element.cRatio.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.advtRatio ? (element.advtRatio.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.leads ? (element.leads.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.signUp ? (element.signUp.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.turnover ? (element.turnover.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.techGP ? (element.techGP.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.travelGP ? (element.travelGP.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ element.totalGP ? (element.totalGP.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td>Total</td>
+                    <td *ngFor="let i of [1,2,3,4,5,6,7,8,9]"></td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalLeads ? (dataListTotals.totalLeads.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalSignup ? (dataListTotals.totalSignup.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalTurnover ? (dataListTotals.totalTurnover.toFixed(2) | number:'1.2-2') :
+                        0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalTechGP ? (dataListTotals.totalTechGP.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalTravelGP ? (dataListTotals.totalTravelGP.toFixed(2) | number:'1.2-2') :
+                        0 }}
+                    </td>
+                    <td class="text-right">
+                        {{ dataListTotals?.totalGP ? (dataListTotals.totalGP.toFixed(2) | number:'1.2-2') : 0 }}
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr class="h-14">
+                    <td colspan="16" class="text-center font-semibold text-lg">
+                        {{getNodataText()}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>

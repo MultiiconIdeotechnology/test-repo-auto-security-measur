@@ -5,7 +5,7 @@
         <!-- Title -->
         <div class="text-3xl font-extrabold tracking-tight">{{module_name}}</div>
         <!-- Actions -->
-        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4 gap-4">
 
             <!------Global Search ------>
             <!-- <mat-form-field class="fuse-mat-dense fuse-mat-rounded min-w-64" [subscriptSizing]="'dynamic'">
@@ -20,85 +20,121 @@
             </div>
 
             <!------Global Filter------>
-            <button class="ml-4 rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
+            <button class="rounded-full" mat-flat-button [color]="'primary'" matTooltip="Advanced Filter"
                 [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
                 <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
                 <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
             </button>
 
             <!------Common Filter------->
-            <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+            <button mat-flat-button [color]="'primary'"
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
+            <!-- Select Columns Button and Select Box Code -->
+            <div>
+                <button class="rounded-full" mat-flat-button [color]="'primary'" matTooltip="Select more columns"
+                    [disabled]="isLoading" (click)="op.toggle($event)">
+                    <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
+                </button>
+                <p-overlayPanel #op>
+                    <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
+                        class="overlay-panel" [style]="{'max-width': '220px'}" display="chip"
+                        placeholder="Choose Columns" />
+                </p-overlayPanel>
+            </div>
+
             <!------Refresh------>
-            <button class="ml-4" mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()"
+            <button mat-flat-button [color]="'primary'" [disabled]="isLoading" (click)="refreshItems()"
                 matTooltip="Refresh">
                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
             </button>
 
             <!------Create------->
-            <button class="ml-4" mat-flat-button [color]="'primary'" (click)="createReferral()">
+            <button mat-flat-button [color]="'primary'" (click)="createReferral()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Add</span>
             </button>
 
+            <!-- Excel -->
+            <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu">
+                <mat-icon class="icon-size-6">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <button mat-menu-item (click)="exportExcel()">
+                    <mat-icon>arrow_downward</mat-icon>
+                    <span>Export Excel</span>
+                </button>
+            </mat-menu>
         </div>
     </div>
 
     <!----------------Table----------------->
     <div class="table-container paginator-bottom">
-        <p-table #datatable [value]="dataList" [sortField]="sortColumn" [sortOrder]="-1" [resizableColumns]="true"
-            columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}" [loading]="isLoading" [paginator]="true"
-            [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
-            [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
-            [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            [globalFilterFields]="['campaign_name', 'referral_link_for', 'referral_code', 'relationship_manager_name','no_of_leads','entry_date_time', 'start_date', 'remark']"
+        <p-table #datatable [value]="dataList" [columns]="selectedColumns" [sortField]="sortColumn" [sortOrder]="-1"
+            [resizableColumns]="true" columnResizeMode="expand" [tableStyle]="{'min-width': '50rem'}"
+            [loading]="isLoading" [paginator]="true" [rows]="appConfig.pageSize" [totalRecords]="totalRecords"
+            [rowsPerPageOptions]="appConfig.pageSizeOptions" [lazy]="true" (onLazyLoad)="refreshItems($event)"
+            [scrollable]="true" [scrollHeight]="scrollHeight" [showCurrentPageReport]="true" [showPageLinks]="false"
+            [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             styleClass="p-datatable-gridlines p-datatable-sm">
             <!-- Link , No Of Signup -->
-            <ng-template pTemplate="header">
+            <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th class="  text-center left-[-1px]" pFrozenColumn>#</th>
-                    <th pSortableColumn="campaign_name" pResizableColumn>
-                        Campaign Name <p-sortIcon field="campaign_name" />
+                    <th class="text-center left-[-1px] w-[2rem]" pFrozenColumn>#</th>
+                    <th pSortableColumn="referral_code" pResizableColumn>
+                        Code <p-sortIcon field="referral_code" />
+                    </th>
+                    <th pSortableColumn="campaign_category" pResizableColumn>
+                        Category <p-sortIcon field="campaign_category" />
                     </th>
                     <th pSortableColumn="referral_link_for" pResizableColumn>
-                        Campaign Type <p-sortIcon field="referral_link_for" />
+                        Type<p-sortIcon field="referral_link_for" />
                     </th>
-                    <th pSortableColumn="referral_code" pResizableColumn>
-                        Campaign Code<p-sortIcon field="referral_code" />
+                    <th pSortableColumn="status" pResizableColumn>
+                        Status <p-sortIcon field="status" />
                     </th>
-                    <th pSortableColumn="relationship_manager_name" pResizableColumn>
-                        Relationship Manager <p-sortIcon field="relationship_manager_name" />
+                    <th pSortableColumn="relationship_manager_id" pResizableColumn>
+                        RM <p-sortIcon field="relationship_manager_id" />
                     </th>
-                    <th pSortableColumn="is_enable" pResizableColumn class="text-center">
-                        Link <p-sortIcon field="is_enable" />
+                    <th pSortableColumn="campaign_name" pResizableColumn>
+                        Title <p-sortIcon field="campaign_name" />
                     </th>
-                    <th pSortableColumn="no_of_leads" pResizableColumn>
-                        No Of Leads <p-sortIcon field="no_of_leads" />
-                    </th>
-                    <th pSortableColumn="entry_date_time" pResizableColumn>
-                        Create Date <p-sortIcon field="entry_date_time" />
-                    </th>
-                    <th pSortableColumn="start_date" pResizableColumn>
+                    <th [ngClass]="{'min-w-[220px]': (_filterService.selectionDateDropdown$ | async) == 'custom_date_range'}" pSortableColumn="start_date" pResizableColumn>
                         Start Date <p-sortIcon field="start_date" />
                     </th>
-                    <th pSortableColumn="remark" pResizableColumn>
-                        Remark <p-sortIcon field="remark" />
+                    <th [ngClass]="{'w-full': !selectedColumns?.length, 'min-w-[220px]': selectedColumns?.length && (_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range' }" pSortableColumn="entry_date_time"
+                        pResizableColumn>
+                        Entry Time <p-sortIcon field="entry_date_time" />
+                    </th>
+                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns; let isLast = last"
+                        [ngClass]="{'w-full': isLast }">
+                        {{col.header}} <p-sortIcon [field]="col.field" />
                     </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th class="left-[-1px]" pFrozenColumn></th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="campaign_name"
-                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" />
+                        <p-columnFilter type="text" matchMode="contains" field="referral_code"
+                            placeholder="Search by Code" ariaLabel="Filter Code" />
                     </th>
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="referral_link_for" placeholder="Search by Campaign Type"
-                            ariaLabel="Filter Campaign Type" /> -->
+                        <p-columnFilter field="campaign_category" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="campaignCategoryList"
+                                    (onChange)="filter($event.value)" placeholder="Select Category Type"
+                                    [showClear]="true" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div>{{ option }}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
                         <p-columnFilter field="referral_link_for" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="linkList"
@@ -112,13 +148,21 @@
                         </p-columnFilter>
                     </th>
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="referral_code"
-                            placeholder="Search by Campaign Code" ariaLabel="Filter Campaign Code" />
+                        <p-columnFilter field="status" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="statusList"
+                                    (onChange)="filter($event.value)" placeholder="Select Status" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div>{{ option.value }}</div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
+
                     <th>
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="relationship_manager_name" placeholder="Search by R Manager"
-                            ariaLabel="Filter R M" /> -->
-                        <p-columnFilter class="searchableDropdown" field="rm_id_filtres" matchMode="equals"
+                        <p-columnFilter class="searchableDropdown" field="relationship_manager_name" matchMode="equals"
                             [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown class="filter-dropdown" [options]="employeeList" optionLabel="employee_name"
@@ -133,97 +177,173 @@
                         </p-columnFilter>
                     </th>
                     <th>
+                        <p-columnFilter type="text" matchMode="contains" field="campaign_name"
+                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" />
+                    </th>
+
+                    <!-- <th>
                         <p-columnFilter field="is_enable" matchMode="equals" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-dropdown class="filter-dropdown"
-                                            [ngModel]="value"
-                                            [options]="actionList"
-                                            (onChange)="filter($event.value)"
-                                            placeholder="Select Option"
-                                             appendTo="body"
-                                            [showClear]="true">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="actionList"
+                                    (onChange)="filter($event.value)" placeholder="Select Option" appendTo="body"
+                                    [showClear]="true">
                                     <ng-template let-option pTemplate="item">
                                         <p>{{option.label}}</p>
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter> 
-                    </th>
+                        </p-columnFilter>
+                    </th> -->
                     <th>
-                        <p-columnFilter type="numeric" field="no_of_leads" placeholder="Search by No Of Leads"
-                            ariaLabel="Filter No Of Leads" />
-                    </th>
-                    <th>
-                        <p-columnFilter field="entry_date_time" type="date">
+                        <p-columnFilter *ngIf="(_filterService.selectionDateDropdown$ | async) != 'custom_date_range'"
+                            field="start_date" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Create Date">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div (click)="_filterService.onOptionClick(option, primengTable, 'start_date')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="(_filterService.selectionDateDropdown$ | async) == 'custom_date_range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="start_date" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.onOptionClick('', '', '')">cancel</mat-icon>
+                            </div>
+                        </ng-container>
+
                     </th>
                     <th>
-                        <p-columnFilter field="start_date" type="date">
+                        <p-columnFilter
+                            *ngIf="(_filterService.selectionDateDropdownTwo$ | async) != 'custom_date_range'"
+                            field="entry_date_time" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" dateFormat="dd-mm-yy" appendTo="body"
-                                    [ngModel]="value" placeholder="Search by Start Date">
-                                </p-calendar>
+                                <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
+                                    [options]="_filterService.dateRangeList" optionLabel="label"
+                                    placeholder="Select Option" appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <div
+                                            (click)="_filterService.onOptionClickTwo(option, primengTable, 'entry_date_time')">
+                                            <div>{{option.label}}</div>
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
                             </ng-template>
                         </p-columnFilter>
+
+                        <ng-container *ngIf="(_filterService.selectionDateDropdownTwo$ | async) == 'custom_date_range'">
+                            <div class="relative inline-block">
+                                <p-columnFilter field="entry_date_time" matchMode="custom" [showMenu]="false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <p-calendar selectionMode="range" [ngModel]="value"
+                                            (ngModelChange)="onDateRangeChange($event, filter)" [readonlyInput]="true"
+                                            dateFormat="dd-mm-yy" appendTo="body" placeholder="📅 Search by Date Range">
+                                        </p-calendar>
+                                    </ng-template>
+                                </p-columnFilter>
+                                <mat-icon class="icon-size-4 cursor-pointer absolute"
+                                    style="top:50%; transform: translatey(-50%); right: 25px;"
+                                    (click)="_filterService.onOptionClickTwo('', '', '')">cancel</mat-icon>
+                            </div>
+                        </ng-container>
                     </th>
-                    <th>
-                        <p-columnFilter type="text" matchMode="contains" field="remark" placeholder="Search by Remark"
-                            ariaLabel="Filter Remark" />
+                    <th *ngFor="let col of columns">
+                        <p-columnFilter type="text" matchMode="contains" [field]="col.field"
+                            [placeholder]="'Search by '+col.header" [ariaLabel]="'Filter '+col.header" />
                     </th>
+
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-element let-columns="columns">
-                <tr [ngClass]="{'opacity-30': !element.is_enable}">
-                    <td class=" left-[-1px] bg-gray-50 dark:bg-gray-900" alignFrozen="left" pFrozenColumn>
+
+                <tr [ngClass]="{'opacity-30': element.status == 'Pause'}">
+                    <td class="left-[-1px] bg-gray-50 dark:bg-gray-900" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
                         </span>
 
                         <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="info(element)">
+                                <mat-icon class="mat-18">info</mat-icon>
+                                <span style="font-weight: 600;">Info</span>
+                            </button>
                             <button mat-menu-item (click)="edit(element)">
                                 <mat-icon class="mat-18">edit</mat-icon>
-                                <span style="font-weight: 600;">Edit</span>
+                                <span style="font-weight: 600;">Modify</span>
                             </button>
                             <button mat-menu-item (click)="delete(element)">
                                 <mat-icon class="mat-18">delete</mat-icon>
                                 <span style="font-weight: 600;">Delete</span>
                             </button>
-                            <button mat-menu-item (click)="setReferalLinkEnable(element)">
+                            <button mat-menu-item (click)="changeStatus(element)">
                                 <mat-icon class="mat-18">check_circle</mat-icon>
                                 <span style="font-weight: 600;">
-                                    {{element.is_enable ? 'Deactive' : 'Active'}}
+                                    {{element.status == "Live" ? 'Pause' : 'Live'}}
                                 </span>
+                            </button>
+                            <button mat-menu-item (click)="spent(element)">
+                                <i class="material-icons mr-[12px] mat-icon-no-color">access_time_filled</i>
+                                <span style="font-weight: 600;">Spent</span>
+                            </button>
+                            <button mat-menu-item (click)="linkCopy(element)">
+                                <mat-icon svgIcon="heroicons_outline:clipboard-document-check"> </mat-icon>
+                                <span style="font-weight: 600;">Copy Link</span>
+                            </button>
+                            <button mat-menu-item (click)="statusChangeLog(element)">
+                                <img src="assets/icons/logs.svg" class="mr-[12px] w-[24px] h-[24px]" alt="Logs">
+                                <span style="font-weight: 600">Status Change Log</span>
                             </button>
                         </mat-menu>
                     </td>
                     <td>
-                        {{element.campaign_name || '-'}}
+                        {{element.referral_code || '-'}}
                     </td>
+                    <td>{{element.campaign_category || '-'}}</td>
                     <td>{{element.referral_link_for || '-'}}</td>
-                    <td>{{element.referral_code || '-'}}</td>
-                    <td>{{element.relationship_manager_name || '-'}}</td>
-                    <td class="text-center justify-center">
-                        <mat-icon svgIcon="heroicons_outline:clipboard-document-check" 
-                        [ngClass]="element?.is_enable ? 'text-blue-600 p-0.5 cursor-pointer' : 'text-gray-300 opacity-4 p-0.5 cursor-not-allowed'"
-                            (click)="linkCopy(element)" [matTooltip]="element.is_enable ? element.referral_link : 'Referral deactivated'">
-                        </mat-icon>
-                    </td>
-                    <td class="text-center">{{element.no_of_leads || '-'}}</td>
-                    <td class="text-left">{{(element.entry_date_time | date:'dd-MM-yyyy') || '-'}}</td>
+                    <td [ngClass]="statusColorMap[element.status]">{{element.status || '-'}}</td>
+                    <td>{{element.relationship_manager_name || "Any"}}</td>
+                    <td>{{element.campaign_name || '-'}}</td>
                     <td class="text-left">{{(element.start_date | date:'dd-MM-yyyy') || '-'}}</td>
-                    <td class="text-left w-full">{{element.remark || '-'}}</td>
+                    <td class="text-left">{{(element.entry_date_time | date:'dd-MM-yyyy') || '-'}}</td>
+
+                    <td *ngFor="let col of columns; let isLast=last">
+                        <ng-container *ngIf="col.field === 'referral_link'; else plainText">
+                            <a class="underline" [href]="element[col.field]" target="_blank" rel="noopener noreferrer">
+                                {{ element[col.field] || '-' }}
+                            </a>
+                        </ng-container>
+                        <ng-template #plainText>
+                            <span>{{ element[col.field] || '-' }}</span>
+                        </ng-template>
+                    </td>
+                    <!-- <td class="text-center justify-center">
+                        <mat-icon svgIcon="heroicons_outline:clipboard-document-check"
+                            [ngClass]="element?.is_enable ? 'text-blue-600 p-0.5 cursor-pointer' : 'text-gray-300 opacity-4 p-0.5 cursor-not-allowed'"
+                            (click)="linkCopy(element)"
+                            [matTooltip]="element.is_enable ? element.referral_link : 'Referral deactivated'">
+                        </mat-icon>
+                    </td> -->
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-14">
-                    <td colspan="11" class="text-center font-semibold text-lg">
+                    <td [attr.colspan]="9 + selectedColumns?.length" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
@@ -231,4 +351,7 @@
         </p-table>
     </div>
 </div>
-<referral-settings></referral-settings>
+
+<!-- <referral-settings></referral-settings> -->
+<app-referral-list-info></app-referral-list-info>
+<app-referral-list-entry></app-referral-list-entry>

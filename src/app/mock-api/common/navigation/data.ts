@@ -229,6 +229,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'ACCOUNT_PAYMENTLINK_VIEW',
                 icon: 'heroicons_outline:link',
                 link: Routes.account.payment_link_path
+            },
+            {
+                id: 'account.proforma_invoice',
+                title: 'Proforma Invoice',
+                type: 'basic',
+                pid: 'ACCOUNT_PROFORMAINVOICE_VIEW',
+                icon: 'heroicons_outline:newspaper',
+                link: Routes.account.proforma_invoice_path
             }
         ]
     },
@@ -521,6 +529,33 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     // },
                 ]
             },
+
+              {
+                id: 'reports.account2.0',
+                title: 'Accounts 2.0',
+                type: 'collapsable',
+                pid: 'REPORTS_ACCOUNTS-REPORT_VIEW',
+                icon: 'heroicons_outline:building-library',
+                // link: Routes.reports.account_route
+                children: [
+                    {
+                        id: 'reports.purchase_register',
+                        title: 'Purchase Register',
+                        type: 'basic',
+                        pid: 'ACCOUNT2.0_PURCHASEREGISTER_VIEW',
+                        icon: '',
+                        link: Routes.account.purchase_register_route_2
+                    },
+                    {
+                        id: 'reports.sale_register',
+                        title: 'Sale Register',
+                        type: 'basic',
+                        pid: 'ACCOUNT2.0_SALEREGISTER_VIEW',
+                        icon: '',
+                        link: Routes.account.sale_register_route_2
+                    },
+                ]
+            },
             // {
             //     id: 'reports.leads',
             //     title: 'Leads',
@@ -791,12 +826,28 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:campaign',
                 children: [
                     {
+                      id: 'reports.campaignregister',
+                      title: 'Campaign Register',
+                      type: 'basic',
+                      pid: 'CAMPAIGN-REPORTS_CAMPAIGNREGISTER_VIEW',
+                      icon: '',
+                      link: Routes.reports.campaign_register_path_route
+                  },
+                    {
                         id: 'reports.campaignsummary',
                         title: 'Campaign Summary',
                         type: 'basic',
                         pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
                         icon: '',
                         link: Routes.reports.campaign_summary_path_route
+                    },
+                     {
+                        id: 'reports.campaignsummaryreport',
+                        title: 'Campaign Summary Report',
+                        type: 'basic',
+                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARYREPORT_VIEW',
+                        icon: '',
+                        link: Routes.reports.campaign_summary_report_path_route
                     },
                 ]
             },

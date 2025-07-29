@@ -17,6 +17,10 @@ export class SidebarCustomModalService {
     this.modalSubject.next(null);
   }
 
+  close(data: any) {
+    this.modalSubject.next(data);
+  }
+
   onModalChange(): Observable<{ type: string; data?: any } | null> {
     return this.modalSubject.asObservable();
   }

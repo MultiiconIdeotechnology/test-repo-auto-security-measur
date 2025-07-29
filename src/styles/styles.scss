@@ -1058,6 +1058,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
 
 .zero-dialog {
     overflow: auto;
+
     .mat-mdc-dialog-container .mdc-dialog__surface {
         padding: 0 !important;
         box-shadow: none !important;
@@ -1072,16 +1073,16 @@ div:where(.swal2-container) button:where(.swal2-close) {
 
 .sm-dialog {
     max-width: 1260px !important;
-    min-width: 350px !important; 
-}  
+    min-width: 350px !important;
+}
 
 .domain-pointing-info-modal {
     max-height: 670px;
 }
 
-@media screen and (max-height: 768px){
+@media screen and (max-height: 768px) {
     .domain-pointing-info-modal {
-        max-height:600px;
+        max-height: 600px;
     }
 }
 
@@ -1115,10 +1116,9 @@ div:where(.swal2-container) button:where(.swal2-close) {
         border-bottom: none !important;
     }
 
-    .p-datatable .p-datatable-tbody>tr>td:last-child ,
-    .p-datatable .p-datatable-thead>tr>th:last-child
-    {
-        border-right:none !important
+    .p-datatable .p-datatable-tbody>tr>td:last-child,
+    .p-datatable .p-datatable-thead>tr>th:last-child {
+        border-right: none !important
     }
 }
 
@@ -1156,7 +1156,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
         .p-datatable .p-datatable-thead>tr>th {
             background: #e5f1fd !important;
             color: black;
-            border-right:1px solid #a5a9ad73;
+            border-right: 1px solid #a5a9ad73;
         }
 
         .p-datatable .p-datatable-tbody>tr>td {
@@ -1181,7 +1181,8 @@ div:where(.swal2-container) button:where(.swal2-close) {
     overflow: auto;
     // max-width: 1260px !important;
     // min-width: 820px !important;
-    width:811px;
+    width: 811px;
+
     .mat-mdc-dialog-container .mdc-dialog__surface {
         padding: 0 !important;
         box-shadow: none !important;
@@ -1202,7 +1203,7 @@ div:where(.swal2-container) button:where(.swal2-close) {
     }
 }
 
-@media screen and (max-height: 650px){
+@media screen and (max-height: 650px) {
     .custom-dialog-modal-md {
         max-height: 90vh;
     }
@@ -1214,6 +1215,19 @@ div:where(.swal2-container) button:where(.swal2-close) {
     .non-active-circle {
         background: white !important;
         border: 1px solid rgba(182, 178, 178, 0.781) !important;
-        color:black !important;
+        color: black !important;
+    }
+}
+
+// primeng 
+.p-dropdown .p-dropdown-clear-icon {
+    width: 12px;
+    height: 12px;
+}
+
+// fuse drawer preventing close from outside
+.no-close-on-outside {
+    .fuse-drawer-overlay.fuse-drawer-overlay-fixed {
+        pointer-events: none !important;
     }
 }

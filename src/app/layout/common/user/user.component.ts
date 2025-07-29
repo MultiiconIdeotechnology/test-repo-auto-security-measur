@@ -15,7 +15,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { GlobalSearchComponent } from '../global_search/global-search.component';
 import { TwoFactorAuthComponent } from './two-factor/two-factor-auth/two-factor-auth.component';
-import { VerificationDialogComponent } from './two-factor/verification-dialog/verification-dialog.component';
 
 @Component({
     selector: 'user',
@@ -50,7 +49,7 @@ export class UserComponent implements OnInit, OnDestroy {
         private _userService: UserService,
         @Inject(DOCUMENT) private document: Document
     ) {
-        localStorage.getItem('theam')
+        let theme = localStorage.getItem('theam');
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -148,7 +147,7 @@ export class UserComponent implements OnInit, OnDestroy {
  * @param scheme
  */
     setScheme(scheme: Scheme): void {
-        localStorage.setItem('theam',scheme)
+        localStorage.setItem('theam',scheme);
         // this.applyScheme(scheme);
 
         this._fuseConfigService.config = { scheme };

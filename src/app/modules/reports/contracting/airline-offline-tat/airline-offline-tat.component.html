@@ -62,15 +62,15 @@
             [rows]="appConfig.pageSize" [totalRecords]="totalRecords" [rowsPerPageOptions]="appConfig.pageSizeOptions"
             [lazy]="true" (onLazyLoad)="refreshItems($event)" [scrollable]="true" [scrollHeight]="scrollHeight"
             [showCurrentPageReport]="true" [showPageLinks]="false" [showJumpToPageDropdown]="false"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep" 
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" class="contracting_rep"
             [globalFilterFields]="['ticketingTime', 'bookingNo', 'supplierRefNo', 'supplier', 'bookingStatus', 'startDate', 'endDate', 'tat', 'type']"
             styleClass="p-datatable-gridlines p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="min-w-[150px] dark:bg-[#1e293b]" pSortableColumn="ticketingTime" pResizableColumn
+                    <th class="min-w-[170px] dark:bg-[#1e293b]" pSortableColumn="ticketingTime" pResizableColumn
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime"
-                        [ngClass]="{'left-0': !frozenObj?.ticketingTime}">
+                        [ngClass]="{'left-0': !frozenObj?.ticketingTime, 'min-w-[250px]': isFilterShow}">
                         Ticketing Time <p-sortIcon field="ticketingTime" />
                         <span class="float-right" (click)="isFrozenColumn('ticketingTime');$event.stopPropagation()">
                             <i *ngIf="!frozenObj?.ticketingTime" class="pi pi-lock-open icon-size-3"></i>
@@ -89,26 +89,24 @@
                     <th pSortableColumn="bookingStatus" pResizableColumn>
                         Status <p-sortIcon field="bookingStatus" />
                     </th>
-                    <th pSortableColumn="startDate" pResizableColumn>
+                    <th pSortableColumn="startDate" pResizableColumn [ngClass]="{'min-w-[200px]': isFilterShow}">
                         Start Date <p-sortIcon field="startDate" />
                     </th>
-                    <th pSortableColumn="endDate" pResizableColumn>
+                    <th pSortableColumn="endDate" pResizableColumn [ngClass]="{'min-w-[200px]': isFilterShow}">
                         End Date <p-sortIcon field="endDate" />
                     </th>
                     <th pSortableColumn="tat" pResizableColumn>
                         TAT (In Min.) <p-sortIcon field="tat" />
                     </th>
-                    <th pSortableColumn="type" pResizableColumn>
+                    <th class="w-full" pSortableColumn="type" pResizableColumn>
                         Type <p-sortIcon field="type" />
                     </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.ticketingTime">
-                        <!-- <p-columnFilter type="text" matchMode="contains" field="ticketingTime"
-                            placeholder="Search by Campaign Name" ariaLabel="Filter Campaign Name" /> -->
-
-                        <p-columnFilter *ngIf="_filterService.selectionDateDropdownContracting != 'custom_date_range'"
+                        <p-columnFilter
+                            *ngIf="(_filterService.selectionDateDropdownContracting$ | async) != 'custom_date_range'"
                             field="ticketingTime" matchMode="custom" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-dropdown #dateRangeDropdown class="filter-dropdown" [ngModel]="value"
@@ -124,7 +122,8 @@
                             </ng-template>
                         </p-columnFilter>
 
-                        <ng-container *ngIf="_filterService.selectionDateDropdownContracting == 'custom_date_range'">
+                        <ng-container
+                            *ngIf="(_filterService.selectionDateDropdownContracting$ | async) == 'custom_date_range'">
                             <div class="relative inline-block">
                                 <p-columnFilter field="ticketingTime" matchMode="custom" [showMenu]="false">
                                     <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -136,10 +135,9 @@
                                 </p-columnFilter>
                                 <mat-icon class="icon-size-4 cursor-pointer absolute"
                                     style="top:50%; transform: translatey(-50%); right: 25px;"
-                                    (click)="_filterService.selectionDateDropdownContracting = ''">cancel</mat-icon>
+                                    (click)="_filterService.onOptionClickContracting('', '', '')">cancel</mat-icon>
                             </div>
                         </ng-container>
-
                     </th>
                     <th>
                         <p-columnFilter type="text" matchMode="contains" field="bookingNo"
@@ -153,18 +151,18 @@
                         <!-- <p-columnFilter type="text" matchMode="contains" field="supplier" placeholder="Search by supplier"
                             ariaLabel="Filter RM" /> -->
 
-                            <p-columnFilter field="supplier" matchMode="in" [showMenu]="false">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
-                                        placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
-                                        <ng-template let-agent pTemplate="item">
-                                            <div>
-                                                {{agent.company_name}}
-                                            </div>
-                                        </ng-template>
-                                    </p-multiSelect>
-                                </ng-template>
-                            </p-columnFilter>
+                        <p-columnFilter field="supplier" matchMode="in" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-multiSelect [ngModel]="value" [options]="supplierList" optionLabel="company_name"
+                                    placeholder="Select Supplier" (onChange)="filter($event.value)" appendTo="body">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div>
+                                            {{agent.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-multiSelect>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
 
                     <!-- <th>
@@ -187,29 +185,28 @@
                     <th>
                         <!-- <p-columnFilter type="numeric" field="startDate" placeholder="Search by Start Date"
                             ariaLabel="Filter Signup" /> -->
-                            <p-columnFilter field="startDate" type="date">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                        appendTo="body" placeholder="Search by Start Date">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
+                        <p-columnFilter field="startDate" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by Start Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <!-- <p-columnFilter type="numeric" field="endDate" placeholder="Search by End Date"
                             ariaLabel="Filter endDate" /> -->
-                            <p-columnFilter field="endDate" type="date">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                        appendTo="body" placeholder="Search by End Date">
-                                    </p-calendar>
-                                </ng-template>
-                            </p-columnFilter>
+                        <p-columnFilter field="endDate" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Search by End Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
 
                     <th>
-                        <p-columnFilter type="numeric" field="tat"
-                            placeholder="Search by TAT" ariaLabel="Filter TAT" />
+                        <p-columnFilter type="numeric" field="tat" placeholder="Search by TAT" ariaLabel="Filter TAT" />
 
 
                         <!-- <p-columnFilter field="tat" matchMode="equals" [showMenu]="false">
@@ -248,7 +245,8 @@
                         {{(element.ticketingTime | date:'dd-MM-yyyy HH:mm:ss') || "-"}}
                     </td>
                     <td>
-                        <span class="cursor-pointer border-b border-gray-500" (click)="viewData(element)">{{element.bookingNo || "-"}}</span>
+                        <span class="cursor-pointer border-b border-gray-500"
+                            (click)="viewData(element)">{{element.bookingNo || "-"}}</span>
                     </td>
                     <td>{{element.supplierRefNo || "-"}}</td>
                     <td>{{element.supplier || "-" }}</td>

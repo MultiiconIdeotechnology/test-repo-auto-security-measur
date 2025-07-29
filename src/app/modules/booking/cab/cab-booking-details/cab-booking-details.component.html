@@ -26,10 +26,8 @@
                     <div class="first relative flex flex-col white-bg rounded-md  overflow-x-hidden">
                         <div class="flex justify-between overflow-x-auto">
                             <div>
-                                <div class="flex space-x-3"
-                                    *ngIf="bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'">
-                                    <div *ngIf="bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'"
-                                        class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-secondary cursor-pointer"
+                                <div class="flex space-x-3" >
+                                    <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center text-secondary cursor-pointer"
                                         (click)="getCopy('agent')">
                                         <mat-icon class="primary-text pr-1 text-xl"
                                             svgIcon="heroicons_outline:document-text"></mat-icon>
@@ -37,8 +35,7 @@
                                             Copy</span>
                                     </div>
 
-                                    <div *ngIf="bookingDetail?.lead_status == 'Completed' || bookingDetail?.lead_status == 'Token Payment Success'"
-                                        class="px-2 py-1 light-blue-bg border border-[#BFDCFF] rounded-lg flex items-center text-secondary cursor-pointer"
+                                    <div class="px-2 py-1 border border-gray-border rounded-lg flex items-center text-secondary cursor-pointer"
                                         (click)="getCopy('customer')">
                                         <mat-icon class="primary-text pr-1 text-xl"
                                             svgIcon="heroicons_outline:document-text"></mat-icon>
@@ -195,13 +192,24 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="w-full pt-3">
+                                <div class="text-secondary font-normal text-base pb-1">Inquiry Remark</div>
+                                <div class=" font-medium text-lg">{{bookingDetail?.inquiry_remark || '-'}}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div *ngIf="bookingDetail?.lead_status === 'Rejected'"
+                    <div class="mt-2 rounded-md p-3 bg-[#f9434340] border-[#953a3a] border"
+                        *ngIf="bookingDetail?.lead_status == 'Rejected'">
+                        <div class="font-medium text-sm dark:text-[#fff]"><strong>Reject Reason : </strong>
+                            {{bookingDetail?.reject_reason}}</div>
+                    </div>
+
+                    <!-- <div *ngIf="bookingDetail?.lead_status === 'Rejected'"
                         class="bg-[#FFECEC] p-3  bonton-red-text rounded ">
                         <div class=""><strong>Reject Reson : </strong> {{bookingDetail?.reject_reason}}</div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-------Right-------->

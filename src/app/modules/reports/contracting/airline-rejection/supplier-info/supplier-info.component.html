@@ -11,6 +11,12 @@
                     (click)="refreshItems()"></mat-icon>
             </div>
 
+            <button class=" rounded-full" mat-flat-button matTooltip="Advanced Filter"
+                [disabled]="isLoading" (click)="isFilterShow = !isFilterShow;">
+                <img *ngIf="!isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-add.svg" alt="c">
+                <img *ngIf="isFilterShow" class="w-5 cursor-pointer pt-1" src="assets/icons/filter-remove.svg" alt="c">
+            </button>
+
             <!---Excel--->
             <button mat-raised-button [matMenuTriggerFor]="menu" class="">
                 <mat-icon class="icon-size-6">more_vert</mat-icon>
@@ -67,7 +73,39 @@
                     <th class="text-right" pSortableColumn="failed_Flights_International" pResizableColumn>Failed <p-sortIcon
                             field="failed_Flights_International" /></th>
                 </tr>
-                <!-- </ng-template> -->
+
+                <tr *ngIf="isFilterShow">
+                    
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="carrier"
+                            placeholder="Search by Carrier" ariaLabel="Filter Carrier" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="confirmed_Percentage"
+                            placeholder="Search by Confirmed" ariaLabel="Filter Confirmed" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="failed_Percentage"
+                            placeholder="Search by Failed" ariaLabel="Filter Failed" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="confirmed_Percentage_Domestic"
+                            placeholder="Search by Confirmed" ariaLabel="Filter Confirmed" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="failed_Percentage_Domestic"
+                            placeholder="Search by Failed" ariaLabel="Filter Failed" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="confirmed_Percentage_International"
+                            placeholder="Search by Confirmed" ariaLabel="Filter Confirmed" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="failed_Percentage_International"
+                            placeholder="Search by Failed" ariaLabel="Filter Failed" />
+                    </th>
+                </tr>
+
             </ng-template>
             <ng-template pTemplate="body" let-element>
                 <tr>
