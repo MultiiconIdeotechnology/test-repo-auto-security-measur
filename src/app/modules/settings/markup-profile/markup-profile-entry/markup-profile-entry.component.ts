@@ -272,6 +272,8 @@ export class MarkupProfileEntryComponent {
             air_int_bag_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_correction_val: [0, [Validators.required, this.floatNumberValidator()]],
             air_int_correction_type: ['Flat for Full Amendment', Validators.required],
+            air_block_type : ['Flat for Full Booking', Validators.required],
+            air_block_val: [0, [Validators.required, this.floatNumberValidator()]],
             visa_type: ['Flat for Full Booking', Validators.required],
             visa_val: [0, [Validators.required, this.floatNumberValidator()]],
         });

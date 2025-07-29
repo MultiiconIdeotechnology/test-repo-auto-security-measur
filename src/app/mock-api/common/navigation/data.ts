@@ -546,6 +546,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                         icon: '',
                         link: Routes.account.purchase_register_route_2
                     },
+                    {
+                        id: 'reports.sale_register',
+                        title: 'Sale Register',
+                        type: 'basic',
+                        pid: 'ACCOUNT2.0_SALEREGISTER_VIEW',
+                        icon: '',
+                        link: Routes.account.sale_register_route_2
+                    },
                 ]
             },
             // {
