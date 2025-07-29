@@ -107,15 +107,15 @@ export class SupplierInventoryProfileEntryComponent {
 
   Close(): void {
     this.settingsDrawer.close()
-    console.log(this.selectedRecord)
-    if (this.selectedRecord)
-      this.selectedRecord.profile_name = this.profile_name;
-    else
-      this.selectedRecord = {
-        profile_name: this.profile_name,
-        entry_date_time : new Date()
-      }
-    this.sidebarDialogService.CloseSubject(this.selectedRecord)
+    // console.log(this.selectedRecord)
+    // if (this.selectedRecord)
+    //   this.selectedRecord.profile_name = this.profile_name;
+    // else
+    //   this.selectedRecord = {
+    //     profile_name: this.profile_name,
+    //     entry_date_time : new Date()
+    //   }
+    // this.sidebarDialogService.CloseSubject(this.selectedRecord)
   }
 
 }

@@ -1,15 +1,15 @@
 <div class="p-2">
-    
+
     <form [formGroup]="airlineForm">
         <div class="grid grid-cols-4 gap-4">
             <!-- Supplier Combo -->
             <mat-form-field class="flex-grow">
                 <mat-label>Supplier</mat-label>
-                <mat-select required formControlName="supplier_id" 
-                     (selectionChange)="onSupplierChange($event.value)">
+                <mat-select required formControlName="supplier_id" [compareWith]="compareWith"
+                    (selectionChange)="onSupplierChange($event.value)">
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
-                            [formControlName]="'sup_type'">
+                            formControlName="sup_type">
                         </ngx-mat-select-search>
                     </mat-option>
                     <mat-option *ngFor="let ct of supplierList" [value]="ct">
@@ -92,7 +92,7 @@
                     <!-- [compareWith]="compareWithFareTypeSupplier" -->
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
-                            [formControlName]="'supplier_fare_type_filter'">
+                            formControlName="'supplier_fare_type_filter'">
                         </ngx-mat-select-search>
                     </mat-option>
                     <mat-option value="All" (onSelectionChange)="clickAllFarTypeClass($event)">
@@ -190,7 +190,7 @@
 
         <!-- Table -->
         <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
-            [globalFilterFields]="['supplier', 'usertype', 'triptype']" [scrollable]="true" scrollHeight="300px"
+            [globalFilterFields]="['supplier', 'user_type', 'trip_type']" [scrollable]="true" scrollHeight="300px"
             [resizableColumns]="true" columnResizeMode="fit" styleClass="p-datatable-sm p-datatable-gridlines">
 
             <!-- Header -->
@@ -207,16 +207,24 @@
             <!-- Body -->
             <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
                 <tr>
-                    <td class="flex flex-row items-center">
-                        <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
-                            (click)="onDelete(row)"></button>
+                    <td class="flex flex-row items-center gap-2">
+                        <!-- Edit button -->
+                        
+                          <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm text-blue-500"
+                                 (click)="onEdit(row, rowIndex)"></button>
+     
+                             <!-- Delete button -->
+                             <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
+                                 (click)="onDelete(row)"></button>
+                        
                     </td>
-                    <td>{{ row.supplier }}</td>
-                    <td>{{ row.usertype }}</td>
-                    <td>{{ row.isEnable ? 'True' : 'False' }}</td>
-                    <td>{{ row.triptype }}</td>
+                    <td>{{ row.supplier_name }}</td>
+                    <td>{{ row.user_type }}</td>
+                    <td>{{ row.is_enable ? 'True' : 'False' }}</td>
+                    <td>{{ row.trip_type }}</td>
                 </tr>
             </ng-template>
+
 
             <!-- Empty Message -->
             <ng-template pTemplate="emptymessage">

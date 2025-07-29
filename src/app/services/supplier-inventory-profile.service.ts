@@ -32,7 +32,7 @@ export class SupplierInventoryProfileService {
   //   });
   // }
   
-  getSupplierFareTypeCombo(supplier_id: string, filter?: string, is_active: boolean = false): Observable<any[]> {
+  getSupplierFareTypeCombo(supplier_id: string, filter?: string, is_active: boolean = true): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
       supplier_id: supplier_id,
       filter: filter,
