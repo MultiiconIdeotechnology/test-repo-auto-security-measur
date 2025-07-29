@@ -11,9 +11,8 @@
         "s:start": "ng serve --port 4850",
         "o:start": "ng serve --port 4100",
         "g:start": "ng serve --port 4800",
-        "j:start": "ng serve --port 4250",
-        "build:staging": "ng build --configuration=staging",
-        "build:local": "ng build --configuration=local",
+        "build:developer": "ng build --configuration=developer",
+        "build:uat": "ng build --configuration=uat",
         "build:production": "ng build --configuration=production",
         "watch": "ng build --watch --configuration development",
         "test": "ng test"
