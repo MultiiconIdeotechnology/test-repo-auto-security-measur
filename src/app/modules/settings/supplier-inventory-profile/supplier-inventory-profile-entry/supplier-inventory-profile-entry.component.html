@@ -3,7 +3,7 @@
     <!-- Parent Component -->
     <div class="w-full h-full flex flex-col">
         <!-- Header -->
-        <div class="flex items-center justify-between border-b border-gray-300 px-6 pt-12 pb-8 h-16 sticky top-0 z-10">
+        <!-- <div class="flex items-center justify-between border-b border-gray-300 px-6 pt-12 pb-8 h-16 sticky top-0 z-10">
             <div class="flex items-center space-x-4 w-full">
                 <label class="text-normal font-medium min-w-max mb-4">Profile</label>
                 <mat-form-field class="w-full max-w-[400px]">
@@ -12,33 +12,84 @@
             </div>
             <mat-icon svgIcon="close" class="icon-size-6 cursor-pointer ml-4" (click)="Close()">
             </mat-icon>
-        </div>
+        </div> -->
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+            <div
+                class="flex items-center justify-between border-b border-gray-300 px-6 pt-12 pb-8 h-16 sticky top-0 z-10">
+
+                <div class="flex items-center space-x-4 w-full">
+                    <label class="text-normal font-medium min-w-max mb-4">Profile</label>
+
+                    <mat-form-field class="w-full max-w-[400px]">
+                        <input matInput type="text" formControlName="profile_name" placeholder="Enter Profile name" />
+                    </mat-form-field>
+
+                    <!-- Add Button -->
+                    <button *ngIf="!isProfileEdit" mat-flat-button color="primary" type="submit"
+                        [disabled]="profileForm.invalid" class="mb-5">
+                        Add
+                    </button>
+
+                    <!-- Edit / Save -->
+                    <ng-container *ngIf="isProfileEdit">
+                        <button *ngIf="!isEditing" mat-stroked-button color="accent" type="button" class="mb-5"
+                            (click)="enableEdit()">
+                            Edit
+                        </button>
+
+                        <button *ngIf="isEditing" mat-flat-button color="primary" type="submit"
+                            [disabled]="profileForm.invalid" class="mb-5">
+                            Save
+                        </button>
+                    </ng-container>
+                </div>
+
+                <!-- Close icon -->
+                <mat-icon svgIcon="close" class="icon-size-6 cursor-pointer ml-4" (click)="Close()">
+                </mat-icon>
+            </div>
+        </form>
+
+
+
+
+
+
+
 
         <!-- Tab Group -->
         <div class="flex flex-col flex-auto min-w-0 overflow-hidden">
-            <mat-tab-group class="custom-tab lead_tab h-full">
-                <mat-tab label="Airline" aria-label="Airline">
+            <mat-tab-group class="custom-tab lead_tab h-full" [animationDuration]="'0'"
+                (selectedTabChange)="tabChanged($event)">
+
+                <mat-tab label="Airline" [aria-label]="'Airline'">
                     <div class="p-5">
-                        <!-- Pass profile name as input -->
-                        <app-profile-airline [type]="type" [record]="selectedRecord" [profile_name]="profile_name"
+                        <app-profile-airline *ngIf="tabNameStr == 'Airline'" #profileAirlineComponent [type]="type"
+                            [record]="selectedRecord" [profile_name]="profile_name"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-airline>
                     </div>
                 </mat-tab>
-                <mat-tab label="Bus" aria-label="Bus">
+
+                <mat-tab label="Bus" [aria-label]="'Bus'">
                     <div class="p-5">
-                       <app-profile-bus [type]="type" [record]="selectedRecord" [profile_name]="profile_name"
+                        <app-profile-bus *ngIf="tabNameStr == 'Bus'" #profileBusComponent [type]="type"
+                            [record]="selectedRecord" [profile_name]="profile_name"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-bus>
                     </div>
                 </mat-tab>
-                <mat-tab label="Hotel" aria-label="Hotel">
+
+                <mat-tab label="Hotel" [aria-label]="'Hotel'">
                     <div class="p-5">
-                       <app-profile-hotel [type]="type" [record]="selectedRecord" [profile_name]="profile_name"
+                        <app-profile-hotel *ngIf="tabNameStr == 'Hotel'" #profileHotelComponent [type]="type"
+                            [record]="selectedRecord" [profile_name]="profile_name"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-hotel>
                     </div>
                 </mat-tab>
-                <mat-tab label="Insurance" aria-label="Insurance">
+
+                <mat-tab label="Insurance" [aria-label]="'Insurance'">
                     <div class="p-5">
-                       <app-profile-insurance [type]="type" [record]="selectedRecord" [profile_name]="profile_name"
+                        <app-profile-insurance *ngIf="tabNameStr == 'Insurance'" #profileInsuranceComponent
+                            [type]="type" [record]="selectedRecord" [profile_name]="profile_name"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-insurance>
                     </div>
                 </mat-tab>

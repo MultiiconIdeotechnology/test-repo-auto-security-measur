@@ -4,7 +4,8 @@
             <!-- Supplier Combo -->
             <mat-form-field class="flex-grow">
                 <mat-label>Supplier</mat-label>
-                <mat-select required formControlName ="supplier_id" [compareWith]="compareWith" (selectionChange)="onSupplierChange($event.value)">
+                <mat-select required formControlName="supplier_id" [compareWith]="compareWith"
+                    (selectionChange)="onSupplierChange($event.value)">
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
                             formControlName="'sup_type'">
@@ -24,7 +25,7 @@
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-       
+
 
             <div class="flex flex-row">
                 <mat-checkbox class="example-margin ml-[-8px]" formControlName="is_enable">
@@ -41,29 +42,29 @@
         </div>
     </form>
 
-   
+
     <mat-divider class="my-6"></mat-divider>
     <!-- Search & Refresh -->
-         <!-- Divider -->
+    <!-- Divider -->
 
-         <div class="flex justify-between items-center mb-3">
-             <div class="flex items-center gap-2">
-                 <span class="text-sm font-medium">Search:</span>
-                 <input type="text" pInputText [(ngModel)]="globalFilter"
-                     (input)="tableRef.filterGlobal($event.target.value, 'contains')" placeholder="Search..."
-                     class="w-64 h-9 px-2" />
-             </div>
-     
-             <button class="ml-4" mat-flat-button [color]="'primary'" (click)="onRefresh()" matTooltip="Refresh">
-                 <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
-             </button>
-     
-         </div>
-     
-         <!-- Table -->
-             <!-- Table -->
-        <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
-            [globalFilterFields]="['supplier', 'user_type', 'trip_type']" [scrollable]="true" scrollHeight="300px"
+    <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-2">
+            <span class="text-sm font-medium">Search:</span>
+            <input type="text" pInputText [(ngModel)]="globalFilter"
+                (input)="tableRef.filterGlobal($event.target.value, 'contains')" placeholder="Search..."
+                class="w-64 h-9 px-2" />
+        </div>
+
+        <button class="ml-4" mat-flat-button [color]="'primary'" (click)="onRefresh()" matTooltip="Refresh">
+            <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
+        </button>
+
+    </div>
+
+    <!-- Table -->
+   
+        <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10, 20, 50]"
+            [globalFilterFields]="['supplier_name', 'user_type']" [scrollable]="true" [scrollHeight]="scrollHeight"
             [resizableColumns]="true" columnResizeMode="fit" styleClass="p-datatable-sm p-datatable-gridlines">
 
             <!-- Header -->
@@ -72,20 +73,20 @@
                     <th style="width: 60px" class="text-center">#</th>
                     <th pResizableColumn>Supplier</th>
                     <th pResizableColumn>User Type</th>
-                    <th pResizableColumn>Is Enable</th>               
+                    <th pResizableColumn>Is Enable</th>
                 </tr>
             </ng-template>
 
             <!-- Body -->
             <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
-                <tr>
+                <tr >
                     <td class="flex flex-row items-center gap-2">
                         <!-- Edit button -->
                         <!-- <button *ngIf="!isAdd" pButton icon="pi pi-pencil"
                             class="p-button-text p-button-sm text-blue-500" (click)="onGridModify(row, rowIndex)">
                         </button> -->
-                        <button  *ngIf="!isAdd" pButton icon="pi pi-pencil" class="p-button-text p-button-sm text-blue-500"
-                            (click)="onEdit(row, rowIndex)"></button>
+                        <button *ngIf="!isAdd" pButton icon="pi pi-pencil"
+                            class="p-button-text p-button-sm text-blue-500" (click)="onEdit(row, rowIndex)"></button>
 
                         <!-- Delete button -->
                         <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
@@ -94,7 +95,7 @@
                     </td>
                     <td>{{ row.supplier_name }}</td>
                     <td>{{ row.user_type }}</td>
-                    <td>{{ row.is_enable ? 'True' : 'False' }}</td>                
+                    <td>{{ row.is_enable ? 'True' : 'False' }}</td>
                 </tr>
             </ng-template>
 
@@ -107,4 +108,5 @@
             </ng-template>
 
         </p-table>
+    
 </div>

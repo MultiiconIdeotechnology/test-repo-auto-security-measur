@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
 import { CacheLabel, CacheService } from 'app/services/cache.service';
 import { EntityService } from 'app/services/entity.service';
 import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
@@ -38,7 +39,7 @@ import { Table } from 'primeng/table';
 
   ]
 })
-export class ProfileAirlineComponent implements OnChanges {
+export class ProfileAirlineComponent extends BaseListingComponent implements OnChanges {
   @Input() profile_name: string = '';
   @Input() type: string;
   @Input() record: any;
@@ -95,6 +96,7 @@ export class ProfileAirlineComponent implements OnChanges {
     private entityService: EntityService,
     private cacheService: CacheService
   ) {
+    super('');
     this.airlineForm = this.formBuilder.group({
       id: [''],
       supplier_id: ['', Validators.required],
@@ -153,21 +155,22 @@ export class ProfileAirlineComponent implements OnChanges {
 
 
   }
+
+
   ngOnChanges(changes: SimpleChanges): void {
     if (this.type === 'edit' && this.record?.id) {
       this.currentEditId = this.record.id;
       this.recordRespEditId = this.record.id;
       this.isEdit = true;
-
-      // Then load data and patch
+     
       this.initializeForm();
       this.loadRecord(this.currentEditId);
 
     } else if (this.type === 'create') {
-      this.isEdit = false;
-      this.currentRecordRespId = '';
       this.airlineForm.reset();
       this.dataList = [];
+      this.isEdit = false;
+      this.currentRecordRespId = '';
     }
 
     if ((this.type == 'create' || this.type == 'edit')) {
@@ -188,7 +191,7 @@ export class ProfileAirlineComponent implements OnChanges {
   initializeForm(): void {
     this.airlineForm = this.formBuilder.group({
       id: [''],
-      profile_name: [''],
+     // profile_name: [''],
       supplier_id: [''],
       supplier_name: [''],
       sup_type: [''],
@@ -255,7 +258,7 @@ export class ProfileAirlineComponent implements OnChanges {
 
 
   getSupplierCombo(): void {
-    this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBoCombo,
+    this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierAirlineCombo,
       this.supplierInventoryProfileService.getFareypeSupplierBoCombo('Airline', '')).subscribe({
         next: data => {
           this.supplierAllList = cloneDeep(data);
@@ -266,7 +269,7 @@ export class ProfileAirlineComponent implements OnChanges {
 
 
   onSupplierChange(supplier: any, row: any = null): void {
-    console.log('🔁 onSupplierChange triggered:', supplier, row);
+    console.log('onSupplierChange triggered:', supplier, row);
     if (supplier?.id) {
       this.suplier_id = supplier.id;
       this.suplier_name = supplier.company_name;
@@ -388,17 +391,18 @@ export class ProfileAirlineComponent implements OnChanges {
   }
 
   clickAllFarTypeClass(event: any): void {
-
     if (event.source.value !== 'All') return;
 
     const all = event.source.selected;
 
     if (all) {
-      this.airlineForm.get('fare_type_class').patchValue(['All', ...this.supplierFareTypeList.map(x => x.id)], { emitEvent: false });
+      const allValues = this.supplierFareTypeList.map(x => x.class_of_service);
+      this.airlineForm.get('fare_type_class').patchValue(['All', ...allValues], { emitEvent: false });
     } else {
       this.airlineForm.get('fare_type_class').patchValue([], { emitEvent: false });
     }
   }
+
 
 
 
@@ -448,7 +452,7 @@ export class ProfileAirlineComponent implements OnChanges {
       return;
     }
 
-    this.disableBtn = true;
+    //this.disableBtn = true;
     const formValue = this.airlineForm.value;
 
     const newInventory = {
@@ -472,6 +476,8 @@ export class ProfileAirlineComponent implements OnChanges {
 
     //  Maintain inventory list
     this.sessionInventories = cloneDeep(this.dataList || []);
+    console.log("this.sessionInventories",this.sessionInventories);
+    
     console.log("index 1", newInventory);
     if (newInventory?.id) {
       const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
@@ -482,7 +488,6 @@ export class ProfileAirlineComponent implements OnChanges {
       this.sessionInventories.push(newInventory);
     }
 
-    //  Add only if it's NOT duplicate (optional)
 
     this.sessionInventories.forEach((x, index) => {
       x.id = index + 1;
@@ -495,6 +500,9 @@ export class ProfileAirlineComponent implements OnChanges {
       inventories: this.sessionInventories //  Full list of inventories
     };
 
+    console.log("paylaod airline", payload);
+    
+   
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
         const id = res?.id;
@@ -535,6 +543,7 @@ export class ProfileAirlineComponent implements OnChanges {
       // id,
       // profile_id: id,
       //  profile_name: profileName,
+      service:inventory.service,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
@@ -622,9 +631,12 @@ export class ProfileAirlineComponent implements OnChanges {
     return supplier ? supplier.company_name : '';
   }
 
-  onRefresh(): void {
-    this.globalFilter = '';
-    // optionally re-fetch API here
+onRefresh(): void {
+  if (this.currentEditId) {
+    this.loadRecord(this.currentEditId);
+  } else {
+    console.warn('No record ID to refresh');
   }
+}
 
 }

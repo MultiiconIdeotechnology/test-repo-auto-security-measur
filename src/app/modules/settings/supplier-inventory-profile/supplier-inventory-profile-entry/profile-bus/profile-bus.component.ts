@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
+import { BaseListingComponent } from 'app/form-models/base-listing';
 import { CacheLabel, CacheService } from 'app/services/cache.service';
 import { EntityService } from 'app/services/entity.service';
 import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
@@ -22,7 +23,6 @@ import { Table } from 'primeng/table';
   templateUrl: './profile-bus.component.html',
   styleUrls: ['./profile-bus.component.scss'],
   standalone: true,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     MatSelectModule,
     MatFormFieldModule,
@@ -39,7 +39,7 @@ import { Table } from 'primeng/table';
 
   ]
 })
-export class ProfileBusComponent implements OnChanges {
+export class ProfileBusComponent extends BaseListingComponent {
   @Input() profile_name: string = '';
   @Input() type: string;
   @Input() record: any;
@@ -96,6 +96,9 @@ export class ProfileBusComponent implements OnChanges {
     private entityService: EntityService,
     private cacheService: CacheService
   ) {
+
+    super('')
+
     this.airlineForm = this.formBuilder.group({
       id: [''],
       supplier_id: ['', Validators.required],
@@ -191,8 +194,8 @@ export class ProfileBusComponent implements OnChanges {
 
 
   getSupplierCombo(): void {
-    this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBoCombo,
-      this.supplierInventoryProfileService.getFareypeSupplierBoCombo('Airline', '')).subscribe({
+    this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierBusCombo,
+      this.supplierInventoryProfileService.getFareypeSupplierBoCombo('Bus', '')).subscribe({
         next: data => {
           this.supplierAllList = cloneDeep(data);
           this.supplierList = this.supplierAllList;
@@ -364,8 +367,11 @@ export class ProfileBusComponent implements OnChanges {
   }
 
   onRefresh(): void {
-    this.globalFilter = '';
-    // optionally re-fetch API here
+    if (this.currentEditId) {
+      this.loadRecord(this.currentEditId);
+    } else {
+      console.warn('No record ID to refresh');
+    }
   }
 
 }

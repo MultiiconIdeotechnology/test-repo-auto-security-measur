@@ -134,10 +134,10 @@
                         </span>
 
                         <mat-menu #optionMenu>
-                            <button mat-menu-item (click)="info(element)">
+                            <!-- <button mat-menu-item (click)="info(element)">
                                 <mat-icon class="mat-18 icon-size-5">info</mat-icon>
                                 <span style="font-weight: 600;">Info</span>
-                            </button>
+                            </button> -->
                             <button mat-menu-item (click)="edit(element)">
                                 <mat-icon class="mat-18 icon-size-5">edit</mat-icon>
                                 <span style="font-weight: 600;">Modify</span>
@@ -146,19 +146,26 @@
                                 <mat-icon class="mat-18 icon-size-5">delete</mat-icon>
                                 <span style="font-weight: 600;">Delete</span>
                             </button>
-                            <mat-divider></mat-divider>
-                            <button mat-menu-item>
-                                <mat-icon class="mat-18 icon-size-5">check_circle</mat-icon>
-                                <span style="font-weight: 600;">Set Default</span>
+                            <mat-divider *ngIf="!element.is_default"></mat-divider >
+                            <button mat-menu-item (click)="setDefault(element)" *ngIf="!element.is_default">
+                                <mat-icon class="mat-18">check_circle</mat-icon>
+                                <span style="font-weight: 600">Set Default</span>
                             </button>
                         </mat-menu>
                     </td>
                     <td *ngFor="let col of columns" [class]="col.class">
 
-                        <ng-container *ngIf="col.type == types.text || col.type == types.select">
+                        <!-- <ng-container *ngIf="col.type == types.text || col.type == types.select">
                             {{element[col.field] || "-"}}
-                        </ng-container>
+                        </ng-container> -->
 
+                        <ng-container *ngIf="col.type === types.text && col.field == 'profile_name'">
+                            <span [matTooltip]="element['is_default'] ? 'Default' : ''"
+                                class="w-2 inline-block h-2 rounded-full"
+                                [ngClass]="element['is_default'] ? 'bg-green-500' : '-mr-3'">
+                            </span>
+                            {{ element[col.field] || '-' }}
+                        </ng-container>
 
 
                         <ng-container *ngIf="col.type == types.dateTime">

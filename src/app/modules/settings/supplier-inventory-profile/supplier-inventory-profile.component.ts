@@ -10,7 +10,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent, Column, Types } from 'app/form-models/base-listing';
-import { filter_module_name, messages, module_name, Security } from 'app/security';
+import { filter_module_name, messages, module_name, Security, supplierInventoryProfilePermissions } from 'app/security';
 import { ItemService } from 'app/services/item.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { Subscription } from 'rxjs';
@@ -20,6 +20,8 @@ import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.ser
 import { SupplierInventoryProfileEntryComponent } from './supplier-inventory-profile-entry/supplier-inventory-profile-entry.component';
 import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
 import { ProfileInventoryInfoComponent } from './profile-inventory-info/profile-inventory-info.component';
+import { ToasterService } from 'app/services/toaster.service';
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
   selector: 'app-supplier-inventory-profile',
@@ -69,6 +71,8 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
     private matDialog: MatDialog,
     public _filterService: CommonFilterService,
     private sidebarDialogService: SidebarCustomModalService,
+    private toasterService: ToasterService,
+    private entityService: EntityService
   ) {
     super(module_name.supplierinventoryprofile)
     this.key = this.module_name;
@@ -78,14 +82,13 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
     this._filterService.applyDefaultFilter(this.filter_table_name);
 
     this.selectedColumns = [
-      { field: 'profile_name', header: 'Profile Name', type: Types.text },
+      { field: 'profile_name', header: 'Profile Name', type: Types.text, isCustomColor: true },
       { field: 'entry_date_time', header: 'Created Date', type: Types.dateTime, dateFormat: 'dd-MM-yyyy' },
     ];
 
     this.cols.unshift(...this.selectedColumns);
 
     this._subs = this.sidebarDialogService.onCloseSubjectChange().subscribe(res => {
-      console.log(res);
       if (res && res?.id) {
         const rec = this.dataList.find(x => x.id == res.id);
         if (rec)
@@ -225,6 +228,41 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
     // }
     this.sidebarDialogService.openModal('info', record)
   }
+
+  setDefault(record): void {
+    if (!Security.hasPermission(supplierInventoryProfilePermissions.setasDefaultPermissions)) {
+      return this.toasterService.showToast('error', messages.permissionDenied);
+    }
+
+    const label: string = 'Set Default Profile';
+    this.conformationService
+      .open({
+        title: label,
+        message: `Are you sure to ${label.toLowerCase()} ${record.profile_name}?`,
+      })
+      .afterClosed()
+      .subscribe((res) => {
+        if (res === 'confirmed') {
+          this.supplierInventoryProfileService.setDefaultSupplierInventoryProfile(record.id).subscribe({
+            next: () => {
+              this.toasterService.showToast('success', 'Profile set as Default!');
+
+              // Update local list without calling API
+              this.dataList = this.dataList.map(item => ({
+                ...item,
+                is_default: item.id === record.id
+              }));
+            },
+            error: (err) => {
+              this.toasterService.showToast('error', err);
+              this.isLoading = false;
+            }
+          });
+        }
+      });
+  }
+
+
 
   getNodataText(): string {
     if (this.isLoading)

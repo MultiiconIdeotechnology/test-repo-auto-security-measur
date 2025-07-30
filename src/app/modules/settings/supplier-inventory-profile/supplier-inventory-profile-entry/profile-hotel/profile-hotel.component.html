@@ -80,10 +80,10 @@
 
     <!-- Table -->
     <!-- Table -->
-    <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
-        [globalFilterFields]="['supplier', 'user_type', 'trip_type']" [scrollable]="true" scrollHeight="300px"
-        [resizableColumns]="true" columnResizeMode="fit" styleClass="p-datatable-sm p-datatable-gridlines">
-
+    <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10, 20, 50]"
+        [globalFilterFields]="['supplier_name', 'user_type', 'trip_type']" [scrollable]="true"
+        [scrollHeight]="scrollHeight" [resizableColumns]="true" columnResizeMode="fit"
+        styleClass="p-datatable-sm p-datatable-gridlines">
         <!-- Header -->
         <ng-template pTemplate="header">
             <tr>

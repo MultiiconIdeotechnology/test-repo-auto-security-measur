@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -50,19 +50,33 @@ import { EntityService } from 'app/services/entity.service';
 })
 export class SupplierInventoryProfileEntryComponent {
   @ViewChild('settingsDrawer') settingsDrawer: MatSidenav;
-  @ViewChild(ProfileAirlineComponent) profileComponentRef: ProfileAirlineComponent;
+
+  @ViewChild('profileAirlineComponent') profileAirlineComponent: ProfileAirlineComponent;
+  @ViewChild('profileBusComponent') profileBusComponent: ProfileBusComponent;
+  @ViewChild('profileHotelComponent') profileHotelComponent: ProfileHotelComponent;
+  @ViewChild('profileInsuranceComponent') profileInsuranceComponent: ProfileInsuranceComponent;
+
   private destroy$: Subject<any> = new Subject<any>();
   title: string = 'Create Link'
   buttonLabel: string = 'Create';
 
   tabsTitle = 'Settings';
-  tabs = ['Airline', 'Bus', 'Hotel', 'Insurance'];
-  activeTab = 'Airline';
+  //tabs = ['Airline', 'Bus', 'Hotel', 'Insurance'];
   profile_name: string = '';
   profile_id: string = '';
   type: string;
+  tabName: any
+
+  tabNameStr: any = 'Airline'
+  tab: string = 'Airline';
+  isSecound: boolean = true
+  isThird: boolean = true
+  isFourth: boolean = true
   selectedRecord: any = null; // store the edit response
   private _subs: Subscription;
+  profileForm: FormGroup;
+  isProfileEdit: boolean = false;
+  isEditing: boolean = false
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
@@ -73,6 +87,7 @@ export class SupplierInventoryProfileEntryComponent {
     private matDialog: MatDialog,
     private supplierInventoryProfileService: SupplierInventoryProfileService,
     private entityService: EntityService,
+    private formBuilder: FormBuilder
   ) {
     this._subs = this.entityService.onsupplierInventoryProfile().subscribe(res => {
       this.profile_id = res;
@@ -80,6 +95,10 @@ export class SupplierInventoryProfileEntryComponent {
   }
 
   ngOnInit(): void {
+
+     this.profileForm = this.formBuilder.group({
+      profile_name: ['', Validators.required]
+    });
 
     // subscribing to modalchange on create and modify
     this.sidebarDialogService.onModalChange().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
@@ -105,6 +124,55 @@ export class SupplierInventoryProfileEntryComponent {
 
     });
 
+  }
+
+  enableEdit(): void {
+    this.isEditing = true;
+    this.profileForm.get('profile_name')?.enable(); // allow editing
+  }
+
+  saveProfile(): void {
+    if (this.profileForm.invalid) return;
+
+    const name = this.profileForm.value.profile_name;
+    if (!this.isProfileEdit) {
+      // Add profile
+      this.isProfileEdit = true;
+      console.log('Profile added:', name);
+      this.profileForm.get('profile_name')?.disable();
+    } else if (this.isEditing) {
+      // Save edited profile
+      console.log('Profile saved:', name);
+      this.isEditing = false;
+      this.profileForm.get('profile_name')?.disable();
+    }
+  }
+
+  public tabChanged(event: any): void {
+    const tabName = event?.tab?.ariaLabel;
+    this.tabNameStr = tabName
+    this.tabName = tabName
+
+    switch (tabName) {
+      case 'Airline':
+        this.tab = 'Airline';
+        break;
+
+      case 'Bus':
+        this.tab = 'Bus';
+        this.isSecound = false
+        break;
+
+      case 'Hotel':
+        this.tab = 'Hotel';
+        this.isThird = false
+        break;
+
+      case 'Insurance':
+        this.tab = 'Insurance';
+        this.isFourth = false
+        break;
+    }
   }
 
   Close(): void {

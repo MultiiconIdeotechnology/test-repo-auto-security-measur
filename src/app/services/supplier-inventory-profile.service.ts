@@ -31,7 +31,7 @@ export class SupplierInventoryProfileService {
   //     filter: filter,
   //   });
   // }
-  
+
   getSupplierFareTypeCombo(supplier_id: string, filter?: string, is_active: boolean = true): Observable<any[]> {
     return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
       supplier_id: supplier_id,
@@ -60,5 +60,11 @@ export class SupplierInventoryProfileService {
 
   deleteSupplierInventoryProfileRecord(id: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/delete', { id: id });
+  }
+
+
+
+  setDefaultSupplierInventoryProfile(id: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/setDefaultSupplierInventoryProfile', { id: id });
   }
 }

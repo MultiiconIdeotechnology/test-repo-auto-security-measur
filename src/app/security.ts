@@ -160,7 +160,7 @@ export const category_name = {
     document: 'Document',
     applyPremission: 'Apply Premission',
     status: 'Status',
-    rejected:'Reject',
+    rejected: 'Reject',
     audit_unaudit: 'Audit/Unaudit',
     publish_unpublish: 'Publish/Unpublish',
     online_offline: 'Online/Offline',
@@ -322,17 +322,18 @@ export const module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
-    tech_business_summary:'Tech Business Summary',
+    tech_business_summary: 'Tech Business Summary',
     tech_rm_monthly_report: 'RM Monthly Anaytics',
-    tech_product_monthly_report:'Product Monthly Analytics',
+    tech_product_monthly_report: 'Product Monthly Analytics',
     cab_inventory: 'Cab',
-    fare_type_mapper:'Fare Type Mapper',
-    
+    fare_type_mapper: 'Fare Type Mapper',
+
 
     // account2.0
     purchase_register_2: 'Purchase Register-2',
+    supplier_inventory_profile: 'Supplier Inventory Profile',
 
-    
+
 };
 
 export const filter_module_name = {
@@ -427,7 +428,7 @@ export const filter_module_name = {
     airline_report: "airline_report",
     campaign_summary: "campaign_summary",
     campaign_register: "campaign_register",
-    campaign_summary_report:'campaign_summary_report',
+    campaign_summary_report: 'campaign_summary_report',
     report_sales_agent_summary: "report_sales_agent_summary",
     products_collection: 'products_collection',
     products_receipts: 'products_receipts',
@@ -438,14 +439,14 @@ export const filter_module_name = {
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
     tech_business_summary: 'tech_business_summary',
-    tech_rm_monthly_report:'tech_rm_monthly_report',
-    tech_product_monthly_report:'tech_product_monthly_report',
-    supplier_wallet_balance:'supplier_wallet_balance',
+    tech_rm_monthly_report: 'tech_rm_monthly_report',
+    tech_product_monthly_report: 'tech_product_monthly_report',
+    supplier_wallet_balance: 'supplier_wallet_balance',
     sent_mail: "sent_mail",
 
     //report account 2.0
     purchase_register_bonton: 'purchase_register_bonton',
-    purchase_register_bonton_dmcc:'purchase_register_bonton_dmcc',
+    purchase_register_bonton_dmcc: 'purchase_register_bonton_dmcc',
 
     //Inventory
     activity: "activity",
@@ -833,8 +834,13 @@ export const PSPPermissions = {
 }
 
 export const fareTypeMApperPermissions = {
-   commonFareTypeTabTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab', category_name: category_name.view },
-   deleteFareTypePermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab Delete', category_name: category_name.delete },
-   supplierFareTypeMapperTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Supplier Fare Type Mapper Tab', category_name: category_name.view },
-   
+    commonFareTypeTabTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab', category_name: category_name.view },
+    deleteFareTypePermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Common Fare Type Tab Delete', category_name: category_name.delete },
+    supplierFareTypeMapperTabPermissions: { module_name: module_name.fare_type_mapper, group_name: group_name.listingPage, operation_type: 'Supplier Fare Type Mapper Tab', category_name: category_name.view },
+
 }
+
+export const supplierInventoryProfilePermissions = {
+    setasDefaultPermissions: { module_name: module_name.supplier_inventory_profile, group_name: group_name.listingPage, operation_type: 'Set as Default', category_name: category_name.action },
+}
+
