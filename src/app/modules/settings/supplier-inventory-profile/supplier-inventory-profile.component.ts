@@ -86,12 +86,11 @@ export class SupplierInventoryProfileComponent extends BaseListingComponent {
 
     this._subs = this.sidebarDialogService.onCloseSubjectChange().subscribe(res => {
       console.log(res);
-      if (res) {
-        if (res?.id) {
-          const rec = this.dataList.find(x => x.id == res.id);
-          if (rec)
-            Object.assign(rec, res)
-        } else {
+      if (res && res?.id) {
+        const rec = this.dataList.find(x => x.id == res.id);
+        if (rec)
+          Object.assign(rec, res)
+        else {
           this.dataList.push(res);
           this.paginator.length = this.paginator.length + 1;
         }

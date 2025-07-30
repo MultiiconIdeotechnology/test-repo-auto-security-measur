@@ -19,7 +19,7 @@
                             (selectionChange)="getSupplierFareTypeCombo('', $event.value)">
                             <mat-option>
                                 <ngx-mat-select-search placeholderLabel="Search"
-                                    noEntriesFoundLabel="'no matching found'" [formControlName]="'sup_type'">
+                                    noEntriesFoundLabel="'no matching found'" formControlName="'sup_type'">
                                 </ngx-mat-select-search>
                             </mat-option>
                             <mat-option *ngFor="let ct of supplierList" [value]="ct.id">
@@ -27,21 +27,7 @@
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
-
-                    <!-- Supplier Fare Type Combo -->
-                    <!-- <mat-form-field class="flex-grow">
-                        <mat-label>Supplier Fare Type</mat-label>
-                        <mat-select required formControlName="supplier_fare_type">                           
-                            <mat-option>
-                                <ngx-mat-select-search placeholderLabel="Search"
-                                    noEntriesFoundLabel="'no matching found'" [formControlName]="'supplier_fare_type_filter'">
-                                </ngx-mat-select-search>
-                            </mat-option>
-                            <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct.class_of_service">
-                                <span>{{ ct.class_of_service }}</span>
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field> -->
+                  
                     
                     <!-- Supplier Fare Type Combo with Autocomplete -->
                     <mat-form-field class="flex-grow">

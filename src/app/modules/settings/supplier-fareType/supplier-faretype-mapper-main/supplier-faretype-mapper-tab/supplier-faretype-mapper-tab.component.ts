@@ -50,9 +50,9 @@ export class SupplierFaretypeMapperTabComponent extends BaseListingComponent {
 
   Mainmodule: any;
   module_name = module_name.fare_type_mapper;
-  filter_table_name = filter_module_name.fare_type_mapper_common_fare_type;
+  filter_table_name = filter_module_name.fare_type_mapper_supplier_fare_type_mapper;
   private settingsUpdatedSubscription: Subscription;
-  cols = [];
+  cols1 = [];
   dataList = [];
   searchInputControlCommonFareType = new FormControl('');
   public _unsubscribeAll: Subject<any> = new Subject<any>();

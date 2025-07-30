@@ -63,7 +63,7 @@
                     <img class="w-5 cursor-pointer ml-1 pt-1" src="assets/icons/column.svg" alt="c">
                 </button>
                 <p-overlayPanel #op1>
-                    <p-multiSelect [options]="cols1" [(ngModel)]="_selectedColumns" optionLabel="header"
+                    <p-multiSelect [options]="cols1" [(ngModel)]="selectedColumns" optionLabel="header"
                         class="overlay-panel" [style]="{'max-width': '220px'}" display="chip"
                         placeholder="Choose Columns" />
                 </p-overlayPanel>
@@ -111,7 +111,7 @@
         <mat-tab label="Supplier" [aria-label]="'Supplier'" *ngIf="getTabsPermission('supplierFareTypeMapper')">
             <ng-container *ngIf="tabNameStr == 'Supplier'">
                 <app-supplier-faretype-mapper-tab #supplierFareTypeMapper
-                    [(isFilterShowSupplierFareType)]="isFilterShowSupplierFareType" [selectedColumns]="_selectedColumns"></app-supplier-faretype-mapper-tab>
+                    [(isFilterShowSupplierFareType)]="isFilterShowSupplierFareType" [selectedColumns]="selectedColumns"></app-supplier-faretype-mapper-tab>
             </ng-container>
         </mat-tab>
 

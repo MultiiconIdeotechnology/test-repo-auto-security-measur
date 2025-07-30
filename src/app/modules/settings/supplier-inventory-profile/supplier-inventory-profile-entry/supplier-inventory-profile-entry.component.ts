@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +22,7 @@ import { ProfileInsuranceComponent } from './profile-insurance/profile-insurance
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { MatDialog } from '@angular/material/dialog';
 import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
+import { EntityService } from 'app/services/entity.service';
 
 @Component({
   selector: 'app-supplier-inventory-profile-entry',
@@ -58,8 +59,10 @@ export class SupplierInventoryProfileEntryComponent {
   tabs = ['Airline', 'Bus', 'Hotel', 'Insurance'];
   activeTab = 'Airline';
   profile_name: string = '';
+  profile_id: string = '';
   type: string;
   selectedRecord: any = null; // store the edit response
+  private _subs: Subscription;
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
@@ -69,9 +72,11 @@ export class SupplierInventoryProfileEntryComponent {
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private supplierInventoryProfileService: SupplierInventoryProfileService,
-
+    private entityService: EntityService,
   ) {
-
+    this._subs = this.entityService.onsupplierInventoryProfile().subscribe(res => {
+      this.profile_id = res;
+    })
   }
 
   ngOnInit(): void {
@@ -94,10 +99,7 @@ export class SupplierInventoryProfileEntryComponent {
           this.title = 'Modify';
           this.profile_name = res?.data?.profile_name
           this.buttonLabel = "Save";
-
           //call get all data apin 
-
-
         }
       }
 
@@ -115,7 +117,13 @@ export class SupplierInventoryProfileEntryComponent {
     //     profile_name: this.profile_name,
     //     entry_date_time : new Date()
     //   }
-    // this.sidebarDialogService.CloseSubject(this.selectedRecord)
+    this.sidebarDialogService.CloseSubject({ id: this.profile_id, profile_name: this.profile_name, entry_date_time: new Date() })
+  }
+
+  ngOnDestroy(): void {
+    if (this._subs) {
+      this._subs.unsubscribe();
+    }
   }
 
 }

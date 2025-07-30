@@ -85,6 +85,7 @@ export class SupplierFaretypeMapperMainComponent implements OnDestroy {
     total = 0;
     record: any;
     _selectedColumns: Column[];
+    selectedColumns: Column[];
 
     cols: Column[] = [
         { field: 'entry_date_time', header: 'Create Date', type: 'date' },

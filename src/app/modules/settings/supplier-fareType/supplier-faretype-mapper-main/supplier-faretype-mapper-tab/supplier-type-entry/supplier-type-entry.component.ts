@@ -92,7 +92,6 @@ export class SupplierTypeEntryComponent {
       sup_type: '',
 
       supplier_fare_type: [null],
-      supplier_fare_type_filter: [''],
 
       bonton_fare_type: [''],
       bonton_fare_type_id: ['']
@@ -115,13 +114,6 @@ export class SupplierTypeEntryComponent {
         this.bontonFareTypeList = this.bontonFareTypeAllList.filter(x => x?.fare_type?.toLowerCase().includes(val));
     })
 
-    // this.formGroup.get('supplier_fare_type_filter').valueChanges.subscribe(res => {
-    //   const val = res?.trim()?.toLowerCase();
-    //   if (!val)
-    //     this.supplierFareTypeList = this.supplierFareTypeAllList;
-    //   else
-    //     this.supplierFareTypeList = this.supplierFareTypeAllList.filter(x => x?.class_of_service?.toLowerCase().includes(val));
-    // })
     this.formGroup.get('supplier_fare_type')?.valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
       .subscribe(val => {
@@ -184,7 +176,6 @@ export class SupplierTypeEntryComponent {
               id: res?.data?.data?.id || '',
               supplier_id: supplierId || '',
               supplier_fare_type: res.data.data.supplier_fare_type || '',
-              supplier_fare_type_filter: res.data.data.supplier_fare_type || '',
               bonton_fare_type_id: bontonFareTypeObj || ''
             });
           }
@@ -249,7 +240,6 @@ export class SupplierTypeEntryComponent {
     this.formGroup?.patchValue({
       id: '',
 
-      supplier_fare_type_filter: '',
       sup_type: '',
 
       supplier_id: '',

@@ -15,12 +15,12 @@
                     <mat-option *ngFor="let ct of supplierList" [value]="ct">
                         <span>{{ ct.company_name }}</span>
                     </mat-option>
-                </mat-select>
+                </mat-select>            
             </mat-form-field>
 
             <mat-form-field class="w-full">
                 <mat-label>User Type</mat-label>
-                <mat-select formControlName="user_type">
+                <mat-select formControlName="user_type" required>
                     <mat-option *ngFor="let type of userType" [value]="type">
                         {{ type }}
                     </mat-option>
@@ -29,7 +29,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Trip Type</mat-label>
-                <mat-select formControlName="trip_type">
+                <mat-select formControlName="trip_type" required>
                     <mat-option *ngFor="let type of tripTypeList" [value]="type">
                         {{ type }}
                     </mat-option>
@@ -38,7 +38,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Route Type</mat-label>
-                <mat-select formControlName="route_type">
+                <mat-select formControlName="route_type" required>
                     <mat-option *ngFor="let type of routeTypeList" [value]="type">
                         {{ type }}
                     </mat-option>
@@ -47,7 +47,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Airline</mat-label>
-                <mat-select multiple required formControlName="airline_id" (selectionChange)="clickOtherRoles($event)">
+                <mat-select multiple required formControlName="airline_id" (selectionChange)="clickOtherRoles($event)" required>
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search"
                             noEntriesFoundLabel="'no matching Airline found'" [formControlName]="'airlineFilter'"
@@ -63,7 +63,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Fare Class</mat-label>
-                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)">
+                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)" required>
                     <mat-option [value]="'All'" (onSelectionChange)="onAllFareClassToggle($event)">
                         All
                     </mat-option>
@@ -76,7 +76,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Fare Type</mat-label>
-                <mat-select formControlName="fare_type">
+                <mat-select formControlName="fare_type" required>
                     <mat-option *ngFor="let fare of fareTypeList" [value]="fare">
                         {{ fare }}
                     </mat-option>
@@ -88,7 +88,7 @@
             <mat-form-field class="flex-grow">
                 <mat-label>Fare Type Class</mat-label>
                 <mat-select multiple required formControlName="fare_type_class"
-                    (selectionChange)="clickOtherFareTypeClass($event)">
+                    (selectionChange)="clickOtherFareTypeClass($event)" required>
                     <!-- [compareWith]="compareWithFareTypeSupplier" -->
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
@@ -106,7 +106,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Fare Type Class Visibility</mat-label>
-                <mat-select formControlName="fare_type_class_visible_type">
+                <mat-select formControlName="fare_type_class_visible_type" required>
                     <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
                         {{ type }}
                     </mat-option>
@@ -118,7 +118,7 @@
             <mat-form-field class="w-full">
                 <mat-label>Airport Codes</mat-label>
                 <mat-select multiple required formControlName="airport_code_id"
-                    (selectionChange)="clickOtherCodes($event)">
+                    (selectionChange)="clickOtherCodes($event)" required>
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching City found'"
                             [formControlName]="'airport_code_filter'">
@@ -134,7 +134,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Airport Codes Visibility</mat-label>
-                <mat-select formControlName="airport_codes_visible_type">
+                <mat-select formControlName="airport_codes_visible_type" required>
                     <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
                         {{ type }}
                     </mat-option>
@@ -143,7 +143,7 @@
 
             <mat-form-field appearance="fill" class="w-full">
                 <mat-label>Stops</mat-label>
-                <mat-select multiple formControlName="stops" (selectionChange)="onStopsChange($event)">
+                <mat-select multiple formControlName="stops" (selectionChange)="onStopsChange($event)" required>
                     <mat-option [value]="'All'" (onSelectionChange)="onSelectAllStops($event)">
                         All
                     </mat-option>
@@ -154,7 +154,7 @@
             </mat-form-field>
 
             <div class="flex flex-row">
-                <mat-checkbox class="example-margin ml-[-8px]" formControlName="is_enable">
+                <mat-checkbox class="example-margin ml-[-8px]" formControlName="is_enable" required>
                     Is Enabled</mat-checkbox>
             </div>
 
@@ -209,14 +209,16 @@
                 <tr>
                     <td class="flex flex-row items-center gap-2">
                         <!-- Edit button -->
-                        
-                          <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm text-blue-500"
-                                 (click)="onEdit(row, rowIndex)"></button>
-     
-                             <!-- Delete button -->
-                             <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
-                                 (click)="onDelete(row)"></button>
-                        
+                        <!-- <button *ngIf="!isAdd" pButton icon="pi pi-pencil"
+                            class="p-button-text p-button-sm text-blue-500" (click)="onGridModify(row, rowIndex)">
+                        </button> -->
+                        <button  *ngIf="!isAdd" pButton icon="pi pi-pencil" class="p-button-text p-button-sm text-blue-500"
+                            (click)="onEdit(row, rowIndex)"></button>
+
+                        <!-- Delete button -->
+                        <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
+                            (click)="onDelete(row)"></button>
+
                     </td>
                     <td>{{ row.supplier_name }}</td>
                     <td>{{ row.user_type }}</td>

@@ -8,17 +8,14 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSidenav } from '@angular/material/sidenav';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { CacheLabel, CacheService } from 'app/services/cache.service';
-import { KycDocumentService } from 'app/services/kyc-document.service';
+import { EntityService } from 'app/services/entity.service';
 import { SupplierInventoryProfileService } from 'app/services/supplier-inventory-profile.service';
-import { SupplierService } from 'app/services/supplier.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { cloneDeep } from 'lodash';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Table } from 'primeng/table';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-profile-airline',
@@ -62,12 +59,16 @@ export class ProfileAirlineComponent implements OnChanges {
   airPortcodeList: any[] = [];
   allAirPortCode: any[] = [];
   currentEditId: string | null = null;
+  currentRecordRespId: string | null = null;
+  recordRespEditId: string | null = null;
   isEdit: boolean = false;
+
   suplier_name: string = '';
   suplier_id: string = '';
 
   dataList: any[] = [];
   allProfiles: any[] = [];
+  sessionInventories: any[] = [];
 
   searchText = '';
   userType: any = ['B2B', 'B2C'];
@@ -89,65 +90,34 @@ export class ProfileAirlineComponent implements OnChanges {
 
   constructor(
     private formBuilder: FormBuilder,
-    private supplierService: SupplierService,
     private supplierInventoryProfileService: SupplierInventoryProfileService,
     private toasterService: ToasterService,
+    private entityService: EntityService,
     private cacheService: CacheService
   ) {
     this.airlineForm = this.formBuilder.group({
       id: [''],
-      supplier_id: [''],
+      supplier_id: ['', Validators.required],
       supplier_name: [''],
       sup_type: [''],
-      fare_type_class: [''],
+      fare_type_class: ['', Validators.required],
       supplier_fare_type_filter: [''],
-      user_type: [''],
-      trip_type: ['',],
-      route_type: [''],
-      airline_id: [''],
+      user_type: ['', Validators.required],
+      trip_type: ['', Validators.required],
+      route_type: ['', Validators.required],
+      airline_id: ['', Validators.required],
       airlineFilter: [''],
-      fare_class: [''],
-      fare_type: [''],
-      fare_type_class_visible_type: [''],
-      airport_code_id: [''],
+      fare_class: ['', Validators.required],
+      fare_type: ['', Validators.required],
+      fare_type_class_visible_type: ['', Validators.required],
+      airport_code_id: ['', Validators.required],
       airport_code_filter: [''],
-      airport_codes_visible_type: [''],
-      stops: [''],
-      is_enable: [true]
+      airport_codes_visible_type: ['', Validators.required],
+      stops: ['', Validators.required],
+      is_enable: true
     });
 
 
-
-
-  }
-  ngOnChanges(changes: SimpleChanges): void {
-    if (this.type === 'edit' && this.record?.id) {
-      this.currentEditId = this.record.id;
-      this.isEdit = true;
-
-      // Then load data and patch
-      this.initializeForm();
-      this.loadRecord(this.currentEditId);
-
-      // Optional: Set profile name
-      if (this.record.profile_name) {
-        this.profile_name = this.record.profile_name;
-      }
-
-    } else if (this.type === 'create') {
-      this.isEdit = false;
-      this.airlineForm.reset();
-      this.dataList = [];
-    }
-  }
-
-
-
-  ngOnInit(): void {
-    this.getSupplierCombo();
-    this.airlineCombo();
-    this.getAirportMstCombo();
-    // this.initializeForm();
 
     this.airlineForm.get('sup_type').valueChanges.subscribe(res => {
       const val = res?.trim()?.toLowerCase();
@@ -181,8 +151,38 @@ export class ProfileAirlineComponent implements OnChanges {
         this.supplierFareTypeList = this.supplierFareTypeAllList.filter(x => x.class_of_service.toLowerCase().includes(val));
     });
 
+
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.type === 'edit' && this.record?.id) {
+      this.currentEditId = this.record.id;
+      this.recordRespEditId = this.record.id;
+      this.isEdit = true;
+
+      // Then load data and patch
+      this.initializeForm();
+      this.loadRecord(this.currentEditId);
+
+    } else if (this.type === 'create') {
+      this.isEdit = false;
+      this.currentRecordRespId = '';
+      this.airlineForm.reset();
+      this.dataList = [];
+    }
+
+    if ((this.type == 'create' || this.type == 'edit')) {
+      this.getSupplierCombo();
+      this.airlineCombo();
+      this.getAirportMstCombo();
+    }
+
   }
 
+
+
+  ngOnInit(): void {
+
+  }
 
 
   initializeForm(): void {
@@ -206,7 +206,7 @@ export class ProfileAirlineComponent implements OnChanges {
       airport_code_filter: [''],
       airport_codes_visible_type: [''],
       stops: [''],
-      is_enable: []
+      is_enable: true
     });
   }
 
@@ -214,32 +214,28 @@ export class ProfileAirlineComponent implements OnChanges {
   loadRecord(requestId: string): void {
     this.supplierInventoryProfileService.getSupplierInventoryProfileRecord(requestId).subscribe(res => {
       const record = res;
-      this.currentEditId = record.id;
-      this.profile_name = record.profile_name;
+      this.currentEditId = this.record.id;
+      // this.profile_name = this.record.profile_name;
 
       const settingsArray = record.settings ? JSON.parse(record.settings) : [];
-      console.log("✅ settingsArray", settingsArray);
-
-      // 🟩 This updates your table grid
+      //  This updates your table grid
       this.dataList = settingsArray;
 
-      console.log("✅ Patched Form:", this.airlineForm.getRawValue());
+      console.log("Patched Form:", this.airlineForm.getRawValue());
     });
   }
 
   onEdit(row: any, index: number): void {
-    debugger;
-    this.isEdit = true;
+    // this.isEdit = true;
     this.editIndex = index;
     this.currentEditId = row.id;
-    this.profile_name = row.profile_name;
-
     this.airlineForm.patchValue({
       supplier_id: {
         id: row.supplier_id,
         company_name: row.supplier_name
       },
       user_type: row.user_type,
+      id: row.id,
       trip_type: row.trip_type,
       route_type: row.route_type,
       airline_id: row.airline || [],
@@ -254,7 +250,6 @@ export class ProfileAirlineComponent implements OnChanges {
 
     this.suplier_id = row.supplier_id;
     this.suplier_name = row.supplier_name;
-
     this.onSupplierChange({ id: row.supplier_id, company_name: row.supplier_name }, row);
   }
 
@@ -278,8 +273,6 @@ export class ProfileAirlineComponent implements OnChanges {
 
       this.getSupplierFareTypeCombo('', supplier.id, () => {
         if (this.isEdit && row?.fare_type_class) {
-          console.log('✅ Fare type combo loaded. Now patching:', row.fare_type_class);
-
           setTimeout(() => {
             this.airlineForm.patchValue({
               fare_type_class: row.fare_type_class
@@ -291,23 +284,6 @@ export class ProfileAirlineComponent implements OnChanges {
   }
 
 
-
-
-
-
-
-  // getSupplierFareTypeCombo(filter: string, supplier_id: string, p0: () => void): void {
-  //   const isEdit = true;
-  //   // this.airlineForm.get('id')?.value?.trim() !== '';
-  //   this.supplierInventoryProfileService.getSupplierFareTypeCombo(supplier_id, filter, isEdit)
-  //     .subscribe({
-  //       next: data => {
-  //         this.supplierFareTypeAllList = cloneDeep(data);
-  //         this.supplierFareTypeList = data;
-  //       }
-  //     });
-  // }
-
   getSupplierFareTypeCombo(filter: string, supplier_id: string, p0?: () => void): void {
     const isEdit = true;
 
@@ -318,7 +294,7 @@ export class ProfileAirlineComponent implements OnChanges {
           this.supplierFareTypeList = data;
 
           if (p0) {
-            p0(); // ✅ call the callback here after data is set
+            p0(); // call the callback here after data is set
           }
         }
       });
@@ -328,15 +304,6 @@ export class ProfileAirlineComponent implements OnChanges {
   compareWith(o1: any, o2: any): boolean {
     return o1 && o2 && o1.id === o2.id;
   }
-
-  // getSupplierFareTypeCombo(filter: string, supplier_id: string): void {
-  //   this.supplierInventoryProfileService.getSupplierFareTypeCombo(supplier_id, filter, (this.airlineForm.get('id').value?.trim() != '' && this.airlineForm.get('id').value != null)).subscribe({
-  //     next: data => {
-  //       this.supplierFareTypeAllList = cloneDeep(data);
-  //       this.supplierFareTypeList = data;
-  //     }
-  //   });
-  // }
 
   airlineCombo(): void {
     this.cacheService.getOrAdd(CacheLabel.getAirlineCombo,
@@ -473,6 +440,7 @@ export class ProfileAirlineComponent implements OnChanges {
     const value = this.AllAirline.filter(x => x.short_code.toLowerCase().includes(val.toLowerCase()))
     this.AirlineList = value;
   }
+
   submit(): void {
     if (this.airlineForm.invalid) {
       this.airlineForm.markAllAsTouched();
@@ -481,15 +449,14 @@ export class ProfileAirlineComponent implements OnChanges {
     }
 
     this.disableBtn = true;
-
-    const profileName = this.profile_name || this.getProfileNameFromList(this.currentEditId);
     const formValue = this.airlineForm.value;
 
-    const inventory = {
+    const newInventory = {
       service: 'Airline',
       supplier_id: this.suplier_id,
       supplier_name: this.suplier_name,
       user_type: formValue.user_type,
+      id: formValue.id,
       trip_type: formValue.trip_type,
       route_type: formValue.route_type,
       airline: formValue.airline_id || [],
@@ -503,59 +470,56 @@ export class ProfileAirlineComponent implements OnChanges {
       is_enable: formValue.is_enable
     };
 
-    let inventories = [inventory];
+    //  Maintain inventory list
+    this.sessionInventories = cloneDeep(this.dataList || []);
+    console.log("index 1", newInventory);
+    if (newInventory?.id) {
+      const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
+      console.log("index", index);
 
-    if (this.currentEditId) {
-      const profile = this.allProfiles.find(p => p.id === this.currentEditId);
-
-      if (profile) {
-        const invIndex = profile.inventories.findIndex(inv => this.isMatchingInventory(inv, inventory));
-        if (invIndex !== -1) {
-          profile.inventories[invIndex] = inventory;
-        } else {
-          profile.inventories.push(inventory);
-        }
-        inventories = [...profile.inventories];
-      }
+      this.sessionInventories[index] = newInventory;
+    } else {
+      this.sessionInventories.push(newInventory);
     }
 
+    //  Add only if it's NOT duplicate (optional)
+
+    this.sessionInventories.forEach((x, index) => {
+      x.id = index + 1;
+    })
+
     const payload = {
-      id: this.currentEditId || '',
-      profile_name: profileName,
+      id: this.isEdit ? this.recordRespEditId : this.currentRecordRespId || '', // If blank, create new
+      profile_name: this.profile_name || '',
       is_default: false,
-      inventories
+      inventories: this.sessionInventories //  Full list of inventories
     };
 
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
-        const id = res?.id || payload.id;
-
+        const id = res?.id;
+        this.currentRecordRespId = res?.id;
+        this.entityService.reisesupplierInventoryProfile(id);
         if (!id) {
-          this.toasterService.showToast('error', 'Invalid response.', 'top-right');
+          this.toasterService.showToast('error', 'Invalid response', 'top-right');
           this.disableBtn = false;
           return;
         }
 
-        const displayRow = this.getDisplayRow(id, profileName, inventory);
+        this.currentEditId = id;
 
-        const index = this.editIndex ?? this.dataList.findIndex(row => row.id === id);
+        //  Show all rows in grid
+        const rows = this.sessionInventories.map(inv =>
+          this.getDisplayRow(id, this.profile_name, inv)
+        );
+        this.dataList = [...rows];
 
-        if (this.isEdit && index !== -1) {
-          this.dataList[index] = displayRow;
-          this.dataList = [...this.dataList]; // ✅ Trigger table update
-        } else {
-          this.dataList.unshift(displayRow); // ✅ New create
-          this.allProfiles.push({
-            id,
-            profile_name: profileName,
-            is_default: false,
-            inventories: [inventory]
-          });
-          this.currentEditId = id;
-        }
+        this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        this.toasterService.showToast('success', 'Saved successfully.', 'top-right');
-        this.resetEditFlags(false);
+        //  Reset form but NOT sessionInventories
+        this.airlineForm.reset();
+        this.resetForm();
+        this.disableBtn = false;
       },
       error: (err) => {
         this.toasterService.showToast('error', err, 'top-right');
@@ -565,15 +529,17 @@ export class ProfileAirlineComponent implements OnChanges {
   }
 
 
+
   getDisplayRow(id: string, profileName: string, inventory: any): any {
     return {
-      id,
-     // profile_id: id,
-    //  profile_name: profileName,
+      // id,
+      // profile_id: id,
+      //  profile_name: profileName,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
       trip_type: inventory.trip_type,
+      id: inventory.id,
       route_type: inventory.route_type,
       airline: inventory.airline || [],
       fare_class: inventory.fare_class || [],
@@ -617,10 +583,10 @@ export class ProfileAirlineComponent implements OnChanges {
   }
 
   resetEditFlags(clearProfileName: boolean = false): void {
-    if (clearProfileName) {
-      //this.profile_name = '';
-     // this.currentEditId = '';
-    }
+    // if (clearProfileName) {
+    //   //this.profile_name = '';
+    //   // this.currentEditId = '';
+    // }
     this.airlineForm.reset();
     this.disableBtn = false;
     this.isEdit = false;
@@ -645,7 +611,7 @@ export class ProfileAirlineComponent implements OnChanges {
       this.dataList.splice(index, 1);
       this.dataList = [...this.dataList]; // trigger change detection
 
-      // ✅ Update localStorage after deletion
+      // Update localStorage after deletion
       localStorage.setItem('airlineProfileDataList', JSON.stringify(this.dataList));
     }
   }
