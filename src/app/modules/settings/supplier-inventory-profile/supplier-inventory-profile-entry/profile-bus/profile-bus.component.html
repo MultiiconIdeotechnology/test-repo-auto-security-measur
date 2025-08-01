@@ -8,7 +8,7 @@
                     (selectionChange)="onSupplierChange($event.value)">
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching found'"
-                            formControlName="'sup_type'">
+                            formControlName="sup_type">
                         </ngx-mat-select-search>
                     </mat-option>
                     <mat-option *ngFor="let ct of supplierList" [value]="ct">
@@ -78,8 +78,9 @@
             </ng-template>
 
             <!-- Body -->
-            <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
-                <tr >
+             
+            <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">              
+                <tr>
                     <td class="flex flex-row items-center gap-2">
                         <!-- Edit button -->
                         <!-- <button *ngIf="!isAdd" pButton icon="pi pi-pencil"
@@ -90,7 +91,7 @@
 
                         <!-- Delete button -->
                         <button pButton icon="pi pi-trash" class="p-button-text p-button-sm text-red-500"
-                            (click)="onDelete(row)"></button>
+                            (click)="onDelete(row,rowIndex)"></button>
 
                     </td>
                     <td>{{ row.supplier_name }}</td>

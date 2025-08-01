@@ -62,9 +62,13 @@ export class SupplierInventoryProfileService {
     return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/delete', { id: id });
   }
 
-
-
   setDefaultSupplierInventoryProfile(id: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/setDefaultSupplierInventoryProfile', { id: id });
   }
+
+  //CreateProfile
+   createProfile(model: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/CreateProfile', model);
+  }
+
 }

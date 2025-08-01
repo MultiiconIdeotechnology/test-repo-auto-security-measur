@@ -19,7 +19,7 @@
                             (selectionChange)="getSupplierFareTypeCombo('', $event.value)">
                             <mat-option>
                                 <ngx-mat-select-search placeholderLabel="Search"
-                                    noEntriesFoundLabel="'no matching found'" formControlName="'sup_type'">
+                                    noEntriesFoundLabel="'no matching found'" formControlName="sup_type">
                                 </ngx-mat-select-search>
                             </mat-option>
                             <mat-option *ngFor="let ct of supplierList" [value]="ct.id">

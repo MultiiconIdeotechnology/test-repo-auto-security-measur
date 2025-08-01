@@ -13,49 +13,39 @@
             <mat-icon svgIcon="close" class="icon-size-6 cursor-pointer ml-4" (click)="Close()">
             </mat-icon>
         </div> -->
-        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
-            <div
-                class="flex items-center justify-between border-b border-gray-300 px-6 pt-12 pb-8 h-16 sticky top-0 z-10">
-
+        <form [formGroup]="profileForm">
+            <div class="flex items-center justify-between border-b border-gray-300 px-6 pt-4 pb-0 sticky top-0 z-10">
                 <div class="flex items-center space-x-4 w-full">
+                    <!-- Static Left Label -->
                     <label class="text-normal font-medium min-w-max mb-4">Profile</label>
 
+                    <!-- Input Field -->
                     <mat-form-field class="w-full max-w-[400px]">
-                        <input matInput type="text" formControlName="profile_name" placeholder="Enter Profile name" />
+                        <input matInput type="text" placeholder="Enter Profile name" formControlName="profile_name" />
                     </mat-form-field>
 
-                    <!-- Add Button -->
-                    <button *ngIf="!isProfileEdit" mat-flat-button color="primary" type="submit"
-                        [disabled]="profileForm.invalid" class="mb-5">
-                        Add
-                    </button>
-
-                    <!-- Edit / Save -->
-                    <ng-container *ngIf="isProfileEdit">
-                        <button *ngIf="!isEditing" mat-stroked-button color="accent" type="button" class="mb-5"
-                            (click)="enableEdit()">
-                            Edit
-                        </button>
-
-                        <button *ngIf="isEditing" mat-flat-button color="primary" type="submit"
-                            [disabled]="profileForm.invalid" class="mb-5">
+                    <!-- Action Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Save Button (used for both Add & Update) -->
+                        <button mat-flat-button color="primary" type="button" class="mb-4" (click)="saveProfile()"
+                            [disabled]="profileForm.invalid || !isEditing">
                             Save
                         </button>
-                    </ng-container>
+
+                        <!-- Edit Icon (only when profile already saved) -->
+                        <button *ngIf="profileId" mat-icon-button color="" aria-label="Edit"
+                            class="mb-4" (click)="enableEditing()">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </div>
+
+
                 </div>
 
-                <!-- Close icon -->
-                <mat-icon svgIcon="close" class="icon-size-6 cursor-pointer ml-4" (click)="Close()">
-                </mat-icon>
+                <!-- Close Icon -->
+                <mat-icon svgIcon="close" class="icon-size-6 cursor-pointer ml-4 mb-4" (click)="Close()"></mat-icon>
             </div>
         </form>
-
-
-
-
-
-
-
 
         <!-- Tab Group -->
         <div class="flex flex-col flex-auto min-w-0 overflow-hidden">
@@ -65,7 +55,9 @@
                 <mat-tab label="Airline" [aria-label]="'Airline'">
                     <div class="p-5">
                         <app-profile-airline *ngIf="tabNameStr == 'Airline'" #profileAirlineComponent [type]="type"
-                            [record]="selectedRecord" [profile_name]="profile_name"
+                            [record]="selectedRecord" [createdProfile]="createdProfile"
+                            [isFormDisabled]="!createdProfile?.id" [profile_name]="profile_name"
+                            [inventoryList]="groupedInventories['Airline']"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-airline>
                     </div>
                 </mat-tab>
@@ -73,7 +65,8 @@
                 <mat-tab label="Bus" [aria-label]="'Bus'">
                     <div class="p-5">
                         <app-profile-bus *ngIf="tabNameStr == 'Bus'" #profileBusComponent [type]="type"
-                            [record]="selectedRecord" [profile_name]="profile_name"
+                            [record]="selectedRecord" [profile_name]="profile_name" [createdProfile]="createdProfile"
+                            [isFormDisabled]="!createdProfile?.id" [inventoryList]="groupedInventories['Bus']"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-bus>
                     </div>
                 </mat-tab>
@@ -82,6 +75,8 @@
                     <div class="p-5">
                         <app-profile-hotel *ngIf="tabNameStr == 'Hotel'" #profileHotelComponent [type]="type"
                             [record]="selectedRecord" [profile_name]="profile_name"
+                            [inventoryList]="groupedInventories['Hotel']" [createdProfile]="createdProfile"
+                            [isFormDisabled]="!createdProfile?.id"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-hotel>
                     </div>
                 </mat-tab>
@@ -90,6 +85,8 @@
                     <div class="p-5">
                         <app-profile-insurance *ngIf="tabNameStr == 'Insurance'" #profileInsuranceComponent
                             [type]="type" [record]="selectedRecord" [profile_name]="profile_name"
+                            [inventoryList]="groupedInventories['Insurance']" [createdProfile]="createdProfile"
+                            [isFormDisabled]="!createdProfile?.id"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-insurance>
                     </div>
                 </mat-tab>

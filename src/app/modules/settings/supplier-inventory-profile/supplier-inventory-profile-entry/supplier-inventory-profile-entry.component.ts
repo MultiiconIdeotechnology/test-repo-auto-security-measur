@@ -51,7 +51,7 @@ import { EntityService } from 'app/services/entity.service';
 export class SupplierInventoryProfileEntryComponent {
   @ViewChild('settingsDrawer') settingsDrawer: MatSidenav;
 
-  @ViewChild('profileAirlineComponent') profileAirlineComponent: ProfileAirlineComponent;
+  @ViewChild('profileAirlineComponent') profileAirlineComponent!: ProfileAirlineComponent;
   @ViewChild('profileBusComponent') profileBusComponent: ProfileBusComponent;
   @ViewChild('profileHotelComponent') profileHotelComponent: ProfileHotelComponent;
   @ViewChild('profileInsuranceComponent') profileInsuranceComponent: ProfileInsuranceComponent;
@@ -76,13 +76,28 @@ export class SupplierInventoryProfileEntryComponent {
   private _subs: Subscription;
   profileForm: FormGroup;
   isProfileEdit: boolean = false;
-  isEditing: boolean = false
+  isEditing: boolean = true;
+  createdProfile: any = {};
+  profileId: string = '';
+  isLoading: boolean = false;
+  
+
+  groupedInventories: {
+    Airline: any[],
+    Bus: any[],
+    Hotel: any[],
+    Insurance: any[]
+  } = {
+      Airline: [],
+      Bus: [],
+      Hotel: [],
+      Insurance: []
+    };
+
 
   constructor(
     private sidebarDialogService: SidebarCustomModalService,
-    private _filterService: CommonFilterService,
-    private dataManagerService: DataManagerService,
-    private alertService: ToasterService,
+    private toasterService: ToasterService,
     private conformationService: FuseConfirmationService,
     private matDialog: MatDialog,
     private supplierInventoryProfileService: SupplierInventoryProfileService,
@@ -96,8 +111,10 @@ export class SupplierInventoryProfileEntryComponent {
 
   ngOnInit(): void {
 
-     this.profileForm = this.formBuilder.group({
-      profile_name: ['', Validators.required]
+    this.profileForm = this.formBuilder.group({
+      profile_name: ['', Validators.required],
+      is_default: [false], // or true if needed
+      id: ['']
     });
 
     // subscribing to modalchange on create and modify
@@ -105,48 +122,121 @@ export class SupplierInventoryProfileEntryComponent {
       if (res) {
         if (res['type'] == 'create') {
           // this.resetForm();
+          // this.type = 'create'
+          // 
+          // this.title = 'Create';
+          // this.profile_name = '';
+          // this.buttonLabel = "Create";
+          this.profileForm.reset();
           this.type = 'create'
           this.settingsDrawer.open();
-          this.title = 'Create';
-          this.profile_name = '';
-          this.buttonLabel = "Create";
+         this.profileForm.get('profile_name')?.enable();
+          this.isEditing = true;
+          this.profileId = '';
+          this.createdProfile = {};
         } else if (res['type'] == 'edit') {
-          this.type = 'edit'
+          this.type = 'edit';
           this.selectedRecord = res?.data;
-          console.log("main-modify", res);
-          this.settingsDrawer.open();
+          this.createdProfile = res?.data;
+          this.profileId = res?.data?.id || '';
           this.title = 'Modify';
-          this.profile_name = res?.data?.profile_name
-          this.buttonLabel = "Save";
-          //call get all data apin 
+          this.buttonLabel = 'Save';
+          this.loadRecord();
+          this.settingsDrawer.open();
+
+          // Patch form with profile data
+          this.profileForm.patchValue({
+            profile_name: this.createdProfile.profile_name || '',
+            id: this.profileId,
+            is_default: this.createdProfile.is_default || false
+          });
+
+          //  Disable profile name field initially (until "Edit" is clicked)
+          //  this.profileForm.get('profile_name')?.disable();
+          //this.isEditing = false;
         }
+        // else if (res['type'] == 'edit') {
+        //   this.type = 'edit'
+        //   this.selectedRecord = res?.data;
+        //   console.log("main-modify", res);
+        //   this.settingsDrawer.open();
+        //   this.title = 'Modify';
+        //   this.profile_name = this.createdProfile.profile_name
+        //   console.log("res?.data?",res?.data);
+
+        //   this.buttonLabel = "Save";
+        //   //call get all data apin 
+        // }
       }
 
     });
 
   }
 
-  enableEdit(): void {
-    this.isEditing = true;
-    this.profileForm.get('profile_name')?.enable(); // allow editing
+  saveProfile() {
+    if (this.profileForm.invalid) {
+      this.profileForm.markAllAsTouched();
+      this.toasterService.showToast('error', 'Please fill all required fields.', 'top-right');
+      return;
+    }
+    this.isLoading = true;
+    const payload = {
+      ...this.profileForm.value,
+      id: this.profileId || '',
+      is_default: false,
+    };
+
+
+    this.supplierInventoryProfileService.createProfile(payload).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.profileId = res.id;
+        this.createdProfile = res;
+        this.isEditing = false;
+        this.profileForm.get('profile_name')?.disable();
+      },
+      error: (err) => {
+        console.error('Save failed:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  saveProfile(): void {
-    if (this.profileForm.invalid) return;
+  enableEditing() {
+    this.isEditing = true;
+    this.profileForm.get('profile_name')?.enable();
+  }
 
-    const name = this.profileForm.value.profile_name;
-    if (!this.isProfileEdit) {
-      // Add profile
-      this.isProfileEdit = true;
-      console.log('Profile added:', name);
-      this.profileForm.get('profile_name')?.disable();
-    } else if (this.isEditing) {
-      // Save edited profile
-      console.log('Profile saved:', name);
-      this.isEditing = false;
-      this.profileForm.get('profile_name')?.disable();
+  ngAfterViewInit(): void {
+    // Disable child form if profile is created
+    if (this.createdProfile?.id) {
+      this.profileAirlineComponent.enableForm();
     }
   }
+
+  loadRecord(): void {
+    this.supplierInventoryProfileService.getSupplierInventoryProfileRecord(this.profileId).subscribe(res => {
+      this.createdProfile = res;
+
+      this.profileForm.patchValue({
+        profile_name: res.profile_name
+      });
+
+      const settingsStr = res.settings || '[]';
+      const settings = JSON.parse(settingsStr);
+
+      // Group inventories by service
+      this.groupedInventories = {
+        Airline: settings.filter(x => x.service === 'Airline'),
+        Bus: settings.filter(x => x.service === 'Bus'),
+        Hotel: settings.filter(x => x.service === 'Hotel'),
+        Insurance: settings.filter(x => x.service === 'Insurance')
+      };
+    });
+  }
+
+
+
 
   public tabChanged(event: any): void {
     const tabName = event?.tab?.ariaLabel;
@@ -177,6 +267,8 @@ export class SupplierInventoryProfileEntryComponent {
 
   Close(): void {
     this.settingsDrawer.close()
+     this.isEditing = false;
+    // this.profileForm.reset();
     // console.log(this.selectedRecord)
     // if (this.selectedRecord)
     //   this.selectedRecord.profile_name = this.profile_name;
@@ -185,7 +277,7 @@ export class SupplierInventoryProfileEntryComponent {
     //     profile_name: this.profile_name,
     //     entry_date_time : new Date()
     //   }
-    this.sidebarDialogService.CloseSubject({ id: this.profile_id, profile_name: this.profile_name, entry_date_time: new Date() })
+    this.sidebarDialogService.CloseSubject({ id: this.createdProfile.id, profile_name: this.createdProfile.profile_name, entry_date_time: new Date() })
   }
 
   ngOnDestroy(): void {

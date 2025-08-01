@@ -43,9 +43,11 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   @Input() profile_name: string = '';
   @Input() type: string;
   @Input() record: any;
+  @Input() createdProfile: any;
   @Output() closeDrawer = new EventEmitter<void>();
   @ViewChild('tableRef') tableRef!: Table;
   airlineForm: FormGroup;
+  @Input() inventoryList: any[] = [];
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -70,6 +72,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   dataList: any[] = [];
   allProfiles: any[] = [];
   sessionInventories: any[] = [];
+  profileData: any[] = [];
 
   searchText = '';
   userType: any = ['B2B', 'B2C'];
@@ -158,26 +161,34 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
 
   ngOnChanges(changes: SimpleChanges): void {
+    if ((this.type == 'create' || this.type == 'edit')) {
+      this.getSupplierCombo();
+      this.airlineCombo();
+      this.getAirportMstCombo();
+    }
+
+
     if (this.type === 'edit' && this.record?.id) {
       this.currentEditId = this.record.id;
       this.recordRespEditId = this.record.id;
       this.isEdit = true;
-     
+
       this.initializeForm();
-      this.loadRecord(this.currentEditId);
+      // this.loadRecord(this.currentEditId);
+
+      if (this.inventoryList?.length) {
+        this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
+      }
 
     } else if (this.type === 'create') {
       this.airlineForm.reset();
       this.dataList = [];
       this.isEdit = false;
       this.currentRecordRespId = '';
+      this.recordRespEditId = '';
     }
 
-    if ((this.type == 'create' || this.type == 'edit')) {
-      this.getSupplierCombo();
-      this.airlineCombo();
-      this.getAirportMstCombo();
-    }
+
 
   }
 
@@ -191,7 +202,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   initializeForm(): void {
     this.airlineForm = this.formBuilder.group({
       id: [''],
-     // profile_name: [''],
+      // profile_name: [''],
       supplier_id: [''],
       supplier_name: [''],
       sup_type: [''],
@@ -380,26 +391,26 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   //Fare Type class
-  clickOtherFareTypeClass(event?): void {
-    if (event.source.value === 'All') return;
-
-    const allSelected = this.airlineForm.get('fare_type_class').value.find(x => x == 'All');
-    if (allSelected) {
-      const updatedClients = this.airlineForm.get('fare_type_class').value.filter(x => x !== 'All');
-      this.airlineForm.get('fare_type_class').patchValue(updatedClients, { emitEvent: false });
-    }
-  }
-
   clickAllFarTypeClass(event: any): void {
     if (event.source.value !== 'All') return;
 
-    const all = event.source.selected;
+    const isChecked = event.source.selected;
 
-    if (all) {
-      const allValues = this.supplierFareTypeList.map(x => x.class_of_service);
-      this.airlineForm.get('fare_type_class').patchValue(['All', ...allValues], { emitEvent: false });
-    } else {
-      this.airlineForm.get('fare_type_class').patchValue([], { emitEvent: false });
+    const allValues = this.supplierFareTypeList.map(x => x.class_of_service);
+
+    this.airlineForm.get('fare_type_class').patchValue(
+      isChecked ? allValues : [],
+      { emitEvent: false }
+    );
+  }
+
+  clickOtherFareTypeClass(event?: any): void {
+    const selected = this.airlineForm.get('fare_type_class').value;
+
+    // If 'All' is still in list somehow, remove it
+    if (selected.includes('All')) {
+      const cleaned = selected.filter(x => x !== 'All');
+      this.airlineForm.get('fare_type_class').patchValue(cleaned, { emitEvent: false });
     }
   }
 
@@ -408,7 +419,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
   onAllFareClassToggle(event: any): void {
     if (event.source.selected) {
-      this.airlineForm.get('fare_class')?.patchValue([...this.fareClassList], { emitEvent: false });
+      this.airlineForm.get('fare_class')?.patchValue(['All',...this.fareClassList], { emitEvent: false });
     } else {
       this.airlineForm.get('fare_class')?.patchValue([], { emitEvent: false });
     }
@@ -452,7 +463,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       return;
     }
 
-    //this.disableBtn = true;
+    this.disableBtn = true;
     const formValue = this.airlineForm.value;
 
     const newInventory = {
@@ -476,8 +487,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     //  Maintain inventory list
     this.sessionInventories = cloneDeep(this.dataList || []);
-    console.log("this.sessionInventories",this.sessionInventories);
-    
+    console.log("this.sessionInventories", this.sessionInventories);
+
     console.log("index 1", newInventory);
     if (newInventory?.id) {
       const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
@@ -493,20 +504,29 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       x.id = index + 1;
     })
 
+    // const storedDataStr = localStorage.getItem('airlineProfileDataList') || '[]';
+    // const storedData = JSON.parse(storedDataStr);
+
+    // console.log("storedData",storedData);
+
     const payload = {
-      id: this.isEdit ? this.recordRespEditId : this.currentRecordRespId || '', // If blank, create new
-      profile_name: this.profile_name || '',
+      // id: this.isEdit ? this.recordRespEditId : this.currentRecordRespId || '', // If blank, create new
+      id: this.createdProfile?.id,
+      profile_name: this.createdProfile.profile_name || '',
       is_default: false,
       inventories: this.sessionInventories //  Full list of inventories
     };
 
     console.log("paylaod airline", payload);
-    
-   
+
+
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
         const id = res?.id;
         this.currentRecordRespId = res?.id;
+        this.profileData = JSON.parse(res?.settings);
+        //localStorage.setItem('airlineProfileDataList', JSON.stringify(this.profileData));
+        console.log("this.profileData", this.profileData);
         this.entityService.reisesupplierInventoryProfile(id);
         if (!id) {
           this.toasterService.showToast('error', 'Invalid response', 'top-right');
@@ -517,8 +537,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
         this.currentEditId = id;
 
         //  Show all rows in grid
-        const rows = this.sessionInventories.map(inv =>
-          this.getDisplayRow(id, this.profile_name, inv)
+        const rows = this.profileData.map(inv =>
+          // this.getDisplayRow(id, this.profile_name, inv)
+          this.getDisplayRow(inv)
         );
         this.dataList = [...rows];
 
@@ -526,7 +547,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
         //  Reset form but NOT sessionInventories
         this.airlineForm.reset();
-        this.resetForm();
+        //this.resetForm();
         this.disableBtn = false;
       },
       error: (err) => {
@@ -536,14 +557,29 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     });
   }
 
+  disableForm(): void {
+    this.airlineForm.disable();
+  }
+
+  enableForm(): void {
+    this.airlineForm.enable();
+  }
+
+  @Input() set isFormDisabled(value: boolean) {
+    if (value) {
+      this.airlineForm.disable();
+    } else {
+      this.airlineForm.enable();
+    }
+  }
 
 
-  getDisplayRow(id: string, profileName: string, inventory: any): any {
+  getDisplayRow(inventory: any): any {
     return {
       // id,
       // profile_id: id,
       //  profile_name: profileName,
-      service:inventory.service,
+      service: inventory.service,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
@@ -559,10 +595,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       airport_codes_visible_type: inventory.airport_codes_visible_type,
       stops: inventory.stops || [],
       is_enable: inventory.is_enable,
-      isEnable: inventory.is_enable,
-      supplier: inventory.supplier_name,
-      usertype: inventory.user_type,
-      triptype: inventory.trip_type
+      // isEnable: inventory.is_enable,
+      // supplier: inventory.supplier_name,
+      // usertype: inventory.user_type,
+      // triptype: inventory.trip_type
     };
   }
 
@@ -602,28 +638,45 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     this.editIndex = -1;
   }
 
-  resetForm(): void {
-    this.airlineForm.reset();
-    this.airlineForm.patchValue({
-      is_enable: false,
-      airline_id: [],
-      fare_class: [],
-      airport_code_id: [],
-      stops: []
+  // resetForm(): void {
+  //   this.airlineForm.reset();
+  //   this.airlineForm.patchValue({
+  //     is_enable: true,
+  //     airline_id: [],
+  //     fare_class: [],
+  //     airport_code_id: [],
+  //     stops: []
+  //   });
+  // }
+
+
+  onDelete(row: any, rowIndex: number): void {
+
+    this.dataList.splice(rowIndex, 1);
+    this.dataList = [...this.dataList];
+    const inventories = this.dataList.map(item => {
+      return {
+        ...item,
+      };
+    });
+
+    const payload = {
+      id: this.createdProfile?.id || '',
+      profile_name: this.createdProfile.profile_name,
+      is_default: false,
+      inventories: inventories
+    };
+
+    this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
+      next: (res) => {
+        this.toasterService.showToast('success', 'Record deleted successfully.', 'top-right');
+      },
+      error: (err) => {
+        this.toasterService.showToast('error', 'Failed to update profile after deletion.', 'top-right');
+      }
     });
   }
 
-
-  onDelete(row: any): void {
-    const index = this.dataList.indexOf(row);
-    if (index !== -1) {
-      this.dataList.splice(index, 1);
-      this.dataList = [...this.dataList]; // trigger change detection
-
-      // Update localStorage after deletion
-      localStorage.setItem('airlineProfileDataList', JSON.stringify(this.dataList));
-    }
-  }
 
 
   getSupplierNameById(id: number | string): string {
@@ -631,12 +684,12 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     return supplier ? supplier.company_name : '';
   }
 
-onRefresh(): void {
-  if (this.currentEditId) {
-    this.loadRecord(this.currentEditId);
-  } else {
-    console.warn('No record ID to refresh');
+  onRefresh(): void {
+    if (this.currentEditId) {
+      this.loadRecord(this.currentEditId);
+    } else {
+      console.warn('No record ID to refresh');
+    }
   }
-}
 
 }

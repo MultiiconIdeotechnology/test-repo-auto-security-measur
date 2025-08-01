@@ -43,9 +43,12 @@ export class ProfileBusComponent extends BaseListingComponent {
   @Input() profile_name: string = '';
   @Input() type: string;
   @Input() record: any;
+  @Input() createdProfile: any;
   @Output() closeDrawer = new EventEmitter<void>();
   @ViewChild('tableRef') tableRef!: Table;
   airlineForm: FormGroup;
+  @Input() inventoryList: any[] = [];
+  
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -70,6 +73,7 @@ export class ProfileBusComponent extends BaseListingComponent {
   dataList: any[] = [];
   allProfiles: any[] = [];
   sessionInventories: any[] = [];
+  profileData: any[] = [];
 
   searchText = '';
   userType: any = ['B2B', 'B2C'];
@@ -118,6 +122,22 @@ export class ProfileBusComponent extends BaseListingComponent {
 
   }
 
+  disableForm(): void {
+    this.airlineForm.disable();
+  }
+
+  enableForm(): void {
+    this.airlineForm.enable();
+  }
+
+  @Input() set isFormDisabled(value: boolean) {
+    if (value) {
+      this.airlineForm.disable();
+    } else {
+      this.airlineForm.enable();
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (this.type === 'edit' && this.record?.id) {
       this.currentEditId = this.record.id;
@@ -126,7 +146,10 @@ export class ProfileBusComponent extends BaseListingComponent {
 
       // Then load data and patch
       this.initializeForm();
-      this.loadRecord(this.currentEditId);
+      //this.loadRecord(this.currentEditId);
+      if (this.inventoryList?.length) {
+        this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
+      }
 
     } else if (this.type === 'create') {
       this.isEdit = false;
@@ -252,17 +275,25 @@ export class ProfileBusComponent extends BaseListingComponent {
       x.id = index + 1;
     })
 
+    //const storedDataStr = localStorage.getItem('airlineProfileDataList') || '[]';
+    //const storedData = JSON.parse(storedDataStr);
+
     const payload = {
-      id: this.isEdit ? this.recordRespEditId : this.currentRecordRespId || '', // If blank, create new
-      profile_name: this.profile_name || '',
+      id: this.createdProfile?.id, // If blank, create new
+      profile_name: this.createdProfile.profile_name,
       is_default: false,
       inventories: this.sessionInventories //  Full list of inventories
     };
+
 
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
         const id = res?.id;
         this.currentRecordRespId = res?.id;
+        this.profileData = JSON.parse(res?.settings);
+        //  localStorage.setItem('airlineProfileDataList', JSON.stringify(this.profileData));
+        // console.log("this.profileData", this.profileData);
+
         this.entityService.reisesupplierInventoryProfile(id);
         if (!id) {
           this.toasterService.showToast('error', 'Invalid response', 'top-right');
@@ -273,8 +304,8 @@ export class ProfileBusComponent extends BaseListingComponent {
         this.currentEditId = id;
 
         //  Show all rows in grid
-        const rows = this.sessionInventories.map(inv =>
-          this.getDisplayRow(id, this.profile_name, inv)
+        const rows = this.profileData.map(inv =>
+          this.getDisplayRow(inv)
         );
         this.dataList = [...rows];
 
@@ -292,7 +323,7 @@ export class ProfileBusComponent extends BaseListingComponent {
     });
   }
 
-  getDisplayRow(id: string, profileName: string, inventory: any): any {
+  getDisplayRow(inventory: any): any {
     return {
       // id,
       // profile_id: id,
@@ -349,16 +380,33 @@ export class ProfileBusComponent extends BaseListingComponent {
   }
 
 
-  onDelete(row: any): void {
-    const index = this.dataList.indexOf(row);
-    if (index !== -1) {
-      this.dataList.splice(index, 1);
-      this.dataList = [...this.dataList]; // trigger change detection
+  onDelete(row: any, rowIndex: number): void {
 
-      // Update localStorage after deletion
-      localStorage.setItem('airlineProfileDataList', JSON.stringify(this.dataList));
-    }
+    this.dataList.splice(rowIndex, 1);
+    this.dataList = [...this.dataList];
+    const inventories = this.dataList.map(item => {
+      return {
+        ...item,
+      };
+    });
+
+    const payload = {
+      id: this.createdProfile?.id || '',
+      profile_name: this.createdProfile.profile_name,
+      is_default: false,
+      inventories: inventories
+    };
+
+    this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
+      next: (res) => {
+        this.toasterService.showToast('success', 'Record deleted and updated successfully.', 'top-right');
+      },
+      error: (err) => {
+        this.toasterService.showToast('error', 'Failed to update profile after deletion.', 'top-right');
+      }
+    });
   }
+
 
 
   getSupplierNameById(id: number | string): string {
