@@ -10,9 +10,7 @@ import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { DataManagerService } from 'app/services/data-manager.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProfileAirlineComponent } from './profile-airline/profile-airline.component';
@@ -59,7 +57,7 @@ export class SupplierInventoryProfileEntryComponent {
   private destroy$: Subject<any> = new Subject<any>();
   title: string = 'Create Link'
   buttonLabel: string = 'Create';
-
+  selectedTabIndex = 0;
   tabsTitle = 'Settings';
   //tabs = ['Airline', 'Bus', 'Hotel', 'Insurance'];
   profile_name: string = '';
@@ -142,6 +140,8 @@ export class SupplierInventoryProfileEntryComponent {
           this.title = 'Modify';
           this.buttonLabel = 'Save';
           this.loadRecord();
+          this.profileForm.get('profile_name')?.disable();
+          this.isEditing = false;
           this.settingsDrawer.open();
 
           // Patch form with profile data
@@ -268,6 +268,7 @@ export class SupplierInventoryProfileEntryComponent {
   Close(): void {
     this.settingsDrawer.close()
      this.isEditing = false;
+     this.selectedTabIndex = 0;
     // this.profileForm.reset();
     // console.log(this.selectedRecord)
     // if (this.selectedRecord)

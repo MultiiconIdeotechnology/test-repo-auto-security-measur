@@ -82,9 +82,8 @@
                 </mat-select>
             </mat-form-field>
 
-
             <!-- Supplier Fare Type class Combo -->
-            <mat-form-field class="flex-grow">
+            <mat-form-field class="w-full">
                 <mat-label>Fare Type Class</mat-label>
                 <mat-select multiple required formControlName="fare_type_class"
                     (selectionChange)="clickOtherFareTypeClass($event)" required>
@@ -117,11 +116,11 @@
                 <mat-select multiple required formControlName="airport_code_id"
                     (selectionChange)="clickOtherCodes($event)" required>
                     <mat-option>
-                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching City found'"
-                            [formControlName]="'airport_code_filter'">
+                        <ngx-mat-select-search placeholderLabel="Search" noEntriesFoundLabel="'no matching Airport Codes found'"
+                            formControlName="airport_code_filter">
                         </ngx-mat-select-search>
                     </mat-option>
-                    <mat-option value="All" (onSelectionChange)="clickAllCodes($event)">
+                    <mat-option [value]="'All'" (onSelectionChange)="clickAllCodes($event)">
                         <span class="font-normal">All</span>
                     </mat-option>
                     <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id">{{ct.display_name}}</mat-option>
@@ -187,7 +186,7 @@
 
         <!-- Table -->
         
-             <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10, 20, 50]"
+             <p-table #tableRef [value]="dataList"  [dataSource]="dataList"  [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10, 20, 50]"
                  [globalFilterFields]="['supplier_name', 'user_type', 'trip_type']" [scrollable]="true" [scrollHeight]="scrollHeight"
                  [resizableColumns]="true" columnResizeMode="fit" styleClass="p-datatable-sm p-datatable-gridlines">
      

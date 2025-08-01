@@ -188,7 +188,6 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
       //  This updates your table grid
       this.dataList = settingsArray;
 
-      console.log("Patched Form:", this.airlineForm.getRawValue());
     });
   }
 
@@ -255,11 +254,8 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
 
     //  Maintain inventory list
     this.sessionInventories = cloneDeep(this.dataList || []);
-    console.log("index 1", newInventory);
     if (newInventory?.id) {
       const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
-      console.log("index", index);
-
       this.sessionInventories[index] = newInventory;
     } else {
       this.sessionInventories.push(newInventory);
@@ -316,11 +312,11 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
       // id,
       // profile_id: id,
       //  profile_name: profileName,
+      service: inventory.service,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
       id: inventory.id,
-
       is_enable: inventory.is_enable,
       // isEnable: inventory.is_enable,
       // supplier: inventory.supplier_name,
@@ -337,20 +333,6 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
     );
   }
 
-
-  updateDataList(id: string, updatedRow: any): void {
-    const index = this.dataList.findIndex(row => row.id === id);
-    if (index !== -1) {
-      this.dataList[index] = updatedRow;
-      this.dataList = [...this.dataList]; // Trigger grid update
-    }
-  }
-
-  getProfileNameFromList(id: string): string {
-    debugger;
-    const row = this.dataList.find(r => r.id === id);
-    return row?.profile_name;
-  }
 
   resetEditFlags(clearProfileName: boolean = false): void {
     // if (clearProfileName) {

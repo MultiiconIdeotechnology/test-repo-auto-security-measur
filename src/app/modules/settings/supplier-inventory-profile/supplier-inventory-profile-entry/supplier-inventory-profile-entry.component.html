@@ -50,11 +50,11 @@
         <!-- Tab Group -->
         <div class="flex flex-col flex-auto min-w-0 overflow-hidden">
             <mat-tab-group class="custom-tab lead_tab h-full" [animationDuration]="'0'"
-                (selectedTabChange)="tabChanged($event)">
+                (selectedTabChange)="tabChanged($event)" [(selectedIndex)]="selectedTabIndex">
 
                 <mat-tab label="Airline" [aria-label]="'Airline'">
                     <div class="p-5">
-                        <app-profile-airline *ngIf="tabNameStr == 'Airline'" #profileAirlineComponent [type]="type"
+                        <app-profile-airline  #profileAirlineComponent [type]="type"
                             [record]="selectedRecord" [createdProfile]="createdProfile"
                             [isFormDisabled]="!createdProfile?.id" [profile_name]="profile_name"
                             [inventoryList]="groupedInventories['Airline']"
@@ -64,7 +64,7 @@
 
                 <mat-tab label="Bus" [aria-label]="'Bus'">
                     <div class="p-5">
-                        <app-profile-bus *ngIf="tabNameStr == 'Bus'" #profileBusComponent [type]="type"
+                        <app-profile-bus #profileBusComponent [type]="type"
                             [record]="selectedRecord" [profile_name]="profile_name" [createdProfile]="createdProfile"
                             [isFormDisabled]="!createdProfile?.id" [inventoryList]="groupedInventories['Bus']"
                             (closeDrawer)="settingsDrawer.close()"></app-profile-bus>
@@ -73,7 +73,7 @@
 
                 <mat-tab label="Hotel" [aria-label]="'Hotel'">
                     <div class="p-5">
-                        <app-profile-hotel *ngIf="tabNameStr == 'Hotel'" #profileHotelComponent [type]="type"
+                        <app-profile-hotel #profileHotelComponent [type]="type"
                             [record]="selectedRecord" [profile_name]="profile_name"
                             [inventoryList]="groupedInventories['Hotel']" [createdProfile]="createdProfile"
                             [isFormDisabled]="!createdProfile?.id"
@@ -83,7 +83,7 @@
 
                 <mat-tab label="Insurance" [aria-label]="'Insurance'">
                     <div class="p-5">
-                        <app-profile-insurance *ngIf="tabNameStr == 'Insurance'" #profileInsuranceComponent
+                        <app-profile-insurance  #profileInsuranceComponent
                             [type]="type" [record]="selectedRecord" [profile_name]="profile_name"
                             [inventoryList]="groupedInventories['Insurance']" [createdProfile]="createdProfile"
                             [isFormDisabled]="!createdProfile?.id"

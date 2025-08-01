@@ -184,7 +184,6 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       //  This updates your table grid
       this.dataList = settingsArray;
 
-      console.log("Patched Form:", this.airlineForm.getRawValue());
     });
   }
 
@@ -256,10 +255,8 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
 
     //  Maintain inventory list
     this.sessionInventories = cloneDeep(this.dataList || []);
-    console.log("index 1", newInventory);
     if (newInventory?.id) {
       const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
-      console.log("index", index);
 
       this.sessionInventories[index] = newInventory;
     } else {
@@ -317,6 +314,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       // id,
       // profile_id: id,
       //  profile_name: profileName,
+      service: inventory.service,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
@@ -324,10 +322,6 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       id: inventory.id,
       star: inventory.star || [],
       is_enable: inventory.is_enable,
-      // isEnable: inventory.is_enable,
-      // supplier: inventory.supplier_name,
-      // usertype: inventory.user_type,
-      // triptype: inventory.trip_type
     };
   }
 
@@ -339,21 +333,6 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       a.route_type === b.route_type
       // You can extend this if more matching rules are required
     );
-  }
-
-
-  updateDataList(id: string, updatedRow: any): void {
-    const index = this.dataList.findIndex(row => row.id === id);
-    if (index !== -1) {
-      this.dataList[index] = updatedRow;
-      this.dataList = [...this.dataList]; // Trigger grid update
-    }
-  }
-
-  getProfileNameFromList(id: string): string {
-    debugger;
-    const row = this.dataList.find(r => r.id === id);
-    return row?.profile_name;
   }
 
   resetEditFlags(clearProfileName: boolean = false): void {
@@ -410,7 +389,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     if (this.currentEditId) {
       this.loadRecord(this.currentEditId);
     } else {
-      console.warn('No record ID to refresh');
+      console.warn('No record found');
     }
   }
 }

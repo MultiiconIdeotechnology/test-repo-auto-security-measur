@@ -23,6 +23,7 @@ import { Table } from 'primeng/table';
   templateUrl: './profile-bus.component.html',
   styleUrls: ['./profile-bus.component.scss'],
   standalone: true,
+  schemas:[CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     MatSelectModule,
     MatFormFieldModule,
@@ -192,7 +193,6 @@ export class ProfileBusComponent extends BaseListingComponent {
       //  This updates your table grid
       this.dataList = settingsArray;
 
-      console.log("Patched Form:", this.airlineForm.getRawValue());
     });
   }
 
@@ -259,10 +259,8 @@ export class ProfileBusComponent extends BaseListingComponent {
 
     //  Maintain inventory list
     this.sessionInventories = cloneDeep(this.dataList || []);
-    console.log("index 1", newInventory);
     if (newInventory?.id) {
       const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
-      console.log("index", index);
 
       this.sessionInventories[index] = newInventory;
     } else {
@@ -290,10 +288,7 @@ export class ProfileBusComponent extends BaseListingComponent {
       next: (res) => {
         const id = res?.id;
         this.currentRecordRespId = res?.id;
-        this.profileData = JSON.parse(res?.settings);
-        //  localStorage.setItem('airlineProfileDataList', JSON.stringify(this.profileData));
-        // console.log("this.profileData", this.profileData);
-
+      
         this.entityService.reisesupplierInventoryProfile(id);
         if (!id) {
           this.toasterService.showToast('error', 'Invalid response', 'top-right');
@@ -304,7 +299,7 @@ export class ProfileBusComponent extends BaseListingComponent {
         this.currentEditId = id;
 
         //  Show all rows in grid
-        const rows = this.profileData.map(inv =>
+        const rows = this.sessionInventories.map(inv =>
           this.getDisplayRow(inv)
         );
         this.dataList = [...rows];
@@ -328,16 +323,12 @@ export class ProfileBusComponent extends BaseListingComponent {
       // id,
       // profile_id: id,
       //  profile_name: profileName,
+      service: inventory.service,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
       id: inventory.id,
-
       is_enable: inventory.is_enable,
-      // isEnable: inventory.is_enable,
-      // supplier: inventory.supplier_name,
-      // usertype: inventory.user_type,
-      // triptype: inventory.trip_type
     };
   }
 
@@ -349,20 +340,6 @@ export class ProfileBusComponent extends BaseListingComponent {
     );
   }
 
-
-  updateDataList(id: string, updatedRow: any): void {
-    const index = this.dataList.findIndex(row => row.id === id);
-    if (index !== -1) {
-      this.dataList[index] = updatedRow;
-      this.dataList = [...this.dataList]; // Trigger grid update
-    }
-  }
-
-  getProfileNameFromList(id: string): string {
-    debugger;
-    const row = this.dataList.find(r => r.id === id);
-    return row?.profile_name;
-  }
 
   resetEditFlags(clearProfileName: boolean = false): void {
     // if (clearProfileName) {
@@ -418,7 +395,7 @@ export class ProfileBusComponent extends BaseListingComponent {
     if (this.currentEditId) {
       this.loadRecord(this.currentEditId);
     } else {
-      console.warn('No record ID to refresh');
+      console.warn('No record found');
     }
   }
 

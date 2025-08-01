@@ -63,7 +63,7 @@
 
     <!-- Table -->
     <!-- Table -->
-    <p-table #tableRef [value]="dataList" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10, 20, 50]"
+    <p-table #tableRef [value]="dataList"  [dataSource]="dataList" [paginator]="true" [rows]="5"  [rowsPerPageOptions]="[5,10, 20, 50]"
         [globalFilterFields]="['supplier_name', 'user_type']" [scrollable]="true"
         [scrollHeight]="scrollHeight" [resizableColumns]="true" columnResizeMode="fit"
         styleClass="p-datatable-sm p-datatable-gridlines">

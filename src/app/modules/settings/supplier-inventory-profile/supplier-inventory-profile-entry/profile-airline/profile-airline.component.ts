@@ -23,6 +23,7 @@ import { Table } from 'primeng/table';
   templateUrl: './profile-airline.component.html',
   styleUrls: ['./profile-airline.component.scss'],
   standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     MatSelectModule,
     MatFormFieldModule,
@@ -192,12 +193,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
   }
 
-
-
   ngOnInit(): void {
 
   }
-
 
   initializeForm(): void {
     this.airlineForm = this.formBuilder.group({
@@ -235,7 +233,6 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       //  This updates your table grid
       this.dataList = settingsArray;
 
-      console.log("Patched Form:", this.airlineForm.getRawValue());
     });
   }
 
@@ -280,7 +277,6 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
 
   onSupplierChange(supplier: any, row: any = null): void {
-    console.log('onSupplierChange triggered:', supplier, row);
     if (supplier?.id) {
       this.suplier_id = supplier.id;
       this.suplier_name = supplier.company_name;
@@ -391,35 +387,33 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   //Fare Type class
-  clickAllFarTypeClass(event: any): void {
-    if (event.source.value !== 'All') return;
+  clickOtherFareTypeClass(event?): void {
+    if (event.source.value === 'All') return;
 
-    const isChecked = event.source.selected;
-
-    const allValues = this.supplierFareTypeList.map(x => x.class_of_service);
-
-    this.airlineForm.get('fare_type_class').patchValue(
-      isChecked ? allValues : [],
-      { emitEvent: false }
-    );
+    const allSelected = this.airlineForm.get('fare_type_class').value.find(x => x == 'All');
+    if (allSelected) {
+      const updatedClients = this.airlineForm.get('fare_type_class').value.filter(x => x !== 'All');
+      this.airlineForm.get('fare_type_class').patchValue(updatedClients, { emitEvent: false });
+    }
   }
 
-  clickOtherFareTypeClass(event?: any): void {
-    const selected = this.airlineForm.get('fare_type_class').value;
+  clickAllFarTypeClass(event: any): void {
 
-    // If 'All' is still in list somehow, remove it
-    if (selected.includes('All')) {
-      const cleaned = selected.filter(x => x !== 'All');
-      this.airlineForm.get('fare_type_class').patchValue(cleaned, { emitEvent: false });
+    if (event.source.value !== 'All') return;
+
+    const all = event.source.selected;
+
+    if (all) {
+      this.airlineForm.get('fare_type_class').patchValue(['All', ...this.supplierFareTypeList.map(x => x.class_of_service)], { emitEvent: false });
+    } else {
+      this.airlineForm.get('fare_type_class').patchValue([], { emitEvent: false });
     }
   }
 
 
-
-
   onAllFareClassToggle(event: any): void {
     if (event.source.selected) {
-      this.airlineForm.get('fare_class')?.patchValue(['All',...this.fareClassList], { emitEvent: false });
+      this.airlineForm.get('fare_class')?.patchValue(['All', ...this.fareClassList], { emitEvent: false });
     } else {
       this.airlineForm.get('fare_class')?.patchValue([], { emitEvent: false });
     }
@@ -487,12 +481,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     //  Maintain inventory list
     this.sessionInventories = cloneDeep(this.dataList || []);
-    console.log("this.sessionInventories", this.sessionInventories);
 
-    console.log("index 1", newInventory);
     if (newInventory?.id) {
       const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
-      console.log("index", index);
 
       this.sessionInventories[index] = newInventory;
     } else {
@@ -504,11 +495,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       x.id = index + 1;
     })
 
-    // const storedDataStr = localStorage.getItem('airlineProfileDataList') || '[]';
-    // const storedData = JSON.parse(storedDataStr);
-
-    // console.log("storedData",storedData);
-
+  
     const payload = {
       // id: this.isEdit ? this.recordRespEditId : this.currentRecordRespId || '', // If blank, create new
       id: this.createdProfile?.id,
@@ -517,16 +504,15 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       inventories: this.sessionInventories //  Full list of inventories
     };
 
-    console.log("paylaod airline", payload);
+ 
 
 
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
         const id = res?.id;
         this.currentRecordRespId = res?.id;
-        this.profileData = JSON.parse(res?.settings);
+        // this.profileData = JSON.parse(res?.settings);
         //localStorage.setItem('airlineProfileDataList', JSON.stringify(this.profileData));
-        console.log("this.profileData", this.profileData);
         this.entityService.reisesupplierInventoryProfile(id);
         if (!id) {
           this.toasterService.showToast('error', 'Invalid response', 'top-right');
@@ -537,7 +523,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
         this.currentEditId = id;
 
         //  Show all rows in grid
-        const rows = this.profileData.map(inv =>
+        const rows = this.sessionInventories.map(inv =>
           // this.getDisplayRow(id, this.profile_name, inv)
           this.getDisplayRow(inv)
         );
@@ -579,12 +565,12 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       // id,
       // profile_id: id,
       //  profile_name: profileName,
+      id: inventory.id,
       service: inventory.service,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
       trip_type: inventory.trip_type,
-      id: inventory.id,
       route_type: inventory.route_type,
       airline: inventory.airline || [],
       fare_class: inventory.fare_class || [],
@@ -610,21 +596,6 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       a.route_type === b.route_type
       // You can extend this if more matching rules are required
     );
-  }
-
-
-  updateDataList(id: string, updatedRow: any): void {
-    const index = this.dataList.findIndex(row => row.id === id);
-    if (index !== -1) {
-      this.dataList[index] = updatedRow;
-      this.dataList = [...this.dataList]; // Trigger grid update
-    }
-  }
-
-  getProfileNameFromList(id: string): string {
-    debugger;
-    const row = this.dataList.find(r => r.id === id);
-    return row?.profile_name;
   }
 
   resetEditFlags(clearProfileName: boolean = false): void {
@@ -654,6 +625,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     this.dataList.splice(rowIndex, 1);
     this.dataList = [...this.dataList];
+    
     const inventories = this.dataList.map(item => {
       return {
         ...item,
@@ -688,7 +660,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     if (this.currentEditId) {
       this.loadRecord(this.currentEditId);
     } else {
-      console.warn('No record ID to refresh');
+      console.warn('No record found');
     }
   }
 
