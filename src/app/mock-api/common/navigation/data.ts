@@ -833,14 +833,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                       icon: '',
                       link: Routes.reports.campaign_register_path_route
                   },
-                    {
-                        id: 'reports.campaignsummary',
-                        title: 'Campaign Summary',
-                        type: 'basic',
-                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
-                        icon: '',
-                        link: Routes.reports.campaign_summary_path_route
-                    },
+                    // {
+                    //     id: 'reports.campaignsummary',
+                    //     title: 'Campaign Summary',
+                    //     type: 'basic',
+                    //     pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
+                    //     icon: '',
+                    //     link: Routes.reports.campaign_summary_path_route
+                    // },
                      {
                         id: 'reports.campaignsummaryreport',
                         title: 'Campaign Summary Report',
