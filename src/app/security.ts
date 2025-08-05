@@ -245,6 +245,7 @@ export const module_name = {
     markupProfile: 'Markup Profile',
     amendmentRequests: 'Amendment Requests',
     groupInquiry: 'Group Inquiry',
+    airline_block: 'Bookings - Airline Block',
     ledger: 'Agent Ledger',
     payment: 'Payments',
     paymentLink: 'Payment Link',
@@ -283,6 +284,7 @@ export const module_name = {
     inventoryHotel: 'Inventory - Hotel',
     inventoryVisa: 'Inventory - Visa',
     inventoryCab: 'Inventory - Cab',
+    inventoryAirlineBlock: 'Inventory - Airline Block',
     ERPSettings: 'ERP Settings',
     SaleBook: 'Sale Book',
     SalesReturn: 'Sales Return',
@@ -394,7 +396,7 @@ export const filter_module_name = {
     offline_service_booking: "offline_service_booking",
     holiday_lead_service_booking: "holiday_lead",
     cab_lead_service_booking: "cab_lead",
-
+    airline_booking_booking: "airline_booking_booking",
 
     //Report
     agent_balance_register: "agent_balance_register",
@@ -445,6 +447,7 @@ export const filter_module_name = {
     hotel: "hotel",
     visa: "visa",
     cab: "cab",
+    airline_block: "airline_block",
 
     //Hr
     permission_profile: "permission_profile",
@@ -677,6 +680,11 @@ export const forexPermissions = {
     statusPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Status', category_name: category_name.status },
 }
 
+export const bookingAirlineBlockPermissions = {
+    rejectedPermissions: { module_name: module_name.airline_block, group_name: group_name.detailPage, operation_type: 'Reject', category_name: category_name.rejected },
+    statusPermissions: { module_name: module_name.airline_block, group_name: group_name.detailPage, operation_type: 'Status', category_name: category_name.status },
+}
+
 export const bookingsFlightPermissions = {
     importPNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Import PNR', category_name: category_name.entry },
     offlinePNRPermissions: { module_name: module_name.bookingsFlight, group_name: group_name.listingPage, operation_type: 'Offline PNR', category_name: category_name.entry },
@@ -775,6 +783,12 @@ export const inventoryVisaPermissions = {
     visaDocumentsPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Visa Documents', category_name: category_name.view },
     visaChargesPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Visa Charges', category_name: category_name.view },
     specialNotesPermissions: { module_name: module_name.inventoryVisa, group_name: group_name.listingPage, operation_type: 'Special Notes', category_name: category_name.entry },
+}
+
+export const inventoryAirlineBlockPermissions = {
+    publishUnpublishPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
+    viewAirlineBlockPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'View Airline Block', category_name: category_name.view },
+    auditUnauditPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
 }
 
 export const employeePermissions = {

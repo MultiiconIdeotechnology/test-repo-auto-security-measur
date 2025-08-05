@@ -99,7 +99,8 @@ export class SupplierEntryRightComponent {
     'Holidays',
     'Hotel',
     'Insurance',
-    'Visa'
+    'Visa',
+    'Airline Block',
   ]
 
   constructor(
