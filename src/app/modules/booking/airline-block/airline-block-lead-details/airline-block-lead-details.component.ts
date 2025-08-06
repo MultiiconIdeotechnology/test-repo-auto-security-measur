@@ -18,8 +18,8 @@ import { Linq } from 'app/utils/linq';
 import { AirlineBlockService } from 'app/services/airline-block.service';
 import { CommonUtils } from 'app/utils/commonutils';
 import { CompactLayoutComponent } from 'app/layout/layouts/vertical/compact/compact.component';
-import { RejectReasonComponent } from '../reject-reason/reject-reason.component';
 import { bookingAirlineBlockPermissions, messages, Security } from 'app/security';
+import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 
 @Component({
   selector: 'app-airline-block-lead-details',
