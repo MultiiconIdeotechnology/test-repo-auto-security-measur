@@ -232,7 +232,7 @@ export class GlobalSearchComponent {
                     }
 
                     else if (this.bookingRefKey == 'cab_booking') {
-                        if (!Security.hasViewDetailPermission(module_name.bookingsCab)) {
+                        if (!Security.hasViewDetailPermission(module_name.cab_lead)) {
                             return this.alertService.showToast('error', messages.permissionDenied);
                         }
                         this.formGroup.get('searchfilter').patchValue("");

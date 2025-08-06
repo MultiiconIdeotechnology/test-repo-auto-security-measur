@@ -25,6 +25,7 @@ import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { RejectReasonComponent } from 'app/modules/masters/agent/reject-reason/reject-reason.component';
 import { CancellationPolicyComponent } from '../../bus/cancellation-policy/cancellation-policy.component';
 import { CommonUtils } from 'app/utils/commonutils';
+import { bookingsCabPermissions, messages, Security } from 'app/security';
 
 @Component({
   selector: 'app-cab-booking-details',
@@ -103,6 +104,9 @@ export class CabBookingDetailsComponent {
   }
 
   status(record: any, code: any): void {
+    if (!Security.hasPermission(bookingsCabPermissions.statusPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
     const label: string = code == 1 ? 'Cab Completed' : 'Cab Cancelled';
     this.conformationService.open({
       title: label,
@@ -128,7 +132,9 @@ export class CabBookingDetailsComponent {
   }
 
   Rejected(record: any, code: any): void {
-
+    if (!Security.hasPermission(bookingsCabPermissions.rejectedPermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
     this.matDialog.open(RejectReasonComponent, {
       disableClose: true,
       data: record,

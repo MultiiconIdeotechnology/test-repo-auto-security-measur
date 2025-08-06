@@ -14,13 +14,13 @@ export default [
         path: 'details',
         component: CabBookingDetailsComponent,
         canActivate: [AuthGuard],
-        data: { module: 'Cab', group: 'Detail', operation: 'Modify', category: 'Entry' }
+        data: { module: 'Bookings - Cab', group: 'Detail', operation: 'Modify', category: 'Entry' }
     },
     {
         path: 'details/:id',
         component: CabBookingDetailsComponent,
         canActivate: [AuthGuard],
-        data: { module: 'Cab', group: 'Listing', operation: 'View Detail', category: 'View Detail' }
+        data: { module: 'Bookings - Cab', group: 'Listing', operation: 'View Detail', category: 'View Detail' }
     }
 ] as Routes
 

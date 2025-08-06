@@ -225,7 +225,7 @@ export const module_name = {
     hotel: 'Hotel',
     forex: 'Forex',
     holiday_lead: 'Holiday',
-    cab_lead: 'Cab',
+    cab_lead: 'Bookings - Cab',
     sent_mail: 'Sent Mail',
     hotelroom: 'Hotel Room',
     hoteltariff: 'Hotel Tariff',
@@ -275,7 +275,6 @@ export const module_name = {
     bookingsBus: 'Bookings - BUS',
     bookingsHotel: 'Bookings - Hotel',
     bookingsForex: 'Bookings - Forex',
-    bookingsCab: 'Bookings - Cab',
     bookingsHoliday: 'Bookings - Holiday',
     bookingsVisa: 'Bookings - Visa',
     bookingsInsurance: 'Bookings - Visa',
@@ -672,6 +671,11 @@ export const documentPermissions = {
     rejectPermissions: { module_name: module_name.kycdocument, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.audit_unaudit },
 }
 
+export const bookingsCabPermissions = {
+    rejectedPermissions: { module_name: module_name.cab_lead, group_name: group_name.detailPage, operation_type: 'Reject', category_name: category_name.rejected },
+    statusPermissions: { module_name: module_name.cab_lead, group_name: group_name.detailPage, operation_type: 'Status', category_name: category_name.status },
+}
+
 export const forexPermissions = {
     rejectedPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Reject', category_name: category_name.rejected },
     statusPermissions: { module_name: module_name.forex, group_name: group_name.listingPage, operation_type: 'Status', category_name: category_name.status },
@@ -756,7 +760,8 @@ export const inventoryHolidayPermissions = {
 export const inventoryCabPermissions = {
     publishUnpublishPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
     setasPopularPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Set as Popular', category_name: category_name.operation },
-    copyProductPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Copy Product', category_name: category_name.copy },
+    auditUnauditPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
+    deletePermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'Delete Cab', category_name: category_name.delete },
     viewCabPermissions: { module_name: module_name.inventoryCab, group_name: group_name.listingPage, operation_type: 'View Cab', category_name: category_name.view },
 }
 
