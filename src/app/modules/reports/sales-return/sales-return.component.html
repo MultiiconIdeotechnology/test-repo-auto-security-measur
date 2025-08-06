@@ -28,7 +28,8 @@
 
             <!------Common Filter------->
             <button class="ml-4" mat-flat-button [color]="'primary'"
-                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter" [disabled]="isLoading">
+                (click)="_filterService.openDrawer(filter_table_name, primengTable)" matTooltip="Saved Filter"
+                [disabled]="isLoading">
                 <img class="w-6 h-auto cursor-pointer" src="assets/icons/common-filter.svg" alt="">
             </button>
 
@@ -65,7 +66,7 @@
             [showJumpToPageDropdown]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
             [globalFilterFields]="['agentid','agent','supplier', 'complete_date_time', 'amendment_ref_no', 'amendment_type','air_ref_no','pan_numner', 'gst_numner',
             'sup_service_charge', 'bonton_service_charge','refunded_amount','service_charge','tax','net_refund','commission','tds','refundable_price',
-            'commission_2','tds_2','net_commission']" styleClass="p-datatable-gridlines p-datatable-sm">
+            'commission_2','tds_2','net_commission', 'mop']" styleClass="p-datatable-gridlines p-datatable-sm">
             <ng-template pTemplate="header">
                 <tr>
                     <th class="min-w-[130px] dark:bg-[#1e293b]" pSortableColumn="agentid" pResizableColumn
@@ -152,12 +153,14 @@
                     <th pSortableColumn="cashback_tds" pResizableColumn>
                         Cashback TDS<p-sortIcon field="cashback_tds" />
                     </th>
+                    <th pSortableColumn="mop" pResizableColumn>
+                        MOP<p-sortIcon field="mop" />
+                    </th>
                 </tr>
 
                 <tr *ngIf="isFilterShow">
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agentid">
-                        <p-columnFilter type="numeric" field="agentid" placeholder="Agent Id"
-                            ariaLabel="Agent Id" />
+                        <p-columnFilter type="numeric" field="agentid" placeholder="Agent Id" ariaLabel="Agent Id" />
                     </th>
                     <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.agent">
                         <p-columnFilter class="searchableDropdown" field="agent" matchMode="equals" [showMenu]="false">
@@ -286,6 +289,21 @@
                         <p-columnFilter type="numeric" field="cashback_tds" placeholder="Search by Cashback TDS"
                             ariaLabel="Filter Cashback TDS" />
                     </th>
+                    <th class="w-auto">
+                        <!-- <p-columnFilter type="text" field="mop" placeholder="Search by MOP"
+                            ariaLabel="Filter MOP" /> -->
+                        <p-columnFilter field="mop" matchMode="equals" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [ngModel]="value" [options]="mopList"
+                                    (onChange)="filter($event.value)" placeholder="Select MOP" [showClear]="true"
+                                    appendTo="body">
+                                    <ng-template let-option pTemplate="item">
+                                        <p>{{option.label}}</p>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
                 </tr>
             </ng-template>
 
@@ -305,28 +323,39 @@
                     <td>{{element.air_ref_no || '-'}}</td>
                     <td>{{element.pan_numner || '-'}}</td>
                     <td>{{element.gst_numner || '-'}}</td>
-                    <td class="text-right">{{element.sup_service_charge ? (element.sup_service_charge.toFixed(2) | number:'1.2-2') : 0}}
+                    <td class="text-right">{{element.sup_service_charge ? (element.sup_service_charge.toFixed(2) |
+                        number:'1.2-2') : 0}}
                     </td>
-                    <td class="text-right">{{element.bonton_service_charge ? (element.bonton_service_charge.toFixed(2) | number:'1.2-2') :
+                    <td class="text-right">{{element.bonton_service_charge ? (element.bonton_service_charge.toFixed(2) |
+                        number:'1.2-2') :
                         0}}</td>
                     <td class="text-right">{{element.refunded_amount || '0'}}</td>
-                    <td class="text-right">{{element.service_charge ? (element.service_charge.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.service_charge ? (element.service_charge.toFixed(2) |
+                        number:'1.2-2') : 0}}</td>
                     <td class="text-right">{{element.tax ? (element.tax.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="text-right">{{element.net_refund ? (element.net_refund.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="text-right">{{element.commission ? (element.commission.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.net_refund ? (element.net_refund.toFixed(2) | number:'1.2-2') : 0}}
+                    </td>
+                    <td class="text-right">{{element.commission ? (element.commission.toFixed(2) | number:'1.2-2') : 0}}
+                    </td>
                     <td class="text-right">{{element.tds ? (element.tds.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="text-right">{{element.refundable_price ? (element.refundable_price.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="text-right">{{element.commission_2 ? (element.commission_2.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.refundable_price ? (element.refundable_price.toFixed(2) |
+                        number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.commission_2 ? (element.commission_2.toFixed(2) | number:'1.2-2') :
+                        0}}</td>
                     <td class="text-right">{{element.tds_2 ? (element.tds_2.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="text-right">{{element.net_commission ? (element.net_commission.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="text-right">{{element.cashback ? (element.cashback.toFixed(2) | number:'1.2-2') : 0}}</td>
-                    <td class="w-auto text-right">{{element.cashback_tds ? (element.cashback_tds.toFixed(2) | number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.net_commission ? (element.net_commission.toFixed(2) |
+                        number:'1.2-2') : 0}}</td>
+                    <td class="text-right">{{element.cashback ? (element.cashback.toFixed(2) | number:'1.2-2') : 0}}
+                    </td>
+                    <td class="w-auto text-right">{{element.cashback_tds ? (element.cashback_tds.toFixed(2) |
+                        number:'1.2-2') : 0}}</td>
+                    <td>{{element.mop}}</td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr class="h-15">
-                    <td colspan="23" class="text-center font-semibold text-lg">
+                    <td colspan="25" class="text-center font-semibold text-lg">
                         {{getNodataText()}}
                     </td>
                 </tr>
