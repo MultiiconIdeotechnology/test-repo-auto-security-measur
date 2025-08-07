@@ -64,7 +64,7 @@ import { AirlineBlockService } from 'app/services/airline-block.service';
 })
 export class AirlineBlockLeadComponent extends BaseListingComponent {
 
-  module_name = module_name.airline_block;
+  module_name = module_name.airlineBlock;
   filter_table_name = filter_module_name.airline_booking_booking;
   private settingsUpdatedSubscription: Subscription;
   dataList = [];
@@ -125,7 +125,7 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
   }
 
   viewData(record): void {
-    if (!Security.hasViewDetailPermission(this.module_name)) {
+    if (!Security.hasViewDetailPermission(module_name.booking_airline_block)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
     Linq.recirect('/'+ Routes.booking.airline_block_lead_path + '/details/' + record.id);
@@ -183,7 +183,7 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
     }
   
     exportExcel(): void {
-      if (!Security.hasExportDataPermission(this.module_name)) {
+      if (!Security.hasExportDataPermission(module_name.booking_airline_block)) {
         return this.alertService.showToast('error', messages.permissionDenied);
       }
 

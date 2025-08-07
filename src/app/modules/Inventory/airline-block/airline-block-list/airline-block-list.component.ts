@@ -62,7 +62,7 @@ import { Security, filter_module_name, inventoryAirlineBlockPermissions, message
 })
 export class AirlineBlockListComponent extends BaseListingComponent {
 
-  module_name = module_name.airline_block;
+  module_name = module_name.airlineBlock;
   filter_table_name = filter_module_name.airline_block;
   private settingsUpdatedSubscription: Subscription;
   dataList = [];
@@ -95,7 +95,7 @@ export class AirlineBlockListComponent extends BaseListingComponent {
     public _filterService: CommonFilterService,
     private conformationService: FuseConfirmationService,
   ) {
-    super(module_name.airline_block);
+    super(module_name.airlineBlock);
     this.key = this.module_name;
     this.sortColumn = 'departure_date_time';
     this.sortDirection = 'asc';

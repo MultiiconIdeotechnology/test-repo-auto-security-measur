@@ -245,13 +245,14 @@ export const module_name = {
     markupProfile: 'Markup Profile',
     amendmentRequests: 'Amendment Requests',
     groupInquiry: 'Group Inquiry',
-    airline_block: 'Bookings - Airline Block',
+    booking_airline_block: 'Bookings - Airline Block',
     ledger: 'Agent Ledger',
     payment: 'Payments',
     paymentLink: 'Payment Link',
     proformaInvoice: 'Proforma Invoice',
     receipt: 'Receipt',
     flight: 'Flight',
+    airlineBlock:'Airline Block',
     bus: 'Bus',
     agentkyc: 'Agent KYC Dashboard',
     wallet: 'Wallet Recharge',
@@ -681,8 +682,8 @@ export const forexPermissions = {
 }
 
 export const bookingAirlineBlockPermissions = {
-    rejectedPermissions: { module_name: module_name.airline_block, group_name: group_name.detailPage, operation_type: 'Reject', category_name: category_name.rejected },
-    statusPermissions: { module_name: module_name.airline_block, group_name: group_name.detailPage, operation_type: 'Status', category_name: category_name.status },
+    rejectedPermissions: { module_name: module_name.booking_airline_block, group_name: group_name.detailPage, operation_type: 'Reject', category_name: category_name.rejected },
+    statusPermissions: { module_name: module_name.booking_airline_block, group_name: group_name.detailPage, operation_type: 'Status', category_name: category_name.status },
 }
 
 export const bookingsFlightPermissions = {
