@@ -93,7 +93,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       id: [''],
       supplier_id: ['', Validators.required],
       supplier_name: [''],
-      sup_type: [''],
+      sup_type: '',
       user_type: ['', Validators.required],
       trip_type: ['', Validators.required],
       star: ['', Validators.required],
@@ -164,7 +164,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       id: [''],
       profile_name: [''],
       supplier_id: [''],
-      sup_type: [''],
+      sup_type: '',
       supplier_name: [''],
       user_type: [''],
       trip_type: ['',],
@@ -242,7 +242,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     const formValue = this.airlineForm.value;
 
     const newInventory = {
-      service: 'Hotel',
+      service: formValue.service || 'Hotel',
       supplier_id: this.suplier_id,
       supplier_name: this.suplier_name,
       user_type: formValue.user_type,
@@ -254,20 +254,92 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     };
 
     //  Maintain inventory list
-    this.sessionInventories = cloneDeep(this.dataList || []);
-    if (newInventory?.id) {
-      const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
+    // this.sessionInventories = cloneDeep(this.dataList || []);
+    // if (newInventory?.id) {
+    //   const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
 
+    //   this.sessionInventories[index] = newInventory;
+    // } else {
+    //   this.sessionInventories.push(newInventory);
+    // }
+
+    // //  Add only if it's NOT duplicate (optional)
+
+    // this.sessionInventories.forEach((x, index) => {
+    //   x.id = index + 1;
+    // })
+
+   // Clone the session data to work on
+    this.sessionInventories = cloneDeep(this.dataList || []);
+
+    const isEdit = !!newInventory.id;
+
+    if (isEdit) {
+      // Find exact record using both id and service
+      const index = this.sessionInventories.findIndex(
+        inv => inv.id === newInventory.id && inv.service === newInventory.service
+      );
+
+      if (index === -1) {
+        this.toasterService.showToast('error', 'Record not found. Cannot update.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      // Prevent duplicate update (excluding self)
+      const isDuplicate = this.sessionInventories.some(
+        inv =>
+          inv.user_type === newInventory.user_type &&
+          inv.supplier_id === newInventory.supplier_id &&
+          inv.service === newInventory.service &&
+          !(inv.id === newInventory.id && inv.service === newInventory.service) // exclude self
+      );
+
+      if (isDuplicate) {
+        this.toasterService.showToast('error', 'Duplicate entry not allowed on update.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      //  Update the record
       this.sessionInventories[index] = newInventory;
+
     } else {
+      // ADD mode
+
+      // Check for duplicate (same user_type + supplier_id + service)
+      const isDuplicate = this.sessionInventories.some(
+        inv =>
+          inv.user_type === newInventory.user_type &&
+          inv.supplier_id === newInventory.supplier_id &&
+          inv.service === newInventory.service
+      );
+
+      if (isDuplicate) {
+        this.toasterService.showToast('error', 'Duplicate entry not allowed.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      // Assign new ID (unique per service)
+      const maxId = Math.max(
+        0,
+        ...this.sessionInventories
+          .filter(inv => inv.service === newInventory.service)
+          .map(inv => inv.id || 0)
+      );
+
+      newInventory.id = maxId + 1;
+
       this.sessionInventories.push(newInventory);
     }
 
-    //  Add only if it's NOT duplicate (optional)
-
+    //  Update dataList from sessionInventories
     this.sessionInventories.forEach((x, index) => {
-      x.id = index + 1;
-    })
+      x.tempRowIndex = index + 1; // Optional display ID
+    });
+
+
 
     const payload = {
       id: this.createdProfile?.id,
@@ -279,8 +351,8 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
         const id = res?.id;
-        this.currentRecordRespId = res?.id;
-        this.entityService.reisesupplierInventoryProfile(id);
+        this.currentRecordRespId = id;
+
         if (!id) {
           this.toasterService.showToast('error', 'Invalid response', 'top-right');
           this.disableBtn = false;
@@ -288,16 +360,14 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
         }
 
         this.currentEditId = id;
+        this.entityService.reisesupplierInventoryProfile(id);
 
-        //  Show all rows in grid
-        const rows = this.sessionInventories.map(inv =>
-          this.getDisplayRow(inv)
-        );
+        // Show grid
+        const rows = this.sessionInventories.map(inv => this.getDisplayRow(inv));
         this.dataList = [...rows];
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        //  Reset form but NOT sessionInventories
         this.airlineForm.reset();
         this.resetForm();
         this.disableBtn = false;

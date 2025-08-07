@@ -19,7 +19,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>User Type</mat-label>
-                <mat-select formControlName="user_type">
+                <mat-select formControlName="user_type" required>
                     <mat-option *ngFor="let type of userType" [value]="type">
                         {{ type }}
                     </mat-option>

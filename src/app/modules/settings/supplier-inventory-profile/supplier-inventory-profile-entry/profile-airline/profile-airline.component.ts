@@ -105,7 +105,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       id: [''],
       supplier_id: ['', Validators.required],
       supplier_name: [''],
-      sup_type: [''],
+      sup_type: '',
       fare_type_class: ['', Validators.required],
       supplier_fare_type_filter: [''],
       user_type: ['', Validators.required],
@@ -203,7 +203,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       // profile_name: [''],
       supplier_id: [''],
       supplier_name: [''],
-      sup_type: [''],
+      sup_type: '',
       fare_type_class: [''],
       supplier_fare_type_filter: [''],
       user_type: [''],
@@ -461,7 +461,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     const formValue = this.airlineForm.value;
 
     const newInventory = {
-      service: 'Airline',
+      service: formValue.service || 'Airline',
       supplier_id: this.suplier_id,
       supplier_name: this.suplier_name,
       user_type: formValue.user_type,
@@ -480,22 +480,92 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     };
 
     //  Maintain inventory list
+    // this.sessionInventories = cloneDeep(this.dataList || []);
+
+    // if (newInventory?.id) {
+    //   const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
+
+    //   this.sessionInventories[index] = newInventory;
+    // } else {
+    //   this.sessionInventories.push(newInventory);
+    // }
+
+
+    // this.sessionInventories.forEach((x, index) => {
+    //   x.id = index + 1;
+    // })
+   // Clone the session data to work on
     this.sessionInventories = cloneDeep(this.dataList || []);
 
-    if (newInventory?.id) {
-      const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
+    const isEdit = !!newInventory.id;
 
+    if (isEdit) {
+      // Find exact record using both id and service
+      const index = this.sessionInventories.findIndex(
+        inv => inv.id === newInventory.id && inv.service === newInventory.service
+      );
+
+      if (index === -1) {
+        this.toasterService.showToast('error', 'Record not found. Cannot update.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      // Prevent duplicate update (excluding self)
+      const isDuplicate = this.sessionInventories.some(
+        inv =>
+          inv.user_type === newInventory.user_type &&
+          inv.supplier_id === newInventory.supplier_id &&
+          inv.service === newInventory.service &&
+          !(inv.id === newInventory.id && inv.service === newInventory.service) // exclude self
+      );
+
+      if (isDuplicate) {
+        this.toasterService.showToast('error', 'Duplicate entry not allowed on update.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      //  Update the record
       this.sessionInventories[index] = newInventory;
+
     } else {
+      // ADD mode
+
+      // Check for duplicate (same user_type + supplier_id + service)
+      const isDuplicate = this.sessionInventories.some(
+        inv =>
+          inv.user_type === newInventory.user_type &&
+          inv.supplier_id === newInventory.supplier_id &&
+          inv.service === newInventory.service
+      );
+
+      if (isDuplicate) {
+        this.toasterService.showToast('error', 'Duplicate entry not allowed.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      // Assign new ID (unique per service)
+      const maxId = Math.max(
+        0,
+        ...this.sessionInventories
+          .filter(inv => inv.service === newInventory.service)
+          .map(inv => inv.id || 0)
+      );
+
+      newInventory.id = maxId + 1;
+
       this.sessionInventories.push(newInventory);
     }
 
-
+    //  Update dataList from sessionInventories
     this.sessionInventories.forEach((x, index) => {
-      x.id = index + 1;
-    })
+      x.tempRowIndex = index + 1; // Optional display ID
+    });
 
-  
+
+
     const payload = {
       // id: this.isEdit ? this.recordRespEditId : this.currentRecordRespId || '', // If blank, create new
       id: this.createdProfile?.id,
@@ -504,16 +574,11 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       inventories: this.sessionInventories //  Full list of inventories
     };
 
- 
-
-
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
         const id = res?.id;
-        this.currentRecordRespId = res?.id;
-        // this.profileData = JSON.parse(res?.settings);
-        //localStorage.setItem('airlineProfileDataList', JSON.stringify(this.profileData));
-        this.entityService.reisesupplierInventoryProfile(id);
+        this.currentRecordRespId = id;
+
         if (!id) {
           this.toasterService.showToast('error', 'Invalid response', 'top-right');
           this.disableBtn = false;
@@ -521,19 +586,16 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
         }
 
         this.currentEditId = id;
+        this.entityService.reisesupplierInventoryProfile(id);
 
-        //  Show all rows in grid
-        const rows = this.sessionInventories.map(inv =>
-          // this.getDisplayRow(id, this.profile_name, inv)
-          this.getDisplayRow(inv)
-        );
+        // Show grid
+        const rows = this.sessionInventories.map(inv => this.getDisplayRow(inv));
         this.dataList = [...rows];
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        //  Reset form but NOT sessionInventories
         this.airlineForm.reset();
-        //this.resetForm();
+        this.resetForm();
         this.disableBtn = false;
       },
       error: (err) => {
@@ -559,6 +621,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     }
   }
 
+  resetForm(): void {
+    this.airlineForm.reset();
+  }
 
   getDisplayRow(inventory: any): any {
     return {
@@ -625,7 +690,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     this.dataList.splice(rowIndex, 1);
     this.dataList = [...this.dataList];
-    
+
     const inventories = this.dataList.map(item => {
       return {
         ...item,

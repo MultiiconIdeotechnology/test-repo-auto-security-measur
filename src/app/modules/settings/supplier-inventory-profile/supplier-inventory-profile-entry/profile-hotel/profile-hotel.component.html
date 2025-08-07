@@ -19,7 +19,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>User Type</mat-label>
-                <mat-select formControlName="user_type">
+                <mat-select formControlName="user_type" required>
                     <mat-option *ngFor="let type of userType" [value]="type">
                         {{ type }}
                     </mat-option>
@@ -28,7 +28,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Trip Type</mat-label>
-                <mat-select formControlName="trip_type">
+                <mat-select formControlName="trip_type" required>
                     <mat-option *ngFor="let type of tripTypeList" [value]="type">
                         {{ type }}
                     </mat-option>
@@ -37,7 +37,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Star</mat-label>
-                <mat-select formControlName="star" multiple>
+                <mat-select formControlName="star" multiple required>
                     <mat-option *ngFor="let star of starList" [value]="star">
                         {{ star }}
                     </mat-option>

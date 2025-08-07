@@ -23,7 +23,7 @@ import { Table } from 'primeng/table';
   templateUrl: './profile-bus.component.html',
   styleUrls: ['./profile-bus.component.scss'],
   standalone: true,
-  schemas:[CUSTOM_ELEMENTS_SCHEMA],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     MatSelectModule,
     MatFormFieldModule,
@@ -49,7 +49,7 @@ export class ProfileBusComponent extends BaseListingComponent {
   @ViewChild('tableRef') tableRef!: Table;
   airlineForm: FormGroup;
   @Input() inventoryList: any[] = [];
-  
+
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -108,7 +108,7 @@ export class ProfileBusComponent extends BaseListingComponent {
       id: [''],
       supplier_id: ['', Validators.required],
       supplier_name: [''],
-      sup_type: [''],
+      sup_type: '',
       user_type: ['', Validators.required],
       is_enable: true
     });
@@ -175,7 +175,7 @@ export class ProfileBusComponent extends BaseListingComponent {
       id: [''],
       profile_name: [''],
       supplier_id: [''],
-      sup_type: [''],
+      sup_type: '',
       supplier_name: [''],
       user_type: [''],
       is_enable: true
@@ -249,47 +249,97 @@ export class ProfileBusComponent extends BaseListingComponent {
     const formValue = this.airlineForm.value;
 
     const newInventory = {
-      service: 'Bus',
+      service: formValue.service || 'Bus', // ensure this comes from form if dynamic
       supplier_id: this.suplier_id,
       supplier_name: this.suplier_name,
       user_type: formValue.user_type,
-      id: formValue.id,
+      id: formValue.id, // May be undefined for new
       is_enable: formValue.is_enable
     };
 
-    //  Maintain inventory list
+    // Clone the session data to work on
     this.sessionInventories = cloneDeep(this.dataList || []);
-    if (newInventory?.id) {
-      const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
 
+    const isEdit = !!newInventory.id;
+
+    if (isEdit) {
+      // Find exact record using both id and service
+      const index = this.sessionInventories.findIndex(
+        inv => inv.id === newInventory.id && inv.service === newInventory.service
+      );
+
+      if (index === -1) {
+        this.toasterService.showToast('error', 'Record not found. Cannot update.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      // Prevent duplicate update (excluding self)
+      const isDuplicate = this.sessionInventories.some(
+        inv =>
+          inv.user_type === newInventory.user_type &&
+          inv.supplier_id === newInventory.supplier_id &&
+          inv.service === newInventory.service &&
+          !(inv.id === newInventory.id && inv.service === newInventory.service) // exclude self
+      );
+
+      if (isDuplicate) {
+        this.toasterService.showToast('error', 'Duplicate entry not allowed on update.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      //  Update the record
       this.sessionInventories[index] = newInventory;
+
     } else {
+      // ADD mode
+
+      // Check for duplicate (same user_type + supplier_id + service)
+      const isDuplicate = this.sessionInventories.some(
+        inv =>
+          inv.user_type === newInventory.user_type &&
+          inv.supplier_id === newInventory.supplier_id &&
+          inv.service === newInventory.service
+      );
+
+      if (isDuplicate) {
+        this.toasterService.showToast('error', 'Duplicate entry not allowed.', 'top-right');
+        this.disableBtn = false;
+        return;
+      }
+
+      // Assign new ID (unique per service)
+      const maxId = Math.max(
+        0,
+        ...this.sessionInventories
+          .filter(inv => inv.service === newInventory.service)
+          .map(inv => inv.id || 0)
+      );
+
+      newInventory.id = maxId + 1;
+
       this.sessionInventories.push(newInventory);
     }
 
-    //  Add only if it's NOT duplicate (optional)
-
+    //  Update dataList from sessionInventories
     this.sessionInventories.forEach((x, index) => {
-      x.id = index + 1;
-    })
+      x.tempRowIndex = index + 1; // Optional display ID
+    });
 
-    //const storedDataStr = localStorage.getItem('airlineProfileDataList') || '[]';
-    //const storedData = JSON.parse(storedDataStr);
-
+    //  Create payload for saving
     const payload = {
-      id: this.createdProfile?.id, // If blank, create new
+      id: this.createdProfile?.id || undefined,
       profile_name: this.createdProfile.profile_name,
       is_default: false,
-      inventories: this.sessionInventories //  Full list of inventories
+      inventories: this.sessionInventories
     };
-
 
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
       next: (res) => {
         const id = res?.id;
-        this.currentRecordRespId = res?.id;
-      
-        this.entityService.reisesupplierInventoryProfile(id);
+        this.currentRecordRespId = id;
+
         if (!id) {
           this.toasterService.showToast('error', 'Invalid response', 'top-right');
           this.disableBtn = false;
@@ -297,16 +347,14 @@ export class ProfileBusComponent extends BaseListingComponent {
         }
 
         this.currentEditId = id;
+        this.entityService.reisesupplierInventoryProfile(id);
 
-        //  Show all rows in grid
-        const rows = this.sessionInventories.map(inv =>
-          this.getDisplayRow(inv)
-        );
+        // Show grid
+        const rows = this.sessionInventories.map(inv => this.getDisplayRow(inv));
         this.dataList = [...rows];
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        //  Reset form but NOT sessionInventories
         this.airlineForm.reset();
         this.resetForm();
         this.disableBtn = false;
@@ -317,6 +365,7 @@ export class ProfileBusComponent extends BaseListingComponent {
       }
     });
   }
+
 
   getDisplayRow(inventory: any): any {
     return {
