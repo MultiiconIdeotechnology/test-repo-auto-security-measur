@@ -49,6 +49,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   @ViewChild('tableRef') tableRef!: Table;
   airlineForm: FormGroup;
   @Input() inventoryList: any[] = [];
+  private _isFormDisabled = false;
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -451,13 +452,14 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   submit(): void {
+    this.disableBtn = true;
+
     if (this.airlineForm.invalid) {
       this.airlineForm.markAllAsTouched();
       this.toasterService.showToast('error', 'Please fill all required fields.', 'top-right');
       return;
     }
 
-    this.disableBtn = true;
     const formValue = this.airlineForm.value;
 
     const newInventory = {
@@ -494,7 +496,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     // this.sessionInventories.forEach((x, index) => {
     //   x.id = index + 1;
     // })
-   // Clone the session data to work on
+    // Clone the session data to work on
     this.sessionInventories = cloneDeep(this.dataList || []);
 
     const isEdit = !!newInventory.id;
@@ -614,12 +616,17 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   @Input() set isFormDisabled(value: boolean) {
+    this._isFormDisabled = value;
     if (value) {
       this.airlineForm.disable();
     } else {
       this.airlineForm.enable();
     }
   }
+
+  get isButtonDisabled(): boolean {
+  return this._isFormDisabled ;
+}
 
   resetForm(): void {
     this.airlineForm.reset();

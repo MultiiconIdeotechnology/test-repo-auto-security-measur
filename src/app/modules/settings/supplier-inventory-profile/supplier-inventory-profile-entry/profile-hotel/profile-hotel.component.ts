@@ -49,6 +49,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
   @ViewChild('tableRef') tableRef!: Table;
   @Input() inventoryList: any[] = [];
   airlineForm: FormGroup;
+  private _isFormDisabled = false;
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -151,6 +152,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
   }
 
   @Input() set isFormDisabled(value: boolean) {
+    this._isFormDisabled = value;
     if (value) {
       this.airlineForm.disable();
     } else {
@@ -158,6 +160,9 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     }
   }
 
+  get isButtonDisabled(): boolean {
+    return this._isFormDisabled;
+  }
 
   initializeForm(): void {
     this.airlineForm = this.formBuilder.group({
@@ -269,7 +274,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     //   x.id = index + 1;
     // })
 
-   // Clone the session data to work on
+    // Clone the session data to work on
     this.sessionInventories = cloneDeep(this.dataList || []);
 
     const isEdit = !!newInventory.id;

@@ -36,7 +36,7 @@
 
         <!-- Save Button -->
         <div class="flex justify-end mt-6">
-            <button mat-flat-button color="primary" (click)="submit()">
+            <button mat-flat-button color="primary" (click)="submit()" [disabled]="isButtonDisabled">
                 Save
             </button>
         </div>

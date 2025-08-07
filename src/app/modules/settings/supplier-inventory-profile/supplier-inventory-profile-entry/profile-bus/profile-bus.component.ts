@@ -49,6 +49,7 @@ export class ProfileBusComponent extends BaseListingComponent {
   @ViewChild('tableRef') tableRef!: Table;
   airlineForm: FormGroup;
   @Input() inventoryList: any[] = [];
+  private _isFormDisabled = false;
 
 
   globalFilter: string = '';
@@ -132,12 +133,18 @@ export class ProfileBusComponent extends BaseListingComponent {
   }
 
   @Input() set isFormDisabled(value: boolean) {
+    this._isFormDisabled = value;
     if (value) {
       this.airlineForm.disable();
     } else {
       this.airlineForm.enable();
     }
   }
+
+  get isButtonDisabled(): boolean {
+    return this._isFormDisabled;
+  }
+
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.type === 'edit' && this.record?.id) {

@@ -48,6 +48,7 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
   @ViewChild('tableRef') tableRef!: Table;
   @Input() inventoryList: any[] = [];
   airlineForm: FormGroup;
+  private _isFormDisabled = false;
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -153,11 +154,16 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
   }
 
   @Input() set isFormDisabled(value: boolean) {
+    this._isFormDisabled = value;
     if (value) {
       this.airlineForm.disable();
     } else {
       this.airlineForm.enable();
     }
+  }
+
+  get isButtonDisabled(): boolean {
+    return this._isFormDisabled;
   }
 
   ngOnInit(): void {
