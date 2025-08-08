@@ -50,8 +50,8 @@
                 <mat-select multiple formControlName="airline_id" (selectionChange)="clickOtherAirline($event)"
                     required>
                     <!-- ngx search -->
-                    <mat-option disabled>
-                        <ngx-mat-select-search [formControl]="airlineFilter" placeholderLabel="Search airline"
+                    <mat-option>
+                        <ngx-mat-select-search formControlName ="airlineFilter" placeholderLabel="Search airline"
                             noEntriesFoundLabel="No matching Airline found">
                         </ngx-mat-select-search>
                     </mat-option>
