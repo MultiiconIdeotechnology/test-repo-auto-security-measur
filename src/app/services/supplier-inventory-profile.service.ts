@@ -25,6 +25,10 @@ export class SupplierInventoryProfileService {
     return this.http.post<any>(this.baseUrl + 'AirportMst/getAirportMstCombo', { filter });
   }
 
+  getBontonCommonFareTypeCombo(filter: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'CommonFareType/getCommonFareTypeCombo', { filter });
+  }
+
   // getSupplierFareTypeCombo(supplier_id: string, filter?: string): Observable<any[]> {
   //   return this.http.post<any[]>(this.baseUrl + 'SupplierFareTypeMapper/getSupplierFareTypeCombo', {
   //     supplier_id: supplier_id,
@@ -67,7 +71,7 @@ export class SupplierInventoryProfileService {
   }
 
   //CreateProfile
-   createProfile(model: any): Observable<any> {
+  createProfile(model: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'SupplierInventoryProfile/CreateProfile', model);
   }
 

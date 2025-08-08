@@ -75,7 +75,7 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
   sessionInventories: any[] = [];
 
   searchText = '';
-  userType: any = ['B2B', 'B2C'];
+  userType: any = ['Both', 'B2B', 'B2C'];
   tripTypeList: any = ['International', 'Both', 'Domestic'];
   routeTypeList: any = ['One Way', 'Round Trip', 'MultiCity'];
   fareTypeList: any = ['Both', 'Refundable', 'Non Refundable'];
@@ -106,7 +106,7 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
       supplier_name: [''],
       sup_type: '',
       user_type: ['', Validators.required],
-      is_enable: true
+      is_enable: [false]
     });
 
     this.airlineForm.get('sup_type').valueChanges.subscribe(res => {
@@ -135,7 +135,7 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
     } else if (this.type === 'create') {
       this.isEdit = false;
       this.currentRecordRespId = '';
-      this.airlineForm.reset();
+      this.airlineForm.reset({ is_enable: false });
       this.dataList = [];
     }
 
@@ -179,7 +179,7 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
       sup_type: '',
       supplier_name: [''],
       user_type: [''],
-      is_enable: true
+      is_enable: [false]
     });
   }
 
@@ -370,7 +370,7 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        this.airlineForm.reset();
+       // this.airlineForm.reset();
         this.resetForm();
         this.disableBtn = false;
       },
@@ -386,16 +386,13 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
       // id,
       // profile_id: id,
       //  profile_name: profileName,
+      id: inventory.id,
       service: inventory.service,
       supplier_id: inventory.supplier_id,
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
-      id: inventory.id,
       is_enable: inventory.is_enable,
-      // isEnable: inventory.is_enable,
-      // supplier: inventory.supplier_name,
-      // usertype: inventory.user_type,
-      // triptype: inventory.trip_type
+     
     };
   }
 
@@ -413,14 +410,14 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
     //   //this.profile_name = '';
     //   // this.currentEditId = '';
     // }
-    this.airlineForm.reset();
+    this.airlineForm.reset({ is_enable: false });
     this.disableBtn = false;
     this.isEdit = false;
     this.editIndex = -1;
   }
 
   resetForm(): void {
-    this.airlineForm.reset();
+    this.airlineForm.reset({ is_enable: false });
   }
 
   onDelete(row: any, rowIndex: number): void {

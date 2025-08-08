@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatOptionModule } from '@angular/material/core';
+import { MatOptionModule, MatOptionSelectionChange } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { BaseListingComponent } from 'app/form-models/base-listing';
 import { CacheLabel, CacheService } from 'app/services/cache.service';
@@ -50,6 +50,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   airlineForm: FormGroup;
   @Input() inventoryList: any[] = [];
   private _isFormDisabled = false;
+  private _patchingFareClass = false;
+  airlineFilter = new FormControl('');
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -75,11 +77,12 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   allProfiles: any[] = [];
   sessionInventories: any[] = [];
   profileData: any[] = [];
+  filteredAirlineList: any[] = [];
 
   searchText = '';
-  userType: any = ['B2B', 'B2C'];
-  tripTypeList: any = ['International', 'Both', 'Domestic'];
-  routeTypeList: any = ['One Way', 'Round Trip', 'MultiCity'];
+  userType: any = ['Both', 'B2B', 'B2C'];
+  tripTypeList: any = ['Both', 'Domestic', 'International'];
+  routeTypeList: any = ['Both', 'One Way', 'Round Trip'];
   fareTypeList: any = ['Both', 'Refundable', 'Non Refundable'];
   fareClassList: any = [
     'All',
@@ -89,6 +92,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     'First Class'
   ];
   fareTypeClassVisibleTypeList: any = ['Include', 'Exclude'];
+  routeTypeVisibleTypeList: any = ['Include', 'Exclude'];
+  tripTypeVisibleTypeList: any = ['Include', 'Exclude'];
   stopList: number[] = [0, 1, 2, 3, 4];
   editIndex: number | null = null;
   fareTypeClassOptions: any[] = [];
@@ -112,6 +117,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       user_type: ['', Validators.required],
       trip_type: ['', Validators.required],
       route_type: ['', Validators.required],
+      route_type_visible: ['', Validators.required],
+      trip_type_visible: ['', Validators.required],
       airline_id: ['', Validators.required],
       airlineFilter: [''],
       fare_class: ['', Validators.required],
@@ -121,7 +128,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       airport_code_filter: [''],
       airport_codes_visible_type: ['', Validators.required],
       stops: ['', Validators.required],
-      is_enable: true
+      is_enable: [false]
     });
 
 
@@ -155,7 +162,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       if (!val)
         this.supplierFareTypeList = this.supplierFareTypeAllList;
       else
-        this.supplierFareTypeList = this.supplierFareTypeAllList.filter(x => x.class_of_service.toLowerCase().includes(val));
+        this.supplierFareTypeList = this.supplierFareTypeAllList.filter(x => x.fare_type.toLowerCase().includes(val));
     });
 
 
@@ -167,6 +174,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       this.getSupplierCombo();
       this.airlineCombo();
       this.getAirportMstCombo();
+      this.getBontonFareTypeCombo();
     }
 
 
@@ -183,7 +191,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       }
 
     } else if (this.type === 'create') {
-      this.airlineForm.reset();
+      this.airlineForm.reset({ is_enable: false });
       this.dataList = [];
       this.isEdit = false;
       this.currentRecordRespId = '';
@@ -194,9 +202,11 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
 
   }
+
+
 
   initializeForm(): void {
     this.airlineForm = this.formBuilder.group({
@@ -210,6 +220,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       user_type: [''],
       trip_type: ['',],
       route_type: [''],
+      route_type_visible: [''],
+      trip_type_visible: [''],
       airline_id: [''],
       airlineFilter: [''],
       fare_class: [''],
@@ -219,7 +231,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       airport_code_filter: [''],
       airport_codes_visible_type: [''],
       stops: [''],
-      is_enable: true
+      is_enable: [false]
     });
   }
 
@@ -240,6 +252,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   onEdit(row: any, index: number): void {
     // this.isEdit = true;
     this.editIndex = index;
+    console.log("row", row)
     this.currentEditId = row.id;
     this.airlineForm.patchValue({
       supplier_id: {
@@ -250,6 +263,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       id: row.id,
       trip_type: row.trip_type,
       route_type: row.route_type,
+      route_type_visible: row.route_type_visible,
+      trip_type_visible: row.trip_type_visible,
       airline_id: row.airline || [],
       fare_class: row.fare_class || [],
       fare_type: row.fare_type,
@@ -257,8 +272,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       airport_code_id: row.airport_codes || [],
       airport_codes_visible_type: row.airport_codes_visible_type,
       stops: row.stops || [],
+      fare_type_class: row.fare_type_class || [],
       is_enable: row.is_enable
     });
+    // this.airlineForm.get('fare_type_class').patchValue(row.fare_type_class, { emitEvent: false });
 
     this.suplier_id = row.supplier_id;
     this.suplier_name = row.supplier_name;
@@ -282,31 +299,41 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       this.suplier_id = supplier.id;
       this.suplier_name = supplier.company_name;
 
-      this.getSupplierFareTypeCombo('', supplier.id, () => {
-        if (this.isEdit && row?.fare_type_class) {
-          setTimeout(() => {
-            this.airlineForm.patchValue({
-              fare_type_class: row.fare_type_class
-            });
-          }, 0); // allow change detection to catch up
-        }
-      });
+      //   this.getSupplierFareTypeCombo('', supplier.id, () => {
+      //     if (this.isEdit && row?.fare_type_class) {
+      //       setTimeout(() => {
+      //         this.airlineForm.patchValue({
+      //           fare_type_class: row.fare_type_class
+      //         });
+      //       }, 0); // allow change detection to catch up
+      //     }
+      //   });
     }
   }
 
 
-  getSupplierFareTypeCombo(filter: string, supplier_id: string, p0?: () => void): void {
-    const isEdit = true;
+  // getSupplierFareTypeCombo(filter: string, supplier_id: string, p0?: () => void): void {
+  //   const isEdit = true;
 
-    this.supplierInventoryProfileService.getSupplierFareTypeCombo(supplier_id, filter, isEdit)
-      .subscribe({
+  //   this.supplierInventoryProfileService.getSupplierFareTypeCombo(supplier_id, filter, isEdit)
+  //     .subscribe({
+  //       next: data => {
+  //         this.supplierFareTypeAllList = cloneDeep(data);
+  //         this.supplierFareTypeList = data;
+
+  //         if (p0) {
+  //           p0(); // call the callback here after data is set
+  //         }
+  //       }
+  //     });
+  // }
+
+  getBontonFareTypeCombo() {
+    this.cacheService.getOrAdd(CacheLabel.getBontonCommonFareTypeCombo,
+      this.supplierInventoryProfileService.getBontonCommonFareTypeCombo('')).subscribe({
         next: data => {
           this.supplierFareTypeAllList = cloneDeep(data);
-          this.supplierFareTypeList = data;
-
-          if (p0) {
-            p0(); // call the callback here after data is set
-          }
+          this.supplierFareTypeList = this.supplierFareTypeAllList;
         }
       });
   }
@@ -315,6 +342,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   compareWith(o1: any, o2: any): boolean {
     return o1 && o2 && o1.id === o2.id;
   }
+
+  compareWithFareTypeBonton = (a: any, b: any) => a && b && a.id === b.id;
 
   airlineCombo(): void {
     this.cacheService.getOrAdd(CacheLabel.getAirlineCombo,
@@ -336,31 +365,53 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       });
   }
 
-  // compareWith = (a: any, b: any) => a === b; // for IDs
 
   //AirLine
-  clickOtherRoles(event?): void {
-    if (event.source.value === 'All') return;
+  private isUpdatingAirlineSelection = false;
 
-    const allSelected = this.airlineForm.get('airline_id').value.find(x => x == 'All');
-    if (allSelected) {
-      const updatedClients = this.airlineForm.get('airline_id').value.filter(x => x !== 'All');
-      this.airlineForm.get('airline_id').patchValue(updatedClients, { emitEvent: false });
-    }
-  }
+  clickAllAirline(event: any): void {
+    if (this.isUpdatingAirlineSelection) return;
+    this.isUpdatingAirlineSelection = true;
 
-  clickAllRoles(event: any): void {
+    const control = this.airlineForm.get('airline_id');
+    const allIds = this.AirlineList.map(x => x.id);
 
-    if (event.source.value !== 'All') return;
-
-    const all = event.source.selected;
-
-    if (all) {
-      this.airlineForm.get('airline_id').patchValue(['All', ...this.AirlineList.map(x => x.id)], { emitEvent: false });
+    if (event.source.selected) {
+      control?.patchValue(['All', ...allIds], { emitEvent: false });
     } else {
-      this.airlineForm.get('airline_id').patchValue([], { emitEvent: false });
+      control?.patchValue([], { emitEvent: false });
     }
+
+    this.isUpdatingAirlineSelection = false;
   }
+
+  clickOtherAirline(event: any): void {
+    if (this.isUpdatingAirlineSelection) return;
+    this.isUpdatingAirlineSelection = true;
+
+    const control = this.airlineForm.get('airline_id');
+    let selected = control?.value || [];
+
+    if (selected.includes('All') && (selected.length - 1) !== this.AirlineList.length) {
+      selected = selected.filter(v => v !== 'All');
+      control?.patchValue(selected, { emitEvent: false });
+    }
+
+    if (!selected.includes('All') && selected.length === this.AirlineList.length) {
+      control?.patchValue(['All', ...selected], { emitEvent: false });
+    }
+
+    if (selected.length === 0) {
+      control?.patchValue([], { emitEvent: false });
+    }
+
+    this.isUpdatingAirlineSelection = false;
+  }
+
+
+
+
+
 
 
   //Airport Codes
@@ -388,63 +439,105 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   //Fare Type class
-  clickOtherFareTypeClass(event?): void {
-    if (event.source.value === 'All') return;
+  clickAllFareTypeClass(event: any): void {
+    const control = this.airlineForm.get('fare_type_class');
+    const allIds = this.supplierFareTypeList.map(x => x.id);
 
-    const allSelected = this.airlineForm.get('fare_type_class').value.find(x => x == 'All');
-    if (allSelected) {
-      const updatedClients = this.airlineForm.get('fare_type_class').value.filter(x => x !== 'All');
-      this.airlineForm.get('fare_type_class').patchValue(updatedClients, { emitEvent: false });
-    }
-  }
-
-  clickAllFarTypeClass(event: any): void {
-
-    if (event.source.value !== 'All') return;
-
-    const all = event.source.selected;
-
-    if (all) {
-      this.airlineForm.get('fare_type_class').patchValue(['All', ...this.supplierFareTypeList.map(x => x.class_of_service)], { emitEvent: false });
+    if (event.source.selected) {
+      control?.patchValue(['All', ...allIds], { emitEvent: false });
     } else {
-      this.airlineForm.get('fare_type_class').patchValue([], { emitEvent: false });
+      control?.patchValue([], { emitEvent: false });
     }
   }
 
+  clickOtherFareTypeClass(event: any): void {
+    const control = this.airlineForm.get('fare_type_class');
+    let selected = control?.value || [];
+
+    // If "All" is selected but not all items are selected, remove "All"
+    if (selected.includes('All') && selected.length - 1 !== this.supplierFareTypeList.length) {
+      selected = selected.filter((v: any) => v !== 'All');
+      control?.patchValue(selected, { emitEvent: false });
+    }
+
+    // If all items are manually selected but "All" is missing, add "All"
+    if (!selected.includes('All') && selected.length === this.supplierFareTypeList.length) {
+      control?.patchValue(['All', ...selected], { emitEvent: false });
+    }
+  }
+
+
+
+  // helper to compare arrays (shallow, order-sensitive)
+  private arraysEqual(a: any[] = [], b: any[] = []) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  isAllSelected = false;
 
   onAllFareClassToggle(event: any): void {
+    const control = this.airlineForm.get('fare_class');
     if (event.source.selected) {
-      this.airlineForm.get('fare_class')?.patchValue(['All', ...this.fareClassList], { emitEvent: false });
+      this.isAllSelected = true;
+      control?.patchValue([...this.fareClassList], { emitEvent: false });
     } else {
-      this.airlineForm.get('fare_class')?.patchValue([], { emitEvent: false });
+      this.isAllSelected = false;
+      control?.patchValue([], { emitEvent: false });
     }
   }
 
   onFareClassChange(event: any): void {
-    const selected = event.value;
-
-    // If 'All' is selected with others, remove 'All'
-    if (selected.includes('All') && selected.length > 1) {
-      const updated = selected.filter((val: string) => val !== 'All');
-      this.airlineForm.get('fare_class')?.patchValue(updated, { emitEvent: false });
-    }
+    const control = this.airlineForm.get('fare_class');
+    const selected = control?.value || [];
+    this.isAllSelected = selected.length === this.fareClassList.length;
   }
+
+
+  get fareClassDisplay(): string {
+    const values = this.airlineForm.get('fare_class')?.value || [];
+    return values.filter((v: string) => v !== 'All').join(', ');
+  }
+
+
+
 
   onSelectAllStops(event: any): void {
     if (event.source.selected) {
-      this.airlineForm.get('stops')?.patchValue(['All', ...this.stopList], { emitEvent: false });
+      this.airlineForm.get('stops')?.patchValue(
+        ['All', ...this.stopList],
+        { emitEvent: false }
+      );
     } else {
       this.airlineForm.get('stops')?.patchValue([], { emitEvent: false });
     }
   }
 
   onStopsChange(event: any): void {
-    const selected = event.value;
-    if (selected.includes('All') && selected.length > 1) {
-      const updated = selected.filter((val: any) => val !== 'All');
-      this.airlineForm.get('stops')?.patchValue(updated, { emitEvent: false });
+    const control = this.airlineForm.get('stops');
+    const selected = event.value || [];
+
+    // If 'All' is selected but not everything else, remove 'All'
+    if (selected.includes('All') && selected.length - 1 !== this.stopList.length) {
+      control?.patchValue(selected.filter((val: any) => val !== 'All'), { emitEvent: false });
+    }
+
+    // If all items are manually selected but 'All' is missing, add 'All'
+    if (!selected.includes('All') && selected.length === this.stopList.length) {
+      control?.patchValue(['All', ...selected], { emitEvent: false });
     }
   }
+
+  get stopsDisplay(): string {
+    const values = this.airlineForm.get('stops')?.value || [];
+    return values
+      .filter((v: any) => v !== 'All')
+      .map((stop: number) => `${stop} Stop${stop > 1 ? 's' : ''}`)
+      .join(', ');
+  }
+
+
 
   filterAirlineCarrier(val): void {
     const value = this.AllAirline.filter(x => x.short_code.toLowerCase().includes(val.toLowerCase()))
@@ -470,6 +563,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       id: formValue.id,
       trip_type: formValue.trip_type,
       route_type: formValue.route_type,
+      route_type_visible: formValue.route_type_visible,
+      trip_type_visible: formValue.trip_type_visible,
       airline: formValue.airline_id || [],
       fare_class: formValue.fare_class || [],
       fare_type: formValue.fare_type,
@@ -480,6 +575,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       stops: formValue.stops || [],
       is_enable: formValue.is_enable
     };
+
+
+    console.log("newInventory", newInventory);
+
 
     //  Maintain inventory list
     // this.sessionInventories = cloneDeep(this.dataList || []);
@@ -596,8 +695,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        this.airlineForm.reset();
         this.resetForm();
+        // this.airlineForm.reset({ is_enable: false });
         this.disableBtn = false;
       },
       error: (err) => {
@@ -625,11 +724,11 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   get isButtonDisabled(): boolean {
-  return this._isFormDisabled ;
-}
+    return this._isFormDisabled;
+  }
 
   resetForm(): void {
-    this.airlineForm.reset();
+    this.airlineForm.reset({ is_enable: false });
   }
 
   getDisplayRow(inventory: any): any {
@@ -644,6 +743,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       user_type: inventory.user_type,
       trip_type: inventory.trip_type,
       route_type: inventory.route_type,
+      route_type_visible: inventory.route_type_visible,
+      trip_type_visible: inventory.trip_type_visible,
       airline: inventory.airline || [],
       fare_class: inventory.fare_class || [],
       fare_type: inventory.fare_type,
@@ -653,10 +754,6 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       airport_codes_visible_type: inventory.airport_codes_visible_type,
       stops: inventory.stops || [],
       is_enable: inventory.is_enable,
-      // isEnable: inventory.is_enable,
-      // supplier: inventory.supplier_name,
-      // usertype: inventory.user_type,
-      // triptype: inventory.trip_type
     };
   }
 
@@ -670,12 +767,14 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     );
   }
 
+
+
   resetEditFlags(clearProfileName: boolean = false): void {
     // if (clearProfileName) {
     //   //this.profile_name = '';
     //   // this.currentEditId = '';
     // }
-    this.airlineForm.reset();
+    this.airlineForm.reset({ is_enable: false });
     this.disableBtn = false;
     this.isEdit = false;
     this.editIndex = -1;

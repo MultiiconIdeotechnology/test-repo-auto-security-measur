@@ -54,6 +54,7 @@ export enum CacheLabel {
   getFareypeSupplierAirlineCombo,
   getFareypeSupplierBusCombo,
   getFareypeSupplierHotelCombo,
-  getFareypeSupplierInsuranceCombo
+  getFareypeSupplierInsuranceCombo,
+  getBontonCommonFareTypeCombo
 
 }

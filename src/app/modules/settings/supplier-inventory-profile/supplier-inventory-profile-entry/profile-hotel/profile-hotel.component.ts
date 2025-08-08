@@ -76,8 +76,8 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
   sessionInventories: any[] = [];
 
   searchText = '';
-  userType: any = ['B2B', 'B2C'];
-  tripTypeList: any = ['International', 'Both', 'Domestic'];
+  userType: any = ['Both', 'B2B', 'B2C'];
+  tripTypeList: any = ['Both','Domestic','International'];
   starList: number[] = [1, 2, 3, 4, 5];
   editIndex: number | null = null;
 
@@ -98,7 +98,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       user_type: ['', Validators.required],
       trip_type: ['', Validators.required],
       star: ['', Validators.required],
-      is_enable: true
+      is_enable: [false]
     });
 
     this.airlineForm.get('sup_type').valueChanges.subscribe(res => {
@@ -129,7 +129,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     } else if (this.type === 'create') {
       this.isEdit = false;
       this.currentRecordRespId = '';
-      this.airlineForm.reset();
+      this.airlineForm.reset({ is_enable: false });
       this.dataList = [];
     }
 
@@ -174,7 +174,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       user_type: [''],
       trip_type: ['',],
       star: [''],
-      is_enable: true
+      is_enable: [false]
     });
   }
 
@@ -248,10 +248,10 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
 
     const newInventory = {
       service: formValue.service || 'Hotel',
+      id: formValue.id,
       supplier_id: this.suplier_id,
       supplier_name: this.suplier_name,
       user_type: formValue.user_type,
-      id: formValue.id,
       trip_type: formValue.trip_type,
       route_type: formValue.route_type,
       star: formValue.star || [],
@@ -373,7 +373,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        this.airlineForm.reset();
+       // this.airlineForm.reset();
         this.resetForm();
         this.disableBtn = false;
       },
@@ -415,14 +415,14 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     //   //this.profile_name = '';
     //   // this.currentEditId = '';
     // }
-    this.airlineForm.reset();
+    this.airlineForm.reset({ is_enable: false });
     this.disableBtn = false;
     this.isEdit = false;
     this.editIndex = -1;
   }
 
   resetForm(): void {
-    this.airlineForm.reset();
+    this.airlineForm.reset({ is_enable: false });
   }
 
 
