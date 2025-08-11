@@ -12,8 +12,6 @@ import { FuseDrawerComponent } from '@fuse/components/drawer';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatSidenav } from '@angular/material/sidenav';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
-import { DataManagerService } from 'app/services/data-manager.service';
-import { RefferralService } from 'app/services/referral.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { ToasterService } from 'app/services/toaster.service';
 import {  Subject, takeUntil } from 'rxjs';
@@ -21,8 +19,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
-import { AccountService } from 'app/services/account.service';
-import { DateTime } from 'luxon';
 import { CommonFareTypeService } from 'app/services/commonFareType.service';
 
 @Component({
@@ -137,7 +133,7 @@ export class CommonFareTypeEntryComponent {
                 this.resetForm();
                 if (data.id) {
                     let resData = {
-                        id: '',
+                        id: data.id,
                         fare_type: data?.fare_type,
                         entry_date_time: data?.entry_date_time,
                         modify_date_time: data?.modify_date_time,

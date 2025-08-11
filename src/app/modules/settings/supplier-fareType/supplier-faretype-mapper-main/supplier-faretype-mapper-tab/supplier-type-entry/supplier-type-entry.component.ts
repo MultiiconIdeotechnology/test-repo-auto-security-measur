@@ -14,7 +14,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { ToasterService } from 'app/services/toaster.service';
-import { debounceTime, distinctUntilChanged, filter, startWith, Subject, switchMap, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, takeUntil } from 'rxjs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
