@@ -17,6 +17,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { cloneDeep } from 'lodash';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Table } from 'primeng/table';
+import { filter, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-profile-airline',
@@ -332,10 +333,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     this.cacheService.getOrAdd(CacheLabel.getBontonCommonFareTypeCombo,
       this.supplierInventoryProfileService.getBontonCommonFareTypeCombo('')).subscribe({
         next: data => {
-          this.supplierFareTypeAllList = cloneDeep(data);
+      this.supplierFareTypeAllList = cloneDeep(data);
           this.supplierFareTypeList = this.supplierFareTypeAllList;
         }
-      });
+    });
   }
 
 
@@ -660,10 +661,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       this.sessionInventories.push(newInventory);
     }
 
-    //  Update dataList from sessionInventories
-    this.sessionInventories.forEach((x, index) => {
-      x.tempRowIndex = index + 1; // Optional display ID
-    });
+    // //  Update dataList from sessionInventories
+    // this.sessionInventories.forEach((x, index) => {
+    //   x.tempRowIndex = index + 1; // Optional display ID
+    // });
 
 
 
@@ -829,7 +830,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
   onRefresh(): void {
     if (this.currentEditId) {
-      this.loadRecord(this.currentEditId);
+      if (this.inventoryList?.length) {
+        this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
+      }
     } else {
       console.warn('No record found');
     }

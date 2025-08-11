@@ -340,9 +340,9 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
     }
 
     //  Update dataList from sessionInventories
-    this.sessionInventories.forEach((x, index) => {
-      x.tempRowIndex = index + 1; // Optional display ID
-    });
+    // this.sessionInventories.forEach((x, index) => {
+    //   x.tempRowIndex = index + 1; // Optional display ID
+    // });
 
 
 
@@ -461,8 +461,10 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
   }
 
   onRefresh(): void {
-    if (this.currentEditId) {
-      this.loadRecord(this.currentEditId);
+   if (this.currentEditId) {
+      if (this.inventoryList?.length) {
+        this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
+      }
     } else {
       console.warn('No record found');
     }

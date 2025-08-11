@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 @Injectable({
@@ -7,7 +7,15 @@ import { map, switchMap } from 'rxjs/operators';
 })
 export class CacheService {
   private cache = new Map<string, any>();
+
+ // private refreshSubject = new Subject<number>();
+  //public refresh$ = this.refreshSubject.asObservable();
+
   constructor() { }
+
+  // notifyRefresh(key: number) {
+  //   this.refreshSubject.next(key);
+  // }
 
   get(key: number): any {
     var label = CacheLabel[key];
@@ -37,6 +45,11 @@ export class CacheService {
   }
 
   set(key: number, data: any): void {
+    var label = CacheLabel[key];
+    this.cache.set(label, data);
+  }
+
+  update<T>(key: number, data: T) {
     var label = CacheLabel[key];
     this.cache.set(label, data);
   }

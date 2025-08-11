@@ -338,9 +338,9 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
     }
 
     //  Update dataList from sessionInventories
-    this.sessionInventories.forEach((x, index) => {
-      x.tempRowIndex = index + 1; // Optional display ID
-    });
+    // this.sessionInventories.forEach((x, index) => {
+    //   x.tempRowIndex = index + 1; // Optional display ID
+    // });
 
 
     const payload = {
@@ -456,9 +456,11 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
 
   onRefresh(): void {
     if (this.currentEditId) {
-      this.loadRecord(this.currentEditId);
+      if (this.inventoryList?.length) {
+        this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
+      }
     } else {
-      console.warn('No record ID to refresh');
+      console.warn('No record found');
     }
   }
 }

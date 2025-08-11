@@ -14,16 +14,17 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { SidebarCustomModalService } from 'app/services/sidebar-custom-modal.service';
 import { ToasterService } from 'app/services/toaster.service';
-import {  Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { NgxMatTimepickerModule } from 'ngx-mat-timepicker';
 import { CommonFareTypeService } from 'app/services/commonFareType.service';
+import { CacheLabel, CacheService } from 'app/services/cache.service';
 
 @Component({
     selector: 'app-common-fareType-entry',
-    templateUrl: './common-fareType-entry.component.html',  
+    templateUrl: './common-fareType-entry.component.html',
     standalone: true,
     imports: [
         CommonModule,
@@ -63,7 +64,7 @@ export class CommonFareTypeEntryComponent {
     fareTypeAllList: any[] = [];
     fareTypeList: any[] = [];
     fieldList: any[] = [];
-    isEdit:boolean = false;
+    isEdit: boolean = false;
 
 
     constructor(
@@ -71,7 +72,8 @@ export class CommonFareTypeEntryComponent {
         private builder: FormBuilder,
         private _filterService: CommonFilterService,
         private alertService: ToasterService,
-        private commonFareTypeService: CommonFareTypeService,     
+        private commonFareTypeService: CommonFareTypeService,
+        private cacheService: CacheService
 
     ) {
         this.formGroup = this.builder.group({
@@ -95,8 +97,8 @@ export class CommonFareTypeEntryComponent {
                     this.title = 'Modify';
                     this.buttonLabel = "Update";
                     if (res?.data) {
-                        this.isEdit = true;                                           
-                        this.formGroup.patchValue(res?.data?.data)                     
+                        this.isEdit = true;
+                        this.formGroup.patchValue(res?.data?.data)
                     }
                 }
             }
@@ -127,9 +129,10 @@ export class CommonFareTypeEntryComponent {
         // return
         this.disableBtn = true
         this.commonFareTypeService.createCommonFareType(json).subscribe({
-            next: (data) => {
-               // this.alertService.showToast('success', 'Fare type created successfully');
-               this.alertService.showToast('success', this.isEdit ? 'Fare type updated successfully' : 'Fare type created successfully');
+            next: (data:any) => {
+                // this.alertService.showToast('success', 'Fare type created successfully');
+                this.alertService.showToast('success', this.isEdit ? 'Fare type updated successfully' : 'Fare type created successfully');
+                this.cacheService.update(CacheLabel.getBontonCommonFareTypeCombo, data?.fare_type );
                 this.resetForm();
                 if (data.id) {
                     let resData = {
