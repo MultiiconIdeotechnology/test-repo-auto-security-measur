@@ -186,7 +186,7 @@
 
             <ng-template pTemplate="body" let-element let-columns="columns" let-index="rowIndex">
 
-                <tr [ngClass]="{'opacity-25': !element.is_audited}" [pReorderableRow]="index">
+                <tr [pReorderableRow]="index">
                     <td class="bg-gray-50 dark:bg-gray-900 left-[-1px]" alignFrozen="left" pFrozenColumn>
                         <span [matMenuTriggerFor]="optionMenu" class="flex align-middle cursor-pointer">
                             <mat-icon> more_vert </mat-icon>
@@ -209,11 +209,11 @@
                                         {{ element.is_publish_for_bonton ? "Unpublish" : "Publish" }}
                                     </span>
                                 </button>
-                                <button mat-menu-item (click)="viewDetails(element)">
-                                    <mat-icon svgIcon="heroicons_solid:eye"></mat-icon>
-                                    <span style="font-weight: 600">View Airline Block</span>
-                                </button>
                             </div>
+                            <button mat-menu-item (click)="viewDetails(element)" *ngIf="element.origin && element.destination">
+                                <mat-icon svgIcon="heroicons_solid:eye"></mat-icon>
+                                <span style="font-weight: 600">View Airline Block</span>
+                            </button>
                         </mat-menu>
                     </td>
                     <td alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.is_publish_for_bonton"
