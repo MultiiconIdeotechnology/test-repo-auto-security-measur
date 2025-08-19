@@ -257,7 +257,7 @@ export class ProfileBusComponent extends BaseListingComponent {
 
     const newInventory = {
       service: formValue.service || 'Bus', // ensure this comes from form if dynamic
-      id: formValue.id, 
+      id: formValue.id,
       supplier_id: this.suplier_id,
       supplier_name: this.suplier_name,
       user_type: formValue.user_type,
@@ -343,7 +343,7 @@ export class ProfileBusComponent extends BaseListingComponent {
     };
 
     //console.log("payload",payload);
-     //this.disableBtn = false;
+    //this.disableBtn = false;
     //return
 
     this.supplierInventoryProfileService.createSupplierInventoryProfile(payload).subscribe({
@@ -366,8 +366,10 @@ export class ProfileBusComponent extends BaseListingComponent {
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-       // this.airlineForm.reset();
-        this.resetForm();
+        // this.airlineForm.reset();
+        setTimeout(() => {
+          this.resetForm();
+        }, 1000);
         this.disableBtn = false;
       },
       error: (err) => {
@@ -452,7 +454,7 @@ export class ProfileBusComponent extends BaseListingComponent {
   }
 
   onRefresh(): void {
-   if (this.currentEditId) {
+    if (this.currentEditId) {
       if (this.inventoryList?.length) {
         this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
       }

@@ -77,7 +77,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
 
   searchText = '';
   userType: any = ['Both', 'B2B', 'B2C'];
-  tripTypeList: any = ['Both','Domestic','International'];
+  tripTypeList: any = ['Both', 'Domestic', 'International'];
   starList: number[] = [1, 2, 3, 4, 5];
   editIndex: number | null = null;
 
@@ -258,22 +258,6 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
       is_enable: formValue.is_enable
     };
 
-    //  Maintain inventory list
-    // this.sessionInventories = cloneDeep(this.dataList || []);
-    // if (newInventory?.id) {
-    //   const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
-
-    //   this.sessionInventories[index] = newInventory;
-    // } else {
-    //   this.sessionInventories.push(newInventory);
-    // }
-
-    // //  Add only if it's NOT duplicate (optional)
-
-    // this.sessionInventories.forEach((x, index) => {
-    //   x.id = index + 1;
-    // })
-
     // Clone the session data to work on
     this.sessionInventories = cloneDeep(this.dataList || []);
 
@@ -373,8 +357,10 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-       // this.airlineForm.reset();
-        this.resetForm();
+        // this.airlineForm.reset();
+        setTimeout(() => {
+          this.resetForm();
+        }, 1000);
         this.disableBtn = false;
       },
       error: (err) => {
@@ -461,7 +447,7 @@ export class ProfileHotelComponent extends BaseListingComponent implements OnCha
   }
 
   onRefresh(): void {
-   if (this.currentEditId) {
+    if (this.currentEditId) {
       if (this.inventoryList?.length) {
         this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
       }

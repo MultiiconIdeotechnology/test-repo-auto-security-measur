@@ -258,20 +258,6 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
       is_enable: formValue.is_enable
     };
 
-    //  Maintain inventory list
-    // this.sessionInventories = cloneDeep(this.dataList || []);
-    // if (newInventory?.id) {
-    //   const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
-    //   this.sessionInventories[index] = newInventory;
-    // } else {
-    //   this.sessionInventories.push(newInventory);
-    // }
-
-    // //  Add only if it's NOT duplicate (optional)
-
-    // this.sessionInventories.forEach((x, index) => {
-    //   x.id = index + 1;
-    // })
     // Clone the session data to work on
     this.sessionInventories = cloneDeep(this.dataList || []);
 
@@ -370,8 +356,10 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-       // this.airlineForm.reset();
-        this.resetForm();
+        // this.airlineForm.reset();
+        setTimeout(() => {
+          this.resetForm();
+        }, 1000);
         this.disableBtn = false;
       },
       error: (err) => {
@@ -392,7 +380,7 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
       supplier_name: inventory.supplier_name,
       user_type: inventory.user_type,
       is_enable: inventory.is_enable,
-     
+
     };
   }
 

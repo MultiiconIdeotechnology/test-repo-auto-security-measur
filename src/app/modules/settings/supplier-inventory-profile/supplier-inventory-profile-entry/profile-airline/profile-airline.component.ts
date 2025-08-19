@@ -17,7 +17,6 @@ import { ToasterService } from 'app/services/toaster.service';
 import { cloneDeep } from 'lodash';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { Table } from 'primeng/table';
-import { filter, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-profile-airline',
@@ -85,8 +84,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   tripTypeList: any = ['Both', 'Domestic', 'International'];
   routeTypeList: any = ['Both', 'One Way', 'Round Trip'];
   fareTypeList: any = ['Both', 'Refundable', 'Non Refundable'];
-  fareClassList: any = [
-    'All',
+  fareClassList: string[] = [
     'Economy',
     'Premium Economy',
     'Business',
@@ -253,8 +251,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   onEdit(row: any, index: number): void {
     // this.isEdit = true;
     this.editIndex = index;
-    console.log("row", row)
     this.currentEditId = row.id;
+
     this.airlineForm.patchValue({
       supplier_id: {
         id: row.supplier_id,
@@ -333,10 +331,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     this.cacheService.getOrAdd(CacheLabel.getBontonCommonFareTypeCombo,
       this.supplierInventoryProfileService.getBontonCommonFareTypeCombo('')).subscribe({
         next: data => {
-      this.supplierFareTypeAllList = cloneDeep(data);
+          this.supplierFareTypeAllList = cloneDeep(data);
           this.supplierFareTypeList = this.supplierFareTypeAllList;
         }
-    });
+      });
   }
 
 
@@ -467,37 +465,53 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     }
   }
 
+  private updatingFareClass = false;
 
+  onFareClassChange(event: any): void {
+    if (this.updatingFareClass) return;
 
-  // helper to compare arrays (shallow, order-sensitive)
-  private arraysEqual(a: any[] = [], b: any[] = []) {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-    return true;
+    const control = this.airlineForm.get('fare_class');
+    const selected = event.value || [];
+
+    this.updatingFareClass = true;
+
+    if (selected.includes('All') && selected.length - 1 !== this.fareClassList.length) {
+      // "All" checked but not everything else → remove "All"
+      control?.setValue(selected.filter((v: string) => v !== 'All'), { emitEvent: false });
+    } else if (!selected.includes('All') && selected.length === this.fareClassList.length) {
+      // all items manually checked → add "All"
+      control?.setValue(['All', ...selected], { emitEvent: false });
+    }
+
+    this.updatingFareClass = false;
   }
 
-  isAllSelected = false;
 
-  onAllFareClassToggle(event: any): void {
+
+
+  onSelectAllFareClass(event: any): void {
+    if (this.updatingFareClass) return;
+
     const control = this.airlineForm.get('fare_class');
+
     if (event.source.selected) {
-      this.isAllSelected = true;
-      control?.patchValue([...this.fareClassList], { emitEvent: false });
+      // "All" selected → force all items selected
+      this.updatingFareClass = true;
+      control?.setValue(['All', ...this.fareClassList], { emitEvent: false });
+      this.updatingFareClass = false;
     } else {
-      this.isAllSelected = false;
-      control?.patchValue([], { emitEvent: false });
+      // "All" unselected → clear everything
+      this.updatingFareClass = true;
+      control?.setValue([], { emitEvent: false });
+      this.updatingFareClass = false;
     }
   }
 
-  onFareClassChange(event: any): void {
-    const control = this.airlineForm.get('fare_class');
-    const selected = control?.value || [];
-    this.isAllSelected = selected.length === this.fareClassList.length;
-  }
-
-
   get fareClassDisplay(): string {
     const values = this.airlineForm.get('fare_class')?.value || [];
+    if (values.includes('All') && values.length - 1 === this.fareClassList.length) {
+      return 'All'; // show just "All" when all are selected
+    }
     return values.filter((v: string) => v !== 'All').join(', ');
   }
 
@@ -577,25 +591,6 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       is_enable: formValue.is_enable
     };
 
-
-    console.log("newInventory", newInventory);
-
-
-    //  Maintain inventory list
-    // this.sessionInventories = cloneDeep(this.dataList || []);
-
-    // if (newInventory?.id) {
-    //   const index = this.sessionInventories.indexOf(this.sessionInventories.find(x => x.id == newInventory.id));
-
-    //   this.sessionInventories[index] = newInventory;
-    // } else {
-    //   this.sessionInventories.push(newInventory);
-    // }
-
-
-    // this.sessionInventories.forEach((x, index) => {
-    //   x.id = index + 1;
-    // })
     // Clone the session data to work on
     this.sessionInventories = cloneDeep(this.dataList || []);
 
@@ -661,10 +656,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       this.sessionInventories.push(newInventory);
     }
 
-    // //  Update dataList from sessionInventories
-    // this.sessionInventories.forEach((x, index) => {
-    //   x.tempRowIndex = index + 1; // Optional display ID
-    // });
+    //  Update dataList from sessionInventories
+    this.sessionInventories.forEach((x, index) => {
+      x.tempRowIndex = index + 1; // Optional display ID
+    });
 
 
 
@@ -696,7 +691,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        this.resetForm();
+        setTimeout(() => {        
+          this.resetForm();
+        }, 1000);
         // this.airlineForm.reset({ is_enable: false });
         this.disableBtn = false;
       },
@@ -830,9 +827,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
   onRefresh(): void {
     if (this.currentEditId) {
-      if (this.inventoryList?.length) {
-        this.dataList = this.inventoryList.map(inv => this.getDisplayRow(inv));
-      }
+      this.loadRecord(this.currentEditId);
     } else {
       console.warn('No record found');
     }

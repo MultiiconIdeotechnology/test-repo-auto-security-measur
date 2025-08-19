@@ -51,7 +51,7 @@
                     required>
                     <!-- ngx search -->
                     <mat-option>
-                        <ngx-mat-select-search formControlName ="airlineFilter" placeholderLabel="Search airline"
+                        <ngx-mat-select-search formControlName="airlineFilter" placeholderLabel="Search airline"
                             noEntriesFoundLabel="No matching Airline found">
                         </ngx-mat-select-search>
                     </mat-option>
@@ -70,27 +70,21 @@
                 </mat-select>
             </mat-form-field>
 
-
             <mat-form-field class="w-full">
                 <mat-label>Fare Class</mat-label>
-                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)"
-                    required>
+                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)" required>
 
-                    <!-- Use getter instead of inline filter/join -->
-                    <mat-select-trigger>
-                        {{ fareClassDisplay }}
-                    </mat-select-trigger>
-
-                    <mat-option [value]="'All'" (onSelectionChange)="onAllFareClassToggle($event)">
+                    <!-- All option -->
+                    <mat-option value="All" (onSelectionChange)="onSelectAllFareClass($event)">
                         All
                     </mat-option>
-                    <mat-option *ngFor="let item of fareClassList.slice(1)" [value]="item">
+
+                    <!-- Normal items -->
+                    <mat-option *ngFor="let item of fareClassList" [value]="item">
                         {{ item }}
                     </mat-option>
-
                 </mat-select>
             </mat-form-field>
-
 
 
             <mat-form-field class="w-full">
