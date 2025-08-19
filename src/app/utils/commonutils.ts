@@ -220,7 +220,35 @@ export class CommonUtils {
 
         return value;
     }
-    
+
+    public static isResolutionValidation(model: { file: File, width: number, height: number }): Promise<DocValidationDTO> {
+        return new Promise((resolve) => {
+            if (!model.file) {
+                resolve({ valid: false, alertMessage: `Please upload valid file.`, alertType: 'error' });
+                return;
+            }
+
+            const img = new Image();
+            img.src = URL.createObjectURL(model.file);
+
+            img.onload = () => {
+                const width = img.width;
+                const height = img.height;
+                URL.revokeObjectURL(img.src); // Free up memory
+
+                if (width > model.width || height > model.height) {
+                    resolve({ valid: false, alertMessage: `The uploaded image resolution is too large. Please upload an image with a maximum resolution of ${model.width} × ${model.height} pixels.`, alertType: 'error' });
+                } else {
+                    resolve({ valid: true, alertMessage: '', alertType: 'success' });
+                }
+            };
+
+            img.onerror = () => {
+                resolve({ valid: false, alertMessage: `Could not load image.`, alertType: 'error' });
+            };
+        });
+    }
+
 }
 
 export class DocValidationDTO {
