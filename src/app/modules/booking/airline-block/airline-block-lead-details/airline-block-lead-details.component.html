@@ -95,7 +95,7 @@
                                     <div class="w-[50%]">
                                         <div class="text-md font-semibold text-secondary">Inquiry Date</div>
                                         <div class="font-semibold pt-[2px]">{{(bookingDetail?.bookingDate |
-                                            date:'dd-MM-yyyy hh:mm a') || '-'}}</div>
+                                            date:'dd-MM-yyyy HH:mm') || '-'}}</div>
                                     </div>
                                 </div>
                                 <div class="pb-4 flex">
@@ -167,9 +167,9 @@
                                             </div>
                                             <div class="pt-6 px-7 pb-5 flex items-center">
                                                 <div class="flex items-center w-full">
-                                                    <div class="flex flex-col min-w-[180px]">
+                                                    <div class="flex flex-col w-[180px]">
                                                         <span class="text-xl font-semibold">{{segment.departure_date_time |
-                                                            date: 'h:mma'}}</span>
+                                                            date: 'HH:mm'}}</span>
                                                         <span class="text-md font-medium">
                                                             {{segment.departure_date_time | date: 'EEE, dd-MM-yyyy'}}
                                                         </span>
@@ -198,9 +198,9 @@
                                                                 class="text-gray font-medium">{{bookingDetail.flight_type}}</span>
                                                         </div>
                                                     </div>
-                                                    <div class="flex flex-col min-w-[180px]">
+                                                    <div class="flex flex-col w-[180px]">
                                                         <span class="text-xl font-semibold">{{segment.arrival_date_time |
-                                                            date: 'h:mma'}}</span>
+                                                            date: 'HH:mm'}}</span>
                                                         <span class="text-md font-medium">
                                                             {{segment.arrival_date_time | date: 'EEE, dd-MM-yyyy'}}</span>
                                                         <span class="text-gray text-sm">{{segment.arrival_terminal}}
