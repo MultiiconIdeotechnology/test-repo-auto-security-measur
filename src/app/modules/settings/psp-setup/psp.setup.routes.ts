@@ -8,7 +8,7 @@ export default [
         path: '',
         component: PspSetupComponent,
         canActivate: [AuthGuard],
-        data: { module: 'BO Menu Links', group: 'Settings', operation: 'PSP', category: 'View' }
+        data: { module: 'BO Menu Links', group: 'Settings', operation: 'PSP Setup', category: 'View' }
     },
 
     {

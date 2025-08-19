@@ -1131,7 +1131,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'PSP Setup',
                 type: 'basic',
                 pid: 'SETTINGS_PSPSETUP_VIEW',
-                icon: 'heroicons_outline:wallet',
+                icon: 'heroicons_outline:server',
                 link: Routes.settings.psp_setup_route
             }
         ]
