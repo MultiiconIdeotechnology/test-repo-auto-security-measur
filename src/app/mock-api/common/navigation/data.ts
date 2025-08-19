@@ -1131,7 +1131,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Supplier Inventory Profile',
                 type: 'basic',
                 pid: 'SETTINGS_SUPPLIERINVENTORYPROFILE_VIEW',
-                icon: 'heroicons_outline:wallet',
+                icon: 'heroicons_outline:document-plus',
                 link: Routes.settings.supplier_inventory_profile_route
             },
             {
@@ -1139,7 +1139,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Supplier Fare Type Mapper',
                 type: 'basic',
                 pid: 'SETTINGS_FARETYPEMAPPER_VIEW',
-                icon: 'heroicons_outline:wallet',
+                icon: 'heroicons_outline:inbox-arrow-down',
                 link: Routes.settings.supplier_faretype_mapper_route
             }
         ]
