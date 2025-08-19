@@ -39,7 +39,7 @@ export class PspEntryPaymentModeFormComponent {
   disableBtn: boolean = false
   formGroup: FormGroup;
   readonly: boolean = false;
-  modeList: any[] = ["PG", "Credit Card", "Debit Card", "UPI", "Net Banking", "Internation Card"];
+  modeList: any[] = ["PG", "Credit Card", "Debit Card", "UPI", "Net Banking", "International Card"];
   pspList: any[] = [];
   pgFilter: FormControl = new FormControl('');
   modeFilter: FormControl = new FormControl('');
