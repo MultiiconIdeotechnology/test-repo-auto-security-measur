@@ -51,7 +51,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   @Input() inventoryList: any[] = [];
   private _isFormDisabled = false;
   private _patchingFareClass = false;
-  airlineFilter = new FormControl('');
+  //airlineFilter = new FormControl('');
 
   globalFilter: string = '';
   disableBtn: boolean = false;
@@ -376,8 +376,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     const allIds = this.AirlineList.map(x => x.id);
 
     if (event.source.selected) {
+      // Select All + all airlines
       control?.patchValue(['All', ...allIds], { emitEvent: false });
     } else {
+      // Clear selection
       control?.patchValue([], { emitEvent: false });
     }
 
@@ -391,25 +393,19 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     const control = this.airlineForm.get('airline_id');
     let selected = control?.value || [];
 
+    // Case 1: "All" selected but not all airlines → remove "All"
     if (selected.includes('All') && (selected.length - 1) !== this.AirlineList.length) {
       selected = selected.filter(v => v !== 'All');
       control?.patchValue(selected, { emitEvent: false });
     }
 
+    // Case 2: all airlines selected but "All" missing → add "All"
     if (!selected.includes('All') && selected.length === this.AirlineList.length) {
       control?.patchValue(['All', ...selected], { emitEvent: false });
     }
 
-    if (selected.length === 0) {
-      control?.patchValue([], { emitEvent: false });
-    }
-
     this.isUpdatingAirlineSelection = false;
   }
-
-
-
-
 
 
 
@@ -691,9 +687,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-        setTimeout(() => {        
+       // setTimeout(() => {
           this.resetForm();
-        }, 1000);
+     //   }, 1000);
         // this.airlineForm.reset({ is_enable: false });
         this.disableBtn = false;
       },

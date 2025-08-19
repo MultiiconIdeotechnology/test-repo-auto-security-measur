@@ -357,9 +357,9 @@ export class ProfileInsuranceComponent extends BaseListingComponent implements O
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
         // this.airlineForm.reset();
-        setTimeout(() => {
+       // setTimeout(() => {
           this.resetForm();
-        }, 1000);
+       // }, 1000);
         this.disableBtn = false;
       },
       error: (err) => {

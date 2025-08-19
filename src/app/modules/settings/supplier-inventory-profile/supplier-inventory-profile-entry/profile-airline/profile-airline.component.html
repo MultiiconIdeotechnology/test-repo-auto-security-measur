@@ -36,6 +36,15 @@
             </mat-form-field>
 
             <mat-form-field class="w-full">
+                <mat-label>Trip Type Visibility</mat-label>
+                <mat-select formControlName="trip_type_visible" required>
+                    <mat-option *ngFor="let type of tripTypeVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
                 <mat-label>Route Type</mat-label>
                 <mat-select formControlName="route_type" required>
                     <mat-option *ngFor="let type of routeTypeList" [value]="type">
@@ -45,24 +54,31 @@
             </mat-form-field>
 
             <mat-form-field class="w-full">
+                <mat-label>Route Type Visibility</mat-label>
+                <mat-select formControlName="route_type_visible" required>
+                    <mat-option *ngFor="let type of routeTypeVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full">
                 <mat-label>Airline</mat-label>
 
-                <mat-select multiple formControlName="airline_id" (selectionChange)="clickOtherAirline($event)"
-                    required>
-                    <!-- ngx search -->
+                <mat-select multiple formControlName="airline_id">
+                    <!-- Search -->
                     <mat-option>
                         <ngx-mat-select-search formControlName="airlineFilter" placeholderLabel="Search airline"
                             noEntriesFoundLabel="No matching Airline found">
                         </ngx-mat-select-search>
                     </mat-option>
 
-                    <!-- "All" option -->
-                    <mat-option [value]="'All'" (onSelectionChange)="clickAllAirline($event)"
-                        [checked]="airlineForm.get('airline_id').value?.includes('All')">
+                    <!-- All option -->
+                    <mat-option [value]="'All'" (onSelectionChange)="clickAllAirline($event)">
                         All
                     </mat-option>
 
-                    <!-- Filtered airline list -->
+                    <!-- Airline list -->
                     <mat-option *ngFor="let ct of AirlineList" [value]="ct.id"
                         (onSelectionChange)="clickOtherAirline($event)">
                         {{ ct.short_code }}
@@ -70,9 +86,40 @@
                 </mat-select>
             </mat-form-field>
 
+
+
+            <mat-form-field class="w-full">
+                <mat-label>Airport Codes</mat-label>
+                <mat-select multiple required formControlName="airport_code_id"
+                    (selectionChange)="clickOtherCodes($event)" required>
+                    <mat-option>
+                        <ngx-mat-select-search placeholderLabel="Search"
+                            noEntriesFoundLabel="'no matching Airport Codes found'"
+                            formControlName="airport_code_filter">
+                        </ngx-mat-select-search>
+                    </mat-option>
+                    <mat-option [value]="'All'" (onSelectionChange)="clickAllCodes($event)">
+                        <span class="font-normal">All</span>
+                    </mat-option>
+                    <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id">{{ct.display_name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
+            <mat-form-field class="w-full">
+                <mat-label>Airport Codes Visibility</mat-label>
+                <mat-select formControlName="airport_codes_visible_type" required>
+                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
+                        {{ type }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+
             <mat-form-field class="w-full">
                 <mat-label>Fare Class</mat-label>
-                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)" required>
+                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)"
+                    required>
 
                     <!-- All option -->
                     <mat-option value="All" (onSelectionChange)="onSelectAllFareClass($event)">
@@ -121,57 +168,9 @@
                 </mat-select>
             </mat-form-field>
 
-
-
-
             <mat-form-field class="w-full">
                 <mat-label>Fare Type Class Visibility</mat-label>
                 <mat-select formControlName="fare_type_class_visible_type" required>
-                    <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
-                        {{ type }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-
-            <mat-form-field class="w-full">
-                <mat-label>Route Type Visibility</mat-label>
-                <mat-select formControlName="route_type_visible" required>
-                    <mat-option *ngFor="let type of routeTypeVisibleTypeList" [value]="type">
-                        {{ type }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-
-            <mat-form-field class="w-full">
-                <mat-label>Trip Type Visibility</mat-label>
-                <mat-select formControlName="trip_type_visible" required>
-                    <mat-option *ngFor="let type of tripTypeVisibleTypeList" [value]="type">
-                        {{ type }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-
-            <mat-form-field class="w-full">
-                <mat-label>Airport Codes</mat-label>
-                <mat-select multiple required formControlName="airport_code_id"
-                    (selectionChange)="clickOtherCodes($event)" required>
-                    <mat-option>
-                        <ngx-mat-select-search placeholderLabel="Search"
-                            noEntriesFoundLabel="'no matching Airport Codes found'"
-                            formControlName="airport_code_filter">
-                        </ngx-mat-select-search>
-                    </mat-option>
-                    <mat-option [value]="'All'" (onSelectionChange)="clickAllCodes($event)">
-                        <span class="font-normal">All</span>
-                    </mat-option>
-                    <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id">{{ct.display_name}}</mat-option>
-                </mat-select>
-            </mat-form-field>
-
-
-            <mat-form-field class="w-full">
-                <mat-label>Airport Codes Visibility</mat-label>
-                <mat-select formControlName="airport_codes_visible_type" required>
                     <mat-option *ngFor="let type of fareTypeClassVisibleTypeList" [value]="type">
                         {{ type }}
                     </mat-option>
