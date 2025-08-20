@@ -101,17 +101,38 @@
             </button>
 
             <ng-container *ngIf="tabNameStr == 'Pending'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')" matTooltip="Refresh">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Pending')"
+                    matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
+                <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                    <mat-icon class="icon-size-6">more_vert</mat-icon>
+                </button>
+                <mat-menu #menu>
+                    <button mat-menu-item (click)="exportExcel()">
+                        <mat-icon>arrow_downward</mat-icon>
+                        <span>Export Excel</span>
+                    </button>
+                </mat-menu>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Completed'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Completed')" matTooltip="Refresh">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Completed')"
+                    matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
+                 <button mat-raised-button [color]="'primary'" [matMenuTriggerFor]="menu" class="ml-4">
+                    <mat-icon class="icon-size-6">more_vert</mat-icon>
+                </button>
+                <mat-menu #menu>
+                    <button mat-menu-item (click)="exportExcel()">
+                        <mat-icon>arrow_downward</mat-icon>
+                        <span>Export Excel</span>
+                    </button>
+                </mat-menu>
             </ng-container>
             <ng-container *ngIf="tabNameStr == 'Expired'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Expired')" matTooltip="Refresh">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Expired')"
+                    matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
 
@@ -127,7 +148,8 @@
             </ng-container>
 
             <ng-container *ngIf="tabNameStr == 'Blocked'">
-                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Blocked')" matTooltip="Refresh">
+                <button class="ml-4" mat-flat-button [color]="'primary'" (click)="refreshItemsTab('Blocked')"
+                    matTooltip="Refresh">
                     <mat-icon class="icon-size-4.5" svgIcon="feather:refresh-ccw"></mat-icon>
                 </button>
 
@@ -147,25 +169,29 @@
     <mat-tab-group class="custom-tab lead_tab" [animationDuration]="'0'" (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Pending" [aria-label]="'Pending'" *ngIf="getTabsPermission('pending')">
             <ng-container *ngIf="tabNameStr == 'Pending'">
-                <app-crm-tech-dashboard-pending #pending   [(isFilterShowPending)]="isFilterShowPending"></app-crm-tech-dashboard-pending>
+                <app-crm-tech-dashboard-pending #pending
+                    [(isFilterShowPending)]="isFilterShowPending"></app-crm-tech-dashboard-pending>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Completed" [aria-label]="'Completed'" *ngIf="getTabsPermission('completed')">
             <ng-container *ngIf="tabNameStr == 'Completed'">
-                <app-crm-tech-dashboard-completed #completed [(isFilterShowCompleted)]="isFilterShowCompleted"></app-crm-tech-dashboard-completed>
+                <app-crm-tech-dashboard-completed #completed
+                    [(isFilterShowCompleted)]="isFilterShowCompleted"></app-crm-tech-dashboard-completed>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Blocked" [aria-label]="'Blocked'" *ngIf="getTabsPermission('blocked')">
             <ng-container *ngIf="tabNameStr == 'Blocked'">
-                <app-crm-tech-dashboard-blocked #blocked [(isFilterShowBlocked)]="isFilterShowBlocked"></app-crm-tech-dashboard-blocked>
+                <app-crm-tech-dashboard-blocked #blocked
+                    [(isFilterShowBlocked)]="isFilterShowBlocked"></app-crm-tech-dashboard-blocked>
             </ng-container>
         </mat-tab>
 
         <mat-tab label="Expired" [aria-label]="'Expired'" *ngIf="getTabsPermission('expired')">
             <ng-container *ngIf="tabNameStr == 'Expired'">
-                <app-crm-tech-dashboard-expired #expired [(isFilterShowExpired)]="isFilterShowExpired"></app-crm-tech-dashboard-expired>
+                <app-crm-tech-dashboard-expired #expired
+                    [(isFilterShowExpired)]="isFilterShowExpired"></app-crm-tech-dashboard-expired>
             </ng-container>
         </mat-tab>
     </mat-tab-group>

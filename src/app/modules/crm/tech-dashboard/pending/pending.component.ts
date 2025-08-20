@@ -38,6 +38,8 @@ import { CommonFilterService } from 'app/core/common-filter/common-filter.servic
 import { GlobalSearchService } from 'app/services/global-search.service';
 import { DomainSslVerificationComponent } from '../domain-ssl-verification/domain-ssl-verification.component';
 import { MobileProductActivateDialogComponent } from '../domain-ssl-verification/mobile-product-activate-dialog/mobile-product-activate-dialog.component';
+import { Excel } from 'app/utils/export/excel';
+import { DateTime } from 'luxon';
 
 @Component({
     selector: 'app-crm-tech-dashboard-pending',
@@ -493,6 +495,32 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             });
     }
 
+    exportExcel(event?: any): void {
+        const filterReq = this.getNewFilterReq(event);
+        filterReq['Filter'] = this.searchInputControlPending.value;
+        filterReq['Take'] = this.totalRecords;
+
+        this.crmService.getTechProductList(filterReq).subscribe(data => {
+            for (var dt of data.data) {
+                dt.integration_start_date_time = dt.integration_start_date_time ? DateTime.fromISO(dt.integration_start_date_time).toFormat('dd-MM-yyyy') : ''
+                dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy') : ''
+            }
+            Excel.export(
+                'Pending',
+                [
+                    { header: 'Item Code', property: 'item_code' },
+                    { header: 'Item.', property: 'item_name' },
+                    { header: 'Product', property: 'product_name' },
+                    { header: 'Status', property: 'product_status' },
+                    { header: 'Agent Code', property: 'agentCode' },
+                    { header: 'Agency Name', property: 'agency_name' },
+                    { header: ' Start Int. Date', property: 'integration_start_date_time' },
+                    { header: 'Entry Date', property: 'entry_date_time' },
+                ],
+                data.data, "Pending", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+        });
+    }
+
     ngOnDestroy(): void {
 
         if (this.settingsUpdatedSubscription) {
@@ -500,4 +528,5 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             this._filterService.activeFiltData = {};
         }
     }
+
 }

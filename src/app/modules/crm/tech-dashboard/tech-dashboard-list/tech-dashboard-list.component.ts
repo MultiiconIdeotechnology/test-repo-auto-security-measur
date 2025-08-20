@@ -173,10 +173,14 @@ export class CRMTechDashboardListComponent implements OnDestroy {
     }
 
     exportExcel(): void {
-        if (this.tab == 'blocked')
-            this.blocked.exportExcel()
+        if (this.tab == 'pending' || this.tab == 'Pending')
+            this.pending.exportExcel();
+        else if (this.tab == 'completed')
+            this.completed.exportExcel();
+        else if (this.tab == 'blocked')
+            this.blocked.exportExcel();
         else
-            this.expired.exportExcel()
+            this.expired.exportExcel();
     }
 
     pendingRefresh(event: any) {
