@@ -12,7 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { BaseListingComponent, Column } from 'app/form-models/base-listing';
-import { PSPPermissions, Security, filter_module_name, messages, module_name } from 'app/security';
+import { PSPPermissions, PSPSetupPermissions, Security, filter_module_name, messages, module_name } from 'app/security';
 import { PspSettingService } from 'app/services/psp-setting.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
@@ -169,9 +169,9 @@ export class PspSetupComponent extends BaseListingComponent {
   }
 
   SetDefault(record): void {
-    // if (!Security.hasPermission(PSPPermissions.setDefaultPermissions)) {
-    //   return this.toasterService.showToast('error', messages.permissionDenied);
-    // }
+    if (!Security.hasPermission(PSPSetupPermissions.setDefaultPermissions)) {
+      return this.toasterService.showToast('error', messages.permissionDenied);
+    }
 
     const label: string = 'Set Default PSP Profile';
     this.conformationService
@@ -209,9 +209,9 @@ export class PspSetupComponent extends BaseListingComponent {
   }
 
   EnableDisable(record): void {
-    // if (!Security.hasPermission(inventoryVisaPermissions.enableDisablePermissions)) {
-    //     return this.alertService.showToast('error', messages.permissionDenied);
-    // }
+    if (!Security.hasPermission(PSPSetupPermissions.enableDisablePermissions)) {
+        return this.alertService.showToast('error', messages.permissionDenied);
+    }
 
     const label: string = record.is_enabled ? 'Disable' : 'Enable';
     this.conformationService
@@ -256,6 +256,9 @@ export class PspSetupComponent extends BaseListingComponent {
   }
 
   bulkAssign(record: any) {
+       if (!Security.hasPermission(PSPSetupPermissions.bulkAssignPermissions)) {
+        return this.alertService.showToast('error', messages.permissionDenied);
+    }
     this.matDialog.open(BulkAssignDialogComponent,
       {
         data: { record: record, key: 'bulk-assign', title: 'Bulk Assign Profile' },
