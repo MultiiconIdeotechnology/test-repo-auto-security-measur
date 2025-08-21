@@ -833,14 +833,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                       icon: '',
                       link: Routes.reports.campaign_register_path_route
                   },
-                    {
-                        id: 'reports.campaignsummary',
-                        title: 'Campaign Summary',
-                        type: 'basic',
-                        pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
-                        icon: '',
-                        link: Routes.reports.campaign_summary_path_route
-                    },
+                    // {
+                    //     id: 'reports.campaignsummary',
+                    //     title: 'Campaign Summary',
+                    //     type: 'basic',
+                    //     pid: 'CAMPAIGN-REPORTS_CAMPAIGNSUMMARY_VIEW',
+                    //     icon: '',
+                    //     link: Routes.reports.campaign_summary_path_route
+                    // },
                      {
                         id: 'reports.campaignsummaryreport',
                         title: 'Campaign Summary Report',
@@ -959,14 +959,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon: 'mat_outline:holiday_village',
                 link: Routes.inventory.holiday_v2_route
             },
-            // {
-            //     id: 'inventory.cab',
-            //     title: 'Cab',
-            //     type: 'basic',
-            //     pid: 'INVENTORY_CAB_VIEW',
-            //     icon: 'heroicons_outline:newspaper',
-            //     link: Routes.inventory.cab_route
-            // },
+            {
+                id: 'inventory.cab',
+                title: 'Cab',
+                type: 'basic',
+                pid: 'INVENTORY_CAB_VIEW',
+                icon: 'heroicons_outline:newspaper',
+                link: Routes.inventory.cab_route
+            },
             // {
             //     id: 'inventory.cab',
             //     title: 'Cab',
