@@ -566,6 +566,12 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
     const formValue = this.airlineForm.value;
 
+    let airline = formValue.airline_id || [];
+
+    if (airline.includes('All')) {
+      airline = ['All'];
+    }
+
     const newInventory = {
       service: formValue.service || 'Airline',
       supplier_id: this.suplier_id,
@@ -576,7 +582,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       route_type: formValue.route_type,
       route_type_visible: formValue.route_type_visible,
       trip_type_visible: formValue.trip_type_visible,
-      airline: formValue.airline_id || [],
+      airline: airline ,
       fare_class: formValue.fare_class || [],
       fare_type: formValue.fare_type,
       fare_type_class: formValue.fare_type_class || [],
@@ -687,9 +693,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
         this.toasterService.showToast('success', 'Saved successfully', 'top-right');
 
-       // setTimeout(() => {
-          this.resetForm();
-     //   }, 1000);
+        // setTimeout(() => {
+        this.resetForm();
+        //   }, 1000);
         // this.airlineForm.reset({ is_enable: false });
         this.disableBtn = false;
       },
