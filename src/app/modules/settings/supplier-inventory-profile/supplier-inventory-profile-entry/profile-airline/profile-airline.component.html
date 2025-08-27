@@ -200,15 +200,8 @@
             </mat-form-field> -->
             <mat-form-field class="w-full">
                 <mat-label>Stops</mat-label>
-                <mat-select multiple formControlName="stops" required>
-
-                    <mat-option [value]="'All'" [selected]="airlineForm.get('stops')?.value?.includes('All')"
-                        (onSelectionChange)="onSelectAllStops($event)">
-                        All
-                    </mat-option>
-
-                    <mat-option *ngFor="let stop of stopList" [value]="stop"
-                        (onSelectionChange)="onStopsChange($event)">
+                <mat-select multiple formControlName="stops" required>           
+                    <mat-option *ngFor="let stop of stopList" [value]="stop">
                         {{ stop }} Stop{{ stop > 1 ? 's' : '' }}
                     </mat-option>
 
