@@ -254,23 +254,35 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     this.currentEditId = row.id;
 
     let airlineSelection: any[] = [];
-
     if (row.airline?.includes('All')) {
       airlineSelection = ["All"];
     } else {
       airlineSelection = row.airline || [];
     }
 
-     let airPortCodeSelection: any[] = [];
-
+    let airPortCodeSelection: any[] = [];
     if (row.airport_codes?.includes('All')) {
       airPortCodeSelection = ["All"];
     } else {
       airPortCodeSelection = row.airport_codes || [];
     }
 
+    let fareTypeClassSelection: any[] = [];
+    if (row.fare_type_class?.includes('All')) {
+      fareTypeClassSelection = ["All"];
+    } else {
+      fareTypeClassSelection = row.fare_type_class || [];
+    }
 
-   
+    let fareClassSelection: any[] = [];
+    if (row.fare_class?.includes('All')) {
+      fareClassSelection = ["All"];
+    } else {
+      fareClassSelection = row.fare_class || [];
+    }
+
+
+
 
     setTimeout(() => {
       this.airlineForm.patchValue({
@@ -283,7 +295,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
         trip_type_visible: row.trip_type_visible,
         airline_id: row.airline,
         airlineFilter: '',
-        fare_class: row.fare_class || [],
+        fare_class: fareClassSelection,
         fare_type: row.fare_type,
         fare_type_class_visible_type: row.fare_type_class_visible_type,
         airport_code_id: row.airport_codes,
@@ -291,6 +303,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
         airport_codes_visible_type: row.airport_codes_visible_type,
         stops: row.stops || [],
         fare_type_class: row.fare_type_class || [],
+        supplier_fare_type_filter: '',
         is_enable: row.is_enable
       });
 
@@ -439,9 +452,9 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
   //Airport Codes
 
-private isUpdatingAirportCodes = false;
+  private isUpdatingAirportCodes = false;
 
-clickAllCodes(event: any): void {
+  clickAllCodes(event: any): void {
     if (this.isUpdatingAirportCodes) return;
     this.isUpdatingAirportCodes = true;
 
@@ -458,10 +471,10 @@ clickAllCodes(event: any): void {
     }
 
     this.isUpdatingAirportCodes = false;
-}
+  }
 
-clickOtherCodes(event: any): void {
- if (this.isUpdatingAirportCodes) return;
+  clickOtherCodes(event: any): void {
+    if (this.isUpdatingAirportCodes) return;
     this.isUpdatingAirportCodes = true;
 
     const control = this.airlineForm.get('airport_code_id');
@@ -483,94 +496,106 @@ clickOtherCodes(event: any): void {
     }
 
     this.isUpdatingAirportCodes = false;
-}
+  }
 
 
 
 
   //Fare Type class
+  private isUpdatingFareTypeClass = false;
   clickAllFareTypeClass(event: any): void {
-    const control = this.airlineForm.get('fare_type_class');
-    const allIds = this.supplierFareTypeList.map(x => x.id);
+     if (this.isUpdatingFareTypeClass) return;
+    this.isUpdatingFareTypeClass = true;
 
-    if (event.source.selected) {
-      control?.patchValue(['All', ...allIds], { emitEvent: false });
+    const control = this.airlineForm.get('fare_type_class');
+    let allIds = this.supplierFareTypeList.map(x => x.id);
+
+    if (event.source._selected) {
+      // Select All + all airlines
+      if (control.value.some(x => x != 'All'))
+        control?.patchValue(['All'], { emitEvent: false });
     } else {
+      // Clear selection
       control?.patchValue([], { emitEvent: false });
     }
+
+    this.isUpdatingFareTypeClass = false;
   }
 
   clickOtherFareTypeClass(event: any): void {
+   if (this.isUpdatingFareTypeClass) return;
+    this.isUpdatingFareTypeClass = true;
+
     const control = this.airlineForm.get('fare_type_class');
     let selected = control?.value || [];
 
-    // If "All" is selected but not all items are selected, remove "All"
-    if (selected.includes('All') && selected.length - 1 !== this.supplierFareTypeList.length) {
-      selected = selected.filter((v: any) => v !== 'All');
+    // Case 1: "All" selected but not all airlines → remove "All"
+    if (selected.includes('All') && (selected.length - 1) !== this.supplierFareTypeList.length) {
+      selected = selected.filter(v => v !== 'All');
       control?.patchValue(selected, { emitEvent: false });
     }
 
-    // If all items are manually selected but "All" is missing, add "All"
+    // Case 2: all airlines selected but "All" missing → add "All"
     if (!selected.includes('All') && selected.length === this.supplierFareTypeList.length) {
       control?.patchValue(['All', ...selected], { emitEvent: false });
     }
+
+    if (!selected.includes('All') && selected.length === this.supplierFareTypeList.length) {
+      control?.patchValue(['All', ...selected], { emitEvent: false });
+    }
+
+    this.isUpdatingFareTypeClass = false;
   }
 
-  private updatingFareClass = false;
-
-  onFareClassChange(event: any): void {
-    if (this.updatingFareClass) return;
-
-    const control = this.airlineForm.get('fare_class');
-    const selected = event.value || [];
-
+//Fare class
+private updatingFareClass = false;
+onSelectAllFareClass(event: any): void {
+   if (this.updatingFareClass) return;
     this.updatingFareClass = true;
 
-    if (selected.includes('All') && selected.length - 1 !== this.fareClassList.length) {
-      // "All" checked but not everything else → remove "All"
-      control?.setValue(selected.filter((v: string) => v !== 'All'), { emitEvent: false });
-    } else if (!selected.includes('All') && selected.length === this.fareClassList.length) {
-      // all items manually checked → add "All"
-      control?.setValue(['All', ...selected], { emitEvent: false });
+    const control = this.airlineForm.get('fare_class');
+    let allIds = this.fareClassList.map(x => x);
+
+    if (event.source._selected) {
+      // Select All + all airlines
+      if (control.value.some(x => x != 'All'))
+        control?.patchValue(['All'], { emitEvent: false });
+    } else {
+      // Clear selection
+      control?.patchValue([], { emitEvent: false });
     }
 
     this.updatingFareClass = false;
-  }
+}
 
-
-
-
-  onSelectAllFareClass(event: any): void {
-    if (this.updatingFareClass) return;
+onFareClassChange(event: any): void {
+  if (this.updatingFareClass) return;
+    this.updatingFareClass = true;
 
     const control = this.airlineForm.get('fare_class');
+    let selected = control?.value || [];
 
-    if (event.source.selected) {
-      // "All" selected → force all items selected
-      this.updatingFareClass = true;
-      control?.setValue(['All', ...this.fareClassList], { emitEvent: false });
-      this.updatingFareClass = false;
-    } else {
-      // "All" unselected → clear everything
-      this.updatingFareClass = true;
-      control?.setValue([], { emitEvent: false });
-      this.updatingFareClass = false;
+    // Case 1: "All" selected but not all airlines → remove "All"
+    if (selected.includes('All') && (selected.length - 1) !== this.fareClassList.length) {
+      selected = selected.filter(v => v !== 'All');
+      control?.patchValue(selected, { emitEvent: false });
     }
-  }
 
-  get fareClassDisplay(): string {
-    const values = this.airlineForm.get('fare_class')?.value || [];
-    if (values.includes('All') && values.length - 1 === this.fareClassList.length) {
-      return 'All'; // show just "All" when all are selected
+    // Case 2: all airlines selected but "All" missing → add "All"
+    if (!selected.includes('All') && selected.length === this.fareClassList.length) {
+      control?.patchValue(['All', ...selected], { emitEvent: false });
     }
-    return values.filter((v: string) => v !== 'All').join(', ');
-  }
 
+    if (!selected.includes('All') && selected.length === this.fareClassList.length) {
+      control?.patchValue(['All', ...selected], { emitEvent: false });
+    }
 
+    this.updatingFareClass = false;
+}
 
 
   onSelectAllStops(event: any): void {
-    if (event.source.selected) {
+    if (event.source._selected) {
       this.airlineForm.get('stops')?.patchValue(
         ['All', ...this.stopList],
         { emitEvent: false }
@@ -622,16 +647,23 @@ clickOtherCodes(event: any): void {
     const formValue = this.airlineForm.value;
 
     let airline = formValue.airline_id || [];
-
     if (airline.includes('All')) {
       airline = ['All'];
     }
 
-
-     let airPortCode = formValue.airport_code_id || [];
-
+    let airPortCode = formValue.airport_code_id || [];
     if (airPortCode.includes('All')) {
       airPortCode = ['All'];
+    }
+    
+    let fareTypeClass = formValue.fare_type_class || [];
+    if (fareTypeClass.includes('All')) {
+      fareTypeClass = ['All'];
+    }
+
+    let fareClass = formValue.fare_class || [];
+    if (fareClass.includes('All')) {
+      fareClass = ['All'];
     }
 
 
@@ -646,11 +678,11 @@ clickOtherCodes(event: any): void {
       route_type_visible: formValue.route_type_visible,
       trip_type_visible: formValue.trip_type_visible,
       airline: airline,
-      fare_class: formValue.fare_class || [],
+      fare_class: fareClass,
       fare_type: formValue.fare_type,
-      fare_type_class: formValue.fare_type_class || [],
+      fare_type_class: fareTypeClass,
       fare_type_class_visible_type: formValue.fare_type_class_visible_type,
-      airport_codes:airPortCode,
+      airport_codes: airPortCode,
       airport_codes_visible_type: formValue.airport_codes_visible_type,
       stops: formValue.stops || [],
       is_enable: formValue.is_enable

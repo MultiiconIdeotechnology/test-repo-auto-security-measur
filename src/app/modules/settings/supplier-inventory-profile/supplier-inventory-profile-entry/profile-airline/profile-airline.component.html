@@ -91,8 +91,7 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Airport Codes</mat-label>
-                <mat-select multiple required formControlName="airport_code_id"
-                     required>
+                <mat-select multiple required formControlName="airport_code_id" required>
                     <mat-option>
                         <ngx-mat-select-search placeholderLabel="Search"
                             noEntriesFoundLabel="'no matching Airport Codes found'"
@@ -100,18 +99,18 @@
                         </ngx-mat-select-search>
                     </mat-option>
 
-                    <mat-option [value]="'All'" [selected]="airlineForm.get('airport_code_id')?.value?.includes('All')" 
-                    (onSelectionChange)="clickAllCodes($event)">
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('airport_code_id')?.value?.includes('All')"
+                        (onSelectionChange)="clickAllCodes($event)">
                         All
                     </mat-option>
 
-                     <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id"
+                    <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id"
                         (onSelectionChange)="clickOtherCodes($event)">
                         {{ ct.display_name }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            
+
 
             <mat-form-field class="w-full">
                 <mat-label>Airport Codes Visibility</mat-label>
@@ -125,16 +124,17 @@
 
             <mat-form-field class="w-full">
                 <mat-label>Fare Class</mat-label>
-                <mat-select multiple formControlName="fare_class" (selectionChange)="onFareClassChange($event)"
-                    required>
+                <mat-select multiple formControlName="fare_class" required>
 
                     <!-- All option -->
-                    <mat-option value="All" (onSelectionChange)="onSelectAllFareClass($event)">
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('fare_class')?.value?.includes('All')"
+                        (onSelectionChange)="onSelectAllFareClass($event)">
                         All
                     </mat-option>
 
                     <!-- Normal items -->
-                    <mat-option *ngFor="let item of fareClassList" [value]="item">
+                    <mat-option *ngFor="let item of fareClassList" [value]="item"
+                        (selectionChange)="onFareClassChange($event)">
                         {{ item }}
                     </mat-option>
                 </mat-select>
@@ -153,8 +153,7 @@
             <!-- Supplier Fare Type class Combo -->
             <mat-form-field class="w-full">
                 <mat-label>Fare Type Class</mat-label>
-                <mat-select multiple required formControlName="fare_type_class"
-                    (selectionChange)="clickOtherFareTypeClass($event)">
+                <mat-select multiple required formControlName="fare_type_class">
 
                     <!-- Search -->
                     <mat-option>
@@ -164,11 +163,13 @@
                         </ngx-mat-select-search>
                     </mat-option>
 
-                    <mat-option value="All" (onSelectionChange)="clickAllFareTypeClass($event)">
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('fare_type_class')?.value?.includes('All')"
+                        (onSelectionChange)="clickAllFareTypeClass($event)">
                         All
                     </mat-option>
 
-                    <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct.id">
+                    <mat-option *ngFor="let ct of supplierFareTypeList" [value]="ct.id"
+                        (selectionChange)="clickOtherFareTypeClass($event)">
                         {{ ct.fare_type }}
                     </mat-option>
 
@@ -184,24 +185,36 @@
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field class="w-full">
+            <!-- <mat-form-field class="w-full">
                 <mat-label>Stops</mat-label>
-                <mat-select multiple formControlName="stops" (selectionChange)="onStopsChange($event)" required>
+                <mat-select multiple formControlName="stops" required>
 
-                    <!-- Trigger text without "All" -->
-                    <mat-select-trigger>
-                        {{ stopsDisplay }}
-                    </mat-select-trigger>
-
-                    <mat-option value="All" (onSelectionChange)="onSelectAllStops($event)">
+                    <mat-option value="All" [selected]="airlineForm.get('stops')?.value?.includes('All')" (onSelectionChange)="onSelectAllStops($event)">
                         All
                     </mat-option>
 
-                    <mat-option *ngFor="let stop of stopList" [value]="stop">
+                    <mat-option *ngFor="let stop of stopList"  [value]="stop"  (selectionChange)="onStopsChange($event)">
                         {{ stop }} Stop{{ stop > 1 ? 's' : '' }}
                     </mat-option>
                 </mat-select>
+            </mat-form-field> -->
+            <mat-form-field class="w-full">
+                <mat-label>Stops</mat-label>
+                <mat-select multiple formControlName="stops" required>
+
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('stops')?.value?.includes('All')"
+                        (onSelectionChange)="onSelectAllStops($event)">
+                        All
+                    </mat-option>
+
+                    <mat-option *ngFor="let stop of stopList" [value]="stop"
+                        (onSelectionChange)="onStopsChange($event)">
+                        {{ stop }} Stop{{ stop > 1 ? 's' : '' }}
+                    </mat-option>
+
+                </mat-select>
             </mat-form-field>
+
 
             <div class="flex flex-row">
                 <mat-checkbox class="example-margin ml-[-8px]" formControlName="is_enable">
