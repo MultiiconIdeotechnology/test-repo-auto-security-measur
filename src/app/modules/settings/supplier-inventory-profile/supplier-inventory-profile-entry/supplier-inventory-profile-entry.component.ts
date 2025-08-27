@@ -195,8 +195,8 @@ export class SupplierInventoryProfileEntryComponent {
         this.isEditing = false;
         this.profileForm.get('profile_name')?.disable();
       },
-      error: (err) => {
-        console.error('Save failed:', err);
+      error: (err) => {      
+        this.toasterService.showToast('error',err)
         this.isLoading = false;
       }
     });

@@ -68,13 +68,14 @@
                 <mat-select multiple formControlName="airline_id">
                     <!-- Search -->
                     <mat-option>
-                        <ngx-mat-select-search formControlName="airlineFilter" placeholderLabel="Search airline" 
+                        <ngx-mat-select-search formControlName="airlineFilter" placeholderLabel="Search airline"
                             noEntriesFoundLabel="No matching Airline found">
                         </ngx-mat-select-search>
                     </mat-option>
 
                     <!-- All option -->
-                    <mat-option [value]="'All'"  [selected]="airlineForm.get('airline_id')?.value?.includes('All')" (onSelectionChange)="clickAllAirline($event)">
+                    <mat-option [value]="'All'" [selected]="airlineForm.get('airline_id')?.value?.includes('All')"
+                        (onSelectionChange)="clickAllAirline($event)">
                         All
                     </mat-option>
 
@@ -104,7 +105,7 @@
                     <mat-option *ngFor="let ct of airPortcodeList" [value]="ct.id">{{ct.display_name}}</mat-option>
                 </mat-select>
             </mat-form-field>
-
+            
 
             <mat-form-field class="w-full">
                 <mat-label>Airport Codes Visibility</mat-label>
@@ -177,7 +178,7 @@
                 </mat-select>
             </mat-form-field>
 
-            <mat-form-field  class="w-full">
+            <mat-form-field class="w-full">
                 <mat-label>Stops</mat-label>
                 <mat-select multiple formControlName="stops" (selectionChange)="onStopsChange($event)" required>
 

@@ -261,6 +261,17 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       airlineSelection = row.airline || [];
     }
 
+     let airPortCode: any[] = [];
+
+    if (row.airport_codes?.includes('All')) {
+      airPortCode = ["All"];
+    } else {
+      airPortCode = row.airport_codes || [];
+    }
+
+
+   
+
     setTimeout(() => {
       this.airlineForm.patchValue({
         supplier_id: { id: row.supplier_id, company_name: row.supplier_name },
@@ -271,17 +282,18 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
         route_type_visible: row.route_type_visible,
         trip_type_visible: row.trip_type_visible,
         airline_id: row.airline,
-        airlineFilter : '',
+        airlineFilter: '',
         fare_class: row.fare_class || [],
         fare_type: row.fare_type,
         fare_type_class_visible_type: row.fare_type_class_visible_type,
-        airport_code_id: row.airport_codes || [],
-        airport_code_filter:'',
+        airport_code_id: row.airport_codes,
+        airport_code_filter: '',
         airport_codes_visible_type: row.airport_codes_visible_type,
         stops: row.stops || [],
         fare_type_class: row.fare_type_class || [],
         is_enable: row.is_enable
       });
+
 
       this.cd.detectChanges();
     }, 0);
@@ -426,28 +438,51 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
 
 
   //Airport Codes
-  clickOtherCodes(event?): void {
-    if (event.source.value === 'All') return;
 
-    const allSelected = this.airlineForm.get('airport_code_id').value.find(x => x == 'All');
-    if (allSelected) {
-      const updatedClients = this.airlineForm.get('airport_code_id').value.filter(x => x !== 'All');
-      this.airlineForm.get('airport_code_id').patchValue(updatedClients, { emitEvent: false });
-    }
-  }
+private isUpdatingAirportCodes = false;
 
-  clickAllCodes(event: any): void {
+clickAllCodes(event: any): void {
+    if (this.isUpdatingAirportCodes) return;
+    this.isUpdatingAirportCodes = true;
 
-    if (event.source.value !== 'All') return;
+    const control = this.airlineForm.get('airport_code_id');
+    const allIds = this.AirlineList.map(x => x.id);
 
-    const all = event.source.selected;
-
-    if (all) {
-      this.airlineForm.get('airport_code_id').patchValue(['All', ...this.airPortcodeList.map(x => x.id)], { emitEvent: false });
+    if (event.source._selected) {
+      // Select All + all airlines
+      if (control.value.some(x => x != 'All'))
+        control?.patchValue(['All'], { emitEvent: false });
     } else {
-      this.airlineForm.get('airport_code_id').patchValue([], { emitEvent: false });
+      // Clear selection
+      control?.patchValue([], { emitEvent: false });
     }
+
+    this.isUpdatingAirportCodes = false;
+}
+
+clickOtherCodes(event: any): void {
+  const control = this.airlineForm.get('airport_code_id');
+  const selected: string[] = event.value || [];
+  const allIds = this.airPortcodeList.map(x => x.id);
+
+  // If "All" is clicked
+  if (selected.includes('All')) {
+    control?.patchValue(['All', ...allIds], { emitEvent: false });
+    return;
   }
+
+  // If user selected all codes one by one → auto-add "All"
+  if (selected.length === allIds.length) {
+    control?.patchValue(['All', ...allIds], { emitEvent: false });
+    return;
+  }
+
+  // Normal case
+  control?.patchValue(selected, { emitEvent: false });
+}
+
+
+
 
   //Fare Type class
   clickAllFareTypeClass(event: any): void {
