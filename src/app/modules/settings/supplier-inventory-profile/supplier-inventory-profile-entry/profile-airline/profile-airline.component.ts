@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -103,7 +103,8 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     private supplierInventoryProfileService: SupplierInventoryProfileService,
     private toasterService: ToasterService,
     private entityService: EntityService,
-    private cacheService: CacheService
+    private cacheService: CacheService,
+    private cd: ChangeDetectorRef
   ) {
     super('');
     this.airlineForm = this.formBuilder.group({
@@ -249,38 +250,52 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
   onEdit(row: any, index: number): void {
-    // this.isEdit = true;
     this.editIndex = index;
     this.currentEditId = row.id;
 
-    this.airlineForm.patchValue({
-      supplier_id: {
-        id: row.supplier_id,
-        company_name: row.supplier_name
-      },
-      user_type: row.user_type,
-      id: row.id,
-      trip_type: row.trip_type,
-      route_type: row.route_type,
-      route_type_visible: row.route_type_visible,
-      trip_type_visible: row.trip_type_visible,
-      airline_id: row.airline || [],
-      fare_class: row.fare_class || [],
-      fare_type: row.fare_type,
-      fare_type_class_visible_type: row.fare_type_class_visible_type,
-      airport_code_id: row.airport_codes || [],
-      airport_codes_visible_type: row.airport_codes_visible_type,
-      stops: row.stops || [],
-      fare_type_class: row.fare_type_class || [],
-      is_enable: row.is_enable
-    });
-    // this.airlineForm.get('fare_type_class').patchValue(row.fare_type_class, { emitEvent: false });
+    let airlineSelection: any[] = [];
+
+    if (row.airline?.includes('All')) {
+      airlineSelection = ["All"];
+    } else {
+      airlineSelection = row.airline || [];
+    }
+
+    setTimeout(() => {
+      this.airlineForm.patchValue({
+        supplier_id: { id: row.supplier_id, company_name: row.supplier_name },
+        user_type: row.user_type,
+        id: row.id,
+        trip_type: row.trip_type,
+        route_type: row.route_type,
+        route_type_visible: row.route_type_visible,
+        trip_type_visible: row.trip_type_visible,
+        airline_id: row.airline,
+        airlineFilter : '',
+        fare_class: row.fare_class || [],
+        fare_type: row.fare_type,
+        fare_type_class_visible_type: row.fare_type_class_visible_type,
+        airport_code_id: row.airport_codes || [],
+        airport_code_filter:'',
+        airport_codes_visible_type: row.airport_codes_visible_type,
+        stops: row.stops || [],
+        fare_type_class: row.fare_type_class || [],
+        is_enable: row.is_enable
+      });
+
+      this.cd.detectChanges();
+    }, 0);
 
     this.suplier_id = row.supplier_id;
     this.suplier_name = row.supplier_name;
     this.onSupplierChange({ id: row.supplier_id, company_name: row.supplier_name }, row);
   }
 
+
+  compareAirline(o1: any, o2: any): boolean {
+    if (o1 == null || o2 == null) return false;
+    return o1.toString() === o2.toString();
+  }
 
   getSupplierCombo(): void {
     this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierAirlineCombo,
@@ -375,9 +390,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     const control = this.airlineForm.get('airline_id');
     const allIds = this.AirlineList.map(x => x.id);
 
-    if (event.source.selected) {
+    if (event.source._selected) {
       // Select All + all airlines
-      control?.patchValue(['All', ...allIds], { emitEvent: false });
+      if (control.value.some(x => x != 'All'))
+        control?.patchValue(['All'], { emitEvent: false });
     } else {
       // Clear selection
       control?.patchValue([], { emitEvent: false });
@@ -400,6 +416,10 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
     }
 
     // Case 2: all airlines selected but "All" missing → add "All"
+    if (!selected.includes('All') && selected.length === this.AirlineList.length) {
+      control?.patchValue(['All', ...selected], { emitEvent: false });
+    }
+
     if (!selected.includes('All') && selected.length === this.AirlineList.length) {
       control?.patchValue(['All', ...selected], { emitEvent: false });
     }
@@ -582,7 +602,7 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
       route_type: formValue.route_type,
       route_type_visible: formValue.route_type_visible,
       trip_type_visible: formValue.trip_type_visible,
-      airline: airline ,
+      airline: airline,
       fare_class: formValue.fare_class || [],
       fare_type: formValue.fare_type,
       fare_type_class: formValue.fare_type_class || [],
