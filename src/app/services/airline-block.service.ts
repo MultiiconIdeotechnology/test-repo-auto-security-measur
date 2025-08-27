@@ -15,13 +15,13 @@ export class AirlineBlockService {
     user: any = {};
     private baseUrl = environment.apiUrl;
     isLoading: boolean = false;
-    
+
     constructor(private http: HttpClient) {
     }
 
     setAirlineBlockData(data: any) {
         this.airlineBlockDataSubject.next(data);
-    }    
+    }
 
     getAirlineBlockList(model: any): Observable<any> {
         return this.http.post<any>(this.baseUrl + 'AirBlock/getAirBlockList', model);
@@ -62,5 +62,9 @@ export class AirlineBlockService {
     setAuditUnaudit(id: any) {
         return this.http.post<any[]>(this.baseUrl + 'AirBlock/setAuditUnaudit', { id: id });
     }
-    
+
+    getSupplierCombo(filter: string, type?: string): Observable<any[]> {
+        return this.http.post<any[]>(environment.apiUrl + 'Supplier/getSupplierCombo', { filter: filter, type: type });
+    }
+
 }

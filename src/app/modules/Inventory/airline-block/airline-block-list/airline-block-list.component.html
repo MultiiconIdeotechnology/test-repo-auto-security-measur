@@ -65,7 +65,7 @@
                     <th class="min-w-[120px] text-center dark:bg-[#1e293b]"
                         alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.is_publish_for_bonton"
                         [ngClass]="{'left-0': !frozenObj?.is_publish_for_bonton}">
-                        Bonton
+                        Airline
                         <span class="float-right"
                             (click)="isFrozenColumn('is_publish_for_bonton');$event.stopPropagation()">
                             <i *ngIf="frozenObj?.is_publish_for_bonton" class="pi pi-lock icon-size-3"></i>
@@ -121,10 +121,22 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-
                     <th>
-                        <p-columnFilter type="text" matchMode="contains" field="supplier_name"
-                            placeholder="Search by Supplier Name" ariaLabel="Filter Supplier Name"></p-columnFilter>
+                        <p-columnFilter class="searchableDropdown" field="supplier_name" matchMode="equals"
+                            [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown class="filter-dropdown" [options]="supplierList" optionLabel="company_name"
+                                    [(ngModel)]="selectedSupplier" [filter]="true" filterBy="company_name"
+                                    (onFilter)="getSupplierList($event?.filter)" (onChange)="filter($event.value)"
+                                    [showClear]="true" appendTo="body" placeholder="Select Supplier">
+                                    <ng-template let-agent pTemplate="item">
+                                        <div class="flex align-items-center gap-1">
+                                            {{agent.company_name}}
+                                        </div>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
                     </th>
                     <th>
                         <p-columnFilter field="departure_date_time" type="date">
@@ -192,6 +204,11 @@
                             <mat-icon> more_vert </mat-icon>
                         </span>
                         <mat-menu #optionMenu>
+                            <button mat-menu-item (click)="delete(element, index)">
+                                <mat-icon class="mat-18">delete</mat-icon>
+                                <span style="font-weight: 600">Delete</span>
+                            </button>
+                            <mat-divider></mat-divider>
                             <button mat-menu-item (click)="Audit(element)">
                                 <mat-icon class="mat-18">
                                         {{element.is_audited ? "check_circle" : "check_circle"}}

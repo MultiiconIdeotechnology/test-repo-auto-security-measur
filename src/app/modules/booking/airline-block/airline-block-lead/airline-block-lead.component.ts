@@ -18,11 +18,8 @@ import { RouterOutlet } from '@angular/router';
 import { PrimeNgImportsModule } from 'app/_model/imports_primeng/imports';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { BaseListingComponent } from 'app/form-models/base-listing';
-import { MatDialog } from '@angular/material/dialog';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { CommonFilterService } from 'app/core/common-filter/common-filter.service';
 import { filter_module_name, messages, module_name, Security } from 'app/security';
-import { EntityService } from 'app/services/entity.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { Subscription, takeUntil } from 'rxjs';
 import { Excel } from 'app/utils/export/excel';
@@ -30,35 +27,36 @@ import { DateTime } from 'luxon';
 import { Linq } from 'app/utils/linq';
 import { Routes } from 'app/common/const';
 import { AirlineBlockService } from 'app/services/airline-block.service';
+import { AgentService } from 'app/services/agent.service';
 
 @Component({
   selector: 'app-airline-block-lead',
   standalone: true,
-    imports: [
-      CommonModule,
-      NgIf,
-      NgFor,
-      DatePipe,
-      FormsModule,
-      ReactiveFormsModule,
-      MatFormFieldModule,
-      MatIconModule,
-      MatMenuModule,
-      MatTableModule,
-      MatSortModule,
-      MatPaginatorModule,
-      MatInputModule,
-      MatButtonModule,
-      MatTooltipModule,
-      NgClass,
-      RouterOutlet,
-      MatProgressSpinnerModule,
-      MatDatepickerModule,
-      MatNativeDateModule,
-      MatSelectModule,
-      NgxMatSelectSearchModule,
-      PrimeNgImportsModule,
-    ],
+  imports: [
+    CommonModule,
+    NgIf,
+    NgFor,
+    DatePipe,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatMenuModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatButtonModule,
+    MatTooltipModule,
+    NgClass,
+    RouterOutlet,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
+    NgxMatSelectSearchModule,
+    PrimeNgImportsModule,
+  ],
   templateUrl: './airline-block-lead.component.html',
   styleUrls: ['./airline-block-lead.component.scss']
 })
@@ -73,15 +71,16 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
   cols: any;
   _selectedColumns: any;
   statusList = ['New', 'Completed', 'Confirmed', 'Rejected', 'Cancelled'];
-
+  selectedSupplier: any;
+  supplierList: any[] = [];
+  selectedAgent: any;
+  agentList: any[] = [];
 
   constructor(
     private airlineBlockService: AirlineBlockService,
-    private matDialog: MatDialog,
     private toasterService: ToasterService,
     public _filterService: CommonFilterService,
-    private conformationService: FuseConfirmationService,
-    private entityService: EntityService,
+    private agentService: AgentService,
   ) {
     super(module_name.holiday_lead);
     this.key = this.module_name;
@@ -92,7 +91,8 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
-
+    this.getSupplierList('');
+    this.agentList = this._filterService.agentListById;
     // common filter
     this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
@@ -124,11 +124,31 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
     }
   }
 
+  // Api to get the Supplier list data
+  getSupplierList(value) {
+    this.airlineBlockService.getSupplierCombo(value, 'Airline Block').subscribe((data: any) => {
+      this.supplierList = data;
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name
+      }
+    })
+  }
+
+  getAgent(value: string) {
+    this.agentService.getAgentComboMaster(value, true).subscribe((data) => {
+      this.agentList = data;
+
+      for (let i in this.agentList) {
+        this.agentList[i]['agent_info'] = `${this.agentList[i].code}-${this.agentList[i].agency_name}-${this.agentList[i].email_address}`
+      }
+    });
+  }
+
   viewData(record): void {
     if (!Security.hasViewDetailPermission(module_name.booking_airline_block)) {
       return this.alertService.showToast('error', messages.permissionDenied);
     }
-    Linq.recirect('/'+ Routes.booking.airline_block_lead_path + '/details/' + record.id);
+    Linq.recirect('/' + Routes.booking.airline_block_lead_path + '/details/' + record.id);
   }
 
   ngOnDestroy(): void {
@@ -138,81 +158,81 @@ export class AirlineBlockLeadComponent extends BaseListingComponent {
     }
   }
 
-    refreshItems(event?: any) {
-      this.isLoading = true;
-      let model = this.getNewFilterReq(event)
-      this.airlineBlockService.getAirlineBlockLeadList(model).subscribe({
-        next: (data) => {
-          this.isLoading = false;
-          this.dataList = data.data;
-          this.totalRecords = data.total;
-          if (this.dataList && this.dataList.length) {
-            setTimeout(() => {
-              this.isFrozenColumn('', ['reference_no']);
-            }, 200);
-          } else {
-            setTimeout(() => {
-              this.isFrozenColumn('', ['reference_no'], true);
-            }, 200);
-          }
-        },
-        error: (err) => {
-          this.toasterService.showToast('error', err)
-          this.isLoading = false;
-        },
-      });
-    }
-  
-    getStatusColor(status: string): string {
-      if (status == 'New' || status == 'Waiting for Token Payment') {
-        return 'text-orange-600';
-      } else if (status == 'Completed' || status == 'Token Payment Success' || status == 'Confirmed') {
-        return 'text-green-600';
-      } else if (status == 'Cancelled' || status == 'Rejected' || status == 'Token Payment Failed') {
-        return 'text-red-600';
-      } else {
-        return '';
-      }
-    }
-  
-    getNodataText(): string {
-      if (this.isLoading) return 'Loading...';
-      else if (this.searchInputControl.value)
-        return `no search results found for \'${this.searchInputControl.value}\'.`;
-      else return 'No data to display';
-    }
-  
-    exportExcel(): void {
-      if (!Security.hasExportDataPermission(module_name.booking_airline_block)) {
-        return this.alertService.showToast('error', messages.permissionDenied);
-      }
-
-      // let extraModel = this.getFilter();
-      let newModel = this.getNewFilterReq({})
-      // const filterReq = { ...extraModel, ...newModel };
-      newModel['Take'] = this.totalRecords;
-  
-      this.airlineBlockService.getAirlineBlockLeadList(newModel).subscribe(data => {
-        for (var dt of data.data) {
-          dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
-          dt.departure_date_time = dt.departure_date_time ? DateTime.fromISO(dt.departure_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
-          dt.arrival_date_time = dt.arrival_date_time ? DateTime.fromISO(dt.arrival_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+  refreshItems(event?: any) {
+    this.isLoading = true;
+    let model = this.getNewFilterReq(event)
+    this.airlineBlockService.getAirlineBlockLeadList(model).subscribe({
+      next: (data) => {
+        this.isLoading = false;
+        this.dataList = data.data;
+        this.totalRecords = data.total;
+        if (this.dataList && this.dataList.length) {
+          setTimeout(() => {
+            this.isFrozenColumn('', ['reference_no']);
+          }, 200);
+        } else {
+          setTimeout(() => {
+            this.isFrozenColumn('', ['reference_no'], true);
+          }, 200);
         }
-        Excel.export(
-          'Airline Block Lead',
-          [
-            { header: 'Ref. No.', property: 'reference_no' },
-            { header: 'Status', property: 'lead_status' },
-            { header: 'Origin', property: 'origin' },
-            { header: 'Destination', property: 'destination' },
-            { header: 'Departure Date', property: 'departure_date_time' },
-            { header: 'Arrival Date', property: 'arrival_date_time' },
-            { header: 'Created', property: 'entry_date_time' },
-          ],
-          data.data, "Airline Block Lead", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
-      });
+      },
+      error: (err) => {
+        this.toasterService.showToast('error', err)
+        this.isLoading = false;
+      },
+    });
+  }
+
+  getStatusColor(status: string): string {
+    if (status == 'New' || status == 'Waiting for Token Payment') {
+      return 'text-orange-600';
+    } else if (status == 'Completed' || status == 'Token Payment Success' || status == 'Confirmed') {
+      return 'text-green-600';
+    } else if (status == 'Cancelled' || status == 'Rejected' || status == 'Token Payment Failed') {
+      return 'text-red-600';
+    } else {
+      return '';
     }
-  
+  }
+
+  getNodataText(): string {
+    if (this.isLoading) return 'Loading...';
+    else if (this.searchInputControl.value)
+      return `no search results found for \'${this.searchInputControl.value}\'.`;
+    else return 'No data to display';
+  }
+
+  exportExcel(): void {
+    if (!Security.hasExportDataPermission(module_name.booking_airline_block)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
+
+    // let extraModel = this.getFilter();
+    let newModel = this.getNewFilterReq({})
+    // const filterReq = { ...extraModel, ...newModel };
+    newModel['Take'] = this.totalRecords;
+
+    this.airlineBlockService.getAirlineBlockLeadList(newModel).subscribe(data => {
+      for (var dt of data.data) {
+        dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.departure_date_time = dt.departure_date_time ? DateTime.fromISO(dt.departure_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+        dt.arrival_date_time = dt.arrival_date_time ? DateTime.fromISO(dt.arrival_date_time).toFormat('dd-MM-yyyy HH:mm:ss') : '';
+      }
+      Excel.export(
+        'Airline Block Lead',
+        [
+          { header: 'Ref. No.', property: 'reference_no' },
+          { header: 'Status', property: 'lead_status' },
+          { header: 'Origin', property: 'origin' },
+          { header: 'Destination', property: 'destination' },
+          { header: 'Departure Date', property: 'departure_date_time' },
+          { header: 'Arrival Date', property: 'arrival_date_time' },
+          { header: 'Created', property: 'entry_date_time' },
+        ],
+        data.data, "Airline Block Lead", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }]);
+    });
+  }
+
 
 }
 

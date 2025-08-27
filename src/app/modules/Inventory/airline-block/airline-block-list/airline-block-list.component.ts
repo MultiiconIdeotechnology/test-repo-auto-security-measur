@@ -70,7 +70,9 @@ export class AirlineBlockListComponent extends BaseListingComponent {
   total = 0;
   _selectedColumns: any;
   isFilterShow: boolean;
-  // lastOrderValue: number | null = null;
+  selectedSupplier: any;
+  supplierList: any[] = [];
+
   initialOrderVal: number = 0;
   actionList: any[] = [
     { label: 'Publish', value: true },
@@ -104,6 +106,7 @@ export class AirlineBlockListComponent extends BaseListingComponent {
   }
 
   ngOnInit() {
+    this.getSupplierList('');
     // common filter
     this._filterService.selectionDateDropdown = "";
     this.settingsUpdatedSubscription = this._filterService.drawersUpdated$.subscribe((resp: any) => {
@@ -133,6 +136,17 @@ export class AirlineBlockListComponent extends BaseListingComponent {
     }
   }
 
+  // Api to get the Supplier list data
+  getSupplierList(value) {
+    this.airlineBlockService.getSupplierCombo(value, 'Airline Block').subscribe((data: any) => {
+      this.supplierList = data;
+      for (let i in this.supplierList) {
+        this.supplierList[i].id_by_value = this.supplierList[i].company_name
+      }
+    })
+  }
+
+
   viewDetails(record: any): void {
    if (!Security.hasPermission(inventoryAirlineBlockPermissions.viewAirlineBlockPermissions)) {
       return this.alertService.showToast('error', messages.permissionDenied);
@@ -153,6 +167,9 @@ export class AirlineBlockListComponent extends BaseListingComponent {
   }
 
   deleteInternal(record, index): void {
+    if (!Security.hasPermission(inventoryAirlineBlockPermissions.deletePermissions)) {
+      return this.alertService.showToast('error', messages.permissionDenied);
+    }
     const label: string = 'Delete Airline Block'
     this.conformationService.open({
       title: label,

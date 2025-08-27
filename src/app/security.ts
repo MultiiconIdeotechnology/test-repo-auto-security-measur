@@ -789,6 +789,7 @@ export const inventoryVisaPermissions = {
 export const inventoryAirlineBlockPermissions = {
     publishUnpublishPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Publish Unpublish', category_name: category_name.publish_unpublish },
     viewAirlineBlockPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'View Airline Block', category_name: category_name.view },
+    deletePermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Delete Airline Block', category_name: category_name.delete },
     auditUnauditPermissions: { module_name: module_name.inventoryAirlineBlock, group_name: group_name.listingPage, operation_type: 'Audit Unaudit', category_name: category_name.audit_unaudit },
 }
 
