@@ -292,10 +292,6 @@ export class ProfileAirlineComponent extends BaseListingComponent implements OnC
   }
 
 
-  compareAirline(o1: any, o2: any): boolean {
-    if (o1 == null || o2 == null) return false;
-    return o1.toString() === o2.toString();
-  }
 
   getSupplierCombo(): void {
     this.cacheService.getOrAdd(CacheLabel.getFareypeSupplierAirlineCombo,
