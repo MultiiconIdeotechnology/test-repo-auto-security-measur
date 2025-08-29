@@ -97,10 +97,10 @@ export class MobileProductActivateDialogComponent {
   // final step to activate andoroid/ios product
   activateMobileProduct() {
     let payloadObj = {
-      id: this.record?.id,
-      is_activated: true,
-      agent_id: this.record?.agentid,
-      product_id: this.record?.product_id
+      ServiceId: this.record?.id,
+      // is_activated: true,
+      AgentId: this.record?.agentid,
+      // product_id: this.record?.product_id
     }
     this.domainVarifyService.activate(payloadObj).subscribe({
       next: (res) => {
