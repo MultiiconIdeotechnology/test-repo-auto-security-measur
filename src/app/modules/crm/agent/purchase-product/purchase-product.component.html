@@ -59,7 +59,7 @@
                                 </button> -->
 
                                 <button mat-menu-item (click)="deleteProduct(ListItem)"
-                                *ngIf="(ListItem.product_status.purchase_amount > 0 && ListItem.receipt_status !== 'Confirmed' && ListItem.product_status !== 'Delivered') || (ListItem.product_status.purchase_amount == 0 && ListItem.product_status !== 'Delivered')">
+                                    *ngIf="(ListItem.product_status.purchase_amount > 0 && ListItem.receipt_status !== 'Confirmed' && ListItem.product_status !== 'Delivered') || (ListItem.product_status.purchase_amount == 0 && ListItem.product_status !== 'Delivered')">
                                     <mat-icon class="mat-18">delete</mat-icon>
                                     <span style="font-weight: 600">Delete</span>
                                 </button>
@@ -82,6 +82,11 @@
                                     *ngIf="ListItem.product_status == 'Delivered'">
                                     <mat-icon svgIcon="mat_solid:history_toggle_off"></mat-icon>
                                     <span style="font-weight: 600">Expiry</span>
+                                </button>
+
+                                <button mat-menu-item (click)="setBlockUnblock(element)">
+                                    <mat-icon class="mat-18 icon-size-5">{{element.is_blocked ? "highlight_off" : "check_circle"}}</mat-icon>
+                                    <span style="font-weight: 500">{{element.is_blocked ? "Unblock" : "Block"}}</span>
                                 </button>
 
                                 <!-- <button mat-menu-item (click)="paymentProduct(ListItem)">
@@ -165,5 +170,6 @@
         [pageSize]="appConfig.pageSize" (page)="refreshItems()" [showFirstLastButtons]="appConfig.showFirstLastButtons">
     </mat-paginator>
 </div>
-<purchase-product-entry-settings [agentId]="agentId" [currencySymbol]="currencySymbol"></purchase-product-entry-settings>
+<purchase-product-entry-settings [agentId]="agentId"
+    [currencySymbol]="currencySymbol"></purchase-product-entry-settings>
 <app-crm-sales-return-right [currencySymbol]="currencySymbol"></app-crm-sales-return-right>
