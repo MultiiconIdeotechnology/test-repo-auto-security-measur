@@ -1125,6 +1125,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 pid: 'SETTINGS_CASHBACKPARAMETERS_VIEW',
                 icon: 'heroicons_outline:wallet',
                 link: Routes.settings.cashback_parameters_route
+            },
+            {
+                id: 'settings.pspsetup',
+                title: 'PSP Setup',
+                type: 'basic',
+                pid: 'SETTINGS_PSPSETUP_VIEW',
+                icon: 'heroicons_outline:server',
+                link: Routes.settings.psp_setup_route
             }
         ]
     }

@@ -160,7 +160,7 @@ export const category_name = {
     document: 'Document',
     applyPremission: 'Apply Premission',
     status: 'Status',
-    rejected:'Reject',
+    rejected: 'Reject',
     audit_unaudit: 'Audit/Unaudit',
     publish_unpublish: 'Publish/Unpublish',
     online_offline: 'Online/Offline',
@@ -191,6 +191,7 @@ export const category_name = {
     action: 'Action',
     dail_call: 'Dail Call',
     re_shuffle: 'Reshuffle',
+    bulk_assign: 'Bulk Assign'
 };
 
 export const module_name = {
@@ -320,10 +321,11 @@ export const module_name = {
     airline_monthly: 'Airline Monthly Analysis',
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
-    tech_business_summary:'Tech Business Summary',
+    tech_business_summary: 'Tech Business Summary',
     tech_rm_monthly_report: 'RM Monthly Anaytics',
-    tech_product_monthly_report:'Product Monthly Analytics',
+    tech_product_monthly_report: 'Product Monthly Analytics',
     cab_inventory: 'Cab',
+    psp_setup: 'PSP Setup',
 
     // account2.0
     purchase_register_2: 'Purchase Register-2',
@@ -416,7 +418,7 @@ export const filter_module_name = {
     airline_report: "airline_report",
     campaign_summary: "campaign_summary",
     campaign_register: "campaign_register",
-    campaign_summary_report:'campaign_summary_report',
+    campaign_summary_report: 'campaign_summary_report',
     report_sales_agent_summary: "report_sales_agent_summary",
     products_collection: 'products_collection',
     products_receipts: 'products_receipts',
@@ -427,14 +429,14 @@ export const filter_module_name = {
     airline_rejection: 'Airline Rejection Analysis',
     airline_career: 'Airline Carrier Wise Analysis',
     tech_business_summary: 'tech_business_summary',
-    tech_rm_monthly_report:'tech_rm_monthly_report',
-    tech_product_monthly_report:'tech_product_monthly_report',
-    supplier_wallet_balance:'supplier_wallet_balance',
+    tech_rm_monthly_report: 'tech_rm_monthly_report',
+    tech_product_monthly_report: 'tech_product_monthly_report',
+    supplier_wallet_balance: 'supplier_wallet_balance',
     sent_mail: "sent_mail",
 
     //report account 2.0
     purchase_register_bonton: 'purchase_register_bonton',
-    purchase_register_bonton_dmcc:'purchase_register_bonton_dmcc',
+    purchase_register_bonton_dmcc: 'purchase_register_bonton_dmcc',
 
     //Inventory
     activity: "activity",
@@ -454,6 +456,7 @@ export const filter_module_name = {
 
     //Settings
     psp: "psp",
+    psp_setup: 'psp_setup',
     supplier_api: "supplier_api",
     message_templates: "message_templates",
     message_events: "message_events",
@@ -824,4 +827,10 @@ export const supplierAPIPermissions = {
 export const PSPPermissions = {
     setDefaultPermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Set Default', category_name: category_name.action },
     enableDisablePermissions: { module_name: module_name.pspsetting, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
+}
+
+export const PSPSetupPermissions = {
+    bulkAssignPermissions: { module_name: module_name.psp_setup, group_name: group_name.listingPage, operation_type: 'Bulk Assign', category_name: category_name.bulk_assign },
+    setDefaultPermissions: { module_name: module_name.psp_setup, group_name: group_name.listingPage, operation_type: 'Set Default', category_name: category_name.action },
+    enableDisablePermissions: { module_name: module_name.psp_setup, group_name: group_name.listingPage, operation_type: 'Enable Disable', category_name: category_name.enableDisable },
 }

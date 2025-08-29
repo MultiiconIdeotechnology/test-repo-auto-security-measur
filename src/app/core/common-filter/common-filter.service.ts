@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ThinLayoutComponent } from 'app/layout/layouts/vertical/thin/thin.component';
 import { AgentService } from 'app/services/agent.service';
 import { KycDocumentService } from 'app/services/kyc-document.service';
 import { RefferralService } from 'app/services/referral.service';
