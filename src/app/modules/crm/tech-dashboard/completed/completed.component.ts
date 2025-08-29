@@ -393,6 +393,9 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     }
 
     exportExcel(event?: any): void {
+        if (!Security.hasExportDataPermission(this.module_name)) {
+            return this.alertService.showToast('error', messages.permissionDenied);
+        }
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlCompleted.value;
         filterReq['Take'] = this.totalRecords;
