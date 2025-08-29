@@ -211,18 +211,18 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record?.subid ? record?.subid : "",
-                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                        Id: record?.id ? record?.id : "",
+                        NewExpiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
                     }
                     this.crmService.updateExpiryDate(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Update Expiry Date has been updated!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Update Expiry Date has been updated!',
+                                    'top-right',
+                                    true
+                                );
                                 this.refreshItems();
                             }
                         },
@@ -343,6 +343,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     }
 
     unBlocked(record, index): void {
+        console.log("record", record);
+        
         // if (!Security.hasPermission(agentsPermissions.removeAllSubagentPermissions)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
         // }
@@ -358,18 +360,19 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     let newJson = {
-                        id: record.subid,
-                        is_block: false
+                        ServiceId: record.id,
+                        Isblock: false,
+                        BlockRemarks:""
                     }
-                    this.crmService.unblocked(newJson).subscribe({
+                    this.crmService.blocked(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Un-blocked Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Un-blocked Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.dataList.splice(index, 1);
                             }
                         },

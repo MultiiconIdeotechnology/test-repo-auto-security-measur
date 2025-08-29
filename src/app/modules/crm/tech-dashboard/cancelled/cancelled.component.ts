@@ -264,7 +264,7 @@ export class CancelledComponent extends BaseListingComponent {
       .subscribe((res) => {
         if (res?.action === 'confirmed') {
           let newJson = {
-            id: record?.subid ? record?.subid : "",
+            id: record?.id ? record?.id : "",
             expiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
           }
           this.crmService.updateExpiryDate(newJson).subscribe({
@@ -316,19 +316,19 @@ export class CancelledComponent extends BaseListingComponent {
       .subscribe((res) => {
         if (res?.action === 'confirmed') {
           let newJson = {
-            id: record.subid,
-            is_block: true,
-            special_status_remark: res?.statusRemark ? res?.statusRemark : ""
+            ServiceId: record.id,
+            Isblock: true,
+            BlockRemarks: res?.statusRemark ? res?.statusRemark : ""
           }
           this.crmService.blocked(newJson).subscribe({
             next: (res) => {
-              this.alertService.showToast(
-                'success',
-                'Blocked Successfully!',
-                'top-right',
-                true
-              );
               if (res) {
+                this.alertService.showToast(
+                  'success',
+                  'Blocked Successfully!',
+                  'top-right',
+                  true
+                );
                 this.dataList.splice(index, 1);
               }
             },
