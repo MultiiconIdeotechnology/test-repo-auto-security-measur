@@ -374,6 +374,53 @@ export class PurchaseProductComponent {
         });
     }
 
+     setBlockUnblock(record): void {
+            // if (!Security.hasPermission(agentsPermissions.blockUnblockPermissions)) {
+            //     return this.alertService.showToast('error', messages.permissionDenied);
+            // }
+    
+            // if (record.is_blocked) {
+            //     const label: string = 'Unblock Agent'
+            //     this.conformationService.open({
+            //         title: label,
+            //         message: 'Are you sure to ' + label.toLowerCase() + ' ' + record.agency_name + ' ?'
+            //     }).afterClosed().subscribe(res => {
+            //         if (res === 'confirmed') {
+            //             this.crmService.setBlockUnblock(record.id).subscribe({
+            //                 next: () => {
+            //                     record.is_blocked = !record.is_blocked;
+            //                     this.alertService.showToast('success', "Agent has been Unblock!", "top-right", true);
+            //                     this.refreshItems();
+    
+            //                 },
+            //                 error: (err) => {
+            //                     this.alertService.showToast('error', err, 'top-right', true);
+            //                 },
+            //             })
+            //         }
+            //     })
+            // } else {
+            //     this.matDialog.open(BlockReasonComponent, {
+            //         data: record,
+            //         disableClose: true
+            //     }).afterClosed().subscribe(res => {
+            //         if (res) {
+            //             this.crmService.setBlockUnblock(record.id, res).subscribe({
+            //                 next: () => {
+            //                     record.is_blocked = !record.is_blocked;
+            //                     this.alertService.showToast('success', "Agent has been Block!", "top-right", true);
+            //                     this.refreshItems();
+    
+            //                 },
+            //                 error: (err) => {
+            //                     this.alertService.showToast('error', err, 'top-right', true);
+            //                 },
+            //             })
+            //         }
+            //     })
+            // }
+        }
+
     purchaseProductInfo(record, agencyName): void {
         // if (!Security.hasNewEntryPermission(module_name.crmagent)) {
         //     return this.alertService.showToast('error', messages.permissionDenied);
