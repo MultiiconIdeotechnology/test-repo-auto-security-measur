@@ -116,7 +116,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
-        this.sortColumn = 'entry_date_time';
+        this.sortColumn = 'entryDateTime';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -138,8 +138,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             if (resp['table_config']['integration_start_date_time'].value) {
                 resp['table_config']['integration_start_date_time'].value = new Date(resp['table_config']['integration_start_date_time'].value);
             }
-            if (resp['table_config']['entry_date_time'].value) {
-                resp['table_config']['entry_date_time'].value = new Date(resp['table_config']['entry_date_time'].value);
+            if (resp['table_config']['entryDateTime'].value) {
+                resp['table_config']['entryDateTime'].value = new Date(resp['table_config']['entryDateTime'].value);
             }
             this.primengTable['filters'] = resp['table_config'];
             this.isFilterShowPending = true;
@@ -167,8 +167,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             if (filterData['table_config']['integration_start_date_time'].value) {
                 filterData['table_config']['integration_start_date_time'].value = new Date(filterData['table_config']['integration_start_date_time'].value);
             }
-            if (filterData['table_config']['entry_date_time'].value) {
-                filterData['table_config']['entry_date_time'].value = new Date(filterData['table_config']['entry_date_time'].value);
+            if (filterData['table_config']['entryDateTime'].value) {
+                filterData['table_config']['entryDateTime'].value = new Date(filterData['table_config']['entryDateTime'].value);
             }
             this.primengTable['filters'] = filterData['table_config'];
             // this.primengTable['_sortField'] = filterData['sortColumn'];
@@ -181,7 +181,7 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlPending.value;
 
-        this.crmService.getTechProductList(filterReq).subscribe({
+        this.crmService.getPendingProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;
@@ -215,18 +215,14 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Sales Return' || status == 'Cancelled') {
+        if (status == 'Sales Return' || status == 'Cancelled' || status == 'Expired' || status == 'Blocked' || status == 'Rejected from Store') {
             return 'text-red-600';
         } else if (status == 'Inprocess' || status == 'Google Closed Testing') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
-        } else if (status == 'Waiting for Customer Update' || status == 'Pending') {
+        } else if (status == 'Waiting for Customer Update' || status == 'Pending' || status == 'Waiting for Account Activation') {
             return 'text-blue-600';
-        } else if (status == 'Waiting for Account Activation') {
-            return 'text-blue-600';
-        } else if (status == 'Rejected from Store') {
-            return 'text-red-600';
         }
         else {
             return '';
@@ -349,18 +345,18 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res === 'confirmed') {
                     let newJson = {
-                        id: record.id,
-                        is_integration_started: true
+                        Id: record.id,
+                        IsStartIntegration: true
                     }
                     this.crmService.startIntegration(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Start Integration Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Start Integration Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.refreshItems();
                             }
                         },
@@ -431,13 +427,13 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                                 }
                                 this.crmService.activate(newJson).subscribe({
                                     next: (res) => {
-                                        this.alertService.showToast(
-                                            'success',
-                                            'Product activated Successfully!',
-                                            'top-right',
-                                            true
-                                        );
                                         if (res) {
+                                            this.alertService.showToast(
+                                                'success',
+                                                'Product activated Successfully!',
+                                                'top-right',
+                                                true
+                                            );
                                             this.dataList.splice(index, 1);
                                         }
                                     },
@@ -480,8 +476,8 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                     }
                     this.crmService.googleClosedTesting(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast('success', 'Google closed testing successfully!');
                             if (res) {
+                                this.alertService.showToast('success', 'Google closed testing successfully!');
                                 this.refreshItems();
                             }
                         },

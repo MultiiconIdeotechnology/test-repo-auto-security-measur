@@ -141,24 +141,28 @@ export class CrmService {
         return this.http.post<any>(this.baseUrl + 'CRM/agent/reactiveAgent', model);
     }
 
-    getTechProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardList', model);
+    getPendingProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getPendingProductList', model);
     }
 
-    getTechCompletedProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardCompletedList', model);
+    getDeliveredProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getDeliveredProductList', model);
     }
 
     getTechBlockedProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardBlockedList', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getBlockedProductList', model);
     }
 
     startIntegration(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/startIntegration', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/startIntegration', model);
+    }
+
+    getData(id: string): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getData', {id: id});
     }
 
     googleClosedTesting(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/googleClosedTesting', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/googleClosedTesting', model);
     }
 
     blocked(model: any): Observable<any> {
@@ -175,7 +179,11 @@ export class CrmService {
     }
 
     getTechExpiredProductList(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/gettecdashboardExpiredList', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getExpiredProductList', model);
+    }
+
+    getCancelledProductList(model: any): Observable<any> {
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/getCancelledProductList', model);
     }
 
     createLinkUrl(model: any): Observable<any> {
@@ -199,7 +207,7 @@ export class CrmService {
     }
 
     updateStatus(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/updatestatus', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/updateStatus', model);
     }
 
     // getStatusChangedLog(model: any): Observable<any> {

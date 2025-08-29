@@ -112,7 +112,7 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
-        this.sortColumn = 'block_date_time';
+        this.sortColumn = 'blockDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -132,8 +132,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
             }
             // this.sortColumn = resp['sortColumn'];
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['block_date_time'].value) {
-                resp['table_config']['block_date_time'].value = new Date(resp['table_config']['block_date_time'].value);
+            if (resp['table_config']['blockDate'].value) {
+                resp['table_config']['blockDate'].value = new Date(resp['table_config']['blockDate'].value);
             }
             if (resp['table_config']['expiry_date'].value) {
                 resp['table_config']['expiry_date'].value = new Date(resp['table_config']['expiry_date'].value);
@@ -161,8 +161,8 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
                 }
             }, 1000);
 
-            if (filterData['table_config']['block_date_time'].value) {
-                filterData['table_config']['block_date_time'].value = new Date(filterData['table_config']['block_date_time'].value);
+            if (filterData['table_config']['blockDate'].value) {
+                filterData['table_config']['blockDate'].value = new Date(filterData['table_config']['blockDate'].value);
             }
             if (filterData['table_config']['expiry_date'].value) {
                 filterData['table_config']['expiry_date'].value = new Date(filterData['table_config']['expiry_date'].value);
@@ -405,19 +405,19 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
 
         this.crmService.getTechBlockedProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.block_date_time = dt.block_date_time ? DateTime.fromISO(dt.block_date_time).toFormat('dd-MM-yyyy') : ''
+                dt.blockDate = dt.blockDate ? DateTime.fromISO(dt.blockDate).toFormat('dd-MM-yyyy') : ''
                 dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
                 'Blocked',
                 [
-                    { header: 'Item Code', property: 'item_code' },
-                    { header: 'Item.', property: 'item_name' },
-                    { header: 'Product', property: 'product_name' },
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item.', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
                     { header: 'Agent Code', property: 'agentCode' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: 'Block Date', property: 'block_date_time' },
-                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Block Date', property: 'blockDate' },
+                    { header: 'Expiry Date', property: 'expiryDate' },
                     { header: 'RM', property: 'rm' },
                 ],
                 data.data, "Blocked", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);

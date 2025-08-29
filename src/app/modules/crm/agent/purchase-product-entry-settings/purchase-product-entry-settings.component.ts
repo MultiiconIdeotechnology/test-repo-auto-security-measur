@@ -137,7 +137,7 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
         // @Inject(MAT_DIALOG_DATA) public data: any = {},
         // @Inject(MAT_DIALOG_DATA) public editFlag: any = {}
     ) {
-        this.dateBeforeAllow = this.calculateDateBeforeDays(10);
+        this.dateBeforeAllow = this.calculateDateBeforeDays(0);
         // this.isEditFlag = this.isEditFlag?.editFlag;
         // this.record = data?.data ?? {}
         this.formGroup = this.builder.group({

@@ -41,7 +41,7 @@
                 </th>
             </tr>
 
-            <tr *ngIf="isFilterShowExpired">
+            <tr *ngIf="isFilterShowCancelled" >
                 <th class=" left-[-1px]" pFrozenColumn></th>
                 <th alignFrozen="left" pFrozenColumn [frozen]="frozenObj?.itemCode" class="min-w-[110px]">
                     <p-columnFilter field="itemCode" type="text" placeholder="Search by Item code" ariaLabel="Filter Item code"></p-columnFilter>

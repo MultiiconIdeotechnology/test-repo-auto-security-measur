@@ -344,6 +344,7 @@ export const filter_module_name = {
     tech_dashboard_completed: "tech_dashboard_completed",
     tech_dashboard_blocked: "tech_dashboard_blocked",
     tech_dashboard_expired: "tech_dashboard_expired",
+    tech_dashboard_cancelled: "tech_dashboard_cancelled",
     referral_link: "referral_link",
 
     // masters
@@ -519,6 +520,7 @@ export const techDashPermissions = {
     completedTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Completed Tab', category_name: category_name.view },
     expiredTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Expired Tab', category_name: category_name.view },
     blockedTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Blocked Tab', category_name: category_name.view },
+    cancelledTabPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Cancelled Tab', category_name: category_name.view },
     updateStatusPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Update Status', category_name: category_name.operation },
     statusChangedLogPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'Status Changed Log', category_name: category_name.operation },
     wlSettingPermissions: { module_name: module_name.techDashboard, group_name: group_name.listingPage, operation_type: 'WL Setting', category_name: category_name.operation },

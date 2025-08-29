@@ -112,7 +112,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
     ) {
         super(module_name.techDashboard);
         this.key = this.module_name;
-        this.sortColumn = 'activation_date_sub';
+        this.sortColumn = 'activationDate';
         this.sortDirection = 'desc';
         this.Mainmodule = this;
         this._filterService.applyDefaultFilter(this.filter_table_name);
@@ -133,8 +133,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                 }
 
             // this.primengTable['_sortField'] = resp['sortColumn'];
-            if (resp['table_config']['activation_date_sub'].value) {
-                resp['table_config']['activation_date_sub'].value = new Date(resp['table_config']['activation_date_sub'].value);
+            if (resp['table_config']['activationDate'].value) {
+                resp['table_config']['activationDate'].value = new Date(resp['table_config']['activationDate'].value);
             }
             if (resp['table_config']['expiry_date_sub'].value) {
                 resp['table_config']['expiry_date_sub'].value = new Date(resp['table_config']['expiry_date_sub'].value);
@@ -162,8 +162,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
                     }
                 }
             }, 1000);
-            if (filterData['table_config']['activation_date_sub'].value) {
-                filterData['table_config']['activation_date_sub'].value = new Date(filterData['table_config']['activation_date_sub'].value);
+            if (filterData['table_config']['activationDate'].value) {
+                filterData['table_config']['activationDate'].value = new Date(filterData['table_config']['activationDate'].value);
             }
             if (filterData['table_config']['expiry_date_sub'].value) {
                 filterData['table_config']['expiry_date_sub'].value = new Date(filterData['table_config']['expiry_date_sub'].value);
@@ -207,7 +207,7 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         const filterReq = this.getNewFilterReq(event);
         filterReq['Filter'] = this.searchInputControlCompleted.value;
 
-        this.crmService.getTechCompletedProductList(filterReq).subscribe({
+        this.crmService.getDeliveredProductList(filterReq).subscribe({
             next: (data) => {
                 this.isLoading = false;
                 this.dataList = data.data;

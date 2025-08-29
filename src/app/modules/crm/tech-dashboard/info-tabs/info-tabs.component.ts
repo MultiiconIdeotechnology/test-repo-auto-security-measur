@@ -23,6 +23,7 @@ import { DateTime } from 'luxon';
 import { AppConfig } from 'app/config/app-config';
 import { tabStatusChangedLogComponent } from '../tab-status-changed-log/tab-status-changed-log.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { ProductLogComponent } from '../product-log/product-log.component';
 
 @Component({
     selector: 'app-info-tabs',
@@ -53,7 +54,8 @@ import { MatDividerModule } from '@angular/material/divider';
         MatTabsModule,
         MatCheckboxModule,
         tabStatusChangedLogComponent,
-        MatDividerModule
+        MatDividerModule,
+        ProductLogComponent
     ],
 })
 export class TechInfoTabsComponent {
@@ -124,37 +126,54 @@ export class TechInfoTabsComponent {
 
     ngOnInit() {
         if (this.record.id) {
-            this.fieldList = [
-                { name: 'Item Code', value: this.record?.item_code },
-                { name: 'Item', value: this.record?.item_name },
-                { name: 'Product', value: this.record?.product_name },
-                {
-                    name: 'Status', value: this.record?.product_status,
-                    class: this.record?.product_status === 'Pending' ? 'text-red-600 font-semibold text-base' :
-                        this.record?.product_status === 'Inprocess' || this.record?.product_status == 'Google Closed Testing' ? 'text-yellow-600 font-semibold' :
-                            this.record?.product_status === 'Delivered' ? 'text-green-600 font-semibold' :
-                                this.record?.product_status === 'Waiting for Customer Update' ? 'text-blue-600 font-semibold' :
-                                    this.record?.product_status === 'Waiting for Account Activation' ? 'text-blue-600 font-semibold' :
-                                        this.record?.product_status === 'Rejected from Store' ? 'text-red-600 font-semibold' :
-                                            this.record?.product_status === 'Blocked' ? 'text-red-600 font-semibold' :
-                                                this.record?.product_status === 'Sales Return' ? 'text-red-600 font-semibold' :
-                                                    this.record?.product_status === 'Expired' ? 'text-red-600 font-semibold' : ''
+
+
+            this.crmService.getData(this.record.id).subscribe({
+                next: (res) => {
+                    this.fieldList = res
                 },
-                { name: 'Agent Code', value: this.record?.agentCode },
-                { name: 'Agency Name', value: this.record?.agency_name },
-                { name: 'RM', value: this.record?.rm },
-                { name: 'Product Entry Date', value: this.record?.product_Entry_Date ? DateTime.fromISO(this.record?.product_Entry_Date).toFormat('dd-MM-yyyy').toString() : '' },
-                { name: 'Is Integration Started', value: this.record?.is_integration_started ? 'Yes' : 'No' },
-                { name: 'Integration Start By', value: this.record?.integration_start_by_id },
-                { name: 'Integration Start Date', value: this.record?.integration_start_date_time ? DateTime.fromISO(this.record?.integration_start_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
-                { name: 'Is Block', value: this.record?.is_block ? 'Yes' : 'No' },
-                { name: 'Block By', value: this.record?.is_block_by },
-                { name: 'Block Date Time', value: this.record?.block_date_time ? DateTime.fromISO(this.record?.block_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
-                { name: 'Is Activated', value: this.record?.is_activated ? 'Yes' : 'No' },
-                { name: 'Activated By', value: this.record?.activate_by },
-                { name: 'Activation Date', value: this.record?.activation_date ? DateTime.fromISO(this.record?.activation_date).toFormat('dd-MM-yyyy').toString() : '' },
-                { name: 'RM Remark', value: this.record?.special_status_remark }
-            ]
+                error: (err) => {
+                    this.alertService.showToast(
+                        'error',
+                        err,
+                        'top-right',
+                        true
+                    );
+                },
+
+            });
+
+            // this.fieldList = [
+            //     { name: 'Item Code', value: this.record?.item_code },
+            //     { name: 'Item', value: this.record?.item_name },
+            //     { name: 'Product', value: this.record?.product_name },
+            //     {
+            //         name: 'Status', value: this.record?.product_status,
+            //         class: this.record?.product_status === 'Pending' ? 'text-red-600 font-semibold text-base' :
+            //             this.record?.product_status === 'Inprocess' || this.record?.product_status == 'Google Closed Testing' ? 'text-yellow-600 font-semibold' :
+            //                 this.record?.product_status === 'Delivered' ? 'text-green-600 font-semibold' :
+            //                     this.record?.product_status === 'Waiting for Customer Update' ? 'text-blue-600 font-semibold' :
+            //                         this.record?.product_status === 'Waiting for Account Activation' ? 'text-blue-600 font-semibold' :
+            //                             this.record?.product_status === 'Rejected from Store' ? 'text-red-600 font-semibold' :
+            //                                 this.record?.product_status === 'Blocked' ? 'text-red-600 font-semibold' :
+            //                                     this.record?.product_status === 'Sales Return' ? 'text-red-600 font-semibold' :
+            //                                         this.record?.product_status === 'Expired' ? 'text-red-600 font-semibold' : ''
+            //     },
+            //     { name: 'Agent Code', value: this.record?.agentCode },
+            //     { name: 'Agency Name', value: this.record?.agency_name },
+            //     { name: 'RM', value: this.record?.rm },
+            //     { name: 'Product Entry Date', value: this.record?.product_Entry_Date ? DateTime.fromISO(this.record?.product_Entry_Date).toFormat('dd-MM-yyyy').toString() : '' },
+            //     { name: 'Is Integration Started', value: this.record?.is_integration_started ? 'Yes' : 'No' },
+            //     { name: 'Integration Start By', value: this.record?.integration_start_by_id },
+            //     { name: 'Integration Start Date', value: this.record?.integration_start_date_time ? DateTime.fromISO(this.record?.integration_start_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+            //     { name: 'Is Block', value: this.record?.is_block ? 'Yes' : 'No' },
+            //     { name: 'Block By', value: this.record?.is_block_by },
+            //     { name: 'Block Date Time', value: this.record?.block_date_time ? DateTime.fromISO(this.record?.block_date_time).toFormat('dd-MM-yyyy HH:mm:ss').toString() : '' },
+            //     { name: 'Is Activated', value: this.record?.is_activated ? 'Yes' : 'No' },
+            //     { name: 'Activated By', value: this.record?.activate_by },
+            //     { name: 'Activation Date', value: this.record?.activation_date ? DateTime.fromISO(this.record?.activation_date).toFormat('dd-MM-yyyy').toString() : '' },
+            //     { name: 'RM Remark', value: this.record?.special_status_remark }
+            // ]
         }
     }
 
@@ -172,24 +191,22 @@ export class TechInfoTabsComponent {
                 this.tab = 'Status Change Log';
                 this.tabStatus?.refreshItems()
                 break;
+
+            case 'Product Logs':
+                this.tab = 'Product Logs';
+                break;
         }
     }
 
     getStatusColor(status: string): string {
-        if (status == 'Pending') {
+        if (status == 'Sales Return' || status == 'Cancelled' || status == 'Expired' || status == 'Blocked' || status == 'Rejected from Store') {
             return 'text-red-600';
         } else if (status == 'Inprocess' || status == 'Google Closed Testing') {
             return 'text-yellow-600';
         } else if (status == 'Delivered') {
             return 'text-green-600';
-        } else if (status == 'Waiting for Customer Update') {
+        } else if (status == 'Waiting for Customer Update' || status == 'Pending' || status == 'Waiting for Account Activation') {
             return 'text-blue-600';
-        } else if (status == 'Waiting for Account Activation') {
-            return 'text-blue-600';
-        } else if (status == 'Rejected from Store') {
-            return 'text-red-600';
-        } else if (status == 'Expired') {
-            return 'text-red-600';
         }
         else {
             return '';
