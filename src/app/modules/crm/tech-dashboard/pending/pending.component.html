@@ -159,7 +159,7 @@
                             <span style="font-weight: 600">Info</span>
                         </button>
                         <button mat-menu-item (click)="startIntegration(element)"
-                            *ngIf="element.isStartIntegration === false">
+                            *ngIf="element.isStartIntegration === false && element?.productServiceStatus == 'Pending'">
                             <mat-icon class="mat-18">how_to_reg</mat-icon>
                             <span style="font-weight: 600">Start Integration</span>
                         </button>
@@ -168,20 +168,15 @@
                             <mat-icon class="mat-18">edit</mat-icon>
                             <span style="font-weight: 600">Update Status</span>
                         </button>
-                        <ng-container *ngIf="!element?.productName?.toLowerCase().includes('rise')">
-                            <button mat-menu-item (click)="wlSetting(element)"
-                                *ngIf="element.isStartIntegration == true">
+                        <ng-container *ngIf="!element?.productName?.toLowerCase().includes('rise') && element?.productServiceStatus == 'Inprocess'">
+                            <button mat-menu-item (click)="wlSetting(element)">
                                 <mat-icon class="mat-18">schedule</mat-icon>
                                 <span style="font-weight: 600">WL Settings</span>
                             </button>
                         </ng-container>
                         <button mat-menu-item (click)="activate(element, i)" *ngIf="(
-                                (element.isStartIntegration == true &&
-                                !['003', '004', '006', '007'].includes(element.itemCode)) ||
-                                element.productServiceStatus.toLowerCase() === 'google closed testing') 
-                                &&
-                                (
-                                element?.itemName?.toLowerCase()?.includes('android') ||
+                                (element.isStartIntegration == true && !['003', '004', '006', '007'].includes(element.itemCode)) ||
+                                element.productServiceStatus.toLowerCase() === 'google closed testing') && ( element?.itemName?.toLowerCase()?.includes('android') ||
                                 element?.itemName?.toLowerCase()?.includes('ios')
                                 )">
                             <mat-icon class="mat-18">history</mat-icon>

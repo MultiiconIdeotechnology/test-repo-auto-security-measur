@@ -166,7 +166,7 @@ export class CrmService {
     }
 
     blocked(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/BlockProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/blockUnblock', model);
     }
 
     unblocked(model: any): Observable<any> {
@@ -239,7 +239,7 @@ export class CrmService {
     }
 
     updateExpiryDate(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/UpdateExpirydate', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/updateExpirydate', model);
     }
 
     cancelPurchaseProduct(model: any): Observable<any> {

@@ -314,19 +314,19 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record.id,
-                        is_block: true,
-                        special_status_remark: res?.statusRemark ? res?.statusRemark : ""
+                        ServiceId: record.id,
+                        Isblock: true,
+                        BlockRemarks: res?.statusRemark ? res?.statusRemark : ""
                     }
                     this.crmService.blocked(newJson).subscribe({
                         next: (res) => {
-                            this.alertService.showToast(
-                                'success',
-                                'Blocked Successfully!',
-                                'top-right',
-                                true
-                            );
                             if (res) {
+                                this.alertService.showToast(
+                                    'success',
+                                    'Blocked Successfully!',
+                                    'top-right',
+                                    true
+                                );
                                 this.dataList.splice(index, 1);
                             }
                         },
@@ -363,8 +363,8 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
             .subscribe((res) => {
                 if (res?.action === 'confirmed') {
                     let newJson = {
-                        id: record?.id ? record?.id : "",
-                        expiry_date: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
+                        Id: record?.id ? record?.id : "",
+                        NewExpiryDate: res?.date ? DateTime.fromISO(res?.date).toFormat('yyyy-MM-dd') : ""
                     }
                     this.crmService.updateExpiryDate(newJson).subscribe({
                         next: (res) => {
