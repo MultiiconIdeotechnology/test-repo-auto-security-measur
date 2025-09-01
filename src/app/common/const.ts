@@ -340,8 +340,8 @@ export const Routes = {
         visa_route: '/booking/visa',
         visa_details_route: '/booking/visa/details',
 
-        airline_block_lead_path: 'airline-block/airline-block-lead',
-        airline_block_lead_route: '/airline-block/airline-block-lead',
+        airline_block_lead_path: 'booking/airline-block',
+        airline_block_lead_route: '/booking/airline-block',
 
         offline_service_path: 'booking/offline-service',
         offline_service_route: '/booking/offline-service',
@@ -380,8 +380,8 @@ export const Routes = {
         visa_path: 'inventory/visa',
         visa_route: '/inventory/visa',
 
-        airline_block_path: 'airline-block/airline-block-inventory',
-        airline_block_route: '/airline-block/airline-block-inventory',
+        airline_block_path: 'inventory/airline-block',
+        airline_block_route: '/inventory/airline-block',
 
         holiday_v2_path: 'inventory/holidayv2-products',
         holiday_v2_route: '/inventory/holidayv2-products',
