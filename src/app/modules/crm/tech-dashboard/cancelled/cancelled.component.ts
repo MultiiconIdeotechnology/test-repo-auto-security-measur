@@ -372,7 +372,7 @@ export class CancelledComponent extends BaseListingComponent {
         'Cancelled',
         [
           { header: 'Item Code', property: 'itemCode' },
-          { header: 'Item.', property: 'itemName' },
+          { header: 'Item', property: 'itemName' },
           { header: 'Product', property: 'productName' },
           { header: 'Agent Code', property: 'agentCode' },
           { header: 'Agency Name', property: 'agencyName' },

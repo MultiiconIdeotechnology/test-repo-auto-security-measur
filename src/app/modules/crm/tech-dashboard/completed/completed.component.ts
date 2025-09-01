@@ -400,23 +400,23 @@ export class TechDashboardCompletedComponent extends BaseListingComponent {
         filterReq['Filter'] = this.searchInputControlCompleted.value;
         filterReq['Take'] = this.totalRecords;
 
-        this.crmService.getTechCompletedProductList(filterReq).subscribe(data => {
+        this.crmService.getDeliveredProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.activation_date = dt.activation_date ? DateTime.fromISO(dt.activation_date).toFormat('dd-MM-yyyy') : ''
-                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+                dt.activationDate = dt.activationDate ? DateTime.fromISO(dt.activationDate).toFormat('dd-MM-yyyy') : ''
+                dt.expiryDate = dt.expiryDate ? DateTime.fromISO(dt.expiryDate).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
-                'Completed',
+                'Delivered',
                 [
-                    { header: 'Item Code', property: 'item_code' },
-                    { header: 'Item.', property: 'item_name' },
-                    { header: 'Product', property: 'product_name' },
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
                     { header: 'Agent Code', property: 'agentCode' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: 'Activation Date', property: 'activation_date' },
-                    { header: 'Expiry Date', property: 'expiry_date' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Activation Date', property: 'activationDate' },
+                    { header: 'Expiry Date', property: 'expiryDate' },
                 ],
-                data.data, "Completed", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
+                data.data, "Delivered", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });
     }
 

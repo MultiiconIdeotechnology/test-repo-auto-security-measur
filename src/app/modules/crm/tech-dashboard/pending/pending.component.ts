@@ -423,9 +423,9 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
                         .subscribe((res) => {
                             if (res === 'confirmed') {
                                 let newJson = {
-                                    id: record.id ? record.id : "",
-                                    is_activated: true,
-                                    agent_id: record?.agentid ? record?.agentid : ""
+                                    ServiceId: record.id ? record.id : "",
+                                    // is_activated: true,
+                                    AgentId: record?.agentid ? record?.agentid : ""
                                 }
                                 this.crmService.activate(newJson).subscribe({
                                     next: (res) => {
@@ -499,22 +499,22 @@ export class TechDashboardPendingComponent extends BaseListingComponent {
         filterReq['Filter'] = this.searchInputControlPending.value;
         filterReq['Take'] = this.totalRecords;
 
-        this.crmService.getTechProductList(filterReq).subscribe(data => {
+        this.crmService.getPendingProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
-                dt.integration_start_date_time = dt.integration_start_date_time ? DateTime.fromISO(dt.integration_start_date_time).toFormat('dd-MM-yyyy') : ''
-                dt.entry_date_time = dt.entry_date_time ? DateTime.fromISO(dt.entry_date_time).toFormat('dd-MM-yyyy') : ''
+                dt.startIntegrationDateTime = dt.startIntegrationDateTime ? DateTime.fromISO(dt.startIntegrationDateTime).toFormat('dd-MM-yyyy') : ''
+                dt.entryDateTime = dt.entryDateTime ? DateTime.fromISO(dt.entryDateTime).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
                 'Pending',
                 [
-                    { header: 'Item Code', property: 'item_code' },
-                    { header: 'Item.', property: 'item_name' },
-                    { header: 'Product', property: 'product_name' },
-                    { header: 'Status', property: 'product_status' },
+                    { header: 'Item Code', property: 'itemCode' },
+                    { header: 'Item', property: 'itemName' },
+                    { header: 'Product', property: 'productName' },
+                    { header: 'Status', property: 'productServiceStatus' },
                     { header: 'Agent Code', property: 'agentCode' },
-                    { header: 'Agency Name', property: 'agency_name' },
-                    { header: ' Start Int. Date', property: 'integration_start_date_time' },
-                    { header: 'Entry Date', property: 'entry_date_time' },
+                    { header: 'Agency Name', property: 'agencyName' },
+                    { header: 'Start Int. Date', property: 'startIntegrationDateTime' },
+                    { header: 'Entry Date', property: 'entryDateTime' },
                 ],
                 data.data, "Pending", [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }]);
         });

@@ -193,7 +193,7 @@ export class CrmService {
 
 
     activate(model: any): Observable<any> {
-        return this.http.post<any>(this.baseUrl + 'Dashboard/TecDashboard/ActivateProduct', model);
+        return this.http.post<any>(this.baseUrl + 'ProductPurchaseService/activeProduct', model);
     }
 
     getTechExpiredProductList(model: any): Observable<any> {

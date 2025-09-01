@@ -409,13 +409,13 @@ export class TechDashboardBlockedComponent extends BaseListingComponent {
         this.crmService.getTechBlockedProductList(filterReq).subscribe(data => {
             for (var dt of data.data) {
                 dt.blockDate = dt.blockDate ? DateTime.fromISO(dt.blockDate).toFormat('dd-MM-yyyy') : ''
-                dt.expiry_date = dt.expiry_date ? DateTime.fromISO(dt.expiry_date).toFormat('dd-MM-yyyy') : ''
+                dt.expiryDate = dt.expiryDate ? DateTime.fromISO(dt.expiryDate).toFormat('dd-MM-yyyy') : ''
             }
             Excel.export(
                 'Blocked',
                 [
                     { header: 'Item Code', property: 'itemCode' },
-                    { header: 'Item.', property: 'itemName' },
+                    { header: 'Item', property: 'itemName' },
                     { header: 'Product', property: 'productName' },
                     { header: 'Agent Code', property: 'agentCode' },
                     { header: 'Agency Name', property: 'agencyName' },
