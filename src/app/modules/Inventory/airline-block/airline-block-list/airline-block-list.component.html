@@ -95,12 +95,12 @@
                         Seat
                         <p-sortIcon field="no_of_seat"></p-sortIcon>
                     </th>
-                    <th pSortableColumn="entry_date_time" pResizableColumn>
+                    <th [ngClass]="{'w-full': !columns?.length}" pSortableColumn="entry_date_time" pResizableColumn>
                         Create Date
                         <p-sortIcon field="entry_date_time"></p-sortIcon>
                     </th>
 
-                    <th [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
+                    <th [ngClass]="{'w-full':isLast}" [pSortableColumn]="col.field" pResizableColumn *ngFor="let col of columns">
                         {{col.header}} <p-sortIcon [field]="col.field" />
                     </th>
                 </tr>

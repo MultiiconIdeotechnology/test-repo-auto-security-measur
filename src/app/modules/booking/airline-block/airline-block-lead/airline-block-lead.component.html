@@ -91,14 +91,23 @@
                     <th pSortableColumn="destination" pResizableColumn>
                         Destination <p-sortIcon field="destination" />
                     </th>
+                    <th pSortableColumn="entry_date_time" pResizableColumn>
+                        Date <p-sortIcon field="entry_date_time" />
+                    </th>
                     <th pSortableColumn="departure_date_time" pResizableColumn>
                         Departure <p-sortIcon field="departure_date_time" />
                     </th>
                     <th pSortableColumn="arrival_date_time" pResizableColumn>
                         Arrival <p-sortIcon field="arrival_date_time" />
                     </th>
-                    <th class="w-full" pSortableColumn="entry_date_time" pResizableColumn>
-                        Created <p-sortIcon field="entry_date_time" />
+                    <th pSortableColumn="lead_pax_name" pResizableColumn>
+                        Lead Name <p-sortIcon field="lead_pax_name" />
+                    </th>
+                    <th pSortableColumn="lead_pax_email" pResizableColumn>
+                        Lead Email <p-sortIcon field="lead_pax_email" />
+                    </th>
+                    <th pSortableColumn="lead_pax_contact" pResizableColumn>
+                        Lead Number <p-sortIcon field="lead_pax_contact" />
                     </th>
                 </tr>
 
@@ -166,6 +175,15 @@
                         ariaLabel="Search by destination Name"></p-columnFilter>
                     </th>
                     <th>
+                        <p-columnFilter field="entry_date_time" type="date">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
+                                    appendTo="body" placeholder="Filter Created Date">
+                                </p-calendar>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th>
                         <p-columnFilter field="departure_date_time" type="date">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
                                 <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
@@ -183,16 +201,18 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th>
-                        <p-columnFilter field="entry_date_time" type="date">
-                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-calendar (onSelect)="filter($event)" [ngModel]="value" dateFormat="dd-mm-yy"
-                                    appendTo="body" placeholder="Filter Created Date">
-                                </p-calendar>
-                            </ng-template>
-                        </p-columnFilter>
+                   <th>
+                        <p-columnFilter type="text" matchMode="contains" field="lead_pax_name"
+                            placeholder="Search by Lead Name" ariaLabel="Filter Lead Name" />
                     </th>
-                   
+                    <th>
+                        <p-columnFilter type="text" matchMode="contains" field="lead_pax_email"
+                            placeholder="Search by Lead Email" ariaLabel="Filter Lead Email" />
+                    </th>
+                    <th>
+                        <p-columnFilter type="numeric" matchMode="equals" field="lead_pax_contact"
+                            placeholder="Search by Lead Number" ariaLabel="Filter Lead Mobile" />
+                    </th>
                 </tr>
             </ng-template>
 
@@ -212,10 +232,18 @@
                     <td>{{ element.agent_name || '-' }}</td>
                     <td>{{ element.origin || '-' }}</td>
                     <td>{{ element.destination || '-' }}</td>
-                    <td>{{ element.departure_date_time ? (element.departure_date_time | date:'dd-MM-yyyy HH:mm:ss') : '-' }}
+                    <td>{{ element.entry_date_time ? (element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') : '-' }}</td>
+                    <td>{{ element.departure_date_time ? (element.departure_date_time | date:'dd-MM-yyyy HH:mm:ss') : '-' }}</td>
+                    <td>{{ element.arrival_date_time ? (element.arrival_date_time | date:'dd-MM-yyyy HH:mm:ss') : '-' }}</td>
+                    <td>
+                        {{element.lead_pax_name || "-"}}
                     </td>
-                    <td>{{ element.arrival_date_time ? (element.arrival_date_time | date:'dd-MM-yyyy HH:mm:ss') : '-' }}
-                    <td>{{ element.entry_date_time ? (element.entry_date_time | date:'dd-MM-yyyy HH:mm:ss') : '-' }}
+                    <td>
+                        {{element.lead_pax_email || "-"}}
+                    </td>
+                    <td>
+                        {{element.lead_pax_contact || "-"}}
+                    </td>
                 </tr>
             </ng-template>
 
