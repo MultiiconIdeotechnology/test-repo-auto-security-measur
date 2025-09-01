@@ -162,6 +162,12 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
                         this.addFlag = item?.addFlag;
                     }
 
+                    if(item.editFlag){
+                        this.title = "Edit Product Purchase"
+                    }else{
+                        this.title = "Product Purchase"
+                    }
+
                     // pending installmentsArray
                     this.formGroup.patchValue({
                         product: "",
@@ -177,7 +183,6 @@ export class PurchaseProductEntrySettingsComponent implements OnInit, OnDestroy 
 
                     this.proofAttachment = false;
                     if (item?.editFlag) {
-                        this.title =  "Edit Product"
                         if (item?.editData?.proofAttachment) {
                             this.proofAttachment = true;
                         }
